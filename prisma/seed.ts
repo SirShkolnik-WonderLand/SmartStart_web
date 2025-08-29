@@ -13,7 +13,7 @@ async function main() {
     create: {
       email: 'admin@smartstart.com',
       name: 'Admin User',
-      level: 'EAGLE',
+      level: 'SKY_MASTER',
       xp: 1000,
       reputation: 100,
       account: {
@@ -32,7 +32,7 @@ async function main() {
     create: {
       email: 'owner@demo.local',
       name: 'Project Owner',
-      level: 'HAWK',
+      level: 'WISE_OWL',
       xp: 750,
       reputation: 75,
       account: {
@@ -51,7 +51,7 @@ async function main() {
     create: {
       email: 'contrib@demo.local',
       name: 'Contributor',
-      level: 'OWL',
+      level: 'NIGHT_WATCHER',
       xp: 500,
       reputation: 50,
       account: {
