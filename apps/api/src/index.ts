@@ -65,8 +65,8 @@ app.use('/', tasksRoutes);
 app.use('/', contributionsRoutes);
 app.use('/', capTableRoutes);
 app.use('/', visibilityRoutes);
-app.use('/api/mesh', meshRoutes);
-app.use('/api/admin', adminRoutes);
+app.use('/mesh', meshRoutes);
+app.use('/admin', adminRoutes);
 
 const port = process.env.PORT || 3001;
 app.listen(port, () => console.log(`API running on port ${port}`));
