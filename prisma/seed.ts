@@ -88,9 +88,8 @@ async function main() {
       projectId: demoProject.id,
       holderId: ownerUser.id,
       holderType: 'OWNER',
-      percentage: 35,
-      shares: 3500,
-      totalShares: 10000
+      pct: 35.0,
+      source: 'Initial ownership'
     }
   });
 
@@ -102,9 +101,8 @@ async function main() {
       projectId: demoProject.id,
       holderId: contributorUser.id,
       holderType: 'USER',
-      percentage: 5,
-      shares: 500,
-      totalShares: 10000
+      pct: 5.0,
+      source: 'Contribution reward'
     }
   });
 
@@ -115,11 +113,9 @@ async function main() {
     create: {
       id: 'idea-1',
       title: 'Mobile App Development',
-      description: 'Create a mobile companion app for the SmartStart platform',
-      impact: 'HIGH',
-      priority: 'MEDIUM',
-      status: 'SUBMITTED',
-      authorId: contributorUser.id,
+      body: 'Create a mobile companion app for the SmartStart platform to enable on-the-go project management and real-time collaboration.',
+      status: 'ACTIVE',
+      proposerId: contributorUser.id,
       projectId: demoProject.id
     }
   });
@@ -131,16 +127,9 @@ async function main() {
     create: {
       id: 'poll-1',
       question: 'Which feature should we prioritize next?',
-      category: 'TECHNICAL',
-      projectId: demoProject.id,
-      createdById: ownerUser.id,
-      options: {
-        create: [
-          { text: 'Mobile App', order: 1 },
-          { text: 'Advanced Analytics', order: 2 },
-          { text: 'API Integrations', order: 3 }
-        ]
-      }
+      type: 'MULTIPLE_CHOICE',
+      closesAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
+      projectId: demoProject.id
     }
   });
 
@@ -152,7 +141,7 @@ async function main() {
       id: 'mesh-1',
       type: 'WIN',
       title: 'Platform Launch Success',
-      content: 'Successfully launched the SmartStart platform with all core features!',
+      description: 'Successfully launched the SmartStart platform with all core features!',
       authorId: ownerUser.id,
       projectId: demoProject.id
     }
