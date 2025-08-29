@@ -19,10 +19,10 @@ services:
   - type: web
     name: smartstart-api
     env: node
-    rootDir: apps/api
+    rootDir: .
     plan: free
-    buildCommand: npm install -g pnpm && pnpm install && pnpm prisma:generate && pnpm build
-    startCommand: pnpm prisma migrate deploy && pnpm start
+    buildCommand: npm install -g pnpm && pnpm install && pnpm prisma:generate && pnpm --filter @smartstart/api build
+    startCommand: cd apps/api && pnpm prisma migrate deploy && pnpm start
     envVars:
       - key: NODE_ENV
         value: production
