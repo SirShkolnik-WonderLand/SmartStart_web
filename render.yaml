@@ -4,12 +4,8 @@ services:
     env: node
     rootDir: apps/web
     plan: free
-    buildCommand: |
-      corepack enable
-      pnpm install --frozen-lockfile
-      pnpm --filter @smartstart/web build
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm --filter @smartstart/web build
     startCommand: pnpm --filter @smartstart/web start
-    healthCheckPath: /
     envVars:
       - key: NODE_ENV
         value: production
@@ -25,28 +21,14 @@ services:
           property: url
       - key: JWT_SECRET
         generateValue: true
-    autoDeploy: true
-    buildFilter:
-      paths:
-        - apps/web/**
-        - package.json
-        - pnpm-lock.yaml
-        - pnpm-workspace.yaml
 
   - type: web
     name: smartstart-api
     env: node
     rootDir: apps/api
     plan: free
-    buildCommand: |
-      corepack enable
-      pnpm install --frozen-lockfile
-      pnpm prisma:generate
-      pnpm build
-    startCommand: |
-      pnpm prisma migrate deploy
-      pnpm start
-    healthCheckPath: /health
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm prisma:generate && pnpm build
+    startCommand: pnpm prisma migrate deploy && pnpm start
     envVars:
       - key: NODE_ENV
         value: production
@@ -102,17 +84,7 @@ services:
         value: 20
       - key: MAX_PAGE_SIZE
         value: 100
-    autoDeploy: true
-    buildFilter:
-      paths:
-        - apps/api/**
-        - prisma/**
-        - package.json
-        - pnpm-lock.yaml
-        - pnpm-workspace.yaml
 
 databases:
   - name: smartstart-db
     plan: free
-    ipAllowList: []
-    maxConnections: 10
