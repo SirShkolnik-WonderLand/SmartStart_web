@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import AppLayout from './components/AppLayout'
+import { apiCall } from './utils/api'
 import './styles/home.css'
 
 interface User {
@@ -21,13 +22,8 @@ export default function Home() {
     // Check authentication status
     const checkAuth = async () => {
       try {
-        const response = await fetch('/api/auth/me', {
-          credentials: 'include'
-        })
-        if (response.ok) {
-          const userData = await response.json()
-          setUser(userData)
-        }
+        const userData = await apiCall('/auth/me')
+        setUser(userData)
       } catch (error) {
         console.error('Auth check failed:', error)
       } finally {

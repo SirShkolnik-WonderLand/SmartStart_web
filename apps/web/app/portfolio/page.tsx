@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import AppLayout from '../components/AppLayout'
+import { apiCallWithAuth } from '../utils/api'
 import '../styles/portfolio.css'
 
 interface User {
@@ -89,17 +90,7 @@ export default function PortfolioPage() {
       const token = tokenCookie.split('=')[1]
       
       // Fetch user's projects from API
-      const response = await fetch('/api/projects/user', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch portfolio data')
-      }
-
-      const data = await response.json()
+      const data = await apiCallWithAuth('/projects/user', token)
       
       // Transform API data to match our interface
       const transformedProjects: Project[] = (data.projects || []).map((apiProject: any) => ({

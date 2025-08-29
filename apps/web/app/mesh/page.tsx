@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import AppLayout from '../components/AppLayout'
+import { apiCallWithAuth } from '../utils/api'
 import '../styles/mesh.css'
 
 interface User {
@@ -107,16 +108,10 @@ export default function MeshPage() {
       const token = tokenCookie.split('=')[1]
       
       // Fetch mesh items from API
-      const response = await fetch('/api/mesh/items', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
-
-      if (response.ok) {
-        const data = await response.json()
+      try {
+        const data = await apiCallWithAuth('/mesh/items', token)
         setMeshItems(data)
-      } else {
+      } catch (error) {
         console.error('Failed to fetch mesh data')
         // Fallback to mock data
         setMeshItems(getMockMeshItems())
@@ -144,16 +139,10 @@ export default function MeshPage() {
       const token = tokenCookie.split('=')[1]
       
       // Fetch insights from API
-      const response = await fetch('/api/mesh/insights', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
-
-      if (response.ok) {
-        const data = await response.json()
+      try {
+        const data = await apiCallWithAuth('/mesh/insights', token)
         setInsights(data)
-      } else {
+      } catch (error) {
         console.error('Failed to fetch insights')
         // Fallback to mock data
         setInsights(getMockInsights())
