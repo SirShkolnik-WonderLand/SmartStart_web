@@ -7,13 +7,18 @@
         "dev": "concurrently -k -n API,WEB -c magenta,cyan \"pnpm --filter @smartstart/api dev\" \"pnpm --filter @smartstart/web dev\"",
         "build": "pnpm -r build",
         "prisma:generate": "prisma generate",
-        "prisma:migrate": "prisma migrate deploy"
+        "prisma:migrate": "prisma migrate deploy",
+        "prisma:db:push": "prisma db push",
+        "prisma:seed": "tsx prisma/seed.ts"
     },
     "devDependencies": {
         "concurrently": "^9.0.0",
-        "prisma": "^5.18.0"
+        "prisma": "^5.18.0",
+        "@types/bcryptjs": "^2.4.6",
+        "tsx": "^4.16.0"
     },
     "dependencies": {
-        "@prisma/client": "^5.18.0"
+        "@prisma/client": "^5.18.0",
+        "bcryptjs": "^2.4.3"
     }
 }
