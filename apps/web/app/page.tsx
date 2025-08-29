@@ -1,103 +1,74 @@
-export default async function Mesh() {
+export default async function Home() {
   return (
     <div>
       <div className="page-header">
         <h1 className="page-title">
-          Mesh
+          SmartStart
         </h1>
         <p className="page-subtitle">
-          Live community status: wins, milestones, polls, ideas, and updates
+          Community-driven development platform for building ventures together
         </p>
       </div>
 
       <div className="grid grid-3">
-        {/* Today's Wins */}
+        {/* Welcome */}
         <div className="card">
           <div className="card-header">
             <h3 className="card-title">
-              Today's Wins
+              Welcome to SmartStart
             </h3>
-            <p className="card-subtitle">Celebrating our achievements</p>
+            <p className="card-subtitle">Your community-driven development platform</p>
+          </div>
+          <div className="card-content">
+            <p>SmartStart brings together project management, equity tracking, contribution management, and community collaboration in one secure, scalable solution.</p>
+            <div className="button-group">
+              <a href="/projects" className="button button-primary">View Projects</a>
+              <a href="/mesh" className="button button-secondary">Community Mesh</a>
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Stats */}
+        <div className="card">
+          <div className="card-header">
+            <h3 className="card-title">
+              Platform Stats
+            </h3>
+            <p className="card-subtitle">Current activity overview</p>
           </div>
           <ul className="status-list">
             <li className="status-item">
-              <span className="status-text">Project Alpha milestone reached</span>
+              <span className="status-text">Active Projects: 3</span>
             </li>
             <li className="status-item">
-              <span className="status-text">3 PRs merged successfully</span>
+              <span className="status-text">Community Members: 12</span>
             </li>
             <li className="status-item">
-              <span className="status-text">Sprint goals completed</span>
+              <span className="status-text">Total Contributions: 47</span>
             </li>
           </ul>
         </div>
 
-        {/* Next Milestones */}
+        {/* Recent Activity */}
         <div className="card">
           <div className="card-header">
             <h3 className="card-title">
-              Next Milestones
+              Recent Activity
             </h3>
-            <p className="card-subtitle">Upcoming targets and deadlines</p>
+            <p className="card-subtitle">Latest community updates</p>
           </div>
           <ul className="status-list">
             <li className="status-item">
-              <div className="status-content">
-                <span className="status-text"><strong>Tomorrow:</strong> Beta demo review</span>
-                <span className="status-time">24h</span>
-              </div>
+              <span className="status-text">New project proposal submitted</span>
             </li>
             <li className="status-item">
-              <div className="status-content">
-                <span className="status-text"><strong>This week:</strong> Growth sprint planning</span>
-                <span className="status-time">7d</span>
-              </div>
+              <span className="status-text">Community poll created</span>
             </li>
             <li className="status-item">
-              <div className="status-content">
-                <span className="status-text"><strong>Next week:</strong> Investor pitch prep</span>
-                <span className="status-time">14d</span>
-              </div>
+              <span className="status-text">Equity distribution updated</span>
             </li>
           </ul>
         </div>
-
-        {/* Idea Sparks */}
-        <div className="card">
-          <div className="card-header">
-            <h3 className="card-title">
-              Idea Sparks
-            </h3>
-            <p className="card-subtitle">Innovation in progress</p>
-          </div>
-          <ul className="status-list">
-            <li className="status-item">
-              <span className="status-text">AI-powered analytics dashboard</span>
-            </li>
-            <li className="status-item">
-              <span className="status-text">Mobile app MVP concept</span>
-            </li>
-            <li className="status-item">
-              <span className="status-text">Partnership expansion strategy</span>
-            </li>
-          </ul>
-        </div>
-
-        {/* Polls in Progress */}
-        <div className="card">
-          <div className="card-header">
-            <h3 className="card-title">
-              Polls in Progress
-            </h3>
-            <p className="card-subtitle">Community decisions pending</p>
-          </div>
-          <ul className="status-list">
-            <li className="status-item">
-              <div className="status-content">
-                <span className="status-text">Sprint theme selection</span>
-                <span className="status-time warning">2d</span>
-              </div>
-            </li>
             <li className="status-item">
               <div className="status-content">
                 <span className="status-text">Feature priority ranking</span>
