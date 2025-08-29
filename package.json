@@ -1,0 +1,19 @@
+{
+    "name": "smartstart",
+    "private": true,
+    "packageManager": "pnpm@9.0.0",
+    "workspaces": ["apps/*"],
+    "scripts": {
+        "dev": "concurrently -k -n API,WEB -c magenta,cyan \"pnpm --filter @smartstart/api dev\" \"pnpm --filter @smartstart/web dev\"",
+        "build": "pnpm -r build",
+        "prisma:generate": "prisma generate",
+        "prisma:migrate": "prisma migrate deploy"
+    },
+    "devDependencies": {
+        "concurrently": "^9.0.0",
+        "prisma": "^5.18.0"
+    },
+    "dependencies": {
+        "@prisma/client": "^5.18.0"
+    }
+}

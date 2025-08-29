@@ -1,0 +1,473 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  name          String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  // privacy
+  profile       ProfilePrivacy?
+  
+  // tenancy (for future SaaS)
+  tenantId      String?  @default("default")
+  
+  // gamification
+  level         UserLevel @default(OWLET)
+  xp            Int      @default(0)
+  reputation    Int      @default(0)
+  status        UserStatus @default(ACTIVE)
+  lastActive    DateTime @default(now())
+  
+  // relations
+  projectsOwned Project[] @relation("ProjectOwner")
+  contributions Contribution[]
+  messages      Message[] @relation("UserMessages")
+  kudos         Kudos[]   @relation("UserKudos")
+  assignedTasks Task[]    @relation("TaskAssignee")
+  ideas         Idea[]    @relation("UserIdeas")
+  pollVotes     PollVote[] @relation("UserPollVotes")
+  kudosGiven    Kudos[]   @relation("UserKudosGiven")
+  meshItems     MeshItem[] @relation("MeshItemAuthor")
+  meshReactions MeshReaction[] @relation("MeshReactionUser")
+  userBadges    UserBadge[]
+  userSkills    UserSkill[]
+  
+  // auth & membership
+  account       Account?
+  projectMemberships ProjectMember[]
+  notifications Notification[]
+  
+  @@index([tenantId])
+  @@index([status])
+  @@index([level])
+}
+
+model ProfilePrivacy {
+  id                 String  @id @default(cuid())
+  userId             String  @unique
+  user               User    @relation(fields: [userId], references: [id])
+  showExactPercToHub Boolean @default(false)
+}
+
+model Project {
+  id            String   @id @default(cuid())
+  name          String
+  summary       String?
+  ownerId       String
+  owner         User     @relation("ProjectOwner", fields: [ownerId], references: [id])
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  deletedAt     DateTime?
+  
+  // tenancy (for future SaaS)
+  tenantId      String?  @default("default")
+  
+  // cap table entries
+  capEntries    CapTableEntry[]
+  sprints       Sprint[]
+  tasks         Task[]
+  ideas         Idea[]
+  polls         Poll[]
+  messages      Message[] @relation("ProjectMessages")
+  meshItems     MeshItem[] @relation("MeshItemProject")
+  
+  // guardrails (enforced in service)
+  ownerMinPct   Float    @default(35)
+  aliceCapPct   Float    @default(25)
+  reservePct    Float    @default(40)
+  
+  // membership & visibility
+  members       ProjectMember[]
+  visibility    ProjectVisibility?
+  
+  @@index([tenantId])
+}
+
+enum HolderType {
+  OWNER
+  ALICE
+  USER
+  RESERVE
+}
+
+model CapTableEntry {
+  id         String     @id @default(cuid())
+  projectId  String
+  project    Project    @relation(fields: [projectId], references: [id])
+  holderType HolderType
+  holderId   String?
+  pct        Float
+  source     String
+  createdAt  DateTime   @default(now())
+  
+  @@index([projectId])
+  @@unique([projectId, holderType, holderId])
+}
+
+model Sprint {
+  id         String   @id @default(cuid())
+  projectId  String
+  project    Project  @relation(fields: [projectId], references: [id])
+  start      DateTime
+  end        DateTime
+  goals      String
+  exitCriteria String
+  tasks      Task[]
+}
+
+enum TaskType {
+  CODE
+  DESIGN
+  GROWTH
+  OPS
+}
+
+enum TaskStatus {
+  TODO
+  DOING
+  REVIEW
+  DONE
+}
+
+model Task {
+  id         String   @id @default(cuid())
+  sprintId   String?
+  sprint     Sprint?  @relation(fields: [sprintId], references: [id])
+  projectId  String
+  project    Project  @relation(fields: [projectId], references: [id])
+  title      String
+  type       TaskType
+  status     TaskStatus @default(TODO)
+  assigneeId String?
+  assignee   User?     @relation("TaskAssignee", fields: [assigneeId], references: [id])
+  contributions Contribution[]
+  
+  @@index([projectId])
+  @@index([assigneeId])
+}
+
+model Contribution {
+  id            String   @id @default(cuid())
+  taskId        String
+  task          Task     @relation(fields: [taskId], references: [id])
+  contributorId String
+  contributor   User     @relation(fields: [contributorId], references: [id])
+  effort        Int
+  impact        Int
+  proposedPct   Float
+  finalPct      Float?
+  acceptedAt    DateTime?
+  acceptedById  String?
+  status        ContributionStatus @default(PENDING)
+  
+  @@index([taskId])
+  @@index([contributorId])
+}
+
+model Idea {
+  id         String   @id @default(cuid())
+  projectId  String?
+  project    Project? @relation(fields: [projectId], references: [id])
+  proposerId String
+  proposer   User     @relation("UserIdeas", fields: [proposerId], references: [id])
+  title      String
+  body       String
+  status     String
+  votes      Int      @default(0)
+  createdAt  DateTime @default(now())
+  deletedAt  DateTime?
+}
+
+model Poll {
+  id         String   @id @default(cuid())
+  projectId  String?
+  project    Project? @relation(fields: [projectId], references: [id])
+  question   String
+  type       String
+  closesAt   DateTime
+  votes      PollVote[]
+}
+
+model PollVote {
+  id       String @id @default(cuid())
+  pollId   String
+  poll     Poll   @relation(fields: [pollId], references: [id])
+  voterId  String
+  voter    User   @relation("UserPollVotes", fields: [voterId], references: [id])
+  value    String
+  
+  @@unique([pollId, voterId])
+}
+
+model Message {
+  id         String  @id @default(cuid())
+  projectId  String?
+  project    Project? @relation("ProjectMessages", fields: [projectId], references: [id])
+  authorId   String
+  author     User    @relation("UserMessages", fields: [authorId], references: [id])
+  body       String
+  createdAt  DateTime @default(now())
+  deletedAt  DateTime?
+  
+  @@index([projectId])
+  @@index([authorId])
+}
+
+model Kudos {
+  id        String   @id @default(cuid())
+  toUserId  String
+  toUser    User     @relation("UserKudos", fields: [toUserId], references: [id])
+  fromUserId String
+  fromUser  User     @relation("UserKudosGiven", fields: [fromUserId], references: [id])
+  message   String
+  createdAt DateTime @default(now())
+}
+
+model AuditEvent {
+  id        String   @id @default(cuid())
+  actorId   String?
+  entity    String
+  action    String
+  payload   Json
+  createdAt DateTime @default(now())
+  
+  @@index([actorId])
+  @@index([entity])
+}
+
+model Account {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String?
+  role      Role     @default(MEMBER)
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  
+  @@index([email])
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  OWNER
+  CONTRIBUTOR
+  MEMBER
+  VIEWER
+  GUEST
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  PENDING
+  SUSPENDED
+}
+
+enum UserLevel {
+  OWLET
+  NIGHT_WATCHER
+  WISE_OWL
+  SKY_MASTER
+}
+
+model ProjectMember {
+  id        String      @id @default(cuid())
+  projectId String
+  userId    String
+  role      ProjectRole @default(MEMBER)
+  createdAt DateTime    @default(now())
+  
+  project   Project     @relation(fields: [projectId], references: [id])
+  user      User        @relation(fields: [userId], references: [id])
+  
+  @@unique([projectId, userId])
+  @@index([projectId])
+  @@index([userId])
+}
+
+enum ProjectRole {
+  OWNER
+  MEMBER
+  VIEWER
+}
+
+enum ContributionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model ProjectVisibility {
+  id                String  @id @default(cuid())
+  projectId         String  @unique
+  capTableHubMasked Boolean @default(true)
+  tasksHubVisible   Boolean @default(false)
+  ideasHubVisible   Boolean @default(true)
+  pollsHubVisible   Boolean @default(true)
+  
+  project           Project @relation(fields: [projectId], references: [id])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  kind      String
+  payload   Json
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  
+  user      User     @relation(fields: [userId], references: [id])
+  
+  @@index([userId, read])
+  @@index([createdAt])
+}
+
+// New models for Mesh and Community features
+
+model MeshItem {
+  id          String      @id @default(cuid())
+  type        MeshItemType
+  title       String
+  description String
+  authorId    String
+  author      User        @relation("MeshItemAuthor", fields: [authorId], references: [id])
+  projectId   String?
+  project     Project?    @relation("MeshItemProject", fields: [projectId], references: [id])
+  priority    MeshPriority @default(MEDIUM)
+  metadata    Json?
+  createdAt   DateTime    @default(now())
+  
+  reactions   MeshReaction[]
+  
+  @@index([authorId])
+  @@index([projectId])
+  @@index([type])
+  @@index([createdAt])
+}
+
+enum MeshItemType {
+  WIN
+  MILESTONE
+  NEED_HELP
+  KUDOS
+  IDEA_SPARK
+  POLL_ACTIVE
+  SPRINT_UPDATE
+}
+
+enum MeshPriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+model MeshReaction {
+  id        String   @id @default(cuid())
+  meshItemId String
+  meshItem  MeshItem @relation(fields: [meshItemId], references: [id])
+  userId    String
+  user      User     @relation("MeshReactionUser", fields: [userId], references: [id])
+  emoji     String
+  createdAt DateTime @default(now())
+  
+  @@unique([meshItemId, userId, emoji])
+  @@index([meshItemId])
+  @@index([userId])
+}
+
+model Badge {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String
+  icon        String
+  condition   String   // JSON string describing how to earn
+  createdAt   DateTime @default(now())
+  
+  userBadges  UserBadge[]
+}
+
+model UserBadge {
+  id       String   @id @default(cuid())
+  userId   String
+  badgeId  String
+  earnedAt DateTime @default(now())
+  
+  user     User     @relation(fields: [userId], references: [id])
+  badge    Badge    @relation(fields: [badgeId], references: [id])
+  
+  @@unique([userId, badgeId])
+  @@index([userId])
+  @@index([badgeId])
+}
+
+model Skill {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  category    String
+  description String?
+  createdAt   DateTime @default(now())
+  
+  userSkills  UserSkill[]
+}
+
+model UserSkill {
+  id       String   @id @default(cuid())
+  userId   String
+  skillId  String
+  level    Int      @default(1) // 1-5 scale
+  createdAt DateTime @default(now())
+  
+  user     User     @relation(fields: [userId], references: [id])
+  skill    Skill    @relation(fields: [skillId], references: [id])
+  
+  @@unique([userId, skillId])
+  @@index([userId])
+  @@index([skillId])
+}
+
+model SystemSetting {
+  id          String   @id @default(cuid())
+  category    String
+  key         String
+  value       String
+  description String?
+  updatedAt   DateTime @updatedAt
+  
+  @@unique([category, key])
+  @@index([category])
+}
+
+model CommunityInsight {
+  id          String   @id @default(cuid())
+  type        InsightType
+  title       String
+  description String
+  priority    Int
+  confidence  Float
+  actionItems Json
+  relevantUsers Json
+  createdAt   DateTime @default(now())
+  expiresAt   DateTime?
+  
+  @@index([type])
+  @@index([priority])
+  @@index([createdAt])
+}
+
+enum InsightType {
+  TRENDING
+  OPPORTUNITY
+  COLLABORATION
+  MILESTONE
+}

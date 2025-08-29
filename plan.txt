@@ -1,0 +1,224 @@
+qGot it — you want **the HUB app** itself: one place where everyone sees their **portfolio, projects, communication, ideas, polls, and status**—with **privacy controls** and **clean project ownership/share visibility**. Here’s a tight, build-ready spec.
+
+# Core Principles
+
+* **Personal portfolios first**: every founder sees *their* value (shares, roles, history).
+* **Project clarity**: who owns what, current sprint, next milestone, needs.
+* **Privacy by default**: you control what’s visible to others per-project/per-item.
+* **Community energy**: ideas, polls, updates, shout-outs → ritualized into the “Mesh”.
+* **Zero ambiguity**: contributions are logged; shares are visible; decisions are timestamped.
+
+---
+
+# Roles & Permissions
+
+* **Udi (Hub Admin)**: global settings, moderation, project/role overrides.
+* **Project Owner**: manages project, sets visibility, approves contributors.
+* **Founder/Contributor**: joins projects, contributes, polls, ideas, comments.
+* **Viewer (optional)**: can see public items, no edits (useful for future partners/investors).
+
+**Permission Matrix (high level):**
+
+* Portfolio: owner (full), others (summary if you allow), admin (full).
+* Project Cap Table: always visible to project members; owner chooses if visible hub-wide (mask exact % if needed).
+* Tasks/Sprints: project members; read-only to hub if toggled public.
+* Ideas/Polls: hub-wide by default; can be project-only.
+* DMs/Private Threads: participants only.
+
+---
+
+# Information Architecture (top-level nav)
+
+1. **Home (Mesh)** – live feed of status across people & projects.
+2. **My Portfolio** – your ownership, teams, contributions, kudos, activity.
+3. **Projects** – list + filters; each has Overview, Sprint, Tasks, People, Shares, Files.
+4. **Ideas** – idea dump, voting, triage pipeline (Backlog → Review → Sprint).
+5. **Polls** – quick decisions (async), tied to projects or hub-wide.
+6. **Messages** – DMs, threads, project channels.
+7. **People** – profiles, skills, availability, contact (respecting privacy).
+8. **Admin (Udi)** – policies, visibility defaults, branding, announcements.
+
+---
+
+# Key Screens & What They Show
+
+## 1) Home: **Mesh** (Community Status)
+
+A living “status mesh” of:
+
+* **Today’s wins** (auto-highlight merged PRs, shipped tasks, demo videos).
+* **What’s next** (milestones due in next 7 days).
+* **Needs help** (owner flags: “seeking growth sprint”, “needs QA”).
+* **Kudos** (peer shout-outs that add to reputation).
+* **Idea sparks** (new ideas with quick emoji votes).
+* **Polls in progress** (decisions awaiting your vote).
+
+Controls: filter by project/person, mute threads, bookmark items.
+Privacy: items inherit project visibility; private things never surface.
+
+## 2) **My Portfolio**
+
+* **Ownership**: projects with your % (exact to you; masked for others if you choose).
+* **Earnings/Value (optional)**: simple score (not \$) trending over time.
+* **Contributions**: timeline of accepted work (code/design/growth), links to artifacts.
+* **Badges & Kudos**: credibility under your name.
+* **Availability**: toggle “Open for sprint” with time blocks; others can request you.
+
+Privacy toggles:
+
+* Show exact % to: \[Project members only / Hub / Private].
+* Show contributions detail: \[All / Project-only / Private].
+
+## 3) **Project Workspace**
+
+Tabs:
+
+* **Overview**: mission, owner (≥35%), summary cap table donut (exact % to members), next milestone, public update.
+* **Sprint**: 30-day super sprint board (Goals, Exit Criteria, Scope).
+* **Tasks**: Kanban + checklists; link PRs, designs, campaigns.
+* **People**: roles, availability, contact; request contributors.
+* **Shares**: owner min, Alice cap, contributor allocations (members see exact; optional hub mask).
+* **Files**: specs, decks, demo links (access inherits project ACLs).
+* **Decisions**: poll history, signed contribution acceptances (read-only ledger).
+
+Owner controls: invite/remove members, set visibility, start polls, publish updates.
+
+## 4) **Ideas (Dump → Pipeline)**
+
+* Submit idea (title, problem, value prop, rough scope).
+* Auto-tag and allow **quick reactions** (🔥, 👍, 🤔).
+* **Voting**: light weight (1 vote/person/idea) + optional stake comments.
+* **Pipeline**: Backlog → Review → Greenlit → In Sprint → Shipped → Archived.
+* Owner can “claim” idea (becomes Project Owner) or invite claimants to a 48h mini-sprint to prove value before ownership lock.
+
+## 5) **Polls (Decisions)**
+
+Types:
+
+* **Yes/No**, **Multiple choice**, **Ranked choice**, **Score (1–5)**.
+* Scope: **Hub-wide** or **Project-only**.
+* Options: anonymous or named; quorum; auto-close; binding/non-binding.
+* Use cases: select sprint theme, accept scope change, prioritize features.
+
+## 6) **Messages**
+
+* DM, group threads, project channels.
+* Threaded comments on tasks/ideas/polls.
+* Mentions, quick reactions, attachments.
+* Respect ACLs; private by default unless in public project channels.
+
+## 7) **People (Directory)**
+
+* Mini-card: name, role(s), skills, reputation, availability.
+* Click for full profile (respecting privacy settings).
+* “Request to collaborate” button sparks a scoped proposal.
+
+## 8) **Admin (Udi)**
+
+* Branding (logo, colors, “CommDev” flag).
+* Default visibilities & retention.
+* Policy pages (Founder Pack, Rules, Equity guidelines).
+* Announcements (pin on Mesh).
+* Moderation queue (report content, resolve disputes).
+* Export: project data room (cap table summary, sprint history, signed docs).
+
+---
+
+# Privacy & Visibility Model
+
+* **Visibility levels**: Private (me), Project Members, Hub, Public (future).
+* **Default**:
+
+  * Portfolio exact %: Project Members (Hub: masked dial like “low/med/high”).
+  * Project Overview: Hub.
+  * Cap Table exact: Members; Hub masked unless owner enables.
+  * Tasks/Sprints: Members; Hub read-only if toggled.
+  * Ideas: Hub by default; can mark Project-only.
+  * Polls: inherit scope; results visible per scope.
+* **Always private**: DMs, private docs, draft contracts.
+
+---
+
+# Contribution → Share Display (no legal math, just clarity)
+
+* Each **accepted contribution** shows: type, impact tag, link (PR/campaign), **earned share** (to you), “accepted by” + timestamp.
+* Project **Shares tab** aggregates: Owner %, Alice %, Your total %, Others (listed), Remaining/Reserve.
+* **History**: each change is an entry with signatures (non-editable).
+
+---
+
+# Community Mechanics (make it alive)
+
+* **Kudos**: short message + emoji → boosts reputation; visible on Mesh & profile.
+* **Shout-out Friday**: automated weekly post summarizing wins.
+* **Demo Day** cadence: end of each 30-day sprint, live link attached to Project.
+* **Spotlight**: rotating profile highlight on Home (opt-in).
+* **Streaks**: consecutive sprints contributed → badge (keeps momentum).
+
+---
+
+# Rules (lightweight, visible in-app)
+
+1. Use the Founder Pack tools and 2FA.
+2. Respect visibility; don’t leak private items.
+3. Contribution = ownership; verbal promises mean nothing until accepted and logged.
+4. 30-day sprints are the rhythm; ship demos at the end.
+5. Be constructive; no drama. Udi’s word is final in disputes.
+
+---
+
+# Notifications (not spammy)
+
+* **Daily digest**: your tasks, mentions, polls, deadlines.
+* **Real-time**: DM, you’re @mentioned, your contribution accepted, poll closing.
+* **Weekly**: Mesh summary (wins, launches, calls for help).
+
+Users can tune channels (web, email, Teams push).
+
+---
+
+# Smart Extras
+
+* **Availability Mesh**: heatmap of who’s open for a sprint slot next month.
+* **Needs Board**: owners post specific asks (“Need 1 growth sprint, 2 weeks”).
+* **Idea Bounties**: owners attach equity range (0.5–5%) upfront to attract help.
+* **Status Templates**: one-click publish “Week N Update” → Mesh + Project Overview.
+* **Reputation Formula (simple)**: accepted contributions × impact + kudos + on-time ratio.
+
+---
+
+# Tech notes (keep it simple now, scale later)
+
+* **Auth/SSO**: Azure AD (M365), MFA enforced.
+* **Frontend**: Next.js 14, Tailwind, shadcn.
+* **Backend**: Node (NestJS/Express) + Postgres (Prisma).
+* **Files**: S3-compatible; signed URLs per ACL.
+* **Search**: Postgres full-text for MVP (Elasticsearch later if needed).
+* **Events**: append-only Audit table; use it to rebuild Mesh feed.
+* **Integrations**: GitHub links on tasks, Teams webhooks for notifications.
+
+**Core tables**: User, ProfilePrivacy, Project, CapTableEntry, Sprint, Task, Contribution, Idea, Poll, PollVote, Message, Channel, Kudos, Announcement, AuditEvent.
+
+---
+
+# First build slice (2–3 weeks)
+
+1. Auth + profiles + privacy toggles.
+2. Projects (Overview, People, Shares read-only), create/edit.
+3. My Portfolio (ownership list + contributions list).
+4. Mesh feed (wins, updates, kudos).
+5. Ideas (submit + vote) & Polls (yes/no).
+6. Messages (basic project channels + DMs).
+
+Then layer sprints/tasks + contribution acceptance flow.
+
+---
+
+# What this gives you tomorrow
+
+* A **living hub** that makes your model *feel real*: they see their portfolio, they see others, they see the movement.
+* **Less WhatsApp chaos**: decisions & updates live in the Mesh, not lost in chats.
+* **Trust**: visibility + signed acceptances prevent misunderstandings.
+* **Energy**: kudos, spotlights, demo day → keeps the community pumped.
+
+If you want, I can turn this into a **one-page product requirements doc** (PRD) you can paste into your tracker, plus a **simple wireframe list** (what blocks on which page) to hand to your first builder.

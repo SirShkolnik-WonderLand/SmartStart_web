@@ -1,0 +1,418 @@
+/* SmartStart - People Page CSS */
+
+
+/* People Statistics */
+
+.people-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-2xl);
+}
+
+.people-stat-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xl);
+    text-align: center;
+    transition: all var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+}
+
+.people-stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+    opacity: 0;
+    transition: opacity var(--transition-normal);
+}
+
+.people-stat-card:hover::before {
+    opacity: 1;
+}
+
+.people-stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--border-accent);
+}
+
+.people-stat-number {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--accent-primary);
+    margin-bottom: var(--spacing-sm);
+    font-family: var(--font-mono);
+}
+
+.people-stat-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.people-stat-description {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.4;
+}
+
+
+/* Search and Filters */
+
+.search-filters-section {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xl);
+    margin-bottom: var(--spacing-2xl);
+}
+
+.search-filters-header {
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 1px solid var(--border-secondary);
+}
+
+.search-filters-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-sm);
+}
+
+.search-filters-subtitle {
+    font-size: 14px;
+    color: var(--text-muted);
+    font-weight: 400;
+}
+
+.search-filters-form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--spacing-lg);
+    align-items: end;
+}
+
+.search-input {
+    position: relative;
+}
+
+.search-input input {
+    padding-left: 40px;
+}
+
+.search-icon {
+    position: absolute;
+    left: var(--spacing-md);
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 16px;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.filter-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+}
+
+
+/* People Grid */
+
+.people-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: var(--spacing-lg);
+}
+
+.person-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    transition: all var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+}
+
+.person-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+    opacity: 0;
+    transition: opacity var(--transition-normal);
+}
+
+.person-card:hover::before {
+    opacity: 1;
+}
+
+.person-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--border-accent);
+}
+
+.person-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.person-avatar {
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--bg-primary);
+    border: 3px solid var(--border-accent);
+    box-shadow: var(--shadow-glow);
+}
+
+.person-info {
+    flex: 1;
+}
+
+.person-name {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.person-role {
+    font-size: 14px;
+    color: var(--accent-primary);
+    font-weight: 500;
+    margin-bottom: var(--spacing-xs);
+}
+
+.person-company {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 400;
+}
+
+.person-status {
+    margin-left: auto;
+}
+
+.person-body {
+    margin-bottom: var(--spacing-md);
+}
+
+.person-bio {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: var(--spacing-md);
+}
+
+.person-skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+    margin-bottom: var(--spacing-md);
+}
+
+.skill-tag {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-secondary);
+    color: var(--text-secondary);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.person-meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 1px solid var(--border-secondary);
+}
+
+.meta-item {
+    text-align: center;
+}
+
+.meta-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: var(--spacing-xs);
+}
+
+.meta-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.meta-value.projects {
+    color: var(--accent-primary);
+    font-family: var(--font-mono);
+}
+
+.meta-value.equity {
+    color: var(--accent-success);
+    font-family: var(--font-mono);
+}
+
+.person-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    justify-content: flex-end;
+}
+
+
+/* Person Status Variants */
+
+.person-status-active {
+    background: rgba(0, 255, 136, 0.2);
+    color: var(--accent-success);
+    border: 1px solid rgba(0, 255, 136, 0.3);
+}
+
+.person-status-inactive {
+    background: rgba(128, 128, 128, 0.2);
+    color: var(--text-muted);
+    border: 1px solid rgba(128, 128, 128, 0.3);
+}
+
+.person-status-pending {
+    background: rgba(255, 170, 0, 0.2);
+    color: var(--accent-warning);
+    border: 1px solid rgba(255, 170, 0, 0.3);
+}
+
+
+/* Role Badges */
+
+.role-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.role-super-admin {
+    background: rgba(255, 68, 68, 0.2);
+    color: var(--accent-danger);
+    border: 1px solid rgba(255, 68, 68, 0.3);
+}
+
+.role-admin {
+    background: rgba(255, 170, 0, 0.2);
+    color: var(--accent-warning);
+    border: 1px solid rgba(255, 170, 0, 0.3);
+}
+
+.role-owner {
+    background: rgba(0, 212, 255, 0.2);
+    color: var(--accent-primary);
+    border: 1px solid rgba(0, 212, 255, 0.3);
+}
+
+.role-member {
+    background: rgba(0, 255, 136, 0.2);
+    color: var(--accent-success);
+    border: 1px solid rgba(0, 255, 136, 0.3);
+}
+
+.role-viewer {
+    background: rgba(0, 153, 255, 0.2);
+    color: var(--accent-info);
+    border: 1px solid rgba(0, 153, 255, 0.3);
+}
+
+.role-guest {
+    background: rgba(128, 128, 128, 0.2);
+    color: var(--text-muted);
+    border: 1px solid rgba(128, 128, 128, 0.3);
+}
+
+
+/* Responsive Design */
+
+@media (max-width: 768px) {
+    .people-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .people-grid {
+        grid-template-columns: 1fr;
+    }
+    .search-filters-form {
+        grid-template-columns: 1fr;
+    }
+    .person-header {
+        flex-direction: column;
+        text-align: center;
+        gap: var(--spacing-sm);
+    }
+    .person-status {
+        margin-left: 0;
+    }
+    .person-meta {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .person-actions {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .people-stats {
+        grid-template-columns: 1fr;
+    }
+    .people-stat-number {
+        font-size: 28px;
+    }
+    .person-card {
+        padding: var(--spacing-md);
+    }
+    .search-filters-section {
+        padding: var(--spacing-lg);
+    }
+    .person-avatar {
+        width: 48px;
+        height: 48px;
+        font-size: 18px;
+    }
+}
