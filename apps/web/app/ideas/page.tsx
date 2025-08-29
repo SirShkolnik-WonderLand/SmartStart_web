@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import AppLayout from '../components/AppLayout'
+import { apiCallWithAuth } from '../utils/api'
 import '../styles/ideas.css'
 
 interface User {
@@ -87,7 +88,7 @@ export default function IdeasPage() {
         setUser(userData)
         
         // Fetch ideas data
-        fetchIdeasData()
+        await fetchIdeasData()
       } catch (error) {
         console.error('Error parsing user data:', error)
         router.push('/login')
@@ -97,7 +98,7 @@ export default function IdeasPage() {
     getUserFromCookies()
   }, [router])
 
-  const fetchIdeasData = () => {
+  const fetchIdeasData = async () => {
     // Mock ideas data
     const mockIdeas: Idea[] = [
       {

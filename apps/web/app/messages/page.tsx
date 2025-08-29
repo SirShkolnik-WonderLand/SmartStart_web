@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import AppLayout from '../components/AppLayout'
+import { apiCallWithAuth } from '../utils/api'
 import '../styles/messages.css'
 
 interface User {
@@ -66,8 +67,8 @@ export default function MessagesPage() {
         setUser(userData)
         
         // Fetch channels and messages data
-        fetchChannelsData()
-        fetchMessagesData('general')
+        await fetchChannelsData()
+        await fetchMessagesData('general')
       } catch (error) {
         console.error('Error parsing user data:', error)
         router.push('/login')
@@ -77,7 +78,7 @@ export default function MessagesPage() {
     getUserFromCookies()
   }, [router])
 
-  const fetchChannelsData = () => {
+  const fetchChannelsData = async () => {
     // Mock channels data
     const mockChannels: Channel[] = [
       {
@@ -130,7 +131,7 @@ export default function MessagesPage() {
     setChannels(mockChannels)
   }
 
-  const fetchMessagesData = (channelId: string) => {
+  const fetchMessagesData = async (channelId: string) => {
     // Mock messages data
     const mockMessages: Message[] = [
       {

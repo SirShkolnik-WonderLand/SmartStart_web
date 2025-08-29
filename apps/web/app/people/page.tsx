@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import AppLayout from '../components/AppLayout'
+import { apiCallWithAuth } from '../utils/api'
 import '../styles/people.css'
 
 interface User {
@@ -61,7 +62,7 @@ export default function PeoplePage() {
         setUser(userData)
         
         // Fetch community members data
-        fetchMembersData()
+        await fetchMembersData()
       } catch (error) {
         console.error('Error parsing user data:', error)
         router.push('/login')
@@ -71,7 +72,7 @@ export default function PeoplePage() {
     getUserFromCookies()
   }, [router])
 
-  const fetchMembersData = () => {
+  const fetchMembersData = async () => {
     // Mock community members data
     const mockMembers: CommunityMember[] = [
       {

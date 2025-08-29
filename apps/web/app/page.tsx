@@ -52,7 +52,7 @@ export default function Home() {
   }
 
   return (
-    <AppLayout currentPage="home">
+    <AppLayout currentPage="/">
       <div className="page-header">
         <h1 className="page-title">
           SmartStart

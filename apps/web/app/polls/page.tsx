@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import AppLayout from '../components/AppLayout'
+import { apiCallWithAuth } from '../utils/api'
 import '../styles/polls.css'
 
 interface User {
@@ -61,7 +62,7 @@ export default function PollsPage() {
         setUser(userData)
         
         // Fetch polls data
-        fetchPollsData()
+        await fetchPollsData()
       } catch (error) {
         console.error('Error parsing user data:', error)
         router.push('/login')
@@ -71,7 +72,7 @@ export default function PollsPage() {
     getUserFromCookies()
   }, [router])
 
-  const fetchPollsData = () => {
+  const fetchPollsData = async () => {
     // Mock polls data
     const mockPolls: Poll[] = [
       {
