@@ -17,6 +17,7 @@ import sprintsRoutes from "./routes/sprints.js";
 import tasksRoutes from "./routes/tasks.js";
 import capTableRoutes from "./routes/capTable.js";
 import visibilityRoutes from "./routes/visibility.js";
+import smartDataRoutes from "./routes/smartData.js";
 
 const prisma = new PrismaClient();
 const app = express();
@@ -52,9 +53,6 @@ app.get('/version', (_req, res) => {
   res.json({ name: 'smartstart-api', version: process.env.COMMIT_SHA || 'dev' });
 });
 
-
-
-
 // Register modular API routes
 app.use('/auth', authRoutes);
 app.use(apiLimiter);
@@ -70,6 +68,16 @@ app.use('/', capTableRoutes);
 app.use('/', visibilityRoutes);
 app.use('/mesh', meshRoutes);
 app.use('/admin', adminRoutes);
+
+// Smart Data Routes - New interconnected data intelligence endpoints
+app.use('/portfolio', smartDataRoutes);
+app.use('/community', smartDataRoutes);
+app.use('/notifications', smartDataRoutes);
+app.use('/data', smartDataRoutes);
+app.use('/activity', smartDataRoutes);
+app.use('/insights', smartDataRoutes);
+app.use('/team', smartDataRoutes);
+app.use('/updates', smartDataRoutes);
 
 const port = process.env.PORT || 3001;
 app.listen(port, () => console.log(`API running on port ${port}`));

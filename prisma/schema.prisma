@@ -29,6 +29,11 @@ model User {
   status        UserStatus @default(ACTIVE)
   lastActive    DateTime @default(now())
   
+  // Smart computed fields for portfolio insights
+  totalPortfolioValue Float @default(0) // Computed from all projects
+  activeProjectsCount Int @default(0)   // Computed from active memberships
+  totalContributions  Int @default(0)   // Computed from contributions
+  
   // relations
   projectsOwned Project[] @relation("ProjectOwner")
   contributions Contribution[]
@@ -48,9 +53,14 @@ model User {
   projectMemberships ProjectMember[]
   notifications Notification[]
   
+  // Smart activity tracking
+  activityLog   UserActivity[]
+  
   @@index([tenantId])
   @@index([status])
   @@index([level])
+  @@index([totalPortfolioValue])
+  @@index([activeProjectsCount])
 }
 
 model ProfilePrivacy {
@@ -58,6 +68,9 @@ model ProfilePrivacy {
   userId             String  @unique
   user               User    @relation(fields: [userId], references: [id])
   showExactPercToHub Boolean @default(false)
+  showActivity       Boolean @default(true)
+  showSkills         Boolean @default(true)
+  showReputation     Boolean @default(true)
 }
 
 model Project {
@@ -72,6 +85,12 @@ model Project {
   
   // tenancy (for future SaaS)
   tenantId      String?  @default("default")
+  
+  // Smart project metrics
+  totalValue    Float @default(0)        // Computed from cap table
+  activeMembers Int @default(0)          // Computed from active memberships
+  completionRate Float @default(0)       // Computed from tasks
+  lastActivity  DateTime @default(now()) // Computed from latest activity
   
   // cap table entries
   capEntries    CapTableEntry[]
@@ -91,14 +110,40 @@ model Project {
   members       ProjectMember[]
   visibility    ProjectVisibility?
   
+  // Smart project insights
+  insights      ProjectInsight[]
+  
   @@index([tenantId])
+  @@index([totalValue])
+  @@index([completionRate])
+  @@index([lastActivity])
 }
 
-enum HolderType {
-  OWNER
-  ALICE
-  USER
-  RESERVE
+// New model for smart project insights
+model ProjectInsight {
+  id          String   @id @default(cuid())
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id])
+  type        ProjectInsightType
+  title       String
+  description String
+  priority    Int
+  confidence  Float
+  data        Json     // Flexible data storage
+  createdAt   DateTime @default(now())
+  expiresAt   DateTime?
+  
+  @@index([projectId])
+  @@index([type])
+  @@index([priority])
+}
+
+enum ProjectInsightType {
+  PERFORMANCE
+  COLLABORATION
+  RISK
+  OPPORTUNITY
+  MILESTONE
 }
 
 model CapTableEntry {
@@ -111,8 +156,18 @@ model CapTableEntry {
   source     String
   createdAt  DateTime   @default(now())
   
+  // Smart cap table tracking
+  value      Float @default(0) // Computed value based on project total
+  
   @@index([projectId])
   @@unique([projectId, holderType, holderId])
+}
+
+enum HolderType {
+  OWNER
+  ALICE
+  USER
+  RESERVE
 }
 
 model Sprint {
@@ -124,6 +179,14 @@ model Sprint {
   goals      String
   exitCriteria String
   tasks      Task[]
+  
+  // Smart sprint metrics
+  completionRate Float @default(0) // Computed from tasks
+  velocity      Float @default(0)  // Computed from completed tasks
+  
+  @@index([projectId])
+  @@index([start])
+  @@index([end])
 }
 
 enum TaskType {
@@ -153,8 +216,17 @@ model Task {
   assignee   User?     @relation("TaskAssignee", fields: [assigneeId], references: [id])
   contributions Contribution[]
   
+  // Smart task metrics
+  effort     Int @default(0)      // Estimated effort in hours
+  impact     Int @default(0)      // Impact score 1-5
+  priority   Int @default(3)      // Priority 1-5
+  dueDate    DateTime?
+  
   @@index([projectId])
   @@index([assigneeId])
+  @@index([status])
+  @@index([priority])
+  @@index([dueDate])
 }
 
 model Contribution {
@@ -171,8 +243,19 @@ model Contribution {
   acceptedById  String?
   status        ContributionStatus @default(PENDING)
   
+  // Smart contribution tracking
+  quality       Int @default(3)   // Quality score 1-5
+  collaboration Int @default(3)   // Collaboration score 1-5
+  
   @@index([taskId])
   @@index([contributorId])
+  @@index([status])
+}
+
+enum ContributionStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }
 
 model Idea {
@@ -187,6 +270,35 @@ model Idea {
   votes      Int      @default(0)
   createdAt  DateTime @default(now())
   deletedAt  DateTime?
+  
+  // Smart idea metrics
+  priority   Int @default(3)      // Priority 1-5
+  impact     Int @default(3)      // Impact score 1-5
+  effort     String?              // Estimated effort
+  category   String?              // Idea category
+  tags       String[]             // Flexible tags
+  
+  // Smart idea insights
+  insights   IdeaInsight[]
+  
+  @@index([projectId])
+  @@index([status])
+  @@index([priority])
+  @@index([votes])
+}
+
+// New model for smart idea insights
+model IdeaInsight {
+  id          String   @id @default(cuid())
+  ideaId      String
+  idea        Idea     @relation(fields: [ideaId], references: [id])
+  type        String   // e.g., "trending", "collaboration", "opportunity"
+  score       Float    // Insight score
+  data        Json     // Flexible data storage
+  createdAt   DateTime @default(now())
+  
+  @@index([ideaId])
+  @@index([type])
 }
 
 model Poll {
@@ -197,6 +309,14 @@ model Poll {
   type       String
   closesAt   DateTime
   votes      PollVote[]
+  
+  // Smart poll metrics
+  totalVotes Int @default(0)      // Computed from votes
+  isActive   Boolean @default(true) // Computed from closesAt
+  
+  @@index([projectId])
+  @@index([closesAt])
+  @@index([isActive])
 }
 
 model PollVote {
@@ -206,8 +326,11 @@ model PollVote {
   voterId  String
   voter    User   @relation("UserPollVotes", fields: [voterId], references: [id])
   value    String
+  createdAt DateTime @default(now())
   
   @@unique([pollId, voterId])
+  @@index([pollId])
+  @@index([voterId])
 }
 
 model Message {
@@ -220,8 +343,38 @@ model Message {
   createdAt  DateTime @default(now())
   deletedAt  DateTime?
   
+  // Smart message features
+  type       MessageType @default(GENERAL)
+  priority   Int @default(3)      // Priority 1-5
+  reactions  MessageReaction[]
+  
   @@index([projectId])
   @@index([authorId])
+  @@index([type])
+  @@index([createdAt])
+}
+
+enum MessageType {
+  GENERAL
+  ANNOUNCEMENT
+  QUESTION
+  UPDATE
+  CELEBRATION
+}
+
+// New model for message reactions
+model MessageReaction {
+  id        String   @id @default(cuid())
+  messageId String
+  message   Message  @relation(fields: [messageId], references: [id])
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  emoji     String
+  createdAt DateTime @default(now())
+  
+  @@unique([messageId, userId, emoji])
+  @@index([messageId])
+  @@index([userId])
 }
 
 model Kudos {
@@ -232,6 +385,14 @@ model Kudos {
   fromUser  User     @relation("UserKudosGiven", fields: [fromUserId], references: [id])
   message   String
   createdAt DateTime @default(now())
+  
+  // Smart kudos tracking
+  category  String?              // Kudos category
+  impact    Int @default(3)      // Impact score 1-5
+  
+  @@index([toUserId])
+  @@index([fromUserId])
+  @@index([category])
 }
 
 model AuditEvent {
@@ -244,6 +405,7 @@ model AuditEvent {
   
   @@index([actorId])
   @@index([entity])
+  @@index([createdAt])
 }
 
 model Account {
@@ -289,24 +451,24 @@ model ProjectMember {
   role      ProjectRole @default(MEMBER)
   createdAt DateTime    @default(now())
   
+  // Smart membership tracking
+  isActive  Boolean @default(true)
+  lastContribution DateTime?
+  totalContributions Int @default(0)
+  
   project   Project     @relation(fields: [projectId], references: [id])
   user      User        @relation(fields: [userId], references: [id])
   
   @@unique([projectId, userId])
   @@index([projectId])
   @@index([userId])
+  @@index([isActive])
 }
 
 enum ProjectRole {
   OWNER
   MEMBER
   VIEWER
-}
-
-enum ContributionStatus {
-  PENDING
-  APPROVED
-  REJECTED
 }
 
 model ProjectVisibility {
@@ -328,13 +490,35 @@ model Notification {
   read      Boolean  @default(false)
   createdAt DateTime @default(now())
   
+  // Smart notification features
+  priority  Int @default(3)      // Priority 1-5
+  expiresAt DateTime?
+  actionUrl String?              // URL to take action
+  
   user      User     @relation(fields: [userId], references: [id])
   
   @@index([userId, read])
   @@index([createdAt])
+  @@index([priority])
 }
 
-// New models for Mesh and Community features
+// New model for smart user activity tracking
+model UserActivity {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  type        String   // e.g., "login", "contribution", "idea", "poll"
+  entity      String?  // Related entity ID
+  entityType  String?  // Type of entity
+  data        Json     // Flexible data storage
+  createdAt   DateTime @default(now())
+  
+  @@index([userId])
+  @@index([type])
+  @@index([createdAt])
+}
+
+// Enhanced Mesh and Community features
 
 model MeshItem {
   id          String      @id @default(cuid())
@@ -349,12 +533,19 @@ model MeshItem {
   metadata    Json?
   createdAt   DateTime    @default(now())
   
+  // Smart mesh features
+  impact      Int @default(3)      // Impact score 1-5
+  urgency     Int @default(3)      // Urgency score 1-5
+  tags        String[]             // Flexible tags
+  
   reactions   MeshReaction[]
   
   @@index([authorId])
   @@index([projectId])
   @@index([type])
   @@index([createdAt])
+  @@index([priority])
+  @@index([impact])
 }
 
 enum MeshItemType {
@@ -379,7 +570,7 @@ model MeshReaction {
   meshItemId String
   meshItem  MeshItem @relation(fields: [meshItemId], references: [id])
   userId    String
-  user      User     @relation("MeshReactionUser", fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
   emoji     String
   createdAt DateTime @default(now())
   
@@ -396,7 +587,19 @@ model Badge {
   condition   String   // JSON string describing how to earn
   createdAt   DateTime @default(now())
   
+  // Smart badge features
+  category    String?              // Badge category
+  rarity      BadgeRarity @default(COMMON) // Badge rarity
+  
   userBadges  UserBadge[]
+}
+
+enum BadgeRarity {
+  COMMON
+  UNCOMMON
+  RARE
+  EPIC
+  LEGENDARY
 }
 
 model UserBadge {
@@ -420,6 +623,10 @@ model Skill {
   description String?
   createdAt   DateTime @default(now())
   
+  // Smart skill features
+  demand      Int @default(3)      // Market demand 1-5
+  complexity  Int @default(3)      // Skill complexity 1-5
+  
   userSkills  UserSkill[]
 }
 
@@ -430,12 +637,17 @@ model UserSkill {
   level    Int      @default(1) // 1-5 scale
   createdAt DateTime @default(now())
   
+  // Smart skill tracking
+  verified   Boolean @default(false) // Skill verification
+  endorsements Int @default(0)      // Number of endorsements
+  
   user     User     @relation(fields: [userId], references: [id])
   skill    Skill    @relation(fields: [skillId], references: [id])
   
   @@unique([userId, skillId])
   @@index([userId])
   @@index([skillId])
+  @@index([level])
 }
 
 model SystemSetting {
@@ -462,9 +674,14 @@ model CommunityInsight {
   createdAt   DateTime @default(now())
   expiresAt   DateTime?
   
+  // Smart insight features
+  impact      Int @default(3)      // Impact score 1-5
+  category    String?              // Insight category
+  
   @@index([type])
   @@index([priority])
   @@index([createdAt])
+  @@index([impact])
 }
 
 enum InsightType {
