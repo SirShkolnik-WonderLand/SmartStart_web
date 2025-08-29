@@ -487,7 +487,7 @@ function InsightsTab({ insights, opportunities }: {
       <div className="opportunities-section">
         <h3>🤝 Collaboration Opportunities</h3>
         <div className="opportunities-grid">
-          {opportunities?.needsHelp?.slice(0, 3).map((item, index) => (
+          {opportunities?.needsHelp?.slice(0, 3).map((item: any, index: number) => (
             <div key={index} className="opportunity-card">
               <div className="opportunity-header">
                 <span className="opportunity-type">Need Help</span>
@@ -579,7 +579,25 @@ function ActivityTab({ recentActivity, badges, skills }: {
 // MODAL COMPONENTS
 // ============================================================================
 
-function WalletModal({ portfolio, totalPortfolioValue, onClose }) {
+function WalletModal({ 
+  projects, 
+  insights, 
+  opportunities, 
+  recentActivity, 
+  badges, 
+  skills, 
+  totalPortfolioValue, 
+  onClose 
+}: {
+  projects: any[];
+  insights: any[];
+  opportunities: any;
+  recentActivity: any[];
+  badges: any[];
+  skills: any[];
+  totalPortfolioValue: number;
+  onClose: () => void;
+}) {
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="wallet-modal" onClick={(e) => e.stopPropagation()}>
@@ -617,7 +635,10 @@ function WalletModal({ portfolio, totalPortfolioValue, onClose }) {
   );
 }
 
-function ProjectDetailsModal({ project, onClose }) {
+function ProjectDetailsModal({ project, onClose }: {
+  project: any;
+  onClose: () => void;
+}) {
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="project-modal" onClick={(e) => e.stopPropagation()}>
