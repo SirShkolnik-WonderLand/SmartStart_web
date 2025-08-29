@@ -500,11 +500,12 @@ export const usePortfolio = () => {
  * Hook for community intelligence
  */
 export const useCommunity = () => {
-  const { community, fetchCommunityIntelligence } = useSmartStore();
+  const { community, fetchCommunityIntelligence, isLoading } = useSmartStore();
   
   return {
     ...community,
-    fetchCommunityIntelligence
+    fetchCommunityIntelligence,
+    isLoading
   };
 };
 

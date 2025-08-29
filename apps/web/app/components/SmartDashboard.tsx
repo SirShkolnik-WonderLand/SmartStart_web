@@ -14,8 +14,8 @@ interface SmartDashboardProps {
 
 export default function SmartDashboard({ className = '' }: SmartDashboardProps) {
   const { user, isAuthenticated } = useAuth();
-  const { portfolio, fetchPortfolio, isLoading: portfolioLoading } = usePortfolio();
-  const { community, fetchCommunityIntelligence, isLoading: communityLoading } = useCommunity();
+  const { projects, insights, opportunities, recentActivity, badges, skills, fetchPortfolio, isLoading: portfolioLoading } = usePortfolio();
+  const { health, trendingTopics, activeMembers, fetchCommunityIntelligence, isLoading: communityLoading } = useCommunity();
   const { notifications, unreadCount } = useNotifications();
   const { updateUserActivity, syncComputedFields } = useActivity();
 
@@ -60,9 +60,9 @@ export default function SmartDashboard({ className = '' }: SmartDashboardProps) 
     );
   }
 
-  const portfolioTrends = analyzePortfolioTrends(portfolio.projects);
-  const collaborationAnalysis = analyzeCollaborationOpportunities(portfolio.opportunities);
-  const communityHealth = analyzeCommunityHealthTrends(community.health);
+  const portfolioTrends = analyzePortfolioTrends(projects);
+  const collaborationAnalysis = analyzeCollaborationOpportunities(opportunities);
+  const communityHealth = health ? analyzeCommunityHealthTrends(health) : null;
 
   const handleSyncData = async () => {
     try {
@@ -133,8 +133,12 @@ export default function SmartDashboard({ className = '' }: SmartDashboardProps) 
         {activeTab === 'overview' && (
           <OverviewTab 
             user={user}
-            portfolio={portfolio}
-            community={community}
+            projects={projects}
+            insights={insights}
+            opportunities={opportunities}
+            recentActivity={recentActivity}
+            badges={badges}
+            skills={skills}
             portfolioTrends={portfolioTrends}
             collaborationAnalysis={collaborationAnalysis}
             communityHealth={communityHealth}
@@ -144,7 +148,12 @@ export default function SmartDashboard({ className = '' }: SmartDashboardProps) 
 
         {activeTab === 'portfolio' && (
           <PortfolioTab 
-            portfolio={portfolio}
+            projects={projects}
+            insights={insights}
+            opportunities={opportunities}
+            recentActivity={recentActivity}
+            badges={badges}
+            skills={skills}
             portfolioTrends={portfolioTrends}
             isLoading={portfolioLoading}
           />
@@ -152,7 +161,9 @@ export default function SmartDashboard({ className = '' }: SmartDashboardProps) 
 
         {activeTab === 'community' && (
           <CommunityTab 
-            community={community}
+            health={health}
+            trendingTopics={trendingTopics}
+            activeMembers={activeMembers}
             communityHealth={communityHealth}
             isLoading={communityLoading}
           />
@@ -160,8 +171,12 @@ export default function SmartDashboard({ className = '' }: SmartDashboardProps) 
 
         {activeTab === 'insights' && (
           <InsightsTab 
-            portfolio={portfolio}
-            community={community}
+            projects={projects}
+            insights={insights}
+            opportunities={opportunities}
+            recentActivity={recentActivity}
+            badges={badges}
+            skills={skills}
             portfolioTrends={portfolioTrends}
             collaborationAnalysis={collaborationAnalysis}
             communityHealth={communityHealth}
@@ -176,7 +191,31 @@ export default function SmartDashboard({ className = '' }: SmartDashboardProps) 
 // TAB COMPONENTS
 // ============================================================================
 
-function OverviewTab({ user, portfolio, community, portfolioTrends, collaborationAnalysis, communityHealth, notifications }) {
+function OverviewTab({ 
+  user, 
+  projects, 
+  insights, 
+  opportunities, 
+  recentActivity, 
+  badges, 
+  skills, 
+  portfolioTrends, 
+  collaborationAnalysis, 
+  communityHealth, 
+  notifications 
+}: {
+  user: any;
+  projects: any[];
+  insights: any[];
+  opportunities: any;
+  recentActivity: any[];
+  badges: any[];
+  skills: any[];
+  portfolioTrends: any;
+  collaborationAnalysis: any;
+  communityHealth: any;
+  notifications: any[];
+}) {
   return (
     <div className="overview-tab">
       {/* User Profile Summary */}
@@ -235,7 +274,7 @@ function OverviewTab({ user, portfolio, community, portfolioTrends, collaboratio
         <div className="recent-activity card">
           <h4>Recent Activity</h4>
           <div className="activity-list">
-            {portfolio.recentActivity.slice(0, 5).map((activity, index) => (
+                            {recentActivity.slice(0, 5).map((activity, index) => (
               <div key={index} className="activity-item">
                 <span className="activity-icon">📊</span>
                 <span className="activity-text">{activity.type}</span>
@@ -266,7 +305,25 @@ function OverviewTab({ user, portfolio, community, portfolioTrends, collaboratio
   );
 }
 
-function PortfolioTab({ portfolio, portfolioTrends, isLoading }) {
+function PortfolioTab({ 
+  projects, 
+  insights, 
+  opportunities, 
+  recentActivity, 
+  badges, 
+  skills, 
+  portfolioTrends, 
+  isLoading 
+}: {
+  projects: any[];
+  insights: any[];
+  opportunities: any;
+  recentActivity: any[];
+  badges: any[];
+  skills: any[];
+  portfolioTrends: any;
+  isLoading: boolean;
+}) {
   if (isLoading) {
     return <div className="loading">Loading portfolio intelligence...</div>;
   }
@@ -302,7 +359,7 @@ function PortfolioTab({ portfolio, portfolioTrends, isLoading }) {
       <div className="projects-section">
         <h3>Your Projects</h3>
         <div className="projects-grid">
-          {portfolio.projects.map((project, index) => (
+                          {projects.map((project, index) => (
             <div key={index} className="project-card card">
               <div className="project-header">
                 <h4>{project.name}</h4>
@@ -340,7 +397,7 @@ function PortfolioTab({ portfolio, portfolioTrends, isLoading }) {
       <div className="insights-section">
         <h3>Smart Insights</h3>
         <div className="insights-grid">
-          {portfolio.insights.map((insight, index) => (
+                          {insights.map((insight, index) => (
             <div key={index} className={`insight-card card priority-${insight.priority}`}>
               <div className="insight-header">
                 <h4>{insight.title}</h4>
@@ -361,7 +418,19 @@ function PortfolioTab({ portfolio, portfolioTrends, isLoading }) {
   );
 }
 
-function CommunityTab({ community, communityHealth, isLoading }) {
+function CommunityTab({ 
+  health, 
+  trendingTopics, 
+  activeMembers, 
+  communityHealth, 
+  isLoading 
+}: {
+  health: any;
+  trendingTopics: any;
+  activeMembers: any[];
+  communityHealth: any;
+  isLoading: boolean;
+}) {
   if (isLoading) {
     return <div className="loading">Loading community intelligence...</div>;
   }
@@ -419,32 +488,32 @@ function CommunityTab({ community, communityHealth, isLoading }) {
         <h3>Community Metrics</h3>
         <div className="metrics-grid">
           <div className="metric-item">
-            <span className="metric-value">{community.health?.metrics?.totalUsers || 0}</span>
+                            <span className="metric-value">{health?.metrics?.totalUsers || 0}</span>
             <span className="metric-label">Total Users</span>
           </div>
           <div className="metric-item">
-            <span className="metric-value">{community.health?.metrics?.activeUsers || 0}</span>
+                            <span className="metric-value">{health?.metrics?.activeUsers || 0}</span>
             <span className="metric-label">Active Users</span>
           </div>
           <div className="metric-item">
-            <span className="metric-value">{community.health?.metrics?.totalProjects || 0}</span>
+                            <span className="metric-value">{health?.metrics?.totalProjects || 0}</span>
             <span className="metric-label">Total Projects</span>
           </div>
           <div className="metric-item">
-            <span className="metric-value">{community.health?.metrics?.totalContributions || 0}</span>
+                            <span className="metric-value">{health?.metrics?.totalContributions || 0}</span>
             <span className="metric-label">Total Contributions</span>
           </div>
         </div>
       </div>
 
       {/* Trending Topics */}
-      {community.trendingTopics && (
+                  {trendingTopics && (
         <div className="trending-topics card">
           <h3>Trending Topics</h3>
           <div className="topics-grid">
             <div className="topic-section">
               <h4>Popular Ideas</h4>
-              {community.trendingTopics.ideas.slice(0, 3).map((idea, index) => (
+              {trendingTopics.ideas.slice(0, 3).map((idea: any, index: number) => (
                 <div key={index} className="topic-item">
                   <span className="topic-title">{idea.title}</span>
                   <span className="topic-votes">👍 {idea.votes}</span>
@@ -453,7 +522,7 @@ function CommunityTab({ community, communityHealth, isLoading }) {
             </div>
             <div className="topic-section">
               <h4>Active Polls</h4>
-              {community.trendingTopics.polls.slice(0, 3).map((poll, index) => (
+              {trendingTopics.polls.slice(0, 3).map((poll: any, index: number) => (
                 <div key={index} className="topic-item">
                   <span className="topic-title">{poll.question}</span>
                   <span className="topic-votes">🗳️ {poll.totalVotes}</span>
@@ -468,7 +537,7 @@ function CommunityTab({ community, communityHealth, isLoading }) {
       <div className="active-members card">
         <h3>Top Community Members</h3>
         <div className="members-list">
-          {community.activeMembers.slice(0, 5).map((member, index) => (
+                      {activeMembers.slice(0, 5).map((member: any, index: number) => (
             <div key={index} className="member-item">
               <div className="member-info">
                 <span className="member-name">{member.name || member.email}</span>
@@ -486,7 +555,27 @@ function CommunityTab({ community, communityHealth, isLoading }) {
   );
 }
 
-function InsightsTab({ portfolio, community, portfolioTrends, collaborationAnalysis, communityHealth }) {
+function InsightsTab({ 
+  projects, 
+  insights, 
+  opportunities, 
+  recentActivity, 
+  badges, 
+  skills, 
+  portfolioTrends, 
+  collaborationAnalysis, 
+  communityHealth 
+}: {
+  projects: any[];
+  insights: any[];
+  opportunities: any;
+  recentActivity: any[];
+  badges: any[];
+  skills: any[];
+  portfolioTrends: any;
+  collaborationAnalysis: any;
+  communityHealth: any;
+}) {
   return (
     <div className="insights-tab">
       {/* Portfolio Insights */}
@@ -527,7 +616,7 @@ function InsightsTab({ portfolio, community, portfolioTrends, collaborationAnaly
         <div className="insights-section card">
           <h3>Community Recommendations</h3>
           <div className="recommendations-list">
-            {communityHealth.recommendations.map((recommendation, index) => (
+            {communityHealth.recommendations.map((recommendation: any, index: number) => (
               <div key={index} className="recommendation-item">
                 <span className="recommendation-icon">💡</span>
                 <span className="recommendation-text">{recommendation}</span>

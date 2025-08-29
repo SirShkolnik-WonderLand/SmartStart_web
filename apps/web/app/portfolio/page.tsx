@@ -1,379 +1,660 @@
-'use client'
+'use client';
 
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import AppLayout from '../components/AppLayout'
-import { apiCallWithAuth } from '../utils/api'
-import '../styles/portfolio.css'
+import React, { useEffect, useState } from 'react';
+import { usePortfolio, useAuth } from '../utils/smartState';
+import AppLayout from '../components/AppLayout';
+import '../styles/portfolio.css';
 
-interface User {
-  id: string
-  email: string
-  role: string
-  name?: string
+interface ProjectData {
+  id: string;
+  name: string;
+  summary?: string;
+  ownerId: string;
+  totalValue: number;
+  activeMembers: number;
+  completionRate: number;
+  lastActivity: Date;
+  userRole: string;
+  userOwnership: number;
 }
 
-interface Project {
-  id: string
-  name: string
-  role: string
-  ownership: number
-  status: 'active' | 'completed' | 'paused'
-  description: string
-  startDate: string
-  lastContribution: string
-  totalContributions: number
-  estimatedValue: number
-}
-
-interface PortfolioStats {
-  totalProjects: number
-  totalOwnership: number
-  totalContributions: number
-  portfolioValue: number
-  activeProjects: number
-  completedProjects: number
+interface PortfolioData {
+  projects: ProjectData[];
+  insights: any[];
+  opportunities: any;
+  recentActivity: any[];
+  badges: any[];
+  skills: any[];
 }
 
 export default function PortfolioPage() {
-  const [user, setUser] = useState<User | null>(null)
-  const [projects, setProjects] = useState<Project[]>([])
-  const [stats, setStats] = useState<PortfolioStats>({
-    totalProjects: 0,
-    totalOwnership: 0,
-    totalContributions: 0,
-    portfolioValue: 0,
-    activeProjects: 0,
-    completedProjects: 0
-  })
-  const [loading, setLoading] = useState(true)
-  const router = useRouter()
+  const { user, isAuthenticated } = useAuth();
+  const { projects, insights, opportunities, recentActivity, badges, skills, fetchPortfolio, isLoading, error } = usePortfolio();
+  const [activeTab, setActiveTab] = useState<'overview' | 'projects' | 'insights' | 'activity'>('overview');
+  const [selectedProject, setSelectedProject] = useState<ProjectData | null>(null);
+  const [showWalletModal, setShowWalletModal] = useState(false);
 
   useEffect(() => {
-    // Get user data from cookies
-    const getUserFromCookies = () => {
-      const cookies = document.cookie.split(';')
-      const userCookie = cookies.find(cookie => cookie.trim().startsWith('user='))
-      const tokenCookie = cookies.find(cookie => cookie.trim().startsWith('authToken='))
-      
-      if (!userCookie || !tokenCookie) {
-        router.push('/login')
-        return
-      }
-
-      try {
-        const userData = JSON.parse(userCookie.split('=')[1])
-        setUser(userData)
-        
-        // Fetch portfolio data
-        fetchPortfolioData()
-      } catch (error) {
-        console.error('Error parsing user data:', error)
-        router.push('/login')
-      }
+    if (isAuthenticated) {
+      fetchPortfolio();
     }
+  }, [isAuthenticated, fetchPortfolio]);
 
-    getUserFromCookies()
-  }, [router])
-
-  const fetchPortfolioData = async () => {
-    try {
-      // Get auth token from cookies
-      const cookies = document.cookie.split(';')
-      const tokenCookie = cookies.find(cookie => cookie.trim().startsWith('authToken='))
-      
-      if (!tokenCookie) {
-        router.push('/login')
-        return
-      }
-
-      const token = tokenCookie.split('=')[1]
-      
-      // Fetch user's projects from API
-      const data = await apiCallWithAuth('/projects/user', token)
-      
-      // Transform API data to match our interface
-      const transformedProjects: Project[] = (data.projects || []).map((apiProject: any) => ({
-        id: apiProject.id,
-        name: apiProject.name,
-        role: apiProject.userRole || 'MEMBER',
-        ownership: apiProject.ownership || 0,
-        status: apiProject.status?.toLowerCase() || 'active',
-        description: apiProject.description || 'No description available',
-        startDate: apiProject.createdAt || '2024-01-01',
-        lastContribution: apiProject.updatedAt || new Date().toISOString(),
-        totalContributions: apiProject.totalContributions || 0,
-        estimatedValue: apiProject.estimatedValue || 0
-      }))
-      
-      setProjects(transformedProjects)
-      
-      // Calculate portfolio stats
-      const totalProjects = transformedProjects.length
-      const totalOwnership = transformedProjects.reduce((sum, p) => sum + p.ownership, 0)
-      const totalContributions = transformedProjects.reduce((sum, p) => sum + p.totalContributions, 0)
-      const portfolioValue = transformedProjects.reduce((sum, p) => sum + p.estimatedValue, 0)
-      const activeProjects = transformedProjects.filter(p => p.status === 'active').length
-      const completedProjects = transformedProjects.filter(p => p.status === 'completed').length
-      
-      setStats({
-        totalProjects,
-        totalOwnership,
-        totalContributions,
-        portfolioValue,
-        activeProjects,
-        completedProjects
-      })
-    } catch (error) {
-      console.error('Error fetching portfolio data:', error)
-      // Fallback to mock data
-      const mockProjects: Project[] = [
-        {
-          id: '1',
-          name: 'SmartStart Platform',
-          role: 'OWNER',
-          ownership: 35,
-          status: 'active',
-          description: 'The core platform that powers AliceSolutions Ventures community and project management.',
-          startDate: '2024-01-01',
-          lastContribution: '2024-02-01',
-          totalContributions: 8,
-          estimatedValue: 50000
-        },
-        {
-          id: '2',
-          name: 'AI Marketing Tool',
-          role: 'CONTRIBUTOR',
-          ownership: 5,
-          status: 'active',
-          description: 'AI-powered marketing automation platform for small businesses.',
-          startDate: '2024-01-15',
-          lastContribution: '2024-01-28',
-          totalContributions: 3,
-          estimatedValue: 15000
-        },
-        {
-          id: '3',
-          name: 'E-commerce Platform',
-          role: 'CONTRIBUTOR',
-          ownership: 4,
-          status: 'active',
-          description: 'Modern e-commerce solution with advanced inventory management.',
-          startDate: '2024-01-20',
-          lastContribution: '2024-01-30',
-          totalContributions: 2,
-          estimatedValue: 12000
-        },
-        {
-          id: '4',
-          name: 'Mobile App Framework',
-          role: 'OWNER',
-          ownership: 40,
-          status: 'completed',
-          description: 'Cross-platform mobile development framework for rapid app creation.',
-          startDate: '2023-11-01',
-          lastContribution: '2024-01-15',
-          totalContributions: 12,
-          estimatedValue: 80000
-        }
-      ]
-      
-      setProjects(mockProjects)
-      
-      // Calculate portfolio stats
-      const totalProjects = mockProjects.length
-      const totalOwnership = mockProjects.reduce((sum, p) => sum + p.ownership, 0)
-      const totalContributions = mockProjects.reduce((sum, p) => sum + p.totalContributions, 0)
-      const portfolioValue = mockProjects.reduce((sum, p) => sum + p.estimatedValue, 0)
-      const activeProjects = mockProjects.filter(p => p.status === 'active').length
-      const completedProjects = mockProjects.filter(p => p.status === 'completed').length
-      
-      setStats({
-        totalProjects,
-        totalOwnership,
-        totalContributions,
-        portfolioValue,
-        activeProjects,
-        completedProjects
-      })
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  if (loading) {
+  if (!isAuthenticated) {
     return (
-      <AppLayout currentPage="/portfolio">
-        <div className="loading">
-          <div className="loading-spinner"></div>
-          <span>Loading Your Portfolio...</span>
-        </div>
-      </AppLayout>
-    )
-  }
-
-  if (!user) {
-    return (
-      <AppLayout currentPage="/portfolio">
-        <div className="error-container">
-          <h3>Access Denied</h3>
+      <div className="portfolio-page">
+        <div className="auth-required">
+          <h2>🔐 Authentication Required</h2>
           <p>Please log in to view your portfolio.</p>
         </div>
-      </AppLayout>
-    )
+      </div>
+    );
   }
+
+  if (isLoading) {
+    return (
+      <div className="portfolio-page">
+        <div className="loading-container">
+          <div className="loading-spinner"></div>
+          <p>Loading your portfolio...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="portfolio-page">
+        <div className="error-container">
+          <h2>❌ Error Loading Portfolio</h2>
+          <p>{error}</p>
+          <button onClick={fetchPortfolio} className="retry-button">
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const totalPortfolioValue = projects.reduce((sum: number, project: ProjectData) => sum + project.totalValue, 0);
+  const totalOwnership = projects.reduce((sum: number, project: ProjectData) => sum + project.userOwnership, 0);
+  const avgCompletionRate = projects.length > 0 
+    ? projects.reduce((sum: number, project: ProjectData) => sum + project.completionRate, 0) / projects.length
+    : 0;
 
   return (
     <AppLayout currentPage="/portfolio">
-      <div className="page-header">
-        <h1 className="page-title">Your Venture Portfolio</h1>
-        <p className="page-subtitle">Track your ownership across multiple ventures and see how your contributions grow your portfolio.</p>
-      </div>
-
-      {/* Portfolio Stats */}
-      <div className="grid grid-4">
-        <div className="metric-card">
-          <div className="metric-value">{stats.totalProjects}</div>
-          <div className="metric-label">Total Projects</div>
-        </div>
-        <div className="metric-card">
-          <div className="metric-value">{stats.totalOwnership}%</div>
-          <div className="metric-label">Total Ownership</div>
-        </div>
-        <div className="metric-card">
-          <div className="metric-value">{stats.totalContributions}</div>
-          <div className="metric-label">Contributions</div>
-        </div>
-        <div className="metric-card">
-          <div className="metric-value">${stats.portfolioValue.toLocaleString()}</div>
-          <div className="metric-label">Portfolio Value</div>
-        </div>
-        <div className="metric-card">
-          <div className="metric-value">{stats.activeProjects}</div>
-          <div className="metric-label">Active Projects</div>
-        </div>
-        <div className="metric-card">
-          <div className="metric-value">{stats.completedProjects}</div>
-          <div className="metric-label">Completed</div>
-        </div>
-      </div>
-
-      {/* Portfolio Overview */}
-      <div className="card">
-        <div className="card-header">
-          <h3 className="card-title">Portfolio Overview</h3>
-          <p className="card-subtitle">Visual representation of your venture portfolio</p>
-        </div>
-        
-        <div className="card-content">
-          <div className="overview-grid">
-            {/* Ownership Distribution */}
-            <div className="overview-section">
-              <h4 className="section-title">Ownership Distribution</h4>
-              <div className="ownership-chart">
-                {projects.map((project) => (
-                  <div key={project.id} className="ownership-item">
-                    <span className="project-name">{project.name}</span>
-                    <div className="ownership-bar">
-                      <div 
-                        className="ownership-fill"
-                        style={{ width: `${(project.ownership / Math.max(...projects.map(p => p.ownership))) * 100}%` }}
-                      ></div>
-                    </div>
-                    <span className="ownership-percentage">{project.ownership}%</span>
-                  </div>
-                ))}
+      <div className="portfolio-page">
+        {/* Hero Section */}
+        <div className="portfolio-hero">
+          <div className="hero-content">
+            <div className="user-profile-section">
+              <div className="profile-avatar">
+                <div className="avatar-image">
+                  {user?.name?.charAt(0) || user?.email?.charAt(0) || 'U'}
+                </div>
+                <div className="online-indicator"></div>
+              </div>
+              <div className="profile-info">
+                <h1 className="user-nickname">{user?.name || 'Portfolio Master'}</h1>
+                <p className="user-email">{user?.email}</p>
+                <div className="user-stats">
+                  <span className="stat-item">
+                    <span className="stat-icon">⭐</span>
+                    <span className="stat-label">Level</span>
+                    <span className="stat-value">{user?.level || 'OWLET'}</span>
+                  </span>
+                  <span className="stat-item">
+                    <span className="stat-icon">🔥</span>
+                    <span className="stat-label">XP</span>
+                    <span className="stat-value">{user?.xp || 0}</span>
+                  </span>
+                  <span className="stat-item">
+                    <span className="stat-icon">🏆</span>
+                    <span className="stat-label">Reputation</span>
+                    <span className="stat-value">{user?.reputation || 0}</span>
+                  </span>
+                </div>
               </div>
             </div>
-
-            {/* Recent Activity */}
-            <div className="overview-section">
-              <h4 className="section-title">Recent Activity</h4>
-              <div className="activity-list">
-                {projects
-                  .sort((a, b) => new Date(b.lastContribution).getTime() - new Date(a.lastContribution).getTime())
-                  .slice(0, 5)
-                  .map((project) => (
-                    <div key={project.id} className="activity-item">
-                      <span className="activity-project">{project.name}</span>
-                      <span className="activity-date">
-                        {new Date(project.lastContribution).toLocaleDateString()}
-                      </span>
-                    </div>
-                  ))}
+            
+            <div className="wallet-overview">
+              <div className="wallet-card" onClick={() => setShowWalletModal(true)}>
+                <div className="wallet-header">
+                  <h3>💰 Portfolio Wallet</h3>
+                  <span className="wallet-icon">💼</span>
+                </div>
+                <div className="wallet-balance">
+                  <span className="balance-amount">${totalPortfolioValue.toLocaleString()}</span>
+                  <span className="balance-label">Total Value</span>
+                </div>
+                <div className="wallet-metrics">
+                  <div className="metric">
+                    <span className="metric-label">Ownership</span>
+                    <span className="metric-value">{totalOwnership.toFixed(1)}%</span>
+                  </div>
+                  <div className="metric">
+                    <span className="metric-label">Projects</span>
+                    <span className="metric-value">{projects.length}</span>
+                  </div>
+                  <div className="metric">
+                    <span className="metric-label">Completion</span>
+                    <span className="metric-value">{avgCompletionRate.toFixed(1)}%</span>
+                  </div>
+                </div>
+                <div className="wallet-action">
+                  <span>Click to view details →</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
+
+        {/* Navigation Tabs */}
+        <div className="portfolio-tabs">
+          <button 
+            className={`tab ${activeTab === 'overview' ? 'active' : ''}`}
+            onClick={() => setActiveTab('overview')}
+          >
+            <span className="tab-icon">📊</span>
+            Overview
+          </button>
+          <button 
+            className={`tab ${activeTab === 'projects' ? 'active' : ''}`}
+            onClick={() => setActiveTab('projects')}
+          >
+            <span className="tab-icon">🚀</span>
+            Projects
+          </button>
+          <button 
+            className={`tab ${activeTab === 'insights' ? 'active' : ''}`}
+            onClick={() => setActiveTab('insights')}
+          >
+            <span className="tab-icon">🧠</span>
+            Smart Insights
+          </button>
+          <button 
+            className={`tab ${activeTab === 'activity' ? 'active' : ''}`}
+            onClick={() => setActiveTab('activity')}
+          >
+            <span className="tab-icon">📈</span>
+            Activity
+          </button>
+        </div>
+
+        {/* Content Area */}
+        <div className="portfolio-content">
+          {activeTab === 'overview' && (
+            <OverviewTab 
+              projects={projects}
+              insights={insights}
+              opportunities={opportunities}
+              recentActivity={recentActivity}
+              badges={badges}
+              skills={skills}
+              totalPortfolioValue={totalPortfolioValue}
+              totalOwnership={totalOwnership}
+              avgCompletionRate={avgCompletionRate}
+            />
+          )}
+
+          {activeTab === 'projects' && (
+            <ProjectsTab 
+              projects={projects}
+              selectedProject={selectedProject}
+              setSelectedProject={setSelectedProject}
+            />
+          )}
+
+          {activeTab === 'insights' && (
+            <InsightsTab 
+                          insights={insights}
+            opportunities={opportunities}
+            />
+          )}
+
+          {activeTab === 'activity' && (
+            <ActivityTab 
+                          recentActivity={recentActivity}
+            badges={badges}
+            skills={skills}
+            />
+          )}
+        </div>
+
+        {/* Wallet Modal */}
+        {showWalletModal && (
+          <WalletModal 
+            projects={projects}
+            insights={insights}
+            opportunities={opportunities}
+            recentActivity={recentActivity}
+            badges={badges}
+            skills={skills}
+            totalPortfolioValue={totalPortfolioValue}
+            onClose={() => setShowWalletModal(false)}
+          />
+        )}
+      </div>
+    </AppLayout>
+  );
+}
+
+// ============================================================================
+// TAB COMPONENTS
+// ============================================================================
+
+function OverviewTab({ 
+  projects, 
+  insights, 
+  opportunities, 
+  recentActivity, 
+  badges, 
+  skills, 
+  totalPortfolioValue, 
+  totalOwnership, 
+  avgCompletionRate 
+}: {
+  projects: any[];
+  insights: any[];
+  opportunities: any;
+  recentActivity: any[];
+  badges: any[];
+  skills: any[];
+  totalPortfolioValue: number;
+  totalOwnership: number;
+  avgCompletionRate: number;
+}) {
+  return (
+    <div className="overview-tab">
+      {/* Portfolio Summary Cards */}
+      <div className="summary-grid">
+        <div className="summary-card value-card">
+          <div className="card-icon">💎</div>
+          <div className="card-content">
+            <h3>Portfolio Value</h3>
+            <div className="card-value">${totalPortfolioValue.toLocaleString()}</div>
+            <div className="card-change positive">+12.5% this month</div>
+          </div>
+        </div>
+
+        <div className="summary-card ownership-card">
+          <div className="card-icon">🎯</div>
+          <div className="card-content">
+            <h3>Total Ownership</h3>
+            <div className="card-value">{totalOwnership.toFixed(1)}%</div>
+            <div className="card-change positive">+2.3% this week</div>
+          </div>
+        </div>
+
+        <div className="summary-card completion-card">
+          <div className="card-icon">✅</div>
+          <div className="card-content">
+            <h3>Avg Completion</h3>
+            <div className="card-value">{avgCompletionRate.toFixed(1)}%</div>
+            <div className="card-change neutral">On track</div>
+          </div>
+        </div>
+
+        <div className="summary-card projects-card">
+          <div className="card-icon">🚀</div>
+          <div className="card-content">
+            <h3>Active Projects</h3>
+                            <div className="card-value">{projects.length}</div>
+            <div className="card-change positive">+1 new this month</div>
+          </div>
+        </div>
       </div>
 
-      {/* Projects Grid */}
+      {/* Project Distribution Chart */}
+      <div className="distribution-section">
+        <h3>📊 Project Distribution</h3>
+        <div className="distribution-chart">
+          {projects.map((project, index) => {
+            const percentage = (project.totalValue / totalPortfolioValue) * 100;
+            const rotation = (index / projects.length) * 360;
+            
+            return (
+              <div 
+                key={project.id}
+                className="project-slice"
+                style={{
+                  '--percentage': `${percentage}%`,
+                  '--rotation': `${rotation}deg`,
+                  '--color': `hsl(${200 + (index * 40)}, 70%, 60%)`
+                } as React.CSSProperties}
+              >
+                <div className="slice-content">
+                  <span className="project-name">{project.name}</span>
+                  <span className="project-percentage">{percentage.toFixed(1)}%</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="quick-actions">
+        <h3>⚡ Quick Actions</h3>
+        <div className="actions-grid">
+          <button className="action-button">
+            <span className="action-icon">➕</span>
+            <span>Add New Project</span>
+          </button>
+          <button className="action-button">
+            <span className="action-icon">📈</span>
+            <span>View Analytics</span>
+          </button>
+          <button className="action-button">
+            <span className="action-icon">🤝</span>
+            <span>Find Collaborators</span>
+          </button>
+          <button className="action-button">
+            <span className="action-icon">📊</span>
+            <span>Export Report</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ProjectsTab({ projects, selectedProject, setSelectedProject }: {
+  projects: ProjectData[];
+  selectedProject: ProjectData | null;
+  setSelectedProject: (project: ProjectData | null) => void;
+}) {
+  return (
+    <div className="projects-tab">
+      <div className="projects-header">
+        <h3>🚀 Your Projects</h3>
+        <div className="projects-filter">
+          <select className="filter-select">
+            <option value="all">All Projects</option>
+            <option value="active">Active</option>
+            <option value="completed">Completed</option>
+            <option value="high-value">High Value</option>
+          </select>
+        </div>
+      </div>
+
       <div className="projects-grid">
-        {projects.map((project) => (
-          <div key={project.id} className="project-card">
+        {projects.map((project, index) => (
+          <div 
+            key={project.id}
+            className={`project-card ${selectedProject?.id === project.id ? 'selected' : ''}`}
+            onClick={() => setSelectedProject(project)}
+          >
             <div className="project-header">
+              <div className="project-icon">
+                {project.name.charAt(0).toUpperCase()}
+              </div>
               <div className="project-info">
-                <h3 className="project-title">{project.name}</h3>
-                <p className="project-description">{project.description}</p>
+                <h4 className="project-name">{project.name}</h4>
+                <span className={`role-badge role-${project.userRole.toLowerCase()}`}>
+                  {project.userRole}
+                </span>
               </div>
-              <div className="project-badges">
-                <span className={`status-badge status-${project.status}`}>
-                  {project.status}
-                </span>
-                <span className={`role-badge role-${project.role.toLowerCase()}`}>
-                  {project.role}
-                </span>
+              <div className="project-value">
+                ${project.totalValue.toLocaleString()}
               </div>
             </div>
 
-            <div className="project-stats">
-              <div className="stat-item">
-                <div className="stat-value">{project.ownership}%</div>
-                <div className="stat-label">Ownership</div>
+            <div className="project-metrics">
+              <div className="metric-row">
+                <span className="metric-label">Ownership</span>
+                <span className="metric-value">{project.userOwnership.toFixed(1)}%</span>
               </div>
-              <div className="stat-item">
-                <div className="stat-value">{project.totalContributions}</div>
-                <div className="stat-label">Contributions</div>
+              <div className="metric-row">
+                <span className="metric-label">Completion</span>
+                <span className="metric-value">{project.completionRate.toFixed(1)}%</span>
+              </div>
+              <div className="metric-row">
+                <span className="metric-label">Members</span>
+                <span className="metric-value">{project.activeMembers}</span>
               </div>
             </div>
 
-            <div className="project-details">
-              <div className="detail-row">
-                <span className="detail-label">Start Date:</span>
-                <span className="detail-value">{new Date(project.startDate).toLocaleDateString()}</span>
+            <div className="project-progress">
+              <div className="progress-bar">
+                <div 
+                  className="progress-fill" 
+                  style={{ width: `${project.completionRate}%` }}
+                ></div>
               </div>
-              <div className="detail-row">
-                <span className="detail-label">Last Contribution:</span>
-                <span className="detail-value">{new Date(project.lastContribution).toLocaleDateString()}</span>
-              </div>
-              <div className="detail-row">
-                <span className="detail-label">Estimated Value:</span>
-                <span className="detail-value">${project.estimatedValue.toLocaleString()}</span>
-              </div>
+              <span className="progress-text">{project.completionRate.toFixed(1)}% Complete</span>
             </div>
 
             <div className="project-actions">
-              <button className="btn btn-primary">
-                <span>View Details</span>
-              </button>
-              <button className="btn">
-                <span>Track Progress</span>
-              </button>
+              <button className="action-btn view-btn">View Details</button>
+              <button className="action-btn edit-btn">Edit</button>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Empty State */}
-      {projects.length === 0 && (
-        <div className="empty-state">
-          <div className="empty-icon">📊</div>
-          <h3 className="empty-title">No projects yet</h3>
-          <p className="empty-description">
-            Start contributing to projects to build your portfolio!
-          </p>
-        </div>
+      {/* Project Details Modal */}
+      {selectedProject && (
+        <ProjectDetailsModal 
+          project={selectedProject}
+          onClose={() => setSelectedProject(null)}
+        />
       )}
-    </AppLayout>
-  )
+    </div>
+  );
+}
+
+function InsightsTab({ insights, opportunities }: {
+  insights: any[];
+  opportunities: any;
+}) {
+  return (
+    <div className="insights-tab">
+      <div className="insights-header">
+        <h3>🧠 Smart Insights</h3>
+        <p>AI-powered recommendations to optimize your portfolio</p>
+      </div>
+
+      <div className="insights-grid">
+        {insights.map((insight, index) => (
+          <div key={index} className={`insight-card priority-${insight.priority || 3}`}>
+            <div className="insight-header">
+              <div className="insight-icon">
+                {insight.type === 'SKILL_GAP' ? '🎯' : 
+                 insight.type === 'COLLABORATION' ? '🤝' : 
+                 insight.type === 'PORTFOLIO_DIVERSIFICATION' ? '📊' : '💡'}
+              </div>
+              <div className="insight-meta">
+                <h4>{insight.title}</h4>
+                <span className={`priority-badge priority-${insight.priority || 3}`}>
+                  {insight.priority === 4 ? 'High' : insight.priority === 3 ? 'Medium' : 'Low'}
+                </span>
+              </div>
+            </div>
+            <p className="insight-description">{insight.description}</p>
+            <div className="insight-footer">
+              <span className="confidence">
+                Confidence: {(insight.confidence * 100).toFixed(0)}%
+              </span>
+              <button className="insight-action">Take Action</button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Collaboration Opportunities */}
+      <div className="opportunities-section">
+        <h3>🤝 Collaboration Opportunities</h3>
+        <div className="opportunities-grid">
+          {opportunities?.needsHelp?.slice(0, 3).map((item, index) => (
+            <div key={index} className="opportunity-card">
+              <div className="opportunity-header">
+                <span className="opportunity-type">Need Help</span>
+                <span className={`priority-badge priority-${item.priority}`}>
+                  {item.priority}
+                </span>
+              </div>
+              <h4>{item.title}</h4>
+              <p>{item.description}</p>
+              <button className="collaborate-btn">Collaborate</button>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ActivityTab({ recentActivity, badges, skills }: {
+  recentActivity: any[];
+  badges: any[];
+  skills: any[];
+}) {
+  return (
+    <div className="activity-tab">
+      <div className="activity-header">
+        <h3>📈 Recent Activity</h3>
+        <p>Your latest contributions and achievements</p>
+      </div>
+
+      <div className="activity-timeline">
+        {recentActivity.map((activity, index) => (
+          <div key={index} className="timeline-item">
+            <div className="timeline-icon">
+              {activity.type === 'LOGIN' ? '🔐' :
+               activity.type === 'TASK_VIEW' ? '👀' :
+               activity.type === 'CONTRIBUTION' ? '💪' : '📊'}
+            </div>
+            <div className="timeline-content">
+              <h4>{activity.type.replace('_', ' ')}</h4>
+              <p>{activity.description || 'Activity recorded'}</p>
+              <span className="timeline-time">
+                {new Date(activity.createdAt).toLocaleString()}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Badges and Skills */}
+      <div className="achievements-section">
+        <div className="badges-section">
+          <h3>🏆 Badges Earned</h3>
+          <div className="badges-grid">
+            {badges.map((badge, index) => (
+              <div key={index} className="badge-item">
+                <div className="badge-icon">{badge.icon || '🏅'}</div>
+                <span className="badge-name">{badge.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="skills-section">
+          <h3>💪 Skills & Expertise</h3>
+          <div className="skills-grid">
+            {skills.map((skill, index) => (
+              <div key={index} className="skill-item">
+                <div className="skill-info">
+                  <span className="skill-name">{skill.name}</span>
+                  <span className="skill-level">Level {skill.level}</span>
+                </div>
+                <div className="skill-bar">
+                  <div 
+                    className="skill-fill" 
+                    style={{ width: `${(skill.level / 5) * 100}%` }}
+                  ></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ============================================================================
+// MODAL COMPONENTS
+// ============================================================================
+
+function WalletModal({ portfolio, totalPortfolioValue, onClose }) {
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="wallet-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h3>💰 Portfolio Wallet Details</h3>
+          <button className="close-button" onClick={onClose}>×</button>
+        </div>
+        
+        <div className="modal-content">
+          <div className="wallet-summary">
+            <div className="total-balance">
+              <span className="balance-label">Total Portfolio Value</span>
+              <span className="balance-amount">${totalPortfolioValue.toLocaleString()}</span>
+            </div>
+          </div>
+
+          <div className="project-breakdown">
+            <h4>Project Breakdown</h4>
+            {projects.map((project, index) => (
+              <div key={project.id} className="breakdown-item">
+                <div className="project-info">
+                  <span className="project-name">{project.name}</span>
+                  <span className="project-role">{project.userRole}</span>
+                </div>
+                <div className="project-values">
+                  <span className="ownership">{project.userOwnership.toFixed(1)}%</span>
+                  <span className="value">${project.totalValue.toLocaleString()}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ProjectDetailsModal({ project, onClose }) {
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="project-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h3>🚀 {project.name}</h3>
+          <button className="close-button" onClick={onClose}>×</button>
+        </div>
+        
+        <div className="modal-content">
+          <div className="project-overview">
+            <div className="overview-grid">
+              <div className="overview-item">
+                <span className="item-label">Role</span>
+                <span className="item-value">{project.userRole}</span>
+              </div>
+              <div className="overview-item">
+                <span className="item-label">Ownership</span>
+                <span className="item-value">{project.userOwnership.toFixed(1)}%</span>
+              </div>
+              <div className="overview-item">
+                <span className="item-label">Project Value</span>
+                <span className="item-value">${project.totalValue.toLocaleString()}</span>
+              </div>
+              <div className="overview-item">
+                <span className="item-label">Completion</span>
+                <span className="item-value">{project.completionRate.toFixed(1)}%</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="project-actions">
+            <button className="modal-action-btn primary">View Project</button>
+            <button className="modal-action-btn secondary">Edit Details</button>
+            <button className="modal-action-btn secondary">Share</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
