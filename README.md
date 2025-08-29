@@ -4,7 +4,7 @@
 
 SmartStart is a comprehensive platform that brings together project management, equity tracking, contribution management, and community collaboration in one secure, scalable solution. Built for teams that want to build ventures together with transparent ownership and fair contribution recognition.
 
-## 🚀 **Latest Updates - Complete System Overhaul**
+## 🚀 **Latest Updates - Complete System Overhaul (v0.1.1)**
 
 ### **✅ What's New (Latest Release)**
 - **Complete Next.js 14 Architecture** - Clean, modern React-based frontend
