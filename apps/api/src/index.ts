@@ -24,7 +24,10 @@ const app = express();
 // Security middleware
 app.use(helmet());
 app.use(cors({
-  origin: process.env.WEB_ORIGIN || "http://localhost:3000",
+  origin: [
+    process.env.WEB_ORIGIN || "http://localhost:3000",
+    "https://smartstart-web.onrender.com"
+  ],
   credentials: true
 }));
 app.use(express.json());

@@ -52,7 +52,7 @@ export default function MessagesPage() {
 
   useEffect(() => {
     // Get user data from cookies
-    const getUserFromCookies = () => {
+    const getUserFromCookies = async () => {
       const cookies = document.cookie.split(';')
       const userCookie = cookies.find(cookie => cookie.trim().startsWith('user='))
       const tokenCookie = cookies.find(cookie => cookie.trim().startsWith('authToken='))
