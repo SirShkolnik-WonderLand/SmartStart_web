@@ -1,4 +1,4 @@
-// API utility for direct backend calls
+// API utility for direct backend calls - Updated for deployment
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://smartstart-api.onrender.com'
 
 export async function apiCall(endpoint: string, options: RequestInit = {}) {
