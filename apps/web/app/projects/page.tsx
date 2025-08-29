@@ -31,7 +31,7 @@ export default function ProjectsPage() {
       const tokenCookie = cookies.find(cookie => cookie.trim().startsWith('authToken='))
       
       if (!userCookie || !tokenCookie) {
-        router.push('/login.html')
+        router.push('/login')
         return
       }
 
@@ -43,7 +43,7 @@ export default function ProjectsPage() {
         fetchUserProjects(userData.id, tokenCookie.split('=')[1])
       } catch (error) {
         console.error('Error parsing user data:', error)
-        router.push('/login.html')
+        router.push('/login')
       }
     }
 
@@ -75,7 +75,7 @@ export default function ProjectsPage() {
     document.cookie = 'user=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
     document.cookie = 'userRole=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
     
-    router.push('/login.html')
+    router.push('/login')
   }
 
   if (loading) {
@@ -96,7 +96,7 @@ export default function ProjectsPage() {
           <h1 className="text-2xl font-bold text-red-600 mb-4">Access Denied</h1>
           <p className="text-gray-600">Please log in to view projects.</p>
           <button 
-            onClick={() => router.push('/login.html')}
+            onClick={() => router.push('/login')}
             className="mt-4 px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
           >
             Back to Login
