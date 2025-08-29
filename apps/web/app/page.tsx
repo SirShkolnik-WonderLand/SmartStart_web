@@ -1,6 +1,53 @@
-export default async function Home() {
+'use client'
+
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import AppLayout from './components/AppLayout'
+import './styles/home.css'
+
+interface User {
+  id: string
+  email: string
+  role: string
+  name?: string
+}
+
+export default function Home() {
+  const [user, setUser] = useState<User | null>(null)
+  const [loading, setLoading] = useState(true)
+  const router = useRouter()
+
+  useEffect(() => {
+    // Check authentication status
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/auth/me', {
+          credentials: 'include'
+        })
+        if (response.ok) {
+          const userData = await response.json()
+          setUser(userData)
+        }
+      } catch (error) {
+        console.error('Auth check failed:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    checkAuth()
+  }, [])
+
+  if (loading) {
+    return (
+      <AppLayout currentPage="home">
+        <div className="loading">Loading...</div>
+      </AppLayout>
+    )
+  }
+
   return (
-    <div>
+    <AppLayout currentPage="home">
       <div className="page-header">
         <h1 className="page-title">
           SmartStart
@@ -69,35 +116,10 @@ export default async function Home() {
             </li>
           </ul>
         </div>
-            <li className="status-item">
-              <div className="status-content">
-                <span className="status-text">Feature priority ranking</span>
-                <span className="status-time danger">24h</span>
-              </div>
-            </li>
-            <li className="status-item">
-              <div className="status-content">
-                <span className="status-text">Partnership decision</span>
-                <span className="status-time">7d</span>
-              </div>
-            </li>
-          </ul>
-        </div>
-
-        {/* Needs Help */}
-        <div className="card">
-          <div className="card-header">
-            <h3 className="card-title">
-              Needs Help
-            </h3>
-            <p className="card-subtitle">Opportunities to contribute</p>
-          </div>
-          <ul className="status-list">
-            <li className="status-item">
-              <div className="status-content">
-                <span className="status-text">Growth sprint contributor</span>
-                <span className="status-badge badge-warning">2 weeks</span>
-              </div>
+      </div>
+    </AppLayout>
+  )
+}
             </li>
             <li className="status-item">
               <div className="status-content">
