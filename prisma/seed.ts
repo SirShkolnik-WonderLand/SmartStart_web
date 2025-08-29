@@ -58,7 +58,7 @@ async function main() {
         create: {
           email: 'contrib@demo.local',
           password: await bcrypt.hash('contrib123', 12),
-          role: 'CONTRIBUTOR'
+          role: 'MEMBER'
         }
       }
     }
@@ -140,7 +140,7 @@ async function main() {
       id: 'member-2',
       projectId: demoProject1.id,
       userId: contributorUser.id,
-      role: 'CONTRIBUTOR'
+      role: 'MEMBER'
     }
   });
 
@@ -162,7 +162,7 @@ async function main() {
       id: 'member-4',
       projectId: demoProject2.id,
       userId: ownerUser.id,
-      role: 'CONTRIBUTOR'
+      role: 'MEMBER'
     }
   });
 
@@ -184,7 +184,7 @@ async function main() {
       id: 'member-6',
       projectId: demoProject3.id,
       userId: adminUser.id,
-      role: 'CONTRIBUTOR'
+      role: 'MEMBER'
     }
   });
 
@@ -206,7 +206,7 @@ async function main() {
       id: 'member-8',
       projectId: demoProject4.id,
       userId: ownerUser.id,
-      role: 'CONTRIBUTOR'
+      role: 'MEMBER'
     }
   });
 
@@ -360,7 +360,7 @@ async function main() {
   console.log('📊 Created:');
   console.log(`   - ${adminUser.email} (ADMIN)`);
   console.log(`   - ${ownerUser.email} (OWNER)`);
-  console.log(`   - ${contributorUser.email} (CONTRIBUTOR)`);
+  console.log(`   - ${contributorUser.email} (MEMBER)`);
   console.log(`   - Demo projects: ${demoProject1.name}, ${demoProject2.name}, ${demoProject3.name}, ${demoProject4.name}`);
 }
 
