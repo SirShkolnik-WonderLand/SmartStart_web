@@ -96,7 +96,7 @@ export default function UserManagementPage() {
       const token = tokenCookie.split('=')[1]
       
       // Fetch users from API
-      const response = await fetch('http://localhost:3001/api/admin/users', {
+      const response = await fetch('/api/admin/users', {
         headers: {
           'Authorization': `Bearer ${token}`
         }

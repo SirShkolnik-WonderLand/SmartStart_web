@@ -148,7 +148,7 @@ export default function SystemSettingsPage() {
       const token = tokenCookie.split('=')[1]
       
       // Fetch settings from API
-      const response = await fetch('http://localhost:3001/api/admin/settings', {
+      const response = await fetch('/api/admin/settings', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -237,7 +237,7 @@ export default function SystemSettingsPage() {
       const token = tokenCookie.split('=')[1]
       
       // Save settings via API
-      const response = await fetch('http://localhost:3001/api/admin/settings', {
+      const response = await fetch('/api/admin/settings', {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,

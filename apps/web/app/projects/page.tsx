@@ -52,7 +52,7 @@ export default function ProjectsPage() {
 
   const fetchUserProjects = async (userId: string, token: string) => {
     try {
-      const response = await fetch(`http://localhost:3001/auth/rbac-insights/${userId}`, {
+      const response = await fetch(`/api/auth/rbac-insights/${userId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }

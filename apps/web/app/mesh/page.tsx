@@ -107,7 +107,7 @@ export default function MeshPage() {
       const token = tokenCookie.split('=')[1]
       
       // Fetch mesh items from API
-      const response = await fetch('http://localhost:3001/api/mesh/items', {
+      const response = await fetch('/api/mesh/items', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -144,7 +144,7 @@ export default function MeshPage() {
       const token = tokenCookie.split('=')[1]
       
       // Fetch insights from API
-      const response = await fetch('http://localhost:3001/api/mesh/insights', {
+      const response = await fetch('/api/mesh/insights', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -311,7 +311,7 @@ export default function MeshPage() {
       const token = tokenCookie.split('=')[1]
       
       // Add reaction via API
-      const response = await fetch(`http://localhost:3001/api/mesh/items/${itemId}/reactions`, {
+      const response = await fetch(`/api/mesh/items/${itemId}/reactions`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

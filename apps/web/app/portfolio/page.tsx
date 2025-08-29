@@ -89,7 +89,7 @@ export default function PortfolioPage() {
       const token = tokenCookie.split('=')[1]
       
       // Fetch user's projects from API
-      const response = await fetch('http://localhost:3001/api/projects/user', {
+      const response = await fetch('/api/projects/user', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
