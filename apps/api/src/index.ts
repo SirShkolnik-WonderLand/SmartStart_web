@@ -24,13 +24,35 @@ const app = express();
 
 // Security middleware
 app.use(helmet());
+
+// CORS configuration
 app.use(cors({
   origin: [
-    process.env.WEB_ORIGIN || "http://localhost:3000",
+    process.env.CORS_ORIGIN || process.env.WEB_ORIGIN || "http://localhost:3000",
     "https://smartstart-web.onrender.com"
   ],
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
+
+// Handle preflight requests
+app.options('*', cors());
+
+// Additional CORS headers middleware
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', req.headers.origin || 'https://smartstart-web.onrender.com');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+  } else {
+    next();
+  }
+});
+
 app.use(express.json());
 
 // Rate limiting
