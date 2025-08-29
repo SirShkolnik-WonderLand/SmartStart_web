@@ -21,8 +21,8 @@ services:
     env: node
     rootDir: .
     plan: free
-    buildCommand: npm install -g pnpm && pnpm install && pnpm prisma:generate && pnpm --filter @smartstart/api build
-    startCommand: cd apps/api && pnpm prisma migrate deploy && pnpm start
+    buildCommand: npm install -g pnpm && pnpm install && npx prisma generate && pnpm --filter @smartstart/api build
+    startCommand: cd apps/api && npx prisma migrate deploy && pnpm start
     envVars:
       - key: NODE_ENV
         value: production
