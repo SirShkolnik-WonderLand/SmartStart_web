@@ -48,7 +48,7 @@ SmartStart supports multiple deployment strategies:
 - **API**: `https://your-api-name.onrender.com`
 - **Database**: Managed by Render
 
-### **render.yaml Configuration**
+### **render.yaml Configuration (Latest)**
 ```yaml
 services:
   - type: web
@@ -56,41 +56,181 @@ services:
     env: node
     rootDir: apps/web
     plan: free
-    buildCommand: corepack enable && pnpm install && pnpm --filter @smartstart/web build
+    buildCommand: |
+      corepack enable
+      pnpm install --frozen-lockfile
+      pnpm --filter @smartstart/web build
     startCommand: pnpm --filter @smartstart/web start
+    healthCheckPath: /
     envVars:
+      - key: NODE_ENV
+        value: production
       - key: NEXT_PUBLIC_API_URL
         fromService:
           name: smartstart-api
           type: web
           property: url
+      - key: WEB_ORIGIN
+        fromService:
+          name: smartstart-web
+          type: web
+          property: url
+      - key: JWT_SECRET
+        generateValue: true
     autoDeploy: true
+    buildFilter:
+      paths:
+        - apps/web/**
+        - package.json
+        - pnpm-lock.yaml
+        - pnpm-workspace.yaml
 
   - type: web
     name: smartstart-api
     env: node
     rootDir: apps/api
     plan: free
-    buildCommand: corepack enable && pnpm install && pnpm prisma:generate
-    startCommand: pnpm prisma:migrate && pnpm start
+    buildCommand: |
+      corepack enable
+      pnpm install --frozen-lockfile
+      pnpm prisma:generate
+      pnpm build
+    startCommand: |
+      pnpm prisma migrate deploy
+      pnpm start
+    healthCheckPath: /health
     envVars:
+      - key: NODE_ENV
+        value: production
       - key: DATABASE_URL
         fromDatabase:
           name: smartstart-db
           property: connectionString
       - key: PORT
         value: 3001
+      - key: WEB_ORIGIN
+        fromService:
+          name: smartstart-web
+          type: web
+          property: url
+      - key: JWT_SECRET
+        generateValue: true
       - key: SESSION_SECRET
         generateValue: true
-      - key: NODE_ENV
-        value: production
+      - key: CORS_ORIGIN
+        fromService:
+          name: smartstart-web
+          type: web
+          property: url
+      - key: RATE_LIMIT_WINDOW_MS
+        value: 900000
+      - key: RATE_LIMIT_MAX_REQUESTS
+        value: 100
+      - key: AUTH_RATE_LIMIT
+        value: 5
+      - key: API_RATE_LIMIT
+        value: 100
+      - key: IDEAS_RATE_LIMIT
+        value: 30
+      - key: POLLS_RATE_LIMIT
+        value: 30
+      - key: ENABLE_AUDIT_LOGGING
+        value: true
+      - key: AUDIT_LOG_RETENTION_DAYS
+        value: 365
+      - key: ENABLE_RBAC
+        value: true
+      - key: ENABLE_RATE_LIMITING
+        value: true
+      - key: OWNER_MIN_PCT
+        value: 35
+      - key: ALICE_CAP_PCT
+        value: 25
+      - key: CONTRIBUTION_MIN_PCT
+        value: 0.5
+      - key: CONTRIBUTION_MAX_PCT
+        value: 5.0
+      - key: DEFAULT_PAGE_SIZE
+        value: 20
+      - key: MAX_PAGE_SIZE
+        value: 100
     autoDeploy: true
+    buildFilter:
+      paths:
+        - apps/api/**
+        - prisma/**
+        - package.json
+        - pnpm-lock.yaml
+        - pnpm-workspace.yaml
 
 databases:
   - name: smartstart-db
     plan: free
     ipAllowList: []
+    maxConnections: 10
 ```
+
+### **Render.com Best Practices Applied**
+
+#### **✅ Build Optimization**
+- **Frozen Lockfile**: Uses `--frozen-lockfile` for consistent builds
+- **Corepack Enable**: Ensures proper pnpm version management
+- **Build Filters**: Only rebuilds when relevant files change
+- **Multi-line Commands**: Proper command structure for complex builds
+
+#### **✅ Health Checks**
+- **Web Health Check**: `/` endpoint for frontend monitoring
+- **API Health Check**: `/health` endpoint for backend monitoring
+- **Database Connectivity**: Automatic connection testing
+
+#### **✅ Environment Variables**
+- **Auto-generated Secrets**: JWT_SECRET and SESSION_SECRET
+- **Service Dependencies**: Automatic URL linking between services
+- **Production Settings**: NODE_ENV and security configurations
+- **Rate Limiting**: Configurable limits for different endpoints
+
+#### **✅ Security Configuration**
+- **CORS Protection**: Proper origin restrictions
+- **Rate Limiting**: Multiple tiers (auth, API, ideas, polls)
+- **Audit Logging**: Comprehensive security event tracking
+- **RBAC Enforcement**: Role-based access control enabled
+
+#### **✅ Performance Optimization**
+- **Database Connections**: Limited to 10 concurrent connections
+- **Build Caching**: Efficient dependency management
+- **Auto-deployment**: Automatic updates on code changes
+
+### **Step 5: Post-Deployment Setup**
+
+#### **Verify Services**
+```bash
+# Check web app health
+curl https://your-web-app.onrender.com
+
+# Check API health
+curl https://your-api-app.onrender.com/health
+
+# Check API version
+curl https://your-api-app.onrender.com/version
+```
+
+#### **Database Seeding (Optional)**
+```bash
+# Connect to your Render database and run:
+# This can be done via Render's database console or CLI
+```
+
+#### **Environment Verification**
+1. **Web App**: Should load without errors
+2. **API Health**: Should return `{"ok": true}`
+3. **Database**: Should be accessible and migrated
+4. **Authentication**: Login should work with demo accounts
+
+### **Step 6: Custom Domain (Optional)**
+1. Go to your Render dashboard
+2. Select your web service
+3. Go to "Settings" → "Custom Domains"
+4. Add your domain and configure DNS
 
 ## 🐳 **Option 2: Docker Deployment**
 
@@ -355,6 +495,7 @@ DATABASE_URL=postgresql://user:password@host:5432/database
 
 # Security
 SESSION_SECRET=your-super-secret-key-here
+JWT_SECRET=your-jwt-secret-key-here
 
 # API Configuration
 PORT=3001
@@ -362,6 +503,7 @@ NODE_ENV=production
 
 # Web Configuration
 NEXT_PUBLIC_API_URL=https://your-api-domain.com
+WEB_ORIGIN=https://your-web-domain.com
 ```
 
 ### **Optional Environment Variables**
@@ -369,6 +511,10 @@ NEXT_PUBLIC_API_URL=https://your-api-domain.com
 # Rate Limiting
 RATE_LIMIT_WINDOW_MS=900000
 RATE_LIMIT_MAX_REQUESTS=100
+AUTH_RATE_LIMIT=5
+API_RATE_LIMIT=100
+IDEAS_RATE_LIMIT=30
+POLLS_RATE_LIMIT=30
 
 # Audit Logging
 AUDIT_LOG_RETENTION_DAYS=365
@@ -376,8 +522,17 @@ ENABLE_AUDIT_LOGGING=true
 
 # Feature Flags
 ENABLE_RBAC=true
-ENABLE_AUDIT_LOGGING=true
 ENABLE_RATE_LIMITING=true
+
+# Business Logic
+OWNER_MIN_PCT=35
+ALICE_CAP_PCT=25
+CONTRIBUTION_MIN_PCT=0.5
+CONTRIBUTION_MAX_PCT=5.0
+
+# Pagination
+DEFAULT_PAGE_SIZE=20
+MAX_PAGE_SIZE=100
 
 # Multi-tenant (future)
 DEFAULT_TENANT_ID=default
@@ -399,6 +554,10 @@ GET /ready
 # Detailed system status
 GET /admin/status
 # Response: {"status": "healthy", "services": {...}}
+
+# API version
+GET /version
+# Response: {"name": "smartstart-api", "version": "1.0.0"}
 ```
 
 ### **Logging Configuration**
@@ -488,248 +647,86 @@ const prisma = new PrismaClient({
 });
 ```
 
-## 🔄 **Deployment Automation**
-
-### **GitHub Actions Workflow**
-```yaml
-# .github/workflows/deploy.yml
-name: Deploy to Production
-
-on:
-  push:
-    branches: [main]
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-          
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 9
-          
-      - name: Install dependencies
-        run: pnpm install
-        
-      - name: Run tests
-        run: pnpm test
-        
-      - name: Build applications
-        run: pnpm build
-        
-      - name: Deploy to server
-        uses: appleboy/ssh-action@v0.1.5
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.KEY }}
-          script: |
-            cd /opt/smartstart
-            git pull origin main
-            pnpm install
-            pnpm prisma:generate
-            pnpm prisma:migrate deploy
-            pm2 restart all
-```
-
-### **Docker Hub Automation**
-```yaml
-# .github/workflows/docker.yml
-name: Build and Push Docker Images
-
-on:
-  push:
-    branches: [main]
-    tags: ['v*']
-
-jobs:
-  docker:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_TOKEN }}
-          
-      - name: Build and push API
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          file: ./apps/api/Dockerfile
-          push: true
-          tags: yourusername/smartstart-api:latest
-          
-      - name: Build and push Web
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          file: ./apps/web/Dockerfile
-          push: true
-          tags: yourusername/smartstart-web:latest
-```
-
-## 🧪 **Post-Deployment Testing**
-
-### **Health Check Script**
-```bash
-#!/bin/bash
-# health-check.sh
-
-API_URL="https://your-api-domain.com"
-WEB_URL="https://your-web-domain.com"
-
-echo "🔍 Checking SmartStart deployment..."
-
-# Check API health
-echo "📡 API Health Check..."
-API_RESPONSE=$(curl -s "$API_URL/health")
-if [[ $API_RESPONSE == *"ok"* ]]; then
-    echo "✅ API is healthy"
-else
-    echo "❌ API health check failed"
-    exit 1
-fi
-
-# Check database connectivity
-echo "🗄️ Database Connectivity..."
-DB_RESPONSE=$(curl -s "$API_URL/ready")
-if [[ $DB_RESPONSE == *"connected"* ]]; then
-    echo "✅ Database is connected"
-else
-    echo "❌ Database connection failed"
-    exit 1
-fi
-
-# Check web app
-echo "🌐 Web App Check..."
-WEB_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" "$WEB_URL")
-if [[ $WEB_RESPONSE == "200" ]]; then
-    echo "✅ Web app is responding"
-else
-    echo "❌ Web app check failed (HTTP $WEB_RESPONSE)"
-    exit 1
-fi
-
-echo "🎉 All systems are healthy!"
-```
-
-### **Load Testing**
-```bash
-# Install Artillery
-npm install -g artillery
-
-# Create load test configuration
-cat > load-test.yml << EOF
-config:
-  target: 'https://your-api-domain.com'
-  phases:
-    - duration: 60
-      arrivalRate: 10
-      name: "Warm up"
-    - duration: 300
-      arrivalRate: 50
-      name: "Sustained load"
-    - duration: 60
-      arrivalRate: 100
-      name: "Peak load"
-
-scenarios:
-  - name: "API endpoints"
-    weight: 100
-    requests:
-      - get:
-          url: "/health"
-      - get:
-          url: "/ready"
-      - post:
-          url: "/auth/login"
-          json:
-            email: "test@example.com"
-            password: "password123"
-EOF
-
-# Run load test
-artillery run load-test.yml
-```
-
-## 🆘 **Troubleshooting**
+## 🚨 **Troubleshooting**
 
 ### **Common Issues**
 
-#### **Database Connection Failed**
-```bash
-# Check database status
-sudo systemctl status postgresql
-
-# Check connection
-psql -h localhost -U postgres -d smartstart
-
-# Check logs
-sudo tail -f /var/log/postgresql/postgresql-*.log
-```
-
-#### **Application Won't Start**
-```bash
-# Check logs
-pm2 logs smartstart-api
-pm2 logs smartstart-web
-
-# Check process status
-pm2 status
-
-# Restart services
-pm2 restart all
-```
-
 #### **Build Failures**
 ```bash
-# Clear node modules
-rm -rf node_modules
-rm -rf apps/*/node_modules
+# Check Node.js version
+node --version  # Should be 18+
 
-# Clear cache
-pnpm store prune
+# Check pnpm version
+pnpm --version  # Should be 8+
 
-# Reinstall
+# Clear cache and reinstall
+rm -rf node_modules pnpm-lock.yaml
 pnpm install
+```
 
-# Rebuild
-pnpm build
+#### **Database Connection Issues**
+```bash
+# Test database connection
+psql $DATABASE_URL -c "SELECT 1"
+
+# Check Prisma client
+pnpm prisma generate
+pnpm prisma db push
+```
+
+#### **Environment Variable Issues**
+```bash
+# Verify environment variables
+echo $DATABASE_URL
+echo $NODE_ENV
+echo $PORT
+
+# Check Render environment variables in dashboard
+```
+
+#### **Health Check Failures**
+```bash
+# Test health endpoints
+curl https://your-api.onrender.com/health
+curl https://your-web.onrender.com/
+
+# Check service logs in Render dashboard
 ```
 
 ### **Performance Issues**
-```bash
-# Check database performance
-SELECT query, calls, total_time, mean_time
-FROM pg_stat_statements
-ORDER BY total_time DESC
-LIMIT 10;
 
-# Check application memory usage
-pm2 monit
+#### **Slow API Responses**
+- Check database query performance
+- Verify indexes are created
+- Monitor connection pool usage
+- Check rate limiting settings
 
-# Check system resources
-htop
-iostat -x 1
-```
+#### **Build Time Optimization**
+- Use build filters in render.yaml
+- Optimize Docker layers
+- Use caching strategies
+- Minimize dependencies
 
 ## 📚 **Additional Resources**
 
-- [RBAC System Guide](./RBAC_SYSTEM.md)
-- [API Documentation](./API_DOCS.md)
-- [Quick Start Guide](./QUICKSTART.md)
-- [Database Schema](../prisma/schema.prisma)
+### **Documentation**
+- [Render.com Documentation](https://render.com/docs)
+- [Next.js Deployment](https://nextjs.org/docs/deployment)
+- [Prisma Deployment](https://www.prisma.io/docs/guides/deployment)
+- [Express.js Best Practices](https://expressjs.com/en/advanced/best-practices-performance.html)
+
+### **Monitoring Tools**
+- [Render Logs](https://render.com/docs/logs)
+- [Database Monitoring](https://render.com/docs/databases)
+- [Health Checks](https://render.com/docs/health-checks)
+
+### **Security Resources**
+- [OWASP Security Guidelines](https://owasp.org/www-project-top-ten/)
+- [Helmet.js Documentation](https://helmetjs.github.io/)
+- [Rate Limiting Best Practices](https://express-rate-limit.mintlify.app/)
 
 ---
 
-**SmartStart Deployment Guide** - Get your platform running in production! 🚀
+**🎉 Your SmartStart platform is now ready for production deployment!**
+
+For support and questions, please refer to the troubleshooting section or create an issue in the repository.
