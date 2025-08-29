@@ -8,6 +8,19 @@ const router = express.Router()
 const userService = new UserManagementService()
 const settingsService = new SystemSettingsService()
 
+// ===== SETTINGS ROUTES =====
+
+// Get all settings (admin only)
+router.get('/settings', authenticateToken, checkRole(['ADMIN', 'SUPER_ADMIN']), async (req, res) => {
+  try {
+    const settings = await settingsService.getAllSettings()
+    res.json(settings)
+  } catch (error) {
+    console.error('Error fetching settings:', error)
+    res.status(500).json({ error: 'Failed to fetch settings' })
+  }
+})
+
 // ===== USER MANAGEMENT ROUTES =====
 
 // Get all users (admin only)

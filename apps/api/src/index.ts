@@ -50,24 +50,7 @@ app.get('/version', (_req, res) => {
 });
 
 
-// Admin settings endpoint
-app.get("/admin/settings", authenticateToken, requireRole(['ADMIN', 'OWNER']), async (req, res) => {
-  try {
-    const settings = {
-      systemRoles: ['USER', 'ADMIN', 'OWNER'],
-      projectRoles: ['MEMBER', 'ADMIN', 'OWNER'],
-      contributionLimits: {
-        min: 0.5,
-        max: 5.0
-      }
-    };
 
-    res.json(settings);
-  } catch (error) {
-    console.error("Get admin settings error:", error);
-    res.status(500).json({ error: "Failed to get admin settings" });
-  }
-});
 
 // Register modular API routes
 app.use('/auth', authRoutes);
