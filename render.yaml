@@ -4,8 +4,8 @@ services:
     env: node
     rootDir: apps/web
     plan: free
-    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm --filter @smartstart/web build
-    startCommand: pnpm --filter @smartstart/web start
+    buildCommand: npm install -g pnpm && pnpm install && pnpm build
+    startCommand: pnpm start
     envVars:
       - key: NODE_ENV
         value: production
@@ -21,7 +21,7 @@ services:
     env: node
     rootDir: apps/api
     plan: free
-    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm prisma:generate && pnpm build
+    buildCommand: npm install -g pnpm && pnpm install && pnpm prisma:generate && pnpm build
     startCommand: pnpm prisma migrate deploy && pnpm start
     envVars:
       - key: NODE_ENV
