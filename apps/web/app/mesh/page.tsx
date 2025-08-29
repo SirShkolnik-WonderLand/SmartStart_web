@@ -300,18 +300,10 @@ export default function MeshPage() {
       const token = tokenCookie.split('=')[1]
       
       // Add reaction via API
-      const response = await fetch(`/api/mesh/items/${itemId}/reactions`, {
+      await apiCallWithAuth(`/mesh/items/${itemId}/reactions`, token, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
         body: JSON.stringify({ emoji })
       })
-
-      if (!response.ok) {
-        throw new Error('Failed to add reaction')
-      }
 
       // Refresh mesh data to get updated reactions
       await fetchMeshData()

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import AppLayout from '../components/AppLayout'
+import { apiCall } from '../utils/api'
 import '../styles/login.css'
 
 export default function LoginPage() {
@@ -18,29 +19,21 @@ export default function LoginPage() {
     setError('')
 
     try {
-      const response = await fetch(`/api/proxy/auth/login`, {
+      const data = await apiCall('/auth/login', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
       })
-
-      if (response.ok) {
-        const data = await response.json()
-        
-        // Set cookies for authentication
-        document.cookie = `authToken=${data.token}; path=/; max-age=86400`
-        document.cookie = `user=${JSON.stringify(data.user)}; path=/; max-age=86400`
-        document.cookie = `userRole=${data.user.role}; path=/; max-age=86400`
-        
-        // Redirect based on role
-        if (data.user.role === 'ADMIN') {
-          router.push('/admin')
-        } else {
-          router.push('/portfolio')
-        }
+      
+      // Set cookies for authentication
+      document.cookie = `authToken=${data.token}; path=/; max-age=86400`
+      document.cookie = `user=${JSON.stringify(data.user)}; path=/; max-age=86400`
+      document.cookie = `userRole=${data.user.role}; path=/; max-age=86400`
+      
+      // Redirect based on role
+      if (data.user.role === 'ADMIN') {
+        router.push('/admin')
       } else {
-        const errorData = await response.json()
-        setError(errorData.error || 'Login failed')
+        router.push('/portfolio')
       }
     } catch (error) {
       setError('Network error. Please try again.')

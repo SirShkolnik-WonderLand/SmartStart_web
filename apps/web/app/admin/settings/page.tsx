@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import AppLayout from '../../components/AppLayout'
+import { apiCallWithAuth } from '../../utils/api'
 import '../../styles/admin.css'
 
 interface User {
@@ -148,17 +149,7 @@ export default function SystemSettingsPage() {
       const token = tokenCookie.split('=')[1]
       
       // Fetch settings from API
-      const response = await fetch('/api/admin/settings', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch settings')
-      }
-
-      const data = await response.json()
+      const data = await apiCallWithAuth('/admin/settings', token)
       
       // Transform API data to match our interface
       const transformedSettings: SystemSettings = {
@@ -237,18 +228,10 @@ export default function SystemSettingsPage() {
       const token = tokenCookie.split('=')[1]
       
       // Save settings via API
-      const response = await fetch('/api/admin/settings', {
+      await apiCallWithAuth('/admin/settings', token, {
         method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
         body: JSON.stringify(settings)
       })
-
-      if (!response.ok) {
-        throw new Error('Failed to save settings')
-      }
 
       setShowSaveSuccess(true)
       setTimeout(() => setShowSaveSuccess(false), 3000)

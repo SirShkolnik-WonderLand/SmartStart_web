@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import AppLayout from '../../components/AppLayout'
+import { apiCallWithAuth } from '../../utils/api'
 import '../../styles/admin.css'
 
 interface User {
@@ -96,17 +97,7 @@ export default function UserManagementPage() {
       const token = tokenCookie.split('=')[1]
       
       // Fetch users from API
-      const response = await fetch('/api/admin/users', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch users')
-      }
-
-      const data = await response.json()
+      const data = await apiCallWithAuth('/admin/users', token)
       
       // Transform API data to match our interface
       const transformedUsers: CommunityUser[] = (data.users || []).map((apiUser: any) => ({

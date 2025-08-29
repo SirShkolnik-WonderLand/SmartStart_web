@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { apiCallWithAuth } from '../utils/api'
 
 interface User {
   id: string
@@ -52,16 +53,8 @@ export default function ProjectsPage() {
 
   const fetchUserProjects = async (userId: string, token: string) => {
     try {
-      const response = await fetch(`/api/auth/rbac-insights/${userId}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
-      
-      if (response.ok) {
-        const insights = await response.json()
-        setProjects(insights.projectAccess || [])
-      }
+      const insights = await apiCallWithAuth(`/auth/rbac-insights/${userId}`, token)
+      setProjects(insights.projectAccess || [])
     } catch (error) {
       console.error('Error fetching user projects:', error)
     } finally {
