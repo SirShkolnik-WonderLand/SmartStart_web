@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import AppLayout from '../components/AppLayout'
-import { apiCall } from '../utils/api'
+import { useAuth } from '../components/AuthProvider'
 import '../styles/login.css'
 
 export default function LoginPage() {
@@ -12,6 +12,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const router = useRouter()
+  const { login } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -19,24 +20,21 @@ export default function LoginPage() {
     setError('')
 
     try {
-      const data = await apiCall('/auth/login', {
-        method: 'POST',
-        body: JSON.stringify({ email, password })
-      })
+      await login(email, password)
       
-      // Set cookies for authentication
-      document.cookie = `authToken=${data.token}; path=/; max-age=86400`
-      document.cookie = `user=${JSON.stringify(data.user)}; path=/; max-age=86400`
-      document.cookie = `userRole=${data.user.role}; path=/; max-age=86400`
-      
-      // Redirect based on role
-      if (data.user.role === 'ADMIN') {
+      // Redirect based on user role
+      const userRole = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('userRole='))
+        ?.split('=')[1]
+
+      if (userRole === 'ADMIN') {
         router.push('/admin')
       } else {
         router.push('/portfolio')
       }
     } catch (error) {
-      setError('Network error. Please try again.')
+      setError('Login failed. Please check your credentials and try again.')
     } finally {
       setLoading(false)
     }

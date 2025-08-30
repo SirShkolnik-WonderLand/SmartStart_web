@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { usePortfolio, useAuth } from '../utils/smartState';
+import { usePortfolio } from '../utils/smartState'
+import { useAuth } from '../components/AuthProvider';
 import AppLayout from '../components/AppLayout';
 import '../styles/portfolio.css';
 
@@ -65,7 +66,7 @@ interface PortfolioInsights {
 }
 
 export default function PortfolioPage() {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, isInitialized } = useAuth();
   const { projects, insights, opportunities, recentActivity, badges, skills, fetchPortfolio, isLoading, error } = usePortfolio();
   const [activeTab, setActiveTab] = useState<'overview' | 'projects' | 'insights' | 'activity' | 'contracts' | 'vesting'>('overview');
   const [selectedProject, setSelectedProject] = useState<ProjectData | null>(null);
@@ -79,11 +80,11 @@ export default function PortfolioPage() {
   const [selectedContract, setSelectedContract] = useState<ContractOffer | null>(null);
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && isInitialized) {
       fetchPortfolio();
       fetchSmartContractData();
     }
-  }, [isAuthenticated, fetchPortfolio]);
+  }, [isAuthenticated, isInitialized, fetchPortfolio]);
 
   const fetchSmartContractData = async () => {
     try {
@@ -170,6 +171,17 @@ export default function PortfolioPage() {
       console.error(`Error ${action}ing contract:`, error);
     }
   };
+
+  if (!isInitialized) {
+    return (
+      <div className="portfolio-page">
+        <div className="loading-container">
+          <div className="loading-spinner"></div>
+          <p>Initializing...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!isAuthenticated) {
     return (
