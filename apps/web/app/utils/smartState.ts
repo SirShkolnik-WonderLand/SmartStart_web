@@ -181,7 +181,7 @@ interface SmartState {
   // Community & Collaboration
   community: {
     health: CommunityHealth | null;
-    trendingTopics: TrendingTopics | null;
+    trendingTopics: TrendingTopics;
     activeMembers: SmartUser[];
   };
 
