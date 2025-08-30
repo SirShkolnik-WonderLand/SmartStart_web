@@ -1,97 +1,36 @@
 import express from 'express';
 import { prisma } from '../db.js';
 import { authenticateToken, requireRole } from '../middleware/auth.js';
+import { ProjectSubmissionService } from '../services/projectSubmission.js';
 
 const router = express.Router();
 
-// Create new project with equity validation
-router.post('/', authenticateToken, requireRole(['ADMIN', 'OWNER']), async (req, res) => {
+// Submit new project with comprehensive validation and 30-day pipeline
+router.post('/submit', authenticateToken, requireRole(['ADMIN', 'OWNER']), async (req, res) => {
   try {
-    const { 
-      name, 
-      summary,
-      category = 'SAAS',
-      ownerEquityProposal = 40,
-      aliceEquityProposal = 20,
-      contributorEquityPool = 25,
-      reserveEquity = 15,
-      sprintGoals = [],
-      marketingStrategy = '',
-      launchChannels = []
-    } = req.body;
+    const submissionData = req.body;
     
-    if (!name) return res.status(400).json({ error: 'Project name is required' });
-
-    // Validate equity proposal (business rules from hub_rules.txt)
-    if (ownerEquityProposal < 35) {
-      return res.status(400).json({ 
-        error: 'Owner must retain minimum 35% equity according to AliceSolutions Ventures framework' 
-      });
+    if (!submissionData.title) {
+      return res.status(400).json({ error: 'Project title is required' });
     }
 
-    if (aliceEquityProposal > 25) {
-      return res.status(400).json({ 
-        error: 'AliceSolutions Ventures cannot exceed 25% equity stake' 
-      });
-    }
-
-    if (ownerEquityProposal + aliceEquityProposal + contributorEquityPool + reserveEquity !== 100) {
-      return res.status(400).json({ 
-        error: 'Equity percentages must total 100%' 
-      });
-    }
-
-    // Create project with enhanced business logic
-    const project = await prisma.project.create({
-      data: {
-        name,
-        summary: `${summary} | Category: ${category} | Marketing: ${marketingStrategy} | Channels: ${launchChannels.join(', ')}`,
-        ownerId: req.user!.id,
-        capEntries: {
-          createMany: {
-            data: [
-              { holderType: 'OWNER', holderId: req.user!.id, pct: ownerEquityProposal, source: 'Project Owner Proposal' },
-              { holderType: 'ALICE', pct: aliceEquityProposal, source: 'AliceSolutions Ventures' },
-              { holderType: 'RESERVE', pct: reserveEquity, source: 'Future Investors Reserve' },
-            ],
-          },
-        },
-        members: { create: { userId: req.user!.id, role: 'OWNER' } },
-      },
-      include: { capEntries: true, owner: true, members: true },
-    });
-
-    // Create 30-day sprint plan
-    const sprintDuration = 7; // 7 days per sprint
-    const totalSprints = Math.min(sprintGoals.length || 4, 4); // Max 4 sprints
-
-    for (let i = 0; i < totalSprints; i++) {
-      const sprintStart = new Date(Date.now() + (i * sprintDuration * 24 * 60 * 60 * 1000));
-      const sprintEnd = new Date(sprintStart.getTime() + (sprintDuration * 24 * 60 * 60 * 1000));
-      
-      await prisma.sprint.create({
-        data: {
-          projectId: project.id,
-          start: sprintStart,
-          end: sprintEnd,
-          goals: sprintGoals[i] || `Sprint ${i + 1}: ${getSprintPhase(i + 1)} phase`,
-          exitCriteria: `Complete ${getSprintPhase(i + 1)} phase objectives`
-        }
-      });
-    }
+    // Use ProjectSubmissionService to handle the complete submission process
+    const result = await ProjectSubmissionService.submitProject(req.user!.id, submissionData);
 
     res.status(201).json({
-      project,
-      message: 'Project created with 30-day launch timeline!',
-      timeline: {
-        totalSprints,
-        sprintDuration,
-        targetLaunchDate: new Date(Date.now() + (totalSprints * sprintDuration * 24 * 60 * 60 * 1000))
-      }
+      message: 'Project submitted successfully! It will be reviewed by the team.',
+      project: result.project,
+      submission: result.submission,
+      sprintPlan: result.sprintPlan,
+      timeline: result.timeline,
+      equityValidation: result.equityValidation
     });
-  } catch (error) {
-    console.error('Create project error:', error);
-    res.status(500).json({ error: 'Failed to create project' });
+  } catch (error: any) {
+    console.error('Project submission error:', error);
+    res.status(500).json({ 
+      error: 'Failed to submit project',
+      details: error.message 
+    });
   }
 });
 
@@ -244,6 +183,101 @@ router.get('/portfolio', authenticateToken, async (req, res) => {
   } catch (error) {
     console.error('Get portfolio error:', error);
     res.status(500).json({ error: 'Failed to get portfolio' });
+  }
+});
+
+// Get all project submissions (admin only)
+router.get('/submissions', authenticateToken, requireRole(['ADMIN', 'SUPER_ADMIN']), async (req, res) => {
+  try {
+    const submissions = await prisma.projectSub.findMany({
+      include: {
+        project: {
+          include: {
+            owner: true,
+            capEntries: true
+          }
+        }
+      },
+      orderBy: { submittedAt: 'desc' }
+    });
+
+    res.json(submissions);
+  } catch (error: any) {
+    console.error('Get submissions error:', error);
+    res.status(500).json({ error: 'Failed to get submissions' });
+  }
+});
+
+// Review a project submission (admin only)
+router.post('/submissions/:id/review', authenticateToken, requireRole(['ADMIN', 'SUPER_ADMIN']), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status, reviewNotes } = req.body;
+
+    if (!['APPROVED', 'REJECTED', 'REVISION_REQUESTED'].includes(status)) {
+      return res.status(400).json({ error: 'Invalid status. Must be APPROVED, REJECTED, or REVISION_REQUESTED' });
+    }
+
+    const submission = await ProjectSubmissionService.reviewSubmission(
+      id,
+      req.user!.id,
+      status,
+      reviewNotes
+    );
+
+    res.json({
+      message: `Project submission ${status.toLowerCase()} successfully`,
+      submission
+    });
+  } catch (error: any) {
+    console.error('Review submission error:', error);
+    res.status(500).json({ error: 'Failed to review submission' });
+  }
+});
+
+// Get submission analytics (admin only)
+router.get('/analytics/submissions', authenticateToken, requireRole(['ADMIN', 'SUPER_ADMIN']), async (req, res) => {
+  try {
+    const analytics = await ProjectSubmissionService.getSubmissionAnalytics();
+    res.json(analytics);
+  } catch (error: any) {
+    console.error('Get submission analytics error:', error);
+    res.status(500).json({ error: 'Failed to get submission analytics' });
+  }
+});
+
+// Get marketing recommendations for a project category
+router.get('/marketing/:category', authenticateToken, async (req, res) => {
+  try {
+    const { category } = req.params;
+    const recommendations = ProjectSubmissionService.getMarketingRecommendations(category);
+    res.json(recommendations);
+  } catch (error: any) {
+    console.error('Get marketing recommendations error:', error);
+    res.status(500).json({ error: 'Failed to get marketing recommendations' });
+  }
+});
+
+// Calculate contribution equity
+router.post('/calculate-equity', authenticateToken, async (req, res) => {
+  try {
+    const { effort, impact, complexity = 3, skillRarity = 3 } = req.body;
+    
+    if (!effort || !impact) {
+      return res.status(400).json({ error: 'Effort and impact are required' });
+    }
+
+    const equity = ProjectSubmissionService.calculateContributionEquity(
+      effort,
+      impact,
+      complexity,
+      skillRarity
+    );
+
+    res.json({ equity, calculation: { effort, impact, complexity, skillRarity } });
+  } catch (error: any) {
+    console.error('Calculate equity error:', error);
+    res.status(500).json({ error: 'Failed to calculate equity' });
   }
 });
 

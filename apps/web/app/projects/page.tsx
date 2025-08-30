@@ -31,7 +31,7 @@ interface Project {
   }
 }
 
-interface ProjectSubmission {
+interface ProjectSub {
   id: string
   title: string
   description: string
@@ -54,7 +54,7 @@ interface ProjectSubmission {
 export default function ProjectsPage() {
   const [user, setUser] = useState<User | null>(null)
   const [projects, setProjects] = useState<Project[]>([])
-  const [submissions, setSubmissions] = useState<ProjectSubmission[]>([])
+  const [submissions, setSubmissions] = useState<ProjectSub[]>([])
   const [loading, setLoading] = useState(true)
   const [showSubmissionForm, setShowSubmissionForm] = useState(false)
   const [activeTab, setActiveTab] = useState<'projects' | 'submissions' | 'create'>('projects')

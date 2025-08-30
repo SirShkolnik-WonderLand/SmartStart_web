@@ -42,8 +42,6 @@ model User {
   
   // relations
   projectsOwned Project[] @relation("ProjectOwner")
-  projectSubmissions ProjectSubmission[] @relation("ProjectSubmissions")
-  projectReviews ProjectSubmission[] @relation("ProjectReviews")
   contributions Contribution[]
   messages      Message[] @relation("UserMessages")
   messageReactions MessageReaction[] @relation("UserMessageReactions")
@@ -139,6 +137,9 @@ model Project {
   // Smart project insights
   insights      ProjectInsight[]
   
+  // Project submission relation
+  submission    ProjectSub?
+  
   @@index([tenantId])
   @@index([totalValue])
   @@index([completionRate])
@@ -164,6 +165,91 @@ model ProjectInsight {
   @@index([projectId])
   @@index([type])
   @@index([priority])
+}
+
+// Project Submission Model for 30-day Launch Pipeline
+model ProjectSub {
+  id          String   @id @default(cuid())
+  projectId   String   @unique // One-to-one with Project
+  project     Project  @relation(fields: [projectId], references: [id])
+  
+  // Basic project information
+  title       String
+  description String
+  category    ProjectCategory
+  marketSize  String?
+  targetAudience String?
+  competitiveAdvantage String?
+  revenueModel String?
+  estimatedFunding Float?
+  timeline    String?
+  
+  // Equity proposal (validated against business rules)
+  ownerEquityProposal Float // Must be >= 35%
+  aliceEquityProposal Float // Must be <= 25%
+  contributorEquityPool Float
+  reserveEquity Float
+  
+  // Business validation
+  marketValidation String?
+  technicalFeasibility String?
+  financialProjections String?
+  
+  // 30-day sprint planning
+  sprintGoals String[] // Array of sprint objectives
+  keyMilestones String[] // Key milestones for each sprint
+  successMetrics String[] // Success criteria
+  requiredSkills String[] // Skills needed for the project
+  
+  // Team and commitment
+  teamSize    Int @default(3)
+  timeCommitment String @default("10-15 hours/week")
+  
+  // Marketing and launch strategy
+  marketingStrategy String?
+  launchChannels String[] // Array of launch channels
+  pricingStrategy String?
+  
+  // Submission workflow
+  status      ProjectSubmissionStatus @default(SUBMITTED)
+  submittedAt DateTime @default(now())
+  reviewedAt  DateTime?
+  reviewedBy  String? // User ID of reviewer
+  reviewNotes String?
+  
+  // Legal and compliance
+  termsAccepted Boolean @default(false)
+  privacyAccepted Boolean @default(false)
+  contractVersion String @default("v1.0")
+  
+  @@index([projectId])
+  @@index([status])
+  @@index([submittedAt])
+  @@index([category])
+}
+
+// Project Submission Status Enum
+enum ProjectSubmissionStatus {
+  SUBMITTED
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+  REVISION_REQUESTED
+}
+
+// Project Category Enum
+enum ProjectCategory {
+  SAAS
+  MOBILE_APP
+  WEB_APP
+  ECOMMERCE
+  MARKETPLACE
+  FINANCIAL_TECH
+  HEALTH_TECH
+  ED_TECH
+  AI_ML
+  BLOCKCHAIN
+  OTHER
 }
 
 enum ProjectInsightType {

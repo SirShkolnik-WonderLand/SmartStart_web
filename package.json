@@ -2,7 +2,9 @@
     "name": "smartstart",
     "private": true,
     "packageManager": "pnpm@9.0.0",
-    "workspaces": ["apps/*"],
+    "workspaces": [
+        "apps/*"
+    ],
     "scripts": {
         "dev": "concurrently -k -n API,WEB -c magenta,cyan \"pnpm --filter @smartstart/api dev\" \"pnpm --filter @smartstart/web dev\"",
         "build": "pnpm -r build",
@@ -12,13 +14,13 @@
         "prisma:seed": "tsx prisma/seed.ts"
     },
     "devDependencies": {
+        "@types/bcryptjs": "^2.4.6",
         "concurrently": "^9.0.0",
         "prisma": "^5.18.0",
-        "@types/bcryptjs": "^2.4.6",
         "tsx": "^4.16.0"
     },
     "dependencies": {
-        "@prisma/client": "^5.18.0",
+        "@prisma/client": "^5.22.0",
         "bcryptjs": "^2.4.3"
     },
     "prisma": {
