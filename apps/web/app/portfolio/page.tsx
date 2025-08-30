@@ -635,9 +635,9 @@ function InsightsTab({ insights, opportunities, portfolioInsights }: {
             </div>
             <p className="insight-description">{insight.description}</p>
             <div className="insight-footer">
-              <span className="confidence">
-                Confidence: {(insight.confidence * 100).toFixed(0)}%
-              </span>
+                              <span className="confidence">
+                  Confidence: {insight.confidence && !isNaN(insight.confidence) ? (insight.confidence * 100).toFixed(0) : '0'}%
+                </span>
               <button className="insight-action">Take Action</button>
             </div>
           </div>
@@ -674,28 +674,28 @@ function InsightsTab({ insights, opportunities, portfolioInsights }: {
                 <div className="insight-icon">💰</div>
                 <h4>Total Equity Owned</h4>
               </div>
-              <p>{portfolioInsights.totalEquityOwned.toFixed(2)}%</p>
+              <p>{isNaN(portfolioInsights.totalEquityOwned) ? '0.00' : portfolioInsights.totalEquityOwned.toFixed(2)}%</p>
             </div>
             <div className="insight-card">
               <div className="insight-header">
                 <div className="insight-icon">📈</div>
                 <h4>Equity Growth Rate</h4>
               </div>
-              <p>{portfolioInsights.equityGrowthRate ? `${(portfolioInsights.equityGrowthRate * 100).toFixed(1)}%` : 'N/A'}</p>
+              <p>{portfolioInsights.equityGrowthRate && !isNaN(portfolioInsights.equityGrowthRate) ? `${(portfolioInsights.equityGrowthRate * 100).toFixed(1)}%` : 'N/A'}</p>
             </div>
             <div className="insight-card">
               <div className="insight-header">
                 <div className="insight-icon">⚖️</div>
                 <h4>Risk Score</h4>
               </div>
-              <p>{portfolioInsights.riskScore ? `${(portfolioInsights.riskScore * 100).toFixed(1)}%` : 'N/A'}</p>
+              <p>{portfolioInsights.riskScore && !isNaN(portfolioInsights.riskScore) ? `${(portfolioInsights.riskScore * 100).toFixed(1)}%` : 'N/A'}</p>
             </div>
             <div className="insight-card">
               <div className="insight-header">
                 <div className="insight-icon">💡</div>
                 <h4>Opportunity Score</h4>
               </div>
-              <p>{portfolioInsights.opportunityScore ? `${portfolioInsights.opportunityScore.toFixed(1)}%` : 'N/A'}</p>
+              <p>{portfolioInsights.opportunityScore && !isNaN(portfolioInsights.opportunityScore) ? `${portfolioInsights.opportunityScore.toFixed(1)}%` : 'N/A'}</p>
             </div>
           </div>
         </div>
