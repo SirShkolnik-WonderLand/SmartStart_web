@@ -400,7 +400,11 @@ export const useSmartStore = create<SmartState>()(
                   overall: 0
                 }
               },
-              trendingTopics: [],
+              trendingTopics: {
+                ideas: [],
+                polls: [],
+                meshItems: []
+              },
               activeMembers: []
             }
           });
