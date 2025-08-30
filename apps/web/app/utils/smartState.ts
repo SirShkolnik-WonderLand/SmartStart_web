@@ -225,7 +225,11 @@ export const useSmartStore = create<SmartState>()(
 
       community: {
         health: null,
-        trendingTopics: null,
+        trendingTopics: {
+          ideas: [],
+          polls: [],
+          meshItems: []
+        },
         activeMembers: []
       },
 
@@ -290,7 +294,11 @@ export const useSmartStore = create<SmartState>()(
           },
           community: {
             health: null,
-            trendingTopics: null,
+            trendingTopics: {
+              ideas: [],
+              polls: [],
+              meshItems: []
+            },
             activeMembers: []
           },
           notifications: [],
