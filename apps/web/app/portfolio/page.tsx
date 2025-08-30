@@ -219,10 +219,10 @@ export default function PortfolioPage() {
     );
   }
 
-  const totalPortfolioValue = projects.reduce((sum: number, project: ProjectData) => sum + project.totalValue, 0);
-  const totalOwnership = portfolioInsights?.totalEquityOwned || projects.reduce((sum: number, project: ProjectData) => sum + project.userOwnership, 0);
+  const totalPortfolioValue = projects.reduce((sum: number, project: ProjectData) => sum + (project.totalValue || 0), 0);
+  const totalOwnership = portfolioInsights?.totalEquityOwned || projects.reduce((sum: number, project: ProjectData) => sum + (project.userOwnership || 0), 0);
   const avgCompletionRate = projects.length > 0 
-    ? projects.reduce((sum: number, project: ProjectData) => sum + project.completionRate, 0) / projects.length
+    ? projects.reduce((sum: number, project: ProjectData) => sum + (project.completionRate || 0), 0) / projects.length
     : 0;
 
   return (
@@ -268,13 +268,13 @@ export default function PortfolioPage() {
                   <span className="wallet-icon">💼</span>
                 </div>
                 <div className="wallet-balance">
-                  <span className="balance-amount">${totalPortfolioValue.toLocaleString()}</span>
+                  <span className="balance-amount">${isNaN(totalPortfolioValue) ? '0' : totalPortfolioValue.toLocaleString()}</span>
                   <span className="balance-label">Total Value</span>
                 </div>
                 <div className="wallet-metrics">
                   <div className="metric">
                     <span className="metric-label">Equity</span>
-                    <span className="metric-value">{totalOwnership.toFixed(1)}%</span>
+                    <span className="metric-value">{isNaN(totalOwnership) ? '0.0' : totalOwnership.toFixed(1)}%</span>
                   </div>
                   <div className="metric">
                     <span className="metric-label">Projects</span>
@@ -282,7 +282,7 @@ export default function PortfolioPage() {
                   </div>
                   <div className="metric">
                     <span className="metric-label">Completion</span>
-                    <span className="metric-value">{avgCompletionRate.toFixed(1)}%</span>
+                    <span className="metric-value">{isNaN(avgCompletionRate) ? '0.0' : avgCompletionRate.toFixed(1)}%</span>
                   </div>
                 </div>
                 <div className="wallet-action">

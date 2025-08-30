@@ -80,12 +80,52 @@ router.get('/portfolio', authenticateToken, async (req, res) => {
   try {
     const projects = await prisma.project.findMany({
       where: { members: { some: { userId: req.user!.id } } },
-      include: { capEntries: true, members: true },
+      include: { 
+        capEntries: true, 
+        members: true,
+        tasks: {
+          include: {
+            assignee: true,
+            status: true
+          }
+        }
+      },
     });
+    
     const portfolio = projects.map((project: any) => {
       const userEntry = project.capEntries.find((e: any) => e.holderType === 'USER' && e.holderId === req.user!.id);
-      return { id: project.id, name: project.name, ownership: userEntry ? userEntry.pct : 0, role: project.members.find((m: any) => m.userId === req.user!.id)?.role };
+      const userMember = project.members.find((m: any) => m.userId === req.user!.id);
+      
+      // Calculate completion rate from tasks
+      const totalTasks = project.tasks?.length || 0;
+      const completedTasks = project.tasks?.filter((t: any) => t.status === 'COMPLETED')?.length || 0;
+      const completionRate = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
+      
+      // Calculate total value (placeholder - could be enhanced with real valuation)
+      const totalValue = project.capEntries?.reduce((sum: number, entry: any) => {
+        if (entry.holderType === 'USER' && entry.holderId === req.user!.id) {
+          return sum + (entry.pct * 1000); // Placeholder: 1% = $1000
+        }
+        return sum;
+      }, 0) || 0;
+      
+      // Calculate active members
+      const activeMembers = project.members?.filter((m: any) => m.status === 'ACTIVE')?.length || 0;
+      
+      return {
+        id: project.id,
+        name: project.name,
+        summary: project.summary || 'No description available',
+        ownerId: project.ownerId,
+        totalValue: totalValue,
+        activeMembers: activeMembers,
+        completionRate: completionRate,
+        lastActivity: project.updatedAt,
+        userRole: userMember?.role || 'MEMBER',
+        userOwnership: userEntry ? userEntry.pct : 0
+      };
     });
+    
     res.json({ projects: portfolio });
   } catch (error) {
     console.error('Get portfolio error:', error);
