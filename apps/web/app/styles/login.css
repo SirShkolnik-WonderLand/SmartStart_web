@@ -1,14 +1,12 @@
-/* SmartStart - Login Page CSS */
-
+/* SmartStart - Modern Professional Login Page */
 
 /* Login Container */
-
 .login-container {
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, var(--bg-primary), var(--bg-secondary));
+    background: var(--bg-primary);
     padding: var(--spacing-lg);
     position: relative;
     overflow: hidden;
@@ -21,33 +19,26 @@
     left: -50%;
     width: 200%;
     height: 200%;
-    background: radial-gradient(circle, rgba(0, 212, 255, 0.1) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.03) 0%, transparent 70%);
     animation: rotate 30s linear infinite;
 }
 
 @keyframes rotate {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
-
 /* Login Card */
-
 .login-card {
     background: var(--bg-secondary);
     border: 1px solid var(--border-primary);
     border-radius: var(--radius-xl);
-    padding: var(--spacing-2xl);
+    padding: var(--spacing-3xl);
     width: 100%;
-    max-width: 450px;
+    max-width: 480px;
     position: relative;
     z-index: 1;
     box-shadow: var(--shadow-lg);
-    backdrop-filter: blur(20px);
 }
 
 .login-card::before {
@@ -56,14 +47,12 @@
     top: 0;
     left: 0;
     right: 0;
-    height: 3px;
+    height: 4px;
     background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
     border-radius: var(--radius-xl) var(--radius-xl) 0 0;
 }
 
-
 /* Login Header */
-
 .login-header {
     text-align: center;
     margin-bottom: var(--spacing-2xl);
@@ -73,19 +62,18 @@
     width: 80px;
     height: 80px;
     background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-xl);
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 0 auto var(--spacing-lg);
-    border: 3px solid var(--border-accent);
-    box-shadow: var(--shadow-glow);
+    box-shadow: var(--shadow-md);
 }
 
 .login-logo .logo-text {
     font-size: 24px;
     font-weight: 800;
-    color: var(--bg-primary);
+    color: white;
     text-transform: uppercase;
     letter-spacing: 1px;
 }
@@ -105,9 +93,7 @@
     line-height: 1.5;
 }
 
-
 /* Login Form */
-
 .login-form {
     margin-bottom: var(--spacing-xl);
 }
@@ -127,8 +113,8 @@
 .form-input {
     width: 100%;
     padding: var(--spacing-md);
-    background: var(--bg-tertiary);
-    border: 1px solid var(--border-secondary);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-primary);
     border-radius: var(--radius-md);
     color: var(--text-primary);
     font-family: var(--font-sans);
@@ -139,17 +125,15 @@
 .form-input:focus {
     outline: none;
     border-color: var(--accent-primary);
-    box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
-    background: var(--bg-elevated);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    background: var(--bg-secondary);
 }
 
 .form-input::placeholder {
     color: var(--text-muted);
 }
 
-
 /* Password Input */
-
 .password-input {
     position: relative;
 }
@@ -173,9 +157,7 @@
     background: var(--bg-hover);
 }
 
-
 /* Remember Me */
-
 .remember-me {
     display: flex;
     align-items: center;
@@ -197,16 +179,14 @@
     user-select: none;
 }
 
-
 /* Login Button */
-
 .login-btn {
     width: 100%;
     padding: var(--spacing-md);
-    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    background: var(--accent-primary);
     border: none;
     border-radius: var(--radius-md);
-    color: var(--bg-primary);
+    color: white;
     font-family: var(--font-sans);
     font-size: 16px;
     font-weight: 600;
@@ -216,24 +196,10 @@
     overflow: hidden;
 }
 
-.login-btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: left var(--transition-slow);
-}
-
-.login-btn:hover::before {
-    left: 100%;
-}
-
-.login-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-glow);
+.login-btn:hover:not(:disabled) {
+    background: var(--accent-secondary);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
 }
 
 .login-btn:disabled {
@@ -242,13 +208,11 @@
     transform: none;
 }
 
-
 /* Login Footer */
-
 .login-footer {
     text-align: center;
     padding-top: var(--spacing-lg);
-    border-top: 1px solid var(--border-secondary);
+    border-top: 1px solid var(--border-muted);
 }
 
 .forgot-password {
@@ -264,12 +228,10 @@
     text-decoration: underline;
 }
 
-
 /* Error Messages */
-
 .error-message {
-    background: rgba(255, 68, 68, 0.1);
-    border: 1px solid rgba(255, 68, 68, 0.3);
+    background: rgba(239, 68, 68, 0.05);
+    border: 1px solid rgba(239, 68, 68, 0.2);
     color: var(--accent-danger);
     padding: var(--spacing-md);
     border-radius: var(--radius-md);
@@ -278,12 +240,10 @@
     text-align: center;
 }
 
-
 /* Success Messages */
-
 .success-message {
-    background: rgba(0, 255, 136, 0.1);
-    border: 1px solid rgba(0, 255, 136, 0.3);
+    background: rgba(16, 185, 129, 0.05);
+    border: 1px solid rgba(16, 185, 129, 0.2);
     color: var(--accent-success);
     padding: var(--spacing-md);
     border-radius: var(--radius-md);
@@ -292,14 +252,12 @@
     text-align: center;
 }
 
-
 /* Demo Account Box */
-
 .demo-account {
     margin-top: var(--spacing-lg);
     padding: var(--spacing-md);
-    background: rgba(0, 212, 255, 0.1);
-    border: 1px solid var(--accent-primary);
+    background: rgba(59, 130, 246, 0.05);
+    border: 1px solid var(--border-accent);
     border-radius: var(--radius-md);
     font-size: 14px;
     color: var(--accent-primary);
@@ -307,9 +265,7 @@
     line-height: 1.6;
 }
 
-
 /* Loading State */
-
 .loading-spinner {
     display: inline-block;
     width: 20px;
@@ -322,23 +278,17 @@
 }
 
 @keyframes spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
-
 /* Responsive Design */
-
 @media (max-width: 768px) {
     .login-container {
         padding: var(--spacing-md);
     }
     .login-card {
-        padding: var(--spacing-xl);
+        padding: var(--spacing-2xl);
         max-width: 400px;
     }
     .login-title {
@@ -351,7 +301,7 @@
 
 @media (max-width: 480px) {
     .login-card {
-        padding: var(--spacing-lg);
+        padding: var(--spacing-xl);
         max-width: 100%;
     }
     .login-logo {
