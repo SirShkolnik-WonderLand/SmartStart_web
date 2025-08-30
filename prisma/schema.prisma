@@ -38,13 +38,14 @@ model User {
   projectsOwned Project[] @relation("ProjectOwner")
   contributions Contribution[]
   messages      Message[] @relation("UserMessages")
+  messageReactions MessageReaction[] @relation("UserMessageReactions")
   kudos         Kudos[]   @relation("UserKudos")
   assignedTasks Task[]    @relation("TaskAssignee")
   ideas         Idea[]    @relation("UserIdeas")
   pollVotes     PollVote[] @relation("UserPollVotes")
   kudosGiven    Kudos[]   @relation("UserKudosGiven")
   meshItems     MeshItem[] @relation("MeshItemAuthor")
-  meshReactions MeshReaction[] @relation("MeshReactionUser")
+  meshReactions MeshReaction[] @relation("UserMeshReactions")
   userBadges    UserBadge[]
   userSkills    UserSkill[]
   
@@ -368,7 +369,7 @@ model MessageReaction {
   messageId String
   message   Message  @relation(fields: [messageId], references: [id])
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation("UserMessageReactions", fields: [userId], references: [id])
   emoji     String
   createdAt DateTime @default(now())
   
@@ -570,7 +571,7 @@ model MeshReaction {
   meshItemId String
   meshItem  MeshItem @relation(fields: [meshItemId], references: [id])
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation("UserMeshReactions", fields: [userId], references: [id])
   emoji     String
   createdAt DateTime @default(now())
   
