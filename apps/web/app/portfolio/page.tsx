@@ -557,18 +557,18 @@ function ProjectsTab({ projects, selectedProject, setSelectedProject }: {
                 </span>
               </div>
               <div className="project-value">
-                ${project.totalValue.toLocaleString()}
+                ${isNaN(project.totalValue) ? '0' : project.totalValue.toLocaleString()}
               </div>
             </div>
 
             <div className="project-metrics">
               <div className="metric-row">
                 <span className="metric-label">Ownership</span>
-                <span className="metric-value">{project.userOwnership.toFixed(1)}%</span>
+                <span className="metric-value">{isNaN(project.userOwnership) ? '0.0' : project.userOwnership.toFixed(1)}%</span>
               </div>
               <div className="metric-row">
                 <span className="metric-label">Completion</span>
-                <span className="metric-value">{project.completionRate.toFixed(1)}%</span>
+                <span className="metric-value">{isNaN(project.completionRate) ? '0.0' : project.completionRate.toFixed(1)}%</span>
               </div>
               <div className="metric-row">
                 <span className="metric-label">Members</span>
@@ -580,10 +580,10 @@ function ProjectsTab({ projects, selectedProject, setSelectedProject }: {
               <div className="progress-bar">
                 <div 
                   className="progress-fill" 
-                  style={{ width: `${project.completionRate}%` }}
+                  style={{ width: `${isNaN(project.completionRate) ? 0 : project.completionRate}%` }}
                 ></div>
               </div>
-              <span className="progress-text">{project.completionRate.toFixed(1)}% Complete</span>
+              <span className="progress-text">{isNaN(project.completionRate) ? '0.0' : project.completionRate.toFixed(1)}% Complete</span>
             </div>
 
             <div className="project-actions">
