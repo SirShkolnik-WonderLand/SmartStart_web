@@ -8,8 +8,11 @@ const router = express.Router();
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 5,
-  message: 'Too many authentication attempts, please try again later'
+  max: 20, // Increased for testing
+  message: 'Too many authentication attempts, please try again later',
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => req.ip || 'unknown'
 });
 
 router.post('/signup', authLimiter, async (req, res) => {
@@ -40,13 +43,19 @@ router.post('/signup', authLimiter, async (req, res) => {
 router.post('/login', authLimiter, async (req, res) => {
   try {
     const { email, password } = req.body;
+    console.log(`Login attempt for email: ${email}`);
+    
     if (!email || !password) {
       return res.status(400).json({ error: 'Email and password are required' });
     }
+    
     const result = await AuthService.login(email, password);
     if (!result) {
+      console.log(`Login failed for ${email}: Invalid credentials`);
       return res.status(401).json({ error: 'Invalid credentials' });
     }
+    
+    console.log(`Login successful for ${email}: ${result.user.role}`);
     const rbacInsights = await getRBACInsights(result.user.id, result.user.role);
     res.json({
       ...result,
