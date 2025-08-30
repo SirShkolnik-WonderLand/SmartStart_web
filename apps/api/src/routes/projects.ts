@@ -98,7 +98,7 @@ router.get('/portfolio', authenticateToken, async (req, res) => {
       
       // Calculate completion rate from tasks
       const totalTasks = project.tasks?.length || 0;
-      const completedTasks = project.tasks?.filter((t: any) => t.status === 'COMPLETED')?.length || 0;
+      const completedTasks = project.tasks?.filter((t: any) => t.status === 'DONE')?.length || 0;
       const completionRate = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
       
       // Calculate total value (placeholder - could be enhanced with real valuation)
