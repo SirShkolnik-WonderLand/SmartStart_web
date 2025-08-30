@@ -312,7 +312,30 @@ export const useSmartStore = create<SmartState>()(
           const token = getAuthToken();
           if (!token) throw new Error('No auth token');
 
-          const portfolioData = await apiCallWithAuth('/portfolio/smart', token);
+          // Get user's projects and portfolio data
+          const [projectsResponse, portfolioInsightsResponse] = await Promise.all([
+            apiCallWithAuth('/projects/portfolio', token),
+            apiCallWithAuth(`/smart-contracts/portfolio-insights/${user.id}`, token)
+          ]);
+          
+          const portfolioData = {
+            user: {
+              projects: projectsResponse.projects || [],
+              totalPortfolioValue: portfolioInsightsResponse.totalEquityOwned || 0,
+              activeProjectsCount: projectsResponse.projects?.filter((p: any) => p.activeMembers > 0).length || 0,
+              totalContributions: projectsResponse.projects?.reduce((sum: any, p: any) => sum + (p.contributions?.length || 0), 0) || 0,
+              completionRate: projectsResponse.projects?.reduce((sum: any, p: any) => sum + (p.completionRate || 0), 0) / Math.max(projectsResponse.projects?.length || 1, 1) || 0
+            },
+            insights: [],
+            opportunities: {
+              needsHelp: [],
+              openTasks: [],
+              collaborationIdeas: []
+            },
+            recentActivity: [],
+            badges: [],
+            skills: []
+          };
           
           set({
             portfolio: {
@@ -358,16 +381,12 @@ export const useSmartStore = create<SmartState>()(
         if (!user) return;
 
         try {
-          const token = getAuthToken();
-          if (!token) throw new Error('No auth token');
-
-          const communityData = await apiCallWithAuth('/community/intelligence', token);
-          
+          // For now, set default community data since the endpoint doesn't exist
           set({
             community: {
-              health: communityData.communityHealth,
-              trendingTopics: communityData.trendingTopics,
-              activeMembers: communityData.activeMembers
+              health: 'Good',
+              trendingTopics: [],
+              activeMembers: []
             }
           });
 
@@ -388,10 +407,14 @@ export const useSmartStore = create<SmartState>()(
           const token = getAuthToken();
           if (!token) throw new Error('No auth token');
 
-          const notification = await apiCallWithAuth('/notifications/smart', token, {
-            method: 'POST',
-            body: JSON.stringify({ type, data })
-          });
+          // For now, create a local notification since the endpoint doesn't exist
+          const notification = {
+            id: Date.now().toString(),
+            type,
+            data,
+            createdAt: new Date().toISOString(),
+            read: false
+          };
 
           // Add to local state
           set(state => ({
