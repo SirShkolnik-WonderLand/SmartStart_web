@@ -26,27 +26,33 @@ const app = express();
 // Security middleware
 app.use(helmet());
 
-// CORS configuration - Simplified and more robust
-app.use(cors({
-  origin: [
-    "http://localhost:3000",
-    "https://smartstart-web.onrender.com",
-    "https://smartstart-web.onrender.com"
-  ],
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Origin', 'Accept'],
-  optionsSuccessStatus: 200
-}));
-
-// Handle preflight requests explicitly
-app.options('*', (req, res) => {
+// CORS configuration - More explicit handling
+app.use((req, res, next) => {
+  // Set CORS headers for all requests
   res.header('Access-Control-Allow-Origin', req.headers.origin || 'https://smartstart-web.onrender.com');
   res.header('Access-Control-Allow-Credentials', 'true');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  res.status(200).end();
+  
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+  
+  next();
 });
+
+// Apply CORS middleware as backup
+app.use(cors({
+  origin: [
+    "http://localhost:3000",
+    "https://smartstart-web.onrender.com"
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Origin', 'Accept']
+}));
 
 app.use(express.json());
 
