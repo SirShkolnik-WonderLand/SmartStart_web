@@ -457,7 +457,7 @@ function OverviewTab({
           <div className="summary-stats">
             <div className="stat-row">
               <span className="stat-label">Total Equity Owned:</span>
-              <span className="stat-value">{totalOwnership.toFixed(2)}%</span>
+              <span className="stat-value">{isNaN(totalOwnership) ? '0.00' : totalOwnership.toFixed(2)}%</span>
             </div>
             <div className="stat-row">
               <span className="stat-label">Portfolio Diversity:</span>
@@ -465,11 +465,11 @@ function OverviewTab({
             </div>
             <div className="stat-row">
               <span className="stat-label">Risk Score:</span>
-              <span className="stat-value">{portfolioInsights?.riskScore ? `${(portfolioInsights.riskScore * 100).toFixed(1)}%` : 'N/A'}</span>
+              <span className="stat-value">{portfolioInsights?.riskScore && !isNaN(portfolioInsights.riskScore) ? `${(portfolioInsights.riskScore * 100).toFixed(1)}%` : 'N/A'}</span>
             </div>
             <div className="stat-row">
               <span className="stat-label">Opportunity Score:</span>
-              <span className="stat-value">{portfolioInsights?.opportunityScore ? `${portfolioInsights.opportunityScore.toFixed(1)}%` : 'N/A'}</span>
+              <span className="stat-value">{portfolioInsights?.opportunityScore && !isNaN(portfolioInsights.opportunityScore) ? `${portfolioInsights.opportunityScore.toFixed(1)}%` : 'N/A'}</span>
             </div>
           </div>
         </div>
