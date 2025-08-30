@@ -83,12 +83,7 @@ router.get('/portfolio', authenticateToken, async (req, res) => {
       include: { 
         capEntries: true, 
         members: true,
-        tasks: {
-          include: {
-            assignee: true,
-            status: true
-          }
-        }
+        tasks: true
       },
     });
     
@@ -110,7 +105,7 @@ router.get('/portfolio', authenticateToken, async (req, res) => {
       }, 0) || 0;
       
       // Calculate active members
-      const activeMembers = project.members?.filter((m: any) => m.status === 'ACTIVE')?.length || 0;
+      const activeMembers = project.members?.filter((m: any) => m.isActive === true)?.length || 0;
       
       return {
         id: project.id,
