@@ -511,13 +511,11 @@ export class SmartContractService {
   private async addEquityToCapTable(contract: any) {
     try {
       // Check if entry already exists
-      const existingEntry = await prisma.capTableEntry.findUnique({
+      const existingEntry = await prisma.capTableEntry.findFirst({
         where: {
-          projectId_holderType_holderId: {
-            projectId: contract.projectId,
-            holderType: 'USER',
-            holderId: contract.recipientId,
-          }
+          projectId: contract.projectId,
+          holderType: 'USER',
+          holderId: contract.recipientId,
         }
       });
       
@@ -558,13 +556,12 @@ export class SmartContractService {
    */
   private async updateProjectReserve(projectId: string, equityAllocated: number) {
     try {
-      const reserveEntry = await prisma.capTableEntry.findUnique({
+      // Find reserve entry - RESERVE entries have null holderId
+      const reserveEntry = await prisma.capTableEntry.findFirst({
         where: {
-          projectId_holderType_holderId: {
-            projectId,
-            holderType: 'RESERVE',
-            holderId: null,
-          }
+          projectId,
+          holderType: 'RESERVE',
+          holderId: null,
         }
       });
       
@@ -587,13 +584,11 @@ export class SmartContractService {
    */
   private async updateCapTableVesting(projectId: string, userId: string, equityVested: number) {
     try {
-      const userEntry = await prisma.capTableEntry.findUnique({
+      const userEntry = await prisma.capTableEntry.findFirst({
         where: {
-          projectId_holderType_holderId: {
-            projectId,
-            holderType: 'USER',
-            holderId: userId,
-          }
+          projectId,
+          holderType: 'USER',
+          holderId: userId,
         }
       });
       
