@@ -18,6 +18,7 @@ import tasksRoutes from "./routes/tasks.js";
 import capTableRoutes from "./routes/capTable.js";
 import visibilityRoutes from "./routes/visibility.js";
 import smartContractRoutes from "./routes/smartContracts.js";
+import startupCoopRoutes from "./routes/startupCoop.js";
 // import smartDataRoutes from "./routes/smartData.js";
 
 const prisma = new PrismaClient();
@@ -92,6 +93,7 @@ app.use('/', visibilityRoutes);
 app.use('/mesh', meshRoutes);
 app.use('/admin', adminRoutes);
 app.use('/smart-contracts', smartContractRoutes);
+app.use('/startup-coop', startupCoopRoutes);
 
 // Smart Data Routes - New interconnected data intelligence endpoints
 // Temporarily disabled due to compilation issues

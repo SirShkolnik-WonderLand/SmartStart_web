@@ -60,6 +60,11 @@ model User {
   contractSignatures ContractSignature[] @relation("ContractSignatureSigner")
   equityVesting EquityVesting[] @relation("EquityVestingBeneficiary")
   
+  // Legal entity and coop relations
+  legalEntityMemberships LegalEntityMember[] @relation("LegalEntityMembership")
+  coopMemberships CoopMember[] @relation("CoopMembership")
+  legalDocumentSignatures LegalDocumentSignature[] @relation("LegalDocumentSigner")
+  
   // auth & membership
   account       Account?
   projectMemberships ProjectMember[]
@@ -124,6 +129,13 @@ model Project {
   contractOffers ContractOffer[] @relation("ContractOfferProject")
   contractSignatures ContractSignature[] @relation("ContractSignatureProject")
   equityVesting EquityVesting[] @relation("EquityVestingProject")
+  
+  // Legal entity and coop relations
+  legalEntityId String?
+  legalEntity LegalEntity? @relation("ProjectLegalEntity", fields: [legalEntityId], references: [id])
+  coopId String?
+  coop StartupCoop? @relation("ProjectCoop", fields: [coopId], references: [id])
+  legalDocuments LegalDocument[] @relation("ProjectLegalDocuments")
   
   // guardrails (enforced in service)
   ownerMinPct   Float    @default(35)
@@ -826,7 +838,7 @@ enum InsightType {
   MILESTONE
 }
 
-// NEW MODELS FOR ENHANCED CONTRACT LOGIC
+// COMPREHENSIVE CONTRACT & STARTUP COOP MANAGEMENT SYSTEM
 
 // Smart contract offers between users and projects
 model ContractOffer {
@@ -854,6 +866,12 @@ model ContractOffer {
   deliverables    String[] // What needs to be delivered
   milestones      String[] // Key milestones
   
+  // Legal compliance
+  contractVersion String @default("v1.0")
+  jurisdiction    String @default("CA") // Legal jurisdiction
+  governingLaw    String @default("Ontario, Canada")
+  disputeResolution String @default("Arbitration")
+  
   // Metadata
   createdBy       String   // Who created the offer
   createdAt       DateTime @default(now())
@@ -868,6 +886,7 @@ model ContractOffer {
   @@index([status])
   @@index([expiresAt])
   @@index([contributionType])
+  @@index([jurisdiction])
 }
 
 // Contract signatures for legal compliance
@@ -939,6 +958,317 @@ model VestingEvent {
   @@index([vestingDate])
 }
 
+// STARTUP COOP & LEGAL ENTITY MANAGEMENT
+
+// Legal entity registration and management
+model LegalEntity {
+  id              String   @id @default(cuid())
+  name            String   // Legal entity name
+  type            LegalEntityType
+  jurisdiction    String   // Country/state of incorporation
+  
+  // Registration details
+  registrationNumber String? // Government registration number
+  taxId           String?   // Tax identification number
+  incorporationDate DateTime?
+  
+  // Legal structure
+  legalForm       String   // Corporation, LLC, Cooperative, etc.
+  ownershipStructure String // How ownership is structured
+  governanceModel String   // How decisions are made
+  
+  // Contact information
+  registeredAddress String?
+  mailingAddress  String?
+  phone           String?
+  email           String?
+  
+  // Compliance
+  complianceStatus ComplianceStatus @default(PENDING)
+  lastComplianceCheck DateTime?
+  complianceNotes String?
+  
+  // Relations
+  projects        Project[] @relation("ProjectLegalEntity")
+  members         LegalEntityMember[]
+  documents       LegalDocument[]
+  coops           StartupCoop[] @relation("CoopLegalEntity")
+  
+  // Metadata
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([type])
+  @@index([jurisdiction])
+  @@index([complianceStatus])
+}
+
+// Legal entity membership
+model LegalEntityMember {
+  id              String   @id @default(cuid())
+  entityId        String
+  entity          LegalEntity @relation(fields: [entityId], references: [id])
+  userId          String
+  user            User     @relation("LegalEntityMembership", fields: [userId], references: [id])
+  
+  // Role and rights
+  role            LegalEntityRole
+  votingRights    Boolean @default(false)
+  ownershipPercentage Float @default(0)
+  
+  // Membership details
+  joinedAt        DateTime @default(now())
+  leftAt          DateTime?
+  isActive        Boolean @default(true)
+  
+  // Legal compliance
+  identityVerified Boolean @default(false)
+  kycCompleted    Boolean @default(false)
+  termsAccepted   Boolean @default(false)
+  
+  @@unique([entityId, userId])
+  @@index([entityId])
+  @@index([userId])
+  @@index([role])
+}
+
+// Legal documents and contracts
+model LegalDocument {
+  id              String   @id @default(cuid())
+  entityId        String?
+  entity          LegalEntity? @relation(fields: [entityId], references: [id])
+  projectId       String?
+  project         Project? @relation("ProjectLegalDocuments", fields: [projectId], references: [id])
+  
+  // Document details
+  title           String
+  type            LegalDocumentType
+  content         String   // Document content or file reference
+  version         String   @default("1.0")
+  
+  // Legal status
+  status          LegalDocumentStatus @default(DRAFT)
+  effectiveDate   DateTime?
+  expiryDate      DateTime?
+  
+  // Compliance
+  requiresSignature Boolean @default(false)
+  signatureDeadline DateTime?
+  complianceRequired Boolean @default(false)
+  
+  // Metadata
+  createdBy       String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Relations
+  signatures      LegalDocumentSignature[]
+  
+  @@index([entityId])
+  @@index([projectId])
+  @@index([type])
+  @@index([status])
+  @@index([effectiveDate])
+}
+
+// Legal document signatures
+model LegalDocumentSignature {
+  id              String   @id @default(cuid())
+  documentId      String
+  document        LegalDocument @relation(fields: [documentId], references: [id])
+  signerId        String
+  signer          User     @relation("LegalDocumentSigner", fields: [signerId], references: [id])
+  
+  // Signature details
+  signatureHash   String   // Hash of signed content
+  signedAt        DateTime @default(now())
+  ipAddress       String?  // IP address of signer
+  userAgent       String?  // Browser/device info
+  
+  // Legal compliance
+  termsAccepted   Boolean @default(false)
+  privacyAccepted Boolean @default(false)
+  identityVerified Boolean @default(false)
+  
+  @@index([documentId])
+  @@index([signerId])
+  @@index([signedAt])
+}
+
+// Startup cooperative governance
+model StartupCoop {
+  id              String   @id @default(cuid())
+  name            String   // Cooperative name
+  description     String?
+  
+  // Cooperative structure
+  type            CoopType
+  governanceModel CoopGovernanceModel
+  decisionMaking  CoopDecisionMaking
+  
+  // Membership
+  minMembers      Int @default(3)
+  maxMembers      Int?
+  currentMembers  Int @default(0)
+  
+  // Financial structure
+  membershipFee   Float @default(0)
+  monthlyDues     Float @default(0)
+  profitSharing   Boolean @default(true)
+  
+  // Legal compliance
+  legalEntityId   String?
+  legalEntity     LegalEntity? @relation("CoopLegalEntity", fields: [legalEntityId], references: [id])
+  complianceStatus ComplianceStatus @default(PENDING)
+  
+  // Relations
+  projects        Project[] @relation("ProjectCoop")
+  members         CoopMember[]
+  governance      CoopGovernance[]
+  
+  // Metadata
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([type])
+  @@index([governanceModel])
+  @@index([complianceStatus])
+}
+
+// Cooperative membership
+model CoopMember {
+  id              String   @id @default(cuid())
+  coopId          String
+  coop            StartupCoop @relation(fields: [coopId], references: [id])
+  userId          String
+  user            User     @relation("CoopMembership", fields: [userId], references: [id])
+  
+  // Membership details
+  role            CoopMemberRole
+  joinedAt        DateTime @default(now())
+  leftAt          DateTime?
+  isActive        Boolean @default(true)
+  
+  // Voting and governance
+  votingShares    Int @default(1)
+  votingRights    Boolean @default(true)
+  
+  // Financial
+  membershipFee   Float @default(0)
+  monthlyDues     Float @default(0)
+  profitShare     Float @default(0)
+  
+  // Relations
+  governanceVotes CoopGovernanceVote[] @relation("GovernanceVote")
+  
+  @@unique([coopId, userId])
+  @@index([coopId])
+  @@index([userId])
+  @@index([role])
+}
+
+// Cooperative governance decisions
+model CoopGovernance {
+  id              String   @id @default(cuid())
+  coopId          String
+  coop            StartupCoop @relation(fields: [coopId], references: [id])
+  
+  // Decision details
+  title           String
+  description     String
+  type            GovernanceDecisionType
+  status          GovernanceStatus @default(PROPOSED)
+  
+  // Voting
+  requiresVote    Boolean @default(true)
+  votingDeadline  DateTime?
+  quorumRequired  Int @default(51) // Percentage required
+  
+  // Results
+  votesFor        Int @default(0)
+  votesAgainst    Int @default(0)
+  votesAbstain    Int @default(0)
+  totalVotes      Int @default(0)
+  
+  // Implementation
+  proposedBy      String
+  approvedBy      String?
+  approvedAt      DateTime?
+  effectiveDate   DateTime?
+  
+  // Metadata
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Relations
+  votes           CoopGovernanceVote[]
+  
+  @@index([coopId])
+  @@index([type])
+  @@index([status])
+  @@index([votingDeadline])
+}
+
+// Cooperative governance votes
+model CoopGovernanceVote {
+  id              String   @id @default(cuid())
+  governanceId    String
+  governance      CoopGovernance @relation(fields: [governanceId], references: [id])
+  memberId        String
+  member          CoopMember @relation("GovernanceVote", fields: [memberId], references: [id])
+  
+  // Vote details
+  vote            VoteType
+  votingShares    Int @default(1)
+  votedAt         DateTime @default(now())
+  
+  // Optional
+  comments        String?
+  
+  @@unique([governanceId, memberId])
+  @@index([governanceId])
+  @@index([memberId])
+  @@index([vote])
+}
+
+
+
+// Regulatory compliance tracking
+model ComplianceRecord {
+  id              String   @id @default(cuid())
+  entityId        String?  // Legal entity or project
+  entityType      String   // "LEGAL_ENTITY", "PROJECT", "COOP"
+  
+  // Compliance details
+  regulation      String   // Regulation name/code
+  requirement     String   // Specific requirement
+  status          ComplianceStatus @default(PENDING)
+  
+  // Deadlines and tracking
+  dueDate         DateTime?
+  completedAt     DateTime?
+  nextReviewDate  DateTime?
+  
+  // Documentation
+  evidence        String?  // Evidence of compliance
+  notes           String?
+  
+  // Audit
+  reviewedBy      String?
+  reviewedAt      DateTime?
+  reviewNotes     String?
+  
+  // Metadata
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([entityId])
+  @@index([entityType])
+  @@index([regulation])
+  @@index([status])
+  @@index([dueDate])
+}
+
 // Enhanced enums for new functionality
 enum EquityModel {
   DYNAMIC    // Equity based on contribution value
@@ -984,4 +1314,121 @@ enum VestingEventType {
   TIME_BASED  // Time-based vesting
   PERFORMANCE // Performance-based vesting
   ACCELERATION // Accelerated vesting
+}
+
+// STARTUP COOP & LEGAL ENTITY ENUMS
+
+enum LegalEntityType {
+  CORPORATION
+  LLC
+  COOPERATIVE
+  PARTNERSHIP
+  SOLE_PROPRIETORSHIP
+  NON_PROFIT
+  OTHER
+}
+
+enum LegalEntityRole {
+  OWNER
+  DIRECTOR
+  OFFICER
+  MEMBER
+  PARTNER
+  EMPLOYEE
+  CONTRACTOR
+}
+
+enum LegalDocumentType {
+  ARTICLES_OF_INCORPORATION
+  BYLAWS
+  OPERATING_AGREEMENT
+  PARTNERSHIP_AGREEMENT
+  EMPLOYMENT_CONTRACT
+  EQUITY_AGREEMENT
+  VESTING_SCHEDULE
+  INTELLECTUAL_PROPERTY
+  CONFIDENTIALITY_AGREEMENT
+  TERMS_OF_SERVICE
+  PRIVACY_POLICY
+  OTHER
+}
+
+enum LegalDocumentStatus {
+  DRAFT
+  REVIEW
+  APPROVED
+  EFFECTIVE
+  EXPIRED
+  AMENDED
+  TERMINATED
+}
+
+enum CoopType {
+  WORKER_COOP
+  CONSUMER_COOP
+  PRODUCER_COOP
+  MULTI_STAKEHOLDER_COOP
+  HOUSING_COOP
+  FINANCIAL_COOP
+  OTHER
+}
+
+enum CoopGovernanceModel {
+  DEMOCRATIC
+  REPRESENTATIVE
+  CONSENSUS
+  HYBRID
+  OTHER
+}
+
+enum CoopDecisionMaking {
+  ONE_MEMBER_ONE_VOTE
+  VOTING_SHARES
+  CONSENSUS
+  DELEGATED
+  OTHER
+}
+
+enum CoopMemberRole {
+  FOUNDING_MEMBER
+  ACTIVE_MEMBER
+  ASSOCIATE_MEMBER
+  INVESTOR_MEMBER
+  ADVISORY_MEMBER
+}
+
+enum GovernanceDecisionType {
+  MEMBERSHIP
+  FINANCIAL
+  STRATEGIC
+  OPERATIONAL
+  LEGAL
+  COMPLIANCE
+  OTHER
+}
+
+enum GovernanceStatus {
+  PROPOSED
+  UNDER_REVIEW
+  VOTING
+  APPROVED
+  REJECTED
+  IMPLEMENTED
+  CANCELLED
+}
+
+enum VoteType {
+  FOR
+  AGAINST
+  ABSTAIN
+  RECUSE
+}
+
+enum ComplianceStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  OVERDUE
+  NON_COMPLIANT
+  EXEMPT
 }
