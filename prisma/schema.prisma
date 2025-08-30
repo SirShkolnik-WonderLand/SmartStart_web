@@ -42,6 +42,8 @@ model User {
   
   // relations
   projectsOwned Project[] @relation("ProjectOwner")
+  projectSubmissions ProjectSubmission[] @relation("ProjectSubmissions")
+  projectReviews ProjectSubmission[] @relation("ProjectReviews")
   contributions Contribution[]
   messages      Message[] @relation("UserMessages")
   messageReactions MessageReaction[] @relation("UserMessageReactions")
