@@ -17,6 +17,7 @@ import sprintsRoutes from "./routes/sprints.js";
 import tasksRoutes from "./routes/tasks.js";
 import capTableRoutes from "./routes/capTable.js";
 import visibilityRoutes from "./routes/visibility.js";
+import smartContractRoutes from "./routes/smartContracts.js";
 // import smartDataRoutes from "./routes/smartData.js";
 
 const prisma = new PrismaClient();
@@ -25,32 +26,26 @@ const app = express();
 // Security middleware
 app.use(helmet());
 
-// CORS configuration
+// CORS configuration - Simplified and more robust
 app.use(cors({
   origin: [
-    process.env.CORS_ORIGIN || process.env.WEB_ORIGIN || "http://localhost:3000",
+    "http://localhost:3000",
+    "https://smartstart-web.onrender.com",
     "https://smartstart-web.onrender.com"
   ],
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Origin', 'Accept'],
+  optionsSuccessStatus: 200
 }));
 
-// Handle preflight requests
-app.options('*', cors());
-
-// Additional CORS headers middleware
-app.use((req, res, next) => {
+// Handle preflight requests explicitly
+app.options('*', (req, res) => {
   res.header('Access-Control-Allow-Origin', req.headers.origin || 'https://smartstart-web.onrender.com');
   res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  
-  if (req.method === 'OPTIONS') {
-    res.sendStatus(200);
-  } else {
-    next();
-  }
+  res.status(200).end();
 });
 
 app.use(express.json());
@@ -102,9 +97,6 @@ app.use('/smart-contracts', smartContractRoutes);
 // app.use('/insights', smartDataRoutes);
 // app.use('/team', smartDataRoutes);
 // app.use('/updates', smartDataRoutes);
-
-// Smart Contract Routes - Enhanced portfolio and contract management
-import smartContractRoutes from './routes/smartContracts.js';
 
 const port = process.env.PORT || 3001;
 app.listen(port, () => console.log(`API running on port ${port}`));
