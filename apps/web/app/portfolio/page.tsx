@@ -27,18 +27,109 @@ interface PortfolioData {
   skills: any[];
 }
 
+interface ContractOffer {
+  id: string;
+  projectId: string;
+  project: {
+    id: string;
+    name: string;
+    summary?: string;
+    owner: {
+      id: string;
+      name: string;
+      email: string;
+    };
+  };
+  equityPercentage: number;
+  vestingSchedule: string;
+  contributionType: string;
+  effortRequired: number;
+  impactExpected: number;
+  status: string;
+  expiresAt: Date;
+  createdAt: Date;
+  terms: string;
+  deliverables: string[];
+  milestones: string[];
+}
+
+interface PortfolioInsights {
+  totalEquityOwned: number;
+  averageEquityPerProject: number;
+  portfolioDiversity: number;
+  highestEquityProject: string;
+  lowestEquityProject: string;
+  equityGrowthRate: number;
+  riskScore: number;
+  opportunityScore: number;
+}
+
 export default function PortfolioPage() {
   const { user, isAuthenticated } = useAuth();
   const { projects, insights, opportunities, recentActivity, badges, skills, fetchPortfolio, isLoading, error } = usePortfolio();
-  const [activeTab, setActiveTab] = useState<'overview' | 'projects' | 'insights' | 'activity'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'projects' | 'insights' | 'activity' | 'contracts' | 'vesting'>('overview');
   const [selectedProject, setSelectedProject] = useState<ProjectData | null>(null);
   const [showWalletModal, setShowWalletModal] = useState(false);
+  
+  // New state for smart contracts
+  const [contractOffers, setContractOffers] = useState<ContractOffer[]>([]);
+  const [portfolioInsights, setPortfolioInsights] = useState<PortfolioInsights | null>(null);
+  const [vestingSchedules, setVestingSchedules] = useState<any[]>([]);
+  const [showContractModal, setShowContractModal] = useState(false);
+  const [selectedContract, setSelectedContract] = useState<ContractOffer | null>(null);
 
   useEffect(() => {
     if (isAuthenticated) {
       fetchPortfolio();
+      fetchSmartContractData();
     }
   }, [isAuthenticated, fetchPortfolio]);
+
+  const fetchSmartContractData = async () => {
+    try {
+      // Fetch contract offers
+      const offersResponse = await fetch(`/api/smart-contracts/offers/user/${user?.id}`);
+      if (offersResponse.ok) {
+        const offers = await offersResponse.json();
+        setContractOffers(offers);
+      }
+
+      // Fetch portfolio insights
+      const insightsResponse = await fetch(`/api/smart-contracts/portfolio-insights/${user?.id}`);
+      if (insightsResponse.ok) {
+        const insights = await insightsResponse.json();
+        setPortfolioInsights(insights);
+      }
+
+      // Fetch vesting schedules
+      const vestingResponse = await fetch(`/api/smart-contracts/vesting/${user?.id}`);
+      if (vestingResponse.ok) {
+        const vesting = await vestingResponse.json();
+        setVestingSchedules(vesting);
+      }
+    } catch (error) {
+      console.error('Error fetching smart contract data:', error);
+    }
+  };
+
+  const handleContractAction = async (contractId: string, action: 'accept' | 'reject', reason?: string) => {
+    try {
+      const response = await fetch(`/api/smart-contracts/offers/${contractId}/${action}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reason })
+      });
+
+      if (response.ok) {
+        // Refresh data
+        fetchSmartContractData();
+        setShowContractModal(false);
+        setSelectedContract(null);
+      }
+    } catch (error) {
+      console.error(`Error ${action}ing contract:`, error);
+    }
+  };
 
   if (!isAuthenticated) {
     return (
@@ -59,7 +150,7 @@ export default function PortfolioPage() {
           <p>Loading your portfolio...</p>
         </div>
       </div>
-    );
+      );
   }
 
   if (error) {
@@ -77,7 +168,7 @@ export default function PortfolioPage() {
   }
 
   const totalPortfolioValue = projects.reduce((sum: number, project: ProjectData) => sum + project.totalValue, 0);
-  const totalOwnership = projects.reduce((sum: number, project: ProjectData) => sum + project.userOwnership, 0);
+  const totalOwnership = portfolioInsights?.totalEquityOwned || projects.reduce((sum: number, project: ProjectData) => sum + project.userOwnership, 0);
   const avgCompletionRate = projects.length > 0 
     ? projects.reduce((sum: number, project: ProjectData) => sum + project.completionRate, 0) / projects.length
     : 0;
@@ -130,7 +221,7 @@ export default function PortfolioPage() {
                 </div>
                 <div className="wallet-metrics">
                   <div className="metric">
-                    <span className="metric-label">Ownership</span>
+                    <span className="metric-label">Equity</span>
                     <span className="metric-value">{totalOwnership.toFixed(1)}%</span>
                   </div>
                   <div className="metric">
@@ -156,71 +247,96 @@ export default function PortfolioPage() {
             className={`tab ${activeTab === 'overview' ? 'active' : ''}`}
             onClick={() => setActiveTab('overview')}
           >
-            <span className="tab-icon">📊</span>
             Overview
           </button>
           <button 
             className={`tab ${activeTab === 'projects' ? 'active' : ''}`}
             onClick={() => setActiveTab('projects')}
           >
-            <span className="tab-icon">🚀</span>
             Projects
           </button>
           <button 
             className={`tab ${activeTab === 'insights' ? 'active' : ''}`}
             onClick={() => setActiveTab('insights')}
           >
-            <span className="tab-icon">🧠</span>
-            Smart Insights
+            Insights
           </button>
           <button 
             className={`tab ${activeTab === 'activity' ? 'active' : ''}`}
             onClick={() => setActiveTab('activity')}
           >
-            <span className="tab-icon">📈</span>
             Activity
+          </button>
+          <button 
+            className={`tab ${activeTab === 'contracts' ? 'active' : ''}`}
+            onClick={() => setActiveTab('contracts')}
+          >
+            Contracts
+          </button>
+          <button 
+            className={`tab ${activeTab === 'vesting' ? 'active' : ''}`}
+            onClick={() => setActiveTab('vesting')}
+          >
+            Vesting
           </button>
         </div>
 
-        {/* Content Area */}
-        <div className="portfolio-content">
-          {activeTab === 'overview' && (
-            <OverviewTab 
-              projects={projects}
-              insights={insights}
-              opportunities={opportunities}
-              recentActivity={recentActivity}
-              badges={badges}
-              skills={skills}
-              totalPortfolioValue={totalPortfolioValue}
-              totalOwnership={totalOwnership}
-              avgCompletionRate={avgCompletionRate}
-            />
-          )}
-
-          {activeTab === 'projects' && (
-            <ProjectsTab 
-              projects={projects}
-              selectedProject={selectedProject}
-              setSelectedProject={setSelectedProject}
-            />
-          )}
-
-          {activeTab === 'insights' && (
-            <InsightsTab 
-                          insights={insights}
+        {/* Tab Content */}
+        {activeTab === 'overview' && (
+          <OverviewTab 
+            projects={projects}
+            insights={insights}
             opportunities={opportunities}
-            />
-          )}
-
-          {activeTab === 'activity' && (
-            <ActivityTab 
-                          recentActivity={recentActivity}
+            recentActivity={recentActivity}
             badges={badges}
             skills={skills}
-            />
-          )}
-        </div>
+            totalPortfolioValue={totalPortfolioValue}
+            totalOwnership={totalOwnership}
+            avgCompletionRate={avgCompletionRate}
+            portfolioInsights={portfolioInsights}
+          />
+        )}
+
+        {activeTab === 'projects' && (
+          <ProjectsTab 
+            projects={projects}
+            selectedProject={selectedProject}
+            setSelectedProject={setSelectedProject}
+          />
+        )}
+
+        {activeTab === 'insights' && (
+          <InsightsTab 
+            insights={insights}
+            opportunities={opportunities}
+            portfolioInsights={portfolioInsights}
+          />
+        )}
+
+        {activeTab === 'activity' && (
+          <ActivityTab 
+            recentActivity={recentActivity}
+            badges={badges}
+            skills={skills}
+          />
+        )}
+
+        {activeTab === 'contracts' && (
+          <ContractsTab 
+            contractOffers={contractOffers}
+            onContractAction={handleContractAction}
+            onContractSelect={(contract) => {
+              setSelectedContract(contract);
+              setShowContractModal(true);
+            }}
+          />
+        )}
+
+        {activeTab === 'vesting' && (
+          <VestingTab 
+            vestingSchedules={vestingSchedules}
+          />
+        )}
 
         {/* Wallet Modal */}
         {showWalletModal && (
@@ -233,6 +349,19 @@ export default function PortfolioPage() {
             skills={skills}
             totalPortfolioValue={totalPortfolioValue}
             onClose={() => setShowWalletModal(false)}
+          />
+        )}
+
+        {/* Contract Modal */}
+        {showContractModal && selectedContract && (
+          <ContractModal 
+            contract={selectedContract}
+            onAccept={() => handleContractAction(selectedContract.id, 'accept')}
+            onReject={() => handleContractAction(selectedContract.id, 'reject')}
+            onClose={() => {
+              setShowContractModal(false);
+              setSelectedContract(null);
+            }}
           />
         )}
       </div>
@@ -253,7 +382,8 @@ function OverviewTab({
   skills, 
   totalPortfolioValue, 
   totalOwnership, 
-  avgCompletionRate 
+  avgCompletionRate,
+  portfolioInsights
 }: {
   projects: any[];
   insights: any[];
@@ -264,96 +394,74 @@ function OverviewTab({
   totalPortfolioValue: number;
   totalOwnership: number;
   avgCompletionRate: number;
+  portfolioInsights: PortfolioInsights | null;
 }) {
   return (
     <div className="overview-tab">
-      {/* Portfolio Summary Cards */}
-      <div className="summary-grid">
-        <div className="summary-card value-card">
-          <div className="card-icon">💎</div>
-          <div className="card-content">
-            <h3>Portfolio Value</h3>
-            <div className="card-value">${totalPortfolioValue.toLocaleString()}</div>
-            <div className="card-change positive">+12.5% this month</div>
+      <div className="overview-grid">
+        {/* Portfolio Summary */}
+        <div className="overview-card portfolio-summary">
+          <h3>📊 Portfolio Summary</h3>
+          <div className="summary-stats">
+            <div className="stat-row">
+              <span className="stat-label">Total Equity Owned:</span>
+              <span className="stat-value">{totalOwnership.toFixed(2)}%</span>
+            </div>
+            <div className="stat-row">
+              <span className="stat-label">Portfolio Diversity:</span>
+              <span className="stat-value">{portfolioInsights?.portfolioDiversity || 'N/A'}</span>
+            </div>
+            <div className="stat-row">
+              <span className="stat-label">Risk Score:</span>
+              <span className="stat-value">{portfolioInsights?.riskScore ? `${(portfolioInsights.riskScore * 100).toFixed(1)}%` : 'N/A'}</span>
+            </div>
+            <div className="stat-row">
+              <span className="stat-label">Opportunity Score:</span>
+              <span className="stat-value">{portfolioInsights?.opportunityScore ? `${portfolioInsights.opportunityScore.toFixed(1)}%` : 'N/A'}</span>
+            </div>
           </div>
         </div>
 
-        <div className="summary-card ownership-card">
-          <div className="card-icon">🎯</div>
-          <div className="card-content">
-            <h3>Total Ownership</h3>
-            <div className="card-value">{totalOwnership.toFixed(1)}%</div>
-            <div className="card-change positive">+2.3% this week</div>
+        {/* Recent Activity */}
+        <div className="overview-card recent-activity">
+          <h3>🔄 Recent Activity</h3>
+          <div className="activity-list">
+            {recentActivity.slice(0, 5).map((activity, index) => (
+              <div key={index} className="activity-item">
+                <span className="activity-icon">📈</span>
+                <span className="activity-text">{activity.description}</span>
+                <span className="activity-time">{new Date(activity.timestamp).toLocaleDateString()}</span>
+              </div>
+            ))}
           </div>
         </div>
 
-        <div className="summary-card completion-card">
-          <div className="card-icon">✅</div>
-          <div className="card-content">
-            <h3>Avg Completion</h3>
-            <div className="card-value">{avgCompletionRate.toFixed(1)}%</div>
-            <div className="card-change neutral">On track</div>
-          </div>
-        </div>
-
-        <div className="summary-card projects-card">
-          <div className="card-icon">🚀</div>
-          <div className="card-content">
-            <h3>Active Projects</h3>
-                            <div className="card-value">{projects.length}</div>
-            <div className="card-change positive">+1 new this month</div>
-          </div>
-        </div>
-      </div>
-
-      {/* Project Distribution Chart */}
-      <div className="distribution-section">
-        <h3>📊 Project Distribution</h3>
-        <div className="distribution-chart">
-          {projects.map((project, index) => {
-            const percentage = (project.totalValue / totalPortfolioValue) * 100;
-            const rotation = (index / projects.length) * 360;
-            
-            return (
-              <div 
-                key={project.id}
-                className="project-slice"
-                style={{
-                  '--percentage': `${percentage}%`,
-                  '--rotation': `${rotation}deg`,
-                  '--color': `hsl(${200 + (index * 40)}, 70%, 60%)`
-                } as React.CSSProperties}
-              >
-                <div className="slice-content">
-                  <span className="project-name">{project.name}</span>
-                  <span className="project-percentage">{percentage.toFixed(1)}%</span>
+        {/* Skills Overview */}
+        <div className="overview-card skills-overview">
+          <h3>🛠️ Skills Overview</h3>
+          <div className="skills-grid">
+            {skills.slice(0, 6).map((skill, index) => (
+              <div key={index} className="skill-item">
+                <span className="skill-name">{skill.name}</span>
+                <div className="skill-level">
+                  <div className="skill-bar" style={{ width: `${(skill.level / 5) * 100}%` }}></div>
                 </div>
               </div>
-            );
-          })}
+            ))}
+          </div>
         </div>
-      </div>
 
-      {/* Quick Actions */}
-      <div className="quick-actions">
-        <h3>⚡ Quick Actions</h3>
-        <div className="actions-grid">
-          <button className="action-button">
-            <span className="action-icon">➕</span>
-            <span>Add New Project</span>
-          </button>
-          <button className="action-button">
-            <span className="action-icon">📈</span>
-            <span>View Analytics</span>
-          </button>
-          <button className="action-button">
-            <span className="action-icon">🤝</span>
-            <span>Find Collaborators</span>
-          </button>
-          <button className="action-button">
-            <span className="action-icon">📊</span>
-            <span>Export Report</span>
-          </button>
+        {/* Badges Showcase */}
+        <div className="overview-card badges-showcase">
+          <h3>🏆 Badges & Achievements</h3>
+          <div className="badges-grid">
+            {badges.slice(0, 8).map((badge, index) => (
+              <div key={index} className="badge-item">
+                <span className="badge-icon">{badge.icon}</span>
+                <span className="badge-name">{badge.name}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
@@ -445,9 +553,10 @@ function ProjectsTab({ projects, selectedProject, setSelectedProject }: {
   );
 }
 
-function InsightsTab({ insights, opportunities }: {
+function InsightsTab({ insights, opportunities, portfolioInsights }: {
   insights: any[];
   opportunities: any;
+  portfolioInsights: PortfolioInsights | null;
 }) {
   return (
     <div className="insights-tab">
@@ -502,6 +611,43 @@ function InsightsTab({ insights, opportunities }: {
           ))}
         </div>
       </div>
+
+      {/* Portfolio Insights */}
+      {portfolioInsights && (
+        <div className="portfolio-insights-section">
+          <h3>📈 Portfolio Insights</h3>
+          <div className="insights-grid">
+            <div className="insight-card">
+              <div className="insight-header">
+                <div className="insight-icon">💰</div>
+                <h4>Total Equity Owned</h4>
+              </div>
+              <p>{portfolioInsights.totalEquityOwned.toFixed(2)}%</p>
+            </div>
+            <div className="insight-card">
+              <div className="insight-header">
+                <div className="insight-icon">📈</div>
+                <h4>Equity Growth Rate</h4>
+              </div>
+              <p>{portfolioInsights.equityGrowthRate ? `${(portfolioInsights.equityGrowthRate * 100).toFixed(1)}%` : 'N/A'}</p>
+            </div>
+            <div className="insight-card">
+              <div className="insight-header">
+                <div className="insight-icon">⚖️</div>
+                <h4>Risk Score</h4>
+              </div>
+              <p>{portfolioInsights.riskScore ? `${(portfolioInsights.riskScore * 100).toFixed(1)}%` : 'N/A'}</p>
+            </div>
+            <div className="insight-card">
+              <div className="insight-header">
+                <div className="insight-icon">💡</div>
+                <h4>Opportunity Score</h4>
+              </div>
+              <p>{portfolioInsights.opportunityScore ? `${portfolioInsights.opportunityScore.toFixed(1)}%` : 'N/A'}</p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -674,6 +820,256 @@ function ProjectDetailsModal({ project, onClose }: {
             <button className="modal-action-btn secondary">Edit Details</button>
             <button className="modal-action-btn secondary">Share</button>
           </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// NEW TAB COMPONENTS
+
+function ContractsTab({ 
+  contractOffers, 
+  onContractAction, 
+  onContractSelect 
+}: {
+  contractOffers: ContractOffer[];
+  onContractAction: (contractId: string, action: 'accept' | 'reject') => void;
+  onContractSelect: (contract: ContractOffer) => void;
+}) {
+  const pendingOffers = contractOffers.filter(offer => offer.status === 'PENDING');
+  const acceptedOffers = contractOffers.filter(offer => offer.status === 'ACCEPTED');
+  const rejectedOffers = contractOffers.filter(offer => offer.status === 'REJECTED');
+
+  return (
+    <div className="contracts-tab">
+      <div className="contracts-header">
+        <h3>📋 Smart Contracts</h3>
+        <p>Manage your equity contracts and contribution agreements</p>
+      </div>
+
+      {/* Pending Contracts */}
+      <div className="contracts-section">
+        <h4>⏳ Pending Offers ({pendingOffers.length})</h4>
+        {pendingOffers.length > 0 ? (
+          <div className="contracts-grid">
+            {pendingOffers.map((contract) => (
+              <div key={contract.id} className="contract-card pending">
+                <div className="contract-header">
+                  <h5>{contract.project.name}</h5>
+                  <span className="contract-status pending">{contract.status}</span>
+                </div>
+                <div className="contract-details">
+                  <div className="detail-row">
+                    <span className="detail-label">Equity Offered:</span>
+                    <span className="detail-value">{contract.equityPercentage}%</span>
+                  </div>
+                  <div className="detail-row">
+                    <span className="detail-label">Contribution Type:</span>
+                    <span className="detail-value">{contract.contributionType}</span>
+                  </div>
+                  <div className="detail-row">
+                    <span className="detail-label">Effort Required:</span>
+                    <span className="detail-value">{contract.effortRequired} hours</span>
+                  </div>
+                  <div className="detail-row">
+                    <span className="detail-label">Vesting Schedule:</span>
+                    <span className="detail-value">{contract.vestingSchedule}</span>
+                  </div>
+                  <div className="detail-row">
+                    <span className="detail-label">Expires:</span>
+                    <span className="detail-value">{new Date(contract.expiresAt).toLocaleDateString()}</span>
+                  </div>
+                </div>
+                <div className="contract-actions">
+                  <button 
+                    className="btn btn-primary"
+                    onClick={() => onContractSelect(contract)}
+                  >
+                    View Details
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="no-contracts">No pending contract offers</p>
+        )}
+      </div>
+
+      {/* Accepted Contracts */}
+      <div className="contracts-section">
+        <h4>✅ Accepted Contracts ({acceptedOffers.length})</h4>
+        {acceptedOffers.length > 0 ? (
+          <div className="contracts-grid">
+            {acceptedOffers.map((contract) => (
+              <div key={contract.id} className="contract-card accepted">
+                <div className="contract-header">
+                  <h5>{contract.project.name}</h5>
+                  <span className="contract-status accepted">{contract.status}</span>
+                </div>
+                <div className="contract-details">
+                  <div className="detail-row">
+                    <span className="detail-label">Equity Granted:</span>
+                    <span className="detail-value">{contract.equityPercentage}%</span>
+                  </div>
+                  <div className="detail-row">
+                    <span className="detail-label">Accepted:</span>
+                    <span className="detail-value">{new Date(contract.createdAt).toLocaleDateString()}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="no-contracts">No accepted contracts yet</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function VestingTab({ vestingSchedules }: { vestingSchedules: any[] }) {
+  return (
+    <div className="vesting-tab">
+      <div className="vesting-header">
+        <h3>⏰ Equity Vesting</h3>
+        <p>Track your equity vesting schedules and timelines</p>
+      </div>
+
+      {vestingSchedules.length > 0 ? (
+        <div className="vesting-grid">
+          {vestingSchedules.map((vesting) => (
+            <div key={vesting.id} className="vesting-card">
+              <div className="vesting-header">
+                <h5>{vesting.project.name}</h5>
+                <span className="vesting-schedule">{vesting.vestingSchedule}</span>
+              </div>
+              <div className="vesting-progress">
+                <div className="progress-bar">
+                  <div 
+                    className="progress-fill" 
+                    style={{ width: `${(vesting.vestedEquity / vesting.totalEquity) * 100}%` }}
+                  ></div>
+                </div>
+                <div className="progress-text">
+                  {vesting.vestedEquity.toFixed(2)}% / {vesting.totalEquity.toFixed(2)}%
+                </div>
+              </div>
+              <div className="vesting-details">
+                <div className="detail-row">
+                  <span className="detail-label">Start Date:</span>
+                  <span className="detail-value">{new Date(vesting.vestingStart).toLocaleDateString()}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="detail-label">End Date:</span>
+                  <span className="detail-value">{new Date(vesting.vestingEnd).toLocaleDateString()}</span>
+                </div>
+                {vesting.cliffDate && (
+                  <div className="detail-row">
+                    <span className="detail-label">Cliff Date:</span>
+                    <span className="detail-value">{new Date(vesting.cliffDate).toLocaleDateString()}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="no-vesting">No vesting schedules found</p>
+      )}
+    </div>
+  );
+}
+
+function ContractModal({ 
+  contract, 
+  onAccept, 
+  onReject, 
+  onClose 
+}: {
+  contract: ContractOffer;
+  onAccept: () => void;
+  onReject: () => void;
+  onClose: () => void;
+}) {
+  return (
+    <div className="modal-overlay">
+      <div className="modal-content contract-modal">
+        <div className="modal-header">
+          <h3>📋 Contract Details</h3>
+          <button className="modal-close" onClick={onClose}>×</button>
+        </div>
+        
+        <div className="modal-body">
+          <div className="contract-info">
+            <h4>{contract.project.name}</h4>
+            <p className="project-summary">{contract.project.summary}</p>
+            
+            <div className="contract-terms">
+              <h5>Contract Terms</h5>
+              <div className="terms-grid">
+                <div className="term-item">
+                  <span className="term-label">Equity Offered:</span>
+                  <span className="term-value">{contract.equityPercentage}%</span>
+                </div>
+                <div className="term-item">
+                  <span className="term-label">Contribution Type:</span>
+                  <span className="term-value">{contract.contributionType}</span>
+                </div>
+                <div className="term-item">
+                  <span className="term-label">Effort Required:</span>
+                  <span className="term-value">{contract.effortRequired} hours</span>
+                </div>
+                <div className="term-item">
+                  <span className="term-label">Impact Expected:</span>
+                  <span className="term-value">{contract.impactExpected}/5</span>
+                </div>
+                <div className="term-item">
+                  <span className="term-label">Vesting Schedule:</span>
+                  <span className="term-value">{contract.vestingSchedule}</span>
+                </div>
+                <div className="term-item">
+                  <span className="term-label">Expires:</span>
+                  <span className="term-value">{new Date(contract.expiresAt).toLocaleDateString()}</span>
+                </div>
+              </div>
+            </div>
+            
+            {contract.deliverables && contract.deliverables.length > 0 && (
+              <div className="deliverables">
+                <h5>Deliverables</h5>
+                <ul>
+                  {contract.deliverables.map((deliverable, index) => (
+                    <li key={index}>{deliverable}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            
+            {contract.milestones && contract.milestones.length > 0 && (
+              <div className="milestones">
+                <h5>Milestones</h5>
+                <ul>
+                  {contract.milestones.map((milestone, index) => (
+                    <li key={index}>{milestone}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        </div>
+        
+        <div className="modal-footer">
+          <button className="btn btn-secondary" onClick={onClose}>
+            Close
+          </button>
+          <button className="btn btn-danger" onClick={onReject}>
+            Reject
+          </button>
+          <button className="btn btn-primary" onClick={onAccept}>
+            Accept Contract
+          </button>
         </div>
       </div>
     </div>

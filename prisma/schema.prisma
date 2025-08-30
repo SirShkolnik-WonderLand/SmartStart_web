@@ -34,6 +34,12 @@ model User {
   activeProjectsCount Int @default(0)   // Computed from active memberships
   totalContributions  Int @default(0)   // Computed from contributions
   
+  // Enhanced portfolio metrics
+  totalEquityOwned    Float @default(0) // Total % ownership across all projects
+  averageEquityPerProject Float @default(0) // Average ownership per project
+  portfolioDiversity  Int @default(0)   // Number of different project types
+  lastEquityEarned   DateTime? // Last time equity was earned
+  
   // relations
   projectsOwned Project[] @relation("ProjectOwner")
   contributions Contribution[]
@@ -49,6 +55,11 @@ model User {
   userBadges    UserBadge[]
   userSkills    UserSkill[]
   
+  // Enhanced contract relations
+  contractOffers ContractOffer[] @relation("ContractOfferRecipient")
+  contractSignatures ContractSignature[] @relation("ContractSignatureSigner")
+  equityVesting EquityVesting[] @relation("EquityVestingBeneficiary")
+  
   // auth & membership
   account       Account?
   projectMemberships ProjectMember[]
@@ -62,6 +73,8 @@ model User {
   @@index([level])
   @@index([totalPortfolioValue])
   @@index([activeProjectsCount])
+  @@index([totalEquityOwned])
+  @@index([lastEquityEarned])
 }
 
 model ProfilePrivacy {
@@ -93,6 +106,11 @@ model Project {
   completionRate Float @default(0)       // Computed from tasks
   lastActivity  DateTime @default(now()) // Computed from latest activity
   
+  // Enhanced project contract settings
+  contractVersion String @default("v1.0") // Contract version for tracking changes
+  equityModel    EquityModel @default(DYNAMIC) // How equity is distributed
+  vestingSchedule VestingSchedule @default(IMMEDIATE) // When equity vests
+  
   // cap table entries
   capEntries    CapTableEntry[]
   sprints       Sprint[]
@@ -101,6 +119,11 @@ model Project {
   polls         Poll[]
   messages      Message[] @relation("ProjectMessages")
   meshItems     MeshItem[] @relation("MeshItemProject")
+  
+  // Enhanced contract relations
+  contractOffers ContractOffer[] @relation("ContractOfferProject")
+  contractSignatures ContractSignature[] @relation("ContractSignatureProject")
+  equityVesting EquityVesting[] @relation("EquityVestingProject")
   
   // guardrails (enforced in service)
   ownerMinPct   Float    @default(35)
@@ -118,6 +141,8 @@ model Project {
   @@index([totalValue])
   @@index([completionRate])
   @@index([lastActivity])
+  @@index([equityModel])
+  @@index([vestingSchedule])
 }
 
 // New model for smart project insights
@@ -157,10 +182,20 @@ model CapTableEntry {
   source     String
   createdAt  DateTime   @default(now())
   
-  // Smart cap table tracking
+  // Enhanced cap table tracking
   value      Float @default(0) // Computed value based on project total
+  vestingDate DateTime? // When this equity vests
+  isVested   Boolean @default(false) // Whether equity has vested
+  
+  // Contract tracking
+  contractId String? // Reference to contract if applicable
+  contributionId String? // Reference to contribution if applicable
   
   @@index([projectId])
+  @@index([holderType])
+  @@index([holderId])
+  @@index([vestingDate])
+  @@index([isVested])
   @@unique([projectId, holderType, holderId])
 }
 
@@ -244,13 +279,24 @@ model Contribution {
   acceptedById  String?
   status        ContributionStatus @default(PENDING)
   
-  // Smart contribution tracking
+  // Enhanced contribution tracking
   quality       Int @default(3)   // Quality score 1-5
   collaboration Int @default(3)   // Collaboration score 1-5
+  
+  // Contract integration
+  contractOfferId String? // Link to contract offer
+  equityGranted  Float?  // Final equity granted
+  vestingSchedule VestingSchedule @default(IMMEDIATE)
+  
+  // Performance metrics
+  completionTime Int? // Time to complete in hours
+  stakeholderSatisfaction Int? // Satisfaction score 1-5
   
   @@index([taskId])
   @@index([contributorId])
   @@index([status])
+  @@index([contractOfferId])
+  @@index([equityGranted])
 }
 
 enum ContributionStatus {
@@ -690,4 +736,164 @@ enum InsightType {
   OPPORTUNITY
   COLLABORATION
   MILESTONE
+}
+
+// NEW MODELS FOR ENHANCED CONTRACT LOGIC
+
+// Smart contract offers between users and projects
+model ContractOffer {
+  id              String   @id @default(cuid())
+  projectId       String
+  project         Project  @relation("ContractOfferProject", fields: [projectId], references: [id])
+  recipientId     String
+  recipient       User     @relation("ContractOfferRecipient", fields: [recipientId], references: [id])
+  
+  // Contract terms
+  equityPercentage Float   // Equity offered (0.5% - 5%)
+  vestingSchedule  VestingSchedule @default(IMMEDIATE)
+  contributionType ContributionType
+  effortRequired   Int     // Hours required
+  impactExpected   Int     // Expected impact 1-5
+  
+  // Contract status
+  status          ContractStatus @default(PENDING)
+  expiresAt       DateTime // When offer expires
+  acceptedAt      DateTime?
+  rejectedAt      DateTime?
+  
+  // Contract details
+  terms           String   // Contract terms and conditions
+  deliverables    String[] // What needs to be delivered
+  milestones      String[] // Key milestones
+  
+  // Metadata
+  createdBy       String   // Who created the offer
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Relations
+  signatures      ContractSignature[]
+  equityVesting   EquityVesting[]
+  
+  @@index([projectId])
+  @@index([recipientId])
+  @@index([status])
+  @@index([expiresAt])
+  @@index([contributionType])
+}
+
+// Contract signatures for legal compliance
+model ContractSignature {
+  id              String   @id @default(cuid())
+  contractId      String
+  contract        ContractOffer @relation(fields: [contractId], references: [id])
+  signerId        String
+  signer          User     @relation("ContractSignatureSigner", fields: [signerId], references: [id])
+  projectId       String
+  project         Project  @relation("ContractSignatureProject", fields: [projectId], references: [id])
+  
+  // Signature details
+  signatureHash   String   // Hash of signed content
+  signedAt        DateTime @default(now())
+  ipAddress       String?  // IP address of signer
+  userAgent       String?  // Browser/device info
+  
+  // Legal compliance
+  termsAccepted   Boolean  @default(false)
+  privacyAccepted Boolean  @default(false)
+  
+  @@index([contractId])
+  @@index([signerId])
+  @@index([projectId])
+  @@index([signedAt])
+}
+
+// Equity vesting schedules
+model EquityVesting {
+  id              String   @id @default(cuid())
+  contractId      String
+  contract        ContractOffer @relation(fields: [contractId], references: [id])
+  beneficiaryId   String
+  beneficiary     User     @relation("EquityVestingBeneficiary", fields: [beneficiaryId], references: [id])
+  projectId       String
+  project         Project  @relation("EquityVestingProject", fields: [projectId], references: [id])
+  
+  // Vesting details
+  totalEquity     Float    // Total equity to be vested
+  vestedEquity    Float    @default(0) // Currently vested equity
+  vestingSchedule VestingSchedule
+  vestingStart    DateTime // When vesting begins
+  vestingEnd      DateTime // When vesting completes
+  
+  // Vesting milestones
+  cliffDate       DateTime? // Cliff date if applicable
+  vestingEvents  VestingEvent[]
+  
+  @@index([contractId])
+  @@index([beneficiaryId])
+  @@index([projectId])
+  @@index([vestingStart])
+  @@index([vestingEnd])
+}
+
+// Individual vesting events
+model VestingEvent {
+  id              String   @id @default(cuid())
+  vestingId       String
+  vesting         EquityVesting @relation(fields: [vestingId], references: [id])
+  
+  // Event details
+  equityAmount    Float    // Equity vested in this event
+  vestingDate     DateTime // When this equity vested
+  eventType       VestingEventType
+  
+  @@index([vestingId])
+  @@index([vestingDate])
+}
+
+// Enhanced enums for new functionality
+enum EquityModel {
+  DYNAMIC    // Equity based on contribution value
+  FIXED      // Fixed equity amounts
+  HYBRID     // Combination of fixed and dynamic
+}
+
+enum VestingSchedule {
+  IMMEDIATE  // Equity vests immediately
+  MONTHLY    // Monthly vesting over time
+  QUARTERLY  // Quarterly vesting
+  ANNUAL     // Annual vesting
+  MILESTONE  // Vesting based on milestones
+  CLIFF      // Cliff vesting with delay
+}
+
+enum ContributionType {
+  CODE        // Software development
+  DESIGN      // UI/UX design
+  GROWTH      // Marketing and growth
+  OPS         // Operations and management
+  SALES       // Sales and business development
+  LEGAL       // Legal and compliance
+  FINANCE     // Financial planning
+  STRATEGY    // Strategic planning
+  RESEARCH    // Research and development
+  OTHER       // Other contributions
+}
+
+enum ContractStatus {
+  DRAFT       // Contract is being drafted
+  PENDING     // Waiting for recipient response
+  ACCEPTED    // Contract accepted
+  REJECTED    // Contract rejected
+  EXPIRED     // Contract expired
+  COMPLETED   // Contract completed
+  TERMINATED  // Contract terminated
+}
+
+enum VestingEventType {
+  INITIAL     // Initial vesting
+  MILESTONE   // Milestone-based vesting
+  TIME_BASED  // Time-based vesting
+  PERFORMANCE // Performance-based vesting
+  ACCELERATION // Accelerated vesting
 }

@@ -90,6 +90,7 @@ app.use('/', capTableRoutes);
 app.use('/', visibilityRoutes);
 app.use('/mesh', meshRoutes);
 app.use('/admin', adminRoutes);
+app.use('/smart-contracts', smartContractRoutes);
 
 // Smart Data Routes - New interconnected data intelligence endpoints
 // Temporarily disabled due to compilation issues
@@ -101,6 +102,9 @@ app.use('/admin', adminRoutes);
 // app.use('/insights', smartDataRoutes);
 // app.use('/team', smartDataRoutes);
 // app.use('/updates', smartDataRoutes);
+
+// Smart Contract Routes - Enhanced portfolio and contract management
+import smartContractRoutes from './routes/smartContracts.js';
 
 const port = process.env.PORT || 3001;
 app.listen(port, () => console.log(`API running on port ${port}`));
