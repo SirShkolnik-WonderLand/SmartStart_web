@@ -73,126 +73,44 @@ export default function PeoplePage() {
   }, [router])
 
   const fetchMembersData = async () => {
-    // Mock community members data
-    const mockMembers: CommunityMember[] = [
-      {
-        id: '1',
-        name: 'Alice Johnson',
-        email: 'alice@smartstart.com',
-        role: 'SUPER_ADMIN',
-        avatar: 'AJ',
-        skills: ['Full-Stack Development', 'Product Management', 'Team Leadership'],
-        projects: [
-          { id: '1', name: 'SmartStart Platform', role: 'OWNER', ownership: 40 },
-          { id: '2', name: 'AI Marketing Tool', role: 'ADMIN', ownership: 25 }
-        ],
-        portfolioValue: 125000,
-        totalContributions: 45,
-        joinDate: '2023-01-01',
-        status: 'active',
-        bio: 'Founder and visionary behind SmartStart. Passionate about building communities that create value together.',
-        location: 'Toronto, Canada',
-        expertise: ['React', 'Node.js', 'PostgreSQL', 'AWS', 'Product Strategy']
-      },
-      {
-        id: '2',
-        name: 'Bob Chen',
-        email: 'bob@demo.local',
-        role: 'ADMIN',
-        avatar: 'BC',
-        skills: ['Backend Development', 'DevOps', 'System Architecture'],
-        projects: [
-          { id: '1', name: 'SmartStart Platform', role: 'ADMIN', ownership: 20 },
-          { id: '3', name: 'E-commerce Platform', role: 'OWNER', ownership: 35 }
-        ],
-        portfolioValue: 85000,
-        totalContributions: 32,
-        joinDate: '2023-03-15',
-        status: 'active',
-        bio: 'Senior backend developer with expertise in scalable systems and cloud infrastructure.',
-        location: 'Vancouver, Canada',
-        expertise: ['Python', 'Django', 'Docker', 'Kubernetes', 'PostgreSQL']
-      },
-      {
-        id: '3',
-        name: 'Carol Rodriguez',
-        email: 'carol@demo.local',
-        role: 'OWNER',
-        avatar: 'CR',
-        skills: ['Frontend Development', 'UI/UX Design', 'Mobile Development'],
-        projects: [
-          { id: '2', name: 'AI Marketing Tool', role: 'OWNER', ownership: 30 },
-          { id: '4', name: 'Mobile App Framework', role: 'CONTRIBUTOR', ownership: 15 }
-        ],
-        portfolioValue: 65000,
-        totalContributions: 28,
-        joinDate: '2023-05-20',
-        status: 'active',
-        bio: 'Creative frontend developer and designer. Love building beautiful, user-friendly interfaces.',
-        location: 'Montreal, Canada',
-        expertise: ['React', 'TypeScript', 'Figma', 'React Native', 'CSS']
-      },
-      {
-        id: '4',
-        name: 'David Kim',
-        email: 'david@demo.local',
-        role: 'CONTRIBUTOR',
-        avatar: 'DK',
-        skills: ['Data Science', 'Machine Learning', 'Python Development'],
-        projects: [
-          { id: '2', name: 'AI Marketing Tool', role: 'CONTRIBUTOR', ownership: 10 },
-          { id: '5', name: 'Data Analytics Platform', role: 'OWNER', ownership: 40 }
-        ],
-        portfolioValue: 45000,
-        totalContributions: 18,
-        joinDate: '2023-07-10',
-        status: 'active',
-        bio: 'Data scientist and ML engineer. Passionate about turning data into actionable insights.',
-        location: 'Calgary, Canada',
-        expertise: ['Python', 'TensorFlow', 'Pandas', 'Scikit-learn', 'SQL']
-      },
-      {
-        id: '5',
-        name: 'Emma Wilson',
-        email: 'emma@demo.local',
-        role: 'MEMBER',
-        avatar: 'EW',
-        skills: ['Marketing', 'Content Creation', 'Community Management'],
-        projects: [
-          { id: '1', name: 'SmartStart Platform', role: 'CONTRIBUTOR', ownership: 5 },
-          { id: '6', name: 'Content Hub', role: 'OWNER', ownership: 50 }
-        ],
-        portfolioValue: 30000,
-        totalContributions: 12,
-        joinDate: '2023-09-01',
-        status: 'active',
-        bio: 'Marketing specialist and community builder. Love connecting people and growing communities.',
-        location: 'Ottawa, Canada',
-        expertise: ['Digital Marketing', 'Content Strategy', 'Social Media', 'SEO', 'Analytics']
-      },
-      {
-        id: '6',
-        name: 'Frank Miller',
-        email: 'frank@demo.local',
-        role: 'VIEWER',
-        avatar: 'FM',
-        skills: ['Business Development', 'Sales', 'Partnerships'],
-        projects: [
-          { id: '1', name: 'SmartStart Platform', role: 'VIEWER', ownership: 0 }
-        ],
-        portfolioValue: 0,
-        totalContributions: 0,
-        joinDate: '2023-11-15',
-        status: 'pending',
-        bio: 'Business development professional interested in exploring collaboration opportunities.',
-        location: 'Edmonton, Canada',
-        expertise: ['Business Strategy', 'Sales', 'Partnerships', 'Market Research']
+    try {
+      // Fetch real community members data from API
+      const membersResponse = await apiCallWithAuth('/users', tokenCookie.split('=')[1])
+      
+      if (membersResponse && Array.isArray(membersResponse)) {
+        // Transform API data to match our interface
+        const realMembers: CommunityMember[] = membersResponse.map((member: any) => ({
+          id: member.id,
+          name: member.name || 'Unknown User',
+          email: member.email,
+          role: member.role || 'MEMBER',
+          avatar: member.name ? member.name.substring(0, 2).toUpperCase() : 'U',
+          skills: [], // Will be populated from user skills API if available
+          projects: [], // Will be populated from project memberships API if available
+          portfolioValue: 0, // Will be computed from portfolio data
+          totalContributions: 0, // Will be computed from contributions data
+          joinDate: member.createdAt || new Date().toISOString(),
+          status: 'active', // Default to active for now
+          bio: member.bio || 'No bio available',
+          location: member.location || 'Location not specified',
+          expertise: [] // Will be populated from user skills API if available
+        }))
+        
+        setMembers(realMembers)
+        setFilteredMembers(realMembers)
+      } else {
+        // Fallback to empty array if API fails
+        setMembers([])
+        setFilteredMembers([])
       }
-    ]
-    
-    setMembers(mockMembers)
-    setFilteredMembers(mockMembers)
-    setLoading(false)
+    } catch (error) {
+      console.error('Error fetching members data:', error)
+      // Fallback to empty array if API fails
+      setMembers([])
+      setFilteredMembers([])
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() => {

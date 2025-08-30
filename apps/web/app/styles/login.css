@@ -1,6 +1,8 @@
 /* SmartStart - Modern Professional Login Page */
 
+
 /* Login Container */
+
 .login-container {
     min-height: 100vh;
     display: flex;
@@ -24,11 +26,17 @@
 }
 
 @keyframes rotate {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
+
 /* Login Card */
+
 .login-card {
     background: var(--bg-secondary);
     border: 1px solid var(--border-primary);
@@ -52,7 +60,9 @@
     border-radius: var(--radius-xl) var(--radius-xl) 0 0;
 }
 
+
 /* Login Header */
+
 .login-header {
     text-align: center;
     margin-bottom: var(--spacing-2xl);
@@ -93,7 +103,9 @@
     line-height: 1.5;
 }
 
+
 /* Login Form */
+
 .login-form {
     margin-bottom: var(--spacing-xl);
 }
@@ -133,7 +145,9 @@
     color: var(--text-muted);
 }
 
+
 /* Password Input */
+
 .password-input {
     position: relative;
 }
@@ -157,7 +171,9 @@
     background: var(--bg-hover);
 }
 
+
 /* Remember Me */
+
 .remember-me {
     display: flex;
     align-items: center;
@@ -179,7 +195,9 @@
     user-select: none;
 }
 
+
 /* Login Button */
+
 .login-btn {
     width: 100%;
     padding: var(--spacing-md);
@@ -208,7 +226,9 @@
     transform: none;
 }
 
+
 /* Login Footer */
+
 .login-footer {
     text-align: center;
     padding-top: var(--spacing-lg);
@@ -228,7 +248,9 @@
     text-decoration: underline;
 }
 
+
 /* Error Messages */
+
 .error-message {
     background: rgba(239, 68, 68, 0.05);
     border: 1px solid rgba(239, 68, 68, 0.2);
@@ -240,7 +262,9 @@
     text-align: center;
 }
 
+
 /* Success Messages */
+
 .success-message {
     background: rgba(16, 185, 129, 0.05);
     border: 1px solid rgba(16, 185, 129, 0.2);
@@ -252,7 +276,9 @@
     text-align: center;
 }
 
+
 /* Demo Account Box */
+
 .demo-account {
     margin-top: var(--spacing-lg);
     padding: var(--spacing-md);
@@ -265,7 +291,9 @@
     line-height: 1.6;
 }
 
+
 /* Loading State */
+
 .loading-spinner {
     display: inline-block;
     width: 20px;
@@ -278,11 +306,17 @@
 }
 
 @keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
+
 /* Responsive Design */
+
 @media (max-width: 768px) {
     .login-container {
         padding: var(--spacing-md);

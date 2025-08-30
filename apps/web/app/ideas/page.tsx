@@ -99,149 +99,54 @@ export default function IdeasPage() {
   }, [router])
 
   const fetchIdeasData = async () => {
-    // Mock ideas data
-    const mockIdeas: Idea[] = [
-      {
-        id: '1',
-        title: 'AI-Powered Project Matching',
-        description: 'Develop an AI system that automatically matches community members with projects based on their skills, interests, and availability. This would increase project success rates and member engagement.',
-        category: 'feature',
-        status: 'under_review',
-        priority: 'high',
-        impact: 'high',
-        submittedBy: {
-          id: 'user-1',
-          name: 'Alice Johnson',
-          email: 'alice@smartstart.com',
-          role: 'SUPER_ADMIN'
-        },
-        submittedAt: '2024-01-15T10:00:00Z',
-        votes: {
-          upvotes: 28,
-          downvotes: 2,
-          userVote: 'up'
-        },
-        tags: ['AI', 'Machine Learning', 'Project Management', 'User Experience'],
-        estimatedEffort: '2-3 months',
-        estimatedValue: 75000,
-        team: ['AI Team', 'Frontend Team', 'Backend Team'],
-        comments: [
-          {
-            id: 'c1',
-            content: 'This would be a game-changer for our community! I love the idea of intelligent project matching.',
-            author: {
-              id: 'user-2',
-              name: 'Bob Chen',
-              role: 'ADMIN'
-            },
-            timestamp: '2024-01-16T14:30:00Z'
+    try {
+      // Fetch real ideas data from API
+      const ideasResponse = await apiCallWithAuth('/ideas', tokenCookie.split('=')[1])
+      
+      if (ideasResponse && Array.isArray(ideasResponse)) {
+        // Transform API data to match our interface
+        const realIdeas: Idea[] = ideasResponse.map((idea: any) => ({
+          id: idea.id,
+          title: idea.title,
+          description: idea.body || idea.description || 'No description available',
+          category: 'feature', // Default category since API doesn't have this field
+          status: idea.status?.toLowerCase() || 'submitted',
+          priority: 'medium', // Default priority since API doesn't have this field
+          impact: 'medium', // Default impact since API doesn't have this field
+          submittedBy: {
+            id: idea.proposerId || idea.submittedBy?.id || 'unknown',
+            name: idea.proposer?.name || idea.submittedBy?.name || 'Unknown User',
+            email: idea.proposer?.email || idea.submittedBy?.email || 'unknown@example.com',
+            role: idea.proposer?.role || idea.submittedBy?.role || 'MEMBER'
           },
-          {
-            id: 'c2',
-            content: 'We should consider integrating this with our existing RBAC system for better permission management.',
-            author: {
-              id: 'user-3',
-              name: 'Carol Rodriguez',
-              role: 'OWNER'
-            },
-            timestamp: '2024-01-17T09:15:00Z'
-          }
-        ]
-      },
-      {
-        id: '2',
-        title: 'Community Marketplace',
-        description: 'Create a marketplace where community members can offer and request services, skills, and resources. This would foster collaboration and create additional revenue streams.',
-        category: 'business',
-        status: 'approved',
-        priority: 'medium',
-        impact: 'high',
-        submittedBy: {
-          id: 'user-4',
-          name: 'David Kim',
-          email: 'david@demo.local',
-          role: 'CONTRIBUTOR'
-        },
-        submittedAt: '2024-01-10T16:45:00Z',
-        votes: {
-          upvotes: 35,
-          downvotes: 1,
-          userVote: null
-        },
-        tags: ['Marketplace', 'E-commerce', 'Community', 'Monetization'],
-        estimatedEffort: '3+ months',
-        estimatedValue: 120000,
-        team: ['Full-Stack Team', 'Design Team', 'Business Team'],
-        comments: [
-          {
-            id: 'c3',
-            content: 'This aligns perfectly with our community-driven approach. Great idea!',
-            author: {
-              id: 'user-1',
-              name: 'Alice Johnson',
-              role: 'SUPER_ADMIN'
-            },
-            timestamp: '2024-01-11T11:20:00Z'
-          }
-        ]
-      },
-      {
-        id: '3',
-        title: 'Advanced Analytics Dashboard',
-        description: 'Build a comprehensive analytics dashboard that provides insights into project performance, member contributions, portfolio growth, and community health metrics.',
-        category: 'feature',
-        status: 'in_progress',
-        priority: 'high',
-        impact: 'medium',
-        submittedBy: {
-          id: 'user-5',
-          name: 'Emma Wilson',
-          email: 'emma@demo.local',
-          role: 'MEMBER'
-        },
-        submittedAt: '2024-01-05T13:20:00Z',
-        votes: {
-          upvotes: 22,
-          downvotes: 0,
-          userVote: 'up'
-        },
-        tags: ['Analytics', 'Dashboard', 'Data Visualization', 'Business Intelligence'],
-        estimatedEffort: '1 month',
-        estimatedValue: 45000,
-        team: ['Data Team', 'Frontend Team'],
-        comments: []
-      },
-      {
-        id: '4',
-        title: 'Mobile App Development',
-        description: 'Develop native mobile applications for iOS and Android to provide on-the-go access to SmartStart features, notifications, and project management.',
-        category: 'product',
-        status: 'draft',
-        priority: 'medium',
-        impact: 'high',
-        submittedBy: {
-          id: 'user-6',
-          name: 'Frank Miller',
-          email: 'frank@demo.local',
-          role: 'VIEWER'
-        },
-        submittedAt: '2024-01-20T15:30:00Z',
-        votes: {
-          upvotes: 18,
-          downvotes: 3,
-          userVote: null
-        },
-        tags: ['Mobile', 'iOS', 'Android', 'React Native', 'User Experience'],
-        estimatedEffort: '3+ months',
-        estimatedValue: 95000,
-        team: ['Mobile Team', 'Backend Team'],
-        comments: []
+          submittedAt: idea.createdAt || new Date().toISOString(),
+          votes: {
+            upvotes: 0, // API doesn't have voting system yet
+            downvotes: 0,
+            userVote: null
+          },
+          tags: [], // API doesn't have tags yet
+          estimatedEffort: '1-2 weeks', // Default since API doesn't have this field
+          estimatedValue: 0, // Default since API doesn't have this field
+          team: [], // API doesn't have team assignments yet
+          comments: [] // API doesn't have comments yet
+        }))
+        
+        setIdeas(realIdeas)
+        setFilteredIdeas(realIdeas)
+      } else {
+        // Fallback to empty array if API fails
+        setIdeas([])
+        setFilteredIdeas([])
       }
-    ]
-    
-    setIdeas(mockIdeas)
-    setFilteredIdeas(mockIdeas)
-    setLoading(false)
+    } catch (error) {
+      console.error('Error fetching ideas data:', error)
+      // Fallback to empty array if API fails
+      setIdeas([])
+      setFilteredIdeas([])
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() => {

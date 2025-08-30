@@ -110,16 +110,18 @@ export default function MeshPage() {
       // Fetch mesh items from API
       try {
         const data = await apiCallWithAuth('/mesh/items', token)
-        setMeshItems(data)
+        if (data && Array.isArray(data)) {
+          setMeshItems(data)
+        } else {
+          setMeshItems([])
+        }
       } catch (error) {
         console.error('Failed to fetch mesh data')
-        // Fallback to mock data
-        setMeshItems(getMockMeshItems())
+        setMeshItems([])
       }
     } catch (error) {
       console.error('Error fetching mesh data:', error)
-      // Fallback to mock data
-      setMeshItems(getMockMeshItems())
+      setMeshItems([])
     } finally {
       setLoading(false)
     }
@@ -141,149 +143,19 @@ export default function MeshPage() {
       // Fetch insights from API
       try {
         const data = await apiCallWithAuth('/mesh/insights', token)
-        setInsights(data)
+        if (data && Array.isArray(data)) {
+          setInsights(data)
+        } else {
+          setInsights([])
+        }
       } catch (error) {
         console.error('Failed to fetch insights')
-        // Fallback to mock data
-        setInsights(getMockInsights())
+        setInsights([])
       }
     } catch (error) {
       console.error('Error fetching insights:', error)
-      // Fallback to mock data
-      setInsights(getMockInsights())
+      setInsights([])
     }
-  }
-
-  const getMockMeshItems = (): MeshItem[] => {
-    return [
-      {
-        id: '1',
-        type: 'win',
-        title: 'Project Alpha Launched Successfully!',
-        description: 'After 3 months of hard work, we finally launched our MVP and got our first 100 users!',
-        author: {
-          id: 'user-1',
-          name: 'Sarah Chen',
-          role: 'Project Lead',
-          avatar: '👩‍💼'
-        },
-        project: {
-          id: 'project-1',
-          name: 'Alpha',
-          color: '#4CAF50'
-        },
-        timestamp: '2024-01-15T10:30:00Z',
-        priority: 'high',
-        relevantUsers: ['user-1', 'user-2', 'user-3'],
-        reactions: [
-          { emoji: '🎉', count: 12, users: ['user-2', 'user-3', 'user-4'] },
-          { emoji: '🚀', count: 8, users: ['user-1', 'user-5'] }
-        ],
-        metadata: {
-          equityEarned: 15,
-          sprintNumber: 6
-        }
-      },
-      {
-        id: '2',
-        type: 'need_help',
-        title: 'Need Frontend Developer for Beta Project',
-        description: 'Looking for a React/TypeScript developer to help with our beta launch. 2-3 weeks commitment.',
-        author: {
-          id: 'user-2',
-          name: 'Mike Johnson',
-          role: 'Tech Lead',
-          avatar: '👨‍💻'
-        },
-        project: {
-          id: 'project-2',
-          name: 'Beta',
-          color: '#2196F3'
-        },
-        timestamp: '2024-01-15T09:15:00Z',
-        priority: 'critical',
-        relevantUsers: ['user-2', 'user-6', 'user-7'],
-        reactions: [
-          { emoji: '🤝', count: 5, users: ['user-6', 'user-7'] },
-          { emoji: '💡', count: 3, users: ['user-8'] }
-        ],
-        metadata: {
-          helpType: 'Development',
-          skillNeeded: 'React, TypeScript, UI/UX'
-        },
-        actionItems: [
-          'Review project requirements',
-          'Schedule technical interview',
-          'Define equity split'
-        ]
-      },
-      {
-        id: '3',
-        type: 'milestone',
-        title: 'Reached 50% Equity Distribution',
-        description: 'Successfully distributed equity to 15 team members across 3 projects. Great milestone for our community!',
-        author: {
-          id: 'user-3',
-          name: 'Alex Rodriguez',
-          role: 'Community Manager',
-          avatar: '👨‍💼'
-        },
-        timestamp: '2024-01-15T08:45:00Z',
-        priority: 'medium',
-        relevantUsers: ['user-3', 'user-9', 'user-10'],
-        reactions: [
-          { emoji: '🏆', count: 18, users: ['user-9', 'user-10', 'user-11'] },
-          { emoji: '💰', count: 7, users: ['user-12', 'user-13'] }
-        ],
-        metadata: {
-          milestoneName: 'Equity Distribution'
-        }
-      }
-    ]
-  }
-
-  const getMockInsights = (): CommunityInsight[] => {
-    return [
-      {
-        type: 'trending',
-        title: 'AI & Machine Learning Projects',
-        description: '3 out of 5 active projects involve AI/ML components. Community interest in AI is at an all-time high.',
-        priority: 8,
-        confidence: 0.85,
-        relevantUsers: ['user-1', 'user-4', 'user-6'],
-        actionItems: [
-          'Consider AI-focused community challenge',
-          'Share AI/ML resources',
-          'Connect AI enthusiasts'
-        ]
-      },
-      {
-        type: 'opportunity',
-        title: 'Growth Marketing Skills Gap',
-        description: 'Multiple projects seeking growth marketing help. Consider organizing a growth sprint or skill-sharing session.',
-        priority: 9,
-        confidence: 0.92,
-        relevantUsers: ['user-2', 'user-5'],
-        actionItems: [
-          'Organize growth marketing workshop',
-          'Create skill-sharing program',
-          'Match projects with available talent'
-        ]
-      },
-      {
-        type: 'collaboration',
-        title: 'Cross-Project Synergies',
-        description: '2 projects could benefit from shared backend infrastructure. Opportunity for technical collaboration.',
-        priority: 7,
-        confidence: 0.78,
-        relevantUsers: ['user-3', 'user-7', 'user-8'],
-        actionItems: [
-          'Schedule technical alignment meeting',
-          'Explore shared infrastructure options',
-          'Define collaboration framework'
-        ]
-      }
-    ]
   }
 
   const handleReaction = async (itemId: string, emoji: string) => {

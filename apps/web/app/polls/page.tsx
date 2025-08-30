@@ -73,60 +73,41 @@ export default function PollsPage() {
   }, [router])
 
   const fetchPollsData = async () => {
-    // Mock polls data
-    const mockPolls: Poll[] = [
-      {
-        id: '1',
-        title: 'Platform Feature Priority',
-        description: 'Which feature should we prioritize for the next SmartStart release?',
-        status: 'active',
-        category: 'technical',
-        createdBy: 'admin@smartstart.com',
-        createdAt: '2024-01-15',
-        endDate: '2024-02-15',
-        totalVotes: 24,
-        options: [
-          { id: '1a', text: 'Advanced RBAC Controls', votes: 12, percentage: 50 },
-          { id: '1b', text: 'Real-time Notifications', votes: 8, percentage: 33 },
-          { id: '1c', text: 'Mobile App Development', votes: 4, percentage: 17 }
-        ]
-      },
-      {
-        id: '2',
-        title: 'Community Meeting Schedule',
-        description: 'When should we hold our monthly community meeting?',
-        status: 'active',
-        category: 'community',
-        createdBy: 'owner@demo.local',
-        createdAt: '2024-01-20',
-        endDate: '2024-01-30',
-        totalVotes: 18,
-        options: [
-          { id: '2a', text: 'First Monday of month', votes: 10, percentage: 56 },
-          { id: '2b', text: 'Second Wednesday of month', votes: 6, percentage: 33 },
-          { id: '2c', text: 'Last Friday of month', votes: 2, percentage: 11 }
-        ]
-      },
-      {
-        id: '3',
-        title: 'New Project Funding',
-        description: 'Should we allocate funds for the AI Marketing Tool project?',
-        status: 'active',
-        category: 'business',
-        createdBy: 'contrib@demo.local',
-        createdAt: '2024-01-25',
-        endDate: '2024-02-10',
-        totalVotes: 15,
-        options: [
-          { id: '3a', text: 'Yes, allocate $50K', votes: 11, percentage: 73 },
-          { id: '3b', text: 'Yes, but only $25K', votes: 3, percentage: 20 },
-          { id: '3c', text: 'No, wait for more validation', votes: 1, percentage: 7 }
-        ]
+    try {
+      // Fetch real polls data from API
+      const pollsResponse = await apiCallWithAuth('/polls', tokenCookie.split('=')[1])
+      
+      if (pollsResponse && Array.isArray(pollsResponse)) {
+        // Transform API data to match our interface
+        const realPolls: Poll[] = pollsResponse.map((poll: any) => ({
+          id: poll.id,
+          title: poll.title || 'Untitled Poll',
+          description: poll.description || poll.body || 'No description available',
+          status: poll.status?.toLowerCase() || 'active',
+          category: 'community', // Default category since API doesn't have this field
+          createdBy: poll.createdBy || poll.authorId || 'unknown',
+          createdAt: poll.createdAt || new Date().toISOString(),
+          endDate: poll.endDate || poll.expiresAt || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+          totalVotes: poll.totalVotes || 0,
+          options: poll.options || poll.choices || [
+            { id: '1', text: 'Option 1', votes: 0, percentage: 0 },
+            { id: '2', text: 'Option 2', votes: 0, percentage: 0 }
+          ],
+          userVote: poll.userVote || undefined
+        }))
+        
+        setPolls(realPolls)
+      } else {
+        // Fallback to empty array if API fails
+        setPolls([])
       }
-    ]
-    
-    setPolls(mockPolls)
-    setLoading(false)
+    } catch (error) {
+      console.error('Error fetching polls data:', error)
+      // Fallback to empty array if API fails
+      setPolls([])
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleVote = async (pollId: string, optionId: string) => {

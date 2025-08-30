@@ -34,7 +34,7 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     // Get user data from cookies
-    const getUserFromCookies = () => {
+    const getUserFromCookies = async () => {
       const cookies = document.cookie.split(';')
       const userCookie = cookies.find(cookie => cookie.trim().startsWith('user='))
       const tokenCookie = cookies.find(cookie => cookie.trim().startsWith('authToken='))
@@ -48,36 +48,44 @@ export default function AdminDashboard() {
         const userData = JSON.parse(userCookie.split('=')[1])
         setUser(userData)
         
-        // Mock RBAC insights for now
-        const mockInsights: RBACInsights = {
-          role: userData.role,
-          projectCount: 3,
-          totalContributions: 15,
-          portfolioValue: 60,
-          permissions: ['USER_MANAGEMENT', 'PROJECT_OVERSIGHT', 'SYSTEM_CONFIG', 'AUDIT_ACCESS'],
-          projectAccess: [
-            {
-              projectId: '1',
-              projectName: 'SmartStart Platform',
-              role: 'OWNER',
-              ownership: 35
-            },
-            {
-              projectId: '2',
-              projectName: 'AI Marketing Tool',
-              role: 'ADMIN',
-              ownership: 25
-            },
-            {
-              projectId: '3',
-              projectName: 'E-commerce Platform',
-              role: 'CONTRIBUTOR',
-              ownership: 5
+        // Fetch real RBAC insights from API
+        try {
+          const insightsResponse = await fetch(`https://smartstart-api.onrender.com/auth/rbac-insights/${userData.id}`, {
+            headers: {
+              'Authorization': `Bearer ${tokenCookie.split('=')[1]}`,
+              'Content-Type': 'application/json'
             }
-          ]
+          })
+          
+          if (insightsResponse.ok) {
+            const insights = await insightsResponse.json()
+            setRbacInsights(insights)
+          } else {
+            // Fallback to basic insights if API fails
+            const fallbackInsights: RBACInsights = {
+              role: userData.role,
+              projectCount: 0,
+              totalContributions: 0,
+              portfolioValue: 0,
+              permissions: [],
+              projectAccess: []
+            }
+            setRbacInsights(fallbackInsights)
+          }
+        } catch (error) {
+          console.error('Error fetching RBAC insights:', error)
+          // Fallback to basic insights if API fails
+          const fallbackInsights: RBACInsights = {
+            role: userData.role,
+            projectCount: 0,
+            totalContributions: 0,
+            portfolioValue: 0,
+            permissions: [],
+            projectAccess: []
+          }
+          setRbacInsights(fallbackInsights)
         }
         
-        setRbacInsights(mockInsights)
         setLoading(false)
       } catch (error) {
         console.error('Error parsing user data:', error)

@@ -79,139 +79,87 @@ export default function MessagesPage() {
   }, [router])
 
   const fetchChannelsData = async () => {
-    // Mock channels data
-    const mockChannels: Channel[] = [
-      {
-        id: 'general',
-        name: 'General',
-        description: 'General community discussions',
-        type: 'general',
-        unreadCount: 0,
-        lastMessage: 'Welcome to SmartStart!',
-        lastMessageTime: '2024-01-30T10:00:00Z'
-      },
-      {
-        id: 'announcements',
-        name: 'Announcements',
-        description: 'Important updates and announcements',
-        type: 'announcement',
-        unreadCount: 2,
-        lastMessage: 'New platform features released',
-        lastMessageTime: '2024-01-30T09:30:00Z'
-      },
-      {
-        id: 'smartstart-platform',
-        name: 'SmartStart Platform',
-        description: 'Development discussions for the core platform',
-        type: 'project',
-        unreadCount: 5,
-        lastMessage: 'RBAC system implementation complete',
-        lastMessageTime: '2024-01-30T08:45:00Z'
-      },
-      {
-        id: 'ai-marketing-tool',
-        name: 'AI Marketing Tool',
-        description: 'AI-powered marketing automation project',
-        type: 'project',
-        unreadCount: 1,
-        lastMessage: 'User interface mockups ready',
-        lastMessageTime: '2024-01-29T16:20:00Z'
-      },
-      {
-        id: 'random',
-        name: 'Random',
-        description: 'Off-topic discussions and fun',
-        type: 'random',
-        unreadCount: 0,
-        lastMessage: 'Anyone up for a game night?',
-        lastMessageTime: '2024-01-29T14:15:00Z'
+    try {
+      // Fetch real channels data from API
+      const channelsResponse = await apiCallWithAuth('/messages/channels', tokenCookie.split('=')[1])
+      
+      if (channelsResponse && Array.isArray(channelsResponse)) {
+        // Transform API data to match our interface
+        const realChannels: Channel[] = channelsResponse.map((channel: any) => ({
+          id: channel.id,
+          name: channel.name || 'Unnamed Channel',
+          description: channel.description || 'No description available',
+          type: channel.type || 'general',
+          unreadCount: channel.unreadCount || 0,
+          lastMessage: channel.lastMessage || 'No messages yet',
+          lastMessageTime: channel.lastMessageTime || channel.updatedAt || new Date().toISOString()
+        }))
+        
+        setChannels(realChannels)
+      } else {
+        // Fallback to default channels if API fails
+        const defaultChannels: Channel[] = [
+          {
+            id: 'general',
+            name: 'General',
+            description: 'General community discussions',
+            type: 'general',
+            unreadCount: 0,
+            lastMessage: 'Welcome to SmartStart!',
+            lastMessageTime: new Date().toISOString()
+          }
+        ]
+        setChannels(defaultChannels)
       }
-    ]
-    
-    setChannels(mockChannels)
+    } catch (error) {
+      console.error('Error fetching channels data:', error)
+      // Fallback to default channels if API fails
+      const defaultChannels: Channel[] = [
+        {
+          id: 'general',
+          name: 'General',
+          description: 'General community discussions',
+          type: 'general',
+          unreadCount: 0,
+          lastMessage: 'Welcome to SmartStart!',
+          lastMessageTime: new Date().toISOString()
+        }
+      ]
+      setChannels(defaultChannels)
+    }
   }
 
   const fetchMessagesData = async (channelId: string) => {
-    // Mock messages data
-    const mockMessages: Message[] = [
-      {
-        id: '1',
-        content: 'Welcome to SmartStart! This is where our community comes together to build amazing things.',
-        sender: {
-          id: 'admin-1',
-          name: 'Admin User',
-          email: 'admin@smartstart.com',
-          role: 'ADMIN'
-        },
-        timestamp: '2024-01-30T10:00:00Z',
-        type: 'announcement',
-        reactions: [
-          { emoji: '👋', count: 8, users: ['user1', 'user2', 'user3'] },
-          { emoji: '🚀', count: 5, users: ['user4', 'user5'] }
-        ]
-      },
-      {
-        id: '2',
-        content: 'Excited to be part of this community! Looking forward to contributing to some projects.',
-        sender: {
-          id: 'user-1',
-          name: 'John Doe',
-          email: 'john@demo.local',
-          role: 'CONTRIBUTOR'
-        },
-        timestamp: '2024-01-30T10:05:00Z',
-        type: 'text',
-        reactions: [
-          { emoji: '👍', count: 3, users: ['user2', 'user3'] }
-        ]
-      },
-      {
-        id: '3',
-        content: 'Great to have you here, John! Check out the projects section to see what we\'re working on.',
-        sender: {
-          id: 'user-2',
-          name: 'Jane Smith',
-          email: 'jane@demo.local',
-          role: 'OWNER'
-        },
-        timestamp: '2024-01-30T10:08:00Z',
-        type: 'text',
-        reactions: []
-      },
-      {
-        id: '4',
-        content: 'I\'ve been working on the RBAC system for the past week. It\'s coming along nicely!',
-        sender: {
-          id: 'user-3',
-          name: 'Mike Developer',
-          email: 'mike@demo.local',
-          role: 'CONTRIBUTOR'
-        },
-        timestamp: '2024-01-30T10:12:00Z',
-        type: 'text',
-        reactions: [
-          { emoji: '💻', count: 2, users: ['user1', 'user4'] },
-          { emoji: '🎯', count: 1, users: ['user2'] }
-        ]
-      },
-      {
-        id: '5',
-        content: 'That sounds amazing! Can\'t wait to see it in action. The current permission system could definitely use an upgrade.',
-        sender: {
-          id: 'user-4',
-          name: 'Sarah Manager',
-          email: 'sarah@demo.local',
-          role: 'ADMIN'
-        },
-        timestamp: '2024-01-30T10:15:00Z',
-        type: 'text',
-        reactions: [
-          { emoji: '🙌', count: 4, users: ['user1', 'user2', 'user3'] }
-        ]
+    try {
+      // Fetch real messages data from API
+      const messagesResponse = await apiCallWithAuth(`/messages/${channelId}`, tokenCookie.split('=')[1])
+      
+      if (messagesResponse && Array.isArray(messagesResponse)) {
+        // Transform API data to match our interface
+        const realMessages: Message[] = messagesResponse.map((message: any) => ({
+          id: message.id,
+          content: message.content || message.body || 'No content',
+          sender: {
+            id: message.senderId || message.authorId || 'unknown',
+            name: message.sender?.name || message.author?.name || 'Unknown User',
+            email: message.sender?.email || message.author?.email || 'unknown@example.com',
+            role: message.sender?.role || message.author?.role || 'MEMBER'
+          },
+          timestamp: message.createdAt || message.timestamp || new Date().toISOString(),
+          type: message.type || 'text',
+          reactions: message.reactions || []
+        }))
+        
+        setMessages(realMessages)
+      } else {
+        // Fallback to empty array if API fails
+        setMessages([])
       }
-    ]
-    
-    setMessages(mockMessages)
+    } catch (error) {
+      console.error('Error fetching messages data:', error)
+      // Fallback to empty array if API fails
+      setMessages([])
+    }
   }
 
   const handleChannelSelect = (channelId: string) => {
