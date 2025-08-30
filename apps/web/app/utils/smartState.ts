@@ -384,7 +384,22 @@ export const useSmartStore = create<SmartState>()(
           // For now, set default community data since the endpoint doesn't exist
           set({
             community: {
-              health: 'Good',
+              health: {
+                metrics: {
+                  totalUsers: 0,
+                  activeUsers: 0,
+                  totalProjects: 0,
+                  activeProjects: 0,
+                  totalContributions: 0,
+                  recentActivity: 0
+                },
+                health: {
+                  activityScore: 0,
+                  projectHealth: 0,
+                  userEngagement: 0,
+                  overall: 0
+                }
+              },
               trendingTopics: [],
               activeMembers: []
             }
