@@ -87,22 +87,48 @@ export default function PortfolioPage() {
 
   const fetchSmartContractData = async () => {
     try {
+      // Get auth token from cookies
+      const token = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('authToken='))
+        ?.split('=')[1];
+
+      if (!token) {
+        console.error('No auth token found');
+        return;
+      }
+
       // Fetch contract offers
-      const offersResponse = await fetch(`/api/smart-contracts/offers/user/${user?.id}`);
+      const offersResponse = await fetch(`https://smartstart-api.onrender.com/smart-contracts/offers/user/${user?.id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
       if (offersResponse.ok) {
         const offers = await offersResponse.json();
         setContractOffers(offers);
       }
 
       // Fetch portfolio insights
-      const insightsResponse = await fetch(`/api/smart-contracts/portfolio-insights/${user?.id}`);
+      const insightsResponse = await fetch(`https://smartstart-api.onrender.com/smart-contracts/portfolio-insights/${user?.id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
       if (insightsResponse.ok) {
         const insights = await insightsResponse.json();
         setPortfolioInsights(insights);
       }
 
       // Fetch vesting schedules
-      const vestingResponse = await fetch(`/api/smart-contracts/vesting/${user?.id}`);
+      const vestingResponse = await fetch(`https://smartstart-api.onrender.com/smart-contracts/vesting/${user?.id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
       if (vestingResponse.ok) {
         const vesting = await vestingResponse.json();
         setVestingSchedules(vesting);
@@ -114,9 +140,23 @@ export default function PortfolioPage() {
 
   const handleContractAction = async (contractId: string, action: 'accept' | 'reject', reason?: string) => {
     try {
-      const response = await fetch(`/api/smart-contracts/offers/${contractId}/${action}`, {
+      // Get auth token from cookies
+      const token = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('authToken='))
+        ?.split('=')[1];
+
+      if (!token) {
+        console.error('No auth token found');
+        return;
+      }
+
+      const response = await fetch(`https://smartstart-api.onrender.com/smart-contracts/offers/${contractId}/${action}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({ reason })
       });
 
