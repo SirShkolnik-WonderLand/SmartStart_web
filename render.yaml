@@ -1,8 +1,11 @@
 # SmartStart Platform - Render.com Blueprint
+
+# Define databases separately
 databases:
   - name: smartstart-db
     plan: free
 
+# Define services separately
 services:
   - name: smartstart-api
     type: web
@@ -12,7 +15,9 @@ services:
     startCommand: npm run start:api
     envVars:
       - key: DATABASE_URL
-        value: "postgresql://placeholder"
+        fromDatabase:
+          name: smartstart-db
+          property: connectionString
       - key: JWT_SECRET
         generateValue: true
       - key: NEXTAUTH_SECRET
@@ -40,7 +45,9 @@ services:
     startCommand: npm start
     envVars:
       - key: DATABASE_URL
-        value: "postgresql://placeholder"
+        fromDatabase:
+          name: smartstart-db
+          property: connectionString
       - key: JWT_SECRET
         generateValue: true
       - key: NEXTAUTH_SECRET
