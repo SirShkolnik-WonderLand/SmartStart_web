@@ -3,7 +3,7 @@ services:
     type: web
     runtime: node
     plan: free
-    buildCommand: npm ci --only=production && npx prisma generate
+    buildCommand: npm install --production && npx prisma generate
     startCommand: npm run start:api
     envVars:
       - key: NODE_ENV
