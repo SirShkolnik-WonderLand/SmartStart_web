@@ -397,10 +397,10 @@ export default function SmartStartHub() {
         activity.push({
           id: `project-${project.id}`,
           type: 'MILESTONE',
-          message: `Project "${project.name}" is ${project.status.toLowerCase()}`,
+          message: `Project "${project.name || 'Unknown'}" is ${project.status?.toLowerCase() || 'unknown'}`,
           timestamp: project.updatedAt,
           projectId: project.id,
-          projectName: project.name,
+          projectName: project.name || 'Unknown',
           severity: 'INFO'
         });
       });
@@ -457,7 +457,7 @@ export default function SmartStartHub() {
   }, [isAuthenticated]);
 
   const getStatusClass = (status: string) => {
-    switch (status.toLowerCase()) {
+    switch (status?.toLowerCase() || '') {
       case 'active': return 'active';
       case 'launching': return 'launching';
       case 'planning': return 'planning';
@@ -468,7 +468,7 @@ export default function SmartStartHub() {
   };
 
   const getActivityIconClass = (type: string) => {
-    switch (type.toLowerCase()) {
+    switch (type?.toLowerCase() || '') {
       case 'equity': return 'equity';
       case 'team': return 'team';
       case 'milestone': return 'milestone';
@@ -483,7 +483,7 @@ export default function SmartStartHub() {
   };
 
   const getLevelIcon = (level: string) => {
-    switch (level.toLowerCase()) {
+    switch (level?.toLowerCase() || '') {
       case 'owlet': return <Circle size={16} />;
       case 'builder': return <Hexagon size={16} />;
       case 'architect': return <Diamond size={16} />;
@@ -493,7 +493,7 @@ export default function SmartStartHub() {
   };
 
   const getSkillCategoryIcon = (category: string) => {
-    switch (category.toLowerCase()) {
+    switch (category?.toLowerCase() || '') {
       case 'tech': return <Code size={16} />;
       case 'ops': return <Settings size={16} />;
       case 'growth': return <TrendingUp size={16} />;
@@ -642,8 +642,8 @@ export default function SmartStartHub() {
             </div>
             {portfolioStats && (
               <div className="flex items-center gap-2 text-sm">
-                <div className={`status-dot ${portfolioStats.systemHealth.toLowerCase()}`}></div>
-                <span>System Health: {portfolioStats.systemHealth}</span>
+                <div className={`status-dot ${portfolioStats.systemHealth?.toLowerCase() || 'unknown'}`}></div>
+                <span>System Health: {portfolioStats.systemHealth || 'Unknown'}</span>
               </div>
             )}
           </div>
