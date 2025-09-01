@@ -39,7 +39,6 @@ import {
   Activity,
   Milestone,
   CheckSquare,
-  Calendar,
   Kanban,
   List,
   Grid,
