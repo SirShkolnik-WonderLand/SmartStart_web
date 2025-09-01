@@ -64,6 +64,7 @@ export default function MeshPage() {
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<string>('all')
   const [searchTerm, setSearchTerm] = useState('')
+  const [authToken, setAuthToken] = useState<string>('')
   const router = useRouter()
 
   useEffect(() => {
@@ -80,11 +81,13 @@ export default function MeshPage() {
 
       try {
         const userData = JSON.parse(userCookie.split('=')[1])
+        const token = tokenCookie.split('=')[1]
         setUser(userData)
+        setAuthToken(token)
         
         // Fetch mesh data
-        fetchMeshData()
-        fetchCommunityInsights()
+        fetchMeshData(token)
+        fetchCommunityInsights(token)
       } catch (error) {
         console.error('Error parsing user data:', error)
         router.push('/login')
@@ -94,18 +97,8 @@ export default function MeshPage() {
     getUserFromCookies()
   }, [router])
 
-  const fetchMeshData = async () => {
+  const fetchMeshData = async (token: string) => {
     try {
-      // Get auth token from cookies
-      const cookies = document.cookie.split(';')
-      const tokenCookie = cookies.find(cookie => cookie.trim().startsWith('authToken='))
-      
-      if (!tokenCookie) {
-        router.push('/login')
-        return
-      }
-
-      const token = tokenCookie.split('=')[1]
       
       // Fetch mesh items from API
       try {
@@ -127,18 +120,8 @@ export default function MeshPage() {
     }
   }
 
-  const fetchCommunityInsights = async () => {
+  const fetchCommunityInsights = async (token: string) => {
     try {
-      // Get auth token from cookies
-      const cookies = document.cookie.split(';')
-      const tokenCookie = cookies.find(cookie => cookie.trim().startsWith('authToken='))
-      
-      if (!tokenCookie) {
-        router.push('/login')
-        return
-      }
-
-      const token = tokenCookie.split('=')[1]
       
       // Fetch insights from API
       try {
@@ -160,25 +143,19 @@ export default function MeshPage() {
 
   const handleReaction = async (itemId: string, emoji: string) => {
     try {
-      // Get auth token from cookies
-      const cookies = document.cookie.split(';')
-      const tokenCookie = cookies.find(cookie => cookie.trim().startsWith('authToken='))
-      
-      if (!tokenCookie) {
+      if (!authToken) {
         router.push('/login')
         return
       }
-
-      const token = tokenCookie.split('=')[1]
       
       // Add reaction via API
-      await apiCallWithAuth(`/mesh/items/${itemId}/reactions`, token, {
+      await apiCallWithAuth(`/mesh/items/${itemId}/reactions`, authToken, {
         method: 'POST',
         body: JSON.stringify({ emoji })
       })
 
       // Refresh mesh data to get updated reactions
-      await fetchMeshData()
+      await fetchMeshData(authToken)
     } catch (error) {
       console.error('Error adding reaction:', error)
       // Fallback to local state update

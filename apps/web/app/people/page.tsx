@@ -43,6 +43,7 @@ export default function PeoplePage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [roleFilter, setRoleFilter] = useState<string>('all')
   const [statusFilter, setStatusFilter] = useState<string>('all')
+  const [authToken, setAuthToken] = useState<string>('')
   const router = useRouter()
 
   useEffect(() => {
@@ -59,10 +60,12 @@ export default function PeoplePage() {
 
       try {
         const userData = JSON.parse(userCookie.split('=')[1])
+        const token = tokenCookie.split('=')[1]
         setUser(userData)
+        setAuthToken(token)
         
         // Fetch community members data
-        await fetchMembersData()
+        await fetchMembersData(token)
       } catch (error) {
         console.error('Error parsing user data:', error)
         router.push('/login')
@@ -72,10 +75,10 @@ export default function PeoplePage() {
     getUserFromCookies()
   }, [router])
 
-  const fetchMembersData = async () => {
+  const fetchMembersData = async (token: string) => {
     try {
       // Fetch real community members data from API
-      const membersResponse = await apiCallWithAuth('/users', tokenCookie.split('=')[1])
+      const membersResponse = await apiCallWithAuth('/users', token)
       
       if (membersResponse && Array.isArray(membersResponse)) {
         // Transform API data to match our interface

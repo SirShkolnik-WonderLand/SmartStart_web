@@ -48,6 +48,7 @@ export default function UserManagementPage() {
   const [selectedUser, setSelectedUser] = useState<CommunityUser | null>(null)
   const [showEditModal, setShowEditModal] = useState(false)
   const [editingUser, setEditingUser] = useState<Partial<CommunityUser>>({})
+  const [authToken, setAuthToken] = useState<string>('')
   const router = useRouter()
 
   useEffect(() => {
@@ -72,8 +73,11 @@ export default function UserManagementPage() {
           return
         }
         
+        const token = tokenCookie.split('=')[1]
+        setAuthToken(token)
+        
         // Fetch users data
-        fetchUsersData()
+        fetchUsersData(token)
       } catch (error) {
         console.error('Error parsing user data:', error)
         router.push('/login')
@@ -83,18 +87,8 @@ export default function UserManagementPage() {
     getUserFromCookies()
   }, [router])
 
-  const fetchUsersData = async () => {
+  const fetchUsersData = async (token: string) => {
     try {
-      // Get auth token from cookies
-      const cookies = document.cookie.split(';')
-      const tokenCookie = cookies.find(cookie => cookie.trim().startsWith('authToken='))
-      
-      if (!tokenCookie) {
-        router.push('/login')
-        return
-      }
-
-      const token = tokenCookie.split('=')[1]
       
       // Fetch users from API
       const data = await apiCallWithAuth('/admin/users', token)

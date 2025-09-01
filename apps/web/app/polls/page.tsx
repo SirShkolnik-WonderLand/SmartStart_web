@@ -43,6 +43,7 @@ export default function PollsPage() {
     category: 'community' as const,
     options: ['', '']
   })
+  const [authToken, setAuthToken] = useState<string>('')
   const router = useRouter()
 
   useEffect(() => {
@@ -59,10 +60,12 @@ export default function PollsPage() {
 
       try {
         const userData = JSON.parse(userCookie.split('=')[1])
+        const token = tokenCookie.split('=')[1]
         setUser(userData)
+        setAuthToken(token)
         
         // Fetch polls data
-        await fetchPollsData()
+        await fetchPollsData(token)
       } catch (error) {
         console.error('Error parsing user data:', error)
         router.push('/login')
@@ -72,10 +75,10 @@ export default function PollsPage() {
     getUserFromCookies()
   }, [router])
 
-  const fetchPollsData = async () => {
+  const fetchPollsData = async (token: string) => {
     try {
       // Fetch real polls data from API
-      const pollsResponse = await apiCallWithAuth('/polls', tokenCookie.split('=')[1])
+      const pollsResponse = await apiCallWithAuth('/polls', token)
       
       if (pollsResponse && Array.isArray(pollsResponse)) {
         // Transform API data to match our interface

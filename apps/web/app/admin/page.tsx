@@ -30,6 +30,7 @@ export default function AdminDashboard() {
   const [user, setUser] = useState<User | null>(null)
   const [rbacInsights, setRbacInsights] = useState<RBACInsights | null>(null)
   const [loading, setLoading] = useState(true)
+  const [authToken, setAuthToken] = useState<string>('')
   const router = useRouter()
 
   useEffect(() => {
@@ -48,11 +49,14 @@ export default function AdminDashboard() {
         const userData = JSON.parse(userCookie.split('=')[1])
         setUser(userData)
         
+        const token = tokenCookie.split('=')[1]
+        setAuthToken(token)
+        
         // Fetch real RBAC insights from API
         try {
           const insightsResponse = await fetch(`https://smartstart-api.onrender.com/auth/rbac-insights/${userData.id}`, {
             headers: {
-              'Authorization': `Bearer ${tokenCookie.split('=')[1]}`,
+              'Authorization': `Bearer ${token}`,
               'Content-Type': 'application/json'
             }
           })

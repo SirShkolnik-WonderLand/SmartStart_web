@@ -100,6 +100,7 @@ export default function SystemSettingsPage() {
   const [saving, setSaving] = useState(false)
   const [activeTab, setActiveTab] = useState('general')
   const [showSaveSuccess, setShowSaveSuccess] = useState(false)
+  const [authToken, setAuthToken] = useState<string>('')
   const router = useRouter()
 
   useEffect(() => {
@@ -116,7 +117,9 @@ export default function SystemSettingsPage() {
 
       try {
         const userData = JSON.parse(userCookie.split('=')[1])
+        const token = tokenCookie.split('=')[1]
         setUser(userData)
+        setAuthToken(token)
         
         // Check if user is admin
         if (userData.role !== 'ADMIN' && userData.role !== 'SUPER_ADMIN') {
@@ -125,7 +128,7 @@ export default function SystemSettingsPage() {
         }
         
         // Fetch settings data
-        fetchSettingsData()
+        fetchSettingsData(token)
       } catch (error) {
         console.error('Error parsing user data:', error)
         router.push('/login')
@@ -135,18 +138,8 @@ export default function SystemSettingsPage() {
     getUserFromCookies()
   }, [router])
 
-  const fetchSettingsData = async () => {
+  const fetchSettingsData = async (token: string) => {
     try {
-      // Get auth token from cookies
-      const cookies = document.cookie.split(';')
-      const tokenCookie = cookies.find(cookie => cookie.trim().startsWith('authToken='))
-      
-      if (!tokenCookie) {
-        router.push('/login')
-        return
-      }
-
-      const token = tokenCookie.split('=')[1]
       
       // Fetch settings from API
       const data = await apiCallWithAuth('/admin/settings', token)
@@ -216,19 +209,13 @@ export default function SystemSettingsPage() {
     setSaving(true)
     
     try {
-      // Get auth token from cookies
-      const cookies = document.cookie.split(';')
-      const tokenCookie = cookies.find(cookie => cookie.trim().startsWith('authToken='))
-      
-      if (!tokenCookie) {
+      if (!authToken) {
         router.push('/login')
         return
       }
-
-      const token = tokenCookie.split('=')[1]
       
       // Save settings via API
-      await apiCallWithAuth('/admin/settings', token, {
+      await apiCallWithAuth('/admin/settings', authToken, {
         method: 'PUT',
         body: JSON.stringify(settings)
       })

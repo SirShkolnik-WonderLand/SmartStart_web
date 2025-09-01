@@ -58,6 +58,7 @@ export default function ProjectsPage() {
   const [loading, setLoading] = useState(true)
   const [showSubmissionForm, setShowSubmissionForm] = useState(false)
   const [activeTab, setActiveTab] = useState<'projects' | 'submissions' | 'create'>('projects')
+  const [authToken, setAuthToken] = useState<string>('')
   const router = useRouter()
 
   // Project submission form state
@@ -105,10 +106,13 @@ export default function ProjectsPage() {
         const userData = JSON.parse(userCookie.split('=')[1])
         setUser(userData)
         
+        const token = tokenCookie.split('=')[1]
+        setAuthToken(token)
+        
         // Fetch user projects and submissions
-        await fetchUserProjects(userData.id, tokenCookie.split('=')[1])
+        await fetchUserProjects(userData.id, token)
         if (userData.role === 'ADMIN' || userData.role === 'SUPER_ADMIN') {
-          await fetchSubmissions(tokenCookie.split('=')[1])
+          await fetchSubmissions(token)
         }
       } catch (error) {
         console.error('Error parsing user data:', error)
