@@ -748,12 +748,23 @@ router.post('/migrate', async (req, res) => {
         await prisma.$executeRaw`
             CREATE TABLE IF NOT EXISTS "User" (
                 "id" TEXT NOT NULL,
-                "name" TEXT NOT NULL,
+                "name" TEXT,
                 "email" TEXT NOT NULL,
-                "level" TEXT NOT NULL DEFAULT 'MEMBER',
+                "level" TEXT NOT NULL DEFAULT 'OWLET',
                 "xp" INTEGER NOT NULL DEFAULT 0,
+                "reputation" INTEGER NOT NULL DEFAULT 0,
+                "status" TEXT NOT NULL DEFAULT 'ACTIVE',
+                "lastActive" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                "totalPortfolioValue" DOUBLE PRECISION NOT NULL DEFAULT 0,
+                "activeProjectsCount" INTEGER NOT NULL DEFAULT 0,
+                "totalContributions" INTEGER NOT NULL DEFAULT 0,
+                "totalEquityOwned" DOUBLE PRECISION NOT NULL DEFAULT 0,
+                "averageEquityPerProject" DOUBLE PRECISION NOT NULL DEFAULT 0,
+                "portfolioDiversity" INTEGER NOT NULL DEFAULT 0,
+                "lastEquityEarned" TIMESTAMP(3),
+                "tenantId" TEXT DEFAULT 'default',
                 "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                "updatedAt" TIMESTAMP(3) NOT NULL,
+                "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 CONSTRAINT "User_pkey" PRIMARY KEY ("id")
             )
         `;
@@ -761,10 +772,11 @@ router.post('/migrate', async (req, res) => {
         await prisma.$executeRaw`
             CREATE TABLE IF NOT EXISTS "Badge" (
                 "id" TEXT NOT NULL,
-                "name" TEXT NOT NULL,
-                "description" TEXT,
-                "icon" TEXT,
-                "category" TEXT NOT NULL DEFAULT 'achievement',
+                "name" TEXT NOT NULL UNIQUE,
+                "description" TEXT NOT NULL,
+                "icon" TEXT NOT NULL,
+                "condition" TEXT NOT NULL,
+                "category" TEXT,
                 "rarity" TEXT NOT NULL DEFAULT 'COMMON',
                 "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 CONSTRAINT "Badge_pkey" PRIMARY KEY ("id")
@@ -774,9 +786,11 @@ router.post('/migrate', async (req, res) => {
         await prisma.$executeRaw`
             CREATE TABLE IF NOT EXISTS "Skill" (
                 "id" TEXT NOT NULL,
-                "name" TEXT NOT NULL,
-                "category" TEXT NOT NULL DEFAULT 'general',
+                "name" TEXT NOT NULL UNIQUE,
+                "category" TEXT NOT NULL,
                 "description" TEXT,
+                "demand" INTEGER NOT NULL DEFAULT 3,
+                "complexity" INTEGER NOT NULL DEFAULT 3,
                 "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 CONSTRAINT "Skill_pkey" PRIMARY KEY ("id")
             )
