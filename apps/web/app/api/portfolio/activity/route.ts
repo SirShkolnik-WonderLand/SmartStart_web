@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
         project: true,
         assignee: true
       },
-      orderBy: { dueDate: 'desc' },
+      orderBy: { id: 'desc' }, // Use id instead of dueDate for ordering
       take: limit
     });
     
