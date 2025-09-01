@@ -46,10 +46,88 @@ export interface Activity {
 
 export class PortfolioService {
   private static API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+  private static DEFAULT_USER_ID = 'cmewdcma80002ulb6wl0lzhoo'; // owner@demo.local
 
-  static async getPortfolioStats(userId: string): Promise<PortfolioStats> {
-    // TODO: Replace with real API call when backend is ready
-    // For now, return realistic mock data that matches the database structure
+  static async getPortfolioStats(userId: string = this.DEFAULT_USER_ID): Promise<PortfolioStats> {
+    try {
+      const response = await fetch(`${this.API_BASE}/portfolio/stats?userId=${userId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`API call failed: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to fetch portfolio stats');
+      }
+
+      return data.data;
+    } catch (error) {
+      console.error('Error fetching portfolio stats:', error);
+      throw new Error(`Failed to fetch portfolio stats: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }
+
+  static async getProjects(userId: string = this.DEFAULT_USER_ID): Promise<Project[]> {
+    try {
+      const response = await fetch(`${this.API_BASE}/portfolio/projects?userId=${userId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`API call failed: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to fetch projects');
+      }
+
+      return data.data;
+    } catch (error) {
+      console.error('Error fetching projects:', error);
+      throw new Error(`Failed to fetch projects: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }
+
+  static async getRecentActivity(userId: string = this.DEFAULT_USER_ID, limit: number = 10): Promise<Activity[]> {
+    try {
+      const response = await fetch(`${this.API_BASE}/portfolio/activity?userId=${userId}&limit=${limit}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`API call failed: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to fetch recent activity');
+      }
+
+      return data.data;
+    } catch (error) {
+      console.error('Error fetching recent activity:', error);
+      throw new Error(`Failed to fetch recent activity: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }
+
+  // Fallback mock data methods for when backend is not available
+  static async getPortfolioStatsMock(): Promise<PortfolioStats> {
     return {
       totalValue: 2500000,
       activeProjects: 5,
@@ -62,9 +140,7 @@ export class PortfolioService {
     };
   }
 
-  static async getProjects(userId: string): Promise<Project[]> {
-    // TODO: Replace with real API call when backend is ready
-    // For now, return realistic mock data that matches the database structure
+  static async getProjectsMock(): Promise<Project[]> {
     return [
       {
         id: '1',
@@ -157,9 +233,7 @@ export class PortfolioService {
     ];
   }
 
-  static async getRecentActivity(userId: string, limit: number = 10): Promise<Activity[]> {
-    // TODO: Replace with real API call when backend is ready
-    // For now, return realistic mock data that matches the database structure
+  static async getRecentActivityMock(limit: number = 10): Promise<Activity[]> {
     const activities: Activity[] = [
       {
         id: '1',
@@ -217,84 +291,5 @@ export class PortfolioService {
     ];
     
     return activities.slice(0, limit);
-  }
-
-  // Real API methods for when backend is ready
-  static async getPortfolioStatsFromAPI(userId: string): Promise<PortfolioStats> {
-    try {
-      const response = await fetch(`${this.API_BASE}/api/portfolio/stats?userId=${userId}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`API call failed: ${response.status} ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      
-      if (!data.success) {
-        throw new Error(data.error || 'Failed to fetch portfolio stats');
-      }
-
-      return data.data;
-    } catch (error) {
-      console.error('Error fetching portfolio stats:', error);
-      throw new Error(`Failed to fetch portfolio stats: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    }
-  }
-
-  static async getProjectsFromAPI(userId: string): Promise<Project[]> {
-    try {
-      const response = await fetch(`${this.API_BASE}/api/portfolio/projects?userId=${userId}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`API call failed: ${response.status} ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      
-      if (!data.success) {
-        throw new Error(data.error || 'Failed to fetch projects');
-      }
-
-      return data.data;
-    } catch (error) {
-      console.error('Error fetching projects:', error);
-      throw new Error(`Failed to fetch projects: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    }
-  }
-
-  static async getRecentActivityFromAPI(userId: string, limit: number = 10): Promise<Activity[]> {
-    try {
-      const response = await fetch(`${this.API_BASE}/api/portfolio/activity?userId=${userId}&limit=${limit}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`API call failed: ${response.status} ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      
-      if (!data.success) {
-        throw new Error(data.error || 'Failed to fetch recent activity');
-      }
-
-      return data.data;
-    } catch (error) {
-      console.error('Error fetching recent activity:', error);
-      throw new Error(`Failed to fetch recent activity: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    }
   }
 }
