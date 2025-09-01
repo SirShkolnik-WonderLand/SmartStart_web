@@ -3,13 +3,10 @@ import { PortfolioService } from '../../../../lib/services/portfolio';
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const limit = parseInt(searchParams.get('limit') || '10');
-    
     // In a real app, you'd get the user ID from the session
     const userId = 'demo-user-1';
     
-    const activity = await PortfolioService.getRecentActivity(userId, limit);
+    const activity = await PortfolioService.getRecentActivity(userId, 10);
     
     return NextResponse.json({
       success: true,
