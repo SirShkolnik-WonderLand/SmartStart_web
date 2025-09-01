@@ -4,14 +4,14 @@
 import { apiCallWithAuth } from '../../utils/api';
 
 export interface VestingTracking {
-  schedules: VestingSchedule[];
+  schedules: VestingTrackingSchedule[];
   upcomingVesting: UpcomingVesting[];
   vestingHistory: VestingHistory[];
   totalVested: number;
   totalUnvested: number;
 }
 
-export interface VestingSchedule {
+export interface VestingTrackingSchedule {
   id: string;
   projectId: string;
   projectName: string;
@@ -72,7 +72,7 @@ export class VestingTrackingService {
     }
   }
 
-  async getVestingSchedule(scheduleId: string): Promise<VestingSchedule> {
+  async getVestingSchedule(scheduleId: string): Promise<VestingTrackingSchedule> {
     try {
       const response = await apiCallWithAuth(`/smart-contracts/vesting/schedule/${scheduleId}`, this.token);
       return this.transformVestingSchedule(response);
@@ -168,7 +168,7 @@ export class VestingTrackingService {
     };
   }
 
-  private transformVestingSchedule(data: any): VestingSchedule {
+  private transformVestingSchedule(data: any): VestingTrackingSchedule {
     return {
       id: data.id,
       projectId: data.projectId,
