@@ -1,26 +1,24 @@
 {
-  "name": "smartstart-api",
-  "version": "2.0.0",
-  "description": "SmartStart Database API Service",
-  "main": "index.js",
+  "name": "smartstart-database",
+  "version": "1.0.0",
+  "description": "SmartStart Database Schema and Setup",
   "scripts": {
     "build": "prisma generate",
-    "start": "node index.js",
+    "setup": "node setup.js",
     "db:push": "prisma db push",
-    "db:seed": "tsx prisma/seed.ts"
+    "db:seed": "node prisma/seed.js",
+    "db:studio": "prisma studio"
   },
   "prisma": {
-    "seed": "tsx prisma/seed.ts"
+    "seed": "node prisma/seed.js"
   },
   "dependencies": {
     "@prisma/client": "^5.7.1"
   },
   "devDependencies": {
-    "prisma": "^5.7.1",
-    "tsx": "^4.6.2",
-    "typescript": "^5.3.3"
+    "prisma": "^5.7.1"
   },
-  "keywords": ["api", "database", "prisma", "smartstart"],
+  "keywords": ["database", "prisma", "smartstart"],
   "author": "AliceSolutions",
   "license": "MIT"
 }
