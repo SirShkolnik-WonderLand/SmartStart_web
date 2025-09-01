@@ -737,6 +737,83 @@ router.post('/events/task/accepted', async(req, res) => {
 // ===== SEED ENDPOINT =====
 
 /**
+ * POST /migrate - Create basic database tables for testing
+ * WARNING: This should only be used in development/production setup
+ */
+router.post('/migrate', async (req, res) => {
+    try {
+        console.log('🔄 Starting production database migration...');
+        
+        // Create basic tables for testing
+        await prisma.$executeRaw`
+            CREATE TABLE IF NOT EXISTS "User" (
+                "id" TEXT NOT NULL,
+                "name" TEXT NOT NULL,
+                "email" TEXT NOT NULL,
+                "level" TEXT NOT NULL DEFAULT 'MEMBER',
+                "xp" INTEGER NOT NULL DEFAULT 0,
+                "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                "updatedAt" TIMESTAMP(3) NOT NULL,
+                CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+            )
+        `;
+        
+        await prisma.$executeRaw`
+            CREATE TABLE IF NOT EXISTS "Badge" (
+                "id" TEXT NOT NULL,
+                "name" TEXT NOT NULL,
+                "description" TEXT,
+                "icon" TEXT,
+                "category" TEXT NOT NULL DEFAULT 'achievement',
+                "rarity" TEXT NOT NULL DEFAULT 'COMMON',
+                "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                CONSTRAINT "Badge_pkey" PRIMARY KEY ("id")
+            )
+        `;
+        
+        await prisma.$executeRaw`
+            CREATE TABLE IF NOT EXISTS "Skill" (
+                "id" TEXT NOT NULL,
+                "name" TEXT NOT NULL,
+                "category" TEXT NOT NULL DEFAULT 'general',
+                "description" TEXT,
+                "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                CONSTRAINT "Skill_pkey" PRIMARY KEY ("id")
+            )
+        `;
+        
+        await prisma.$executeRaw`
+            CREATE TABLE IF NOT EXISTS "File" (
+                "id" TEXT NOT NULL,
+                "filename" TEXT NOT NULL,
+                "mimeType" TEXT NOT NULL DEFAULT 'text/plain',
+                "size" INTEGER NOT NULL,
+                "checksumSha256" TEXT NOT NULL,
+                "uploadedBy" TEXT NOT NULL,
+                "isPublic" BOOLEAN NOT NULL DEFAULT true,
+                "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                CONSTRAINT "File_pkey" PRIMARY KEY ("id")
+            )
+        `;
+        
+        console.log('✅ Production database migration completed successfully!');
+        
+        res.json({ 
+            success: true, 
+            message: 'Database migrated successfully',
+            tablesCreated: ['User', 'Badge', 'Skill', 'File'],
+            timestamp: new Date().toISOString()
+        });
+    } catch (error) {
+        console.error('❌ Production database migration failed:', error);
+        res.status(500).json({ 
+            error: 'Failed to migrate database',
+            details: error.message 
+        });
+    }
+});
+
+/**
  * POST /seed - Seed the database with initial data
  * WARNING: This should only be used in development/production setup
  */
