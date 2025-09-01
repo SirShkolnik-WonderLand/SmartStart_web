@@ -7,7 +7,8 @@ const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://smartstart-api.onre
 
 export async function GET(request: NextRequest) {
   // Always return mock data for now - no API calls
-    const mockSkills = [
+  const userId = 'demo-user-1';
+  const mockSkills = [
       {
         id: 'skill-1',
         userId: userId,
@@ -71,5 +72,4 @@ export async function GET(request: NextRequest) {
     ];
     
     return NextResponse.json(mockSkills);
-  }
 }
