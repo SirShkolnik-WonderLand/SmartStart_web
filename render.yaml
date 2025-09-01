@@ -1,8 +1,15 @@
 services:
+  - name: smartstart-db
+    type: pserv
+    runtime: postgresql
+    plan: starter
+    ipAllowList: []
+    autoDeploy: true
+
   - name: smartstart-api
     type: web
     runtime: node
-    plan: free
+    plan: starter
     buildCommand: npm install --production && npx prisma generate
     startCommand: npm run start:api
     envVars:
@@ -10,4 +17,17 @@ services:
         value: production
       - key: PORT
         value: "3001"
+      - key: DATABASE_URL
+        fromService:
+          name: smartstart-db
+          type: pserv
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: WORKER_ENABLED
+        value: "false"
+      - key: STORAGE_ENABLED
+        value: "false"
+      - key: MONITOR_ENABLED
+        value: "false"
     autoDeploy: true
