@@ -1116,7 +1116,7 @@ async function getLastWalletHash(walletId) {
         orderBy: { createdAt: 'desc' }
     });
 
-    return lastEntry ? .hash || null;
+    return lastEntry ? lastEntry.hash : null;
 }
 
 async function calculateWalletHash(walletId, amount, type) {
