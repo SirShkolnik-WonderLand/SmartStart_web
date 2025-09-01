@@ -182,3 +182,26 @@ services:
         value: https://smartstart-storage.onrender.com
     healthCheckPath: /health
     autoDeploy: true
+
+  # Database Migration Service - Handles database setup and seeding
+  - name: smartstart-database
+    type: web
+    runtime: node
+    plan: free
+    buildCommand: npm install && npx prisma generate
+    startCommand: npx prisma db push --force-reset && npx prisma db seed && npm run start:api
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: smartstart-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: NEXTAUTH_SECRET
+        generateValue: true
+      - key: API_PORT
+        value: "3001"
+      - key: NODE_ENV
+        value: production
+    healthCheckPath: /api/health
+    autoDeploy: true
