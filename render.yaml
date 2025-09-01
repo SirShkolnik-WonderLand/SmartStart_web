@@ -1,32 +1,11 @@
 services:
   - type: web
-    name: smartstart-web
+    name: smartstart-database
     env: node
     rootDir: .
     plan: free
-    buildCommand: npm install --include=dev && cd apps/web && npm run build
-    startCommand: cd apps/web && npm start
-    envVars:
-      - key: NODE_ENV
-        value: production
-      - key: NEXT_PUBLIC_API_URL
-        value: https://smartstart-api.onrender.com
-      - key: WEB_ORIGIN
-        value: https://smartstart-web.onrender.com
-      - key: JWT_SECRET
-        generateValue: true
-      - key: PORT
-        value: 3000
-      - key: NEXT_TELEMETRY_DISABLED
-        value: "1"
-
-  - type: web
-    name: smartstart-api
-    env: node
-    rootDir: .
-    plan: free
-    buildCommand: npm install --include=dev && npx prisma generate && npm run build
-    startCommand: npx prisma db push && npx prisma db seed && cd apps/api && npm start
+    buildCommand: npm install && npx prisma generate
+    startCommand: npx prisma db push && npx prisma db seed && echo "Database setup complete"
     envVars:
       - key: NODE_ENV
         value: production
@@ -35,47 +14,7 @@ services:
           name: smartstart-db
           property: connectionString
       - key: PORT
-        value: 3001
-      - key: WEB_ORIGIN
-        value: https://smartstart-web.onrender.com
-      - key: CORS_ORIGIN
-        value: https://smartstart-web.onrender.com
-      - key: JWT_SECRET
-        generateValue: true
-      - key: SESSION_SECRET
-        generateValue: true
-      - key: RATE_LIMIT_WINDOW_MS
-        value: 900000
-      - key: RATE_LIMIT_MAX_REQUESTS
-        value: 100
-      - key: AUTH_RATE_LIMIT
-        value: 5
-      - key: API_RATE_LIMIT
-        value: 100
-      - key: IDEAS_RATE_LIMIT
-        value: 30
-      - key: POLLS_RATE_LIMIT
-        value: 30
-      - key: ENABLE_AUDIT_LOGGING
-        value: true
-      - key: AUDIT_LOG_RETENTION_DAYS
-        value: 365
-      - key: ENABLE_RBAC
-        value: true
-      - key: ENABLE_RATE_LIMITING
-        value: true
-      - key: OWNER_MIN_PCT
-        value: 35
-      - key: ALICE_CAP_PCT
-        value: 25
-      - key: CONTRIBUTION_MIN_PCT
-        value: 0.5
-      - key: CONTRIBUTION_MAX_PCT
-        value: 5.0
-      - key: DEFAULT_PAGE_SIZE
-        value: 20
-      - key: MAX_PAGE_SIZE
-        value: 100
+        value: 8080
 
 databases:
   - name: smartstart-db

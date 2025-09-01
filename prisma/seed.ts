@@ -1,374 +1,81 @@
-import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcryptjs';
+import { PrismaClient } from '@prisma/client'
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 
 async function main() {
-  console.log('🌱 Starting database seeding...');
+  console.log('🌱 Starting database seed...')
 
-  // Create demo users
-  const adminUser = await prisma.user.upsert({
-    where: { email: 'admin@smartstart.com' },
-    update: {},
-    create: {
-      email: 'admin@smartstart.com',
-      name: 'Admin User',
-      level: 'SKY_MASTER',
-      xp: 1000,
-      reputation: 100,
-      account: {
-        create: {
-          email: 'admin@smartstart.com',
-          password: await bcrypt.hash('admin123', 12),
-          role: 'ADMIN'
-        }
-      }
-    }
-  });
+  // Create system settings
+  const systemSettings = [
+    { category: 'equity', key: 'owner_min_percentage', value: '35', description: 'Minimum equity percentage for project owners' },
+    { category: 'equity', key: 'alice_cap_percentage', value: '25', description: 'Maximum equity percentage for AliceSolutions' },
+    { category: 'equity', key: 'contribution_min_percentage', value: '0.5', description: 'Minimum equity percentage for contributions' },
+    { category: 'equity', key: 'contribution_max_percentage', value: '5.0', description: 'Maximum equity percentage for contributions' },
+    { category: 'security', key: 'mfa_required', value: 'true', description: 'Whether MFA is required for all users' },
+    { category: 'security', key: 'kyc_required', value: 'true', description: 'Whether KYC is required for equity participation' },
+    { category: 'governance', key: 'dispute_resolution_days', value: '7', description: 'Number of days for dispute resolution' },
+    { category: 'governance', key: 'quarterly_rebalance_enabled', value: 'true', description: 'Whether quarterly equity rebalancing is enabled' },
+  ]
 
-  const ownerUser = await prisma.user.upsert({
-    where: { email: 'owner@demo.local' },
-    update: {},
-    create: {
-      email: 'owner@demo.local',
-      name: 'Project Owner',
-      level: 'WISE_OWL',
-      xp: 750,
-      reputation: 75,
-      account: {
-        create: {
-          email: 'owner@demo.local',
-          password: await bcrypt.hash('owner123', 12),
-          role: 'OWNER'
-        }
-      }
-    }
-  });
+  for (const setting of systemSettings) {
+    await prisma.systemSetting.upsert({
+      where: { category_key: { category: setting.category, key: setting.key } },
+      update: { value: setting.value, description: setting.description },
+      create: setting,
+    })
+  }
 
-  const contributorUser = await prisma.user.upsert({
-    where: { email: 'contrib@demo.local' },
-    update: {},
-    create: {
-      email: 'contrib@demo.local',
-      name: 'Contributor',
-      level: 'NIGHT_WATCHER',
-      xp: 500,
-      reputation: 50,
-      account: {
-        create: {
-          email: 'contrib@demo.local',
-          password: await bcrypt.hash('contrib123', 12),
-          role: 'MEMBER'
-        }
-      }
-    }
-  });
+  // Create default skills
+  const defaultSkills = [
+    { name: 'JavaScript', category: 'engineering', description: 'JavaScript programming language', demand: 5, complexity: 3 },
+    { name: 'TypeScript', category: 'engineering', description: 'TypeScript programming language', demand: 5, complexity: 4 },
+    { name: 'React', category: 'engineering', description: 'React frontend framework', demand: 5, complexity: 3 },
+    { name: 'Node.js', category: 'engineering', description: 'Node.js runtime environment', demand: 5, complexity: 3 },
+    { name: 'Prisma', category: 'engineering', description: 'Prisma ORM', demand: 4, complexity: 2 },
+    { name: 'PostgreSQL', category: 'engineering', description: 'PostgreSQL database', demand: 4, complexity: 3 },
+    { name: 'UI/UX Design', category: 'design', description: 'User interface and experience design', demand: 4, complexity: 4 },
+    { name: 'Product Management', category: 'ops', description: 'Product management and strategy', demand: 4, complexity: 4 },
+    { name: 'Business Development', category: 'bizdev', description: 'Business development and partnerships', demand: 4, complexity: 3 },
+    { name: 'Marketing', category: 'bizdev', description: 'Digital marketing and growth', demand: 4, complexity: 3 },
+    { name: 'Legal Compliance', category: 'legal', description: 'Legal and regulatory compliance', demand: 3, complexity: 5 },
+    { name: 'Financial Planning', category: 'finance', description: 'Financial planning and analysis', demand: 3, complexity: 4 },
+  ]
 
-  // Create demo projects
-  const demoProject1 = await prisma.project.upsert({
-    where: { id: 'demo-project-1' },
-    update: {},
-    create: {
-      id: 'demo-project-1',
-      name: 'SmartStart Platform',
-      summary: 'A comprehensive platform for community-driven development with transparent ownership tracking.',
-      ownerId: ownerUser.id,
-      ownerMinPct: 35,
-      aliceCapPct: 25,
-      reservePct: 40
-    }
-  });
+  for (const skill of defaultSkills) {
+    await prisma.skill.upsert({
+      where: { name: skill.name },
+      update: { category: skill.category, description: skill.description, demand: skill.demand, complexity: skill.complexity },
+      create: skill,
+    })
+  }
 
-  const demoProject2 = await prisma.project.upsert({
-    where: { id: 'demo-project-2' },
-    update: {},
-    create: {
-      id: 'demo-project-2',
-      name: 'AI Marketing Tool',
-      summary: 'AI-powered marketing automation platform for small businesses.',
-      ownerId: adminUser.id,
-      ownerMinPct: 40,
-      aliceCapPct: 20,
-      reservePct: 40
-    }
-  });
+  // Create default badges
+  const defaultBadges = [
+    { name: 'First Contribution', description: 'Made your first contribution to a project', icon: '🎯', condition: '{"type": "first_contribution"}', category: 'achievement', rarity: 'COMMON' },
+    { name: 'Team Player', description: 'Collaborated on 5+ projects', icon: '🤝', condition: '{"type": "team_collaboration", "count": 5}', category: 'collaboration', rarity: 'UNCOMMON' },
+    { name: 'Code Master', description: 'Completed 10+ code contributions', icon: '💻', condition: '{"type": "code_contributions", "count": 10}', category: 'engineering', rarity: 'RARE' },
+    { name: 'Design Expert', description: 'Completed 10+ design contributions', icon: '🎨', condition: '{"type": "design_contributions", "count": 10}', category: 'design', rarity: 'RARE' },
+    { name: 'Growth Hacker', description: 'Completed 10+ growth contributions', icon: '📈', condition: '{"type": "growth_contributions", "count": 10}', category: 'bizdev', rarity: 'RARE' },
+    { name: 'Equity Holder', description: 'Earned equity in a project', icon: '🏆', condition: '{"type": "equity_earned"}', category: 'achievement', rarity: 'EPIC' },
+    { name: 'Project Owner', description: 'Own a project with active contributors', icon: '👑', condition: '{"type": "project_owner"}', category: 'leadership', rarity: 'LEGENDARY' },
+  ]
 
-  const demoProject3 = await prisma.project.upsert({
-    where: { id: 'demo-project-3' },
-    update: {},
-    create: {
-      id: 'demo-project-3',
-      name: 'E-commerce Platform',
-      summary: 'Modern e-commerce solution with advanced inventory management.',
-      ownerId: contributorUser.id,
-      ownerMinPct: 30,
-      aliceCapPct: 25,
-      reservePct: 45
-    }
-  });
+  for (const badge of defaultBadges) {
+    await prisma.badge.upsert({
+      where: { name: badge.name },
+      update: { description: badge.description, icon: badge.icon, condition: badge.condition, category: badge.category, rarity: badge.rarity },
+      create: badge,
+    })
+  }
 
-  const demoProject4 = await prisma.project.upsert({
-    where: { id: 'demo-project-4' },
-    update: {},
-    create: {
-      id: 'demo-project-4',
-      name: 'Mobile App Framework',
-      summary: 'Cross-platform mobile development framework for rapid app creation.',
-      ownerId: adminUser.id,
-      ownerMinPct: 45,
-      aliceCapPct: 15,
-      reservePct: 40
-    }
-  });
-
-  // Create project memberships
-  await prisma.projectMember.upsert({
-    where: { id: 'member-1' },
-    update: {},
-    create: {
-      id: 'member-1',
-      projectId: demoProject1.id,
-      userId: ownerUser.id,
-      role: 'OWNER'
-    }
-  });
-
-  await prisma.projectMember.upsert({
-    where: { id: 'member-2' },
-    update: {},
-    create: {
-      id: 'member-2',
-      projectId: demoProject1.id,
-      userId: contributorUser.id,
-      role: 'MEMBER'
-    }
-  });
-
-  await prisma.projectMember.upsert({
-    where: { id: 'member-3' },
-    update: {},
-    create: {
-      id: 'member-3',
-      projectId: demoProject2.id,
-      userId: adminUser.id,
-      role: 'OWNER'
-    }
-  });
-
-  await prisma.projectMember.upsert({
-    where: { id: 'member-4' },
-    update: {},
-    create: {
-      id: 'member-4',
-      projectId: demoProject2.id,
-      userId: ownerUser.id,
-      role: 'MEMBER'
-    }
-  });
-
-  await prisma.projectMember.upsert({
-    where: { id: 'member-5' },
-    update: {},
-    create: {
-      id: 'member-5',
-      projectId: demoProject3.id,
-      userId: contributorUser.id,
-      role: 'OWNER'
-    }
-  });
-
-  await prisma.projectMember.upsert({
-    where: { id: 'member-6' },
-    update: {},
-    create: {
-      id: 'member-6',
-      projectId: demoProject3.id,
-      userId: adminUser.id,
-      role: 'MEMBER'
-    }
-  });
-
-  await prisma.projectMember.upsert({
-    where: { id: 'member-7' },
-    update: {},
-    create: {
-      id: 'member-7',
-      projectId: demoProject4.id,
-      userId: adminUser.id,
-      role: 'OWNER'
-    }
-  });
-
-  await prisma.projectMember.upsert({
-    where: { id: 'member-8' },
-    update: {},
-    create: {
-      id: 'member-8',
-      projectId: demoProject4.id,
-      userId: ownerUser.id,
-      role: 'MEMBER'
-    }
-  });
-
-  // Create cap table entries
-  await prisma.capTableEntry.upsert({
-    where: { id: 'cap-entry-1' },
-    update: {},
-    create: {
-      id: 'cap-entry-1',
-      projectId: demoProject1.id,
-      holderId: ownerUser.id,
-      holderType: 'OWNER',
-      pct: 35.0,
-      source: 'Initial ownership'
-    }
-  });
-
-  await prisma.capTableEntry.upsert({
-    where: { id: 'cap-entry-2' },
-    update: {},
-    create: {
-      id: 'cap-entry-2',
-      projectId: demoProject1.id,
-      holderId: contributorUser.id,
-      holderType: 'USER',
-      pct: 5.0,
-      source: 'Contribution reward'
-    }
-  });
-
-  await prisma.capTableEntry.upsert({
-    where: { id: 'cap-entry-3' },
-    update: {},
-    create: {
-      id: 'cap-entry-3',
-      projectId: demoProject2.id,
-      holderId: adminUser.id,
-      holderType: 'OWNER',
-      pct: 40.0,
-      source: 'Initial ownership'
-    }
-  });
-
-  await prisma.capTableEntry.upsert({
-    where: { id: 'cap-entry-4' },
-    update: {},
-    create: {
-      id: 'cap-entry-4',
-      projectId: demoProject2.id,
-      holderId: ownerUser.id,
-      holderType: 'USER',
-      pct: 4.0,
-      source: 'Contribution reward'
-    }
-  });
-
-  await prisma.capTableEntry.upsert({
-    where: { id: 'cap-entry-5' },
-    update: {},
-    create: {
-      id: 'cap-entry-5',
-      projectId: demoProject3.id,
-      holderId: contributorUser.id,
-      holderType: 'OWNER',
-      pct: 30.0,
-      source: 'Initial ownership'
-    }
-  });
-
-  await prisma.capTableEntry.upsert({
-    where: { id: 'cap-entry-6' },
-    update: {},
-    create: {
-      id: 'cap-entry-6',
-      projectId: demoProject3.id,
-      holderId: adminUser.id,
-      holderType: 'USER',
-      pct: 4.0,
-      source: 'Contribution reward'
-    }
-  });
-
-  await prisma.capTableEntry.upsert({
-    where: { id: 'cap-entry-7' },
-    update: {},
-    create: {
-      id: 'cap-entry-7',
-      projectId: demoProject4.id,
-      holderId: adminUser.id,
-      holderType: 'OWNER',
-      pct: 45.0,
-      source: 'Initial ownership'
-    }
-  });
-
-  await prisma.capTableEntry.upsert({
-    where: { id: 'cap-entry-8' },
-    update: {},
-    create: {
-      id: 'cap-entry-8',
-      projectId: demoProject4.id,
-      holderId: ownerUser.id,
-      holderType: 'USER',
-      pct: 4.0,
-      source: 'Contribution reward'
-    }
-  });
-
-  // Create demo ideas
-  await prisma.idea.upsert({
-    where: { id: 'idea-1' },
-    update: {},
-    create: {
-      id: 'idea-1',
-      title: 'Mobile App Development',
-      body: 'Create a mobile companion app for the SmartStart platform to enable on-the-go project management and real-time collaboration.',
-      status: 'ACTIVE',
-      proposerId: contributorUser.id,
-      projectId: demoProject1.id
-    }
-  });
-
-  // Create demo polls
-  await prisma.poll.upsert({
-    where: { id: 'poll-1' },
-    update: {},
-    create: {
-      id: 'poll-1',
-      question: 'Which feature should we prioritize next?',
-      type: 'MULTIPLE_CHOICE',
-      closesAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
-      projectId: demoProject1.id
-    }
-  });
-
-  // Create demo mesh items
-  await prisma.meshItem.upsert({
-    where: { id: 'mesh-1' },
-    update: {},
-    create: {
-      id: 'mesh-1',
-      type: 'WIN',
-      title: 'Platform Launch Success',
-      description: 'Successfully launched the SmartStart platform with all core features!',
-      authorId: ownerUser.id,
-      projectId: demoProject1.id
-    }
-  });
-
-  console.log('✅ Database seeding completed successfully!');
-  console.log('📊 Created:');
-  console.log(`   - ${adminUser.email} (ADMIN)`);
-  console.log(`   - ${ownerUser.email} (OWNER)`);
-  console.log(`   - ${contributorUser.email} (MEMBER)`);
-  console.log(`   - Demo projects: ${demoProject1.name}, ${demoProject2.name}, ${demoProject3.name}, ${demoProject4.name}`);
+  console.log('✅ Database seed completed successfully!')
 }
 
 main()
   .catch((e) => {
-    console.error('❌ Error seeding database:', e);
-    process.exit(1);
+    console.error('❌ Error during seeding:', e)
+    process.exit(1)
   })
   .finally(async () => {
-    await prisma.$disconnect();
-  });
+    await prisma.$disconnect()
+  })

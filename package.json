@@ -1,29 +1,27 @@
 {
-    "name": "smartstart",
-    "private": true,
-    "packageManager": "pnpm@9.0.0",
-    "workspaces": [
-        "apps/*"
-    ],
-    "scripts": {
-        "dev": "concurrently -k -n API,WEB -c magenta,cyan \"pnpm --filter @smartstart/api dev\" \"pnpm --filter @smartstart/web dev\"",
-        "build": "pnpm -r build",
-        "prisma:generate": "prisma generate",
-        "prisma:migrate": "prisma migrate deploy",
-        "prisma:db:push": "prisma db push",
-        "prisma:seed": "tsx prisma/seed.ts"
-    },
-    "devDependencies": {
-        "@types/bcryptjs": "^2.4.6",
-        "concurrently": "^9.0.0",
-        "prisma": "^5.18.0",
-        "tsx": "^4.16.0"
-    },
-    "dependencies": {
-        "@prisma/client": "^5.22.0",
-        "bcryptjs": "^2.4.3"
-    },
-    "prisma": {
-        "seed": "tsx prisma/seed.ts"
-    }
+  "name": "smartstart-database",
+  "version": "1.0.0",
+  "description": "SmartStart Database Schema and Setup",
+  "main": "index.js",
+  "scripts": {
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev",
+    "db:seed": "tsx prisma/seed.ts",
+    "db:studio": "prisma studio",
+    "db:reset": "prisma migrate reset",
+    "build": "prisma generate",
+    "start": "echo 'Database setup complete'"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.7.1"
+  },
+  "devDependencies": {
+    "prisma": "^5.7.1",
+    "tsx": "^4.6.2",
+    "typescript": "^5.3.3"
+  },
+  "keywords": ["database", "prisma", "smartstart"],
+  "author": "AliceSolutions",
+  "license": "MIT"
 }

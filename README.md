@@ -1,189 +1,137 @@
-# SmartStart - Complete 30-Day Launch Pipeline Platform
+# SmartStart Database
 
-## 🚀 What is SmartStart?
+A clean, production-ready database schema for the SmartStart platform with comprehensive equity management, governance, and compliance features.
 
-SmartStart is a comprehensive SaaS platform that enables founders to submit project ideas, get equity validation, and launch projects in 30-day sprints with full legal compliance and contract management. The platform features a beautiful, comprehensive dashboard that displays all user data in a single, organized interface.
+## Features
 
-## 🎯 **SmartStart HUB Dashboard**
+- **Complete Equity Management**: Cap table tracking, vesting schedules, BUZ token system
+- **Governance & Compliance**: Legal entities, cooperative structures, dispute resolution
+- **Smart Contracts**: Automated contract offers, signatures, and legal compliance
+- **Gamification**: Skills, badges, reputation system, and community insights
+- **Security**: KYC/KYB integration, device posture, audit logging
+- **Analytics**: Real-time portfolio tracking and performance metrics
 
-The SmartStart HUB is a comprehensive dashboard that displays all user-specific data from the database in a single, well-organized interface. It provides real-time insights into portfolio performance, project progress, and community engagement.
+## Database Schema
 
-### **Dashboard Features**
-- **Portfolio Overview** - 8 comprehensive data cards showing total value, active projects, team size, equity, growth metrics, and system health
-- **Active Projects** - Real-time project tracking with progress bars, equity distribution, and milestone tracking
-- **User Profile & Gamification** - XP system, reputation scores, badges, and skill levels
-- **Recent Contributions** - Contribution history with equity earned and task details
-- **Community Activity** - Mesh items, questions, resources, and community interactions
-- **Performance Metrics** - Success rates, growth indicators, and portfolio diversity
-- **Real-time Updates** - Auto-refresh every 30 seconds for live data
-- **Responsive Design** - Works perfectly on all devices
+The schema includes 50+ models covering:
 
-### **Technical Implementation**
-- **Next.js API Routes** - Custom endpoints for data fetching with graceful fallbacks
-- **TypeScript Interfaces** - Full type safety for all data structures
-- **Error Handling** - Robust fallback to mock data when APIs are unavailable
-- **Modern UI/UX** - Professional design system with Lucide React icons
-- **Performance Optimized** - Efficient data loading and caching strategies
+- **Core Entities**: Users, Projects, Tasks, Contributions
+- **Equity System**: Cap tables, vesting, BUZ transactions, conversions
+- **Legal & Compliance**: Contracts, legal entities, cooperative governance
+- **Community**: Mesh items, polls, ideas, kudos system
+- **Security**: Audit logs, device posture, KYC/KYB documents
+- **Analytics**: Portfolio tracking, performance metrics, insights
 
-## ✨ Key Features
+## Quick Start
 
-### 🏗️ **Project Submission & Approval Pipeline**
-- **Complete Project Submission System** - Submit ideas with equity proposals, business validation, and 30-day sprint planning
-- **Equity Validation Engine** - Enforces AliceSolutions Ventures business rules (Owner min 35%, AliceSolutions max 25%)
-- **Admin Review Workflow** - Multi-stage approval process with feedback and revision requests
-- **Legal Compliance Tracking** - Contract versions, terms acceptance, and audit trails
+### Local Development
 
-### 📊 **30-Day Launch Pipeline**
-- **Sprint 1: Discovery** - Market research, user interviews, competitive analysis
-- **Sprint 2: Validation** - MVP design, user feedback, technical feasibility
-- **Sprint 3: Build** - Development, testing, iteration
-- **Sprint 4: Launch** - Product launch, marketing, user acquisition
+1. **Install dependencies**:
+   ```bash
+   npm install
+   ```
 
-### 💼 **Equity & Contract Management**
-- **Dynamic Equity Distribution** - Based on contribution value, effort, and impact
-- **Contract Generation** - Automated contract creation for approved projects
-- **Digital Signatures** - Secure contract signing with audit trails
-- **Equity Vesting** - Configurable vesting schedules and milestones
+2. **Set up environment**:
+   ```bash
+   cp env.example .env
+   # Edit .env with your database URL
+   ```
 
-### 🔐 **Security & Compliance**
-- **Role-Based Access Control (RBAC)** - Super Admin, Admin, Owner, Contributor, Member roles
-- **ISO Compliance Ready** - Security frameworks and data protection
-- **Audit Logging** - Complete activity tracking for legal compliance
-- **Data Encryption** - Secure storage and transmission
+3. **Set up database**:
+   ```bash
+   npx prisma db push
+   npx prisma db seed
+   ```
 
-## 🏛️ Business Framework
+4. **View database** (optional):
+   ```bash
+   npx prisma studio
+   ```
 
-### **AliceSolutions Ventures Equity Structure**
-- **Project Owner**: Minimum 35% equity (protected)
-- **AliceSolutions**: Maximum 25% equity (infrastructure & support)
-- **Contributors**: 0.5% - 5% per contribution (based on value)
-- **Reserve Pool**: Future investors and growth
+### Production Deployment
 
-### **Legal Requirements**
-- **Contract Management** - Automated generation and tracking
-- **Digital Signatures** - Legally binding with audit trails
-- **Compliance Monitoring** - Regulatory adherence tracking
-- **Data Protection** - GDPR and privacy compliance
+The project is configured for deployment on Render with:
 
-## 🛠️ Technology Stack
+- **Database**: PostgreSQL with automatic migrations
+- **Environment**: Production-ready with all security settings
+- **Seeding**: Automatic initial data population
 
-- **Backend**: Node.js, Express, Prisma ORM
-- **Database**: PostgreSQL with advanced indexing
-- **Frontend**: Next.js, React, TypeScript
-- **Authentication**: JWT with RBAC
-- **Security**: 2FA, encryption, audit logging
-- **Deployment**: Docker, Render, CI/CD
+## Key Business Rules
 
-## 🚀 **Recent Updates & Deployment**
+- **Owner Minimum**: 35% equity required for project owners
+- **Alice Cap**: Maximum 25% equity for AliceSolutions
+- **Contribution Range**: 0.5% - 5.0% equity per contribution
+- **KYC Required**: For equity participation and legal compliance
+- **Audit Trail**: Immutable audit logs for all equity transactions
 
-### **Dashboard Implementation (September 2025)**
-- ✅ **Complete SmartStart HUB Dashboard** - Comprehensive user data display
-- ✅ **8 Portfolio Overview Cards** - Total value, projects, team, equity, growth metrics
-- ✅ **Active Projects Section** - Real-time progress tracking with equity distribution
-- ✅ **User Profile & Gamification** - XP system, badges, skills, reputation
-- ✅ **Community Activity Feed** - Mesh items, contributions, interactions
-- ✅ **Performance Metrics** - Success rates and growth indicators
-- ✅ **Real-time Updates** - Auto-refresh every 30 seconds
-- ✅ **Responsive Design** - Works on all devices
+## Schema Highlights
 
-### **Technical Improvements**
-- ✅ **Robust Error Handling** - Graceful fallbacks to mock data
-- ✅ **API Route Optimization** - Custom Next.js endpoints for data fetching
-- ✅ **TypeScript Integration** - Full type safety throughout
-- ✅ **Modern UI/UX** - Professional design system with Lucide React icons
-- ✅ **Production Deployment** - Live at https://smartstart-web.onrender.com
+### Equity Management
+- Dynamic cap table with real-time updates
+- Vesting schedules (immediate, monthly, quarterly, milestone-based)
+- BUZ token system for contribution tracking
+- Quarterly equity rebalancing based on performance
 
-### **Deployment Status**
-- **Frontend**: ✅ Deployed and operational
-- **Backend API**: ✅ Available at https://smartstart-api.onrender.com
-- **Database**: ✅ PostgreSQL with full schema
-- **Live Dashboard**: ✅ https://smartstart-web.onrender.com
+### Legal Compliance
+- Contract offer/acceptance workflow
+- Legal entity management (corporations, cooperatives, LLCs)
+- KYC/KYB document verification
+- Dispute resolution system
 
-## 🚀 Getting Started
+### Community Features
+- Skill-based matching and verification
+- Badge system with rarity levels
+- Community insights and analytics
+- Mesh network for collaboration
 
-### Prerequisites
-- Node.js 18+
-- PostgreSQL 14+
-- Docker (optional)
+## Environment Variables
 
-### Installation
-```bash
-# Clone the repository
-git clone <repository-url>
-cd SmartStart
+Required environment variables:
 
-# Install dependencies
-npm install
-
-# Set up environment variables
-cp env.example .env
-# Edit .env with your database and API keys
-
-# Generate Prisma client
-npm run prisma:generate
-
-# Push database schema
-npm run prisma:db:push
-
-# Start development servers
-npm run dev
-```
-
-### Environment Variables
 ```env
-# Database
-DATABASE_URL="postgresql://user:password@localhost:5432/smartstart"
-
-# JWT Secret
-JWT_SECRET="your-secret-key"
-
-# API Configuration
-API_PORT=3001
-WEB_PORT=3000
+DATABASE_URL="postgresql://username:password@host:port/database"
+NODE_ENV="production"
 ```
 
-## 📚 Documentation
+## Database Commands
 
-- **[Hub Rules](hub_rules.txt)** - Business framework and equity structure
-- **[Vision Document](vision.txt)** - Platform vision and roadmap
-- **[Plan Document](plan.txt)** - Implementation plan and milestones
-- **[Smart System README](SMART_SYSTEM_README.md)** - Technical architecture
-- **[Render Deployment](RENDER_DEPLOYMENT_CHECKLIST.md)** - Deployment guide
+```bash
+# Generate Prisma client
+npm run db:generate
 
-## 🔒 Security Features
+# Push schema to database
+npm run db:push
 
-- **Authentication**: JWT-based with refresh tokens
-- **Authorization**: Role-based access control (RBAC)
-- **Data Protection**: Encryption at rest and in transit
-- **Audit Logging**: Complete activity tracking
-- **Compliance**: GDPR, ISO, and legal requirements ready
+# Run migrations
+npm run db:migrate
 
-## 📈 Business Intelligence
+# Seed database
+npm run db:seed
 
-- **Project Analytics**: Submission rates, approval metrics, success rates
-- **Equity Analysis**: Distribution patterns, valuation tracking
-- **Performance Metrics**: Sprint completion rates, launch success
-- **Financial Insights**: Portfolio value, contribution tracking
+# Open Prisma Studio
+npm run db:studio
 
-## 🤝 Contributing
+# Reset database
+npm run db:reset
+```
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests
-5. Submit a pull request
+## Production Deployment
 
-## 📄 License
+This repository is configured for automatic deployment on Render:
 
-This project is proprietary software. All rights reserved.
+1. Connect your GitHub repository to Render
+2. Render will automatically:
+   - Create a PostgreSQL database
+   - Deploy the database service
+   - Run migrations and seed data
+   - Set up all environment variables
 
-## 🆘 Support
+The deployment includes:
+- Automatic database migrations
+- Initial data seeding
+- Production security settings
+- Health monitoring
 
-For support and questions:
-- Create an issue in the repository
-- Contact the development team
-- Check the documentation
+## License
 
----
-
-**SmartStart** - *Build Together. Own Together.*
+MIT License - see LICENSE file for details.
