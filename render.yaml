@@ -1,11 +1,4 @@
 services:
-  - name: smartstart-db
-    type: pserv
-    runtime: docker
-    plan: starter
-    startCommand: postgres
-    autoDeploy: true
-
   - name: smartstart-api
     type: web
     runtime: node
@@ -18,21 +11,9 @@ services:
       - key: PORT
         value: "3001"
       - key: DATABASE_URL
-        fromService:
+        fromDatabase:
           name: smartstart-db
-          type: pserv
-          property: host
-      - key: DB_PORT
-        fromService:
-          name: smartstart-db
-          type: pserv
-          property: port
-      - key: DB_NAME
-        value: "smartstart"
-      - key: DB_USER
-        value: "postgres"
-      - key: DB_PASSWORD
-        generateValue: true
+          property: connectionString
       - key: JWT_SECRET
         generateValue: true
       - key: WORKER_ENABLED
@@ -42,3 +23,9 @@ services:
       - key: MONITOR_ENABLED
         value: "false"
     autoDeploy: true
+
+databases:
+  - name: smartstart-db
+    plan: starter
+    databaseName: smartstart
+    user: postgres

@@ -16,19 +16,7 @@ const Redis = require('redis');
 
 const app = express();
 
-// Construct DATABASE_URL from individual components if not provided
-if (!process.env.DATABASE_URL && process.env.DB_HOST) {
-    const dbHost = process.env.DB_HOST;
-    const dbPort = process.env.DB_PORT || 5432;
-    const dbName = process.env.DB_NAME || 'smartstart';
-    const dbUser = process.env.DB_USER || 'postgres';
-    const dbPassword = process.env.DB_PASSWORD;
-    
-    if (dbHost && dbPassword) {
-        process.env.DATABASE_URL = `postgresql://${dbUser}:${dbPassword}@${dbHost}:${dbPort}/${dbName}`;
-        console.log('Constructed DATABASE_URL from individual components');
-    }
-}
+// DATABASE_URL is now provided directly from the database service
 
 const prisma = new PrismaClient();
 const PORT = process.env.API_PORT || 3001;
