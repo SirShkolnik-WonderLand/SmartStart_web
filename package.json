@@ -12,16 +12,17 @@
         "db:setup": "npx prisma db push --force-reset && npx prisma db seed",
         "dev": "next dev",
         "start": "next start",
-        "start:api": "node server/api.js",
-        "start:worker": "node server/worker.js",
-        "start:storage": "node server/storage.js",
-        "start:monitor": "node server/monitor.js",
+        "start:api": "node server/consolidated-server.js",
+        "start:worker": "node server/consolidated-server.js",
+        "start:storage": "node server/consolidated-server.js",
+        "start:monitor": "node server/consolidated-server.js",
         "dev:api": "nodemon server/api.js",
         "dev:worker": "nodemon server/worker.js",
         "dev:storage": "nodemon server/storage.js",
         "dev:monitor": "nodemon server/monitor.js",
         "lint": "next lint",
-        "deploy:status": "node scripts/deploy-status.js"
+        "deploy:status": "node scripts/deploy-status.js",
+        "deploy:check": "node scripts/deploy-free-tier.js"
     },
     "prisma": {
         "seed": "node prisma/seed.js"
