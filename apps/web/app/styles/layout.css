@@ -4,7 +4,7 @@
 /* ===== HEADER STYLES ===== */
 
 .app-header {
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(15, 23, 42, 0.95);
     backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--border-primary);
     position: fixed;
@@ -12,7 +12,7 @@
     left: 0;
     right: 0;
     z-index: var(--z-fixed);
-    box-shadow: var(--shadow-sm);
+    box-shadow: var(--shadow-md);
     height: var(--header-height);
 }
 

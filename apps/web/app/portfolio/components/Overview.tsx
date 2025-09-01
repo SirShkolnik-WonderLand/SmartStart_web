@@ -163,7 +163,7 @@ export default function Overview() {
           <div className="stat-icon">📊</div>
           <div className="stat-content">
             <h3>Portfolio Diversity</h3>
-            <p className="stat-value">{(stats?.portfolioDiversity * 100)?.toFixed(1) || '0'}%</p>
+            <p className="stat-value">{((stats?.portfolioDiversity || 0) * 100).toFixed(1)}%</p>
             <p className="stat-change">Risk-adjusted score</p>
           </div>
         </div>
@@ -173,7 +173,7 @@ export default function Overview() {
           <div className="stat-content">
             <h3>Active Projects</h3>
             <p className="stat-value">{stats?.activeProjects || '0'}</p>
-            <p className="stat-change">{stats?.completionRate?.toFixed(1) || '0'}% completion rate</p>
+            <p className="stat-change">{(stats?.completionRate || 0).toFixed(1)}% completion rate</p>
           </div>
         </div>
 
@@ -181,7 +181,7 @@ export default function Overview() {
           <div className="stat-icon">🎯</div>
           <div className="stat-content">
             <h3>Opportunity Score</h3>
-            <p className="stat-value">{(stats?.opportunityScore * 100)?.toFixed(1) || '0'}%</p>
+            <p className="stat-value">{((stats?.opportunityScore || 0) * 100).toFixed(1)}%</p>
             <p className="stat-change">Growth potential</p>
           </div>
         </div>
