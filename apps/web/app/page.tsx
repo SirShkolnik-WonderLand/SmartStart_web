@@ -588,6 +588,20 @@ export default function SmartStartHub() {
               >
                 <Users size={16} />
               </a>
+              <a 
+                href="/projects"
+                className="btn btn-ghost btn-sm"
+                title="Project Management"
+              >
+                <Briefcase size={16} />
+              </a>
+              <a 
+                href="/contracts"
+                className="btn btn-ghost btn-sm"
+                title="Smart Contracts"
+              >
+                <FileText size={16} />
+              </a>
               <button className="btn btn-ghost btn-sm">
                 <Settings size={16} />
               </button>

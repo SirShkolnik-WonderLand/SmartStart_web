@@ -1,632 +1,621 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useAuth } from '../../lib/auth';
 import { 
   Users, 
-  User, 
-  Crown, 
   Shield, 
-  Star, 
-  MapPin, 
-  Linkedin, 
-  Twitter, 
-  Github, 
-  Globe,
-  Award,
-  TrendingUp,
-  Briefcase,
-  Calendar,
-  Mail,
-  ArrowUpRight,
+  UserPlus, 
+  Edit, 
+  Trash2, 
+  Eye, 
+  Lock, 
+  Unlock,
+  Crown,
+  Star,
+  Hexagon,
+  Circle,
+  Search,
+  Filter,
+  MoreVertical,
+  CheckCircle,
+  XCircle,
+  AlertTriangle,
+  UserCheck,
+  UserX,
   Settings,
-  Database,
-  Wifi,
-  Shield as ShieldIcon,
-  Clock,
-  Battery,
-  AlertCircle,
-  BarChart3
+  Key,
+  Activity,
+  TrendingUp,
+  Award
 } from 'lucide-react';
 
-interface UserProfile {
-  id: string;
-  bio: string;
-  location: string;
-  linkedinUrl: string;
-  twitterUrl: string;
-  githubUrl: string;
-  websiteUrl: string;
-  avatarUrl: string;
-}
-
-interface UserSkill {
-  skill: {
-    name: string;
-    category: string;
-    description?: string;
-  };
-  level: number;
-  verified: boolean;
-  endorsements: number;
-}
-
-interface UserBadge {
-  badge: {
-    name: string;
-    description: string;
-    icon: string;
-    category?: string;
-  };
-  earnedAt: string;
-}
-
-interface UserData {
+interface User {
   id: string;
   email: string;
   name: string;
-  level: string;
+  role: 'ADMIN' | 'OWNER' | 'MANAGER' | 'MEMBER' | 'VIEWER';
+  level: 'OWLET' | 'BUILDER' | 'ARCHITECT' | 'VENTURE_MASTER';
   xp: number;
   reputation: number;
-  totalPortfolioValue: number;
-  totalEquityOwned: number;
-  activeProjectsCount: number;
-  totalContributions: number;
-  portfolioDiversity: number;
-  lastEquityEarned: string;
+  status: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED' | 'PENDING';
   lastActive: string;
-  createdAt: string;
-  profile: UserProfile;
-  userSkills: UserSkill[];
-  userBadges: UserBadge[];
-  projectMemberships: {
-    role: string;
-    project: {
-      name: string;
-    };
-  }[];
+  joinedAt: string;
+  totalContributions: number;
+  totalEquity: number;
+  projects: string[];
+  permissions: string[];
+  badges: Array<{
+    id: string;
+    name: string;
+    icon: string;
+    earnedAt: string;
+  }>;
 }
 
-export default function UsersPage() {
-  const [users, setUsers] = useState<UserData[]>([]);
+interface Role {
+  name: string;
+  permissions: string[];
+  description: string;
+  color: string;
+  icon: React.ReactNode;
+}
+
+export default function UserManagementPage() {
+  const { user: currentUser } = useAuth();
+  const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [lastRefresh, setLastRefresh] = useState(new Date());
+  const [searchTerm, setSearchTerm] = useState('');
+  const [roleFilter, setRoleFilter] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [showUserModal, setShowUserModal] = useState(false);
+  const [showRoleModal, setShowRoleModal] = useState(false);
+
+  const roles: Role[] = [
+    {
+      name: 'ADMIN',
+      permissions: ['ALL'],
+      description: 'Full system access and control',
+      color: 'bg-red-100 text-red-800',
+      icon: <Crown size={16} />
+    },
+    {
+      name: 'OWNER',
+      permissions: ['PROJECT_CREATE', 'EQUITY_MANAGE', 'TEAM_MANAGE', 'FINANCIAL_VIEW'],
+      description: 'Project ownership and management',
+      color: 'bg-purple-100 text-purple-800',
+      icon: <Star size={16} />
+    },
+    {
+      name: 'MANAGER',
+      permissions: ['PROJECT_MANAGE', 'TEAM_MANAGE', 'CONTRIBUTION_APPROVE'],
+      description: 'Team and project management',
+      color: 'bg-blue-100 text-blue-800',
+      icon: <Hexagon size={16} />
+    },
+    {
+      name: 'MEMBER',
+      permissions: ['PROJECT_VIEW', 'CONTRIBUTION_SUBMIT', 'MESH_ACCESS'],
+      description: 'Active project participation',
+      color: 'bg-green-100 text-green-800',
+      icon: <Circle size={16} />
+    },
+    {
+      name: 'VIEWER',
+      permissions: ['PROJECT_VIEW', 'MESH_VIEW'],
+      description: 'Read-only access',
+      color: 'bg-gray-100 text-gray-800',
+      icon: <Eye size={16} />
+    }
+  ];
 
   useEffect(() => {
     fetchUsers();
-    const interval = setInterval(fetchUsers, 30000); // Refresh every 30 seconds
-    return () => clearInterval(interval);
   }, []);
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch('/api/users');
-      if (!response.ok) {
-        throw new Error('Failed to fetch users');
+      const response = await fetch('/api/users', {
+        credentials: 'include'
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setUsers(data.users || []);
+      } else {
+        // Fallback data for development
+        setUsers([
+          {
+            id: 'user-1',
+            email: 'udi@alicesolutions.com',
+            name: 'Udi Shkolnik',
+            role: 'ADMIN',
+            level: 'VENTURE_MASTER',
+            xp: 2500,
+            reputation: 95,
+            status: 'ACTIVE',
+            lastActive: new Date().toISOString(),
+            joinedAt: new Date(Date.now() - 86400000 * 90).toISOString(),
+            totalContributions: 45,
+            totalEquity: 150,
+            projects: ['project-1', 'project-2'],
+            permissions: ['ALL'],
+            badges: [
+              { id: 'badge-1', name: 'Founder', icon: '👑', earnedAt: new Date(Date.now() - 86400000 * 90).toISOString() },
+              { id: 'badge-2', name: 'MVP Launcher', icon: '🚀', earnedAt: new Date(Date.now() - 86400000 * 30).toISOString() }
+            ]
+          },
+          {
+            id: 'user-2',
+            email: 'alice@example.com',
+            name: 'Alice Chen',
+            role: 'MANAGER',
+            level: 'ARCHITECT',
+            xp: 1800,
+            reputation: 87,
+            status: 'ACTIVE',
+            lastActive: new Date(Date.now() - 3600000).toISOString(),
+            joinedAt: new Date(Date.now() - 86400000 * 60).toISOString(),
+            totalContributions: 32,
+            totalEquity: 85,
+            projects: ['project-1'],
+            permissions: ['PROJECT_MANAGE', 'TEAM_MANAGE', 'CONTRIBUTION_APPROVE'],
+            badges: [
+              { id: 'badge-3', name: 'Team Leader', icon: '👥', earnedAt: new Date(Date.now() - 86400000 * 45).toISOString() }
+            ]
+          }
+        ]);
       }
-      const data = await response.json();
-      setUsers(data.users || []);
-      setLastRefresh(new Date());
-    } catch (err) {
-      console.error('Error fetching users:', err);
-      setError('Failed to load users');
-      // Fallback to mock data
-      setUsers(mockUsers);
+    } catch (error) {
+      console.error('Failed to fetch users:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const getRoleIcon = (role: string) => {
-    switch (role) {
-      case 'SUPER_ADMIN':
-        return <Crown className="w-4 h-4 text-yellow-500" />;
-      case 'OWNER':
-        return <Crown className="w-4 h-4 text-purple-500" />;
-      case 'MEMBER':
-        return <Shield className="w-4 h-4 text-blue-500" />;
-      case 'CONTRIBUTOR':
-        return <Star className="w-4 h-4 text-green-500" />;
-      default:
-        return <User className="w-4 h-4 text-gray-500" />;
-    }
+  const filteredUsers = users.filter(user => {
+    const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         user.email.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesRole = roleFilter === 'all' || user.role === roleFilter;
+    const matchesStatus = statusFilter === 'all' || user.status === statusFilter;
+    
+    return matchesSearch && matchesRole && matchesStatus;
+  });
+
+  const getRoleInfo = (roleName: string) => {
+    return roles.find(role => role.name === roleName) || roles[4];
   };
 
-  const getLevelColor = (level: string) => {
+  const getLevelIcon = (level: string) => {
     switch (level) {
-      case 'SKY_MASTER':
-        return 'text-purple-600 bg-purple-100';
-      case 'WISE_OWL':
-        return 'text-blue-600 bg-blue-100';
-      case 'BUILDER':
-        return 'text-green-600 bg-green-100';
-      case 'NIGHT_WATCHER':
-        return 'text-orange-600 bg-orange-100';
-      case 'OWLET':
-        return 'text-gray-600 bg-gray-100';
-      default:
-        return 'text-gray-600 bg-gray-100';
+      case 'VENTURE_MASTER': return <Crown size={16} className="text-yellow-600" />;
+      case 'ARCHITECT': return <Star size={16} className="text-blue-600" />;
+      case 'BUILDER': return <Hexagon size={16} className="text-green-600" />;
+      case 'OWLET': return <Circle size={16} className="text-gray-600" />;
+      default: return <Circle size={16} className="text-gray-600" />;
     }
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    }).format(amount);
+  const getStatusBadge = (status: string) => {
+    const statusConfig = {
+      ACTIVE: { color: 'bg-green-100 text-green-800', icon: <CheckCircle size={14} /> },
+      INACTIVE: { color: 'bg-gray-100 text-gray-800', icon: <UserX size={14} /> },
+      SUSPENDED: { color: 'bg-red-100 text-red-800', icon: <Lock size={14} /> },
+      PENDING: { color: 'bg-yellow-100 text-yellow-800', icon: <AlertTriangle size={14} /> }
+    };
+    
+    const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.INACTIVE;
+    
+    return (
+      <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${config.color}`}>
+        {config.icon}
+        {status}
+      </span>
+    );
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-        <div className="container mx-auto px-4 py-8">
-          <div className="animate-pulse">
-            <div className="h-8 bg-gray-700 rounded w-1/4 mb-8"></div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[...Array(6)].map((_, i) => (
-                <div key={i} className="bg-gray-800 rounded-lg p-6 h-64"></div>
-              ))}
-            </div>
-          </div>
+      <div className="min-h-screen bg-secondary flex items-center justify-center">
+        <div className="text-center">
+          <div className="loading-spinner mx-auto mb-4"></div>
+          <h2 className="text-xl font-semibold">Loading User Management</h2>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="min-h-screen bg-secondary">
       {/* Header */}
       <header className="header">
-        <div className="header-content">
-          <div className="logo">
-            <div className="logo-icon">
-              <Users size={20} />
+        <div className="container">
+          <div className="header-content">
+            <div className="logo">
+              <div className="logo-icon">
+                <Users size={20} />
+              </div>
+              <div className="logo-text">
+                <h1>User Management</h1>
+                <p>RBAC Controls & User Administration</p>
+              </div>
             </div>
-            <div className="logo-text">
-              <h1>SmartStart HUB</h1>
-              <p>AliceSolutions Ventures • Udi Shkolnik</p>
+            
+            <div className="flex gap-2">
+              <button 
+                onClick={() => setShowUserModal(true)}
+                className="btn btn-primary btn-sm"
+              >
+                <UserPlus size={16} />
+                Add User
+              </button>
+              <button 
+                onClick={() => setShowRoleModal(true)}
+                className="btn btn-ghost btn-sm"
+              >
+                <Shield size={16} />
+                Manage Roles
+              </button>
+              <a href="/" className="btn btn-ghost btn-sm">
+                Back to HUB
+              </a>
             </div>
-          </div>
-          
-          <div className="status-indicators">
-            <div className="status-item">
-              <div className="status-dot online"></div>
-              <span>System Online</span>
-            </div>
-            <div className="status-item">
-              <Database size={16} />
-              <span>DB Connected</span>
-            </div>
-            <div className="status-item">
-              <Wifi size={16} />
-              <span>Network Stable</span>
-            </div>
-            <div className="status-item">
-              <ShieldIcon size={16} />
-              <span>Security Active</span>
-            </div>
-          </div>
-
-          <div className="flex gap-2">
-            <button 
-              onClick={fetchUsers}
-              className="btn btn-ghost btn-sm"
-              title="Refresh data"
-            >
-              <ArrowUpRight size={16} />
-            </button>
-            <a 
-              href="/"
-              className="btn btn-ghost btn-sm"
-              title="Dashboard"
-            >
-              <BarChart3 size={16} />
-            </a>
-            <button className="btn btn-ghost btn-sm">
-              <Settings size={16} />
-            </button>
           </div>
         </div>
       </header>
 
-      {/* Error Banner */}
-      {error && (
-        <div className="error-banner">
-          <AlertCircle size={20} className="icon" />
-          <p className="error-message">{error}</p>
-          <button 
-            onClick={() => setError(null)}
-            className="error-close"
-          >
-            ×
-          </button>
+      {/* Main Content */}
+      <main className="container py-6">
+        {/* Stats Overview */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div className="card">
+            <div className="card-content p-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <Users size={20} className="text-blue-600" />
+                </div>
+                <div>
+                  <div className="text-2xl font-bold">{users.length}</div>
+                  <div className="text-sm text-secondary">Total Users</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div className="card">
+            <div className="card-content p-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                  <UserCheck size={20} className="text-green-600" />
+                </div>
+                <div>
+                  <div className="text-2xl font-bold">
+                    {users.filter(u => u.status === 'ACTIVE').length}
+                  </div>
+                  <div className="text-sm text-secondary">Active Users</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div className="card">
+            <div className="card-content p-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                  <Award size={20} className="text-purple-600" />
+                </div>
+                <div>
+                  <div className="text-2xl font-bold">
+                    {users.filter(u => u.role === 'ADMIN' || u.role === 'OWNER').length}
+                  </div>
+                  <div className="text-sm text-secondary">Admin/Owners</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div className="card">
+            <div className="card-content p-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                  <TrendingUp size={20} className="text-orange-600" />
+                </div>
+                <div>
+                  <div className="text-2xl font-bold">
+                    {users.reduce((sum, u) => sum + u.totalContributions, 0)}
+                  </div>
+                  <div className="text-sm text-secondary">Total Contributions</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Filters and Search */}
+        <div className="card mb-6">
+          <div className="card-content p-4">
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex-1">
+                <div className="relative">
+                  <Search size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-tertiary" />
+                  <input
+                    type="text"
+                    placeholder="Search users by name or email..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2 border border-border rounded-lg bg-bg-elevated text-primary focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  />
+                </div>
+              </div>
+              
+              <div className="flex gap-2">
+                <select
+                  value={roleFilter}
+                  onChange={(e) => setRoleFilter(e.target.value)}
+                  className="px-3 py-2 border border-border rounded-lg bg-bg-elevated text-primary focus:outline-none focus:ring-2 focus:ring-primary-500"
+                >
+                  <option value="all">All Roles</option>
+                  {roles.map(role => (
+                    <option key={role.name} value={role.name}>{role.name}</option>
+                  ))}
+                </select>
+                
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="px-3 py-2 border border-border rounded-lg bg-bg-elevated text-primary focus:outline-none focus:ring-2 focus:ring-primary-500"
+                >
+                  <option value="all">All Status</option>
+                  <option value="ACTIVE">Active</option>
+                  <option value="INACTIVE">Inactive</option>
+                  <option value="SUSPENDED">Suspended</option>
+                  <option value="PENDING">Pending</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Users Table */}
+        <div className="card">
+          <div className="card-content p-0">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-bg-tertiary">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-tertiary uppercase tracking-wider">
+                      User
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-tertiary uppercase tracking-wider">
+                      Role & Level
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-tertiary uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-tertiary uppercase tracking-wider">
+                      Stats
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-tertiary uppercase tracking-wider">
+                      Last Active
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-tertiary uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {filteredUsers.map((user) => (
+                    <tr key={user.id} className="hover:bg-bg-tertiary">
+                      <td className="px-6 py-4">
+                        <div className="flex items-center">
+                          <div className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center">
+                            <span className="text-primary-600 font-semibold">
+                              {user.name.charAt(0)}
+                            </span>
+                          </div>
+                          <div className="ml-4">
+                            <div className="text-sm font-medium text-primary">{user.name}</div>
+                            <div className="text-sm text-secondary">{user.email}</div>
+                          </div>
+                        </div>
+                      </td>
+                      
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2">
+                          <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getRoleInfo(user.role).color}`}>
+                            {getRoleInfo(user.role).icon}
+                            {user.role}
+                          </span>
+                          <div className="flex items-center gap-1">
+                            {getLevelIcon(user.level)}
+                            <span className="text-xs text-tertiary">{user.level}</span>
+                          </div>
+                        </div>
+                      </td>
+                      
+                      <td className="px-6 py-4">
+                        {getStatusBadge(user.status)}
+                      </td>
+                      
+                      <td className="px-6 py-4">
+                        <div className="text-sm">
+                          <div className="flex items-center gap-2">
+                            <span className="text-tertiary">XP:</span>
+                            <span className="font-medium">{user.xp}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-tertiary">Rep:</span>
+                            <span className="font-medium">{user.reputation}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-tertiary">Equity:</span>
+                            <span className="font-medium">{user.totalEquity}%</span>
+                          </div>
+                        </div>
+                      </td>
+                      
+                      <td className="px-6 py-4 text-sm text-tertiary">
+                        {new Date(user.lastActive).toLocaleDateString()}
+                      </td>
+                      
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => {
+                              setSelectedUser(user);
+                              setShowUserModal(true);
+                            }}
+                            className="btn btn-ghost btn-sm"
+                            title="Edit User"
+                          >
+                            <Edit size={14} />
+                          </button>
+                          <button
+                            onClick={() => {
+                              setSelectedUser(user);
+                              setShowUserModal(true);
+                            }}
+                            className="btn btn-ghost btn-sm"
+                            title="View Details"
+                          >
+                            <Eye size={14} />
+                          </button>
+                          <button className="btn btn-ghost btn-sm" title="More Options">
+                            <MoreVertical size={14} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      {/* User Modal */}
+      {showUserModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-bg-elevated rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold">
+                {selectedUser ? 'Edit User' : 'Add New User'}
+              </h2>
+              <button
+                onClick={() => {
+                  setShowUserModal(false);
+                  setSelectedUser(null);
+                }}
+                className="btn btn-ghost btn-sm"
+              >
+                ×
+              </button>
+            </div>
+            
+            <form className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Name</label>
+                  <input
+                    type="text"
+                    defaultValue={selectedUser?.name || ''}
+                    className="w-full px-3 py-2 border border-border rounded-lg bg-bg-elevated text-primary"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Email</label>
+                  <input
+                    type="email"
+                    defaultValue={selectedUser?.email || ''}
+                    className="w-full px-3 py-2 border border-border rounded-lg bg-bg-elevated text-primary"
+                  />
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Role</label>
+                  <select className="w-full px-3 py-2 border border-border rounded-lg bg-bg-elevated text-primary">
+                    {roles.map(role => (
+                      <option key={role.name} value={role.name}>{role.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Status</label>
+                  <select className="w-full px-3 py-2 border border-border rounded-lg bg-bg-elevated text-primary">
+                    <option value="ACTIVE">Active</option>
+                    <option value="INACTIVE">Inactive</option>
+                    <option value="SUSPENDED">Suspended</option>
+                    <option value="PENDING">Pending</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div className="flex justify-end gap-2 pt-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowUserModal(false);
+                    setSelectedUser(null);
+                  }}
+                  className="btn btn-ghost"
+                >
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-primary">
+                  {selectedUser ? 'Update User' : 'Create User'}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
 
-      {/* Main Content */}
-      <main className="container py-6">
-        {/* Status Bar */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 text-sm text-tertiary">
-              <Clock size={16} />
-              <span>Last updated: {lastRefresh.toLocaleTimeString()}</span>
-            </div>
-            <div className="flex items-center gap-2 text-sm">
-              <div className="status-dot online"></div>
-              <span>System Health: GOOD</span>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 text-sm text-tertiary">
-            <Battery size={16} />
-            <span>Performance: Excellent</span>
-          </div>
-        </div>
-
-        {/* Page Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-2 bg-purple-600 rounded-lg">
-              <Users className="w-6 h-6 text-white" />
-            </div>
-            <h2 className="text-2xl font-semibold text-white">User Management</h2>
-          </div>
-          <p className="text-gray-300">
-            Manage team members, roles, and equity distribution across all projects
-          </p>
-        </div>
-
-        {/* Stats Overview */}
-        <section className="mb-8">
-          <div className="stats-grid">
-            <div className="stat-card positive">
-              <div className="stat-icon">
-                <Users size={20} />
-              </div>
-              <div className="stat-content">
-                <div className="stat-value">{users.length}</div>
-                <div className="stat-label">Total Users</div>
-              </div>
+      {/* Role Management Modal */}
+      {showRoleModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-bg-elevated rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold">Role & Permission Management</h2>
+              <button
+                onClick={() => setShowRoleModal(false)}
+                className="btn btn-ghost btn-sm"
+              >
+                ×
+              </button>
             </div>
             
-            <div className="stat-card positive">
-              <div className="stat-icon">
-                <Briefcase size={20} />
-              </div>
-              <div className="stat-content">
-                <div className="stat-value">
-                  {users.reduce((sum, user) => sum + user.activeProjectsCount, 0)}
-                </div>
-                <div className="stat-label">Active Projects</div>
-              </div>
-            </div>
-            
-            <div className="stat-card positive">
-              <div className="stat-icon">
-                <TrendingUp size={20} />
-              </div>
-              <div className="stat-content">
-                <div className="stat-value">
-                  {users.reduce((sum, user) => sum + user.totalEquityOwned, 0).toFixed(1)}%
-                </div>
-                <div className="stat-label">Total Equity</div>
-              </div>
-            </div>
-            
-            <div className="stat-card positive">
-              <div className="stat-icon">
-                <Award size={20} />
-              </div>
-              <div className="stat-content">
-                <div className="stat-value">
-                  {users.reduce((sum, user) => sum + user.xp, 0)}
-                </div>
-                <div className="stat-label">Total XP</div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Users Grid */}
-        <section>
-          <div className="flex items-center gap-3 mb-6">
-            <User size={24} />
-            <h2 className="text-2xl font-semibold text-white">Team Members</h2>
-          </div>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {users.map((user) => (
-              <div key={user.id} className="card">
-                {/* User Header */}
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
-                      <span className="text-white font-bold text-lg">
-                        {user.name.split(' ').map(n => n[0]).join('')}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {roles.map(role => (
+                <div key={role.name} className="card">
+                  <div className="card-content p-4">
+                    <div className="flex items-center gap-3 mb-3">
+                      <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${role.color}`}>
+                        {role.icon}
+                        {role.name}
                       </span>
                     </div>
-                    <div>
-                      <h3 className="text-xl font-semibold text-white">{user.name}</h3>
-                      <div className="flex items-center gap-2">
-                        {getRoleIcon(user.projectMemberships[0]?.role || 'MEMBER')}
-                        <span className="text-sm text-gray-400 capitalize">
-                          {user.projectMemberships[0]?.role?.toLowerCase().replace('_', ' ') || 'Member'}
-                        </span>
+                    <p className="text-sm text-secondary mb-3">{role.description}</p>
+                    <div className="space-y-2">
+                      <h4 className="text-sm font-medium">Permissions:</h4>
+                      <div className="flex flex-wrap gap-1">
+                        {role.permissions.map(permission => (
+                          <span key={permission} className="inline-flex items-center px-2 py-1 rounded text-xs bg-bg-tertiary text-tertiary">
+                            {permission}
+                          </span>
+                        ))}
                       </div>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getLevelColor(user.level)}`}>
-                      {user.level.replace('_', ' ')}
-                    </span>
-                  </div>
                 </div>
-
-                {/* Contact Info */}
-                <div className="mb-4">
-                  <div className="flex items-center gap-2 text-gray-400 mb-2">
-                    <Mail className="w-4 h-4" />
-                    <span className="text-sm">{user.email}</span>
-                  </div>
-                  {user.profile?.location && (
-                    <div className="flex items-center gap-2 text-gray-400 mb-2">
-                      <MapPin className="w-4 h-4" />
-                      <span className="text-sm">{user.profile.location}</span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Bio */}
-                {user.profile?.bio && (
-                  <p className="text-gray-300 text-sm mb-4">{user.profile.bio}</p>
-                )}
-
-                {/* Stats Grid */}
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div className="stat-mini">
-                    <div className="stat-mini-label">Portfolio Value</div>
-                    <div className="stat-mini-value">{formatCurrency(user.totalPortfolioValue)}</div>
-                  </div>
-                  <div className="stat-mini">
-                    <div className="stat-mini-label">Equity Owned</div>
-                    <div className="stat-mini-value">{user.totalEquityOwned.toFixed(1)}%</div>
-                  </div>
-                  <div className="stat-mini">
-                    <div className="stat-mini-label">XP</div>
-                    <div className="stat-mini-value">{user.xp}</div>
-                  </div>
-                  <div className="stat-mini">
-                    <div className="stat-mini-label">Reputation</div>
-                    <div className="stat-mini-value">{user.reputation}</div>
-                  </div>
-                </div>
-
-                {/* Skills */}
-                {user.userSkills && user.userSkills.length > 0 && (
-                  <div className="mb-4">
-                    <h4 className="text-sm font-medium text-gray-300 mb-2">Top Skills</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {user.userSkills.slice(0, 3).map((userSkill, index) => (
-                        <span key={index} className="badge badge-primary">
-                          {userSkill.skill.name}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Badges */}
-                {user.userBadges && user.userBadges.length > 0 && (
-                  <div className="mb-4">
-                    <h4 className="text-sm font-medium text-gray-300 mb-2">Recent Badges</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {user.userBadges.slice(0, 3).map((userBadge, index) => (
-                        <span key={index} className="badge badge-secondary">
-                          {userBadge.badge.name}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Social Links */}
-                {user.profile && (user.profile.linkedinUrl || user.profile.twitterUrl || user.profile.githubUrl) && (
-                  <div className="flex gap-2 mb-4">
-                    {user.profile.linkedinUrl && (
-                      <a href={user.profile.linkedinUrl} target="_blank" rel="noopener noreferrer" 
-                         className="btn btn-sm btn-outline">
-                        <Linkedin className="w-4 h-4" />
-                      </a>
-                    )}
-                    {user.profile.twitterUrl && (
-                      <a href={user.profile.twitterUrl} target="_blank" rel="noopener noreferrer"
-                         className="btn btn-sm btn-outline">
-                        <Twitter className="w-4 h-4" />
-                      </a>
-                    )}
-                    {user.profile.githubUrl && (
-                      <a href={user.profile.githubUrl} target="_blank" rel="noopener noreferrer"
-                         className="btn btn-sm btn-outline">
-                        <Github className="w-4 h-4" />
-                      </a>
-                    )}
-                  </div>
-                )}
-
-                {/* Member Since */}
-                <div className="pt-4 border-t border-gray-700">
-                  <div className="flex items-center gap-2 text-gray-400 text-xs">
-                    <Calendar className="w-3 h-3" />
-                    <span>Member since {formatDate(user.createdAt)}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </section>
-      </main>
+        </div>
+      )}
     </div>
   );
 }
-
-// Mock data for fallback
-const mockUsers: UserData[] = [
-  {
-    id: '1',
-    email: 'alice@alicesolutions.com',
-    name: 'Alice Chen',
-    level: 'SKY_MASTER',
-    xp: 1250,
-    reputation: 85,
-    totalPortfolioValue: 175000,
-    totalEquityOwned: 35,
-    activeProjectsCount: 1,
-    totalContributions: 12,
-    portfolioDiversity: 6,
-    lastEquityEarned: '2025-08-31T00:00:00Z',
-    lastActive: '2025-08-31T00:00:00Z',
-    createdAt: '2025-01-01T00:00:00Z',
-    profile: {
-      id: '1',
-      bio: 'Founder and CEO of AliceSolutions Ventures, passionate about building innovative platforms.',
-      location: 'San Francisco, CA',
-      linkedinUrl: 'https://linkedin.com/in/alicechen',
-      twitterUrl: 'https://twitter.com/alicechen',
-      githubUrl: 'https://github.com/alicechen',
-      websiteUrl: 'https://alicesolutions.com',
-      avatarUrl: ''
-    },
-    userSkills: [
-      { skill: { name: 'Leadership', category: 'Business', description: 'Strategic leadership skills' }, level: 5, verified: true, endorsements: 12 },
-      { skill: { name: 'Strategy', category: 'Business', description: 'Strategic planning and execution' }, level: 5, verified: true, endorsements: 8 },
-      { skill: { name: 'Business Development', category: 'Business', description: 'Business growth and partnerships' }, level: 5, verified: true, endorsements: 15 }
-    ],
-    userBadges: [
-      { badge: { name: '🚀 MVP Launcher', description: 'Successfully launched an MVP', icon: '🚀', category: 'Achievement' }, earnedAt: '2025-08-31T00:00:00Z' },
-      { badge: { name: '💼 Project Owner', description: 'Owned and managed a project', icon: '💼', category: 'Leadership' }, earnedAt: '2025-08-31T00:00:00Z' },
-      { badge: { name: '🎯 Goal Setter', description: 'Set and achieved ambitious goals', icon: '🎯', category: 'Planning' }, earnedAt: '2025-08-31T00:00:00Z' }
-    ],
-    projectMemberships: [{ role: 'OWNER', project: { name: 'SmartStart Platform' } }]
-  },
-  {
-    id: '2',
-    email: 'brian.johnson@smartstart.com',
-    name: 'Brian Johnson',
-    level: 'BUILDER',
-    xp: 180,
-    reputation: 85,
-    totalPortfolioValue: 175000,
-    totalEquityOwned: 35,
-    activeProjectsCount: 1,
-    totalContributions: 18,
-    portfolioDiversity: 1,
-    lastEquityEarned: '2025-08-31T00:00:00Z',
-    lastActive: '2025-08-31T00:00:00Z',
-    createdAt: '2025-06-01T00:00:00Z',
-    profile: {
-      id: '2',
-      bio: 'Experienced entrepreneur and startup founder with a passion for building innovative platforms.',
-      location: 'San Francisco, CA',
-      linkedinUrl: 'https://linkedin.com/in/brianjohnson',
-      twitterUrl: 'https://twitter.com/brianjohnson',
-      githubUrl: 'https://github.com/brianjohnson',
-      websiteUrl: '',
-      avatarUrl: ''
-    },
-    userSkills: [
-      { skill: { name: 'Leadership', category: 'Business', description: 'Team leadership and management' }, level: 3, verified: true, endorsements: 5 },
-      { skill: { name: 'Strategy', category: 'Business', description: 'Strategic planning and execution' }, level: 3, verified: true, endorsements: 4 },
-      { skill: { name: 'Business Development', category: 'Business', description: 'Business growth and partnerships' }, level: 3, verified: true, endorsements: 6 }
-    ],
-    userBadges: [
-      { badge: { name: '🚀 MVP Launcher', description: 'Successfully launched an MVP', icon: '🚀', category: 'Achievement' }, earnedAt: '2025-08-31T00:00:00Z' },
-      { badge: { name: '💼 Project Owner', description: 'Owned and managed a project', icon: '💼', category: 'Leadership' }, earnedAt: '2025-08-31T00:00:00Z' },
-      { badge: { name: '🎯 Goal Setter', description: 'Set and achieved ambitious goals', icon: '🎯', category: 'Planning' }, earnedAt: '2025-08-31T00:00:00Z' }
-    ],
-    projectMemberships: [{ role: 'OWNER', project: { name: 'SmartStart Platform' } }]
-  },
-  {
-    id: '3',
-    email: 'vlad.petrov@smartstart.com',
-    name: 'Vlad Petrov',
-    level: 'WISE_OWL',
-    xp: 320,
-    reputation: 92,
-    totalPortfolioValue: 75000,
-    totalEquityOwned: 15,
-    activeProjectsCount: 1,
-    totalContributions: 32,
-    portfolioDiversity: 1,
-    lastEquityEarned: '2025-08-31T00:00:00Z',
-    lastActive: '2025-08-31T00:00:00Z',
-    createdAt: '2025-07-01T00:00:00Z',
-    profile: {
-      id: '3',
-      bio: 'Full-stack developer and technical architect with expertise in blockchain and smart contracts.',
-      location: 'Kyiv, Ukraine',
-      linkedinUrl: 'https://linkedin.com/in/vladpetrov',
-      twitterUrl: 'https://twitter.com/vladpetrov',
-      githubUrl: 'https://github.com/vladpetrov',
-      websiteUrl: '',
-      avatarUrl: ''
-    },
-    userSkills: [
-      { skill: { name: 'Full-Stack Development', category: 'Technology', description: 'Full-stack web development' }, level: 5, verified: true, endorsements: 20 },
-      { skill: { name: 'Blockchain', category: 'Technology', description: 'Blockchain and cryptocurrency development' }, level: 5, verified: true, endorsements: 15 },
-      { skill: { name: 'Smart Contracts', category: 'Technology', description: 'Smart contract development and deployment' }, level: 5, verified: true, endorsements: 18 }
-    ],
-    userBadges: [
-      { badge: { name: '⚡ Code Ninja', description: 'Exceptional coding skills', icon: '⚡', category: 'Technical' }, earnedAt: '2025-08-31T00:00:00Z' },
-      { badge: { name: '🔗 Blockchain Expert', description: 'Expert in blockchain technology', icon: '🔗', category: 'Technical' }, earnedAt: '2025-08-31T00:00:00Z' },
-      { badge: { name: '🛠️ Tech Lead', description: 'Led technical teams successfully', icon: '🛠️', category: 'Leadership' }, earnedAt: '2025-08-31T00:00:00Z' }
-    ],
-    projectMemberships: [{ role: 'MEMBER', project: { name: 'SmartStart Platform' } }]
-  },
-  {
-    id: '4',
-    email: 'andrii.kovalenko@smartstart.com',
-    name: 'Andrii Kovalenko',
-    level: 'OWLET',
-    xp: 95,
-    reputation: 67,
-    totalPortfolioValue: 50000,
-    totalEquityOwned: 10,
-    activeProjectsCount: 1,
-    totalContributions: 9,
-    portfolioDiversity: 1,
-    lastEquityEarned: '2025-08-31T00:00:00Z',
-    lastActive: '2025-08-31T00:00:00Z',
-    createdAt: '2025-08-01T00:00:00Z',
-    profile: {
-      id: '4',
-      bio: 'Product manager and UX designer focused on creating user-centric solutions.',
-      location: 'Lviv, Ukraine',
-      linkedinUrl: 'https://linkedin.com/in/andriikovalenko',
-      twitterUrl: 'https://twitter.com/andriikovalenko',
-      githubUrl: 'https://github.com/andriikovalenko',
-      websiteUrl: '',
-      avatarUrl: ''
-    },
-    userSkills: [
-      { skill: { name: 'Product Management', category: 'Business', description: 'Product strategy and management' }, level: 3, verified: true, endorsements: 8 },
-      { skill: { name: 'UX Design', category: 'Design', description: 'User experience design' }, level: 3, verified: true, endorsements: 6 },
-      { skill: { name: 'User Research', category: 'Research', description: 'User research and insights' }, level: 3, verified: true, endorsements: 7 }
-    ],
-    userBadges: [
-      { badge: { name: '🎨 Design Thinker', description: 'Creative design thinking', icon: '🎨', category: 'Design' }, earnedAt: '2025-08-31T00:00:00Z' },
-      { badge: { name: '📊 Data Analyst', description: 'Data analysis and insights', icon: '📊', category: 'Analytics' }, earnedAt: '2025-08-31T00:00:00Z' },
-      { badge: { name: '🤝 Team Player', description: 'Excellent team collaboration', icon: '🤝', category: 'Collaboration' }, earnedAt: '2025-08-31T00:00:00Z' }
-    ],
-    projectMemberships: [{ role: 'MEMBER', project: { name: 'SmartStart Platform' } }]
-  }
-];
