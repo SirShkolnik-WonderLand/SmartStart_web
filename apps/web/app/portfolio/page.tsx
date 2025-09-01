@@ -100,36 +100,21 @@ export default function PortfolioPage() {
       }
 
       // Fetch contract offers
-      const offersResponse = await fetch(`https://smartstart-api.onrender.com/smart-contracts/offers/user/${user?.id}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
+      const offersResponse = await fetch(`/api/proxy/smart-contracts/offers/user/${user?.id}`);
       if (offersResponse.ok) {
         const offers = await offersResponse.json();
         setContractOffers(offers);
       }
 
       // Fetch portfolio insights
-      const insightsResponse = await fetch(`https://smartstart-api.onrender.com/smart-contracts/portfolio-insights/${user?.id}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
+      const insightsResponse = await fetch(`/api/proxy/smart-contracts/portfolio-insights/${user?.id}`);
       if (insightsResponse.ok) {
         const insights = await insightsResponse.json();
         setPortfolioInsights(insights);
       }
 
       // Fetch vesting schedules
-      const vestingResponse = await fetch(`https://smartstart-api.onrender.com/smart-contracts/vesting/${user?.id}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
+      const vestingResponse = await fetch(`/api/proxy/smart-contracts/vesting/${user?.id}`);
       if (vestingResponse.ok) {
         const vesting = await vestingResponse.json();
         setVestingSchedules(vesting);
@@ -152,11 +137,10 @@ export default function PortfolioPage() {
         return;
       }
 
-      const response = await fetch(`https://smartstart-api.onrender.com/smart-contracts/offers/${contractId}/${action}`, {
+      const response = await fetch(`/api/proxy/smart-contracts/offers/${contractId}/${action}`, {
         method: 'POST',
         headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({ reason })
       });

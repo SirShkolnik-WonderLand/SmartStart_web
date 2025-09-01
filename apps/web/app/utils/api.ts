@@ -1,5 +1,5 @@
-// API utility for direct backend calls
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://smartstart-api.onrender.com'
+// API utility for proxy calls
+const API_BASE = '/api/proxy'
 
 export async function apiCall(endpoint: string, options: RequestInit = {}) {
   const url = `${API_BASE}${endpoint}`
@@ -20,11 +20,11 @@ export async function apiCall(endpoint: string, options: RequestInit = {}) {
 }
 
 export async function apiCallWithAuth(endpoint: string, token: string, options: RequestInit = {}) {
+  // Token is handled by the proxy route via cookies
   return apiCall(endpoint, {
     ...options,
     headers: {
       ...options.headers,
-      'Authorization': `Bearer ${token}`,
     },
   })
 }
