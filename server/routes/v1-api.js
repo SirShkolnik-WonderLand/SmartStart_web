@@ -734,6 +734,41 @@ router.post('/events/task/accepted', async (req, res) => {
   }
 });
 
+// ===== MIGRATION ENDPOINT =====
+
+/**
+ * POST /migrate - Apply database migrations
+ * WARNING: This should only be used in development/production setup
+ */
+router.post('/migrate', async (req, res) => {
+  try {
+    console.log('🔄 Starting production database migration...');
+    
+    // Run Prisma db push to apply schema changes
+    const { execSync } = require('child_process');
+    const result = execSync('npx prisma db push --accept-data-loss', { 
+      encoding: 'utf8',
+      cwd: process.cwd()
+    });
+    
+    console.log('✅ Production database migration completed successfully!');
+    console.log('Migration result:', result);
+    
+    res.json({ 
+      success: true, 
+      message: 'Database migrated successfully',
+      result: result,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('❌ Production database migration failed:', error);
+    res.status(500).json({ 
+      error: 'Failed to migrate database',
+      details: error.message 
+    });
+  }
+});
+
 // ===== SEED ENDPOINT =====
 
 /**
