@@ -11,7 +11,13 @@
         "dev": "next dev",
         "start": "next start",
         "start:api": "node server/api.js",
+        "start:worker": "node server/worker.js",
+        "start:storage": "node server/storage.js",
+        "start:monitor": "node server/monitor.js",
         "dev:api": "nodemon server/api.js",
+        "dev:worker": "nodemon server/worker.js",
+        "dev:storage": "nodemon server/storage.js",
+        "dev:monitor": "nodemon server/monitor.js",
         "lint": "next lint"
     },
     "prisma": {
@@ -43,8 +49,18 @@
         "stripe": "^12.0.0",
         "node-cron": "^3.0.0",
         "nodemailer": "^6.9.0",
-        "multer": "^1.4.5",
-        "compression": "^1.7.4"
+        "multer": "^1.4.4",
+        "compression": "^1.7.4",
+        "aws-sdk": "^2.1500.0",
+        "redis": "^4.6.0",
+        "bull": "^4.12.0",
+        "axios": "^1.6.0",
+        "winston": "^3.11.0",
+        "express-validator": "^7.0.0",
+        "uuid": "^9.0.0",
+        "sharp": "^0.33.0",
+        "pdf-lib": "^1.17.1",
+        "qrcode": "^1.5.3"
     },
     "devDependencies": {
         "prisma": "^5.7.1",
@@ -62,7 +78,9 @@
         "@types/compression": "^1.7.0",
         "@types/multer": "^1.4.0",
         "@types/node-cron": "^3.0.0",
-        "@types/nodemailer": "^6.4.0"
+        "@types/nodemailer": "^6.4.0",
+        "@types/uuid": "^9.0.0",
+        "@types/qrcode": "^1.5.0"
     },
     "keywords": ["startup", "equity", "collaboration", "platform", "prisma", "nextjs"],
     "author": "AliceSolutions",
