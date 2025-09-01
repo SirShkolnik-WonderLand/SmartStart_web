@@ -13,6 +13,9 @@
     "build": "prisma generate",
     "start": "echo 'Database setup complete'"
   },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
   "dependencies": {
     "@prisma/client": "^5.7.1"
   },

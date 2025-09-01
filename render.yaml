@@ -5,7 +5,7 @@ services:
     rootDir: .
     plan: free
     buildCommand: npm install && npx prisma generate
-    startCommand: npx prisma db push && npx prisma db seed && echo "Database setup complete"
+    startCommand: npx prisma db push && npx prisma db seed && npm start
     envVars:
       - key: NODE_ENV
         value: production
