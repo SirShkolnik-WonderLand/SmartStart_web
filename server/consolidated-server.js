@@ -329,9 +329,9 @@ if (process.env.WORKER_ENABLED === 'true') {
     });
 }
 
-// Mount v1 API routes (after all other endpoints) - temporarily commented for debugging
-// const v1ApiRoutes = require('./routes/v1-api');
-// app.use('/api/v1', v1ApiRoutes);
+// Mount v1 API routes (after all other endpoints)
+const v1ApiRoutes = require('./routes/v1-api');
+app.use('/api/v1', v1ApiRoutes);
 
 // Error handling middleware
 app.use((error, req, res, next) => {
@@ -339,10 +339,10 @@ app.use((error, req, res, next) => {
     res.status(500).json({ error: 'Internal server error' });
 });
 
-// 404 handler - MUST be last after all routes (temporarily commented for debugging)
-// app.use('*', (req, res) => {
-//     res.status(404).json({ error: 'Endpoint not found' });
-// });
+// 404 handler - MUST be last after all routes
+app.use('*', (req, res) => {
+    res.status(404).json({ error: 'Endpoint not found' });
+});
 
 // Graceful shutdown
 process.on('SIGTERM', async() => {
