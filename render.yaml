@@ -1,9 +1,9 @@
 services:
   - name: smartstart-db
     type: pserv
-    runtime: postgresql
+    runtime: postgres
     plan: starter
-    ipAllowList: []
+    startCommand: postgres
     autoDeploy: true
 
   - name: smartstart-api
