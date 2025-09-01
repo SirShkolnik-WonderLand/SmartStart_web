@@ -20,7 +20,8 @@
         "dev:worker": "nodemon server/worker.js",
         "dev:storage": "nodemon server/storage.js",
         "dev:monitor": "nodemon server/monitor.js",
-        "lint": "next lint"
+        "lint": "next lint",
+        "deploy:status": "node scripts/deploy-status.js"
     },
     "prisma": {
         "seed": "node prisma/seed.js"
