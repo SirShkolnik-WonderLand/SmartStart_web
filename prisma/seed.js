@@ -270,11 +270,29 @@ async function main() {
   console.log('✅ Database seed completed successfully!')
 }
 
-main()
-  .catch((e) => {
-    console.error('❌ Error during seeding:', e)
-    process.exit(1)
-  })
-  .finally(async () => {
-    await prisma.$disconnect()
-  })
+// Export the main function for use in API
+async function runSeed() {
+  try {
+    await main();
+    console.log('✅ Database seeding completed successfully');
+  } catch (error) {
+    console.error('❌ Database seeding failed:', error);
+    throw error;
+  } finally {
+    await prisma.$disconnect();
+  }
+}
+
+module.exports = { runSeed };
+
+// Run if called directly
+if (require.main === module) {
+  main()
+    .catch((e) => {
+      console.error('❌ Error during seeding:', e)
+      process.exit(1)
+    })
+    .finally(async () => {
+      await prisma.$disconnect()
+    })
+}

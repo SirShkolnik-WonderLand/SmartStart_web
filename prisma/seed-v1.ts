@@ -301,11 +301,27 @@ async function main() {
   console.log('   Update these with actual user IDs after user creation.');
 }
 
-main()
-  .catch((e) => {
-    console.error('❌ Seeding failed:', e);
-    process.exit(1);
-  })
-  .finally(async () => {
+// Export the main function for use in API
+export async function seedDatabase() {
+  try {
+    await main();
+    console.log('✅ Database seeding completed successfully');
+  } catch (error) {
+    console.error('❌ Database seeding failed:', error);
+    throw error;
+  } finally {
     await prisma.$disconnect();
-  });
+  }
+}
+
+// Run if called directly
+if (require.main === module) {
+  main()
+    .catch((e) => {
+      console.error('❌ Seeding failed:', e);
+      process.exit(1);
+    })
+    .finally(async () => {
+      await prisma.$disconnect();
+    });
+}

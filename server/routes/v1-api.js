@@ -734,6 +734,36 @@ router.post('/events/task/accepted', async (req, res) => {
   }
 });
 
+// ===== SEED ENDPOINT =====
+
+/**
+ * POST /seed - Seed the database with initial data
+ * WARNING: This should only be used in development/production setup
+ */
+router.post('/seed', async (req, res) => {
+  try {
+    console.log('🌱 Starting production database seed...');
+    
+    // Import and run the seed function
+    const seedScript = require('../../prisma/seed');
+    // Run the seed script
+    await seedScript.runSeed();
+    
+    console.log('✅ Production database seed completed successfully!');
+    res.json({ 
+      success: true, 
+      message: 'Database seeded successfully',
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('❌ Production database seed failed:', error);
+    res.status(500).json({ 
+      error: 'Failed to seed database',
+      details: error.message 
+    });
+  }
+});
+
 // ===== HELPER FUNCTIONS =====
 
 async function getLastWalletHash(walletId) {
