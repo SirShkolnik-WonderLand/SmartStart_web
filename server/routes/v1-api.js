@@ -122,10 +122,10 @@ router.get('/profiles/:userId', async(req, res) => {
                 buzEarned: item.buzEarned,
                 impactScore: item.impactScore
             })),
-            stats: {
-                totalBUZ: wallet ? .buzBalance || 0,
-                totalPortfolioItems: portfolioItems.length
-            }
+                         stats: {
+                 totalBUZ: wallet ? wallet.buzBalance : 0,
+                 totalPortfolioItems: portfolioItems.length
+             }
         };
 
         res.json(response);
