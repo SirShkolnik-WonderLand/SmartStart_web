@@ -21,7 +21,18 @@ services:
         fromService:
           name: smartstart-db
           type: pserv
-          property: connectionString
+          property: host
+      - key: DB_PORT
+        fromService:
+          name: smartstart-db
+          type: pserv
+          property: port
+      - key: DB_NAME
+        value: "smartstart"
+      - key: DB_USER
+        value: "postgres"
+      - key: DB_PASSWORD
+        generateValue: true
       - key: JWT_SECRET
         generateValue: true
       - key: WORKER_ENABLED
