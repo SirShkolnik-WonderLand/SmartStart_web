@@ -1100,9 +1100,11 @@ router.post('/test/upload', async(req, res) => {
         const file = await prisma.file.create({
             data: {
                 filename,
+                originalName: filename,
                 mimeType,
                 size: Buffer.byteLength(content, 'utf8'),
                 checksumSha256: require('crypto').createHash('sha256').update(content).digest('hex'),
+                storageUri: `/uploads/${file.id}/${filename}`,
                 uploadedBy: 'test-user',
                 isPublic: true
             }
