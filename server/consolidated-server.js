@@ -329,9 +329,9 @@ if (process.env.WORKER_ENABLED === 'true') {
     });
 }
 
-// Mount v1 API routes (after all other endpoints)
-const v1ApiRoutes = require('./routes/v1-api');
-app.use('/api/v1', v1ApiRoutes);
+// Mount v1 API routes (after all other endpoints) - temporarily commented for debugging
+// const v1ApiRoutes = require('./routes/v1-api');
+// app.use('/api/v1', v1ApiRoutes);
 
 // Error handling middleware
 app.use((error, req, res, next) => {
