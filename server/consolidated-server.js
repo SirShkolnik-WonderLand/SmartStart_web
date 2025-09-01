@@ -88,9 +88,7 @@ app.use(compression());
 
 // CORS configuration
 app.use(cors({
-    origin: process.env.NODE_ENV === 'production' ?
-        ['https://smartstart-platform.onrender.com'] :
-        ['http://localhost:3000'],
+    origin: process.env.NODE_ENV === 'production' ? ['https://smartstart-platform.onrender.com'] : ['http://localhost:3000'],
     credentials: true
 }));
 
@@ -105,6 +103,10 @@ app.use('/api/', limiter);
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
+
+// Mount v1 API routes
+const v1ApiRoutes = require('./routes/v1-api');
+app.use('/api/v1', v1ApiRoutes);
 
 // Authentication middleware
 const authenticateToken = async(req, res, next) => {
