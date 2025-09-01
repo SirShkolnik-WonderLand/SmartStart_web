@@ -31,15 +31,24 @@ interface UserProfile {
 }
 
 interface UserSkill {
-  skillName: string;
-  level: string;
-  xp: number;
+  skill: {
+    name: string;
+    category: string;
+    description?: string;
+  };
+  level: number;
+  verified: boolean;
+  endorsements: number;
 }
 
 interface UserBadge {
-  badgeName: string;
+  badge: {
+    name: string;
+    description: string;
+    icon: string;
+    category?: string;
+  };
   earnedAt: string;
-  xpReward: number;
 }
 
 interface UserData {
@@ -58,8 +67,8 @@ interface UserData {
   lastActive: string;
   createdAt: string;
   profile: UserProfile;
-  skills: UserSkill[];
-  badges: UserBadge[];
+  userSkills: UserSkill[];
+  userBadges: UserBadge[];
   projectMemberships: {
     role: string;
     project: {
@@ -297,13 +306,13 @@ export default function UsersPage() {
               </div>
 
               {/* Skills */}
-              {user.skills && user.skills.length > 0 && (
+              {user.userSkills && user.userSkills.length > 0 && (
                 <div className="mb-4">
                   <h4 className="text-sm font-medium text-gray-300 mb-2">Top Skills</h4>
                   <div className="flex flex-wrap gap-2">
-                    {user.skills.slice(0, 3).map((skill, index) => (
+                    {user.userSkills.slice(0, 3).map((userSkill, index) => (
                       <span key={index} className="px-2 py-1 bg-purple-600 text-white text-xs rounded">
-                        {skill.skillName}
+                        {userSkill.skill.name}
                       </span>
                     ))}
                   </div>
@@ -311,13 +320,13 @@ export default function UsersPage() {
               )}
 
               {/* Badges */}
-              {user.badges && user.badges.length > 0 && (
+              {user.userBadges && user.userBadges.length > 0 && (
                 <div className="mb-4">
                   <h4 className="text-sm font-medium text-gray-300 mb-2">Recent Badges</h4>
                   <div className="flex flex-wrap gap-2">
-                    {user.badges.slice(0, 3).map((badge, index) => (
+                    {user.userBadges.slice(0, 3).map((userBadge, index) => (
                       <span key={index} className="px-2 py-1 bg-yellow-600 text-white text-xs rounded">
-                        {badge.badgeName}
+                        {userBadge.badge.name}
                       </span>
                     ))}
                   </div>
@@ -396,15 +405,15 @@ const mockUsers: UserData[] = [
       websiteUrl: 'https://alicesolutions.com',
       avatarUrl: ''
     },
-    skills: [
-      { skillName: 'Leadership', level: 'EXPERT', xp: 500 },
-      { skillName: 'Strategy', level: 'EXPERT', xp: 450 },
-      { skillName: 'Business Development', level: 'EXPERT', xp: 400 }
+    userSkills: [
+      { skill: { name: 'Leadership', category: 'Business', description: 'Strategic leadership skills' }, level: 5, verified: true, endorsements: 12 },
+      { skill: { name: 'Strategy', category: 'Business', description: 'Strategic planning and execution' }, level: 5, verified: true, endorsements: 8 },
+      { skill: { name: 'Business Development', category: 'Business', description: 'Business growth and partnerships' }, level: 5, verified: true, endorsements: 15 }
     ],
-    badges: [
-      { badgeName: '🚀 MVP Launcher', earnedAt: '2025-08-31T00:00:00Z', xpReward: 50 },
-      { badgeName: '💼 Project Owner', earnedAt: '2025-08-31T00:00:00Z', xpReward: 30 },
-      { badgeName: '🎯 Goal Setter', earnedAt: '2025-08-31T00:00:00Z', xpReward: 20 }
+    userBadges: [
+      { badge: { name: '🚀 MVP Launcher', description: 'Successfully launched an MVP', icon: '🚀', category: 'Achievement' }, earnedAt: '2025-08-31T00:00:00Z' },
+      { badge: { name: '💼 Project Owner', description: 'Owned and managed a project', icon: '💼', category: 'Leadership' }, earnedAt: '2025-08-31T00:00:00Z' },
+      { badge: { name: '🎯 Goal Setter', description: 'Set and achieved ambitious goals', icon: '🎯', category: 'Planning' }, earnedAt: '2025-08-31T00:00:00Z' }
     ],
     projectMemberships: [{ role: 'OWNER', project: { name: 'SmartStart Platform' } }]
   },
@@ -433,15 +442,15 @@ const mockUsers: UserData[] = [
       websiteUrl: '',
       avatarUrl: ''
     },
-    skills: [
-      { skillName: 'Leadership', level: 'INTERMEDIATE', xp: 60 },
-      { skillName: 'Strategy', level: 'INTERMEDIATE', xp: 60 },
-      { skillName: 'Business Development', level: 'INTERMEDIATE', xp: 60 }
+    userSkills: [
+      { skill: { name: 'Leadership', category: 'Business', description: 'Team leadership and management' }, level: 3, verified: true, endorsements: 5 },
+      { skill: { name: 'Strategy', category: 'Business', description: 'Strategic planning and execution' }, level: 3, verified: true, endorsements: 4 },
+      { skill: { name: 'Business Development', category: 'Business', description: 'Business growth and partnerships' }, level: 3, verified: true, endorsements: 6 }
     ],
-    badges: [
-      { badgeName: '🚀 MVP Launcher', earnedAt: '2025-08-31T00:00:00Z', xpReward: 10 },
-      { badgeName: '💼 Project Owner', earnedAt: '2025-08-31T00:00:00Z', xpReward: 10 },
-      { badgeName: '🎯 Goal Setter', earnedAt: '2025-08-31T00:00:00Z', xpReward: 10 }
+    userBadges: [
+      { badge: { name: '🚀 MVP Launcher', description: 'Successfully launched an MVP', icon: '🚀', category: 'Achievement' }, earnedAt: '2025-08-31T00:00:00Z' },
+      { badge: { name: '💼 Project Owner', description: 'Owned and managed a project', icon: '💼', category: 'Leadership' }, earnedAt: '2025-08-31T00:00:00Z' },
+      { badge: { name: '🎯 Goal Setter', description: 'Set and achieved ambitious goals', icon: '🎯', category: 'Planning' }, earnedAt: '2025-08-31T00:00:00Z' }
     ],
     projectMemberships: [{ role: 'OWNER', project: { name: 'SmartStart Platform' } }]
   },
@@ -470,15 +479,15 @@ const mockUsers: UserData[] = [
       websiteUrl: '',
       avatarUrl: ''
     },
-    skills: [
-      { skillName: 'Full-Stack Development', level: 'EXPERT', xp: 107 },
-      { skillName: 'Blockchain', level: 'EXPERT', xp: 107 },
-      { skillName: 'Smart Contracts', level: 'EXPERT', xp: 106 }
+    userSkills: [
+      { skill: { name: 'Full-Stack Development', category: 'Technology', description: 'Full-stack web development' }, level: 5, verified: true, endorsements: 20 },
+      { skill: { name: 'Blockchain', category: 'Technology', description: 'Blockchain and cryptocurrency development' }, level: 5, verified: true, endorsements: 15 },
+      { skill: { name: 'Smart Contracts', category: 'Technology', description: 'Smart contract development and deployment' }, level: 5, verified: true, endorsements: 18 }
     ],
-    badges: [
-      { badgeName: '⚡ Code Ninja', earnedAt: '2025-08-31T00:00:00Z', xpReward: 10 },
-      { badgeName: '🔗 Blockchain Expert', earnedAt: '2025-08-31T00:00:00Z', xpReward: 10 },
-      { badgeName: '🛠️ Tech Lead', earnedAt: '2025-08-31T00:00:00Z', xpReward: 10 }
+    userBadges: [
+      { badge: { name: '⚡ Code Ninja', description: 'Exceptional coding skills', icon: '⚡', category: 'Technical' }, earnedAt: '2025-08-31T00:00:00Z' },
+      { badge: { name: '🔗 Blockchain Expert', description: 'Expert in blockchain technology', icon: '🔗', category: 'Technical' }, earnedAt: '2025-08-31T00:00:00Z' },
+      { badge: { name: '🛠️ Tech Lead', description: 'Led technical teams successfully', icon: '🛠️', category: 'Leadership' }, earnedAt: '2025-08-31T00:00:00Z' }
     ],
     projectMemberships: [{ role: 'MEMBER', project: { name: 'SmartStart Platform' } }]
   },
@@ -507,15 +516,15 @@ const mockUsers: UserData[] = [
       websiteUrl: '',
       avatarUrl: ''
     },
-    skills: [
-      { skillName: 'Product Management', level: 'INTERMEDIATE', xp: 32 },
-      { skillName: 'UX Design', level: 'INTERMEDIATE', xp: 32 },
-      { skillName: 'User Research', level: 'INTERMEDIATE', xp: 31 }
+    userSkills: [
+      { skill: { name: 'Product Management', category: 'Business', description: 'Product strategy and management' }, level: 3, verified: true, endorsements: 8 },
+      { skill: { name: 'UX Design', category: 'Design', description: 'User experience design' }, level: 3, verified: true, endorsements: 6 },
+      { skill: { name: 'User Research', category: 'Research', description: 'User research and insights' }, level: 3, verified: true, endorsements: 7 }
     ],
-    badges: [
-      { badgeName: '🎨 Design Thinker', earnedAt: '2025-08-31T00:00:00Z', xpReward: 10 },
-      { badgeName: '📊 Data Analyst', earnedAt: '2025-08-31T00:00:00Z', xpReward: 10 },
-      { badgeName: '🤝 Team Player', earnedAt: '2025-08-31T00:00:00Z', xpReward: 10 }
+    userBadges: [
+      { badge: { name: '🎨 Design Thinker', description: 'Creative design thinking', icon: '🎨', category: 'Design' }, earnedAt: '2025-08-31T00:00:00Z' },
+      { badge: { name: '📊 Data Analyst', description: 'Data analysis and insights', icon: '📊', category: 'Analytics' }, earnedAt: '2025-08-31T00:00:00Z' },
+      { badge: { name: '🤝 Team Player', description: 'Excellent team collaboration', icon: '🤝', category: 'Collaboration' }, earnedAt: '2025-08-31T00:00:00Z' }
     ],
     projectMemberships: [{ role: 'MEMBER', project: { name: 'SmartStart Platform' } }]
   }

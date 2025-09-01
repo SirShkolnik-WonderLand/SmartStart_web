@@ -10,15 +10,20 @@ export async function GET() {
         status: 'ACTIVE'
       },
       include: {
-        profile: true,
-        skills: {
+        userSkills: {
           take: 5,
+          include: {
+            skill: true
+          },
           orderBy: {
-            xp: 'desc'
+            level: 'desc'
           }
         },
-        badges: {
+        userBadges: {
           take: 5,
+          include: {
+            badge: true
+          },
           orderBy: {
             earnedAt: 'desc'
           }
