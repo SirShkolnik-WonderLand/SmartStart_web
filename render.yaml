@@ -1,7 +1,7 @@
 services:
   - name: smartstart-db
     type: pserv
-    runtime: postgres
+    runtime: docker
     plan: starter
     startCommand: postgres
     autoDeploy: true
