@@ -9,7 +9,6 @@ databases:
 
 services:
   # Consolidated API Server - Handles all backend functionality in one service
-  # This consolidates api.js, worker.js, storage.js, and monitor.js into one service
   - name: smartstart-api
     type: web
     runtime: node
@@ -28,7 +27,7 @@ services:
       - key: API_PORT
         value: "3001"
       - key: NODE_ENV
-        value: production
+        value: "production"
       - key: WORKER_ENABLED
         value: "true"
       - key: STORAGE_ENABLED
@@ -36,9 +35,9 @@ services:
       - key: MONITOR_ENABLED
         value: "true"
       - key: AWS_ACCESS_KEY_ID
-        value: "" # Add your AWS credentials when ready
+        value: ""
       - key: AWS_SECRET_ACCESS_KEY
-        value: "" # Add your AWS credentials when ready
+        value: ""
       - key: AWS_S3_BUCKET
         value: "smartstart-files"
       - key: AWS_REGION
@@ -48,12 +47,11 @@ services:
       - key: SMTP_PORT
         value: "587"
       - key: SMTP_USER
-        value: "" # Add your email when ready
+        value: ""
       - key: SMTP_PASS
-        value: "" # Add your email password when ready
+        value: ""
     healthCheckPath: /api/health
     autoDeploy: true
-    # Free tier optimizations
     maxInstances: 1
     minInstances: 0
 
@@ -74,13 +72,12 @@ services:
       - key: NEXTAUTH_SECRET
         generateValue: true
       - key: NEXTAUTH_URL
-        value: https://smartstart-platform.onrender.com
+        value: "https://smartstart-platform.onrender.com"
       - key: NEXT_PUBLIC_API_URL
-        value: https://smartstart-api.onrender.com
+        value: "https://smartstart-api.onrender.com"
       - key: NODE_ENV
-        value: production
+        value: "production"
     healthCheckPath: /
     autoDeploy: true
-    # Free tier optimizations
     maxInstances: 1
     minInstances: 0
