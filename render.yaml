@@ -28,4 +28,3 @@ databases:
   - name: smartstart-db
     plan: starter
     databaseName: smartstart
-    user: postgres
