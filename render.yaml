@@ -1,5 +1,5 @@
-# SmartStart Platform - Complete AliceSolutions Hub Architecture
-# Full-stack platform with all services for future scalability
+# SmartStart Platform - Free Plan Compatible Blueprint
+# Optimized for Render.com free tier with consolidated services
 
 databases:
   - name: smartstart-db
@@ -7,7 +7,7 @@ databases:
     ipAllowList: []
 
 services:
-  # API Server - Handles all business logic, database operations, external integrations
+  # Main API Server - Handles all business logic, database operations, and background jobs
   - name: smartstart-api
     type: web
     runtime: node
@@ -48,52 +48,24 @@ services:
       - key: REDIS_URL
         value: "" # For caching and sessions
       - key: AWS_ACCESS_KEY_ID
-        value: "" # For S3 file storage
+        value: "" # Add your AWS credentials
       - key: AWS_SECRET_ACCESS_KEY
-        value: "" # For S3 file storage
+        value: "" # Add your AWS credentials
       - key: AWS_S3_BUCKET
         value: "smartstart-files" # S3 bucket for file storage
       - key: AWS_REGION
         value: "us-east-1"
+      - key: STORAGE_PORT
+        value: "3002"
+      - key: MONITOR_PORT
+        value: "3003"
+      - key: WORKER_ENABLED
+        value: "true"
+      - key: STORAGE_ENABLED
+        value: "true"
+      - key: MONITOR_ENABLED
+        value: "true"
     healthCheckPath: /api/health
-    autoDeploy: true
-
-  # Background Worker - Handles quarterly rebalancing, dunning, provisioning
-  - name: smartstart-worker
-    type: worker
-    runtime: node
-    plan: free
-    buildCommand: npm install && npx prisma generate
-    startCommand: npm run start:worker
-    envVars:
-      - key: DATABASE_URL
-        fromDatabase:
-          name: smartstart-db
-          property: connectionString
-      - key: JWT_SECRET
-        generateValue: true
-      - key: NODE_ENV
-        value: production
-      - key: STRIPE_SECRET_KEY
-        value: "sk_test_..." # Add your Stripe test key
-      - key: SMTP_HOST
-        value: "smtp.gmail.com"
-      - key: SMTP_PORT
-        value: "587"
-      - key: SMTP_USER
-        value: "" # Add your email
-      - key: SMTP_PASS
-        value: "" # Add your email password
-      - key: REDIS_URL
-        value: "" # For job queues
-      - key: AWS_ACCESS_KEY_ID
-        value: "" # For S3 file storage
-      - key: AWS_SECRET_ACCESS_KEY
-        value: "" # For S3 file storage
-      - key: AWS_S3_BUCKET
-        value: "smartstart-files"
-      - key: AWS_REGION
-        value: "us-east-1"
     autoDeploy: true
 
   # Web Service - Next.js frontend application
@@ -127,69 +99,13 @@ services:
     healthCheckPath: /
     autoDeploy: true
 
-  # File Storage Service - Handles document uploads, contracts, KYC docs
-  - name: smartstart-storage
-    type: web
-    runtime: node
-    plan: free
-    buildCommand: npm install
-    startCommand: npm run start:storage
-    envVars:
-      - key: DATABASE_URL
-        fromDatabase:
-          name: smartstart-db
-          property: connectionString
-      - key: JWT_SECRET
-        generateValue: true
-      - key: NODE_ENV
-        value: production
-      - key: AWS_ACCESS_KEY_ID
-        value: "" # Add your AWS credentials
-      - key: AWS_SECRET_ACCESS_KEY
-        value: "" # Add your AWS credentials
-      - key: AWS_S3_BUCKET
-        value: "smartstart-files"
-      - key: AWS_REGION
-        value: "us-east-1"
-      - key: STORAGE_PORT
-        value: "3002"
-    healthCheckPath: /health
-    autoDeploy: true
-
-  # Monitoring Service - Health checks, metrics, logging
-  - name: smartstart-monitor
-    type: web
-    runtime: node
-    plan: free
-    buildCommand: npm install
-    startCommand: npm run start:monitor
-    envVars:
-      - key: DATABASE_URL
-        fromDatabase:
-          name: smartstart-db
-          property: connectionString
-      - key: NODE_ENV
-        value: production
-      - key: MONITOR_PORT
-        value: "3003"
-      - key: API_URL
-        value: https://smartstart-api.onrender.com
-      - key: WEB_URL
-        value: https://smartstart-platform.onrender.com
-      - key: WORKER_URL
-        value: https://smartstart-worker.onrender.com
-      - key: STORAGE_URL
-        value: https://smartstart-storage.onrender.com
-    healthCheckPath: /health
-    autoDeploy: true
-
   # Database Migration Service - Handles database setup and seeding
   - name: smartstart-database
     type: web
     runtime: node
     plan: free
     buildCommand: npm install && npx prisma generate
-    startCommand: npx prisma db push --force-reset && npx prisma db seed && npm run start:api
+    startCommand: npx prisma db push --force-reset && npx prisma db seed
     envVars:
       - key: DATABASE_URL
         fromDatabase:
@@ -199,8 +115,6 @@ services:
         generateValue: true
       - key: NEXTAUTH_SECRET
         generateValue: true
-      - key: API_PORT
-        value: "3001"
       - key: NODE_ENV
         value: production
     healthCheckPath: /api/health

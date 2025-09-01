@@ -475,26 +475,15 @@ app.use('*', (req, res) => {
 });
 
 // Start server
-const startServer = async () => {
-  try {
-    // Test database connection
-    await prisma.$connect();
-    console.log('✅ Database connected successfully');
-
-    // Setup background jobs
-    setupBackgroundJobs();
-    console.log('✅ Background jobs scheduled');
-
-    app.listen(PORT, () => {
-      console.log(`🚀 API Server running on port ${PORT}`);
-      console.log(`📊 Environment: ${process.env.NODE_ENV}`);
-      console.log(`🔗 Health check: http://localhost:${PORT}/api/health`);
-    });
-  } catch (error) {
-    console.error('❌ Failed to start server:', error);
-    process.exit(1);
-  }
-};
+app.listen(PORT, () => {
+  console.log(`🚀 SmartStart API Server running on port ${PORT}`);
+  console.log(`📊 Services Status:`);
+  console.log(`   - Worker: ${process.env.WORKER_ENABLED === 'true' ? '✅ Enabled' : '❌ Disabled'}`);
+  console.log(`   - Storage: ${process.env.STORAGE_ENABLED === 'true' ? '✅ Enabled' : '❌ Disabled'}`);
+  console.log(`   - Monitor: ${process.env.MONITOR_ENABLED === 'true' ? '✅ Enabled' : '❌ Disabled'}`);
+  console.log(`🌐 Environment: ${process.env.NODE_ENV}`);
+  console.log(`🔗 Health Check: http://localhost:${PORT}/api/health`);
+});
 
 // Graceful shutdown
 process.on('SIGTERM', async () => {
@@ -502,5 +491,3 @@ process.on('SIGTERM', async () => {
   await prisma.$disconnect();
   process.exit(0);
 });
-
-startServer();
