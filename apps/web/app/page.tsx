@@ -1,237 +1,404 @@
-'use client'
+'use client';
 
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import AppLayout from './components/AppLayout'
-import { apiCall } from './utils/api'
-import './styles/home.css'
+import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { 
+  TrendingUp, 
+  Users, 
+  Briefcase, 
+  DollarSign, 
+  Clock, 
+  CheckCircle, 
+  AlertCircle,
+  Plus,
+  Settings,
+  BarChart3,
+  MessageSquare,
+  FileText,
+  Zap
+} from 'lucide-react';
 
-interface User {
-  id: string
-  email: string
-  role: string
-  name?: string
+interface Project {
+  id: string;
+  name: string;
+  progress: number;
+  equity: number;
+  nextMilestone: string;
+  daysToMilestone: number;
+  status: 'active' | 'launching' | 'planning';
+  teamSize: number;
+  totalValue: number;
 }
 
-interface DashboardStats {
-  activeProjects: number
-  communityMembers: number
-  totalContributions: number
-  recentActivity: Array<{
-    id: string
-    type: string
-    description: string
-    timestamp: string
-  }>
+interface Activity {
+  id: string;
+  type: 'equity' | 'team' | 'milestone' | 'contract';
+  message: string;
+  time: string;
+  project?: string;
 }
 
-export default function Home() {
-  const [user, setUser] = useState<User | null>(null)
-  const [stats, setStats] = useState<DashboardStats>({
-    activeProjects: 0,
-    communityMembers: 0,
-    totalContributions: 0,
-    recentActivity: []
-  })
-  const [loading, setLoading] = useState(true)
-  const router = useRouter()
+interface PortfolioStats {
+  totalValue: number;
+  activeProjects: number;
+  teamSize: number;
+  totalEquity: number;
+  monthlyGrowth: number;
+}
+
+export default function SmartStartHub() {
+  const { data: session, status } = useSession();
+  const [loading, setLoading] = useState(true);
+  const [portfolioStats, setPortfolioStats] = useState<PortfolioStats>({
+    totalValue: 2500000,
+    activeProjects: 5,
+    teamSize: 12,
+    totalEquity: 35,
+    monthlyGrowth: 15.2
+  });
+
+  const [projects, setProjects] = useState<Project[]>([
+    {
+      id: '1',
+      name: 'SmartStart Platform',
+      progress: 75,
+      equity: 35,
+      nextMilestone: 'Launch v2.0',
+      daysToMilestone: 3,
+      status: 'launching',
+      teamSize: 4,
+      totalValue: 1500000
+    },
+    {
+      id: '2',
+      name: 'AI Marketing Tool',
+      progress: 45,
+      equity: 20,
+      nextMilestone: 'Beta Testing',
+      daysToMilestone: 7,
+      status: 'active',
+      teamSize: 3,
+      totalValue: 500000
+    },
+    {
+      id: '3',
+      name: 'E-commerce Platform',
+      progress: 30,
+      equity: 15,
+      nextMilestone: 'MVP Development',
+      daysToMilestone: 14,
+      status: 'planning',
+      teamSize: 2,
+      totalValue: 300000
+    },
+    {
+      id: '4',
+      name: 'Mobile App Framework',
+      progress: 60,
+      equity: 25,
+      nextMilestone: 'Framework Release',
+      daysToMilestone: 5,
+      status: 'active',
+      teamSize: 3,
+      totalValue: 200000
+    }
+  ]);
+
+  const [recentActivity, setRecentActivity] = useState<Activity[]>([
+    {
+      id: '1',
+      type: 'team',
+      message: 'New contributor joined SmartStart Platform',
+      time: '2 hours ago',
+      project: 'SmartStart Platform'
+    },
+    {
+      id: '2',
+      type: 'equity',
+      message: 'Equity distribution completed for AI Marketing Tool',
+      time: '1 day ago',
+      project: 'AI Marketing Tool'
+    },
+    {
+      id: '3',
+      type: 'contract',
+      message: 'Smart contract deployed for E-commerce Platform',
+      time: '3 days ago',
+      project: 'E-commerce Platform'
+    },
+    {
+      id: '4',
+      type: 'milestone',
+      message: 'Mobile App Framework reached 60% completion',
+      time: '5 days ago',
+      project: 'Mobile App Framework'
+    }
+  ]);
 
   useEffect(() => {
-    // Check authentication status
-    const checkAuth = async () => {
-      try {
-        const userData = await apiCall('/auth/me')
-        setUser(userData)
-        
-        // Fetch dashboard stats
-        await fetchDashboardStats()
-      } catch (error) {
-        console.error('Auth check failed:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    checkAuth()
-  }, [])
-
-  const fetchDashboardStats = async () => {
-    try {
-      // Fetch projects count
-      const projectsResponse = await apiCall('/projects')
-      const activeProjects = projectsResponse?.length || 0
-
-      // Fetch users count
-      const usersResponse = await apiCall('/users')
-      const communityMembers = usersResponse?.length || 0
-
-      // Fetch contributions count
-      const contributionsResponse = await apiCall('/contributions')
-      const totalContributions = contributionsResponse?.length || 0
-
-      // Fetch recent activity (from various sources)
-      const recentActivity = await fetchRecentActivity()
-
-      setStats({
-        activeProjects,
-        communityMembers,
-        totalContributions,
-        recentActivity
-      })
-    } catch (error) {
-      console.error('Error fetching dashboard stats:', error)
-    }
-  }
-
-  const fetchRecentActivity = async () => {
-    try {
-      const activities = []
-      
-      // Get recent contributions
-      const contributions = await apiCall('/contributions')
-      if (contributions?.length > 0) {
-        const recentContributions = contributions
-          .slice(0, 3)
-          .map((contribution: any) => ({
-            id: contribution.id,
-            type: 'CONTRIBUTION',
-            description: `New contribution submitted for ${contribution.task?.title || 'task'}`,
-            timestamp: contribution.createdAt
-          }))
-        activities.push(...recentContributions)
-      }
-
-      // Get recent ideas
-      const ideas = await apiCall('/ideas')
-      if (ideas?.length > 0) {
-        const recentIdeas = ideas
-          .slice(0, 2)
-          .map((idea: any) => ({
-            id: idea.id,
-            type: 'IDEA',
-            description: `New idea proposal: ${idea.title}`,
-            timestamp: idea.createdAt
-          }))
-        activities.push(...recentIdeas)
-      }
-
-      // Get recent polls
-      const polls = await apiCall('/polls')
-      if (polls?.length > 0) {
-        const recentPolls = polls
-          .slice(0, 1)
-          .map((poll: any) => ({
-            id: poll.id,
-            type: 'POLL',
-            description: `New community poll created: ${poll.title}`,
-            timestamp: poll.createdAt
-          }))
-        activities.push(...recentPolls)
-      }
-
-      // Sort by timestamp and take the most recent 3
-      return activities
-        .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
-        .slice(0, 3)
-    } catch (error) {
-      console.error('Error fetching recent activity:', error)
-      return []
-    }
-  }
+    if (status === 'loading') return;
+    setLoading(false);
+  }, [status]);
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="loading">
-          <div className="loading-spinner"></div>
-          <p>Loading SmartStart...</p>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-indigo-500 mx-auto mb-4"></div>
+          <p className="text-slate-300 text-lg">Loading SmartStart HUB...</p>
         </div>
       </div>
-    )
+    );
   }
 
-  // Redirect to login if not authenticated
-  if (!user) {
-    router.push('/login')
-    return null
+  if (!session) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold text-white mb-4">SmartStart HUB</h1>
+          <p className="text-slate-300 mb-8">Please log in to access your command center</p>
+          <a 
+            href="/login" 
+            className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+          >
+            Login to HUB
+          </a>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <AppLayout currentPage="/">
-      <div className="page-header">
-        <h1 className="page-title">
-          SmartStart
-        </h1>
-        <p className="page-subtitle">
-          Community-driven development platform for building ventures together
-        </p>
-      </div>
-
-      <div className="grid grid-3">
-        {/* Welcome */}
-        <div className="card">
-          <div className="card-header">
-            <h3 className="card-title">
-              Welcome to SmartStart
-            </h3>
-            <p className="card-subtitle">Your community-driven development platform</p>
-          </div>
-          <div className="card-content">
-            <p>SmartStart brings together project management, equity tracking, contribution management, and community collaboration in one secure, scalable solution.</p>
-            <div className="button-group">
-              <a href="/projects" className="button button-primary">View Projects</a>
-              <a href="/mesh" className="button button-secondary">Community Mesh</a>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+      {/* Animated Background */}
+      <div className="animated-background"></div>
+      
+      {/* Header */}
+      <header className="relative z-10 bg-slate-800/80 backdrop-blur-xl border-b border-slate-700">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center">
+                <TrendingUp className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-white">SmartStart HUB</h1>
+                <p className="text-slate-400 text-sm">Udi Shkolnik • AliceSolutions Owner</p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-4">
+              <div className="bg-green-500/20 border border-green-500/30 rounded-lg px-3 py-1">
+                <span className="text-green-400 text-sm font-medium">System Online</span>
+              </div>
+              <button className="bg-slate-700 hover:bg-slate-600 p-2 rounded-lg transition-colors">
+                <Settings className="w-5 h-5 text-slate-300" />
+              </button>
             </div>
           </div>
         </div>
+      </header>
 
-        {/* Quick Stats */}
-        <div className="card">
-          <div className="card-header">
-            <h3 className="card-title">
-              Platform Stats
-            </h3>
-            <p className="card-subtitle">Current activity overview</p>
+      {/* Main Content */}
+      <main className="relative z-10 max-w-7xl mx-auto px-6 py-8">
+        {/* Portfolio Overview */}
+        <section className="mb-8">
+          <h2 className="text-xl font-semibold text-white mb-6 flex items-center">
+            <BarChart3 className="w-5 h-5 mr-2" />
+            Portfolio Overview
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="bg-slate-800/60 backdrop-blur-xl border border-slate-700 rounded-xl p-6">
+              <div className="flex items-center justify-between mb-4">
+                <DollarSign className="w-8 h-8 text-green-400" />
+                <span className="text-green-400 text-sm font-medium">+{portfolioStats.monthlyGrowth}%</span>
+              </div>
+              <p className="text-2xl font-bold text-white">${(portfolioStats.totalValue / 1000000).toFixed(1)}M</p>
+              <p className="text-slate-400 text-sm">Total Portfolio Value</p>
+            </div>
+            
+            <div className="bg-slate-800/60 backdrop-blur-xl border border-slate-700 rounded-xl p-6">
+              <div className="flex items-center justify-between mb-4">
+                <Briefcase className="w-8 h-8 text-blue-400" />
+                <span className="text-blue-400 text-sm font-medium">Active</span>
+              </div>
+              <p className="text-2xl font-bold text-white">{portfolioStats.activeProjects}</p>
+              <p className="text-slate-400 text-sm">Active Projects</p>
+            </div>
+            
+            <div className="bg-slate-800/60 backdrop-blur-xl border border-slate-700 rounded-xl p-6">
+              <div className="flex items-center justify-between mb-4">
+                <Users className="w-8 h-8 text-purple-400" />
+                <span className="text-purple-400 text-sm font-medium">Growing</span>
+              </div>
+              <p className="text-2xl font-bold text-white">{portfolioStats.teamSize}</p>
+              <p className="text-slate-400 text-sm">Team Members</p>
+            </div>
+            
+            <div className="bg-slate-800/60 backdrop-blur-xl border border-slate-700 rounded-xl p-6">
+              <div className="flex items-center justify-between mb-4">
+                <TrendingUp className="w-8 h-8 text-indigo-400" />
+                <span className="text-indigo-400 text-sm font-medium">Ownership</span>
+              </div>
+              <p className="text-2xl font-bold text-white">{portfolioStats.totalEquity}%</p>
+              <p className="text-slate-400 text-sm">Total Equity</p>
+            </div>
           </div>
-          <ul className="status-list">
-            <li className="status-item">
-              <span className="status-text">Active Projects: {stats.activeProjects}</span>
-            </li>
-            <li className="status-item">
-              <span className="status-text">Community Members: {stats.communityMembers}</span>
-            </li>
-            <li className="status-item">
-              <span className="status-text">Total Contributions: {stats.totalContributions}</span>
-            </li>
-          </ul>
-        </div>
+        </section>
 
-        {/* Recent Activity */}
-        <div className="card">
-          <div className="card-header">
-            <h3 className="card-title">
+        {/* Active Projects */}
+        <section className="mb-8">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-semibold text-white flex items-center">
+              <Briefcase className="w-5 h-5 mr-2" />
+              Active Projects
+            </h2>
+            <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center">
+              <Plus className="w-4 h-4 mr-2" />
+              New Project
+            </button>
+          </div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {projects.map((project) => (
+              <div key={project.id} className="bg-slate-800/60 backdrop-blur-xl border border-slate-700 rounded-xl p-6">
+                <div className="flex items-start justify-between mb-4">
+                  <div>
+                    <h3 className="text-lg font-semibold text-white mb-1">{project.name}</h3>
+                    <p className="text-slate-400 text-sm">{project.equity}% equity • ${(project.totalValue / 1000).toFixed(0)}K value</p>
+                  </div>
+                  <div className={`px-2 py-1 rounded-full text-xs font-medium ${
+                    project.status === 'launching' ? 'bg-orange-500/20 text-orange-400' :
+                    project.status === 'active' ? 'bg-green-500/20 text-green-400' :
+                    'bg-blue-500/20 text-blue-400'
+                  }`}>
+                    {project.status.charAt(0).toUpperCase() + project.status.slice(1)}
+                  </div>
+                </div>
+                
+                <div className="mb-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-slate-300 text-sm">Progress</span>
+                    <span className="text-slate-300 text-sm">{project.progress}%</span>
+                  </div>
+                  <div className="w-full bg-slate-700 rounded-full h-2">
+                    <div 
+                      className="bg-gradient-to-r from-indigo-500 to-purple-600 h-2 rounded-full transition-all duration-300"
+                      style={{ width: `${project.progress}%` }}
+                    ></div>
+                  </div>
+                </div>
+                
+                <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center text-slate-400">
+                    <Clock className="w-4 h-4 mr-1" />
+                    {project.nextMilestone} in {project.daysToMilestone} days
+                  </div>
+                  <div className="flex items-center text-slate-400">
+                    <Users className="w-4 h-4 mr-1" />
+                    {project.teamSize} members
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Quick Actions & Recent Activity */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Quick Actions */}
+          <div className="lg:col-span-1">
+            <h2 className="text-xl font-semibold text-white mb-6 flex items-center">
+              <Zap className="w-5 h-5 mr-2" />
+              Quick Actions
+            </h2>
+            <div className="space-y-3">
+              <button className="w-full bg-slate-800/60 backdrop-blur-xl border border-slate-700 rounded-xl p-4 text-left hover:bg-slate-700/60 transition-colors group">
+                <div className="flex items-center">
+                  <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center mr-3 group-hover:bg-blue-500/30 transition-colors">
+                    <FileText className="w-5 h-5 text-blue-400" />
+                  </div>
+                  <div>
+                    <p className="text-white font-medium">Review Contracts</p>
+                    <p className="text-slate-400 text-sm">3 pending approvals</p>
+                  </div>
+                </div>
+              </button>
+              
+              <button className="w-full bg-slate-800/60 backdrop-blur-xl border border-slate-700 rounded-xl p-4 text-left hover:bg-slate-700/60 transition-colors group">
+                <div className="flex items-center">
+                  <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center mr-3 group-hover:bg-green-500/30 transition-colors">
+                    <CheckCircle className="w-5 h-5 text-green-400" />
+                  </div>
+                  <div>
+                    <p className="text-white font-medium">Approve Equity</p>
+                    <p className="text-slate-400 text-sm">2 distributions ready</p>
+                  </div>
+                </div>
+              </button>
+              
+              <button className="w-full bg-slate-800/60 backdrop-blur-xl border border-slate-700 rounded-xl p-4 text-left hover:bg-slate-700/60 transition-colors group">
+                <div className="flex items-center">
+                  <div className="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center mr-3 group-hover:bg-purple-500/30 transition-colors">
+                    <MessageSquare className="w-5 h-5 text-purple-400" />
+                  </div>
+                  <div>
+                    <p className="text-white font-medium">Team Meeting</p>
+                    <p className="text-slate-400 text-sm">Scheduled in 2 hours</p>
+                  </div>
+                </div>
+              </button>
+              
+              <button className="w-full bg-slate-800/60 backdrop-blur-xl border border-slate-700 rounded-xl p-4 text-left hover:bg-slate-700/60 transition-colors group">
+                <div className="flex items-center">
+                  <div className="w-10 h-10 bg-orange-500/20 rounded-lg flex items-center justify-center mr-3 group-hover:bg-orange-500/30 transition-colors">
+                    <TrendingUp className="w-5 h-5 text-orange-400" />
+                  </div>
+                  <div>
+                    <p className="text-white font-medium">Deploy Update</p>
+                    <p className="text-slate-400 text-sm">SmartStart v2.0 ready</p>
+                  </div>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          {/* Recent Activity */}
+          <div className="lg:col-span-2">
+            <h2 className="text-xl font-semibold text-white mb-6 flex items-center">
+              <Clock className="w-5 h-5 mr-2" />
               Recent Activity
-            </h3>
-            <p className="card-subtitle">Latest community updates</p>
+            </h2>
+            <div className="bg-slate-800/60 backdrop-blur-xl border border-slate-700 rounded-xl p-6">
+              <div className="space-y-4">
+                {recentActivity.map((activity) => (
+                  <div key={activity.id} className="flex items-start space-x-3">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                      activity.type === 'equity' ? 'bg-green-500/20' :
+                      activity.type === 'team' ? 'bg-blue-500/20' :
+                      activity.type === 'milestone' ? 'bg-purple-500/20' :
+                      'bg-orange-500/20'
+                    }`}>
+                      {activity.type === 'equity' && <DollarSign className="w-4 h-4 text-green-400" />}
+                      {activity.type === 'team' && <Users className="w-4 h-4 text-blue-400" />}
+                      {activity.type === 'milestone' && <CheckCircle className="w-4 h-4 text-purple-400" />}
+                      {activity.type === 'contract' && <FileText className="w-4 h-4 text-orange-400" />}
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-white text-sm">{activity.message}</p>
+                      <div className="flex items-center mt-1">
+                        {activity.project && (
+                          <span className="text-indigo-400 text-xs mr-2">{activity.project}</span>
+                        )}
+                        <span className="text-slate-400 text-xs">{activity.time}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
-          <ul className="status-list">
-            {stats.recentActivity.length > 0 ? (
-              stats.recentActivity.map((activity) => (
-                <li key={activity.id} className="status-item">
-                  <span className="status-text">{activity.description}</span>
-                  <span className="status-time">
-                    {new Date(activity.timestamp).toLocaleDateString()}
-                  </span>
-                </li>
-              ))
-            ) : (
-              <li className="status-item">
-                <span className="status-text">No recent activity</span>
-              </li>
-            )}
-          </ul>
         </div>
-      </div>
-    </AppLayout>
-  )
+      </main>
+    </div>
+  );
 }

@@ -1,16 +1,13 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import './styles/globals.css'
-import './styles/layout.css'
-import './styles/components.css'
-import './styles/gamification.css'
-import { AuthProvider } from './components/AuthProvider'
+import './globals.css'
+import AuthProvider from './components/AuthProvider'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'SmartStart - AliceSolutions Ventures Hub',
-  description: 'Community-driven development platform for building ventures together',
+  title: 'SmartStart HUB - Udi Shkolnik',
+  description: 'AliceSolutions Ventures Command Center - Portfolio Management & Project Oversight',
 }
 
 export default function RootLayout({
@@ -20,11 +17,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
-      </head>
       <body className={inter.className}>
         {/* Animated dark background with floating particles and twinkling stars */}
         <div className="animated-background"></div>
