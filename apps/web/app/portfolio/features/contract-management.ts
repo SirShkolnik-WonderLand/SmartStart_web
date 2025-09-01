@@ -19,7 +19,7 @@ export interface ContractOffer {
   contributionType: string;
   effortRequired: number;
   impactExpected: number;
-  vestingSchedule: VestingSchedule;
+  vestingSchedule: ContractVestingSchedule;
   deliverables: string[];
   milestones: Milestone[];
   terms: string;
@@ -35,7 +35,7 @@ export interface SignedContract {
   equityPercentage: number;
   contributionType: string;
   signedAt: Date;
-  vestingSchedule: VestingSchedule;
+  vestingSchedule: ContractVestingSchedule;
   status: 'ACTIVE' | 'COMPLETED' | 'TERMINATED';
   deliverables: Deliverable[];
   milestones: Milestone[];
@@ -60,7 +60,7 @@ export interface ContractHistory {
   details: string;
 }
 
-export interface VestingSchedule {
+export interface ContractVestingSchedule {
   type: 'IMMEDIATE' | 'CLIFF' | 'GRADUAL';
   startDate: Date;
   endDate?: Date;
@@ -225,7 +225,7 @@ export class ContractManagementService {
     };
   }
 
-  private transformVestingSchedule(data: any): VestingSchedule {
+  private transformVestingSchedule(data: any): ContractVestingSchedule {
     return {
       type: data.type,
       startDate: new Date(data.startDate),
