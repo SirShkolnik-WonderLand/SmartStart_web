@@ -549,6 +549,13 @@ export default function SmartStartHub() {
               >
                 <ArrowUpRight size={16} />
               </button>
+              <a 
+                href="/users"
+                className="btn btn-ghost btn-sm"
+                title="User Management"
+              >
+                <Users size={16} />
+              </a>
               <button className="btn btn-ghost btn-sm">
                 <Settings size={16} />
               </button>

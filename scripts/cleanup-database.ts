@@ -6,162 +6,179 @@ async function cleanupDatabase() {
   console.log('🧹 Starting database cleanup...');
 
   try {
-    // 1. Delete all projects except SmartStart Platform
-    console.log('📋 Deleting old projects...');
-    const projectsToDelete = await prisma.project.findMany({
+    // First, let's identify the SmartStart Platform project
+    const smartStartProject = await prisma.project.findFirst({
       where: {
         name: {
-          not: 'SmartStart Platform'
+          contains: 'SmartStart'
         }
       }
     });
 
-    for (const project of projectsToDelete) {
-      console.log(`🗑️  Deleting project: ${project.name}`);
-      
-      // Delete related data first
-      await prisma.capTableEntry.deleteMany({
-        where: { projectId: project.id }
-      });
-      
-      await prisma.projectMember.deleteMany({
-        where: { projectId: project.id }
-      });
-      
-      await prisma.contribution.deleteMany({
+    if (!smartStartProject) {
+      console.log('❌ SmartStart Platform project not found. Creating it...');
+      // Create SmartStart Platform if it doesn't exist
+      const owner = await prisma.user.findFirst({
         where: {
-          task: { projectId: project.id }
+          email: 'alice@alicesolutions.com'
         }
       });
-      
-      await prisma.task.deleteMany({
-        where: { projectId: project.id }
-      });
-      
-      await prisma.sprint.deleteMany({
-        where: { projectId: project.id }
-      });
-      
-      await prisma.projectVisibility.deleteMany({
-        where: { projectId: project.id }
-      });
-      
-      await prisma.projectInsight.deleteMany({
-        where: { projectId: project.id }
-      });
-      
-      await prisma.meshItem.deleteMany({
-        where: { projectId: project.id }
-      });
-      
-      await prisma.message.deleteMany({
-        where: { projectId: project.id }
-      });
-      
-      await prisma.idea.deleteMany({
-        where: { projectId: project.id }
-      });
-      
-      await prisma.pollVote.deleteMany({
-        where: { 
-          poll: { projectId: project.id }
-        }
-      });
-      
-      await prisma.poll.deleteMany({
-        where: { projectId: project.id }
-      });
-      
-      // Delete the project
-      await prisma.project.delete({
-        where: { id: project.id }
-      });
-    }
 
-    // 2. Update SmartStart Platform to have realistic portfolio data
-    console.log('📊 Updating SmartStart Platform data...');
-    const smartstartProject = await prisma.project.findFirst({
-      where: { name: 'SmartStart Platform' }
-    });
+      if (!owner) {
+        console.log('❌ Alice user not found. Please create the SmartStart Platform manually.');
+        return;
+      }
 
-    if (smartstartProject) {
-      // Update project with more realistic data
-      await prisma.project.update({
-        where: { id: smartstartProject.id },
+      const newProject = await prisma.project.create({
         data: {
+          name: 'SmartStart Platform',
           summary: 'Community-driven development platform for building ventures together with transparent equity tracking, smart contracts, and collaborative project management.',
+          ownerId: owner.id,
+          contractVersion: 'v2.0',
+          equityModel: 'DYNAMIC',
+          vestingSchedule: 'IMMEDIATE',
           totalValue: 500000, // $500K instead of $3.7M
-          activeMembers: 4
+          activeMembers: 4,
+          completionRate: 75,
+          lastActivity: new Date(),
+          ownerMinPct: 35,
+          aliceCapPct: 25,
+          reservePct: 40
         }
       });
 
-      // Update cap entries to be more realistic
-      await prisma.capTableEntry.updateMany({
-        where: { 
-          projectId: smartstartProject.id,
-          holderType: 'USER'
-        },
-        data: {
-          pct: 35 // 35% for the main user
-        }
-      });
+      console.log('✅ Created SmartStart Platform project');
     }
 
-    // 3. Clean up old contributions
-    console.log('💼 Cleaning up old contributions...');
-    await prisma.contribution.deleteMany({
+    // Delete all projects except SmartStart Platform
+    const projectsToDelete = await prisma.project.findMany({
       where: {
-        task: {
-          project: {
-            name: {
-              not: 'SmartStart Platform'
-            }
+        name: {
+          not: {
+            contains: 'SmartStart'
           }
         }
       }
     });
 
-    // 4. Clean up old mesh items
-    console.log('🌐 Cleaning up old mesh items...');
-    await prisma.meshItem.deleteMany({
+    console.log(`🗑️ Found ${projectsToDelete.length} projects to delete`);
+
+    for (const project of projectsToDelete) {
+      console.log(`🗑️ Deleting project: ${project.name}`);
+
+      // Delete in correct order to avoid foreign key constraints
+      await prisma.projectInsight.deleteMany({
+        where: { projectId: project.id }
+      });
+
+      await prisma.projectSub.deleteMany({
+        where: { projectId: project.id }
+      });
+
+      await prisma.legalDocument.deleteMany({
+        where: { projectId: project.id }
+      });
+
+      await prisma.equityVesting.deleteMany({
+        where: { projectId: project.id }
+      });
+
+      await prisma.contractSignature.deleteMany({
+        where: { projectId: project.id }
+      });
+
+      await prisma.contractOffer.deleteMany({
+        where: { projectId: project.id }
+      });
+
+      await prisma.meshItem.deleteMany({
+        where: { projectId: project.id }
+      });
+
+      await prisma.message.deleteMany({
+        where: { projectId: project.id }
+      });
+
+      await prisma.poll.deleteMany({
+        where: { projectId: project.id }
+      });
+
+      await prisma.idea.deleteMany({
+        where: { projectId: project.id }
+      });
+
+      await prisma.task.deleteMany({
+        where: { projectId: project.id }
+      });
+
+      await prisma.sprint.deleteMany({
+        where: { projectId: project.id }
+      });
+
+      await prisma.capTableEntry.deleteMany({
+        where: { projectId: project.id }
+      });
+
+      await prisma.projectVisibility.deleteMany({
+        where: { projectId: project.id }
+      });
+
+      await prisma.projectMember.deleteMany({
+        where: { projectId: project.id }
+      });
+
+      await prisma.project.delete({
+        where: { id: project.id }
+      });
+    }
+
+    // Clean up orphaned data
+    console.log('🧹 Cleaning up orphaned data...');
+
+    // Delete orphaned contributions (not linked to SmartStart)
+    const smartStartProjectId = (await prisma.project.findFirst({
       where: {
-        projectId: {
-          not: smartstartProject?.id
+        name: {
+          contains: 'SmartStart'
         }
       }
-    });
+    }))?.id;
 
-    // 5. Reset user data to be more realistic
-    console.log('👤 Updating user data...');
-    await prisma.user.updateMany({
-              data: {
-          xp: 250, // Lower XP
-          reputation: 45, // Lower reputation
-          level: 'WISE_OWL'
+    if (smartStartProjectId) {
+      await prisma.contribution.deleteMany({
+        where: {
+          task: {
+            projectId: {
+              not: smartStartProjectId
+            }
+          }
         }
-    });
+      });
+    }
+
+    // Update SmartStart Platform with realistic data
+    if (smartStartProjectId) {
+      await prisma.project.update({
+        where: { id: smartStartProjectId },
+        data: {
+          totalValue: 500000, // $500K instead of $3.7M
+          activeMembers: 4,
+          completionRate: 75,
+          lastActivity: new Date()
+        }
+      });
+
+      console.log('✅ Updated SmartStart Platform with realistic data');
+    }
 
     console.log('✅ Database cleanup completed successfully!');
-    console.log('📊 Portfolio now shows realistic data:');
-    console.log('   - SmartStart Platform: $500K value');
-    console.log('   - User equity: 35%');
-    console.log('   - XP: 250, Reputation: 45');
+    console.log('📊 SmartStart Platform is now the only project with realistic portfolio values');
 
   } catch (error) {
-    console.error('❌ Error during database cleanup:', error);
-    throw error;
+    console.error('❌ Error during cleanup:', error);
   } finally {
     await prisma.$disconnect();
   }
 }
 
-// Run the cleanup
-cleanupDatabase()
-  .then(() => {
-    console.log('🎉 Database cleanup finished!');
-    process.exit(0);
-  })
-  .catch((error) => {
-    console.error('💥 Cleanup failed:', error);
-    process.exit(1);
-  });
+cleanupDatabase();
