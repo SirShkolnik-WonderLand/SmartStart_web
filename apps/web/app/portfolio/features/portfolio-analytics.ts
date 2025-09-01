@@ -240,8 +240,20 @@ export class PortfolioAnalyticsService {
         totalReturn: 0,
         monthlyReturn: 0,
         annualizedReturn: 0,
-        bestPerformer: null,
-        worstPerformer: null,
+        bestPerformer: {
+          projectId: '',
+          projectName: 'No projects',
+          return: 0,
+          equityValue: 0,
+          growthRate: 0
+        },
+        worstPerformer: {
+          projectId: '',
+          projectName: 'No projects',
+          return: 0,
+          equityValue: 0,
+          growthRate: 0
+        },
         performanceHistory: []
       },
       diversification: {
