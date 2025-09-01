@@ -7,7 +7,7 @@ export interface CommunityRecognition {
   kudos: Kudos[];
   endorsements: Endorsement[];
   reputation: ReputationScore;
-  leaderboard: LeaderboardEntry[];
+  leaderboard: CommunityLeaderboardEntry[];
   recentActivity: RecognitionActivity[];
 }
 
@@ -45,7 +45,7 @@ export interface ReputationScore {
   percentile: number;
 }
 
-export interface LeaderboardEntry {
+export interface CommunityLeaderboardEntry {
   userId: string;
   name: string;
   avatar: string;
@@ -122,7 +122,7 @@ export class CommunityRecognitionService {
     }
   }
 
-  async getLeaderboard(): Promise<LeaderboardEntry[]> {
+  async getLeaderboard(): Promise<CommunityLeaderboardEntry[]> {
     try {
       const response = await apiCallWithAuth('/community/leaderboard', this.token);
       return response.leaderboard || [];

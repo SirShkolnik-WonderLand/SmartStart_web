@@ -30,7 +30,7 @@ export interface EquityProject {
     contributors: number;
     reserve: number;
   };
-  vestingSchedule: VestingSchedule;
+  vestingSchedule: EquityVestingSchedule;
   contributions: Contribution[];
 }
 
@@ -45,7 +45,7 @@ export interface Contribution {
   status: 'PENDING' | 'APPROVED' | 'REJECTED';
 }
 
-export interface VestingSchedule {
+export interface EquityVestingSchedule {
   type: 'IMMEDIATE' | 'CLIFF' | 'GRADUAL';
   startDate: Date;
   endDate?: Date;
