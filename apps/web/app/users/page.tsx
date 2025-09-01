@@ -16,7 +16,16 @@ import {
   TrendingUp,
   Briefcase,
   Calendar,
-  Mail
+  Mail,
+  ArrowUpRight,
+  Settings,
+  Database,
+  Wifi,
+  Shield as ShieldIcon,
+  Clock,
+  Battery,
+  AlertCircle,
+  BarChart3
 } from 'lucide-react';
 
 interface UserProfile {
@@ -81,6 +90,7 @@ export default function UsersPage() {
   const [users, setUsers] = useState<UserData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [lastRefresh, setLastRefresh] = useState(new Date());
 
   useEffect(() => {
     fetchUsers();
@@ -96,6 +106,7 @@ export default function UsersPage() {
       }
       const data = await response.json();
       setUsers(data.users || []);
+      setLastRefresh(new Date());
     } catch (err) {
       console.error('Error fetching users:', err);
       setError('Failed to load users');
@@ -174,14 +185,101 @@ export default function UsersPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
+      {/* Header */}
+      <header className="header">
+        <div className="header-content">
+          <div className="logo">
+            <div className="logo-icon">
+              <Users size={20} />
+            </div>
+            <div className="logo-text">
+              <h1>SmartStart HUB</h1>
+              <p>AliceSolutions Ventures • Udi Shkolnik</p>
+            </div>
+          </div>
+          
+          <div className="status-indicators">
+            <div className="status-item">
+              <div className="status-dot online"></div>
+              <span>System Online</span>
+            </div>
+            <div className="status-item">
+              <Database size={16} />
+              <span>DB Connected</span>
+            </div>
+            <div className="status-item">
+              <Wifi size={16} />
+              <span>Network Stable</span>
+            </div>
+            <div className="status-item">
+              <ShieldIcon size={16} />
+              <span>Security Active</span>
+            </div>
+          </div>
+
+          <div className="flex gap-2">
+            <button 
+              onClick={fetchUsers}
+              className="btn btn-ghost btn-sm"
+              title="Refresh data"
+            >
+              <ArrowUpRight size={16} />
+            </button>
+            <a 
+              href="/"
+              className="btn btn-ghost btn-sm"
+              title="Dashboard"
+            >
+              <BarChart3 size={16} />
+            </a>
+            <button className="btn btn-ghost btn-sm">
+              <Settings size={16} />
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Error Banner */}
+      {error && (
+        <div className="error-banner">
+          <AlertCircle size={20} className="icon" />
+          <p className="error-message">{error}</p>
+          <button 
+            onClick={() => setError(null)}
+            className="error-close"
+          >
+            ×
+          </button>
+        </div>
+      )}
+
+      {/* Main Content */}
+      <main className="container py-6">
+        {/* Status Bar */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 text-sm text-tertiary">
+              <Clock size={16} />
+              <span>Last updated: {lastRefresh.toLocaleTimeString()}</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm">
+              <div className="status-dot online"></div>
+              <span>System Health: GOOD</span>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 text-sm text-tertiary">
+            <Battery size={16} />
+            <span>Performance: Excellent</span>
+          </div>
+        </div>
+
+        {/* Page Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-4">
             <div className="p-2 bg-purple-600 rounded-lg">
               <Users className="w-6 h-6 text-white" />
             </div>
-            <h1 className="text-3xl font-bold text-white">User Management</h1>
+            <h2 className="text-2xl font-semibold text-white">User Management</h2>
           </div>
           <p className="text-gray-300">
             Manage team members, roles, and equity distribution across all projects
@@ -189,191 +287,194 @@ export default function UsersPage() {
         </div>
 
         {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-400 text-sm">Total Users</p>
-                <p className="text-2xl font-bold text-white">{users.length}</p>
+        <section className="mb-8">
+          <div className="stats-grid">
+            <div className="stat-card positive">
+              <div className="stat-icon">
+                <Users size={20} />
               </div>
-              <Users className="w-8 h-8 text-purple-400" />
+              <div className="stat-content">
+                <div className="stat-value">{users.length}</div>
+                <div className="stat-label">Total Users</div>
+              </div>
             </div>
-          </div>
-          
-          <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-400 text-sm">Active Projects</p>
-                <p className="text-2xl font-bold text-white">
+            
+            <div className="stat-card positive">
+              <div className="stat-icon">
+                <Briefcase size={20} />
+              </div>
+              <div className="stat-content">
+                <div className="stat-value">
                   {users.reduce((sum, user) => sum + user.activeProjectsCount, 0)}
-                </p>
+                </div>
+                <div className="stat-label">Active Projects</div>
               </div>
-              <Briefcase className="w-8 h-8 text-blue-400" />
             </div>
-          </div>
-          
-          <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-400 text-sm">Total Equity</p>
-                <p className="text-2xl font-bold text-white">
+            
+            <div className="stat-card positive">
+              <div className="stat-icon">
+                <TrendingUp size={20} />
+              </div>
+              <div className="stat-content">
+                <div className="stat-value">
                   {users.reduce((sum, user) => sum + user.totalEquityOwned, 0).toFixed(1)}%
-                </p>
+                </div>
+                <div className="stat-label">Total Equity</div>
               </div>
-              <TrendingUp className="w-8 h-8 text-green-400" />
             </div>
-          </div>
-          
-          <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-400 text-sm">Total XP</p>
-                <p className="text-2xl font-bold text-white">
+            
+            <div className="stat-card positive">
+              <div className="stat-icon">
+                <Award size={20} />
+              </div>
+              <div className="stat-content">
+                <div className="stat-value">
                   {users.reduce((sum, user) => sum + user.xp, 0)}
-                </p>
+                </div>
+                <div className="stat-label">Total XP</div>
               </div>
-              <Award className="w-8 h-8 text-yellow-400" />
             </div>
           </div>
-        </div>
+        </section>
 
         {/* Users Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {users.map((user) => (
-            <div key={user.id} className="bg-gray-800 rounded-lg p-6 border border-gray-700 hover:border-purple-500 transition-colors">
-              {/* User Header */}
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
-                    <span className="text-white font-bold text-lg">
-                      {user.name.split(' ').map(n => n[0]).join('')}
-                    </span>
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-semibold text-white">{user.name}</h3>
-                    <div className="flex items-center gap-2">
-                      {getRoleIcon(user.projectMemberships[0]?.role || 'MEMBER')}
-                      <span className="text-sm text-gray-400 capitalize">
-                        {user.projectMemberships[0]?.role?.toLowerCase().replace('_', ' ') || 'Member'}
+        <section>
+          <div className="flex items-center gap-3 mb-6">
+            <User size={24} />
+            <h2 className="text-2xl font-semibold text-white">Team Members</h2>
+          </div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {users.map((user) => (
+              <div key={user.id} className="card">
+                {/* User Header */}
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
+                      <span className="text-white font-bold text-lg">
+                        {user.name.split(' ').map(n => n[0]).join('')}
                       </span>
                     </div>
+                    <div>
+                      <h3 className="text-xl font-semibold text-white">{user.name}</h3>
+                      <div className="flex items-center gap-2">
+                        {getRoleIcon(user.projectMemberships[0]?.role || 'MEMBER')}
+                        <span className="text-sm text-gray-400 capitalize">
+                          {user.projectMemberships[0]?.role?.toLowerCase().replace('_', ' ') || 'Member'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getLevelColor(user.level)}`}>
+                      {user.level.replace('_', ' ')}
+                    </span>
                   </div>
                 </div>
-                <div className="text-right">
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${getLevelColor(user.level)}`}>
-                    {user.level.replace('_', ' ')}
-                  </span>
-                </div>
-              </div>
 
-              {/* Contact Info */}
-              <div className="mb-4">
-                <div className="flex items-center gap-2 text-gray-400 mb-2">
-                  <Mail className="w-4 h-4" />
-                  <span className="text-sm">{user.email}</span>
-                </div>
-                {user.profile?.location && (
+                {/* Contact Info */}
+                <div className="mb-4">
                   <div className="flex items-center gap-2 text-gray-400 mb-2">
-                    <MapPin className="w-4 h-4" />
-                    <span className="text-sm">{user.profile.location}</span>
+                    <Mail className="w-4 h-4" />
+                    <span className="text-sm">{user.email}</span>
+                  </div>
+                  {user.profile?.location && (
+                    <div className="flex items-center gap-2 text-gray-400 mb-2">
+                      <MapPin className="w-4 h-4" />
+                      <span className="text-sm">{user.profile.location}</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Bio */}
+                {user.profile?.bio && (
+                  <p className="text-gray-300 text-sm mb-4">{user.profile.bio}</p>
+                )}
+
+                {/* Stats Grid */}
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div className="stat-mini">
+                    <div className="stat-mini-label">Portfolio Value</div>
+                    <div className="stat-mini-value">{formatCurrency(user.totalPortfolioValue)}</div>
+                  </div>
+                  <div className="stat-mini">
+                    <div className="stat-mini-label">Equity Owned</div>
+                    <div className="stat-mini-value">{user.totalEquityOwned.toFixed(1)}%</div>
+                  </div>
+                  <div className="stat-mini">
+                    <div className="stat-mini-label">XP</div>
+                    <div className="stat-mini-value">{user.xp}</div>
+                  </div>
+                  <div className="stat-mini">
+                    <div className="stat-mini-label">Reputation</div>
+                    <div className="stat-mini-value">{user.reputation}</div>
+                  </div>
+                </div>
+
+                {/* Skills */}
+                {user.userSkills && user.userSkills.length > 0 && (
+                  <div className="mb-4">
+                    <h4 className="text-sm font-medium text-gray-300 mb-2">Top Skills</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {user.userSkills.slice(0, 3).map((userSkill, index) => (
+                        <span key={index} className="badge badge-primary">
+                          {userSkill.skill.name}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 )}
-              </div>
 
-              {/* Bio */}
-              {user.profile?.bio && (
-                <p className="text-gray-300 text-sm mb-4">{user.profile.bio}</p>
-              )}
+                {/* Badges */}
+                {user.userBadges && user.userBadges.length > 0 && (
+                  <div className="mb-4">
+                    <h4 className="text-sm font-medium text-gray-300 mb-2">Recent Badges</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {user.userBadges.slice(0, 3).map((userBadge, index) => (
+                        <span key={index} className="badge badge-secondary">
+                          {userBadge.badge.name}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
-              {/* Stats Grid */}
-              <div className="grid grid-cols-2 gap-4 mb-4">
-                <div className="bg-gray-700 rounded p-3">
-                  <p className="text-gray-400 text-xs">Portfolio Value</p>
-                  <p className="text-white font-semibold">{formatCurrency(user.totalPortfolioValue)}</p>
-                </div>
-                <div className="bg-gray-700 rounded p-3">
-                  <p className="text-gray-400 text-xs">Equity Owned</p>
-                  <p className="text-white font-semibold">{user.totalEquityOwned.toFixed(1)}%</p>
-                </div>
-                <div className="bg-gray-700 rounded p-3">
-                  <p className="text-gray-400 text-xs">XP</p>
-                  <p className="text-white font-semibold">{user.xp}</p>
-                </div>
-                <div className="bg-gray-700 rounded p-3">
-                  <p className="text-gray-400 text-xs">Reputation</p>
-                  <p className="text-white font-semibold">{user.reputation}</p>
-                </div>
-              </div>
+                {/* Social Links */}
+                {user.profile && (user.profile.linkedinUrl || user.profile.twitterUrl || user.profile.githubUrl) && (
+                  <div className="flex gap-2 mb-4">
+                    {user.profile.linkedinUrl && (
+                      <a href={user.profile.linkedinUrl} target="_blank" rel="noopener noreferrer" 
+                         className="btn btn-sm btn-outline">
+                        <Linkedin className="w-4 h-4" />
+                      </a>
+                    )}
+                    {user.profile.twitterUrl && (
+                      <a href={user.profile.twitterUrl} target="_blank" rel="noopener noreferrer"
+                         className="btn btn-sm btn-outline">
+                        <Twitter className="w-4 h-4" />
+                      </a>
+                    )}
+                    {user.profile.githubUrl && (
+                      <a href={user.profile.githubUrl} target="_blank" rel="noopener noreferrer"
+                         className="btn btn-sm btn-outline">
+                        <Github className="w-4 h-4" />
+                      </a>
+                    )}
+                  </div>
+                )}
 
-              {/* Skills */}
-              {user.userSkills && user.userSkills.length > 0 && (
-                <div className="mb-4">
-                  <h4 className="text-sm font-medium text-gray-300 mb-2">Top Skills</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {user.userSkills.slice(0, 3).map((userSkill, index) => (
-                      <span key={index} className="px-2 py-1 bg-purple-600 text-white text-xs rounded">
-                        {userSkill.skill.name}
-                      </span>
-                    ))}
+                {/* Member Since */}
+                <div className="pt-4 border-t border-gray-700">
+                  <div className="flex items-center gap-2 text-gray-400 text-xs">
+                    <Calendar className="w-3 h-3" />
+                    <span>Member since {formatDate(user.createdAt)}</span>
                   </div>
                 </div>
-              )}
-
-              {/* Badges */}
-              {user.userBadges && user.userBadges.length > 0 && (
-                <div className="mb-4">
-                  <h4 className="text-sm font-medium text-gray-300 mb-2">Recent Badges</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {user.userBadges.slice(0, 3).map((userBadge, index) => (
-                      <span key={index} className="px-2 py-1 bg-yellow-600 text-white text-xs rounded">
-                        {userBadge.badge.name}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Social Links */}
-              {user.profile && (user.profile.linkedinUrl || user.profile.twitterUrl || user.profile.githubUrl) && (
-                <div className="flex gap-2">
-                  {user.profile.linkedinUrl && (
-                    <a href={user.profile.linkedinUrl} target="_blank" rel="noopener noreferrer" 
-                       className="p-2 bg-blue-600 rounded hover:bg-blue-700 transition-colors">
-                      <Linkedin className="w-4 h-4 text-white" />
-                    </a>
-                  )}
-                  {user.profile.twitterUrl && (
-                    <a href={user.profile.twitterUrl} target="_blank" rel="noopener noreferrer"
-                       className="p-2 bg-blue-400 rounded hover:bg-blue-500 transition-colors">
-                      <Twitter className="w-4 h-4 text-white" />
-                    </a>
-                  )}
-                  {user.profile.githubUrl && (
-                    <a href={user.profile.githubUrl} target="_blank" rel="noopener noreferrer"
-                       className="p-2 bg-gray-600 rounded hover:bg-gray-700 transition-colors">
-                      <Github className="w-4 h-4 text-white" />
-                    </a>
-                  )}
-                </div>
-              )}
-
-              {/* Member Since */}
-              <div className="mt-4 pt-4 border-t border-gray-700">
-                <div className="flex items-center gap-2 text-gray-400 text-xs">
-                  <Calendar className="w-3 h-3" />
-                  <span>Member since {formatDate(user.createdAt)}</span>
-                </div>
               </div>
-            </div>
-          ))}
-        </div>
-
-        {error && (
-          <div className="mt-8 text-center">
-            <p className="text-red-400">{error}</p>
+            ))}
           </div>
-        )}
-      </div>
+        </section>
+      </main>
     </div>
   );
 }
