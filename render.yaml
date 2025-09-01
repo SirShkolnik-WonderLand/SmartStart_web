@@ -1,7 +1,7 @@
 services:
   - name: smartstart-db
     type: pserv
-    runtime: postgres
+    runtime: postgresql
     plan: starter
     startCommand: postgres
     autoDeploy: true
@@ -21,7 +21,7 @@ services:
         fromService:
           name: smartstart-db
           type: pserv
-          property: connectionString
+          property: externalDatabaseUrl
       - key: JWT_SECRET
         generateValue: true
       - key: WORKER_ENABLED
