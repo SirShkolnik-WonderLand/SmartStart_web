@@ -4,6 +4,12 @@ import React, { useEffect, useState } from 'react';
 import { usePortfolio } from '../utils/smartState'
 import { useAuth } from '../components/AuthProvider';
 import AppLayout from '../components/AppLayout';
+import Overview from './components/Overview';
+import Projects from './components/Projects';
+import Insights from './components/Insights';
+import Activity from './components/Activity';
+import Contracts from './components/Contracts';
+import Vesting from './components/Vesting';
 import '../styles/portfolio.css';
 
 interface ProjectData {
@@ -318,61 +324,12 @@ export default function PortfolioPage() {
         </div>
 
         {/* Tab Content */}
-        {activeTab === 'overview' && (
-          <OverviewTab 
-            projects={projects}
-            insights={insights}
-            opportunities={opportunities}
-            recentActivity={recentActivity}
-            badges={badges}
-            skills={skills}
-            totalPortfolioValue={totalPortfolioValue}
-            totalOwnership={totalOwnership}
-            avgCompletionRate={avgCompletionRate}
-            portfolioInsights={portfolioInsights}
-          />
-        )}
-
-        {activeTab === 'projects' && (
-          <ProjectsTab 
-            projects={projects}
-            selectedProject={selectedProject}
-            setSelectedProject={setSelectedProject}
-          />
-        )}
-
-        {activeTab === 'insights' && (
-          <InsightsTab 
-            insights={insights}
-            opportunities={opportunities}
-            portfolioInsights={portfolioInsights}
-          />
-        )}
-
-        {activeTab === 'activity' && (
-          <ActivityTab 
-            recentActivity={recentActivity}
-            badges={badges}
-            skills={skills}
-          />
-        )}
-
-        {activeTab === 'contracts' && (
-          <ContractsTab 
-            contractOffers={contractOffers}
-            onContractAction={handleContractAction}
-            onContractSelect={(contract) => {
-              setSelectedContract(contract);
-              setShowContractModal(true);
-            }}
-          />
-        )}
-
-        {activeTab === 'vesting' && (
-          <VestingTab 
-            vestingSchedules={vestingSchedules}
-          />
-        )}
+        {activeTab === 'overview' && <Overview />}
+        {activeTab === 'projects' && <Projects />}
+        {activeTab === 'insights' && <Insights />}
+        {activeTab === 'activity' && <Activity />}
+        {activeTab === 'contracts' && <Contracts />}
+        {activeTab === 'vesting' && <Vesting />}
 
         {/* Wallet Modal */}
         {showWalletModal && (

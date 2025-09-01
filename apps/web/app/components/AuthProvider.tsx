@@ -30,9 +30,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (token) {
           // Verify token with backend
           try {
-            const response = await fetch('https://smartstart-api.onrender.com/auth/me', {
+            const response = await fetch('/api/proxy/auth/me', {
               headers: {
-                'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
               }
             })
