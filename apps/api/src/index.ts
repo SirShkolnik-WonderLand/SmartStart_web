@@ -72,12 +72,13 @@ const apiLimiter = rateLimit({
 // Health check
 app.get("/health", (_req, res) => res.json({ ok: true }));
 
-// Version endpoint
+// Version endpoint - Force rebuild
 app.get('/version', (_req, res) => {
-  res.json({ 
-    name: 'smartstart-api', 
+  res.json({
+    name: 'smartstart-api',
     version: process.env.COMMIT_SHA || 'dev',
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    build: 'latest'
   });
 });
 
