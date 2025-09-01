@@ -11,7 +11,7 @@
     "db:studio": "prisma studio",
     "db:reset": "prisma migrate reset",
     "build": "prisma generate",
-    "start": "echo 'Database setup complete'"
+    "start": "node index.js"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
