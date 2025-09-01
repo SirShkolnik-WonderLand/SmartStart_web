@@ -38,8 +38,8 @@ import {
   LineChart,
   Activity,
   Milestone,
-  Task,
-  Sprint,
+  CheckSquare,
+  Calendar,
   Kanban,
   List,
   Grid,
@@ -415,8 +415,8 @@ export default function ProjectManagementPage() {
                 onClick={() => setShowSprintModal(true)}
                 className="btn btn-ghost btn-sm"
               >
-                <Sprint size={16} />
-                Manage Sprints
+                        <Calendar size={16} />
+        Manage Sprints
               </button>
               <a href="/" className="btn btn-ghost btn-sm">
                 Back to HUB
@@ -464,7 +464,7 @@ export default function ProjectManagementPage() {
             <div className="card-content p-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                  <Sprint size={20} className="text-purple-600" />
+                  <Calendar size={20} className="text-purple-600" />
                 </div>
                 <div>
                   <div className="text-2xl font-bold">
@@ -606,8 +606,8 @@ export default function ProjectManagementPage() {
                   {/* Sprint Info */}
                   <div className="flex items-center gap-4 mb-4 text-sm">
                     <div className="flex items-center gap-2">
-                      <Sprint size={16} className="text-tertiary" />
-                      <span>Sprint {project.currentSprint}/{project.totalSprints}</span>
+                              <Calendar size={16} className="text-tertiary" />
+        <span>Sprint {project.currentSprint}/{project.totalSprints}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Users size={16} className="text-tertiary" />
@@ -723,8 +723,8 @@ export default function ProjectManagementPage() {
                         
                         <td className="px-6 py-4 text-sm">
                           <div className="flex items-center gap-2">
-                            <Sprint size={16} className="text-tertiary" />
-                            <span>{project.currentSprint}/{project.totalSprints}</span>
+                                    <Calendar size={16} className="text-tertiary" />
+        <span>{project.currentSprint}/{project.totalSprints}</span>
                           </div>
                         </td>
                         
