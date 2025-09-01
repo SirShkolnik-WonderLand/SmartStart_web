@@ -817,6 +817,29 @@ router.post('/seed', async(req, res) => {
     }
 });
 
+/**
+ * POST /seed/contracts - Seed the database with contract templates
+ */
+router.post('/seed/contracts', async(req, res) => {
+    try {
+        console.log('🌱 Starting contract templates seed...');
+        const contractsSeed = require('../../server/seed-contracts');
+        await contractsSeed.seedContractTemplates();
+        console.log('✅ Contract templates seed completed successfully!');
+        res.json({
+            success: true,
+            message: 'Contract templates seeded successfully',
+            timestamp: new Date().toISOString()
+        });
+    } catch (error) {
+        console.error('❌ Contract templates seed failed:', error);
+        res.status(500).json({
+            error: 'Failed to seed contract templates',
+            details: error.message
+        });
+    }
+});
+
 // ===== TEST CRUD ENDPOINTS =====
 
 /**

@@ -336,6 +336,10 @@ if (process.env.WORKER_ENABLED === 'true') {
 const v1ApiRoutes = require('./routes/v1-api');
 app.use('/api/v1', v1ApiRoutes);
 
+// Mount contracts API routes
+const contractsApiRoutes = require('./routes/contracts-api');
+app.use('/api/contracts', contractsApiRoutes);
+
 // Error handling middleware
 app.use((error, req, res, next) => {
     logger.error('Unhandled error:', error);
