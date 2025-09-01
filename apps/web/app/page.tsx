@@ -5,6 +5,7 @@
 // Last updated: 2025-09-01 - Complete database integration
 
 import { useState, useEffect } from 'react';
+import { useAuth } from '../lib/auth';
 import { 
   TrendingUp, 
   Users, 
@@ -221,6 +222,7 @@ interface Activity {
 }
 
 export default function SmartStartHub() {
+  const { isAuthenticated, isLoading: authLoading, user, logout } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
@@ -439,14 +441,20 @@ export default function SmartStartHub() {
   };
 
   useEffect(() => {
-    fetchAllUserData();
-  }, []);
+    if (isAuthenticated) {
+      fetchAllUserData();
+    } else {
+      setLoading(false);
+    }
+  }, [isAuthenticated]);
 
-  // Auto-refresh every 30 seconds
+  // Auto-refresh every 30 seconds only when authenticated
   useEffect(() => {
+    if (!isAuthenticated) return;
+    
     const interval = setInterval(fetchAllUserData, 30000);
     return () => clearInterval(interval);
-  }, []);
+  }, [isAuthenticated]);
 
   const getStatusClass = (status: string) => {
     switch (status.toLowerCase()) {
@@ -494,13 +502,37 @@ export default function SmartStartHub() {
     }
   };
 
-  if (loading) {
+  // Show loading while checking authentication
+  if (authLoading || loading) {
     return (
       <div className="loading">
         <div className="loading-spinner"></div>
         <div className="text-center mt-4">
           <h2 className="text-xl font-semibold mb-2">Loading SmartStart HUB</h2>
-          <p className="text-secondary">Connecting to database and loading your data...</p>
+          <p className="text-secondary">
+            {authLoading ? 'Checking authentication...' : 'Connecting to database and loading your data...'}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Redirect to login if not authenticated
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-secondary flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <TrendingUp size={24} className="text-primary-600" />
+          </div>
+          <h2 className="text-2xl font-semibold mb-2">Welcome to SmartStart</h2>
+          <p className="text-secondary mb-6">Please log in to access your dashboard</p>
+          <a 
+            href="/login"
+            className="inline-flex items-center px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+          >
+            Go to Login
+          </a>
         </div>
       </div>
     );
@@ -518,7 +550,7 @@ export default function SmartStartHub() {
               </div>
               <div className="logo-text">
                 <h1>SmartStart HUB</h1>
-                <p>AliceSolutions Ventures • Udi Shkolnik</p>
+                <p>AliceSolutions Ventures • {user?.name || 'User'}</p>
               </div>
             </div>
             
@@ -558,6 +590,13 @@ export default function SmartStartHub() {
               </a>
               <button className="btn btn-ghost btn-sm">
                 <Settings size={16} />
+              </button>
+              <button 
+                onClick={logout}
+                className="btn btn-ghost btn-sm"
+                title="Logout"
+              >
+                <UserX size={16} />
               </button>
             </div>
           </div>

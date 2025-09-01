@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { TrendingUp, Eye, EyeOff } from 'lucide-react';
+import { useAuth } from '../../lib/auth';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -11,29 +12,22 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
+  const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    try {
-      const resp = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ email, password })
-      });
-      if (!resp.ok) {
-        const data = await resp.json().catch(() => ({}));
-        setError(data?.error || 'Login failed');
-        setLoading(false);
-        return;
-      }
+    
+    const result = await login(email, password);
+    
+    if (result.success) {
       router.push('/');
-    } catch (err) {
-      setError('Unexpected error. Please try again.');
-      setLoading(false);
+    } else {
+      setError(result.error || 'Login failed');
     }
+    
+    setLoading(false);
   };
 
   const fillDemoAccount = (demoEmail: string, demoPassword: string) => {
