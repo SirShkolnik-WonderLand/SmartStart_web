@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
 
-// Call backend API instead of connecting to database directly
+// Call the backend API instead of connecting to database directly
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://smartstart-api.onrender.com';
 
 export async function GET(request: NextRequest) {
@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const userId = searchParams.get('userId') || 'demo-user-1';
     
-    // Call backend API to get real data
+    // Call the backend API to get real data
     const response = await fetch(`${API_BASE}/api/projects/portfolio`, {
       method: 'GET',
       headers: {
@@ -48,22 +48,9 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('Error fetching portfolio stats:', error);
-    
-    // Fallback to mock data if backend is not available
-    const fallbackStats = {
-      totalValue: 3670000,
-      activeProjects: 6,
-      teamSize: 4,
-      totalEquity: 367,
-      monthlyGrowth: 12.5,
-      totalContributions: 1,
-      systemHealth: 'GOOD' as const,
-      lastUpdated: new Date().toISOString()
-    };
-    
-    return NextResponse.json({
-      success: true,
-      data: fallbackStats
-    });
+    return NextResponse.json({ 
+      success: false, 
+      error: error instanceof Error ? error.message : 'Failed to fetch portfolio statistics' 
+    }, { status: 500 });
   }
 }

@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
       {
         id: '5',
         type: 'SYSTEM' as const,
-        message: 'Database connected successfully',
+        message: 'System backup completed successfully',
         timestamp: new Date(Date.now() - 86400000).toISOString(),
         severity: 'INFO' as const,
         userId: 'system',

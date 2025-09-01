@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
 
-// Call backend API instead of connecting to database directly
+// Call the backend API instead of connecting to database directly
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://smartstart-api.onrender.com';
 
 export async function GET(request: NextRequest) {
@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const userId = searchParams.get('userId') || 'demo-user-1';
     
-    // Call backend API to get real projects
+    // Call the backend API to get real projects
     const response = await fetch(`${API_BASE}/api/projects/portfolio`, {
       method: 'GET',
       headers: {
@@ -56,36 +56,9 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('Error fetching projects:', error);
-    
-    // Fallback to mock data if backend is not available
-    const fallbackProjects = [
-      {
-        id: '1',
-        name: 'SmartStart Platform',
-        summary: 'Community-driven development platform for building ventures together with transparent equity tracking, smart contracts, and collaborative project management.',
-        progress: 75,
-        equity: 35,
-        nextMilestone: 'Launch v2.0',
-        daysToMilestone: 3,
-        status: 'LAUNCHING' as const,
-        teamSize: 4,
-        totalValue: 1500000,
-        contractVersion: 'v2.0',
-        equityModel: 'DYNAMIC',
-        vestingSchedule: 'IMMEDIATE',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        owner: {
-          id: 'owner-1',
-          name: 'Udi Shkolnik',
-          email: 'owner@demo.local'
-        }
-      }
-    ];
-    
-    return NextResponse.json({
-      success: true,
-      data: fallbackProjects
-    });
+    return NextResponse.json({ 
+      success: false, 
+      error: error instanceof Error ? error.message : 'Failed to fetch projects' 
+    }, { status: 500 });
   }
 }
