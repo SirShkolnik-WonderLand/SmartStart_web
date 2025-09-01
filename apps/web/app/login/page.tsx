@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { TrendingUp, Eye, EyeOff } from 'lucide-react';
+import { useAuth } from '../components/AuthProvider';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -12,6 +12,7 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
+  const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,19 +20,11 @@ export default function LoginPage() {
     setError('');
 
     try {
-      const result = await signIn('credentials', {
-        email,
-        password,
-        redirect: false,
-      });
-
-      if (result?.error) {
-        setError('Invalid credentials. Please try again.');
-      } else {
-        router.push('/');
-      }
+      await login(email, password);
+      router.push('/');
     } catch (error) {
-      setError('Login failed. Please try again.');
+      console.error('Login error:', error);
+      setError(error instanceof Error ? error.message : 'Login failed. Please check your connection and try again.');
     } finally {
       setLoading(false);
     }

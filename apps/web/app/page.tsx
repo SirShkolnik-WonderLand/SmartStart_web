@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { 
   TrendingUp, 
   Users, 
@@ -15,8 +15,16 @@ import {
   BarChart3,
   MessageSquare,
   FileText,
-  Zap
+  Zap,
+  LogOut
 } from 'lucide-react';
+
+interface User {
+  id: string;
+  email: string;
+  name: string;
+  role: string;
+}
 
 interface Project {
   id: string;
@@ -47,8 +55,10 @@ interface PortfolioStats {
 }
 
 export default function SmartStartHub() {
-  const { data: session, status } = useSession();
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
+  
   const [portfolioStats, setPortfolioStats] = useState<PortfolioStats>({
     totalValue: 2500000,
     activeProjects: 5,
@@ -136,9 +146,32 @@ export default function SmartStartHub() {
   ]);
 
   useEffect(() => {
-    if (status === 'loading') return;
+    // Check for user authentication
+    const userData = localStorage.getItem('user');
+    const token = localStorage.getItem('token');
+    
+    if (userData && token) {
+      try {
+        const user = JSON.parse(userData);
+        setUser(user);
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+        router.push('/login');
+      }
+    } else {
+      router.push('/login');
+    }
+    
     setLoading(false);
-  }, [status]);
+  }, [router]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    router.push('/login');
+  };
 
   if (loading) {
     return (
@@ -151,21 +184,8 @@ export default function SmartStartHub() {
     );
   }
 
-  if (!session) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold text-white mb-4">SmartStart HUB</h1>
-          <p className="text-slate-300 mb-8">Please log in to access your command center</p>
-          <a 
-            href="/login" 
-            className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
-          >
-            Login to HUB
-          </a>
-        </div>
-      </div>
-    );
+  if (!user) {
+    return null; // Will redirect to login
   }
 
   return (
@@ -183,15 +203,19 @@ export default function SmartStartHub() {
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-white">SmartStart HUB</h1>
-                <p className="text-slate-400 text-sm">Udi Shkolnik • AliceSolutions Owner</p>
+                <p className="text-slate-400 text-sm">{user.name} • {user.role}</p>
               </div>
             </div>
             <div className="flex items-center space-x-4">
               <div className="bg-green-500/20 border border-green-500/30 rounded-lg px-3 py-1">
                 <span className="text-green-400 text-sm font-medium">System Online</span>
               </div>
-              <button className="bg-slate-700 hover:bg-slate-600 p-2 rounded-lg transition-colors">
-                <Settings className="w-5 h-5 text-slate-300" />
+              <button 
+                onClick={handleLogout}
+                className="bg-slate-700 hover:bg-slate-600 p-2 rounded-lg transition-colors flex items-center space-x-2"
+              >
+                <LogOut className="w-5 h-5 text-slate-300" />
+                <span className="text-slate-300 text-sm">Logout</span>
               </button>
             </div>
           </div>
