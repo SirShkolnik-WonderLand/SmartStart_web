@@ -475,19 +475,64 @@ app.use('*', (req, res) => {
 });
 
 // Start server
-app.listen(PORT, () => {
-  console.log(`🚀 SmartStart API Server running on port ${PORT}`);
-  console.log(`📊 Services Status:`);
-  console.log(`   - Worker: ${process.env.WORKER_ENABLED === 'true' ? '✅ Enabled' : '❌ Disabled'}`);
-  console.log(`   - Storage: ${process.env.STORAGE_ENABLED === 'true' ? '✅ Enabled' : '❌ Disabled'}`);
-  console.log(`   - Monitor: ${process.env.MONITOR_ENABLED === 'true' ? '✅ Enabled' : '❌ Disabled'}`);
-  console.log(`🌐 Environment: ${process.env.NODE_ENV}`);
-  console.log(`🔗 Health Check: http://localhost:${PORT}/api/health`);
-});
+const startServer = async () => {
+  try {
+    console.log('🚀 Starting SmartStart API Server...');
+    
+    // Test database connection
+    await prisma.$connect();
+    console.log('✅ Database connected successfully');
+    
+    // Auto-setup database if needed (for first deployment)
+    try {
+      console.log('🔧 Checking database setup...');
+      const userCount = await prisma.user.count();
+      if (userCount === 0) {
+        console.log('📊 Database is empty, running setup...');
+        // Run database push and seed
+        const { execSync } = require('child_process');
+        try {
+          execSync('npx prisma db push --force-reset', { stdio: 'inherit' });
+          console.log('✅ Database schema updated');
+          
+          execSync('npm run db:seed', { stdio: 'inherit' });
+          console.log('✅ Database seeded with demo data');
+        } catch (setupError) {
+          console.log('⚠️ Setup completed with warnings:', setupError.message);
+        }
+      } else {
+        console.log(`✅ Database has ${userCount} users, setup complete`);
+      }
+    } catch (setupError) {
+      console.log('⚠️ Database setup check failed:', setupError.message);
+    }
+    
+    app.listen(PORT, () => {
+      console.log(`🚀 SmartStart API Server running on port ${PORT}`);
+      console.log(`📊 Services Status:`);
+      console.log(`   - Worker: ${process.env.WORKER_ENABLED === 'true' ? '✅ Enabled' : '❌ Disabled'}`);
+      console.log(`   - Storage: ${process.env.STORAGE_ENABLED === 'true' ? '✅ Enabled' : '❌ Disabled'}`);
+      console.log(`   - Monitor: ${process.env.MONITOR_ENABLED === 'true' ? '✅ Enabled' : '❌ Disabled'}`);
+      console.log(`🌐 Environment: ${process.env.NODE_ENV}`);
+      console.log(`🔗 Health Check: http://localhost:${PORT}/api/health`);
+    });
+  } catch (error) {
+    console.error('❌ Failed to start server:', error);
+    process.exit(1);
+  }
+};
 
 // Graceful shutdown
 process.on('SIGTERM', async () => {
-  console.log('🛑 Shutting down gracefully...');
+  console.log('🛑 SIGTERM received, shutting down gracefully...');
   await prisma.$disconnect();
   process.exit(0);
 });
+
+process.on('SIGINT', async () => {
+  console.log('🛑 SIGINT received, shutting down gracefully...');
+  await prisma.$disconnect();
+  process.exit(0);
+});
+
+startServer();
