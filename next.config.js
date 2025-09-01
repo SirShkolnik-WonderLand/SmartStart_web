@@ -9,6 +9,14 @@ const nextConfig = {
   images: {
     domains: ['localhost'],
   },
+  // Disable static generation completely
+  output: 'standalone',
+  // Force all pages to be dynamic
+  experimental: {
+    // Disable static optimization
+    workerThreads: false,
+    cpus: 1
+  }
 }
 
 module.exports = nextConfig

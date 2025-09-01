@@ -17,7 +17,22 @@ interface User {
   role: string
 }
 
+interface LoginResponse {
+  success: boolean
+  token: string
+  user: {
+    id: string
+    email: string
+    name: string
+    role: string
+  }
+  error?: string
+}
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+
+// Force dynamic rendering
+export const dynamic = 'force-dynamic'
 
 export default function LoginPage() {
   const router = useRouter()
