@@ -559,15 +559,95 @@ model Account {
   id        String   @id @default(cuid())
   email     String   @unique
   password  String?
-  role      Role     @default(MEMBER)
+  roleId    String
+  role      Role     @relation(fields: [roleId], references: [id])
   userId    String   @unique
   user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
   
+  // Enhanced authentication
+  isActive  Boolean @default(true)
+  lastLogin DateTime?
+  loginAttempts Int @default(0)
+  lockedUntil DateTime?
+  mfaEnabled Boolean @default(false)
+  mfaSecret  String?
+  
+  // Session management
+  sessions  Session[]
+  
   @@index([email])
+  @@index([isActive])
+  @@index([lastLogin])
+  @@index([roleId])
 }
 
-enum Role {
+// New Session model for secure authentication
+model Session {
+  id        String   @id @default(cuid())
+  accountId String
+  account   Account  @relation(fields: [accountId], references: [id])
+  token     String   @unique
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  lastUsed  DateTime @default(now())
+  
+  @@index([accountId])
+  @@index([token])
+  @@index([expiresAt])
+}
+
+// Enhanced Permission system
+model Permission {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String
+  resource    String   // e.g., "project", "user", "equity"
+  action      String   // e.g., "read", "write", "delete", "admin"
+  createdAt   DateTime @default(now())
+  
+  // RBAC relations
+  rolePermissions RolePermission[]
+  
+  @@index([resource])
+  @@index([action])
+}
+
+// Role-Permission mapping
+model RolePermission {
+  id           String     @id @default(cuid())
+  roleId       String
+  role         Role       @relation(fields: [roleId], references: [id])
+  permissionId String
+  permission   Permission @relation(fields: [permissionId], references: [id])
+  grantedAt    DateTime   @default(now())
+  grantedBy    String?
+  
+  @@unique([roleId, permissionId])
+  @@index([roleId])
+  @@index([permissionId])
+}
+
+// Enhanced Role model with hierarchy
+model Role {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String
+  level       Int      // Hierarchy level (higher = more permissions)
+  isSystem    Boolean  @default(false) // System roles cannot be deleted
+  createdAt   DateTime @default(now())
+  
+  // Relations
+  accounts    Account[]
+  rolePermissions RolePermission[]
+  
+  @@index([level])
+  @@index([isSystem])
+}
+
+enum UserRole {
   SUPER_ADMIN
   ADMIN
   OWNER

@@ -1,6 +1,29 @@
-# SmartStart Database Blueprint
-# Database-only deployment - No web service
+# SmartStart Platform - Complete Deployment
+# Full-stack web application with database
 
 databases:
   - name: smartstart-db
     plan: free
+    ipAllowList: []
+
+services:
+  - name: smartstart-platform
+    type: web
+    plan: free
+    buildCommand: npm install && npx prisma generate && npm run build
+    startCommand: npm start
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: smartstart-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: NEXTAUTH_SECRET
+        generateValue: true
+      - key: NEXTAUTH_URL
+        value: https://smartstart-platform.onrender.com
+      - key: NODE_ENV
+        value: production
+    healthCheckPath: /
+    autoDeploy: true
