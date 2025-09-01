@@ -21,7 +21,7 @@ export interface ContractOffer {
   impactExpected: number;
   vestingSchedule: ContractVestingSchedule;
   deliverables: string[];
-  milestones: Milestone[];
+  milestones: ContractMilestone[];
   terms: string;
   status: 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'EXPIRED';
   expiresAt: Date;
@@ -38,7 +38,7 @@ export interface SignedContract {
   vestingSchedule: ContractVestingSchedule;
   status: 'ACTIVE' | 'COMPLETED' | 'TERMINATED';
   deliverables: Deliverable[];
-  milestones: Milestone[];
+  milestones: ContractMilestone[];
 }
 
 export interface PendingSignature {
@@ -69,7 +69,7 @@ export interface ContractVestingSchedule {
   vestingPercentage: number;
 }
 
-export interface Milestone {
+export interface ContractMilestone {
   id: string;
   title: string;
   description: string;
