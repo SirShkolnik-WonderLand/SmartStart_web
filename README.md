@@ -68,6 +68,29 @@ The platform uses **Render Blueprints** for automated infrastructure deployment:
 - **Production Ready** - Professional-grade infrastructure
 - **Easy Scaling** - Upgrade plans as your needs grow
 
+## 🔑 **Production Database Connection**
+
+### **Database Credentials (Render PostgreSQL)**
+- **Host**: `dpg-d2r25k7diees73dp78a0-a.oregon-postgres.render.com`
+- **Port**: `5432`
+- **Database**: `smartstart`
+- **Username**: `smartstart_user`
+- **Password**: `aN8xbmGxskrJbeeQzuoviicP2YQ4BXNh`
+
+### **Connection URLs**
+- **Internal (Render Services)**: `postgresql://smartstart_user:aN8xbmGxskrJbeeQzuoviicP2YQ4BXNh@dpg-d2r25k7diees73dp78a0-a/smartstart`
+- **External (Local Development)**: `postgresql://smartstart_user:aN8xbmGxskrJbeeQzuoviicP2YQ4BXNh@dpg-d2r25k7diees73dp78a0-a.oregon-postgres.render.com/smartstart`
+
+### **PSQL Connection Command**
+```bash
+PGPASSWORD=aN8xbmGxskrJbeeQzuoviicP2YQ4BXNh psql -h dpg-d2r25k7diees73dp78a0-a.oregon-postgres.render.com -U smartstart_user -d smartstart
+```
+
+### **Render CLI Connection**
+```bash
+render psql dpg-d2r25k7diees73dp78a0-a
+```
+
 ## 🔧 Getting Started
 
 1. **Read the Documentation** - Start with [documentation/README.md](documentation/README.md)

@@ -11,6 +11,7 @@ documentation/
 ├── FREE_TIER_SUMMARY.md               # Free tier optimization details
 ├── RENDER_BEST_PRACTICES.md           # Render.com deployment best practices
 ├── DATABASE_ARCHITECTURE.md           # Database schema and relationships
+├── DATABASE_CONNECTION_GUIDE.md       # Complete connection options and credentials
 ├── SYSTEM_ARCHITECTURE.md             # Overall system design and components
 ├── API_REFERENCE.md                   # API endpoints and usage
 ├── DEVELOPMENT_GUIDE.md               # Local development setup
@@ -36,6 +37,10 @@ documentation/
 1. [Database Architecture](DATABASE_ARCHITECTURE.md) - Database schema and relationships
 2. [System Architecture](SYSTEM_ARCHITECTURE.md) - Overall system design
 3. [v1 Complete Summary](V1_COMPLETE_SUMMARY.md) - Complete v1 implementation overview
+
+### For Database Connection
+1. [Database Connection Guide](DATABASE_CONNECTION_GUIDE.md) - Complete connection options and credentials
+2. [Database Architecture](DATABASE_ARCHITECTURE.md) - Schema details and relationships
 
 ## 🏗️ What is SmartStart Platform?
 

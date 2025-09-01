@@ -96,6 +96,39 @@ A Render Blueprint is a `render.yaml` file that automatically creates and config
 - **Background maintenance**: Automated cleanup and optimization
 - **WORM compliance**: Hash chain implementation for audit trails
 
+## 🔑 **Database Connection Details**
+
+### **Production Database Credentials**
+- **Service Name**: `smartstart-db`
+- **Host**: `dpg-d2r25k7diees73dp78a0-a.oregon-postgres.render.com`
+- **Port**: `5432`
+- **Database**: `smartstart`
+- **Username**: `smartstart_user`
+- **Password**: `aN8xbmGxskrJbeeQzuoviicP2YQ4BXNh`
+
+### **Connection Options**
+
+#### **Option 1: Render CLI (Recommended)**
+```bash
+render psql dpg-d2r25k7diees73dp78a0-a
+```
+
+#### **Option 2: Direct PSQL Connection**
+```bash
+PGPASSWORD=aN8xbmGxskrJbeeQzuoviicP2YQ4BXNh psql -h dpg-d2r25k7diees73dp78a0-a.oregon-postgres.render.com -U smartstart_user -d smartstart
+```
+
+#### **Option 3: Environment Variable**
+```bash
+export DATABASE_URL="postgresql://smartstart_user:aN8xbmGxskrJbeeQzuoviicP2YQ4BXNh@dpg-d2r25k7diees73dp78a0-a.oregon-postgres.render.com/smartstart"
+```
+
+### **API Service Details**
+- **Service Name**: `smartstart-api`
+- **URL**: `https://smartstart-api.onrender.com`
+- **Health Endpoint**: `https://smartstart-api.onrender.com/api/health`
+- **Test Endpoints**: `https://smartstart-api.onrender.com/api/v1/test/*`
+
 ## 🔌 API Service (smartstart-api)
 
 ### **Plan Details**

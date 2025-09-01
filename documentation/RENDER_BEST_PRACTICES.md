@@ -98,6 +98,45 @@ services:
 
 #### **Performance Enhancements**
 - **Production builds**: Only production dependencies installed
+
+## 🔑 **Database Connection Best Practices**
+
+### **Connection Security**
+- ✅ **Use Internal URLs** for Render service-to-service communication
+- ✅ **Use External URLs** for local development and external tools
+- ✅ **Store Credentials Securely** - Never commit passwords to git
+- ✅ **Use Environment Variables** for sensitive data
+
+### **Connection Methods**
+
+#### **For Render Services (Internal)**
+```bash
+# Use internal hostname for service-to-service communication
+DATABASE_URL="postgresql://smartstart_user:aN8xbmGxskrJbeeQzuoviicP2YQ4BXNh@dpg-d2r25k7diees73dp78a0-a/smartstart"
+```
+
+#### **For Local Development (External)**
+```bash
+# Use external hostname for local development
+DATABASE_URL="postgresql://smartstart_user:aN8xbmGxskrJbeeQzuoviicP2YQ4BXNh@dpg-d2r25k7diees73dp78a0-a.oregon-postgres.render.com/smartstart"
+```
+
+#### **For Direct Database Access**
+```bash
+# Render CLI (recommended for management)
+render psql dpg-d2r25k7diees73dp78a0-a
+
+# Direct PSQL connection
+PGPASSWORD=aN8xbmGxskrJbeeQzuoviicP2YQ4BXNh psql -h dpg-d2r25k7diees73dp78a0-a.oregon-postgres.render.com -U smartstart_user -d smartstart
+```
+
+### **Production Database Credentials**
+- **Service Name**: `smartstart-db`
+- **Host**: `dpg-d2r25k7diees73dp78a0-a.oregon-postgres.render.com`
+- **Port**: `5432`
+- **Database**: `smartstart`
+- **Username**: `smartstart_user`
+- **Password**: `aN8xbmGxskrJbeeQzuoviicP2YQ4BXNh`
 - **Prisma generation**: Database client generated during build
 - **Environment configuration**: Proper environment variable handling
 - **Health monitoring**: Built-in health check endpoints
