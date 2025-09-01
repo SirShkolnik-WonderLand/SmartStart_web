@@ -5,6 +5,10 @@ export const dynamic = 'force-dynamic';
 
 const prisma = new PrismaClient();
 
+// REAL DATABASE CONNECTION - NO MORE MOCK DATA
+// This API now reads actual data from the database
+// Version: 2025-09-01-REAL-DATA
+
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
