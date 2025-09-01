@@ -28,7 +28,7 @@ Each project has:
 
 2. **AliceSolutions**
 
-   * Takes **up to 25% maximum**.
+   * Takes **up to 20% maximum** > depends on udi contribitions to the procjets.
    * Covers structure, tools, contracts, legal, compliance, and hub alignment.
 
 3. **Contributors (Other Founders)**
@@ -50,7 +50,7 @@ Each project has:
 * **New SaaS Project**:
 
   * Project Owner: 40%
-  * AliceSolutions: 20%
+  * AliceSolutions: max 20%
   * Contributors: Dev 5%, Marketing 3%, Ops 2%
   * Remaining 30% left open for future growth/investors.
 
@@ -205,3 +205,115 @@ It grows with your work:
 ✅ This version is **appealing, innovative, and non-traditional**. It makes them feel they’re stepping into something new, not a job.
 
 Would you like me to also design a **visual model/diagram** for the handout (Hub in center → projects around it → arrows showing contributions → shares into each founder’s portfolio)? That will really make it click when they see it.
+Perfect 👍 I see exactly where you want to take this. You already have:
+
+1. **The SmartStart Vision doc** (the “big SaaS” pitch).
+2. **The Equity Framework draft** (rules, structure, fairness).
+3. **The 2-pager fresh rewrite** (community-company manifesto).
+
+Now you want me to **merge and extend** into a **formal Equity & Ownership Framework** section — clear, fair, inspiring — with **all rules written down**, plus **extra depth** (edge cases, protections, processes).
+
+Here’s the completed **third page** draft for your **AliceSolutions Ventures Playbook**:
+
+---
+
+# 📘 AliceSolutions Ventures – Equity & Ownership Framework
+
+### ⚖️ Core Principle
+
+**Equity is earned, not given.**
+Ownership is created through **ideas, execution, and contributions** — never just a salary.
+
+---
+
+## 🏗️ Roles in Every Project
+
+1. **Project Owner**
+
+   * Originator of the idea.
+   * Leads vision and direction.
+   * **Minimum 35% protected ownership** — cannot be diluted below this.
+
+2. **AliceSolutions (The Hub)**
+
+   * Provides structure, legal, compliance, tools, and security.
+   * Acts as the **backbone** of all ventures.
+   * Takes **up to 25% maximum**, depending on hub involvement.
+
+3. **Contributors**
+
+   * Add value through code, marketing, design, ops, sales, compliance, etc.
+   * Earn **0.5% – 5% equity per significant contribution**, negotiated with project owner.
+   * Contributions accumulate over time → portfolio builds across multiple ventures.
+
+---
+
+## 📊 Equity Rules
+
+* **No Dilution Rule**: Project Owners **never fall below 35%**.
+* **Hub Cap Rule**: AliceSolutions **never exceeds 25%**.
+* **Contribution Cap Rule**: Each contribution maxes at **5%**, but contributors can stack multiple contributions.
+* **Reserve Pool Rule**: Each project holds **15–40%** equity open for future growth, investors, or scaling hires.
+* **Spin-Out Rule**: If a project leaves the hub, all equity allocations already earned remain valid.
+* **Transparency Rule**: All allocations are recorded in the hub ledger, visible to all relevant parties.
+* **Audit Trail Rule**: Contracts and equity splits are logged with full legal compliance (digital signature, versioning, timestamps).
+
+---
+
+## 🔄 Dynamic Allocation
+
+Equity isn’t a one-time event. It’s **dynamic and living**:
+
+* A dev sprint (e.g., backend MVP in 30 days) → 4%.
+* A growth campaign (e.g., complete funnel launch) → 2%.
+* A major ops setup (e.g., logistics + staffing system) → 3%.
+* Continued contributions can **increase ownership over time**.
+
+👉 This ensures **fair recognition of ongoing value**.
+
+---
+
+## 📑 Contribution Recognition
+
+Every contribution is logged with:
+
+* **Description**: what was done.
+* **Impact Score**: effort, scope, strategic value.
+* **Equity Award**: % granted (owner approval + hub compliance).
+* **BUZ Reward**: optional internal token bonus (recognition, gamification, unlockables).
+
+---
+
+## 🔒 Protection Rules
+
+* **Founder Safety**: No one can “take over” a project. The originator always retains control.
+* **Contributor Fairness**: No hidden deals; everything logged and acknowledged.
+* **Hub Neutrality**: AliceSolutions provides infrastructure but does not interfere in creative direction unless compliance/security is at risk.
+* **Exit & Vesting**: If someone leaves early, unvested equity returns to reserve pool.
+
+---
+
+## 🌍 Portfolio Building
+
+Over time, each member becomes:
+
+* **Owner of their project** (protected 35%+).
+* **Contributor in others** (small stakes, 0.5–5% each).
+* **Stakeholder in the hub** (indirect value via AliceSolutions’ share).
+
+This creates **diversified founder portfolios** → one person can hold equity across 5, 10, even 20 startups.
+
+---
+
+## 🏆 Why It Works
+
+✅ **Fairness** → Everyone knows the rules, no hidden traps.
+✅ **Founder Protection** → Project originators never lose control.
+✅ **Contributor Incentive** → Every sprint, campaign, or design adds real ownership.
+✅ **Hub Strength** → AliceSolutions powers ventures without overreaching.
+✅ **Portfolio Effect** → Each founder builds value across many projects, not just one.
+
+---
+
+✨ **AliceSolutions Ventures**
+*Equity is earned. Ownership is protected. Growth is multiplied.*
