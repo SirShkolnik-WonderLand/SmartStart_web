@@ -1,25 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { PortfolioService } from '../../../../lib/services/portfolio';
 
 export async function GET(request: NextRequest) {
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+    // In a real app, you'd get the user ID from the session
+    // For now, we'll use a demo user ID
+    const userId = 'demo-user-1';
     
-    const response = await fetch(`${apiUrl}/api/portfolio/stats`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`Backend API call failed: ${response.status}`);
-    }
-
-    const data = await response.json();
+    const stats = await PortfolioService.getPortfolioStats(userId);
     
     return NextResponse.json({
       success: true,
-      data: data
+      data: stats
     });
   } catch (error) {
     console.error('Error fetching portfolio stats:', error);
