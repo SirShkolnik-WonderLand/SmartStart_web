@@ -69,6 +69,7 @@ export default function IdeasPage() {
     estimatedEffort: '1-2 weeks' as const,
     estimatedValue: 0
   })
+  const [authToken, setAuthToken] = useState<string>('')
   const router = useRouter()
 
   useEffect(() => {
@@ -85,10 +86,12 @@ export default function IdeasPage() {
 
       try {
         const userData = JSON.parse(userCookie.split('=')[1])
+        const token = tokenCookie.split('=')[1]
         setUser(userData)
+        setAuthToken(token)
         
         // Fetch ideas data
-        await fetchIdeasData()
+        await fetchIdeasData(token)
       } catch (error) {
         console.error('Error parsing user data:', error)
         router.push('/login')
@@ -98,10 +101,10 @@ export default function IdeasPage() {
     getUserFromCookies()
   }, [router])
 
-  const fetchIdeasData = async () => {
+  const fetchIdeasData = async (token: string) => {
     try {
       // Fetch real ideas data from API
-      const ideasResponse = await apiCallWithAuth('/ideas', tokenCookie.split('=')[1])
+      const ideasResponse = await apiCallWithAuth('/ideas', token)
       
       if (ideasResponse && Array.isArray(ideasResponse)) {
         // Transform API data to match our interface

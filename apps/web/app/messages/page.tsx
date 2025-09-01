@@ -48,6 +48,7 @@ export default function MessagesPage() {
   const [selectedChannel, setSelectedChannel] = useState<string>('general')
   const [newMessage, setNewMessage] = useState('')
   const [loading, setLoading] = useState(true)
+  const [authToken, setAuthToken] = useState<string>('')
   const router = useRouter()
 
   useEffect(() => {
@@ -64,11 +65,13 @@ export default function MessagesPage() {
 
       try {
         const userData = JSON.parse(userCookie.split('=')[1])
+        const token = tokenCookie.split('=')[1]
         setUser(userData)
+        setAuthToken(token)
         
         // Fetch channels and messages data
-        await fetchChannelsData()
-        await fetchMessagesData('general')
+        await fetchChannelsData(token)
+        await fetchMessagesData('general', token)
       } catch (error) {
         console.error('Error parsing user data:', error)
         router.push('/login')
@@ -78,10 +81,10 @@ export default function MessagesPage() {
     getUserFromCookies()
   }, [router])
 
-  const fetchChannelsData = async () => {
+  const fetchChannelsData = async (token: string) => {
     try {
       // Fetch real channels data from API
-      const channelsResponse = await apiCallWithAuth('/messages/channels', tokenCookie.split('=')[1])
+      const channelsResponse = await apiCallWithAuth('/messages/channels', token)
       
       if (channelsResponse && Array.isArray(channelsResponse)) {
         // Transform API data to match our interface
@@ -129,10 +132,10 @@ export default function MessagesPage() {
     }
   }
 
-  const fetchMessagesData = async (channelId: string) => {
+  const fetchMessagesData = async (channelId: string, token: string) => {
     try {
       // Fetch real messages data from API
-      const messagesResponse = await apiCallWithAuth(`/messages/${channelId}`, tokenCookie.split('=')[1])
+      const messagesResponse = await apiCallWithAuth(`/messages/${channelId}`, token)
       
       if (messagesResponse && Array.isArray(messagesResponse)) {
         // Transform API data to match our interface
@@ -164,7 +167,7 @@ export default function MessagesPage() {
 
   const handleChannelSelect = (channelId: string) => {
     setSelectedChannel(channelId)
-    fetchMessagesData(channelId)
+    fetchMessagesData(channelId, authToken)
     
     // Mark channel as read
     setChannels(prev => 
