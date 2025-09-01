@@ -1,11 +1,14 @@
+# SmartStart Database Service - Clean Configuration
+# Version: 2.0 - Clean Database-Only Setup
+# Deployed: September 1, 2025
+
 services:
   - type: web
-    name: smartstart-database
+    name: smartstart-api
     env: node
-    rootDir: .
     plan: free
     buildCommand: npm install && npx prisma generate
-    startCommand: npx prisma db push && npx prisma db seed && npm start
+    startCommand: npx prisma db push && npx prisma db seed && node index.js
     envVars:
       - key: NODE_ENV
         value: production
