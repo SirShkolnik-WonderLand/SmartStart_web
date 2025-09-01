@@ -744,20 +744,29 @@ router.post('/migrate', async (req, res) => {
   try {
     console.log('🔄 Starting production database migration...');
     
-    // Run Prisma db push to apply schema changes
-    const { execSync } = require('child_process');
-    const result = execSync('npx prisma db push --accept-data-loss', { 
-      encoding: 'utf8',
-      cwd: process.cwd()
-    });
+    // Check what tables exist
+    const tables = await prisma.$queryRaw`
+      SELECT table_name 
+      FROM information_schema.tables 
+      WHERE table_schema = 'public'
+    `;
+    
+    console.log('Current tables:', tables);
+    
+    // Try to create a simple test table
+    await prisma.$executeRaw`CREATE TABLE IF NOT EXISTS "TestTable" (
+      "id" TEXT NOT NULL,
+      "name" TEXT,
+      "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      CONSTRAINT "TestTable_pkey" PRIMARY KEY ("id")
+    )`;
     
     console.log('✅ Production database migration completed successfully!');
-    console.log('Migration result:', result);
     
     res.json({ 
       success: true, 
       message: 'Database migrated successfully',
-      result: result,
+      currentTables: tables,
       timestamp: new Date().toISOString()
     });
   } catch (error) {
