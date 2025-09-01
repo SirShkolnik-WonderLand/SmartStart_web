@@ -20,7 +20,12 @@ import {
   Shield,
   Database,
   Wifi,
-  Battery
+  Battery,
+  Eye,
+  Target,
+  Award,
+  Calendar,
+  Star
 } from 'lucide-react';
 
 interface PortfolioStats {
@@ -97,7 +102,7 @@ export default function SmartStartHub() {
       }
 
       // Fetch recent activity
-      const activityResponse = await fetch('/api/portfolio/activity?limit=10');
+      const activityResponse = await fetch('/api/portfolio/activity');
       const activityData = await activityResponse.json();
       if (activityData.success) {
         setRecentActivity(activityData.data);
@@ -122,95 +127,96 @@ export default function SmartStartHub() {
     return () => clearInterval(interval);
   }, []);
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'ACTIVE': return 'status-success';
-      case 'LAUNCHING': return 'status-warning';
-      case 'PLANNING': return 'status-info';
-      case 'COMPLETED': return 'status-success';
-      case 'PAUSED': return 'status-error';
-      default: return 'status-info';
+  const getStatusClass = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'active': return 'active';
+      case 'launching': return 'launching';
+      case 'planning': return 'planning';
+      case 'completed': return 'completed';
+      case 'paused': return 'paused';
+      default: return 'planning';
     }
   };
 
-  const getSeverityColor = (severity: string) => {
-    switch (severity) {
-      case 'SUCCESS': return 'status-success';
-      case 'INFO': return 'status-info';
-      case 'WARNING': return 'status-warning';
-      case 'ERROR': return 'status-error';
-      default: return 'status-info';
+  const getActivityIconClass = (type: string) => {
+    switch (type.toLowerCase()) {
+      case 'equity': return 'equity';
+      case 'team': return 'team';
+      case 'milestone': return 'milestone';
+      case 'contract': return 'contract';
+      case 'system': return 'system';
+      case 'security': return 'security';
+      default: return 'system';
     }
   };
 
-  const getSystemHealthColor = (health: string) => {
-    switch (health) {
-      case 'EXCELLENT': return 'text-green-600';
-      case 'GOOD': return 'text-blue-600';
-      case 'WARNING': return 'text-yellow-600';
-      case 'CRITICAL': return 'text-red-600';
-      default: return 'text-gray-600';
+  const getStatCardClass = (type: string) => {
+    switch (type) {
+      case 'positive': return 'positive';
+      case 'warning': return 'warning';
+      case 'error': return 'error';
+      default: return '';
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 text-lg font-medium">Loading SmartStart HUB...</p>
-          <p className="text-gray-500 text-sm mt-2">Initializing enterprise dashboard</p>
+      <div className="loading">
+        <div className="loading-spinner"></div>
+        <div className="text-center mt-4">
+          <h2 className="text-xl font-semibold mb-2">Loading SmartStart HUB</h2>
+          <p className="text-secondary">Initializing enterprise dashboard...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-secondary">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 shadow-professional">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-4">
-              <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center">
-                <TrendingUp className="w-6 h-6 text-white" />
+      <header className="header">
+        <div className="container">
+          <div className="header-content">
+            <div className="logo">
+              <div className="logo-icon">
+                <TrendingUp size={20} />
               </div>
-              <div>
-                <h1 className="text-xl font-bold text-gray-900">SmartStart HUB</h1>
-                <p className="text-sm text-gray-500">AliceSolutions Ventures • Udi Shkolnik</p>
+              <div className="logo-text">
+                <h1>SmartStart HUB</h1>
+                <p>AliceSolutions Ventures • Udi Shkolnik</p>
               </div>
             </div>
             
-            <div className="flex items-center space-x-4">
-              {/* System Status */}
-              <div className="flex items-center space-x-3">
-                <div className="flex items-center space-x-2">
-                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                  <span className="text-green-600 text-sm font-medium">System Online</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Database className="w-4 h-4 text-blue-500" />
-                  <span className="text-blue-600 text-sm">DB Connected</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Wifi className="w-4 h-4 text-green-500" />
-                  <span className="text-green-600 text-sm">Network Stable</span>
-                </div>
+            <div className="status-indicators">
+              <div className="status-item">
+                <div className="status-dot online"></div>
+                <span>System Online</span>
               </div>
+              <div className="status-item">
+                <Database size={16} />
+                <span>DB Connected</span>
+              </div>
+              <div className="status-item">
+                <Wifi size={16} />
+                <span>Network Stable</span>
+              </div>
+              <div className="status-item">
+                <Shield size={16} />
+                <span>Security Active</span>
+              </div>
+            </div>
 
-              {/* Quick Actions */}
-              <div className="flex items-center space-x-2">
-                <button 
-                  onClick={fetchData}
-                  className="btn btn-ghost btn-sm"
-                  title="Refresh data"
-                >
-                  <ArrowUpRight className="w-4 h-4" />
-                </button>
-                <button className="btn btn-ghost btn-sm">
-                  <Settings className="w-4 h-4" />
-                </button>
-              </div>
+            <div className="flex gap-2">
+              <button 
+                onClick={fetchData}
+                className="btn btn-ghost btn-sm"
+                title="Refresh data"
+              >
+                <ArrowUpRight size={16} />
+              </button>
+              <button className="btn btn-ghost btn-sm">
+                <Settings size={16} />
+              </button>
             </div>
           </div>
         </div>
@@ -218,93 +224,92 @@ export default function SmartStartHub() {
 
       {/* Error Banner */}
       {error && (
-        <div className="bg-red-50 border border-red-200 mx-4 mt-4 rounded-lg p-4">
-          <div className="flex items-center space-x-3">
-            <AlertCircle className="w-5 h-5 text-red-500" />
-            <p className="text-red-700 font-medium">{error}</p>
-            <button 
-              onClick={() => setError(null)}
-              className="ml-auto text-red-500 hover:text-red-700"
-            >
-              ×
-            </button>
-          </div>
+        <div className="error-banner">
+          <AlertCircle size={20} className="icon" />
+          <p className="error-message">{error}</p>
+          <button 
+            onClick={() => setError(null)}
+            className="error-close"
+          >
+            ×
+          </button>
         </div>
       )}
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Last Updated */}
+      <main className="container py-8">
+        {/* Status Bar */}
         <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2 text-gray-500 text-sm">
-              <Clock className="w-4 h-4" />
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-2 text-sm text-tertiary">
+              <Clock size={16} />
               <span>Last updated: {lastRefresh.toLocaleTimeString()}</span>
             </div>
             {portfolioStats && (
-              <div className={`flex items-center space-x-2 text-sm ${getSystemHealthColor(portfolioStats.systemHealth)}`}>
-                <div className="w-2 h-2 rounded-full bg-current"></div>
+              <div className="flex items-center gap-2 text-sm">
+                <div className={`status-dot ${portfolioStats.systemHealth.toLowerCase()}`}></div>
                 <span>System Health: {portfolioStats.systemHealth}</span>
               </div>
             )}
           </div>
-          <div className="flex items-center space-x-2 text-gray-500 text-sm">
-            <Shield className="w-4 h-4" />
-            <span>Enterprise Security Active</span>
+          <div className="flex items-center gap-2 text-sm text-tertiary">
+            <Battery size={16} />
+            <span>Performance: Excellent</span>
           </div>
         </div>
 
         {/* Portfolio Overview */}
         {portfolioStats && (
           <section className="mb-8">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
-              <BarChart3 className="w-5 h-5 mr-2" />
-              Portfolio Overview
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="card shadow-professional-lg">
-                <div className="card-content">
-                  <div className="flex items-center justify-between mb-4">
-                    <DollarSign className="w-8 h-8 text-green-600" />
-                    <span className="text-green-600 text-sm font-medium">+{portfolioStats.monthlyGrowth}%</span>
-                  </div>
-                  <p className="text-3xl font-bold text-gray-900 mb-2">
-                    ${(portfolioStats.totalValue / 1000000).toFixed(1)}M
-                  </p>
-                  <p className="text-gray-600 text-sm">Total Portfolio Value</p>
+            <div className="flex items-center gap-3 mb-6">
+              <BarChart3 size={24} />
+              <h2 className="text-2xl font-semibold">Portfolio Overview</h2>
+            </div>
+            
+            <div className="stats-grid">
+              <div className={`stat-card ${getStatCardClass('positive')}`}>
+                <div className="stat-icon">
+                  <DollarSign size={24} />
+                </div>
+                <div className="stat-value">
+                  ${(portfolioStats.totalValue / 1000000).toFixed(1)}M
+                </div>
+                <div className="stat-label">Total Portfolio Value</div>
+                <div className="stat-change positive">
+                  +{portfolioStats.monthlyGrowth}% this month
                 </div>
               </div>
               
-              <div className="card shadow-professional-lg">
-                <div className="card-content">
-                  <div className="flex items-center justify-between mb-4">
-                    <Briefcase className="w-8 h-8 text-blue-600" />
-                    <span className="text-blue-600 text-sm font-medium">Active</span>
-                  </div>
-                  <p className="text-3xl font-bold text-gray-900 mb-2">{portfolioStats.activeProjects}</p>
-                  <p className="text-gray-600 text-sm">Active Projects</p>
+              <div className="stat-card">
+                <div className="stat-icon">
+                  <Briefcase size={24} />
+                </div>
+                <div className="stat-value">{portfolioStats.activeProjects}</div>
+                <div className="stat-label">Active Projects</div>
+                <div className="stat-change positive">
+                  All systems operational
                 </div>
               </div>
               
-              <div className="card shadow-professional-lg">
-                <div className="card-content">
-                  <div className="flex items-center justify-between mb-4">
-                    <Users className="w-8 h-8 text-purple-600" />
-                    <span className="text-purple-600 text-sm font-medium">Growing</span>
-                  </div>
-                  <p className="text-3xl font-bold text-gray-900 mb-2">{portfolioStats.teamSize}</p>
-                  <p className="text-gray-600 text-sm">Team Members</p>
+              <div className="stat-card">
+                <div className="stat-icon">
+                  <Users size={24} />
+                </div>
+                <div className="stat-value">{portfolioStats.teamSize}</div>
+                <div className="stat-label">Team Members</div>
+                <div className="stat-change positive">
+                  Growing team
                 </div>
               </div>
               
-              <div className="card shadow-professional-lg">
-                <div className="card-content">
-                  <div className="flex items-center justify-between mb-4">
-                    <TrendingUp className="w-8 h-8 text-indigo-600" />
-                    <span className="text-indigo-600 text-sm font-medium">Ownership</span>
-                  </div>
-                  <p className="text-3xl font-bold text-gray-900 mb-2">{portfolioStats.totalEquity}%</p>
-                  <p className="text-gray-600 text-sm">Total Equity</p>
+              <div className="stat-card">
+                <div className="stat-icon">
+                  <TrendingUp size={24} />
+                </div>
+                <div className="stat-value">{portfolioStats.totalEquity}%</div>
+                <div className="stat-label">Total Equity</div>
+                <div className="stat-change positive">
+                  Strong ownership
                 </div>
               </div>
             </div>
@@ -314,59 +319,57 @@ export default function SmartStartHub() {
         {/* Active Projects */}
         <section className="mb-8">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold text-gray-900 flex items-center">
-              <Briefcase className="w-5 h-5 mr-2" />
-              Active Projects
-            </h2>
+            <div className="flex items-center gap-3">
+              <Briefcase size={24} />
+              <h2 className="text-2xl font-semibold">Active Projects</h2>
+            </div>
             <button className="btn btn-primary btn-md">
-              <Plus className="w-4 h-4 mr-2" />
+              <Plus size={16} />
               New Project
             </button>
           </div>
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="projects-grid">
             {projects.map((project) => (
-              <div key={project.id} className="card shadow-professional-lg hover:shadow-professional-xl transition-shadow">
-                <div className="card-content">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-1">{project.name}</h3>
-                      <p className="text-gray-600 text-sm mb-2 line-clamp-2">{project.summary}</p>
-                      <div className="flex items-center space-x-4 text-sm">
-                        <span className="text-gray-500">{project.equity}% equity</span>
-                        <span className="text-gray-500">•</span>
-                        <span className="text-gray-500">v{project.contractVersion}</span>
-                        <span className="text-gray-500">•</span>
-                        <span className="text-gray-500">{project.equityModel}</span>
-                      </div>
-                    </div>
-                    <div className={`status-indicator ${getStatusColor(project.status)}`}>
-                      {project.status}
+              <div key={project.id} className="project-card">
+                <div className="project-header">
+                  <div className="flex-1">
+                    <h3 className="project-title">{project.name}</h3>
+                    <p className="project-description">{project.summary}</p>
+                    <div className="project-meta">
+                      <span>{project.equity}% equity</span>
+                      <span>•</span>
+                      <span>v{project.contractVersion}</span>
+                      <span>•</span>
+                      <span>{project.equityModel}</span>
                     </div>
                   </div>
-                  
-                  <div className="mb-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-gray-700 text-sm">Progress</span>
-                      <span className="text-gray-700 text-sm font-medium">{project.progress}%</span>
-                    </div>
-                    <div className="progress-bar">
-                      <div 
-                        className="progress-fill"
-                        style={{ width: `${project.progress}%` }}
-                      ></div>
-                    </div>
+                  <div className={`project-status ${getStatusClass(project.status)}`}>
+                    {project.status}
                   </div>
-                  
-                  <div className="flex items-center justify-between text-sm">
-                    <div className="flex items-center text-gray-500">
-                      <Clock className="w-4 h-4 mr-1" />
-                      {project.nextMilestone} in {project.daysToMilestone} days
-                    </div>
-                    <div className="flex items-center text-gray-500">
-                      <Users className="w-4 h-4 mr-1" />
-                      {project.teamSize} members
-                    </div>
+                </div>
+                
+                <div className="progress-container">
+                  <div className="progress-header">
+                    <span className="progress-label">Progress</span>
+                    <span className="progress-value">{project.progress}%</span>
+                  </div>
+                  <div className="progress-bar">
+                    <div 
+                      className="progress-fill"
+                      style={{ width: `${project.progress}%` }}
+                    ></div>
+                  </div>
+                </div>
+                
+                <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center gap-1 text-tertiary">
+                    <Calendar size={16} />
+                    <span>{project.nextMilestone} in {project.daysToMilestone} days</span>
+                  </div>
+                  <div className="flex items-center gap-1 text-tertiary">
+                    <Users size={16} />
+                    <span>{project.teamSize} members</span>
                   </div>
                 </div>
               </div>
@@ -378,113 +381,146 @@ export default function SmartStartHub() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Quick Actions */}
           <div className="lg:col-span-1">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
-              <Zap className="w-5 h-5 mr-2" />
-              Quick Actions
-            </h2>
-            <div className="space-y-3">
-              <button className="w-full card shadow-professional hover:shadow-professional-lg transition-shadow text-left group">
-                <div className="card-content">
-                  <div className="flex items-center">
-                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3 group-hover:bg-blue-200 transition-colors">
-                      <FileText className="w-5 h-5 text-blue-600" />
-                    </div>
-                    <div>
-                      <p className="text-gray-900 font-medium">Review Contracts</p>
-                      <p className="text-gray-500 text-sm">3 pending approvals</p>
-                    </div>
-                  </div>
+            <div className="flex items-center gap-3 mb-6">
+              <Zap size={24} />
+              <h2 className="text-2xl font-semibold">Quick Actions</h2>
+            </div>
+            
+            <div className="quick-actions">
+              <div className="action-item">
+                <div className="action-icon" style={{ background: 'var(--primary-100)', color: 'var(--primary-600)' }}>
+                  <FileText size={20} />
                 </div>
-              </button>
+                <div className="action-content">
+                  <h3>Review Contracts</h3>
+                  <p>3 pending approvals</p>
+                </div>
+              </div>
               
-              <button className="w-full card shadow-professional hover:shadow-professional-lg transition-shadow text-left group">
-                <div className="card-content">
-                  <div className="flex items-center">
-                    <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3 group-hover:bg-green-200 transition-colors">
-                      <CheckCircle className="w-5 h-5 text-green-600" />
-                    </div>
-                    <div>
-                      <p className="text-gray-900 font-medium">Approve Equity</p>
-                      <p className="text-gray-500 text-sm">2 distributions ready</p>
-                    </div>
-                  </div>
+              <div className="action-item">
+                <div className="action-icon" style={{ background: 'var(--success-100)', color: 'var(--success-600)' }}>
+                  <CheckCircle size={20} />
                 </div>
-              </button>
+                <div className="action-content">
+                  <h3>Approve Equity</h3>
+                  <p>2 distributions ready</p>
+                </div>
+              </div>
               
-              <button className="w-full card shadow-professional hover:shadow-professional-lg transition-shadow text-left group">
-                <div className="card-content">
-                  <div className="flex items-center">
-                    <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-3 group-hover:bg-purple-200 transition-colors">
-                      <MessageSquare className="w-5 h-5 text-purple-600" />
-                    </div>
-                    <div>
-                      <p className="text-gray-900 font-medium">Team Meeting</p>
-                      <p className="text-gray-500 text-sm">Scheduled in 2 hours</p>
-                    </div>
-                  </div>
+              <div className="action-item">
+                <div className="action-icon" style={{ background: 'var(--warning-100)', color: 'var(--warning-600)' }}>
+                  <MessageSquare size={20} />
                 </div>
-              </button>
+                <div className="action-content">
+                  <h3>Team Meeting</h3>
+                  <p>Scheduled in 2 hours</p>
+                </div>
+              </div>
               
-              <button className="w-full card shadow-professional hover:shadow-professional-lg transition-shadow text-left group">
-                <div className="card-content">
-                  <div className="flex items-center">
-                    <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center mr-3 group-hover:bg-orange-200 transition-colors">
-                      <TrendingUp className="w-5 h-5 text-orange-600" />
-                    </div>
-                    <div>
-                      <p className="text-gray-900 font-medium">Deploy Update</p>
-                      <p className="text-gray-500 text-sm">SmartStart v2.0 ready</p>
-                    </div>
-                  </div>
+              <div className="action-item">
+                <div className="action-icon" style={{ background: 'var(--primary-100)', color: 'var(--primary-600)' }}>
+                  <TrendingUp size={20} />
                 </div>
-              </button>
+                <div className="action-content">
+                  <h3>Deploy Update</h3>
+                  <p>SmartStart v2.0 ready</p>
+                </div>
+              </div>
             </div>
           </div>
 
           {/* Recent Activity */}
           <div className="lg:col-span-2">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
-              <Activity className="w-5 h-5 mr-2" />
-              Recent Activity
-            </h2>
-            <div className="card shadow-professional-lg">
-              <div className="card-content">
-                <div className="space-y-4">
-                  {recentActivity.map((activity) => (
-                    <div key={activity.id} className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${getSeverityColor(activity.severity)}`}>
-                        {activity.type === 'EQUITY' && <DollarSign className="w-4 h-4" />}
-                        {activity.type === 'TEAM' && <Users className="w-4 h-4" />}
-                        {activity.type === 'MILESTONE' && <CheckCircle className="w-4 h-4" />}
-                        {activity.type === 'CONTRACT' && <FileText className="w-4 h-4" />}
-                        {activity.type === 'SYSTEM' && <Activity className="w-4 h-4" />}
-                        {activity.type === 'SECURITY' && <Shield className="w-4 h-4" />}
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-gray-900 text-sm font-medium">{activity.message}</p>
-                        <div className="flex items-center mt-1 space-x-4">
-                          {activity.projectName && (
-                            <span className="text-blue-600 text-xs bg-blue-100 px-2 py-1 rounded-full">
-                              {activity.projectName}
-                            </span>
-                          )}
-                          {activity.userName && (
-                            <span className="text-gray-500 text-xs">
-                              by {activity.userName}
-                            </span>
-                          )}
-                          <span className="text-gray-400 text-xs">
-                            {new Date(activity.timestamp).toLocaleString()}
-                          </span>
-                        </div>
-                      </div>
+            <div className="flex items-center gap-3 mb-6">
+              <Activity size={24} />
+              <h2 className="text-2xl font-semibold">Recent Activity</h2>
+            </div>
+            
+            <div className="activity-feed">
+              {recentActivity.map((activity) => (
+                <div key={activity.id} className="activity-item">
+                  <div className={`activity-icon ${getActivityIconClass(activity.type)}`}>
+                    {activity.type === 'EQUITY' && <DollarSign size={16} />}
+                    {activity.type === 'TEAM' && <Users size={16} />}
+                    {activity.type === 'MILESTONE' && <CheckCircle size={16} />}
+                    {activity.type === 'CONTRACT' && <FileText size={16} />}
+                    {activity.type === 'SYSTEM' && <Activity size={16} />}
+                    {activity.type === 'SECURITY' && <Shield size={16} />}
+                  </div>
+                  <div className="activity-content">
+                    <p className="activity-message">{activity.message}</p>
+                    <div className="activity-meta">
+                      {activity.projectName && (
+                        <span className="activity-project">
+                          {activity.projectName}
+                        </span>
+                      )}
+                      {activity.userName && (
+                        <span>by {activity.userName}</span>
+                      )}
+                      <span>{new Date(activity.timestamp).toLocaleString()}</span>
                     </div>
-                  ))}
+                  </div>
                 </div>
-              </div>
+              ))}
             </div>
           </div>
         </div>
+
+        {/* Performance Metrics */}
+        <section className="mt-12">
+          <div className="flex items-center gap-3 mb-6">
+            <Target size={24} />
+            <h2 className="text-2xl font-semibold">Performance Metrics</h2>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="card">
+              <div className="card-content">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 bg-success-100 rounded-lg flex items-center justify-center">
+                    <Star size={20} className="text-success-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold">Success Rate</h3>
+                    <p className="text-sm text-secondary">Project completion</p>
+                  </div>
+                </div>
+                <div className="text-3xl font-bold text-success-600">94%</div>
+              </div>
+            </div>
+            
+            <div className="card">
+              <div className="card-content">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center">
+                    <Eye size={20} className="text-primary-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold">Active Users</h3>
+                    <p className="text-sm text-secondary">This month</p>
+                  </div>
+                </div>
+                <div className="text-3xl font-bold text-primary-600">1,247</div>
+              </div>
+            </div>
+            
+            <div className="card">
+              <div className="card-content">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 bg-warning-100 rounded-lg flex items-center justify-center">
+                    <Award size={20} className="text-warning-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold">Milestones</h3>
+                    <p className="text-sm text-secondary">Completed this week</p>
+                  </div>
+                </div>
+                <div className="text-3xl font-bold text-warning-600">23</div>
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
     </div>
   );
