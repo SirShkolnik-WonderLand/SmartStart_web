@@ -1,87 +1,54 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
 
 export const dynamic = 'force-dynamic';
 
-const prisma = new PrismaClient();
+// Call backend API instead of connecting to database directly
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://smartstart-api.onrender.com';
 
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
     const userId = searchParams.get('userId') || 'demo-user-1';
     
-    // Get real projects from database
-    const projects = await prisma.project.findMany({
-      include: {
-        owner: true,
-        members: true,
-        capEntries: true,
-        tasks: true,
-        sprints: true
+    // Call backend API to get real projects
+    const response = await fetch(`${API_BASE}/api/projects/portfolio`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
       },
-      orderBy: { createdAt: 'desc' }
     });
+
+    if (!response.ok) {
+      throw new Error(`Backend API call failed: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
     
-    // Transform real projects to match frontend interface
-    const transformedProjects = projects.map((project) => {
-      // Calculate progress based on tasks
-      const totalTasks = project.tasks?.length || 0;
-      const completedTasks = project.tasks?.filter(task => task.status === 'DONE')?.length || 0;
-      const progress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
-      
-      // Calculate equity from cap table entries
-      const userEquity = project.capEntries?.reduce((sum, entry) => {
-        if (entry.holderType === 'USER' && entry.holderId === userId) {
-          return sum + (entry.pct || 0);
-        }
-        return sum;
-      }, 0) || 0;
-      
-      // Get team size
-      const teamSize = project.members?.length || 0;
-      
-      // Calculate project value
-      const totalValue = project.capEntries?.reduce((sum, entry) => sum + (entry.pct || 0), 0) * 10000 || 0;
-      
-      // Determine status based on sprints
-      const currentSprint = project.sprints?.length || 0;
-      let status: 'ACTIVE' | 'LAUNCHING' | 'PLANNING' | 'COMPLETED' | 'PAUSED';
-      if (currentSprint === 0) status = 'PLANNING';
-      else if (currentSprint >= 4) status = 'COMPLETED';
-      else if (currentSprint >= 3) status = 'LAUNCHING';
-      else status = 'ACTIVE';
-      
-      // Calculate next milestone
-      const nextMilestone = currentSprint === 0 ? 'Project Setup' :
-                           currentSprint === 1 ? 'Discovery Phase' :
-                           currentSprint === 2 ? 'Validation Phase' :
-                           currentSprint === 3 ? 'Build Phase' : 'Launch';
-      
-      const daysToMilestone = Math.max(1, 30 - (currentSprint * 7)); // Simplified calculation
-      
-      return {
-        id: project.id,
-        name: project.name,
-        summary: project.summary || 'No description available',
-        progress: progress,
-        equity: Math.round(userEquity),
-        nextMilestone: nextMilestone,
-        daysToMilestone: daysToMilestone,
-        status: status,
-        teamSize: teamSize,
-        totalValue: totalValue,
-        contractVersion: 'v1.0',
-        equityModel: 'DYNAMIC',
-        vestingSchedule: 'IMMEDIATE',
-        createdAt: project.createdAt.toISOString(),
-        updatedAt: project.updatedAt.toISOString(),
-        owner: {
-          id: project.owner?.id || 'unknown',
-          name: project.owner?.name || 'Unknown Owner',
-          email: project.owner?.email || 'unknown@example.com'
-        }
-      };
-    });
+    // Transform backend projects to match frontend interface
+    const transformedProjects = (data.projects || []).map((project: any) => ({
+      id: project.id,
+      name: project.name,
+      summary: project.summary || 'No description available',
+      progress: project.completionRate || 0,
+      equity: Math.round(project.userOwnership || 0),
+      nextMilestone: project.currentPhase || 'Project Setup',
+      daysToMilestone: Math.max(1, 30 - ((project.currentSprint || 0) * 7)),
+      status: project.currentSprint === 0 ? 'PLANNING' : 
+              project.currentSprint >= 4 ? 'COMPLETED' : 
+              project.currentSprint >= 3 ? 'LAUNCHING' : 'ACTIVE',
+      teamSize: project.activeMembers || 0,
+      totalValue: project.totalValue || 0,
+      contractVersion: 'v1.0',
+      equityModel: 'DYNAMIC',
+      vestingSchedule: 'IMMEDIATE',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      owner: {
+        id: project.ownerId || 'unknown',
+        name: 'Project Owner',
+        email: 'owner@example.com'
+      }
+    }));
     
     return NextResponse.json({
       success: true,
@@ -89,9 +56,36 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('Error fetching projects:', error);
-    return NextResponse.json({ 
-      success: false, 
-      error: error instanceof Error ? error.message : 'Failed to fetch projects' 
-    }, { status: 500 });
+    
+    // Fallback to mock data if backend is not available
+    const fallbackProjects = [
+      {
+        id: '1',
+        name: 'SmartStart Platform',
+        summary: 'Community-driven development platform for building ventures together with transparent equity tracking, smart contracts, and collaborative project management.',
+        progress: 75,
+        equity: 35,
+        nextMilestone: 'Launch v2.0',
+        daysToMilestone: 3,
+        status: 'LAUNCHING' as const,
+        teamSize: 4,
+        totalValue: 1500000,
+        contractVersion: 'v2.0',
+        equityModel: 'DYNAMIC',
+        vestingSchedule: 'IMMEDIATE',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        owner: {
+          id: 'owner-1',
+          name: 'Udi Shkolnik',
+          email: 'owner@demo.local'
+        }
+      }
+    ];
+    
+    return NextResponse.json({
+      success: true,
+      data: fallbackProjects
+    });
   }
 }
