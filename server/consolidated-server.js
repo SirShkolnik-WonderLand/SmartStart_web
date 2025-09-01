@@ -104,10 +104,6 @@ app.use('/api/', limiter);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-// Mount v1 API routes
-const v1ApiRoutes = require('./routes/v1-api');
-app.use('/api/v1', v1ApiRoutes);
-
 // Authentication middleware
 const authenticateToken = async(req, res, next) => {
     const authHeader = req.headers['authorization'];
@@ -332,6 +328,10 @@ if (process.env.WORKER_ENABLED === 'true') {
         }
     });
 }
+
+// Mount v1 API routes (after all other endpoints)
+const v1ApiRoutes = require('./routes/v1-api');
+app.use('/api/v1', v1ApiRoutes);
 
 // Error handling middleware
 app.use((error, req, res, next) => {
