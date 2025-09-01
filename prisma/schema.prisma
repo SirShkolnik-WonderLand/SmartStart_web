@@ -10,85 +10,86 @@ datasource db {
 }
 
 model User {
-  id            String   @id @default(cuid())
-  email         String   @unique
-  name          String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   // privacy
-  profile       ProfilePrivacy?
-  
+  profile ProfilePrivacy?
+
   // tenancy (for future SaaS)
-  tenantId      String?  @default("default")
-  
+  tenantId String? @default("default")
+
   // gamification
-  level         UserLevel @default(OWLET)
-  xp            Int      @default(0)
-  reputation    Int      @default(0)
-  status        UserStatus @default(ACTIVE)
-  lastActive    DateTime @default(now())
-  
+  level      UserLevel  @default(OWLET)
+  xp         Int        @default(0)
+  reputation Int        @default(0)
+  status     UserStatus @default(ACTIVE)
+  lastActive DateTime   @default(now())
+
   // Smart computed fields for portfolio insights
   totalPortfolioValue Float @default(0) // Computed from all projects
-  activeProjectsCount Int @default(0)   // Computed from active memberships
-  totalContributions  Int @default(0)   // Computed from contributions
-  
+  activeProjectsCount Int   @default(0) // Computed from active memberships
+  totalContributions  Int   @default(0) // Computed from contributions
+
   // Enhanced portfolio metrics
-  totalEquityOwned    Float @default(0) // Total % ownership across all projects
-  averageEquityPerProject Float @default(0) // Average ownership per project
-  portfolioDiversity  Int @default(0)   // Number of different project types
-  lastEquityEarned   DateTime? // Last time equity was earned
-  
+  totalEquityOwned        Float     @default(0) // Total % ownership across all projects
+  averageEquityPerProject Float     @default(0) // Average ownership per project
+  portfolioDiversity      Int       @default(0) // Number of different project types
+  lastEquityEarned        DateTime? // Last time equity was earned
+
   // relations
-  projectsOwned Project[] @relation("ProjectOwner")
-  contributions Contribution[]
-  messages      Message[] @relation("UserMessages")
+  projectsOwned    Project[]         @relation("ProjectOwner")
+  contributions    Contribution[]
+  messages         Message[]         @relation("UserMessages")
   messageReactions MessageReaction[] @relation("UserMessageReactions")
-  kudos         Kudos[]   @relation("UserKudos")
-  assignedTasks Task[]    @relation("TaskAssignee")
-  ideas         Idea[]    @relation("UserIdeas")
-  pollVotes     PollVote[] @relation("UserPollVotes")
-  kudosGiven    Kudos[]   @relation("UserKudosGiven")
-  meshItems     MeshItem[] @relation("MeshItemAuthor")
-  meshReactions MeshReaction[] @relation("UserMeshReactions")
-  userBadges    UserBadge[]
-  userSkills    UserSkill[]
-  
+  kudos            Kudos[]           @relation("UserKudos")
+  assignedTasks    Task[]            @relation("TaskAssignee")
+  ideas            Idea[]            @relation("UserIdeas")
+  pollVotes        PollVote[]        @relation("UserPollVotes")
+  kudosGiven       Kudos[]           @relation("UserKudosGiven")
+  meshItems        MeshItem[]        @relation("MeshItemAuthor")
+  meshReactions    MeshReaction[]    @relation("UserMeshReactions")
+  userBadges       UserBadge[]
+  userSkills       UserSkill[]
+
   // Enhanced contract relations
-  contractOffers ContractOffer[] @relation("ContractOfferRecipient")
+  contractOffers     ContractOffer[]     @relation("ContractOfferRecipient")
   contractSignatures ContractSignature[] @relation("ContractSignatureSigner")
-  equityVesting EquityVesting[] @relation("EquityVestingBeneficiary")
-  
+  equityVesting      EquityVesting[]     @relation("EquityVestingBeneficiary")
+
   // Legal entity and coop relations
-  legalEntityMemberships LegalEntityMember[] @relation("LegalEntityMembership")
-  coopMemberships CoopMember[] @relation("CoopMembership")
+  legalEntityMemberships  LegalEntityMember[]      @relation("LegalEntityMembership")
+  coopMemberships         CoopMember[]             @relation("CoopMembership")
   legalDocumentSignatures LegalDocumentSignature[] @relation("LegalDocumentSigner")
-  
+
   // auth & membership
-  account       Account?
+  account            Account?
   projectMemberships ProjectMember[]
-  notifications Notification[]
-  
+  notifications      Notification[]
+
   // Smart activity tracking
-  activityLog   UserActivity[]
-  
+  activityLog UserActivity[]
+
   // New v1 relations
-  userProfile UserProfile?
-  wallet Wallet?
-  endorsementsGiven Endorsement[] @relation("Endorser")
-  endorsementsReceived Endorsement[] @relation("Endorsed")
-  portfolio PortfolioItem[]
-  clients Client[]
-  documents UserDocument[]
-  docSharesFrom DocShare[] @relation("DocShareFrom")
-  docSharesTo DocShare[] @relation("DocShareTo")
-  signatureRequestsFrom SignatureRequest[] @relation("SigReqBy")
+  userProfile               UserProfile?
+  wallet                    Wallet?
+  endorsementsGiven         Endorsement[]      @relation("Endorser")
+  endorsementsReceived      Endorsement[]      @relation("Endorsed")
+  portfolio                 PortfolioItem[]
+  clients                   Client[]
+  documents                 UserDocument[]
+  docSharesFrom             DocShare[]         @relation("DocShareFrom")
+  docSharesTo               DocShare[]         @relation("DocShareTo")
+  signatureRequestsFrom     SignatureRequest[] @relation("SigReqBy")
   signatureRequestsAsSigner SignatureRequest[] @relation("SigReqSigner")
-  legalHoldsCreated LegalHold[]
-  equityConversions EquityConversion[]
-  reviews Review[]
-  
+  legalHoldsCreated         LegalHold[]        @relation("LegalHoldCreator")
+  legalHoldsTargeted        LegalHold[]        @relation("LegalHoldTarget")
+  equityConversions         EquityConversion[]
+  reviews                   Review[]
+
   @@index([tenantId])
   @@index([status])
   @@index([level])
@@ -109,69 +110,69 @@ model ProfilePrivacy {
 }
 
 model Project {
-  id            String   @id @default(cuid())
-  name          String
-  summary       String?
-  ownerId       String
-  owner         User     @relation("ProjectOwner", fields: [ownerId], references: [id])
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  deletedAt     DateTime?
-  
+  id        String    @id @default(cuid())
+  name      String
+  summary   String?
+  ownerId   String
+  owner     User      @relation("ProjectOwner", fields: [ownerId], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
   // tenancy (for future SaaS)
-  tenantId      String?  @default("default")
-  
+  tenantId String? @default("default")
+
   // Smart project metrics
-  totalValue    Float @default(0)        // Computed from cap table
-  activeMembers Int @default(0)          // Computed from active memberships
-  completionRate Float @default(0)       // Computed from tasks
-  lastActivity  DateTime @default(now()) // Computed from latest activity
-  
+  totalValue     Float    @default(0) // Computed from cap table
+  activeMembers  Int      @default(0) // Computed from active memberships
+  completionRate Float    @default(0) // Computed from tasks
+  lastActivity   DateTime @default(now()) // Computed from latest activity
+
   // Enhanced project contract settings
-  contractVersion String @default("v1.0") // Contract version for tracking changes
-  equityModel    EquityModel @default(DYNAMIC) // How equity is distributed
+  contractVersion String          @default("v1.0") // Contract version for tracking changes
+  equityModel     EquityModel     @default(DYNAMIC) // How equity is distributed
   vestingSchedule VestingSchedule @default(IMMEDIATE) // When equity vests
-  
+
   // cap table entries
-  capEntries    CapTableEntry[]
-  sprints       Sprint[]
-  tasks         Task[]
-  ideas         Idea[]
-  polls         Poll[]
-  messages      Message[] @relation("ProjectMessages")
-  meshItems     MeshItem[] @relation("MeshItemProject")
-  
+  capEntries CapTableEntry[]
+  sprints    Sprint[]
+  tasks      Task[]
+  ideas      Idea[]
+  polls      Poll[]
+  messages   Message[]       @relation("ProjectMessages")
+  meshItems  MeshItem[]      @relation("MeshItemProject")
+
   // Enhanced contract relations
-  contractOffers ContractOffer[] @relation("ContractOfferProject")
+  contractOffers     ContractOffer[]     @relation("ContractOfferProject")
   contractSignatures ContractSignature[] @relation("ContractSignatureProject")
-  equityVesting EquityVesting[] @relation("EquityVestingProject")
-  
+  equityVesting      EquityVesting[]     @relation("EquityVestingProject")
+
   // Legal entity and coop relations
-  legalEntityId String?
-  legalEntity LegalEntity? @relation("ProjectLegalEntity", fields: [legalEntityId], references: [id])
-  coopId String?
-  coop StartupCoop? @relation("ProjectCoop", fields: [coopId], references: [id])
+  legalEntityId  String?
+  legalEntity    LegalEntity?    @relation("ProjectLegalEntity", fields: [legalEntityId], references: [id])
+  coopId         String?
+  coop           StartupCoop?    @relation("ProjectCoop", fields: [coopId], references: [id])
   legalDocuments LegalDocument[] @relation("ProjectLegalDocuments")
-  
+
   // guardrails (enforced in service)
-  ownerMinPct   Float    @default(35)
-  aliceCapPct   Float    @default(25)
-  reservePct    Float    @default(40)
-  
+  ownerMinPct Float @default(35)
+  aliceCapPct Float @default(25)
+  reservePct  Float @default(40)
+
   // membership & visibility
-  members       ProjectMember[]
-  visibility    ProjectVisibility?
-  
+  members    ProjectMember[]
+  visibility ProjectVisibility?
+
   // Smart project insights
-  insights      ProjectInsight[]
-  
+  insights ProjectInsight[]
+
   // Project submission relation
-  submission    ProjectSub?
-  
+  submission ProjectSub?
+
   // New v1 relations
   equityConversions EquityConversion[]
-  legalHolds LegalHold[]
-  
+  legalHolds        LegalHold[]
+
   @@index([tenantId])
   @@index([totalValue])
   @@index([completionRate])
@@ -182,18 +183,18 @@ model Project {
 
 // New model for smart project insights
 model ProjectInsight {
-  id          String   @id @default(cuid())
+  id          String             @id @default(cuid())
   projectId   String
-  project     Project  @relation(fields: [projectId], references: [id])
+  project     Project            @relation(fields: [projectId], references: [id])
   type        ProjectInsightType
   title       String
   description String
   priority    Int
   confidence  Float
-  data        Json     // Flexible data storage
-  createdAt   DateTime @default(now())
+  data        Json // Flexible data storage
+  createdAt   DateTime           @default(now())
   expiresAt   DateTime?
-  
+
   @@index([projectId])
   @@index([type])
   @@index([priority])
@@ -201,59 +202,59 @@ model ProjectInsight {
 
 // Project Submission Model for 30-day Launch Pipeline
 model ProjectSub {
-  id          String   @id @default(cuid())
-  projectId   String   @unique // One-to-one with Project
-  project     Project  @relation(fields: [projectId], references: [id])
-  
+  id        String  @id @default(cuid())
+  projectId String  @unique // One-to-one with Project
+  project   Project @relation(fields: [projectId], references: [id])
+
   // Basic project information
-  title       String
-  description String
-  category    ProjectCategory
-  marketSize  String?
-  targetAudience String?
+  title                String
+  description          String
+  category             ProjectCategory
+  marketSize           String?
+  targetAudience       String?
   competitiveAdvantage String?
-  revenueModel String?
-  estimatedFunding Float?
-  timeline    String?
-  
+  revenueModel         String?
+  estimatedFunding     Float?
+  timeline             String?
+
   // Equity proposal (validated against business rules)
-  ownerEquityProposal Float // Must be >= 35%
-  aliceEquityProposal Float // Must be <= 25%
+  ownerEquityProposal   Float // Must be >= 35%
+  aliceEquityProposal   Float // Must be <= 25%
   contributorEquityPool Float
-  reserveEquity Float
-  
+  reserveEquity         Float
+
   // Business validation
-  marketValidation String?
+  marketValidation     String?
   technicalFeasibility String?
   financialProjections String?
-  
+
   // 30-day sprint planning
-  sprintGoals String[] // Array of sprint objectives
-  keyMilestones String[] // Key milestones for each sprint
+  sprintGoals    String[] // Array of sprint objectives
+  keyMilestones  String[] // Key milestones for each sprint
   successMetrics String[] // Success criteria
   requiredSkills String[] // Skills needed for the project
-  
+
   // Team and commitment
-  teamSize    Int @default(3)
+  teamSize       Int    @default(3)
   timeCommitment String @default("10-15 hours/week")
-  
+
   // Marketing and launch strategy
   marketingStrategy String?
-  launchChannels String[] // Array of launch channels
-  pricingStrategy String?
-  
+  launchChannels    String[] // Array of launch channels
+  pricingStrategy   String?
+
   // Submission workflow
   status      ProjectSubmissionStatus @default(SUBMITTED)
-  submittedAt DateTime @default(now())
+  submittedAt DateTime                @default(now())
   reviewedAt  DateTime?
   reviewedBy  String? // User ID of reviewer
   reviewNotes String?
-  
+
   // Legal and compliance
-  termsAccepted Boolean @default(false)
+  termsAccepted   Boolean @default(false)
   privacyAccepted Boolean @default(false)
-  contractVersion String @default("v1.0")
-  
+  contractVersion String  @default("v1.0")
+
   @@index([projectId])
   @@index([status])
   @@index([submittedAt])
@@ -301,22 +302,22 @@ model CapTableEntry {
   pct        Float
   source     String
   createdAt  DateTime   @default(now())
-  
+
   // Enhanced cap table tracking
-  value      Float @default(0) // Computed value based on project total
+  value       Float     @default(0) // Computed value based on project total
   vestingDate DateTime? // When this equity vests
-  isVested   Boolean @default(false) // Whether equity has vested
-  
+  isVested    Boolean   @default(false) // Whether equity has vested
+
   // Contract tracking
-  contractId String? // Reference to contract if applicable
+  contractId     String? // Reference to contract if applicable
   contributionId String? // Reference to contribution if applicable
-  
+
+  @@unique([projectId, holderType, holderId])
   @@index([projectId])
   @@index([holderType])
   @@index([holderId])
   @@index([vestingDate])
   @@index([isVested])
-  @@unique([projectId, holderType, holderId])
 }
 
 enum HolderType {
@@ -327,19 +328,19 @@ enum HolderType {
 }
 
 model Sprint {
-  id         String   @id @default(cuid())
-  projectId  String
-  project    Project  @relation(fields: [projectId], references: [id])
-  start      DateTime
-  end        DateTime
-  goals      String
+  id           String   @id @default(cuid())
+  projectId    String
+  project      Project  @relation(fields: [projectId], references: [id])
+  start        DateTime
+  end          DateTime
+  goals        String
   exitCriteria String
-  tasks      Task[]
-  
+  tasks        Task[]
+
   // Smart sprint metrics
   completionRate Float @default(0) // Computed from tasks
-  velocity      Float @default(0)  // Computed from completed tasks
-  
+  velocity       Float @default(0) // Computed from completed tasks
+
   @@index([projectId])
   @@index([start])
   @@index([end])
@@ -360,29 +361,29 @@ enum TaskStatus {
 }
 
 model Task {
-  id         String   @id @default(cuid())
-  sprintId   String?
-  sprint     Sprint?  @relation(fields: [sprintId], references: [id])
-  projectId  String
-  project    Project  @relation(fields: [projectId], references: [id])
-  title      String
-  type       TaskType
-  status     TaskStatus @default(TODO)
-  assigneeId String?
-  assignee   User?     @relation("TaskAssignee", fields: [assigneeId], references: [id])
+  id            String         @id @default(cuid())
+  sprintId      String?
+  sprint        Sprint?        @relation(fields: [sprintId], references: [id])
+  projectId     String
+  project       Project        @relation(fields: [projectId], references: [id])
+  title         String
+  type          TaskType
+  status        TaskStatus     @default(TODO)
+  assigneeId    String?
+  assignee      User?          @relation("TaskAssignee", fields: [assigneeId], references: [id])
   contributions Contribution[]
-  
+
   // Smart task metrics
-  effort     Int @default(0)      // Estimated effort in hours
-  impact     Int @default(0)      // Impact score 1-5
-  priority   Int @default(3)      // Priority 1-5
-  dueDate    DateTime?
-  
+  effort   Int       @default(0) // Estimated effort in hours
+  impact   Int       @default(0) // Impact score 1-5
+  priority Int       @default(3) // Priority 1-5
+  dueDate  DateTime?
+
   // New v1 relations
   portfolioItems PortfolioItem[]
-  walletLedgers WalletLedger[]
-  reviews Review[]
-  
+  walletLedgers  WalletLedger[]
+  reviews        Review[]
+
   @@index([projectId])
   @@index([assigneeId])
   @@index([status])
@@ -392,20 +393,20 @@ model Task {
 
 // Review model for task quality assessment
 model Review {
-  id          String   @id @default(cuid())
-  taskId      String
-  task        Task     @relation(fields: [taskId], references: [id])
-  reviewerId  String
-  reviewer    User     @relation(fields: [reviewerId], references: [id])
-  qualityScore Int     @default(3) // 1-5 quality rating
-  comments    String?
-  decision    ReviewDecision @default(PENDING)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
+  id           String         @id @default(cuid())
+  taskId       String
+  task         Task           @relation(fields: [taskId], references: [id])
+  reviewerId   String
+  reviewer     User           @relation(fields: [reviewerId], references: [id])
+  qualityScore Int            @default(3) // 1-5 quality rating
+  comments     String?
+  decision     ReviewDecision @default(PENDING)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
   // Relations
   walletLedgers WalletLedger[]
-  
+
   @@index([taskId])
   @@index([reviewerId])
   @@index([decision])
@@ -419,11 +420,11 @@ enum ReviewDecision {
 }
 
 model Contribution {
-  id            String   @id @default(cuid())
+  id            String             @id @default(cuid())
   taskId        String
-  task          Task     @relation(fields: [taskId], references: [id])
+  task          Task               @relation(fields: [taskId], references: [id])
   contributorId String
-  contributor   User     @relation(fields: [contributorId], references: [id])
+  contributor   User               @relation(fields: [contributorId], references: [id])
   effort        Int
   impact        Int
   proposedPct   Float
@@ -431,20 +432,20 @@ model Contribution {
   acceptedAt    DateTime?
   acceptedById  String?
   status        ContributionStatus @default(PENDING)
-  
+
   // Enhanced contribution tracking
-  quality       Int @default(3)   // Quality score 1-5
-  collaboration Int @default(3)   // Collaboration score 1-5
-  
+  quality       Int @default(3) // Quality score 1-5
+  collaboration Int @default(3) // Collaboration score 1-5
+
   // Contract integration
   contractOfferId String? // Link to contract offer
-  equityGranted  Float?  // Final equity granted
+  equityGranted   Float? // Final equity granted
   vestingSchedule VestingSchedule @default(IMMEDIATE)
-  
+
   // Performance metrics
-  completionTime Int? // Time to complete in hours
+  completionTime          Int? // Time to complete in hours
   stakeholderSatisfaction Int? // Satisfaction score 1-5
-  
+
   @@index([taskId])
   @@index([contributorId])
   @@index([status])
@@ -459,28 +460,28 @@ enum ContributionStatus {
 }
 
 model Idea {
-  id         String   @id @default(cuid())
+  id         String    @id @default(cuid())
   projectId  String?
-  project    Project? @relation(fields: [projectId], references: [id])
+  project    Project?  @relation(fields: [projectId], references: [id])
   proposerId String
-  proposer   User     @relation("UserIdeas", fields: [proposerId], references: [id])
+  proposer   User      @relation("UserIdeas", fields: [proposerId], references: [id])
   title      String
   body       String
   status     String
-  votes      Int      @default(0)
-  createdAt  DateTime @default(now())
+  votes      Int       @default(0)
+  createdAt  DateTime  @default(now())
   deletedAt  DateTime?
-  
+
   // Smart idea metrics
-  priority   Int @default(3)      // Priority 1-5
-  impact     Int @default(3)      // Impact score 1-5
-  effort     String?              // Estimated effort
-  category   String?              // Idea category
-  tags       String[]             // Flexible tags
-  
+  priority Int      @default(3) // Priority 1-5
+  impact   Int      @default(3) // Impact score 1-5
+  effort   String? // Estimated effort
+  category String? // Idea category
+  tags     String[] // Flexible tags
+
   // Smart idea insights
-  insights   IdeaInsight[]
-  
+  insights IdeaInsight[]
+
   @@index([projectId])
   @@index([status])
   @@index([priority])
@@ -489,65 +490,65 @@ model Idea {
 
 // New model for smart idea insights
 model IdeaInsight {
-  id          String   @id @default(cuid())
-  ideaId      String
-  idea        Idea     @relation(fields: [ideaId], references: [id])
-  type        String   // e.g., "trending", "collaboration", "opportunity"
-  score       Float    // Insight score
-  data        Json     // Flexible data storage
-  createdAt   DateTime @default(now())
-  
+  id        String   @id @default(cuid())
+  ideaId    String
+  idea      Idea     @relation(fields: [ideaId], references: [id])
+  type      String // e.g., "trending", "collaboration", "opportunity"
+  score     Float // Insight score
+  data      Json // Flexible data storage
+  createdAt DateTime @default(now())
+
   @@index([ideaId])
   @@index([type])
 }
 
 model Poll {
-  id         String   @id @default(cuid())
-  projectId  String?
-  project    Project? @relation(fields: [projectId], references: [id])
-  question   String
-  type       String
-  closesAt   DateTime
-  votes      PollVote[]
-  
+  id        String     @id @default(cuid())
+  projectId String?
+  project   Project?   @relation(fields: [projectId], references: [id])
+  question  String
+  type      String
+  closesAt  DateTime
+  votes     PollVote[]
+
   // Smart poll metrics
-  totalVotes Int @default(0)      // Computed from votes
+  totalVotes Int     @default(0) // Computed from votes
   isActive   Boolean @default(true) // Computed from closesAt
-  
+
   @@index([projectId])
   @@index([closesAt])
   @@index([isActive])
 }
 
 model PollVote {
-  id       String @id @default(cuid())
-  pollId   String
-  poll     Poll   @relation(fields: [pollId], references: [id])
-  voterId  String
-  voter    User   @relation("UserPollVotes", fields: [voterId], references: [id])
-  value    String
+  id        String   @id @default(cuid())
+  pollId    String
+  poll      Poll     @relation(fields: [pollId], references: [id])
+  voterId   String
+  voter     User     @relation("UserPollVotes", fields: [voterId], references: [id])
+  value     String
   createdAt DateTime @default(now())
-  
+
   @@unique([pollId, voterId])
   @@index([pollId])
   @@index([voterId])
 }
 
 model Message {
-  id         String  @id @default(cuid())
-  projectId  String?
-  project    Project? @relation("ProjectMessages", fields: [projectId], references: [id])
-  authorId   String
-  author     User    @relation("UserMessages", fields: [authorId], references: [id])
-  body       String
-  createdAt  DateTime @default(now())
-  deletedAt  DateTime?
-  
+  id        String    @id @default(cuid())
+  projectId String?
+  project   Project?  @relation("ProjectMessages", fields: [projectId], references: [id])
+  authorId  String
+  author    User      @relation("UserMessages", fields: [authorId], references: [id])
+  body      String
+  createdAt DateTime  @default(now())
+  deletedAt DateTime?
+
   // Smart message features
-  type       MessageType @default(GENERAL)
-  priority   Int @default(3)      // Priority 1-5
-  reactions  MessageReaction[]
-  
+  type      MessageType       @default(GENERAL)
+  priority  Int               @default(3) // Priority 1-5
+  reactions MessageReaction[]
+
   @@index([projectId])
   @@index([authorId])
   @@index([type])
@@ -571,25 +572,25 @@ model MessageReaction {
   user      User     @relation("UserMessageReactions", fields: [userId], references: [id])
   emoji     String
   createdAt DateTime @default(now())
-  
+
   @@unique([messageId, userId, emoji])
   @@index([messageId])
   @@index([userId])
 }
 
 model Kudos {
-  id        String   @id @default(cuid())
-  toUserId  String
-  toUser    User     @relation("UserKudos", fields: [toUserId], references: [id])
+  id         String   @id @default(cuid())
+  toUserId   String
+  toUser     User     @relation("UserKudos", fields: [toUserId], references: [id])
   fromUserId String
-  fromUser  User     @relation("UserKudosGiven", fields: [fromUserId], references: [id])
-  message   String
-  createdAt DateTime @default(now())
-  
+  fromUser   User     @relation("UserKudosGiven", fields: [fromUserId], references: [id])
+  message    String
+  createdAt  DateTime @default(now())
+
   // Smart kudos tracking
-  category  String?              // Kudos category
-  impact    Int @default(3)      // Impact score 1-5
-  
+  category String? // Kudos category
+  impact   Int     @default(3) // Impact score 1-5
+
   @@index([toUserId])
   @@index([fromUserId])
   @@index([category])
@@ -602,7 +603,7 @@ model AuditEvent {
   action    String
   payload   Json
   createdAt DateTime @default(now())
-  
+
   @@index([actorId])
   @@index([entity])
   @@index([createdAt])
@@ -617,18 +618,18 @@ model Account {
   userId    String   @unique
   user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
-  
+
   // Enhanced authentication
-  isActive  Boolean @default(true)
-  lastLogin DateTime?
-  loginAttempts Int @default(0)
-  lockedUntil DateTime?
-  mfaEnabled Boolean @default(false)
-  mfaSecret  String?
-  
+  isActive      Boolean   @default(true)
+  lastLogin     DateTime?
+  loginAttempts Int       @default(0)
+  lockedUntil   DateTime?
+  mfaEnabled    Boolean   @default(false)
+  mfaSecret     String?
+
   // Session management
-  sessions  Session[]
-  
+  sessions Session[]
+
   @@index([email])
   @@index([isActive])
   @@index([lastLogin])
@@ -646,7 +647,7 @@ model Session {
   userAgent String?
   createdAt DateTime @default(now())
   lastUsed  DateTime @default(now())
-  
+
   @@index([accountId])
   @@index([token])
   @@index([expiresAt])
@@ -657,13 +658,13 @@ model Permission {
   id          String   @id @default(cuid())
   name        String   @unique
   description String
-  resource    String   // e.g., "project", "user", "equity"
-  action      String   // e.g., "read", "write", "delete", "admin"
+  resource    String // e.g., "project", "user", "equity"
+  action      String // e.g., "read", "write", "delete", "admin"
   createdAt   DateTime @default(now())
-  
+
   // RBAC relations
   rolePermissions RolePermission[]
-  
+
   @@index([resource])
   @@index([action])
 }
@@ -677,7 +678,7 @@ model RolePermission {
   permission   Permission @relation(fields: [permissionId], references: [id])
   grantedAt    DateTime   @default(now())
   grantedBy    String?
-  
+
   @@unique([roleId, permissionId])
   @@index([roleId])
   @@index([permissionId])
@@ -688,14 +689,14 @@ model Role {
   id          String   @id @default(cuid())
   name        String   @unique
   description String
-  level       Int      // Hierarchy level (higher = more permissions)
+  level       Int // Hierarchy level (higher = more permissions)
   isSystem    Boolean  @default(false) // System roles cannot be deleted
   createdAt   DateTime @default(now())
-  
+
   // Relations
-  accounts    Account[]
+  accounts        Account[]
   rolePermissions RolePermission[]
-  
+
   @@index([level])
   @@index([isSystem])
 }
@@ -730,15 +731,15 @@ model ProjectMember {
   userId    String
   role      ProjectRole @default(MEMBER)
   createdAt DateTime    @default(now())
-  
+
   // Smart membership tracking
-  isActive  Boolean @default(true)
-  lastContribution DateTime?
-  totalContributions Int @default(0)
-  
-  project   Project     @relation(fields: [projectId], references: [id])
-  user      User        @relation(fields: [userId], references: [id])
-  
+  isActive           Boolean   @default(true)
+  lastContribution   DateTime?
+  totalContributions Int       @default(0)
+
+  project Project @relation(fields: [projectId], references: [id])
+  user    User    @relation(fields: [userId], references: [id])
+
   @@unique([projectId, userId])
   @@index([projectId])
   @@index([userId])
@@ -758,8 +759,8 @@ model ProjectVisibility {
   tasksHubVisible   Boolean @default(false)
   ideasHubVisible   Boolean @default(true)
   pollsHubVisible   Boolean @default(true)
-  
-  project           Project @relation(fields: [projectId], references: [id])
+
+  project Project @relation(fields: [projectId], references: [id])
 }
 
 model Notification {
@@ -769,14 +770,14 @@ model Notification {
   payload   Json
   read      Boolean  @default(false)
   createdAt DateTime @default(now())
-  
+
   // Smart notification features
-  priority  Int @default(3)      // Priority 1-5
+  priority  Int       @default(3) // Priority 1-5
   expiresAt DateTime?
-  actionUrl String?              // URL to take action
-  
-  user      User     @relation(fields: [userId], references: [id])
-  
+  actionUrl String? // URL to take action
+
+  user User @relation(fields: [userId], references: [id])
+
   @@index([userId, read])
   @@index([createdAt])
   @@index([priority])
@@ -784,15 +785,15 @@ model Notification {
 
 // New model for smart user activity tracking
 model UserActivity {
-  id          String   @id @default(cuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id])
-  type        String   // e.g., "login", "contribution", "idea", "poll"
-  entity      String?  // Related entity ID
-  entityType  String?  // Type of entity
-  data        Json     // Flexible data storage
-  createdAt   DateTime @default(now())
-  
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  type       String // e.g., "login", "contribution", "idea", "poll"
+  entity     String? // Related entity ID
+  entityType String? // Type of entity
+  data       Json // Flexible data storage
+  createdAt  DateTime @default(now())
+
   @@index([userId])
   @@index([type])
   @@index([createdAt])
@@ -801,25 +802,25 @@ model UserActivity {
 // Enhanced Mesh and Community features
 
 model MeshItem {
-  id          String      @id @default(cuid())
+  id          String       @id @default(cuid())
   type        MeshItemType
   title       String
   description String
   authorId    String
-  author      User        @relation("MeshItemAuthor", fields: [authorId], references: [id])
+  author      User         @relation("MeshItemAuthor", fields: [authorId], references: [id])
   projectId   String?
-  project     Project?    @relation("MeshItemProject", fields: [projectId], references: [id])
+  project     Project?     @relation("MeshItemProject", fields: [projectId], references: [id])
   priority    MeshPriority @default(MEDIUM)
   metadata    Json?
-  createdAt   DateTime    @default(now())
-  
+  createdAt   DateTime     @default(now())
+
   // Smart mesh features
-  impact      Int @default(3)      // Impact score 1-5
-  urgency     Int @default(3)      // Urgency score 1-5
-  tags        String[]             // Flexible tags
-  
-  reactions   MeshReaction[]
-  
+  impact  Int      @default(3) // Impact score 1-5
+  urgency Int      @default(3) // Urgency score 1-5
+  tags    String[] // Flexible tags
+
+  reactions MeshReaction[]
+
   @@index([authorId])
   @@index([projectId])
   @@index([type])
@@ -846,14 +847,14 @@ enum MeshPriority {
 }
 
 model MeshReaction {
-  id        String   @id @default(cuid())
+  id         String   @id @default(cuid())
   meshItemId String
-  meshItem  MeshItem @relation(fields: [meshItemId], references: [id])
-  userId    String
-  user      User     @relation("UserMeshReactions", fields: [userId], references: [id])
-  emoji     String
-  createdAt DateTime @default(now())
-  
+  meshItem   MeshItem @relation(fields: [meshItemId], references: [id])
+  userId     String
+  user       User     @relation("UserMeshReactions", fields: [userId], references: [id])
+  emoji      String
+  createdAt  DateTime @default(now())
+
   @@unique([meshItemId, userId, emoji])
   @@index([meshItemId])
   @@index([userId])
@@ -864,14 +865,14 @@ model Badge {
   name        String   @unique
   description String
   icon        String
-  condition   String   // JSON string describing how to earn
+  condition   String // JSON string describing how to earn
   createdAt   DateTime @default(now())
-  
+
   // Smart badge features
-  category    String?              // Badge category
-  rarity      BadgeRarity @default(COMMON) // Badge rarity
-  
-  userBadges  UserBadge[]
+  category String? // Badge category
+  rarity   BadgeRarity @default(COMMON) // Badge rarity
+
+  userBadges UserBadge[]
 }
 
 enum BadgeRarity {
@@ -887,10 +888,10 @@ model UserBadge {
   userId   String
   badgeId  String
   earnedAt DateTime @default(now())
-  
-  user     User     @relation(fields: [userId], references: [id])
-  badge    Badge    @relation(fields: [badgeId], references: [id])
-  
+
+  user  User  @relation(fields: [userId], references: [id])
+  badge Badge @relation(fields: [badgeId], references: [id])
+
   @@unique([userId, badgeId])
   @@index([userId])
   @@index([badgeId])
@@ -902,28 +903,29 @@ model Skill {
   category    String
   description String?
   createdAt   DateTime @default(now())
-  
+
   // Smart skill features
-  demand      Int @default(3)      // Market demand 1-5
-  complexity  Int @default(3)      // Skill complexity 1-5
-  
+  demand     Int @default(3) // Market demand 1-5
+  complexity Int @default(3) // Skill complexity 1-5
+
   userSkills  UserSkill[]
+  Endorsement Endorsement[]
 }
 
 model UserSkill {
-  id       String   @id @default(cuid())
-  userId   String
-  skillId  String
-  level    Int      @default(1) // 1-5 scale
+  id        String   @id @default(cuid())
+  userId    String
+  skillId   String
+  level     Int      @default(1) // 1-5 scale
   createdAt DateTime @default(now())
-  
+
   // Smart skill tracking
-  verified   Boolean @default(false) // Skill verification
-  endorsements Int @default(0)      // Number of endorsements
-  
-  user     User     @relation(fields: [userId], references: [id])
-  skill    Skill    @relation(fields: [skillId], references: [id])
-  
+  verified     Boolean @default(false) // Skill verification
+  endorsements Int     @default(0) // Number of endorsements
+
+  user  User  @relation(fields: [userId], references: [id])
+  skill Skill @relation(fields: [skillId], references: [id])
+
   @@unique([userId, skillId])
   @@index([userId])
   @@index([skillId])
@@ -937,27 +939,63 @@ model SystemSetting {
   value       String
   description String?
   updatedAt   DateTime @updatedAt
-  
+
   @@unique([category, key])
   @@index([category])
 }
 
-model CommunityInsight {
+// ---------- GAMIFICATION & COMMUNITY ----------
+model Endorsement {
+  id         String   @id @default(cuid())
+  endorserId String
+  endorser   User     @relation("Endorser", fields: [endorserId], references: [id], onDelete: Cascade)
+  endorsedId String
+  endorsed   User     @relation("Endorsed", fields: [endorsedId], references: [id], onDelete: Cascade)
+  skillId    String?
+  skill      Skill?   @relation(fields: [skillId], references: [id])
+  weight     Int      @default(1) // 1..5 trust-weighted
+  note       String?  @db.VarChar(200)
+  createdAt  DateTime @default(now())
+
+  @@index([endorsedId])
+}
+
+// Artifacts already exist (File). These connect files to portfolio.
+model PortfolioItem {
   id          String   @id @default(cuid())
-  type        InsightType
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   title       String
-  description String
-  priority    Int
-  confidence  Float
-  actionItems Json
-  relevantUsers Json
+  summary     String?  @db.VarChar(300)
+  fileId      String? // optional linked artifact
+  file        File?    @relation(fields: [fileId], references: [id])
+  externalUrl String?  @db.VarChar(300)
+  taskId      String? // provenance to Task
+  // BUZ/quality overlays for visuals
+  buzEarned   Int      @default(0)
+  impactScore Int      @default(0)
   createdAt   DateTime @default(now())
-  expiresAt   DateTime?
-  
+  updatedAt   DateTime @updatedAt
+  isPublic    Boolean  @default(true)
+  Task        Task?    @relation(fields: [taskId], references: [id])
+}
+
+model CommunityInsight {
+  id            String      @id @default(cuid())
+  type          InsightType
+  title         String
+  description   String
+  priority      Int
+  confidence    Float
+  actionItems   Json
+  relevantUsers Json
+  createdAt     DateTime    @default(now())
+  expiresAt     DateTime?
+
   // Smart insight features
-  impact      Int @default(3)      // Impact score 1-5
-  category    String?              // Insight category
-  
+  impact   Int     @default(3) // Impact score 1-5
+  category String? // Insight category
+
   @@index([type])
   @@index([priority])
   @@index([createdAt])
@@ -975,45 +1013,45 @@ enum InsightType {
 
 // Smart contract offers between users and projects
 model ContractOffer {
-  id              String   @id @default(cuid())
-  projectId       String
-  project         Project  @relation("ContractOfferProject", fields: [projectId], references: [id])
-  recipientId     String
-  recipient       User     @relation("ContractOfferRecipient", fields: [recipientId], references: [id])
-  
+  id          String  @id @default(cuid())
+  projectId   String
+  project     Project @relation("ContractOfferProject", fields: [projectId], references: [id])
+  recipientId String
+  recipient   User    @relation("ContractOfferRecipient", fields: [recipientId], references: [id])
+
   // Contract terms
-  equityPercentage Float   // Equity offered (0.5% - 5%)
-  vestingSchedule  VestingSchedule @default(IMMEDIATE)
+  equityPercentage Float // Equity offered (0.5% - 5%)
+  vestingSchedule  VestingSchedule  @default(IMMEDIATE)
   contributionType ContributionType
-  effortRequired   Int     // Hours required
-  impactExpected   Int     // Expected impact 1-5
-  
+  effortRequired   Int // Hours required
+  impactExpected   Int // Expected impact 1-5
+
   // Contract status
-  status          ContractStatus @default(PENDING)
-  expiresAt       DateTime // When offer expires
-  acceptedAt      DateTime?
-  rejectedAt      DateTime?
-  
+  status     ContractStatus @default(PENDING)
+  expiresAt  DateTime // When offer expires
+  acceptedAt DateTime?
+  rejectedAt DateTime?
+
   // Contract details
-  terms           String   // Contract terms and conditions
-  deliverables    String[] // What needs to be delivered
-  milestones      String[] // Key milestones
-  
+  terms        String // Contract terms and conditions
+  deliverables String[] // What needs to be delivered
+  milestones   String[] // Key milestones
+
   // Legal compliance
-  contractVersion String @default("v1.0")
-  jurisdiction    String @default("CA") // Legal jurisdiction
-  governingLaw    String @default("Ontario, Canada")
+  contractVersion   String @default("v1.0")
+  jurisdiction      String @default("CA") // Legal jurisdiction
+  governingLaw      String @default("Ontario, Canada")
   disputeResolution String @default("Arbitration")
-  
+
   // Metadata
-  createdBy       String   // Who created the offer
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  
+  createdBy String // Who created the offer
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   // Relations
-  signatures      ContractSignature[]
-  equityVesting   EquityVesting[]
-  
+  signatures    ContractSignature[]
+  equityVesting EquityVesting[]
+
   @@index([projectId])
   @@index([recipientId])
   @@index([status])
@@ -1024,24 +1062,24 @@ model ContractOffer {
 
 // Contract signatures for legal compliance
 model ContractSignature {
-  id              String   @id @default(cuid())
-  contractId      String
-  contract        ContractOffer @relation(fields: [contractId], references: [id])
-  signerId        String
-  signer          User     @relation("ContractSignatureSigner", fields: [signerId], references: [id])
-  projectId       String
-  project         Project  @relation("ContractSignatureProject", fields: [projectId], references: [id])
-  
+  id         String        @id @default(cuid())
+  contractId String
+  contract   ContractOffer @relation(fields: [contractId], references: [id])
+  signerId   String
+  signer     User          @relation("ContractSignatureSigner", fields: [signerId], references: [id])
+  projectId  String
+  project    Project       @relation("ContractSignatureProject", fields: [projectId], references: [id])
+
   // Signature details
-  signatureHash   String   // Hash of signed content
-  signedAt        DateTime @default(now())
-  ipAddress       String?  // IP address of signer
-  userAgent       String?  // Browser/device info
-  
+  signatureHash String // Hash of signed content
+  signedAt      DateTime @default(now())
+  ipAddress     String? // IP address of signer
+  userAgent     String? // Browser/device info
+
   // Legal compliance
-  termsAccepted   Boolean  @default(false)
-  privacyAccepted Boolean  @default(false)
-  
+  termsAccepted   Boolean @default(false)
+  privacyAccepted Boolean @default(false)
+
   @@index([contractId])
   @@index([signerId])
   @@index([projectId])
@@ -1050,25 +1088,25 @@ model ContractSignature {
 
 // Equity vesting schedules
 model EquityVesting {
-  id              String   @id @default(cuid())
-  contractId      String
-  contract        ContractOffer @relation(fields: [contractId], references: [id])
-  beneficiaryId   String
-  beneficiary     User     @relation("EquityVestingBeneficiary", fields: [beneficiaryId], references: [id])
-  projectId       String
-  project         Project  @relation("EquityVestingProject", fields: [projectId], references: [id])
-  
+  id            String        @id @default(cuid())
+  contractId    String
+  contract      ContractOffer @relation(fields: [contractId], references: [id])
+  beneficiaryId String
+  beneficiary   User          @relation("EquityVestingBeneficiary", fields: [beneficiaryId], references: [id])
+  projectId     String
+  project       Project       @relation("EquityVestingProject", fields: [projectId], references: [id])
+
   // Vesting details
-  totalEquity     Float    // Total equity to be vested
-  vestedEquity    Float    @default(0) // Currently vested equity
+  totalEquity     Float // Total equity to be vested
+  vestedEquity    Float           @default(0) // Currently vested equity
   vestingSchedule VestingSchedule
   vestingStart    DateTime // When vesting begins
   vestingEnd      DateTime // When vesting completes
-  
+
   // Vesting milestones
-  cliffDate       DateTime? // Cliff date if applicable
-  vestingEvents  VestingEvent[]
-  
+  cliffDate     DateTime? // Cliff date if applicable
+  vestingEvents VestingEvent[]
+
   @@index([contractId])
   @@index([beneficiaryId])
   @@index([projectId])
@@ -1078,15 +1116,15 @@ model EquityVesting {
 
 // Individual vesting events
 model VestingEvent {
-  id              String   @id @default(cuid())
-  vestingId       String
-  vesting         EquityVesting @relation(fields: [vestingId], references: [id])
-  
+  id        String        @id @default(cuid())
+  vestingId String
+  vesting   EquityVesting @relation(fields: [vestingId], references: [id])
+
   // Event details
-  equityAmount    Float    // Equity vested in this event
-  vestingDate     DateTime // When this equity vested
-  eventType       VestingEventType
-  
+  equityAmount Float // Equity vested in this event
+  vestingDate  DateTime // When this equity vested
+  eventType    VestingEventType
+
   @@index([vestingId])
   @@index([vestingDate])
 }
@@ -1095,42 +1133,42 @@ model VestingEvent {
 
 // Legal entity registration and management
 model LegalEntity {
-  id              String   @id @default(cuid())
-  name            String   // Legal entity name
-  type            LegalEntityType
-  jurisdiction    String   // Country/state of incorporation
-  
+  id           String          @id @default(cuid())
+  name         String // Legal entity name
+  type         LegalEntityType
+  jurisdiction String // Country/state of incorporation
+
   // Registration details
   registrationNumber String? // Government registration number
-  taxId           String?   // Tax identification number
-  incorporationDate DateTime?
-  
+  taxId              String? // Tax identification number
+  incorporationDate  DateTime?
+
   // Legal structure
-  legalForm       String   // Corporation, LLC, Cooperative, etc.
+  legalForm          String // Corporation, LLC, Cooperative, etc.
   ownershipStructure String // How ownership is structured
-  governanceModel String   // How decisions are made
-  
+  governanceModel    String // How decisions are made
+
   // Contact information
   registeredAddress String?
-  mailingAddress  String?
-  phone           String?
-  email           String?
-  
+  mailingAddress    String?
+  phone             String?
+  email             String?
+
   // Compliance
-  complianceStatus ComplianceStatus @default(PENDING)
+  complianceStatus    ComplianceStatus @default(PENDING)
   lastComplianceCheck DateTime?
-  complianceNotes String?
-  
+  complianceNotes     String?
+
   // Relations
-  projects        Project[] @relation("ProjectLegalEntity")
-  members         LegalEntityMember[]
-  documents       LegalDocument[]
-  coops           StartupCoop[] @relation("CoopLegalEntity")
-  
+  projects  Project[]           @relation("ProjectLegalEntity")
+  members   LegalEntityMember[]
+  documents LegalDocument[]
+  coops     StartupCoop[]       @relation("CoopLegalEntity")
+
   // Metadata
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([type])
   @@index([jurisdiction])
   @@index([complianceStatus])
@@ -1138,27 +1176,27 @@ model LegalEntity {
 
 // Legal entity membership
 model LegalEntityMember {
-  id              String   @id @default(cuid())
-  entityId        String
-  entity          LegalEntity @relation(fields: [entityId], references: [id])
-  userId          String
-  user            User     @relation("LegalEntityMembership", fields: [userId], references: [id])
-  
+  id       String      @id @default(cuid())
+  entityId String
+  entity   LegalEntity @relation(fields: [entityId], references: [id])
+  userId   String
+  user     User        @relation("LegalEntityMembership", fields: [userId], references: [id])
+
   // Role and rights
-  role            LegalEntityRole
-  votingRights    Boolean @default(false)
-  ownershipPercentage Float @default(0)
-  
+  role                LegalEntityRole
+  votingRights        Boolean         @default(false)
+  ownershipPercentage Float           @default(0)
+
   // Membership details
-  joinedAt        DateTime @default(now())
-  leftAt          DateTime?
-  isActive        Boolean @default(true)
-  
+  joinedAt DateTime  @default(now())
+  leftAt   DateTime?
+  isActive Boolean   @default(true)
+
   // Legal compliance
   identityVerified Boolean @default(false)
-  kycCompleted    Boolean @default(false)
-  termsAccepted   Boolean @default(false)
-  
+  kycCompleted     Boolean @default(false)
+  termsAccepted    Boolean @default(false)
+
   @@unique([entityId, userId])
   @@index([entityId])
   @@index([userId])
@@ -1167,36 +1205,36 @@ model LegalEntityMember {
 
 // Legal documents and contracts
 model LegalDocument {
-  id              String   @id @default(cuid())
-  entityId        String?
-  entity          LegalEntity? @relation(fields: [entityId], references: [id])
-  projectId       String?
-  project         Project? @relation("ProjectLegalDocuments", fields: [projectId], references: [id])
-  
+  id        String       @id @default(cuid())
+  entityId  String?
+  entity    LegalEntity? @relation(fields: [entityId], references: [id])
+  projectId String?
+  project   Project?     @relation("ProjectLegalDocuments", fields: [projectId], references: [id])
+
   // Document details
-  title           String
-  type            LegalDocumentType
-  content         String   // Document content or file reference
-  version         String   @default("1.0")
-  
+  title   String
+  type    LegalDocumentType
+  content String // Document content or file reference
+  version String            @default("1.0")
+
   // Legal status
-  status          LegalDocumentStatus @default(DRAFT)
-  effectiveDate   DateTime?
-  expiryDate      DateTime?
-  
+  status        LegalDocumentStatus @default(DRAFT)
+  effectiveDate DateTime?
+  expiryDate    DateTime?
+
   // Compliance
-  requiresSignature Boolean @default(false)
-  signatureDeadline DateTime?
-  complianceRequired Boolean @default(false)
-  
+  requiresSignature  Boolean   @default(false)
+  signatureDeadline  DateTime?
+  complianceRequired Boolean   @default(false)
+
   // Metadata
-  createdBy       String
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  
+  createdBy String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   // Relations
-  signatures      LegalDocumentSignature[]
-  
+  signatures LegalDocumentSignature[]
+
   @@index([entityId])
   @@index([projectId])
   @@index([type])
@@ -1206,23 +1244,23 @@ model LegalDocument {
 
 // Legal document signatures
 model LegalDocumentSignature {
-  id              String   @id @default(cuid())
-  documentId      String
-  document        LegalDocument @relation(fields: [documentId], references: [id])
-  signerId        String
-  signer          User     @relation("LegalDocumentSigner", fields: [signerId], references: [id])
-  
+  id         String        @id @default(cuid())
+  documentId String
+  document   LegalDocument @relation(fields: [documentId], references: [id])
+  signerId   String
+  signer     User          @relation("LegalDocumentSigner", fields: [signerId], references: [id])
+
   // Signature details
-  signatureHash   String   // Hash of signed content
-  signedAt        DateTime @default(now())
-  ipAddress       String?  // IP address of signer
-  userAgent       String?  // Browser/device info
-  
+  signatureHash String // Hash of signed content
+  signedAt      DateTime @default(now())
+  ipAddress     String? // IP address of signer
+  userAgent     String? // Browser/device info
+
   // Legal compliance
-  termsAccepted   Boolean @default(false)
-  privacyAccepted Boolean @default(false)
+  termsAccepted    Boolean @default(false)
+  privacyAccepted  Boolean @default(false)
   identityVerified Boolean @default(false)
-  
+
   @@index([documentId])
   @@index([signerId])
   @@index([signedAt])
@@ -1230,39 +1268,39 @@ model LegalDocumentSignature {
 
 // Startup cooperative governance
 model StartupCoop {
-  id              String   @id @default(cuid())
-  name            String   // Cooperative name
-  description     String?
-  
+  id          String  @id @default(cuid())
+  name        String // Cooperative name
+  description String?
+
   // Cooperative structure
   type            CoopType
   governanceModel CoopGovernanceModel
   decisionMaking  CoopDecisionMaking
-  
+
   // Membership
-  minMembers      Int @default(3)
-  maxMembers      Int?
-  currentMembers  Int @default(0)
-  
+  minMembers     Int  @default(3)
+  maxMembers     Int?
+  currentMembers Int  @default(0)
+
   // Financial structure
-  membershipFee   Float @default(0)
-  monthlyDues     Float @default(0)
-  profitSharing   Boolean @default(true)
-  
+  membershipFee Float   @default(0)
+  monthlyDues   Float   @default(0)
+  profitSharing Boolean @default(true)
+
   // Legal compliance
-  legalEntityId   String?
-  legalEntity     LegalEntity? @relation("CoopLegalEntity", fields: [legalEntityId], references: [id])
+  legalEntityId    String?
+  legalEntity      LegalEntity?     @relation("CoopLegalEntity", fields: [legalEntityId], references: [id])
   complianceStatus ComplianceStatus @default(PENDING)
-  
+
   // Relations
-  projects        Project[] @relation("ProjectCoop")
-  members         CoopMember[]
-  governance      CoopGovernance[]
-  
+  projects   Project[]        @relation("ProjectCoop")
+  members    CoopMember[]
+  governance CoopGovernance[]
+
   // Metadata
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([type])
   @@index([governanceModel])
   @@index([complianceStatus])
@@ -1270,30 +1308,30 @@ model StartupCoop {
 
 // Cooperative membership
 model CoopMember {
-  id              String   @id @default(cuid())
-  coopId          String
-  coop            StartupCoop @relation(fields: [coopId], references: [id])
-  userId          String
-  user            User     @relation("CoopMembership", fields: [userId], references: [id])
-  
+  id     String      @id @default(cuid())
+  coopId String
+  coop   StartupCoop @relation(fields: [coopId], references: [id])
+  userId String
+  user   User        @relation("CoopMembership", fields: [userId], references: [id])
+
   // Membership details
-  role            CoopMemberRole
-  joinedAt        DateTime @default(now())
-  leftAt          DateTime?
-  isActive        Boolean @default(true)
-  
+  role     CoopMemberRole
+  joinedAt DateTime       @default(now())
+  leftAt   DateTime?
+  isActive Boolean        @default(true)
+
   // Voting and governance
-  votingShares    Int @default(1)
-  votingRights    Boolean @default(true)
-  
+  votingShares Int     @default(1)
+  votingRights Boolean @default(true)
+
   // Financial
-  membershipFee   Float @default(0)
-  monthlyDues     Float @default(0)
-  profitShare     Float @default(0)
-  
+  membershipFee Float @default(0)
+  monthlyDues   Float @default(0)
+  profitShare   Float @default(0)
+
   // Relations
   governanceVotes CoopGovernanceVote[] @relation("GovernanceVote")
-  
+
   @@unique([coopId, userId])
   @@index([coopId])
   @@index([userId])
@@ -1302,40 +1340,40 @@ model CoopMember {
 
 // Cooperative governance decisions
 model CoopGovernance {
-  id              String   @id @default(cuid())
-  coopId          String
-  coop            StartupCoop @relation(fields: [coopId], references: [id])
-  
+  id     String      @id @default(cuid())
+  coopId String
+  coop   StartupCoop @relation(fields: [coopId], references: [id])
+
   // Decision details
-  title           String
-  description     String
-  type            GovernanceDecisionType
-  status          GovernanceStatus @default(PROPOSED)
-  
+  title       String
+  description String
+  type        GovernanceDecisionType
+  status      GovernanceStatus       @default(PROPOSED)
+
   // Voting
-  requiresVote    Boolean @default(true)
-  votingDeadline  DateTime?
-  quorumRequired  Int @default(51) // Percentage required
-  
+  requiresVote   Boolean   @default(true)
+  votingDeadline DateTime?
+  quorumRequired Int       @default(51) // Percentage required
+
   // Results
-  votesFor        Int @default(0)
-  votesAgainst    Int @default(0)
-  votesAbstain    Int @default(0)
-  totalVotes      Int @default(0)
-  
+  votesFor     Int @default(0)
+  votesAgainst Int @default(0)
+  votesAbstain Int @default(0)
+  totalVotes   Int @default(0)
+
   // Implementation
-  proposedBy      String
-  approvedBy      String?
-  approvedAt      DateTime?
-  effectiveDate   DateTime?
-  
+  proposedBy    String
+  approvedBy    String?
+  approvedAt    DateTime?
+  effectiveDate DateTime?
+
   // Metadata
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   // Relations
-  votes           CoopGovernanceVote[]
-  
+  votes CoopGovernanceVote[]
+
   @@index([coopId])
   @@index([type])
   @@index([status])
@@ -1344,57 +1382,55 @@ model CoopGovernance {
 
 // Cooperative governance votes
 model CoopGovernanceVote {
-  id              String   @id @default(cuid())
-  governanceId    String
-  governance      CoopGovernance @relation(fields: [governanceId], references: [id])
-  memberId        String
-  member          CoopMember @relation("GovernanceVote", fields: [memberId], references: [id])
-  
+  id           String         @id @default(cuid())
+  governanceId String
+  governance   CoopGovernance @relation(fields: [governanceId], references: [id])
+  memberId     String
+  member       CoopMember     @relation("GovernanceVote", fields: [memberId], references: [id])
+
   // Vote details
-  vote            VoteType
-  votingShares    Int @default(1)
-  votedAt         DateTime @default(now())
-  
+  vote         VoteType
+  votingShares Int      @default(1)
+  votedAt      DateTime @default(now())
+
   // Optional
-  comments        String?
-  
+  comments String?
+
   @@unique([governanceId, memberId])
   @@index([governanceId])
   @@index([memberId])
   @@index([vote])
 }
 
-
-
 // Regulatory compliance tracking
 model ComplianceRecord {
-  id              String   @id @default(cuid())
-  entityId        String?  // Legal entity or project
-  entityType      String   // "LEGAL_ENTITY", "PROJECT", "COOP"
-  
+  id         String  @id @default(cuid())
+  entityId   String? // Legal entity or project
+  entityType String // "LEGAL_ENTITY", "PROJECT", "COOP"
+
   // Compliance details
-  regulation      String   // Regulation name/code
-  requirement     String   // Specific requirement
-  status          ComplianceStatus @default(PENDING)
-  
+  regulation  String // Regulation name/code
+  requirement String // Specific requirement
+  status      ComplianceStatus @default(PENDING)
+
   // Deadlines and tracking
-  dueDate         DateTime?
-  completedAt     DateTime?
-  nextReviewDate  DateTime?
-  
+  dueDate        DateTime?
+  completedAt    DateTime?
+  nextReviewDate DateTime?
+
   // Documentation
-  evidence        String?  // Evidence of compliance
-  notes           String?
-  
+  evidence String? // Evidence of compliance
+  notes    String?
+
   // Audit
-  reviewedBy      String?
-  reviewedAt      DateTime?
-  reviewNotes     String?
-  
+  reviewedBy  String?
+  reviewedAt  DateTime?
+  reviewNotes String?
+
   // Metadata
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([entityId])
   @@index([entityType])
   @@index([regulation])
@@ -1404,47 +1440,47 @@ model ComplianceRecord {
 
 // Enhanced enums for new functionality
 enum EquityModel {
-  DYNAMIC    // Equity based on contribution value
-  FIXED      // Fixed equity amounts
-  HYBRID     // Combination of fixed and dynamic
+  DYNAMIC // Equity based on contribution value
+  FIXED // Fixed equity amounts
+  HYBRID // Combination of fixed and dynamic
 }
 
 enum VestingSchedule {
-  IMMEDIATE  // Equity vests immediately
-  MONTHLY    // Monthly vesting over time
-  QUARTERLY  // Quarterly vesting
-  ANNUAL     // Annual vesting
-  MILESTONE  // Vesting based on milestones
-  CLIFF      // Cliff vesting with delay
+  IMMEDIATE // Equity vests immediately
+  MONTHLY // Monthly vesting over time
+  QUARTERLY // Quarterly vesting
+  ANNUAL // Annual vesting
+  MILESTONE // Vesting based on milestones
+  CLIFF // Cliff vesting with delay
 }
 
 enum ContributionType {
-  CODE        // Software development
-  DESIGN      // UI/UX design
-  GROWTH      // Marketing and growth
-  OPS         // Operations and management
-  SALES       // Sales and business development
-  LEGAL       // Legal and compliance
-  FINANCE     // Financial planning
-  STRATEGY    // Strategic planning
-  RESEARCH    // Research and development
-  OTHER       // Other contributions
+  CODE // Software development
+  DESIGN // UI/UX design
+  GROWTH // Marketing and growth
+  OPS // Operations and management
+  SALES // Sales and business development
+  LEGAL // Legal and compliance
+  FINANCE // Financial planning
+  STRATEGY // Strategic planning
+  RESEARCH // Research and development
+  OTHER // Other contributions
 }
 
 enum ContractStatus {
-  DRAFT       // Contract is being drafted
-  PENDING     // Waiting for recipient response
-  ACCEPTED    // Contract accepted
-  REJECTED    // Contract rejected
-  EXPIRED     // Contract expired
-  COMPLETED   // Contract completed
-  TERMINATED  // Contract terminated
+  DRAFT // Contract is being drafted
+  PENDING // Waiting for recipient response
+  ACCEPTED // Contract accepted
+  REJECTED // Contract rejected
+  EXPIRED // Contract expired
+  COMPLETED // Contract completed
+  TERMINATED // Contract terminated
 }
 
 enum VestingEventType {
-  INITIAL     // Initial vesting
-  MILESTONE   // Milestone-based vesting
-  TIME_BASED  // Time-based vesting
+  INITIAL // Initial vesting
+  MILESTONE // Milestone-based vesting
+  TIME_BASED // Time-based vesting
   PERFORMANCE // Performance-based vesting
   ACCELERATION // Accelerated vesting
 }
@@ -1568,117 +1604,41 @@ enum ComplianceStatus {
 
 // ---------- GAMIFICATION & COMMUNITY ----------
 model UserProfile {
-  id             String   @id @default(cuid())
-  userId         String   @unique
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  nickname       String   @db.VarChar(40)
-  avatarFileId   String?  // -> File.id (S3/Render)
-  avatarFile     File?    @relation(fields: [avatarFileId], references: [id])
-  theme          String   @default("auto") // "auto" | "light" | "dark" | custom token set id
-  bio            String?  @db.VarChar(280)
-  location       String?  @db.VarChar(80)
-  websiteUrl     String?  @db.VarChar(200)
-  // Visual reputation surface
-  level          Int      @default(1)
-  xp             Int      @default(0)       // bounded; rolls-up to level
-  repScore       Int      @default(0)       // long-term reputation (decays)
-  // Portfolio publicness
-  isPublic       Boolean  @default(true)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  @@index([repScore, level])
-}
-
-model Skill {
-  id        String   @id @default(cuid())
-  slug      String   @unique
-  name      String   @db.VarChar(60)
-  category  String   @db.VarChar(40) // e.g., "frontend", "security", "ops"
-  createdAt DateTime @default(now())
-}
-
-model UserSkill {
-  id         String   @id @default(cuid())
-  userId     String
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  skillId    String
-  skill      Skill    @relation(fields: [skillId], references: [id], onDelete: Restrict)
-  level      Int      @default(1) // 1..5 (self-declared)
-  verifiedBy String?            // User.id who verified
-  verifiedAt DateTime?
-  evidenceUrl String? @db.VarChar(300)
-  createdAt  DateTime @default(now())
-  @@unique([userId, skillId])
-}
-
-model Badge {
-  id          String   @id @default(cuid())
-  code        String   @unique // e.g., "EARLY_CONTRIBUTOR", "BUG_HUNTER_BRONZE"
-  title       String
-  description String
-  icon        String   // icon key
-  // Awarding rule reference:
-  ruleType    String   // "THRESHOLD" | "COMPOSITE" | "MANUAL"
-  ruleJson    Json?    // conditions (e.g., {xp>=1000, reviews>=10})
-  createdAt   DateTime @default(now())
-}
-
-model UserBadge {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  badgeId   String
-  badge     Badge    @relation(fields: [badgeId], references: [id], onDelete: Restrict)
-  awardedAt DateTime @default(now())
-  context   Json?
-  @@unique([userId, badgeId])
-}
-
-model Endorsement {
   id           String   @id @default(cuid())
-  endorserId   String
-  endorser     User     @relation("Endorser", fields: [endorserId], references: [id], onDelete: Cascade)
-  endorsedId   String
-  endorsed     User     @relation("Endorsed", fields: [endorsedId], references: [id], onDelete: Cascade)
-  skillId      String?
-  skill        Skill?   @relation(fields: [skillId], references: [id])
-  weight       Int      @default(1) // 1..5 trust-weighted
-  note         String?  @db.VarChar(200)
-  createdAt    DateTime @default(now())
-  @@index([endorsedId])
-}
-
-// Artifacts already exist (File). These connect files to portfolio.
-model PortfolioItem {
-  id           String   @id @default(cuid())
-  userId       String
+  userId       String   @unique
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  title        String
-  summary      String?  @db.VarChar(300)
-  fileId       String?  // optional linked artifact
-  file         File?    @relation(fields: [fileId], references: [id])
-  externalUrl  String?  @db.VarChar(300)
-  taskId       String?  // provenance to Task
-  // BUZ/quality overlays for visuals
-  buzEarned    Int      @default(0)
-  impactScore  Int      @default(0)
+  nickname     String   @db.VarChar(40)
+  avatarFileId String? // -> File.id (S3/Render)
+  avatarFile   File?    @relation(fields: [avatarFileId], references: [id])
+  theme        String   @default("auto") // "auto" | "light" | "dark" | custom token set id
+  bio          String?  @db.VarChar(280)
+  location     String?  @db.VarChar(80)
+  websiteUrl   String?  @db.VarChar(200)
+  // Visual reputation surface
+  level        Int      @default(1)
+  xp           Int      @default(0) // bounded; rolls-up to level
+  repScore     Int      @default(0) // long-term reputation (decays)
+  // Portfolio publicness
+  isPublic     Boolean  @default(true)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
-  isPublic     Boolean  @default(true)
+
+  @@index([repScore, level])
 }
 
 // ---------- WALLET & LEDGER (BUZ + Fiat accounting off-chain) ----------
 model Wallet {
-  id             String   @id @default(cuid())
-  userId         String   @unique
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  buzBalance     Int      @default(0) // BUZ is integer (basis points)
-  pendingLock    Int      @default(0) // locked for conversion windows/disputes
+  id           String         @id @default(cuid())
+  userId       String         @unique
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  buzBalance   Int            @default(0) // BUZ is integer (basis points)
+  pendingLock  Int            @default(0) // locked for conversion windows/disputes
   // optional future blockchain hooks
-  chainAddress   String?  @unique
-  chainType      String?  // "evm", "sol", etc
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  chainAddress String?        @unique
+  chainType    String? // "evm", "sol", etc
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  WalletLedger WalletLedger[]
 }
 
 enum LedgerType {
@@ -1692,159 +1652,173 @@ enum LedgerType {
 }
 
 model WalletLedger {
-  id          String   @id @default(cuid())
+  id          String     @id @default(cuid())
   walletId    String
-  wallet      Wallet   @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  wallet      Wallet     @relation(fields: [walletId], references: [id], onDelete: Cascade)
   type        LedgerType
-  amount      Int      // BUZ in integer units; fiat minor units if used
+  amount      Int // BUZ in integer units; fiat minor units if used
   refTaskId   String?
   refReviewId String?
   refEquityId String?
-  note        String?  @db.VarChar(200)
-  createdAt   DateTime @default(now())
+  note        String?    @db.VarChar(200)
+  createdAt   DateTime   @default(now())
   // WORM immutability via hash chain
-  prevHash    String?  @db.VarChar(128)
-  hash        String   @db.VarChar(128)
+  prevHash    String?    @db.VarChar(128)
+  hash        String     @db.VarChar(128)
+  Task        Task?      @relation(fields: [taskId], references: [id])
+  taskId      String?
+  Review      Review?    @relation(fields: [reviewId], references: [id])
+  reviewId    String?
+
   @@index([walletId, createdAt])
 }
 
 model ConversionWindow {
-  id            String   @id @default(cuid())
-  opensAt       DateTime
-  closesAt      DateTime
-  equityRateBps Int      // e.g., BUZ→equity basis points (board-set)
-  status        String   @default("SCHEDULED") // SCHEDULED|OPEN|CLOSED|FINALIZED
-  notes         String?
-  createdAt     DateTime @default(now())
+  id               String             @id @default(cuid())
+  opensAt          DateTime
+  closesAt         DateTime
+  equityRateBps    Int // e.g., BUZ→equity basis points (board-set)
+  status           String             @default("SCHEDULED") // SCHEDULED|OPEN|CLOSED|FINALIZED
+  notes            String?
+  createdAt        DateTime           @default(now())
+  EquityConversion EquityConversion[]
+
   @@index([opensAt, closesAt])
 }
 
 model EquityConversion {
-  id              String   @id @default(cuid())
+  id              String           @id @default(cuid())
   userId          String
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   windowId        String
   window          ConversionWindow @relation(fields: [windowId], references: [id], onDelete: Cascade)
   buzUsed         Int
   equityGrantedBp Int // equity in basis points of venture or pool
   ventureId       String?
-  venture         Venture? @relation(fields: [ventureId], references: [id])
-  status          String   @default("PENDING") // PENDING|APPROVED|REJECTED|SETTLED
-  decidedBy       String?  // board approver (User.id)
+  venture         Project?         @relation(fields: [ventureId], references: [id])
+  status          String           @default("PENDING") // PENDING|APPROVED|REJECTED|SETTLED
+  decidedBy       String? // board approver (User.id)
   decidedAt       DateTime?
-  createdAt       DateTime @default(now())
+  createdAt       DateTime         @default(now())
 }
 
 // ---------- USER↔USER DOCUMENTS, CLIENTS, CONTRACTS, WORM ----------
 model Client {
-  id            String   @id @default(cuid())
-  ownerUserId   String
-  ownerUser     User     @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
-  name          String
-  email         String?  @db.VarChar(120)
-  phone         String?  @db.VarChar(40)
-  organization  String?  @db.VarChar(120)
-  tags          String[] // ["ISO27001","CISOaaS"]
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id           String     @id @default(cuid())
+  ownerUserId  String
+  ownerUser    User       @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
+  name         String
+  email        String?    @db.VarChar(120)
+  phone        String?    @db.VarChar(40)
+  organization String?    @db.VarChar(120)
+  tags         String[] // ["ISO27001","CISOaaS"]
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  DocShare     DocShare[]
+
   @@index([ownerUserId])
 }
 
 model UserDocument {
-  id            String   @id @default(cuid())
-  ownerUserId   String
-  ownerUser     User     @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
-  title         String
-  fileId        String
-  file          File     @relation(fields: [fileId], references: [id], onDelete: Cascade)
-  docType       String   // "NDA","MSA","SOW","ISO-AUDIT","PORTFOLIO-PDF","INVOICE"
-  checksumSha256 String  @db.VarChar(64) // WORM anchor
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id               String             @id @default(cuid())
+  ownerUserId      String
+  ownerUser        User               @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
+  title            String
+  fileId           String
+  file             File               @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  docType          String // "NDA","MSA","SOW","ISO-AUDIT","PORTFOLIO-PDF","INVOICE"
+  checksumSha256   String             @db.VarChar(64) // WORM anchor
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  DocShare         DocShare[]
+  SignatureRequest SignatureRequest[]
+  LegalHold        LegalHold[]
 }
 
 model DocShare {
-  id           String   @id @default(cuid())
-  documentId   String
-  document     UserDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
-  fromUserId   String
-  fromUser     User     @relation("DocShareFrom", fields: [fromUserId], references: [id], onDelete: Cascade)
-  toUserId     String?
-  toUser       User?    @relation("DocShareTo", fields: [toUserId], references: [id])
-  clientId     String?
-  client       Client?  @relation(fields: [clientId], references: [id])
-  canView      Boolean  @default(true)
-  canComment   Boolean  @default(false)
-  canSign      Boolean  @default(false)
-  expiresAt    DateTime?
-  createdAt    DateTime @default(now())
+  id         String       @id @default(cuid())
+  documentId String
+  document   UserDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  fromUserId String
+  fromUser   User         @relation("DocShareFrom", fields: [fromUserId], references: [id], onDelete: Cascade)
+  toUserId   String?
+  toUser     User?        @relation("DocShareTo", fields: [toUserId], references: [id])
+  clientId   String?
+  client     Client?      @relation(fields: [clientId], references: [id])
+  canView    Boolean      @default(true)
+  canComment Boolean      @default(false)
+  canSign    Boolean      @default(false)
+  expiresAt  DateTime?
+  createdAt  DateTime     @default(now())
+
   @@index([toUserId, clientId])
 }
 
 model SignatureRequest {
-  id            String   @id @default(cuid())
+  id            String       @id @default(cuid())
   documentId    String
   document      UserDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
   requestedById String
-  requestedBy   User     @relation("SigReqBy", fields: [requestedById], references: [id], onDelete: Cascade)
+  requestedBy   User         @relation("SigReqBy", fields: [requestedById], references: [id], onDelete: Cascade)
   signerUserId  String?
-  signerUser    User?    @relation("SigReqSigner", fields: [signerUserId], references: [id])
-  signerEmail   String?  @db.VarChar(120) // external signer
-  status        String   @default("PENDING") // PENDING|SIGNED|DECLINED|EXPIRED
+  signerUser    User?        @relation("SigReqSigner", fields: [signerUserId], references: [id])
+  signerEmail   String?      @db.VarChar(120) // external signer
+  status        String       @default("PENDING") // PENDING|SIGNED|DECLINED|EXPIRED
   signedAt      DateTime?
-  signatureHash String?  @db.VarChar(128) // detached ECDSA hash over checksumSha256
-  createdAt     DateTime @default(now())
+  signatureHash String?      @db.VarChar(128) // detached ECDSA hash over checksumSha256
+  createdAt     DateTime     @default(now())
   expiresAt     DateTime?
 }
 
 model LegalHold {
-  id          String   @id @default(cuid())
+  id          String        @id @default(cuid())
   reason      String
   createdById String
-  createdBy   User     @relation(fields: [createdById], references: [id])
+  createdBy   User          @relation("LegalHoldCreator", fields: [createdById], references: [id])
   // targets
   documentId  String?
   document    UserDocument? @relation(fields: [documentId], references: [id])
   userId      String?
-  user        User?    @relation(fields: [userId], references: [id])
+  user        User?         @relation("LegalHoldTarget", fields: [userId], references: [id])
   ventureId   String?
-  venture     Venture? @relation(fields: [ventureId], references: [id])
-  active      Boolean  @default(true)
-  createdAt   DateTime @default(now())
+  venture     Project?      @relation(fields: [ventureId], references: [id])
+  active      Boolean       @default(true)
+  createdAt   DateTime      @default(now())
 }
 
 // File storage model for documents, avatars, and artifacts
 model File {
-  id          String   @id @default(cuid())
-  filename    String
-  originalName String
-  mimeType    String
-  size        Int
-  checksumSha256 String @db.VarChar(64)
-  storageUri  String   // S3/Render storage path
-  isPublic    Boolean  @default(false)
-  uploadedBy  String   // User.id
-  uploadedAt  DateTime @default(now())
-  
+  id             String   @id @default(cuid())
+  filename       String
+  originalName   String
+  mimeType       String
+  size           Int
+  checksumSha256 String   @db.VarChar(64)
+  storageUri     String // S3/Render storage path
+  isPublic       Boolean  @default(false)
+  uploadedBy     String // User.id
+  uploadedAt     DateTime @default(now())
+
   // Relations
-  userProfiles UserProfile[]
+  userProfiles   UserProfile[]
   portfolioItems PortfolioItem[]
-  userDocuments UserDocument[]
-  
+  userDocuments  UserDocument[]
+
   @@index([uploadedBy])
   @@index([checksumSha256])
 }
 
 // Append-only WORM audit entries for critical actions
 model WormAudit {
-  id         String   @id @default(cuid())
-  scope      String   // "WALLET","DOC","SIGNATURE","CONTRACT","LEDGER","EQUITY"
-  refId      String   // referenced entity id
-  actorId    String?  // User.id (system if null)
-  action     String   // "CREATE","UPDATE","AWARD_BADGE","ISSUE_BUZ","CONVERT_EQUITY","SIGN"
-  details    Json
-  prevHash   String?  @db.VarChar(128)
-  hash       String   @db.VarChar(128)
-  createdAt  DateTime @default(now())
+  id        String   @id @default(cuid())
+  scope     String // "WALLET","DOC","SIGNATURE","CONTRACT","LEDGER","EQUITY"
+  refId     String // referenced entity id
+  actorId   String? // User.id (system if null)
+  action    String // "CREATE","UPDATE","AWARD_BADGE","ISSUE_BUZ","CONVERT_EQUITY","SIGN"
+  details   Json
+  prevHash  String?  @db.VarChar(128)
+  hash      String   @db.VarChar(128)
+  createdAt DateTime @default(now())
+
   @@index([scope, refId, createdAt])
 }
