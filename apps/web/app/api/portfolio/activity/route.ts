@@ -67,7 +67,7 @@ export async function GET(request: NextRequest) {
           id: `task-${task.id}`,
           type: 'MILESTONE' as const,
           message: `Task completed: ${task.title}`,
-          timestamp: task.dueDate?.toISOString() || new Date().toISOString(),
+          timestamp: new Date().toISOString(), // Use current time since dueDate not included in query
           projectId: task.projectId,
           projectName: task.project?.name,
           severity: 'SUCCESS' as const,
