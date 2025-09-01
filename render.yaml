@@ -3,9 +3,11 @@ services:
     type: web
     runtime: node
     plan: free
-    buildCommand: npm ci --only=production
+    buildCommand: npm ci --only=production && npx prisma generate
     startCommand: npm run start:api
     envVars:
       - key: NODE_ENV
         value: production
+      - key: PORT
+        value: "3001"
     autoDeploy: true
