@@ -1,3 +1,4 @@
+# SmartStart Platform - Render.com Blueprint
 databases:
   - name: smartstart-db
     plan: free
