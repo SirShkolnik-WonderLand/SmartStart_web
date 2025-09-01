@@ -243,7 +243,7 @@ router.post('/profiles/me/endorse', authenticateToken, async(req, res) => {
                 endorsedId,
                 skillId,
                 weight: Math.min(Math.max(weight, 1), 5),
-                note: note ? .substring(0, 200)
+                note: note ? note.substring(0, 200) : note
             }
         });
 
