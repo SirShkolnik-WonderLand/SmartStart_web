@@ -17,6 +17,8 @@ interface User {
   role: string
 }
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+
 export default function LoginPage() {
   const router = useRouter()
   const [form, setForm] = useState<LoginForm>({ email: '', password: '' })
@@ -32,16 +34,27 @@ export default function LoginPage() {
 
   const checkAuth = async () => {
     try {
-      const response = await fetch('/api/auth/me')
+      const token = localStorage.getItem('auth-token')
+      if (!token) return
+
+      const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      
       if (response.ok) {
         const data = await response.json()
         if (data.success) {
           setIsAuthenticated(true)
           router.push('/dashboard')
         }
+      } else {
+        localStorage.removeItem('auth-token')
       }
     } catch (error) {
       console.error('Auth check failed:', error)
+      localStorage.removeItem('auth-token')
     }
   }
 
@@ -51,7 +64,7 @@ export default function LoginPage() {
     setError('')
 
     try {
-      const response = await fetch('/api/auth/login', {
+      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -62,6 +75,8 @@ export default function LoginPage() {
       const data = await response.json()
 
       if (response.ok && data.success) {
+        // Store token in localStorage
+        localStorage.setItem('auth-token', data.token)
         setIsAuthenticated(true)
         router.push('/dashboard')
       } else {

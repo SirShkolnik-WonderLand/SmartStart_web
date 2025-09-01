@@ -17,6 +17,8 @@ interface User {
   permissions: string[]
 }
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+
 export default function DashboardPage() {
   const router = useRouter()
   const [user, setUser] = useState<User | null>(null)
@@ -28,19 +30,33 @@ export default function DashboardPage() {
 
   const checkAuth = async () => {
     try {
-      const response = await fetch('/api/auth/me')
+      const token = localStorage.getItem('auth-token')
+      if (!token) {
+        router.push('/')
+        return
+      }
+
+      const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      
       if (response.ok) {
         const data = await response.json()
         if (data.success) {
           setUser(data.user)
         } else {
+          localStorage.removeItem('auth-token')
           router.push('/')
         }
       } else {
+        localStorage.removeItem('auth-token')
         router.push('/')
       }
     } catch (error) {
       console.error('Auth check failed:', error)
+      localStorage.removeItem('auth-token')
       router.push('/')
     } finally {
       setIsLoading(false)
@@ -48,12 +64,8 @@ export default function DashboardPage() {
   }
 
   const handleLogout = async () => {
-    try {
-      await fetch('/api/auth/logout', { method: 'POST' })
-      router.push('/')
-    } catch (error) {
-      console.error('Logout failed:', error)
-    }
+    localStorage.removeItem('auth-token')
+    router.push('/')
   }
 
   const getRoleColor = (roleName: string) => {
@@ -224,12 +236,11 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* RBAC Demo */}
+            {/* API Server Info */}
             <div className="glass rounded-2xl p-6">
-              <h3 className="text-lg font-semibold text-white mb-4">Role-Based Access Control Demo</h3>
+              <h3 className="text-lg font-semibold text-white mb-4">API Server Status</h3>
               <p className="text-dark-300 mb-4">
-                This dashboard demonstrates the RBAC system working with real data from the database. 
-                Your permissions are dynamically loaded based on your role.
+                This dashboard is now connected to the dedicated API server at: <code className="bg-dark-800 px-2 py-1 rounded">{API_BASE_URL}</code>
               </p>
               
               <div className="bg-dark-800/50 rounded-lg p-4">

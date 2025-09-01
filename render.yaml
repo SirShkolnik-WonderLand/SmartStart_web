@@ -1,5 +1,5 @@
 # SmartStart Platform - Complete Deployment
-# Full-stack web application with database
+# Full-stack web application with dedicated API server and database
 
 databases:
   - name: smartstart-db
@@ -7,6 +7,40 @@ databases:
     ipAllowList: []
 
 services:
+  # API Server - Handles all business logic, database operations, external integrations
+  - name: smartstart-api
+    type: web
+    runtime: node
+    plan: free
+    buildCommand: npm install && npx prisma generate
+    startCommand: npm run start:api
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: smartstart-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: NEXTAUTH_SECRET
+        generateValue: true
+      - key: API_PORT
+        value: "3001"
+      - key: NODE_ENV
+        value: production
+      - key: STRIPE_SECRET_KEY
+        value: "sk_test_..." # Add your Stripe test key
+      - key: GITHUB_CLIENT_ID
+        value: "" # Add your GitHub OAuth app ID
+      - key: GITHUB_CLIENT_SECRET
+        value: "" # Add your GitHub OAuth secret
+      - key: M365_CLIENT_ID
+        value: "" # Add your Microsoft 365 app ID
+      - key: M365_CLIENT_SECRET
+        value: "" # Add your Microsoft 365 secret
+    healthCheckPath: /api/health
+    autoDeploy: true
+
+  # Web Service - Next.js frontend application
   - name: smartstart-platform
     type: web
     runtime: node
@@ -24,7 +58,11 @@ services:
         generateValue: true
       - key: NEXTAUTH_URL
         value: https://smartstart-platform.onrender.com
+      - key: NEXT_PUBLIC_API_URL
+        value: https://smartstart-api.onrender.com
       - key: NODE_ENV
         value: production
+      - key: STRIPE_PUBLISHABLE_KEY
+        value: "pk_test_..." # Add your Stripe publishable key
     healthCheckPath: /
     autoDeploy: true
