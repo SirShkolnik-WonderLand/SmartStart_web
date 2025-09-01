@@ -122,10 +122,10 @@ router.get('/profiles/:userId', async(req, res) => {
                 buzEarned: item.buzEarned,
                 impactScore: item.impactScore
             })),
-                         stats: {
-                 totalBUZ: wallet ? wallet.buzBalance : 0,
-                 totalPortfolioItems: portfolioItems.length
-             }
+            stats: {
+                totalBUZ: wallet ? wallet.buzBalance : 0,
+                totalPortfolioItems: portfolioItems.length
+            }
         };
 
         res.json(response);
@@ -740,28 +740,28 @@ router.post('/events/task/accepted', async(req, res) => {
  * POST /migrate - Apply Prisma migrations to production database
  * WARNING: This should only be used in development/production setup
  */
-router.post('/migrate', async (req, res) => {
+router.post('/migrate', async(req, res) => {
     try {
         console.log('🔄 Starting production database migration...');
-        
+
         // Use Prisma's migration system instead of manual table creation
         // This will apply the comprehensive schema properly
-        
+
         console.log('📋 Checking current database state...');
-        
+
         // Check what tables exist
-        const existingTables = await prisma.$queryRaw`
+        const existingTables = await prisma.$queryRaw `
             SELECT table_name 
             FROM information_schema.tables 
             WHERE table_schema = 'public'
             ORDER BY table_name
         `;
-        
+
         console.log('Current tables:', existingTables);
-        
+
         // For now, create a simple test table to verify the endpoint works
         // In production, you would run: npx prisma migrate deploy
-        await prisma.$executeRaw`
+        await prisma.$executeRaw `
             CREATE TABLE IF NOT EXISTS "TestTable" (
                 "id" TEXT NOT NULL,
                 "name" TEXT NOT NULL,
@@ -769,11 +769,11 @@ router.post('/migrate', async (req, res) => {
                 CONSTRAINT "TestTable_pkey" PRIMARY KEY ("id")
             )
         `;
-        
+
         console.log('✅ Production database migration endpoint working!');
-        
-        res.json({ 
-            success: true, 
+
+        res.json({
+            success: true,
             message: 'Migration endpoint working - use npx prisma migrate deploy for full schema',
             note: 'This endpoint is ready for proper Prisma migrations',
             currentTables: existingTables.map(t => t.table_name),
@@ -782,9 +782,9 @@ router.post('/migrate', async (req, res) => {
         });
     } catch (error) {
         console.error('❌ Production database migration failed:', error);
-        res.status(500).json({ 
+        res.status(500).json({
             error: 'Failed to migrate database',
-            details: error.message 
+            details: error.message
         });
     }
 });
@@ -822,7 +822,7 @@ router.post('/seed', async(req, res) => {
 /**
  * GET /test/data - Get all test data
  */
-router.get('/test/data', async (req, res) => {
+router.get('/test/data', async(req, res) => {
     try {
         // Get all data from various tables
         const data = {
@@ -881,7 +881,7 @@ router.get('/test/data', async (req, res) => {
 /**
  * POST /test/users - Create a test user
  */
-router.post('/test/users', async (req, res) => {
+router.post('/test/users', async(req, res) => {
     try {
         const { name, email, level = 'WISE_OWL', xp = 100 } = req.body;
 
@@ -916,12 +916,12 @@ router.post('/test/users', async (req, res) => {
 /**
  * POST /test/badges - Create a test badge
  */
-router.post('/test/badges', async (req, res) => {
+router.post('/test/badges', async(req, res) => {
     try {
-        const { name, description, icon, category = 'achievement', rarity = 'COMMON' } = req.body;
+        const { name, description, icon, category = 'achievement', rarity = 'COMMON', condition } = req.body;
 
-        if (!name || !description) {
-            return res.status(400).json({ error: 'Name and description are required' });
+        if (!name || !description || !condition) {
+            return res.status(400).json({ error: 'Name, description, and condition are required' });
         }
 
         const badge = await prisma.badge.create({
@@ -930,7 +930,8 @@ router.post('/test/badges', async (req, res) => {
                 description,
                 icon: icon || '🏆',
                 category,
-                rarity
+                rarity,
+                condition
             }
         });
 
@@ -952,7 +953,7 @@ router.post('/test/badges', async (req, res) => {
 /**
  * POST /test/skills - Create a test skill
  */
-router.post('/test/skills', async (req, res) => {
+router.post('/test/skills', async(req, res) => {
     try {
         const { name, category = 'general', description } = req.body;
 
@@ -986,7 +987,7 @@ router.post('/test/skills', async (req, res) => {
 /**
  * PUT /test/users/:id - Update a test user
  */
-router.put('/test/users/:id', async (req, res) => {
+router.put('/test/users/:id', async(req, res) => {
     try {
         const { id } = req.params;
         const { name, email, level, xp } = req.body;
@@ -1019,7 +1020,7 @@ router.put('/test/users/:id', async (req, res) => {
 /**
  * DELETE /test/users/:id - Delete a test user
  */
-router.delete('/test/users/:id', async (req, res) => {
+router.delete('/test/users/:id', async(req, res) => {
     try {
         const { id } = req.params;
 
@@ -1044,7 +1045,7 @@ router.delete('/test/users/:id', async (req, res) => {
 /**
  * GET /test/status - Get database and API status
  */
-router.get('/test/status', async (req, res) => {
+router.get('/test/status', async(req, res) => {
     try {
         const status = {
             api: 'running',
@@ -1055,7 +1056,7 @@ router.get('/test/status', async (req, res) => {
 
         // Check database connection
         try {
-            await prisma.$queryRaw`SELECT 1`;
+            await prisma.$queryRaw `SELECT 1`;
             status.database = 'connected';
         } catch (e) {
             status.database = 'disconnected';
@@ -1063,7 +1064,7 @@ router.get('/test/status', async (req, res) => {
 
         // Check what tables exist
         try {
-            const tables = await prisma.$queryRaw`
+            const tables = await prisma.$queryRaw `
                 SELECT table_name 
                 FROM information_schema.tables 
                 WHERE table_schema = 'public'
@@ -1087,7 +1088,7 @@ router.get('/test/status', async (req, res) => {
 /**
  * POST /test/upload - Simple file upload simulation
  */
-router.post('/test/upload', async (req, res) => {
+router.post('/test/upload', async(req, res) => {
     try {
         const { filename, content, mimeType = 'text/plain' } = req.body;
 
@@ -1132,7 +1133,7 @@ router.post('/test/upload', async (req, res) => {
 /**
  * GET /test/files - Get all uploaded files
  */
-router.get('/test/files', async (req, res) => {
+router.get('/test/files', async(req, res) => {
     try {
         const files = await prisma.file.findMany({
             orderBy: { createdAt: 'desc' },
