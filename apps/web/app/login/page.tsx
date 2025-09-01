@@ -8,17 +8,32 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
-    // Simple login - just redirect to the HUB
-    setTimeout(() => {
+    setError(null);
+    try {
+      const resp = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ email, password })
+      });
+      if (!resp.ok) {
+        const data = await resp.json().catch(() => ({}));
+        setError(data?.error || 'Login failed');
+        setLoading(false);
+        return;
+      }
       router.push('/');
-    }, 1000);
+    } catch (err) {
+      setError('Unexpected error. Please try again.');
+      setLoading(false);
+    }
   };
 
   const fillDemoAccount = (demoEmail: string, demoPassword: string) => {
@@ -27,29 +42,35 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+    <div className="min-h-screen bg-secondary flex items-center justify-center">
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-4">
-            <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center mr-4">
+            <div className="w-16 h-16 rounded-2xl flex items-center justify-center mr-4" style={{ background: 'linear-gradient(135deg, var(--primary-700), var(--primary-800))' }}>
               <TrendingUp className="w-8 h-8 text-white" />
             </div>
             <div className="text-left">
-              <h1 className="text-3xl font-bold text-gray-900">SmartStart</h1>
-              <p className="text-gray-500 text-sm">AliceSolutions Ventures Hub</p>
+              <h1 className="text-3xl font-bold">SmartStart</h1>
+              <p className="text-sm text-tertiary">AliceSolutions Ventures Hub</p>
             </div>
           </div>
         </div>
 
         {/* Login Form */}
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2 text-center">Sign In</h2>
-          <p className="text-gray-600 text-center mb-6">Access your command center</p>
+        <div className="rounded-2xl shadow-xl border p-8" style={{ background: 'var(--bg-elevated)', borderColor: 'var(--border-primary)' }}>
+          <h2 className="text-2xl font-bold mb-2 text-center">Sign In</h2>
+          <p className="text-center mb-6 text-secondary">Access your command center</p>
+          {error && (
+            <div className="error-banner mb-4">
+              <span className="error-message">{error}</span>
+              <button className="error-close" onClick={() => setError(null)}>×</button>
+            </div>
+          )}
           
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="email" className="block text-sm font-medium mb-2">
                 Email Address
               </label>
               <input
@@ -58,13 +79,14 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                className="w-full px-4 py-3 border rounded-lg placeholder-gray-500 focus:outline-none focus:ring-2 transition-colors"
+                style={{ borderColor: 'var(--border-primary)' }}
                 placeholder="Enter your email"
               />
             </div>
             
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="password" className="block text-sm font-medium mb-2">
                 Password
               </label>
               <div className="relative">
@@ -74,13 +96,14 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors pr-12"
+                  className="w-full px-4 py-3 border rounded-lg placeholder-gray-500 focus:outline-none focus:ring-2 transition-colors pr-12"
+                  style={{ borderColor: 'var(--border-primary)' }}
                   placeholder="Enter your password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
@@ -90,7 +113,8 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              className="w-full text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              style={{ background: 'linear-gradient(135deg, var(--primary-600), var(--primary-700))' }}
             >
               {loading ? 'Signing In...' : 'Sign In'}
             </button>
@@ -98,18 +122,19 @@ export default function LoginPage() {
 
           {/* Demo Accounts */}
           <div className="mt-8 pt-6 border-t border-gray-200">
-            <p className="text-gray-500 text-sm text-center mb-4">Quick Access - Demo Accounts</p>
+            <p className="text-sm text-center mb-4 text-tertiary">Quick Access - Demo Accounts</p>
             <div className="space-y-2">
               <button
                 onClick={() => fillDemoAccount('owner@demo.local', 'owner123')}
-                className="w-full text-left p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors group"
+                className="w-full text-left p-3 rounded-lg transition-colors group"
+                style={{ background: 'var(--bg-secondary)' }}
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-900 font-medium">Owner Account</p>
-                    <p className="text-gray-500 text-sm">Full access to SmartStart HUB</p>
+                    <p className="font-medium">Owner Account</p>
+                    <p className="text-sm text-tertiary">Full access to SmartStart HUB</p>
                   </div>
-                  <div className="text-blue-600 group-hover:text-blue-700 transition-colors">
+                  <div className="transition-colors" style={{ color: 'var(--primary-600)' }}>
                     <TrendingUp className="w-4 h-4" />
                   </div>
                 </div>
@@ -117,14 +142,15 @@ export default function LoginPage() {
               
               <button
                 onClick={() => fillDemoAccount('admin@smartstart.com', 'admin123')}
-                className="w-full text-left p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors group"
+                className="w-full text-left p-3 rounded-lg transition-colors group"
+                style={{ background: 'var(--bg-secondary)' }}
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-900 font-medium">Admin Account</p>
-                    <p className="text-gray-500 text-sm">System administration access</p>
+                    <p className="font-medium">Admin Account</p>
+                    <p className="text-sm text-tertiary">System administration access</p>
                   </div>
-                  <div className="text-green-600 group-hover:text-green-700 transition-colors">
+                  <div className="transition-colors" style={{ color: 'var(--success-600)' }}>
                     <TrendingUp className="w-4 h-4" />
                   </div>
                 </div>
@@ -132,14 +158,15 @@ export default function LoginPage() {
               
               <button
                 onClick={() => fillDemoAccount('contrib@demo.local', 'contrib123')}
-                className="w-full text-left p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors group"
+                className="w-full text-left p-3 rounded-lg transition-colors group"
+                style={{ background: 'var(--bg-secondary)' }}
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-900 font-medium">Contributor Account</p>
-                    <p className="text-gray-500 text-sm">Team member access</p>
+                    <p className="font-medium">Contributor Account</p>
+                    <p className="text-sm text-tertiary">Team member access</p>
                   </div>
-                  <div className="text-purple-600 group-hover:text-purple-700 transition-colors">
+                  <div className="transition-colors" style={{ color: 'var(--primary-600)' }}>
                     <TrendingUp className="w-4 h-4" />
                   </div>
                 </div>

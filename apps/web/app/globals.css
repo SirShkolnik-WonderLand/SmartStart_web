@@ -57,10 +57,13 @@
     --text-secondary: var(--gray-600);
     --text-tertiary: var(--gray-500);
     --text-inverse: white;
-    --bg-primary: white;
-    --bg-secondary: var(--gray-50);
-    --bg-tertiary: var(--gray-100);
-    --bg-elevated: white;
+    --bg-primary: #0f172a;
+    /* slate-900 */
+    --bg-secondary: #111827;
+    /* gray-900 slightly lighter */
+    --bg-tertiary: #1f2937;
+    /* gray-800 */
+    --bg-elevated: #1f2937;
     --border-primary: var(--gray-200);
     --border-secondary: var(--gray-100);
     --border-focus: var(--primary-500);
@@ -110,15 +113,18 @@
 
 /* Dark mode support */
 
+
+/* Force dark theme defaults per user preference */
+
 @media (prefers-color-scheme: dark) {
      :root {
         --text-primary: white;
         --text-secondary: var(--gray-300);
         --text-tertiary: var(--gray-400);
-        --bg-primary: var(--gray-900);
-        --bg-secondary: var(--gray-800);
-        --bg-tertiary: var(--gray-700);
-        --bg-elevated: var(--gray-800);
+        --bg-primary: #0f172a;
+        --bg-secondary: #111827;
+        --bg-tertiary: #1f2937;
+        --bg-elevated: #1f2937;
         --border-primary: var(--gray-700);
         --border-secondary: var(--gray-600);
     }
@@ -214,7 +220,7 @@ h6 {
     top: 0;
     z-index: 50;
     backdrop-filter: blur(8px);
-    background-color: rgba(255, 255, 255, 0.95);
+    background-color: rgba(17, 24, 39, 0.85);
 }
 
 .header-content {
@@ -254,7 +260,7 @@ h6 {
 .logo-text h1 {
     font-size: var(--text-xl);
     font-weight: 700;
-    background: linear-gradient(135deg, var(--primary-600), var(--primary-800));
+    background: linear-gradient(135deg, var(--primary-500), var(--primary-700));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -1176,59 +1182,12 @@ h6 {
     margin-top: var(--space-8);
 }
 
-/* Dark Theme Overrides */
-.min-h-screen.bg-gradient-to-br.from-slate-900.via-purple-900.to-slate-900 {
-    background: linear-gradient(135deg, #0f172a 0%, #581c87 50%, #0f172a 100%);
-    color: white;
-}
 
-.min-h-screen.bg-gradient-to-br.from-slate-900.via-purple-900.to-slate-900 .header {
-    background: rgba(15, 23, 42, 0.95);
-    border-bottom: 1px solid rgba(148, 163, 184, 0.2);
-    backdrop-filter: blur(8px);
-}
+/* Remove purple accents and gradients */
 
-.min-h-screen.bg-gradient-to-br.from-slate-900.via-purple-900.to-slate-900 .logo-text h1 {
-    background: linear-gradient(135deg, #a855f7, #7c3aed);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.min-h-screen.bg-gradient-to-br.from-slate-900.via-purple-900.to-slate-900 .logo-text p {
-    color: #94a3b8;
-}
-
-.min-h-screen.bg-gradient-to-br.from-slate-900.via-purple-900.to-slate-900 .status-item {
-    color: #e2e8f0;
-}
-
-.min-h-screen.bg-gradient-to-br.from-slate-900.via-purple-900.to-slate-900 .card {
-    background: rgba(30, 41, 59, 0.8);
-    border: 1px solid rgba(148, 163, 184, 0.2);
-    backdrop-filter: blur(8px);
-}
-
-.min-h-screen.bg-gradient-to-br.from-slate-900.via-purple-900.to-slate-900 .stat-card {
-    background: rgba(30, 41, 59, 0.8);
-    border: 1px solid rgba(148, 163, 184, 0.2);
-    backdrop-filter: blur(8px);
-}
-
-.min-h-screen.bg-gradient-to-br.from-slate-900.via-purple-900.to-slate-900 .stat-value {
-    color: white;
-}
-
-.min-h-screen.bg-gradient-to-br.from-slate-900.via-purple-900.to-slate-900 .stat-label {
-    color: #94a3b8;
-}
-
-.min-h-screen.bg-gradient-to-br.from-slate-900.via-purple-900.to-slate-900 .stat-icon {
-    background: rgba(148, 163, 184, 0.1);
-    color: #a855f7;
-}
 
 /* Stat Mini Components */
+
 .stat-mini {
     background: rgba(51, 65, 85, 0.8);
     border-radius: var(--radius-lg);
@@ -1249,7 +1208,9 @@ h6 {
     color: white;
 }
 
+
 /* Badge Components */
+
 .badge {
     display: inline-flex;
     align-items: center;
@@ -1283,7 +1244,9 @@ h6 {
     transform: translateY(-1px);
 }
 
+
 /* Button Components */
+
 .btn {
     display: inline-flex;
     align-items: center;
@@ -1327,7 +1290,9 @@ h6 {
     color: white;
 }
 
+
 /* Text Colors for Dark Theme */
+
 .text-tertiary {
     color: #94a3b8;
 }
@@ -1344,7 +1309,9 @@ h6 {
     color: white;
 }
 
+
 /* Error Banner */
+
 .error-banner {
     background: linear-gradient(135deg, #dc2626, #b91c1c);
     color: white;
