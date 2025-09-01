@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
     const limit = searchParams.get('limit') || '10';
     
     // Call the backend API to get mesh items
-    const response = await fetch(`${API_BASE}/api/mesh/items?limit=${limit}`, {
+    const response = await fetch(`${API_BASE}/mesh/items?limit=${limit}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

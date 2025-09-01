@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
     
     // Try to call the backend API to get real data
     try {
-      const response = await fetch(`${API_BASE}/api/projects/portfolio`, {
+      const response = await fetch(`${API_BASE}/projects/portfolio`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
     const userId = searchParams.get('userId') || 'demo-user-1';
     
     // Call the backend API to get user contributions
-    const response = await fetch(`${API_BASE}/api/contributions?contributorId=${userId}`, {
+    const response = await fetch(`${API_BASE}/contributions?contributorId=${userId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
