@@ -1,0 +1,889 @@
+
+# 🧩 AliceSolutions Hub – System Blueprint
+
+## 1. Core Identity: The Hub as a **Venture Operating System**
+
+* **Purpose**: provide everything a new venture needs (infrastructure, governance, community, security) in one controlled ecosystem.
+* **Model**: subscription-based entry, equity + BUZ for contributions, governance by AliceSolutions.
+
+---
+
+## 2. Entities in the Hub
+
+### a) **Venture**
+
+* A project or startup registered inside the Hub.
+* Has:
+
+  * **Owner** (min 35% equity)
+  * **Contributors** (equity/BUZ allocations)
+  * **AliceSolutions stake** (up to 20%)
+* Data attached:
+
+  * Legal contracts (auto-issued templates)
+  * Financial profile (QuickBooks slot, Stripe integration)
+  * Equity ledger (dynamic % by rules)
+  * Security/IT pack (M365, backups, GitHub, hosting)
+
+---
+
+### b) **User Profile**
+
+* A personal identity inside the Hub.
+* Attributes:
+
+  * **Nickname/Display name**
+  * **Legal identity** (KYC’d for contracts)
+  * **Wallet** (for BUZ + equity ledger)
+  * **Portfolio** (ventures contributed to, roles played, tokens earned)
+  * **Skills** (tags, verified contributions)
+* Game layer:
+
+  * **Levels** (based on activity)
+  * **Badges** (security cleared, lead contributor, etc.)
+  * **History** (audit trail of every action → tied to trust score).
+
+---
+
+### c) **AliceSolutions**
+
+* The governing entity.
+* Roles:
+
+  * Provides infrastructure (licenses, security, compliance).
+  * Issues BUZ tokens.
+  * Holds stake in ventures (up to 20%).
+  * Ensures contracts are valid and enforceable.
+  * Provides CPA + legal coverage.
+
+---
+
+## 3. Data Structures
+
+* **Equity Ledger**
+
+  * Records % per venture owner, contributor, AliceSolutions.
+  * Dynamic: can shift based on contribution value (rules-based).
+  * Legally tied to contract templates.
+
+* **BUZ Ledger**
+
+  * Token balances for each user wallet.
+  * Transactions logged for contributions, rewards, redemptions.
+  * Optional later: convertible to fiat/crypto.
+
+* **Portfolio DB**
+
+  * Every user has a portfolio record.
+  * Includes ventures contributed to, tokens/equity earned, roles held.
+  * Acts as a “CV on steroids” for future opportunities.
+
+* **Contract Templates**
+
+  * Pre-baked agreements:
+
+    * Founder Agreement
+    * Contributor Agreement
+    * Equity Split Agreement
+    * IP Assignment Agreement
+  * Auto-populated with venture/user data.
+  * Stored in the venture record, enforceable under AliceSolutions umbrella.
+
+---
+
+## 4. Workflows
+
+### a) **Onboarding a Venture**
+
+1. Founder subscribes → gets IT pack.
+2. Hub issues contracts → Founder Agreement + Equity framework.
+3. Venture record created (equity, BUZ wallet, QuickBooks slot).
+
+### b) **Contributor Joins a Venture**
+
+1. Contributor accepts Contributor Agreement.
+2. Assigned role/tasks.
+3. Earns BUZ (logged to wallet).
+4. Optional: equity % allocation (updates ledger + contracts).
+
+### c) **BUZ Economy**
+
+* Contributors earn BUZ by:
+
+  * Completing tasks
+  * Proving skills
+  * Helping ventures grow
+* BUZ uses:
+
+  * Convert to venture equity (within rules)
+  * Redeem for perks (extra Hub features, templates, audits)
+  * Future: exchange for fiat/crypto
+
+### d) **Audit & Compliance**
+
+* Every action is logged → contributes to **Trust Score**.
+* Equity/BUZ ledgers can be audited anytime.
+* CPA/legal review happens annually or upon milestone.
+
+---
+
+## 5. Legal Layer
+
+* **Umbrella Corporation (AliceSolutions)**: every venture runs as a “project” under the umbrella, legally simplified.
+* **Contracts auto-issued**: no venture runs without signed agreements (digitally signed inside Hub).
+* **Equity enforcement**: equity % tracked by Hub ledger → enforceable through AliceSolutions framework.
+* **CPA/legal guardrails**: financial and legal compliance covered by pooled experts (not per venture).
+
+---
+
+## 6. Profiles & Community
+
+* Each user’s **Portfolio** = proof of work + trust currency.
+* **Levels, badges, gamification** make it engaging.
+* **BUZ wallets** tie personal reputation to economic value.
+* Cross-venture discovery → users can find ventures to join, founders can find contributors.
+
+---
+
+## 7. Strategic Moat
+
+* Once a venture is inside, leaving means losing:
+
+  * IT pack (email, hosting, backups).
+  * Equity ledger + BUZ system.
+  * Contributor network tied to Hub identity.
+* This creates **stickiness + defensibility**.
+
+---
+
+✅ In pure logic: AliceSolutions Hub is **a governed ecosystem of Ventures + Users**, held together by:
+
+* **Equity ledger + BUZ economy**
+* **Legal contracts + compliance**
+* **Portfolios + wallets (reputation + economics)**
+* **Community + gamification**
+
+-
+Here’s the conceptual diagram of AliceSolutions Hub — showing the logical entities and flows:
+Venture (top): Owner, equity ledger, contracts, IT pack.
+User Profile (left): Wallet, portfolio, skills, BUZ.
+AliceSolutions (right): Governance, CPA/legal, security, BUZ issuer.
+Ledgers (bottom): Equity %, BUZ balances, contract records.
+Arrows show how:
+Users connect to ventures via Contributor Agreements.
+AliceSolutions provides infrastructure & stake.
+Ledgers track transactions, allocations, contracts.
+AliceSolutions and users are bound by governance/contracts.
+Awesome—here’s a **clean, complete, tech-agnostic blueprint** of the Hub’s **smart rules** plus a **data model** that captures every object, relationship, and lifecycle you’ll need. No fluff, no placeholders.
+
+# Smart Rules (Governance & Logic)
+
+## A. Identity, Access, & Compliance
+
+1. **KYC/KYB gates**
+
+   * Users must pass **KYC** before holding equity/BUZ or signing contracts.
+   * Ventures with external billing must pass **KYB** (corporate identity).
+   * `KYC.status ∈ {pending, verified, rejected}`, immutable audit trail.
+2. **RBAC**
+
+   * Roles: `Owner`, `Contributor`, `Reviewer`, `Admin (AliceSolutions)`, `Compliance`.
+   * **Least privilege**: a user’s role is **per-venture**; global Admin is AliceSolutions only.
+3. **MFA/Device posture**
+
+   * Login allowed only if **MFA = true** and **device posture compliant** (encrypted disk, OS supported).
+4. **Legal covenant**
+
+   * Before any access to venture resources: **click-wrap signed**: Contributor Agreement + IP Assignment + Confidentiality.
+5. **Data residency & retention**
+
+   * Venture selects **region** at creation; all artifacts and backups inherit region.
+   * Retention defaults: contracts **7 yrs**, finance **7 yrs**, logs **2 yrs** (extendable).
+
+## B. Venture Lifecycle
+
+1. **Creation**
+
+   * Requires: KYC’d Owner, minimum data (name, purpose, region), acceptance of Equity Policy.
+2. **Activation gates**
+
+   * IT Pack provisioning only after: Owner verified, payment active, contracts signed.
+3. **Dormancy & archival**
+
+   * If payment fails > X days → **suspend** (read-only), backup retained; after grace → **archive**; delete after retention unless legal hold.
+4. **Closure or exit**
+
+   * Requires: ledger settle, liabilities cleared, IP assignment confirmed, export package generated (contracts + ledger hashes + financials).
+
+## C. Equity Framework (Deterministic)
+
+1. **Ownership floor & caps**
+
+   * `Owner.min_equity = 35%`
+   * `AliceSolutions.max_equity = 20%`
+   * `Σ(all_equity) = 100%` must hold at all times.
+2. **Contributor Equity Pool (CEP)**
+
+   * `CEP = 100% − Owner% − AliceSolutions%`
+   * Disbursed by **rules engine** tied to **Contribution Score** (below).
+3. **Vesting & cliffs**
+
+   * Default: **4-year vest, 1-year cliff**, monthly thereafter.
+   * Early exit < cliff → equity reverts to CEP.
+4. **Performance adjustments**
+
+   * Equity within CEP rebalances quarterly based on **weighted contributions** (work, IP, cash, risk).
+   * Hard limits per period (e.g., ±2% per contributor/quarter) to avoid shocks.
+5. **Events that lock equity**
+
+   * Legal disputes, compliance flags, or unpaid invoices place **legal hold** on transfers.
+
+## D. BUZ Economy (Utility, not security)
+
+1. **Issuance**
+
+   * BUZ is **off-chain/internal** initially; supply is elastic but **rate-limited** per venture per month.
+2. **Earning logic**
+
+   * Earned by **verified task completions**, milestone deliveries, reviewer approvals.
+   * Multiplier for **criticality** and **time-to-impact**; penalties for rework/bugs.
+3. **Redemption**
+
+   * **Primary**: convert BUZ → equity from CEP at quarter end using a board-approved **conversion band** (e.g., 10k BUZ = 0.1% ± band).
+   * **Secondary**: marketplace perks (services, audits) at fixed prices.
+4. **Anti-abuse**
+
+   * **Double-spend prevention**: one issuance per signed result; hash of artifact tied to BUZ tx.
+   * **Sybil resistance**: KYC+TrustScore threshold to receive BUZ.
+5. **Regulatory posture**
+
+   * No external trading until compliance framework is approved; internal ledger only.
+
+## E. Contribution, Reviews, & Trust
+
+1. **Contribution Score (CS)**
+
+   * `CS = Σ(Weight(type) × Impact × Quality × Timeliness × ReviewerCredibility)`
+   * Types: `code, design, bizdev, ops, finance, legal, security, product`.
+2. **Reviewer Credibility**
+
+   * Rises with reviewer accuracy (disputes lower it).
+3. **Trust Score**
+
+   * Based on KYC status, delivery streak, dispute ratio, SLA adherence.
+   * Minimum TrustScore gates sensitive roles/repositories.
+4. **Disputes**
+
+   * Triage within 7 days; evidence required (artifact hash, comments, review logs).
+   * Resolutions adjust CS/BUZ/equity retroactively with full audit entries.
+
+## F. Finance & Billing
+
+1. **Pricing stages** (you locked in):
+
+   * 0–100 users: **\$100** (BP + E5 Security pack cost basis).
+   * 101–300 users: **\$129**.
+   * 301+ users: **\$149** (upgrade to full E5).
+2. **Payment methods**
+
+   * Card (2.9% + \$0.30) or ACH/Interac (preferred).
+3. **Proration**
+
+   * Mid-cycle provisioning prorated; downgrades apply next cycle.
+4. **Dunning**
+
+   * 3 attempts over 10 days, then **suspend**; after 30 days, **archive**.
+
+## G. Security, Privacy, & Audit
+
+1. **Security baselines**
+
+   * All identities MFA; least-privilege; device posture checks; Defender policies enforced.
+2. **PII minimization**
+
+   * Store only necessary KYC claims; tokenize sensitive fields.
+3. **Immutable audit**
+
+   * All sensitive actions append to **WORM** log with chain-hashing.
+4. **Key evidence exports**
+
+   * Quarterly **Audit Pack**: contracts, equity/BUZ ledgers, finance summaries, policy attestations.
+
+---
+
+# Data Model (Conceptual → Logical)
+
+> Types are generic; map to your DB of choice. Use **snake\_case** for tables, **camelCase** for API.
+
+## Core Entities
+
+### `users`
+
+* `id (uuid, pk)`
+* `display_name (string, 2..80)`
+* `email (string, unique)`
+* `kyc_status (enum: pending/verified/rejected)`
+* `trust_score (float, 0..100, default 50)`
+* `country_code (char(2))`
+* `created_at/updated_at (timestamptz)`
+
+### `user_wallets`
+
+* `id (uuid, pk)`
+* `user_id (fk users.id)`
+* `buz_balance (bigint, >=0)`  // integer units to avoid float error
+* `locked_balance (bigint, >=0)`
+* `version (int, optimistic lock)`
+
+### `ventures`
+
+* `id (uuid, pk)`
+* `name (string, unique)`
+* `region (enum: ca-us-eu-… )`
+* `status (enum: draft/active/suspended/archived)`
+* `owner_user_id (fk users.id)`
+* `alice_equity_cap (numeric(6,3), default 20.000)`
+* `created_at/updated_at`
+
+### `venture_it_pack`
+
+* `venture_id (fk ventures.id, pk)`
+* `m365_tenant_id (string)`
+* `email_address (string)`
+* `github_org (string)`
+* `render_service_id (string)`
+* `backup_policy_id (string)`
+* `provisioned_at (timestamptz)`
+* `status (enum: pending/active/suspended)`
+
+### `equity_ledger`
+
+* `id (uuid, pk)`
+* `venture_id (fk)`
+* `holder_type (enum: user/alice)`
+* `holder_id (uuid nullable when alice)`
+* `percent (numeric(6,3))`
+* `vesting_policy_id (fk vesting_policies.id nullable)`
+* `effective_from (date)`
+* `effective_to (date nullable)`
+* **Constraint**: per venture, at any time `Σ(percent)=100.000`.
+
+### `vesting_policies`
+
+* `id (uuid, pk)`
+* `name (string)`
+* `cliff_months (int)`
+* `duration_months (int)`
+* `frequency (enum: monthly/quarterly)`
+
+### `buz_issuance_rules`
+
+* `id (uuid, pk)`
+* `venture_id (fk)`
+* `monthly_issue_cap (bigint)`
+* `conversion_band_min (numeric(10,6))`  // equity per BUZ min
+* `conversion_band_max (numeric(10,6))`  // equity per BUZ max
+* `board_approved (bool)`
+
+### `tasks`
+
+* `id (uuid, pk)`
+* `venture_id (fk)`
+* `title (string)`
+* `type (enum: code/design/ops/… )`
+* `weight (numeric(6,3))` // baseline multiplier
+* `criticality (enum: low/med/high/critical)`
+* `artifact_hash (char(64) nullable until submitted)`
+* `status (enum: open/in_review/approved/rejected)`
+* `created_by_user_id (fk users.id)`
+* `assignee_user_id (fk users.id nullable)`
+
+### `reviews`
+
+* `id (uuid, pk)`
+* `task_id (fk)`
+* `reviewer_user_id (fk users.id)`
+* `quality_score (int 0..100)`
+* `comments (text)`
+* `decision (enum: approve/reject/changes_requested)`
+* `created_at`
+
+### `contribution_events`
+
+* `id (uuid, pk)`
+* `task_id (fk)`
+* `user_id (fk users.id)`
+* `impact (numeric(6,3))`    // normalized 0..2
+* `timeliness (numeric(6,3))`// 0..2
+* `quality (numeric(6,3))`   // from reviews
+* `reviewer_cred (numeric(6,3))` // 0..2 derived
+* `cs_delta (numeric(10,4))` // Contribution Score change
+* `buz_awarded (bigint)`
+* `created_at`
+
+### `buz_transactions`
+
+* `id (uuid, pk)`
+* `wallet_id (fk user_wallets.id)`
+* `venture_id (fk)`
+* `type (enum: earn/convert/redeem/lock/unlock)`
+* `amount (bigint, signed for debit/credit)`
+* `artifact_hash (char(64) nullable)`
+* `tx_hash (char(64))` // internal chain-hash for immutability
+* `created_at`
+* **Constraint**: sum of amounts updates wallet atomically.
+
+### `equity_conversions`
+
+* `id (uuid, pk)`
+* `venture_id (fk)`
+* `user_id (fk)`
+* `buz_spent (bigint)`
+* `equity_percent_granted (numeric(8,6))`
+* `effective_date (date)`
+* `policy_snapshot (jsonb)` // conversion band + approvals at time
+
+### `contracts`
+
+* `id (uuid, pk)`
+* `venture_id (fk)`
+* `type (enum: founder_agreement/contributor/ip/nda/equity_split)`
+* `version (int)`
+* `signing_hash (char(64))`
+* `signed_at (timestamptz)`
+* `signers (jsonb)` // array of {user\_id, name, email, signed\_at}
+* `storage_uri (string)` // pointer to PDF blob
+
+### `billing_accounts`
+
+* `id (uuid, pk)`
+* `venture_id (fk)`
+* `pricing_tier (enum: t100/t129/t149)`
+* `payment_method (enum: card/ach/interac)`
+* `status (enum: active/past_due/suspended)`
+* `next_invoice_at (timestamptz)`
+Absolutely—here’s the **next layer**: finishing the data model, wiring the **data connections**, and codifying **deterministic rules/algorithms** so the Hub runs like a governed machine. No placeholders; all fields, constraints, and flows are explicit.
+
+# 1) Data Model (continued & completed)
+
+> Types are generic; adapt to SQL types (`uuid`, `numeric(… )`, `timestamptz`, `jsonb`, `enum`, `bigint`) or equivalent. Primary keys are `pk`; FKs shown inline. All timestamps are **UTC**.
+
+### `invoices`
+
+* `id (uuid, pk)`
+* `billing_account_id (fk billing_accounts.id)`
+* `period_start/period_end (date)`
+* `amount_due (numeric(10,2))`
+* `currency (char(3))`
+* `status (enum: draft/open/paid/void/refunded)`
+* `stripe_fee (numeric(10,2))`
+* `issued_at (timestamptz)`
+* `due_at (timestamptz)`
+* `pdf_uri (string)`
+
+### `payments`
+
+* `id (uuid, pk)`
+* `invoice_id (fk invoices.id)`
+* `method (enum: card/ach/interac/wire)`
+* `processor_tx_id (string)`
+* `amount_paid (numeric(10,2))`
+* `paid_at (timestamptz)`
+* `status (enum: succeeded/failed/pending)`
+* `failure_reason (string nullable)`
+
+### `credits_refunds`
+
+* `id (uuid, pk)`
+* `invoice_id (fk invoices.id)`
+* `type (enum: service_credit/refund/adjustment)`
+* `amount (numeric(10,2))`
+* `reason (string)`
+* `created_at (timestamptz)`
+
+### `dunning_events`
+
+* `id (uuid, pk)`
+* `billing_account_id (fk)`
+* `attempt_no (int)` // 1..N
+* `method (enum: email/sms/webhook)`
+* `result (enum: sent/recovered/failed)`
+* `created_at (timestamptz)`
+
+### `kyc_documents`
+
+* `id (uuid, pk)`
+* `user_id (fk users.id)`
+* `doc_type (enum: passport/id_card/drivers_license/proof_of_address)`
+* `status (enum: pending/verified/rejected)`
+* `verifier (string)`
+* `evidence_uri (string)`
+* `verified_at (timestamptz)`
+
+### `kyb_documents`
+
+* `id (uuid, pk)`
+* `venture_id (fk ventures.id)`
+* `doc_type (enum: articles_of_inc/incumbency/bank_letter/tax_id)`
+* `status (enum: pending/verified/rejected)`
+* `verifier (string)`
+* `evidence_uri (string)`
+* `verified_at (timestamptz)`
+
+### `role_assignments`
+
+* `id (uuid, pk)`
+* `user_id (fk users.id)`
+* `venture_id (fk ventures.id)`
+* `role (enum: owner/contributor/reviewer/admin/compliance)`
+* `scope (enum: venture/global)`
+* `granted_by (fk users.id)`
+* `granted_at (timestamptz)`
+* `revoked_at (timestamptz nullable)`
+
+### `security_policies`
+
+* `id (uuid, pk)`
+* `venture_id (fk ventures.id)`
+* `policy_name (string)` // e.g., MFA\_REQUIRED, DLP\_BASELINE
+* `version (int)`
+* `settings (jsonb)` // structured control values
+* `enforced (bool)`
+* `effective_at (timestamptz)`
+
+### `device_posture_reports`
+
+* `id (uuid, pk)`
+* `user_id (fk users.id)`
+* `device_id (string)`
+* `os (string)`
+* `encrypted_disk (bool)`
+* `av_status (enum: healthy/disabled/outdated)`
+* `last_seen_at (timestamptz)`
+* `compliant (bool)` // computed
+
+### `resources`  *(cross-links to provisioned assets)*
+
+* `id (uuid, pk)`
+* `venture_id (fk)`
+* `type (enum: m365_mailbox/sharepoint_site/github_repo/render_service/backup_job/qbo_entity)`
+* `external_id (string)`
+* `name (string)`
+* `uri (string)`
+* `status (enum: pending/active/suspended/decommissioned)`
+* `created_at/updated_at`
+
+### `portfolio_entries`
+
+* `id (uuid, pk)`
+* `user_id (fk users.id)`
+* `venture_id (fk ventures.id)`
+* `role_snapshot (string)` // free text summary at time of capture
+* `start_at (date)`
+* `end_at (date nullable)`
+* `impact_summary (text)` // curated highlights
+* `proof_links (jsonb)` // e.g., PRs, artifacts
+
+### `skills`
+
+* `id (uuid, pk)`
+* `slug (string unique)` // e.g., nodejs, prisma, sales, gdpr
+* `name (string)`
+* `category (enum: engineering/design/ops/bizdev/security/legal/finance)`
+
+### `user_skills`
+
+* `user_id (fk users.id)`
+* `skill_id (fk skills.id)`
+* `level (enum: novice/intermediate/advanced/expert)`
+* `verified (bool)`
+* `verifier_user_id (fk users.id nullable)`
+* `PRIMARY KEY (user_id, skill_id)`
+
+### `badges`
+
+* `id (uuid, pk)`
+* `slug (string unique)` // e.g., top\_reviewer\_q1\_2026
+* `name (string)`
+* `criteria (jsonb)`
+
+### `user_badges`
+
+* `user_id (fk users.id)`
+* `badge_id (fk badges.id)`
+* `awarded_at (timestamptz)`
+* `PRIMARY KEY (user_id, badge_id)`
+
+### `disputes`
+
+* `id (uuid, pk)`
+* `venture_id (fk)`
+* `raised_by_user_id (fk users.id)`
+* `object_type (enum: task/review/buz_tx/equity)`
+* `object_id (uuid)` // referenced record
+* `status (enum: open/in_review/resolved/rejected)`
+* `resolution (text nullable)`
+* `created_at/updated_at`
+
+### `dispute_evidence`
+
+* `id (uuid, pk)`
+* `dispute_id (fk disputes.id)`
+* `submitted_by_user_id (fk users.id)`
+* `artifact_hash (char(64) nullable)`
+* `notes (text)`
+* `uri (string nullable)`
+* `created_at (timestamptz)`
+
+### `legal_holds`
+
+* `id (uuid, pk)`
+* `venture_id (fk)`
+* `reason (string)`
+* `applies_to (enum: equity/buz/all)`
+* `imposed_by_user_id (fk users.id)`
+* `imposed_at (timestamptz)`
+* `released_at (timestamptz nullable)`
+
+### `board_approvals`
+
+* `id (uuid, pk)`
+* `venture_id (fk)`
+* `subject (enum: buz_policy/equity_change/exit/merger/security_exception)`
+* `proposal (jsonb)` // payload snapshot
+* `decision (enum: approved/rejected/needs_changes)`
+* `decided_at (timestamptz)`
+* `decided_by (fk users.id)` // AliceSolutions board user
+
+### `policy_history`
+
+* `id (uuid, pk)`
+* `target (enum: buz/equity/security/billing)`
+* `venture_id (fk nullable)` // null = global policy
+* `old_value (jsonb)`
+* `new_value (jsonb)`
+* `changed_by (fk users.id)`
+* `changed_at (timestamptz)`
+
+### `export_packages`
+
+* `id (uuid, pk)`
+* `venture_id (fk)`
+* `type (enum: quarterly_audit/closure/exit)`
+* `manifest_hash (char(64))`
+* `bundle_uri (string)` // signed archive
+* `created_at (timestamptz)`
+
+### `audit_log`  *(append-only, hash-chained)*
+
+* `id (uuid, pk)`
+* `ts (timestamptz)`
+* `actor_user_id (fk users.id nullable)` // system actions can be null
+* `action (string)` // e.g., EQUITY\_CONVERT, BUZ\_ISSUE
+* `object_type (string)`
+* `object_id (uuid)`
+* `data (jsonb)` // redacted fields tokenized
+* `prev_tx_hash (char(64))`
+* `tx_hash (char(64))` // `sha256(concat(prev_tx_hash, canonical_json(data)))`
+* **Constraint**: `prev_tx_hash` of first record = known genesis hash.
+
+---
+
+# 2) Deterministic Constraints (enforced at DB & app)
+
+1. **Cap table invariant**
+
+   * For any `venture_id` and any `date`, `Σ equity_ledger.percent WHERE date∈[effective_from,effective_to] = 100.000`.
+   * **DB**: a periodic constraint or materialized view check; **App**: transaction guard rejects writes breaking the invariant.
+
+2. **Owner & Alice caps**
+
+   * On `ventures` creation: `owner` assigned ≥ **35%**.
+   * Sum of `holder_type=alice` rows ≤ **20%** at all times.
+
+3. **KYC gating**
+
+   * `role_assignments.role IN (owner, contributor, reviewer)` requires `users.kyc_status='verified'`.
+   * `buz_transactions` forbidden for users without `kyc_status='verified'`.
+
+4. **Legal prerequisite**
+
+   * Any `task.status -> approved` requires a **signed contributor agreement** in `contracts` for `(user_id, venture_id)` with `type='contributor'`.
+
+5. **Device posture**
+
+   * `login` events blocked if last `device_posture_reports.compliant=false` within last **30 days** (configurable).
+
+6. **Ledgers atomicity**
+
+   * `buz_transactions` updates `user_wallets.buz_balance` **within the same transaction**; balances cannot go negative unless `type=lock`.
+
+7. **Disputes freeze**
+
+   * Opening a `disputes` row on an `equity_conversions.id` places a **legal\_hold** record and blocks further conversions until resolution.
+
+---
+
+# 3) State Machines (explicit transitions)
+
+### Venture `status`
+
+* `draft → active` (after KYC, payment, contracts)
+* `active → suspended` (dunning failure, policy violation)
+* `suspended → active` (payment recovered)
+* `active/suspended → archived` (closure)
+
+### Task `status`
+
+* `open → in_review → approved | rejected`
+* `rejected → open` (with change notes)
+
+### Dispute `status`
+
+* `open → in_review → resolved | rejected`
+
+Each transition **fires** audit-log entries and optional webhooks (e.g., notify board on equity changes).
+
+---
+
+# 4) Scoring & Allocation Algorithms
+
+### 4.1 Contribution Score (CS)
+
+For each approved contribution `c`:
+
+```
+CS_c = Weight(type) * Impact * Quality * Timeliness * ReviewerCredibility
+```
+
+* **Weight(type)**: code=1.2, design=1.0, bizdev=1.1, ops=0.9, security=1.3, legal=1.2 (policy-tunable)
+* **Impact**: 0.5..2.0 (venture-defined)
+* **Quality**: 0.5..2.0 (from `reviews.quality_score` bands)
+* **Timeliness**: 0.5..1.5 (deadline adherence)
+* **ReviewerCredibility**: 0.8..1.2 (reviewer’s historic accuracy)
+
+User’s quarterly CS = Σ CS\_c for the window.
+
+### 4.2 BUZ Issuance
+
+For each approved task:
+
+```
+base = 100 * Weight(type)
+buz_awarded = round(base * Impact * Quality * Timeliness)
+```
+
+* Enforce per-venture cap: `Σ buz_awarded ≤ monthly_issue_cap`.
+* If cap exceeded, scale all awards in the month by factor `cap / Σproposed`.
+
+### 4.3 BUZ → Equity Conversion (quarterly)
+
+At quarter close:
+
+```
+equity_percent = clamp(
+   buz_spent * conversion_rate, 
+   conversion_band_min, 
+   conversion_band_max
+)
+```
+
+* `conversion_rate` set by `board_approvals` snapshot.
+* Equity drawn from **CEP** only; if CEP depleted, conversion waits next quarter.
+
+### 4.4 Quarterly CEP Rebalance (performance-based)
+
+* For all contributors with vested equity:
+
+```
+Δpercent = k * (CS_user - CS_median) / Σ|CS - CS_median|
+```
+
+* Clip `Δpercent` with ±2% band per quarter.
+* Maintain invariant: Σpercent=100%.
+
+---
+
+# 5) Governance & Legal Flows
+
+**Founder Onboarding**
+
+* Sign: Founder Agreement + Equity Policy
+* Owner% set (≥35%). Alice stake set (≤20%). CEP created.
+* KYB docs collected if billing externally.
+
+**Contributor Onboarding**
+
+* Pass KYC → Sign Contributor Agreement + IP Assignment + NDA → Role assigned.
+
+**Equity Events**
+
+* All equity changes require:
+
+  1. Snapshot of current cap table,
+  2. Board approval (if policy demands),
+  3. Audit-log with `EQUITY_CHANGE` + cap-table proof.
+
+**Dispute Resolution**
+
+* Evidence window: 7 days.
+* Reviewer panel: 2 reviewers + 1 compliance.
+* Outcome may retro-adjust BUZ/equity with corresponding ledger entries and notices.
+
+**Closure/Exit**
+
+* Generate **Export Package**: contracts, cap table snapshot, BUZ/equity ledgers, invoices, security attestations, WORM log range.
+* Apply legal hold if required; otherwise archive → delete after retention.
+
+---
+
+# 6) Privacy & Retention
+
+* **Tokenize**: ID numbers, addresses; store only hashes where possible.
+* **PII minimization**: Keep KYC verdicts + issuer metadata; purge raw scans beyond regulatory minimums.
+* **Retention**: contracts & finance 7 years; security logs 2 years (configurable); audit-log **WORM** 7 years.
+* **Right to be forgotten**: allowed for users with no equity/BUZ liabilities and outside legal holds; replace references with pseudonymous keys.
+
+---
+
+# 7) Analytics & Views (derivations)
+
+* `vw_cap_table_current`: resolves active equity rows per venture.
+* `vw_wallet_balances`: real-time BUZ balances & locks.
+* `vw_trust_profile`: trust score with components (delivery streak, dispute ratio).
+* `vw_venture_health`: MRR, active contributors, CS totals, dunning risk.
+* `vw_security_posture`: MFA %, device compliance %, unresolved incidents.
+* `vw_revenue_recognition`: accrual by month, fees, credits.
+
+---
+
+# 8) Eventing & Automation (jobs)
+
+* **Provisioner**: reacts to `ventures.active` → creates resources (`resources` rows).
+* **Dunning**: emits `dunning_events` on payment failures.
+* **Quarter Close**: seals BUZ cap, enables conversions, rebalances CEP, emits audit pack.
+* **Security Sweep**: weekly device posture + policy enforcement.
+* **Export Packager**: on closure/exit.
+
+---
+
+# 9) Indices & Integrity (examples)
+
+* Unique: `users.email`, `ventures.name`, `skills.slug`, `badges.slug`.
+* Composite: `role_assignments (user_id, venture_id, role)`; `equity_ledger (venture_id, effective_from)`; `buz_transactions (wallet_id, created_at)`.
+* Check constraints: `percent BETWEEN 0 AND 100`, `buz_balance ≥ 0`.
+* Foreign keys **ON DELETE RESTRICT** for legal objects (`contracts`, `equity_ledger`, `buz_transactions`).
+
+---
+
+# 10) Minimal Policies to Adopt Day-1 (non-technical wording)
+
+1. **No access without KYC + signed agreements.**
+2. **Owner ≥35%, AliceSolutions ≤20%, cap table always = 100%.**
+3. **Every contribution must be reviewed; BUZ awards require artifact hash.**
+4. **Quarterly: lock books, allow BUZ→equity, run CEP rebalance.**
+5. **Disputes freeze related transfers until resolved.**
+6. **MFA + compliant device = mandatory; non-compliant users can’t log in.**
+7. **Audit-log is immutable; all sensitive actions recorded and hash-chained.**
+8. **PII minimized; KYC raw images not retained beyond required period.**
+
