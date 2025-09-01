@@ -1,11 +1,7 @@
-# SmartStart Platform - Render.com Blueprint
-
-# Define databases separately
 databases:
   - name: smartstart-db
     plan: free
 
-# Define services separately
 services:
   - name: smartstart-api
     type: web
@@ -33,6 +29,7 @@ services:
       - key: MONITOR_ENABLED
         value: "true"
     healthCheckPath: /api/health
+    autoDeploy: true
     maxInstances: 1
     minInstances: 0
 
@@ -58,5 +55,6 @@ services:
       - key: NODE_ENV
         value: "production"
     healthCheckPath: /
+    autoDeploy: true
     maxInstances: 1
     minInstances: 0
