@@ -40,14 +40,14 @@
 
 /* Animated background container - Dark space theme with floating particles */
 .animated-background {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #1e293b 75%, #0f172a 100%);
-  overflow: hidden;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: -1 !important;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #1e293b 75%, #0f172a 100%) !important;
+  overflow: hidden !important;
 }
 
 /* Floating particles */
@@ -59,14 +59,17 @@
   width: 100%;
   height: 100%;
   background-image: 
-    radial-gradient(2px 2px at 20px 30px, rgba(99, 102, 241, 0.8), transparent),
-    radial-gradient(2px 2px at 40px 70px, rgba(139, 92, 246, 0.6), transparent),
-    radial-gradient(1px 1px at 90px 40px, rgba(6, 182, 212, 0.8), transparent),
-    radial-gradient(1px 1px at 130px 80px, rgba(99, 102, 241, 0.6), transparent),
-    radial-gradient(2px 2px at 160px 30px, rgba(139, 92, 246, 0.8), transparent);
+    radial-gradient(3px 3px at 20px 30px, rgba(99, 102, 241, 0.9), transparent),
+    radial-gradient(3px 3px at 40px 70px, rgba(139, 92, 246, 0.8), transparent),
+    radial-gradient(2px 2px at 90px 40px, rgba(6, 182, 212, 0.9), transparent),
+    radial-gradient(2px 2px at 130px 80px, rgba(99, 102, 241, 0.8), transparent),
+    radial-gradient(3px 3px at 160px 30px, rgba(139, 92, 246, 0.9), transparent),
+    radial-gradient(1px 1px at 200px 120px, rgba(255, 255, 255, 0.6), transparent),
+    radial-gradient(2px 2px at 250px 60px, rgba(99, 102, 241, 0.7), transparent),
+    radial-gradient(1px 1px at 300px 150px, rgba(139, 92, 246, 0.6), transparent);
   background-repeat: repeat;
-  background-size: 200px 100px;
-  animation: float 20s linear infinite;
+  background-size: 300px 150px;
+  animation: float 25s linear infinite;
 }
 
 .animated-background::after {
@@ -77,13 +80,16 @@
   width: 100%;
   height: 100%;
   background-image: 
-    radial-gradient(1px 1px at 50px 50px, rgba(255, 255, 255, 0.8), transparent),
-    radial-gradient(1px 1px at 100px 100px, rgba(255, 255, 255, 0.6), transparent),
-    radial-gradient(1px 1px at 150px 150px, rgba(255, 255, 255, 0.8), transparent),
-    radial-gradient(1px 1px at 200px 200px, rgba(255, 255, 255, 0.6), transparent);
+    radial-gradient(2px 2px at 50px 50px, rgba(255, 255, 255, 0.9), transparent),
+    radial-gradient(2px 2px at 100px 100px, rgba(255, 255, 255, 0.7), transparent),
+    radial-gradient(1px 1px at 150px 150px, rgba(255, 255, 255, 0.9), transparent),
+    radial-gradient(1px 1px at 200px 200px, rgba(255, 255, 255, 0.7), transparent),
+    radial-gradient(2px 2px at 350px 80px, rgba(255, 255, 255, 0.8), transparent),
+    radial-gradient(1px 1px at 400px 200px, rgba(255, 255, 255, 0.6), transparent),
+    radial-gradient(2px 2px at 450px 120px, rgba(255, 255, 255, 0.9), transparent);
   background-repeat: repeat;
-  background-size: 250px 250px;
-  animation: twinkle 4s ease-in-out infinite;
+  background-size: 500px 500px;
+  animation: twinkle 6s ease-in-out infinite;
 }
 
 /* ===== DARK THEME DESIGN TOKENS ===== */
@@ -239,14 +245,14 @@ html {
 }
 
 body {
-  margin: 0;
-  padding: 0;
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  font-family: var(--font-primary);
-  font-size: var(--text-base);
-  line-height: 1.6;
-  position: relative;
+    margin: 0;
+    padding: 0;
+    background-color: transparent !important;
+    color: var(--text-primary);
+    font-family: var(--font-primary);
+    font-size: var(--text-base);
+    line-height: 1.6;
+    position: relative;
 }
 
 /* ===== TYPOGRAPHY ===== */

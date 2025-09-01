@@ -15,8 +15,9 @@ export default function AppLayout({ children, currentPage }: AppLayoutProps) {
       <header className="app-header">
         <div className="header-content">
           <div className="logo-section">
-            <div className="logo-placeholder">
-              <span className="logo-text">Smart</span>
+            <div className="logo-container">
+              <img src="/logo.jpg" alt="SmartStart Logo" className="logo-image" />
+              <div className="logo-glow"></div>
             </div>
             <div className="logo-text">
               <div className="logo-title">SmartStart</div>
