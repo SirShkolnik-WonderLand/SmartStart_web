@@ -339,7 +339,7 @@ app.use((error, req, res, next) => {
     res.status(500).json({ error: 'Internal server error' });
 });
 
-// 404 handler
+// 404 handler - MUST be last after all routes
 app.use('*', (req, res) => {
     res.status(404).json({ error: 'Endpoint not found' });
 });
