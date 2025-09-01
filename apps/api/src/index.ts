@@ -74,7 +74,11 @@ app.get("/health", (_req, res) => res.json({ ok: true }));
 
 // Version endpoint
 app.get('/version', (_req, res) => {
-  res.json({ name: 'smartstart-api', version: process.env.COMMIT_SHA || 'dev' });
+  res.json({ 
+    name: 'smartstart-api', 
+    version: process.env.COMMIT_SHA || 'dev',
+    timestamp: new Date().toISOString()
+  });
 });
 
 // Register modular API routes
