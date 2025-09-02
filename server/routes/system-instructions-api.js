@@ -422,13 +422,25 @@ router.get('/status', async (req, res) => {
                     status: "✅ DEPLOYED",
                     endpoints: 15,
                     features: ["Ventures", "Legal Entities", "Equity", "IT Packs", "Documents"]
+                },
+                {
+                    name: "Company Management System",
+                    status: "✅ DEPLOYED",
+                    endpoints: 17,
+                    features: ["Company CRUD", "Industry Classification", "Hierarchy", "Metrics", "Documents", "Tagging"]
+                },
+                {
+                    name: "Team Management System",
+                    status: "✅ DEPLOYED",
+                    endpoints: 15,
+                    features: ["Team Structure", "Collaboration", "Goals", "Metrics", "Communication", "Analytics"]
                 }
             ],
-            totalEndpoints: 95,
-            totalFeatures: 50,
+            totalEndpoints: 127,
+            totalFeatures: 66,
             databaseTables: 25,
             lastDeployment: new Date().toISOString(),
-            nextPhase: "User Onboarding & KYC System"
+            nextPhase: "Contribution Pipeline & Workflow Automation"
         };
 
         res.json({
