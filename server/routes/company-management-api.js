@@ -76,7 +76,7 @@ router.post('/create', async(req, res) => {
             ) VALUES (
                 ${companyId}, ${name}, ${description}, ${industry}, ${size}, ${stage},
                 ${status}, ${visibility}, ${foundedDate ? new Date(foundedDate) : null}, ${website}, ${location},
-                ${logoUrl}, ${ownerId}, ${parentCompanyId}, ${JSON.stringify(settings)},
+                ${logoUrl}, ${ownerId}, ${parentCompanyId}, ${JSON.stringify(settings)}::jsonb,
                 NOW(), NOW()
             )
         `;
