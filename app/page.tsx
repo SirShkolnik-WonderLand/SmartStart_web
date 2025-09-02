@@ -86,6 +86,9 @@ export default function CLILogin() {
           </div>
 
           <div className="mt-4 text-center text-green-300 text-sm help-hint">💡 Demo: admin / password123</div>
+          <div className="mt-3 text-center text-sm">
+            <a href="/register" className="underline text-green-300 hover:text-green-200">Create a new account</a>
+          </div>
         </div>
       </div>
 
