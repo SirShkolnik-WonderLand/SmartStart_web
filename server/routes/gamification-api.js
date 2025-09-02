@@ -24,6 +24,54 @@ router.get('/health', async (req, res) => {
     }
 });
 
+// ===== MIGRATION ENDPOINT =====
+router.post('/migrate', async (req, res) => {
+    try {
+        console.log('🚀 Starting gamification system migration...');
+        
+        // Import and run migration
+        const { migrateGamificationSystem } = require('../migrate-gamification-system');
+        await migrateGamificationSystem();
+        
+        res.json({
+            success: true,
+            message: 'Gamification system migration completed successfully',
+            timestamp: new Date().toISOString()
+        });
+    } catch (error) {
+        console.error('Migration error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Migration failed',
+            error: error.message
+        });
+    }
+});
+
+// ===== SEEDING ENDPOINT =====
+router.post('/seed', async (req, res) => {
+    try {
+        console.log('🌱 Starting gamification system seeding...');
+        
+        // Import and run seeding
+        const { seedGamification } = require('../seed-gamification');
+        await seedGamification();
+        
+        res.json({
+            success: true,
+            message: 'Gamification system seeding completed successfully',
+            timestamp: new Date().toISOString()
+        });
+    } catch (error) {
+        console.error('Seeding error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Seeding failed',
+            error: error.message
+        });
+    }
+});
+
 // ===== XP & LEVEL MANAGEMENT =====
 
 // Add XP for user activity
