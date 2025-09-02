@@ -140,19 +140,22 @@ router.get('/:id/amendments', async (req, res) => {
     try {
         const { id } = req.params;
 
-        const amendments = await prisma.contractAmendment.findMany({
-            where: { originalContractId: id },
-            include: {
-                amendmentSignatures: {
-                    include: {
-                        signer: {
-                            select: { id: true, name: true, email: true }
-                        }
-                    }
-                }
-            },
-            orderBy: { createdAt: 'desc' }
-        });
+        const amendments = await prisma.$queryRaw`
+            SELECT * FROM "ContractAmendment" 
+            WHERE "originalContractId" = ${id} 
+            ORDER BY "createdAt" DESC
+        `;
+
+        // Get amendment signatures for each amendment
+        const amendmentsWithSignatures = await Promise.all(
+            amendments.map(async (amendment) => {
+                const signatures = await prisma.$queryRaw`
+                    SELECT * FROM "AmendmentSignature" 
+                    WHERE "amendmentId" = ${amendment.id}
+                `;
+                return { ...amendment, amendmentSignatures: signatures };
+            })
+        );
 
         res.json({
             success: true,
