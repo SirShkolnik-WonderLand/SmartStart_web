@@ -218,22 +218,19 @@ router.get('/list/all', async(req, res) => {
                     owner: {
                         select: {
                             id: true,
-                            displayName: true,
+                            name: true,
                             email: true
                         }
                     },
-                    legalEntity: {
-                        select: {
-                            name: true,
-                            type: true,
-                            jurisdiction: true
-                        }
-                    },
-                    ventureProfile: {
-                        select: {
-                            industry: true,
-                            stage: true,
-                            teamSize: true
+                    ventureLegalEntity: {
+                        include: {
+                            legalEntity: {
+                                select: {
+                                    name: true,
+                                    type: true,
+                                    jurisdiction: true
+                                }
+                            }
                         }
                     }
                 },
