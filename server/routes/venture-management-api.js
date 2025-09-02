@@ -351,6 +351,104 @@ router.post('/migrate', async (req, res) => {
     }
 });
 
+// Simple table creation endpoint
+router.post('/create-tables', async (req, res) => {
+    try {
+        const { PrismaClient } = require('@prisma/client');
+        const prisma = new PrismaClient();
+        
+        console.log('🔧 Creating Venture Management tables...');
+        
+        // Create Venture table
+        await prisma.$executeRaw`
+            CREATE TABLE IF NOT EXISTS "Venture" (
+                "id" TEXT NOT NULL,
+                "name" TEXT NOT NULL,
+                "purpose" TEXT NOT NULL,
+                "region" TEXT NOT NULL DEFAULT 'US',
+                "status" TEXT NOT NULL DEFAULT 'DRAFT',
+                "ownerUserId" TEXT NOT NULL,
+                "ventureLegalEntityId" TEXT,
+                "equityFrameworkId" TEXT,
+                "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                "updatedAt" TIMESTAMP(3) NOT NULL,
+                CONSTRAINT "Venture_pkey" PRIMARY KEY ("id")
+            );
+        `;
+        
+        // Create VentureLegalEntity table
+        await prisma.$executeRaw`
+            CREATE TABLE IF NOT EXISTS "VentureLegalEntity" (
+                "id" TEXT NOT NULL,
+                "ventureId" TEXT NOT NULL,
+                "legalEntityId" TEXT NOT NULL,
+                "status" TEXT NOT NULL DEFAULT 'PENDING',
+                "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                "updatedAt" TIMESTAMP(3) NOT NULL,
+                CONSTRAINT "VentureLegalEntity_pkey" PRIMARY KEY ("id")
+            );
+        `;
+        
+        // Create EquityFramework table
+        await prisma.$executeRaw`
+            CREATE TABLE IF NOT EXISTS "EquityFramework" (
+                "id" TEXT NOT NULL,
+                "ventureId" TEXT NOT NULL,
+                "ownerPercent" INTEGER NOT NULL DEFAULT 35,
+                "alicePercent" INTEGER NOT NULL DEFAULT 20,
+                "cepPercent" INTEGER NOT NULL DEFAULT 45,
+                "vestingPolicy" TEXT NOT NULL DEFAULT '4-year vest, 1-year cliff',
+                "status" TEXT NOT NULL DEFAULT 'ACTIVE',
+                "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                "updatedAt" TIMESTAMP(3) NOT NULL,
+                CONSTRAINT "EquityFramework_pkey" PRIMARY KEY ("id")
+            );
+        `;
+        
+        // Create EquityLedger table
+        await prisma.$executeRaw`
+            CREATE TABLE IF NOT EXISTS "EquityLedger" (
+                "id" TEXT NOT NULL,
+                "ventureId" TEXT NOT NULL,
+                "equityFrameworkId" TEXT,
+                "holderType" TEXT NOT NULL,
+                "holderId" TEXT,
+                "percent" DOUBLE PRECISION NOT NULL,
+                "vestingPolicyId" TEXT,
+                "effectiveFrom" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                "effectiveTo" TIMESTAMP(3),
+                "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                "updatedAt" TIMESTAMP(3) NOT NULL,
+                CONSTRAINT "EquityLedger_pkey" PRIMARY KEY ("id")
+            );
+        `;
+        
+        // Create indexes
+        await prisma.$executeRaw`CREATE INDEX IF NOT EXISTS "Venture_ownerUserId_idx" ON "Venture"("ownerUserId");`;
+        await prisma.$executeRaw`CREATE INDEX IF NOT EXISTS "Venture_status_idx" ON "Venture"("status");`;
+        await prisma.$executeRaw`CREATE INDEX IF NOT EXISTS "Venture_region_idx" ON "Venture"("region");`;
+        await prisma.$executeRaw`CREATE INDEX IF NOT EXISTS "EquityLedger_ventureId_idx" ON "EquityLedger"("ventureId");`;
+        await prisma.$executeRaw`CREATE INDEX IF NOT EXISTS "EquityLedger_equityFrameworkId_idx" ON "EquityLedger"("equityFrameworkId");`;
+        
+        await prisma.$disconnect();
+        
+        res.json({
+            success: true,
+            message: 'Venture Management tables created successfully',
+            tables: ['Venture', 'VentureLegalEntity', 'EquityFramework', 'EquityLedger'],
+            timestamp: new Date().toISOString()
+        });
+        
+    } catch (error) {
+        console.error('Table creation failed:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Table creation failed',
+            error: error.message
+        });
+    }
+});
+
 // Get venture legal documents
 router.get('/:ventureId/documents', async (req, res) => {
     try {
