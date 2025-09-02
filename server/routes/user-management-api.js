@@ -46,13 +46,33 @@ router.post('/create', async (req, res) => {
             });
         }
 
-        const result = await userService.createUser(userData);
-        
-        if (result.success) {
-            res.status(201).json(result);
-        } else {
-            res.status(400).json(result);
-        }
+        // Create simple user without complex relations for now
+        const user = await prisma.user.create({
+            data: {
+                email: userData.email,
+                name: userData.name,
+                level: 'OWLET',
+                xp: 0,
+                reputation: 50,
+                status: 'ACTIVE',
+                lastActive: new Date()
+            }
+        });
+
+        res.status(201).json({
+            success: true,
+            user: {
+                id: user.id,
+                email: user.email,
+                name: user.name,
+                level: user.level,
+                xp: user.xp,
+                reputation: user.reputation,
+                status: user.status,
+                createdAt: user.createdAt
+            },
+            message: 'User created successfully (basic mode)'
+        });
     } catch (error) {
         console.error('Error creating user:', error);
         res.status(500).json({
