@@ -56,20 +56,24 @@ router.post('/create', async (req, res) => {
             });
         }
 
-        // Create team
-        const team = await prisma.team.create({
-            data: {
-                name,
-                companyId,
-                parentTeamId,
-                purpose,
-                description,
-                size,
-                leadId,
-                status,
-                isPublic,
-                settings
-            },
+        // Create team using raw SQL to avoid enum type issues
+        const teamId = `team_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        
+        await prisma.$executeRaw`
+            INSERT INTO "Team" (
+                "id", "name", "companyId", "parentTeamId", "purpose", "description",
+                "size", "leadId", "status", "isPublic", "settings",
+                "createdAt", "updatedAt"
+            ) VALUES (
+                ${teamId}, ${name}, ${companyId}, ${parentTeamId}, ${purpose}, ${description},
+                ${size}, ${leadId}, ${status}, ${isPublic}, ${JSON.stringify(settings)}::jsonb,
+                NOW(), NOW()
+            )
+        `;
+
+        // Fetch the created team
+        const team = await prisma.team.findUnique({
+            where: { id: teamId },
             include: {
                 company: {
                     select: {
