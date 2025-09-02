@@ -352,6 +352,10 @@ app.use('/api/contracts/auto-issuance', contractAutoIssuanceApiRoutes);
 const ventureManagementApiRoutes = require('./routes/venture-management-api');
 app.use('/api/ventures', ventureManagementApiRoutes);
 
+// Mount gamification API routes
+const gamificationApiRoutes = require('./routes/gamification-api');
+app.use('/api/gamification', gamificationApiRoutes);
+
 // Error handling middleware
 app.use((error, req, res, next) => {
     logger.error('Unhandled error:', error);
