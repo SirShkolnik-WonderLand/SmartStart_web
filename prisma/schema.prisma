@@ -2030,8 +2030,8 @@ model Company {
   ownerId     String
   owner       User     @relation("CompanyOwner", fields: [ownerId], references: [id])
   parentCompanyId String?
-  parentCompany Company? @relation("CompanyHierarchy", fields: [parentCompanyId], references: [id])
-  subsidiaries Company[] @relation("CompanyHierarchy")
+  parentCompany Company? @relation("CompanyParent", fields: [parentCompanyId], references: [id])
+  subsidiaries Company[] @relation("CompanyParent")
   
   // Company structure
   teams       Team[]
@@ -2039,6 +2039,7 @@ model Company {
   // Company data
   tags        CompanyTag[]
   hierarchy   CompanyHierarchy[]
+  hierarchyChildren CompanyHierarchy[] @relation("CompanyHierarchyChildren")
   metrics     CompanyMetric[]
   documents   CompanyDocument[]
   
@@ -2089,7 +2090,7 @@ model CompanyHierarchy {
   // Hierarchy details
   parentId    String?
   parent      Company? @relation("CompanyHierarchyParent", fields: [parentId], references: [id])
-  children    Company[] @relation("CompanyHierarchyParent")
+  children    Company[] @relation("CompanyHierarchyChildren")
   
   // Relationship details
   relationshipType String // "SUBSIDIARY", "BRANCH", "DIVISION", "JOINT_VENTURE"
