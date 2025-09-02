@@ -49,38 +49,60 @@ router.post('/:id/amend', async (req, res) => {
             });
         }
 
-        // Create amendment record
-        const amendment = await prisma.contractAmendment.create({
-            data: {
-                originalContractId: id,
-                amendmentType: amendmentType.toUpperCase(),
-                reason,
-                changes: JSON.stringify(changes),
-                proposedBy,
-                requiresApproval,
-                approvalDeadline: approvalDeadline ? new Date(approvalDeadline) : null,
-                status: 'PENDING',
-                notificationRecipients: JSON.stringify(notificationRecipients),
-                version: `${originalContract.version}-A${Date.now()}`,
-                effectiveDate: null,
-                approvedBy: null,
-                approvedAt: null
-            }
-        });
+        // Create amendment record using raw SQL
+        const amendmentId = `amendment_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        const version = `${originalContract.version}-A${Date.now()}`;
+        
+        await prisma.$executeRaw`
+            INSERT INTO "ContractAmendment" (
+                "id", "originalContractId", "amendmentType", "reason", "changes", 
+                "version", "status", "requiresApproval", "approvalDeadline", 
+                "notificationRecipients", "effectiveDate", "proposedBy", 
+                "approvedBy", "approvedAt", "createdAt", "updatedAt"
+            ) VALUES (
+                ${amendmentId}, ${id}, ${amendmentType.toUpperCase()}, ${reason}, 
+                ${JSON.stringify(changes)}, ${version}, 'PENDING', ${requiresApproval}, 
+                ${approvalDeadline ? new Date(approvalDeadline) : null}, 
+                ${JSON.stringify(notificationRecipients)}, null, ${proposedBy}, 
+                null, null, NOW(), NOW()
+            )
+        `;
 
-        // Create amendment signature requirements
+        const amendment = {
+            id: amendmentId,
+            originalContractId: id,
+            amendmentType: amendmentType.toUpperCase(),
+            reason,
+            changes: JSON.stringify(changes),
+            version,
+            status: 'PENDING',
+            requiresApproval,
+            approvalDeadline: approvalDeadline ? new Date(approvalDeadline) : null,
+            notificationRecipients: JSON.stringify(notificationRecipients),
+            effectiveDate: null,
+            proposedBy,
+            approvedBy: null,
+            approvedAt: null,
+            createdAt: new Date(),
+            updatedAt: new Date()
+        };
+
+        // Create amendment signature requirements using raw SQL
         if (requiresApproval) {
             for (const recipient of notificationRecipients) {
-                await prisma.amendmentSignature.create({
-                    data: {
-                        amendmentId: amendment.id,
-                        signerId: recipient.signerId,
-                        role: recipient.role || 'APPROVER',
-                        required: true,
-                        status: 'PENDING',
-                        deadline: approvalDeadline ? new Date(approvalDeadline) : null
-                    }
-                });
+                const signatureId = `amendment_sig_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+                await prisma.$executeRaw`
+                    INSERT INTO "AmendmentSignature" (
+                        "id", "amendmentId", "signerId", "role", "required", 
+                        "status", "deadline", "signedAt", "signatureHash", 
+                        "createdAt", "updatedAt"
+                    ) VALUES (
+                        ${signatureId}, ${amendment.id}, ${recipient.signerId}, 
+                        ${recipient.role || 'APPROVER'}, true, 'PENDING', 
+                        ${approvalDeadline ? new Date(approvalDeadline) : null}, 
+                        null, null, NOW(), NOW()
+                    )
+                `;
             }
         }
 
