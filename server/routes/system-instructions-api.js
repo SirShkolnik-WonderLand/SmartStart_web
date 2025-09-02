@@ -434,13 +434,19 @@ router.get('/status', async (req, res) => {
                     status: "✅ DEPLOYED",
                     endpoints: 15,
                     features: ["Team Structure", "Collaboration", "Goals", "Metrics", "Communication", "Analytics"]
+                },
+                {
+                    name: "Contribution Pipeline System",
+                    status: "✅ DEPLOYED",
+                    endpoints: 18,
+                    features: ["Project Management", "Task Management", "Workflow Automation", "Performance Tracking", "Contribution Analytics", "BUZ Integration Ready"]
                 }
             ],
-            totalEndpoints: 127,
-            totalFeatures: 66,
-            databaseTables: 25,
+            totalEndpoints: 145,
+            totalFeatures: 84,
+            databaseTables: 31,
             lastDeployment: new Date().toISOString(),
-            nextPhase: "Contribution Pipeline & Workflow Automation",
+            nextPhase: "Financial Integration & BUZ Token System",
         currentIssues: [
             "Company listing endpoint needs schema alignment fix",
             "Team creation endpoint needs enum type resolution",
