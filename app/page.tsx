@@ -1,473 +1,196 @@
-'use client';
+'use client'
 
-import { useState, useEffect, useRef } from 'react';
-import './globals.css';
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
-interface Command {
-  id: string;
-  command: string;
-  description: string;
-  category: string;
-  endpoint?: string;
-  method?: string;
-  body?: any;
-}
+export default function CLILogin() {
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [loginStep, setLoginStep] = useState(0)
+  const [asciiArt, setAsciiArt] = useState('')
+  const router = useRouter()
 
-interface System {
-  name: string;
-  status: string;
-  endpoints: number;
-  features: string[];
-}
-
-export default function CLIDashboard() {
-  const [currentView, setCurrentView] = useState<'main' | 'system' | 'api' | 'help'>('main');
-  const [selectedSystem, setSelectedSystem] = useState<System | null>(null);
-  const [commandHistory, setCommandHistory] = useState<string[]>([]);
-  const [currentCommand, setCurrentCommand] = useState('');
-  const [output, setOutput] = useState<string>('');
-  const [isLoading, setLoading] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const systems: System[] = [
-    {
-      name: "Legal Foundation System",
-      status: "✅ OPERATIONAL",
-      endpoints: 35,
-      features: ["Contracts", "Templates", "Signatures", "Amendments", "Compliance"]
-    },
-    {
-      name: "Company Management System",
-      status: "✅ OPERATIONAL",
-      endpoints: 17,
-      features: ["Company CRUD", "Industry Classification", "Hierarchy", "Metrics", "Documents", "Tagging"]
-    },
-    {
-      name: "Team Management System",
-      status: "✅ OPERATIONAL",
-      endpoints: 15,
-      features: ["Team Structure", "Collaboration", "Goals", "Metrics", "Communication", "Analytics"]
-    },
-    {
-      name: "Contribution Pipeline System",
-      status: "✅ OPERATIONAL",
-      endpoints: 18,
-      features: ["Project Management", "Task Management", "Workflow Automation", "Performance Tracking", "Contribution Analytics"]
-    },
-    {
-      name: "Gamification System",
-      status: "✅ OPERATIONAL",
-      endpoints: 20,
-      features: ["XP", "Levels", "Badges", "Reputation", "Portfolio", "Skills", "Leaderboards"]
-    },
-    {
-      name: "User Management System",
-      status: "✅ OPERATIONAL",
-      endpoints: 25,
-      features: ["User CRUD", "Profiles", "Privacy", "Connections", "Portfolio", "Skills", "Analytics"]
-    },
-    {
-      name: "Venture Management System",
-      status: "✅ OPERATIONAL",
-      endpoints: 15,
-      features: ["Ventures", "Legal Entities", "Equity", "IT Packs", "Growth Tracking"]
-    }
-  ];
-
-  const commands: Command[] = [
-    // System Commands
-    { id: 'status', command: 'status', description: 'Show system status', category: 'system' },
-    { id: 'systems', command: 'systems', description: 'List all systems', category: 'system' },
-    { id: 'health', command: 'health', description: 'Check system health', category: 'system' },
-    
-    // Navigation Commands
-    { id: 'cd', command: 'cd <system>', description: 'Change to system directory', category: 'navigation' },
-    { id: 'ls', command: 'ls', description: 'List current directory contents', category: 'navigation' },
-    { id: 'pwd', command: 'pwd', description: 'Show current directory', category: 'navigation' },
-    { id: 'back', command: 'back', description: 'Go back to main menu', category: 'navigation' },
-    
-    // API Commands
-    { id: 'api', command: 'api <endpoint>', description: 'Make API call to endpoint', category: 'api' },
-    { id: 'test', command: 'test <system>', description: 'Test system endpoints', category: 'api' },
-    
-    // Help Commands
-    { id: 'help', command: 'help', description: 'Show available commands', category: 'help' },
-    { id: 'clear', command: 'clear', description: 'Clear terminal output', category: 'help' },
-    { id: 'about', command: 'about', description: 'Show system information', category: 'help' },
-  ];
-
+  // ASCII Art Animation
   useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, []);
+    const artFrames = [
+      `
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║    ███████╗███╗   ███╗ █████╗ ██████╗ ████████╗████████╗  ║
+║   ██╔════╝████╗ ████║██╔══██╗██╔══██╗╚══██╔══╝╚══╗██╔══╝  ║
+║   ███████╗██╔████╔██║███████║██████╔╝   ██║      ║██║     ║
+║   ╚════██║██║╚██╔╝██║██╔══██║██╔══██╗   ██║      ║██║     ║
+║   ███████║██║ ╚═╝ ██║██║  ██║██║  ██╗   ██║      ██║     ║
+║   ╚══════╝╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝      ╚═╝     ║
+║                                                              ║
+║                    SMARTSTART PLATFORM                       ║
+║                   🚀 VENTURE OPERATING SYSTEM 🚀            ║
+║                                                              ║
+║              [7 SYSTEMS DEPLOYED • 145 ENDPOINTS]            ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+      `,
+      `
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║    ███████╗███╗   ███╗ █████╗ ██████╗ ████████╗████████╗  ║
+║   ██╔════╝████╗ ████║██╔══██╗██╔══██╗╚══██╔══╝╚══╗██╔══╝  ║
+║   ███████╗██╔████╔██║███████║██████╔╝   ██║      ║██║     ║
+║   ╚════██║██║╚██╔╝██║██╔══██║██╔══██╗   ██║      ║██║     ║
+║   ███████║██║ ╚═╝ ██║██║  ██║██║  ██╗   ██║      ██║     ║
+║   ╚══════╝╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝      ╚═╝     ║
+║                                                              ║
+║                    SMARTSTART PLATFORM                       ║
+║                   🚀 VENTURE OPERATING SYSTEM 🚀            ║
+║                                                              ║
+║              [7 SYSTEMS DEPLOYED • 145 ENDPOINTS]            ║
+║                                                              ║
+║                    🔐 AUTHENTICATION REQUIRED 🔐             ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+      `,
+      `
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║    ███████╗███╗   ███╗ █████╗ ██████╗ ████████╗████████╗  ║
+║   ██╔════╝████╗ ████║██╔══██╗██╔══██╗╚══██╔══╝╚══╗██╔══╝  ║
+║   ███████╗██╔████╔██║███████║██████╔╝   ██║      ║██║     ║
+║   ╚════██║██║╚██╔╝██║██╔══██║██╔══██╗   ██║      ║██║     ║
+║   ███████║██║ ╚═╝ ██║██║  ██║██║  ██╗   ██║      ██║     ║
+║   ╚══════╝╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝      ╚═╝     ║
+║                                                              ║
+║                    SMARTSTART PLATFORM                       ║
+║                   🚀 VENTURE OPERATING SYSTEM 🚀            ║
+║                                                              ║
+║              [7 SYSTEMS DEPLOYED • 145 ENDPOINTS]            ║
+║                                                              ║
+║                    🔐 AUTHENTICATION REQUIRED 🔐             ║
+║                                                              ║
+║                    ⚡ INITIALIZING SYSTEMS ⚡                ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+      `
+    ]
 
-  const executeCommand = async (cmd: string) => {
-    const trimmedCmd = cmd.trim();
-    if (!trimmedCmd) return;
+    let frameIndex = 0
+    const interval = setInterval(() => {
+      setAsciiArt(artFrames[frameIndex])
+      frameIndex = (frameIndex + 1) % artFrames.length
+    }, 2000)
 
-    setCommandHistory(prev => [...prev, `$ ${trimmedCmd}`]);
-    setCurrentCommand('');
-    setLoading(true);
+    return () => clearInterval(interval)
+  }, [])
 
-    try {
-      let result = '';
-
-      if (trimmedCmd === 'status') {
-        result = await getSystemStatus();
-      } else if (trimmedCmd === 'systems') {
-        result = displaySystems();
-      } else if (trimmedCmd === 'health') {
-        result = await checkHealth();
-      } else if (trimmedCmd.startsWith('cd ')) {
-        const systemName = trimmedCmd.substring(3);
-        result = changeDirectory(systemName);
-      } else if (trimmedCmd === 'ls') {
-        result = listDirectory();
-      } else if (trimmedCmd === 'pwd') {
-        result = showCurrentDirectory();
-      } else if (trimmedCmd === 'back') {
-        result = goBack();
-      } else if (trimmedCmd === 'help') {
-        result = showHelp();
-      } else if (trimmedCmd === 'clear') {
-        setOutput('');
-        setLoading(false);
-        return;
-      } else if (trimmedCmd === 'about') {
-        result = showAbout();
-      } else if (trimmedCmd.startsWith('test ')) {
-        const systemName = trimmedCmd.substring(5);
-        result = await testSystem(systemName);
-      } else {
-        result = `Command not found: ${trimmedCmd}. Type 'help' for available commands.`;
-      }
-
-      setOutput(prev => prev + `\n${result}`);
-    } catch (error) {
-      setOutput(prev => prev + `\nError: ${error}`);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getSystemStatus = async () => {
-    try {
-      const response = await fetch('https://smartstart-api.onrender.com/api/system/status');
-      const data = await response.json();
-      
-      if (data.success) {
-        const status = data.systemStatus;
-        return `
-🚀 SmartStart Platform Status
-═══════════════════════════════════════════════════════════════════════════════
-
-Platform: ${status.platform}
-Version: ${status.version}
-Status: ${status.status}
-Total Endpoints: ${status.totalEndpoints}
-Total Features: ${status.totalFeatures}
-Database Tables: ${status.databaseTables}
-
-Deployed Systems:
-${status.deployedSystems.map((sys: any) => 
-  `  ${sys.status} ${sys.name} (${sys.endpoints} endpoints)`
-).join('\n')}
-
-Next Phase: ${status.nextPhase}
-═══════════════════════════════════════════════════════════════════════════════`;
-      } else {
-        return 'Failed to get system status';
-      }
-    } catch (error) {
-      return `Error fetching system status: ${error}`;
-    }
-  };
-
-  const displaySystems = () => {
-    return `
-📊 SmartStart Platform Systems
-═══════════════════════════════════════════════════════════════════════════════
-
-${systems.map((sys, index) => `
-${index + 1}. ${sys.name}
-   Status: ${sys.status}
-   Endpoints: ${sys.endpoints}
-   Features: ${sys.features.join(', ')}
-`).join('')}
-
-Use 'cd <system_name>' to navigate to a system
-═══════════════════════════════════════════════════════════════════════════════`;
-  };
-
-  const checkHealth = async () => {
-    try {
-      const response = await fetch('https://smartstart-api.onrender.com/api/health');
-      const data = await response.json();
-      
-      return `
-🏥 System Health Check
-═══════════════════════════════════════════════════════════════════════════════
-
-Status: ${data.status}
-Environment: ${data.environment}
-Database: ${data.database}
-Timestamp: ${data.timestamp}
-
-Services:
-  Worker: ${data.services?.worker ? '✅' : '❌'}
-  Storage: ${data.services?.storage ? '✅' : '❌'}
-  Monitor: ${data.services?.monitor ? '✅' : '❌'}
-═══════════════════════════════════════════════════════════════════════════════`;
-    } catch (error) {
-      return `Error checking health: ${error}`;
-    }
-  };
-
-  const changeDirectory = (systemName: string) => {
-    const system = systems.find(s => 
-      s.name.toLowerCase().includes(systemName.toLowerCase())
-    );
+  // Simulate login process
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsLoading(true)
     
-    if (system) {
-      setSelectedSystem(system);
-      setCurrentView('system');
-      return `Changed directory to: ${system.name}`;
-    } else {
-      return `System not found: ${systemName}`;
-    }
-  };
-
-  const listDirectory = () => {
-    if (selectedSystem) {
-      return `
-📁 ${selectedSystem.name} Directory
-═══════════════════════════════════════════════════════════════════════════════
-
-Status: ${selectedSystem.status}
-Endpoints: ${selectedSystem.endpoints}
-
-Features:
-${selectedSystem.features.map(feature => `  • ${feature}`).join('\n')}
-
-Commands:
-  • test - Test system endpoints
-  • back - Return to main menu
-═══════════════════════════════════════════════════════════════════════════════`;
-    } else {
-      return `
-📁 Main Directory
-═══════════════════════════════════════════════════════════════════════════════
-
-Available Systems:
-${systems.map(sys => `  • ${sys.name}`).join('\n')}
-
-Commands:
-  • cd <system> - Navigate to system
-  • systems - List all systems
-  • status - Show system status
-═══════════════════════════════════════════════════════════════════════════════`;
-    }
-  };
-
-  const showCurrentDirectory = () => {
-    if (selectedSystem) {
-      return `Current directory: /systems/${selectedSystem.name}`;
-    } else {
-      return 'Current directory: /';
-    }
-  };
-
-  const goBack = () => {
-    setSelectedSystem(null);
-    setCurrentView('main');
-    return 'Returned to main directory';
-  };
-
-  const showHelp = () => {
-    return `
-❓ Available Commands
-═══════════════════════════════════════════════════════════════════════════════
-
-System Commands:
-  status          - Show system status
-  systems         - List all systems
-  health          - Check system health
-
-Navigation Commands:
-  cd <system>     - Change to system directory
-  ls              - List current directory contents
-  pwd             - Show current directory
-  back            - Go back to main menu
-
-API Commands:
-  test <system>   - Test system endpoints
-
-Help Commands:
-  help            - Show this help
-  clear           - Clear terminal output
-  about           - Show system information
-
-Examples:
-  cd company      - Navigate to Company Management System
-  test gamification - Test Gamification System endpoints
-  ls              - List current directory
-═══════════════════════════════════════════════════════════════════════════════`;
-  };
-
-  const showAbout = () => {
-    return `
-ℹ️  SmartStart Platform
-═══════════════════════════════════════════════════════════════════════════════
-
-SmartStart Platform is a comprehensive Venture Operating System that provides
-everything a new venture needs in one controlled ecosystem.
-
-Features:
-  • Infrastructure: IT pack provisioning (M365, GitHub, hosting, backups)
-  • Governance: Legal contracts, equity management, compliance
-  • Community: Contributor management, skill verification, reputation system
-  • Security: KYC/KYB, device posture, audit logging
-  • Gamification: XP, levels, badges, reputation building
-  • BUZ Economy: Token-based contribution rewards and equity conversion
-
-Technology Stack:
-  • Backend: Node.js/Express.js with Prisma ORM
-  • Database: PostgreSQL with advanced indexing
-  • Hosting: Render.com Standard Plan (2GB RAM, 1 CPU)
-  • Deployment: Git-based automated deployment
-
-Current Status: 7 Major Systems Deployed & Operational
-Total Endpoints: 145
-Total Features: 84
-Database Tables: 31+
-
-Next Phase: Financial Integration & BUZ Token System
-═══════════════════════════════════════════════════════════════════════════════`;
-  };
-
-  const testSystem = async (systemName: string) => {
-    const system = systems.find(s => 
-      s.name.toLowerCase().includes(systemName.toLowerCase())
-    );
-    
-    if (!system) {
-      return `System not found: ${systemName}`;
-    }
-
-    try {
-      let healthEndpoint = '';
-      
-      // Map system names to their health endpoints
-      if (system.name.includes('Company')) {
-        healthEndpoint = 'https://smartstart-api.onrender.com/api/companies/health';
-      } else if (system.name.includes('Team')) {
-        healthEndpoint = 'https://smartstart-api.onrender.com/api/teams/health';
-      } else if (system.name.includes('Contribution')) {
-        healthEndpoint = 'https://smartstart-api.onrender.com/api/contribution/health';
-      } else if (system.name.includes('Gamification')) {
-        healthEndpoint = 'https://smartstart-api.onrender.com/api/gamification/health';
-      } else if (system.name.includes('User')) {
-        healthEndpoint = 'https://smartstart-api.onrender.com/api/users/health';
-      } else if (system.name.includes('Venture')) {
-        healthEndpoint = 'https://smartstart-api.onrender.com/api/ventures/health';
-      } else if (system.name.includes('Legal')) {
-        healthEndpoint = 'https://smartstart-api.onrender.com/api/contracts/health';
-      }
-
-      if (healthEndpoint) {
-        const response = await fetch(healthEndpoint);
-        const data = await response.json();
-        
-        return `
-🧪 Testing ${system.name}
-═══════════════════════════════════════════════════════════════════════════════
-
-Health Check: ${data.success ? '✅ PASSED' : '❌ FAILED'}
-Response: ${JSON.stringify(data, null, 2)}
-═══════════════════════════════════════════════════════════════════════════════`;
-      } else {
-        return `No health endpoint found for ${system.name}`;
-      }
-    } catch (error) {
-      return `Error testing ${system.name}: ${error}`;
-    }
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      executeCommand(currentCommand);
-    }
-  };
+    // Simulate API call
+    setTimeout(() => {
+      setIsLoading(false)
+      // For demo, redirect to CLI dashboard
+      router.push('/cli-dashboard')
+    }, 2000)
+  }
 
   return (
-    <div className="cli-container">
-      {/* Header */}
-      <div className="cli-header">
-        <div className="cli-title">
-          <span className="cli-prompt">$</span>
-          <span className="cli-text">SmartStart Platform CLI</span>
-        </div>
-        <div className="cli-status">
-          <span className="status-dot"></span>
-          <span className="status-text">7 SYSTEMS OPERATIONAL</span>
-        </div>
+    <div className="min-h-screen bg-black text-green-400 font-mono p-4">
+      {/* ASCII Art Header */}
+      <div className="text-center mb-8">
+        <pre className="text-xs leading-tight overflow-hidden">
+          {asciiArt}
+        </pre>
       </div>
 
-      {/* Terminal Output */}
-      <div className="cli-output">
-        <div className="welcome-message">
-          🚀 Welcome to SmartStart Platform CLI
-          ═══════════════════════════════════════════════════════════════════════════
-          
-          Type 'help' for available commands
-          Type 'status' to see system status
-          Type 'systems' to list all systems
-          
-          ═══════════════════════════════════════════════════════════════════════════
-        </div>
-        
-        {output && (
-          <pre className="command-output">{output}</pre>
-        )}
-        
-        {isLoading && (
-          <div className="loading">
-            <span className="loading-dots">Processing</span>
+      {/* Login Form */}
+      <div className="max-w-md mx-auto">
+        <div className="bg-gray-900 border border-green-500 rounded-lg p-6">
+          <div className="text-center mb-6">
+            <h2 className="text-xl font-bold text-green-400 mb-2">
+              🔐 SYSTEM ACCESS REQUIRED
+            </h2>
+            <p className="text-green-300 text-sm">
+              Enter your credentials to access SmartStart Platform
+            </p>
           </div>
-        )}
+
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div>
+              <label className="block text-green-400 text-sm font-bold mb-2">
+                USERNAME:
+              </label>
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="w-full bg-black border border-green-500 text-green-400 px-3 py-2 rounded focus:outline-none focus:border-green-300"
+                placeholder="Enter username..."
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-green-400 text-sm font-bold mb-2">
+                PASSWORD:
+              </label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full bg-black border border-green-500 text-green-400 px-3 py-2 rounded focus:outline-none focus:border-green-300"
+                placeholder="Enter password..."
+                required
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-600 text-white font-bold py-2 px-4 rounded transition-colors"
+            >
+              {isLoading ? '🔐 AUTHENTICATING...' : '🚀 LOGIN TO SYSTEM'}
+            </button>
+          </form>
+
+          {/* System Status */}
+          <div className="mt-6 p-4 bg-black rounded border border-green-500">
+            <h3 className="text-green-400 font-bold mb-2">📊 SYSTEM STATUS:</h3>
+            <div className="space-y-1 text-sm">
+              <div className="flex justify-between">
+                <span>Database:</span>
+                <span className="text-green-400">✅ ONLINE</span>
+              </div>
+              <div className="flex justify-between">
+                <span>API Services:</span>
+                <span className="text-green-400">✅ OPERATIONAL</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Endpoints:</span>
+                <span className="text-green-400">145 ACTIVE</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Systems:</span>
+                <span className="text-green-400">7 DEPLOYED</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Access */}
+          <div className="mt-4 text-center">
+            <p className="text-green-300 text-sm">
+              💡 Demo Access: admin / password123
+            </p>
+          </div>
+        </div>
       </div>
 
-      {/* Command Input */}
-      <div className="cli-input-container">
-        <span className="cli-prompt">$</span>
-        <input
-          ref={inputRef}
-          type="text"
-          className="cli-input"
-          value={currentCommand}
-          onChange={(e) => setCurrentCommand(e.target.value)}
-          onKeyPress={handleKeyPress}
-          placeholder="Enter command..."
-          disabled={isLoading}
-        />
-      </div>
-
-      {/* Quick Actions */}
-      <div className="quick-actions">
-        <button onClick={() => executeCommand('status')} className="quick-btn">
-          📊 Status
-        </button>
-        <button onClick={() => executeCommand('systems')} className="quick-btn">
-          🗂️ Systems
-        </button>
-        <button onClick={() => executeCommand('health')} className="quick-btn">
-          🏥 Health
-        </button>
-        <button onClick={() => executeCommand('help')} className="quick-btn">
-          ❓ Help
-        </button>
+      {/* Footer */}
+      <div className="text-center mt-8 text-green-300 text-sm">
+        <p>SmartStart Platform v2.0.0 • All Systems Operational</p>
+        <p className="mt-1">🚀 Ready for Production Use</p>
       </div>
     </div>
-  );
+  )
 }
