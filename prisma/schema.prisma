@@ -103,6 +103,9 @@ model User {
 
   // Company relationships
   companiesOwned Company[] @relation("CompanyOwner")
+  
+  // Team channel relationships
+  teamChannelMemberships TeamChannelMember[] @relation("TeamChannelMember")
 
   @@index([tenantId])
   @@index([status])
@@ -2002,4 +2005,465 @@ model VentureITPack {
   updatedAt DateTime @updatedAt
 
   @@index([status])
+}
+
+// Company Management System
+model Company {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  
+  // Company classification
+  industry    String
+  size        CompanySize @default(SMALL)
+  stage       FundingStage @default(PRE_SEED)
+  status      CompanyStatus @default(ACTIVE)
+  visibility  CompanyVisibility @default(PUBLIC)
+  
+  // Company details
+  foundedDate DateTime?
+  website     String?
+  location    String?
+  logoUrl     String?
+  
+  // Company relationships
+  ownerId     String
+  owner       User     @relation("CompanyOwner", fields: [ownerId], references: [id])
+  parentCompanyId String?
+  parentCompany Company? @relation("CompanyHierarchy", fields: [parentCompanyId], references: [id])
+  subsidiaries Company[] @relation("CompanyHierarchy")
+  
+  // Company structure
+  teams       Team[]
+  
+  // Company data
+  tags        CompanyTag[]
+  hierarchy   CompanyHierarchy[]
+  metrics     CompanyMetric[]
+  documents   CompanyDocument[]
+  
+  // Company settings
+  settings    Json?    // Flexible company configuration
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([ownerId])
+  @@index([industry])
+  @@index([size])
+  @@index([stage])
+  @@index([status])
+  @@index([visibility])
+  @@index([parentCompanyId])
+}
+
+// Company Classification & Tagging
+model CompanyTag {
+  id          String   @id @default(cuid())
+  companyId   String
+  company     Company  @relation(fields: [companyId], references: [id])
+  
+  // Tag details
+  name        String
+  category    TagCategory @default(INDUSTRY)
+  value       String?
+  description String?
+  
+  // Tag metadata
+  isPrimary   Boolean @default(false)
+  confidence  Float   @default(1.0) // 0.0 to 1.0
+  
+  @@unique([companyId, name, category])
+  @@index([companyId])
+  @@index([category])
+  @@index([name])
+}
+
+// Company Hierarchy Management
+model CompanyHierarchy {
+  id          String   @id @default(cuid())
+  companyId   String
+  company     Company  @relation(fields: [companyId], references: [id])
+  
+  // Hierarchy details
+  parentId    String?
+  parent      Company? @relation("CompanyHierarchyParent", fields: [parentId], references: [id])
+  children    Company[] @relation("CompanyHierarchyParent")
+  
+  // Relationship details
+  relationshipType String // "SUBSIDIARY", "BRANCH", "DIVISION", "JOINT_VENTURE"
+  ownershipPercent Float? // Percentage ownership if applicable
+  
+  // Hierarchy metadata
+  level       Int     @default(0) // 0 = root, 1 = first level, etc.
+  path        String  // "/company1/company2/company3" for easy querying
+  
+  @@index([companyId])
+  @@index([parentId])
+  @@index([relationshipType])
+  @@index([level])
+  @@index([path])
+}
+
+// Company Performance Metrics
+model CompanyMetric {
+  id          String   @id @default(cuid())
+  companyId   String
+  company     Company  @relation(fields: [companyId], references: [id])
+  
+  // Metric details
+  name        String
+  value       Float
+  unit        String?
+  metricType  String  // "FINANCIAL", "OPERATIONAL", "CUSTOMER", "EMPLOYEE"
+  
+  // Metric metadata
+  description String?
+  target      Float?
+  threshold   Float?
+  
+  // Metric tracking
+  period      String  // "DAILY", "WEEKLY", "MONTHLY", "QUARTERLY", "ANNUAL"
+  effectiveDate DateTime
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([companyId])
+  @@index([metricType])
+  @@index([period])
+  @@index([effectiveDate])
+}
+
+// Company Document Management
+model CompanyDocument {
+  id          String   @id @default(cuid())
+  companyId   String
+  company     Company  @relation(fields: [companyId], references: [id])
+  
+  // Document details
+  title       String
+  description String?
+  documentType String  // "CONTRACT", "POLICY", "REPORT", "CERTIFICATE", "OTHER"
+  
+  // Document metadata
+  fileName    String
+  fileSize    Int
+  mimeType    String
+  storageUri  String
+  
+  // Document status
+  status      String @default("ACTIVE") // ACTIVE, ARCHIVED, DELETED
+  isPublic    Boolean @default(false)
+  
+  // Document tracking
+  uploadedBy  String
+  uploadedAt  DateTime @default(now())
+  lastAccessed DateTime?
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([companyId])
+  @@index([documentType])
+  @@index([status])
+  @@index([uploadedBy])
+}
+
+// Team Management System
+model Team {
+  id          String   @id @default(cuid())
+  name        String
+  companyId   String
+  company     Company  @relation(fields: [companyId], references: [id])
+  
+  // Team structure
+  parentTeamId String?
+  parentTeam   Team?   @relation("TeamHierarchy", fields: [parentTeamId], references: [id])
+  childTeams   Team[]  @relation("TeamHierarchy")
+  
+  // Team details
+  purpose     String
+  description String?
+  size        Int
+  leadId      String?
+  lead        User?    @relation("TeamLead", fields: [leadId], references: [id])
+  
+  // Team status and visibility
+  status      TeamStatus @default(ACTIVE)
+  isPublic    Boolean  @default(true)
+  
+  // Team members
+  members     TeamMember[]
+  
+  // Team performance
+  goals       TeamGoal[]
+  metrics     TeamMetric[]
+  
+  // Team settings
+  settings    Json?    // Flexible team configuration
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([companyId])
+  @@index([parentTeamId])
+  @@index([status])
+  @@index([isPublic])
+}
+
+// Team Member Management
+model TeamMember {
+  id        String   @id @default(cuid())
+  teamId    String
+  userId    String
+  team      Team     @relation(fields: [teamId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+  
+  // Role and permissions
+  role      TeamRole @default(MEMBER)
+  permissions String[] // Array of TeamPermission values
+  
+  // Performance tracking
+  isActive  Boolean  @default(true)
+  joinedAt  DateTime @default(now())
+  leftAt    DateTime?
+  
+  // Contribution metrics
+  totalContributions Int @default(0)
+  lastContribution  DateTime?
+  
+  // Member settings
+  notificationsEnabled Boolean @default(true)
+  autoAssignmentEnabled Boolean @default(true)
+  
+  @@unique([teamId, userId])
+  @@index([teamId])
+  @@index([userId])
+  @@index([role])
+  @@index([isActive])
+}
+
+// Team Goals & Objectives
+model TeamGoal {
+  id          String   @id @default(cuid())
+  teamId      String
+  team        Team     @relation(fields: [teamId], references: [id])
+  
+  // Goal details
+  title       String
+  description String?
+  status      GoalStatus @default(DRAFT)
+  priority    GoalPriority @default(MEDIUM)
+  
+  // Goal metrics
+  targetValue Float?
+  currentValue Float @default(0)
+  unit        String?
+  
+  // Goal timeline
+  startDate   DateTime?
+  targetDate  DateTime?
+  completedAt DateTime?
+  
+  // Goal tracking
+  progress    Float @default(0) // 0-100 percentage
+  milestones  TeamMilestone[]
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([teamId])
+  @@index([status])
+  @@index([priority])
+  @@index([targetDate])
+}
+
+// Team Milestones
+model TeamMilestone {
+  id          String   @id @default(cuid())
+  goalId      String
+  goal        TeamGoal @relation(fields: [goalId], references: [id])
+  
+  // Milestone details
+  title       String
+  description String?
+  targetDate  DateTime
+  completedAt DateTime?
+  
+  // Milestone tracking
+  isCompleted Boolean @default(false)
+  order       Int     // Order in goal sequence
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([goalId])
+  @@index([targetDate])
+  @@index([isCompleted])
+}
+
+// Team Performance Metrics
+model TeamMetric {
+  id          String   @id @default(cuid())
+  teamId      String
+  team        Team     @relation(fields: [teamId], references: [id])
+  
+  // Metric details
+  name        String
+  value       Float
+  unit        String?
+  metricType  String  // "PERFORMANCE", "EFFICIENCY", "QUALITY", "ENGAGEMENT"
+  
+  // Metric metadata
+  description String?
+  target      Float?
+  threshold   Float?
+  
+  // Metric tracking
+  period      String  // "DAILY", "WEEKLY", "MONTHLY", "QUARTERLY"
+  effectiveDate DateTime
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([teamId])
+  @@index([metricType])
+  @@index([period])
+  @@index([effectiveDate])
+}
+
+// Team Communication & Collaboration
+model TeamChannel {
+  id          String   @id @default(cuid())
+  teamId      String
+  team        Team     @relation(fields: [teamId], references: [id])
+  
+  // Channel details
+  name        String
+  description String?
+  channelType String  // "GENERAL", "ANNOUNCEMENTS", "PROJECTS", "WATERCOOLER"
+  
+  // Channel settings
+  isPublic    Boolean @default(true)
+  isArchived  Boolean @default(false)
+  
+  // Channel members
+  members     TeamChannelMember[]
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([teamId])
+  @@index([channelType])
+  @@index([isPublic])
+}
+
+// Team Channel Members
+model TeamChannelMember {
+  id          String   @id @default(cuid())
+  channelId   String
+  channel     TeamChannel @relation(fields: [channelId], references: [id])
+  userId      String
+  user        User     @relation("TeamChannelMember", fields: [userId], references: [id])
+  
+  // Member settings
+  isAdmin     Boolean @default(false)
+  isMuted     Boolean @default(false)
+  joinedAt    DateTime @default(now())
+  
+  @@unique([channelId, userId])
+  @@index([channelId])
+  @@index([userId])
+}
+
+// Company and Team Enums
+enum CompanySize {
+  MICRO       // 1-10 employees
+  SMALL       // 11-50 employees
+  MEDIUM      // 51-200 employees
+  LARGE       // 201-1000 employees
+  ENTERPRISE  // 1000+ employees
+}
+
+enum FundingStage {
+  PRE_SEED    // Idea stage
+  SEED        // Early development
+  SERIES_A    // Growth stage
+  SERIES_B    // Expansion stage
+  SERIES_C    // Scaling stage
+  SERIES_D    // Pre-IPO
+  IPO         // Public company
+  ACQUIRED    // Company acquired
+}
+
+enum CompanyStatus {
+  ACTIVE      // Operating normally
+  INACTIVE    // Temporarily suspended
+  SUSPENDED   // Under investigation
+  DISSOLVED   // Company dissolved
+  MERGED      // Merged with another company
+}
+
+enum CompanyVisibility {
+  PUBLIC      // Visible to everyone
+  PRIVATE     // Visible to members only
+  CONFIDENTIAL // Visible to owners only
+}
+
+enum TagCategory {
+  INDUSTRY    // Technology, Healthcare, Finance, etc.
+  TECHNOLOGY  // AI, Blockchain, SaaS, etc.
+  BUSINESS_MODEL // B2B, B2C, Marketplace, etc.
+  GEOGRAPHY   // North America, Europe, Asia, etc.
+  STAGE       // Startup, Growth, Scale, etc.
+  CUSTOM      // Custom company-specific tags
+}
+
+enum TeamRole {
+  LEAD        // Team leader
+  SENIOR      // Senior team member
+  MEMBER      // Regular team member
+  JUNIOR      // Junior team member
+  INTERN      // Intern or apprentice
+}
+
+enum TeamPermission {
+  READ        // Read team information
+  WRITE       // Create and edit team content
+  ADMIN       // Manage team settings
+  INVITE      // Invite new members
+  REMOVE      // Remove members
+  ANALYTICS   // Access team analytics
+}
+
+enum TeamStatus {
+  ACTIVE      // Team is active
+  INACTIVE    // Team is inactive
+  ARCHIVED    // Team is archived
+  DISBANDED   // Team has been disbanded
+}
+
+enum GoalStatus {
+  DRAFT       // Goal is in draft
+  ACTIVE      // Goal is active
+  ON_TRACK    // Goal is on track
+  AT_RISK     // Goal is at risk
+  COMPLETED   // Goal is completed
+  CANCELLED   // Goal is cancelled
+}
+
+enum GoalPriority {
+  LOW         // Low priority goal
+  MEDIUM      // Medium priority goal
+  HIGH        // High priority goal
+  CRITICAL    // Critical priority goal
 }
