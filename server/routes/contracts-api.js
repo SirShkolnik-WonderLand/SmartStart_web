@@ -4,6 +4,45 @@ const crypto = require('crypto');
 const router = express.Router();
 const prisma = new PrismaClient();
 
+// ===== HEALTH CHECK =====
+
+/**
+ * GET /contracts/health - Contracts system health check
+ */
+router.get('/health', async (req, res) => {
+    try {
+        const [totalContracts, totalTemplates, totalSignatures] = await Promise.all([
+            prisma.legalDocument.count(),
+            prisma.legalDocument.count({
+                where: { status: 'APPROVED' }
+            }),
+            prisma.legalDocumentSignature.count()
+        ]);
+
+        res.json({
+            success: true,
+            message: 'Contracts system is healthy',
+            status: 'healthy',
+            metrics: {
+                totalContracts,
+                totalTemplates,
+                totalSignatures,
+                averageSignaturesPerContract: totalContracts > 0 ? (totalSignatures / totalContracts).toFixed(2) : 0
+            },
+            timestamp: new Date().toISOString()
+        });
+    } catch (error) {
+        console.error('Contracts health check error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Contracts system health check failed',
+            status: 'unhealthy',
+            error: error.message,
+            timestamp: new Date().toISOString()
+        });
+    }
+});
+
 // ===== CONTRACT TEMPLATES SYSTEM =====
 
 /**
@@ -820,45 +859,6 @@ router.get('/compliance/status', async (req, res) => {
         res.status(500).json({
             error: 'Failed to retrieve compliance status',
             details: error.message
-        });
-    }
-});
-
-// ===== HEALTH CHECK =====
-
-/**
- * GET /contracts/health - Contracts system health check
- */
-router.get('/health', async (req, res) => {
-    try {
-        const [totalContracts, totalTemplates, totalSignatures] = await Promise.all([
-            prisma.legalDocument.count(),
-            prisma.legalDocument.count({
-                where: { status: 'APPROVED' }
-            }),
-            prisma.legalDocumentSignature.count()
-        ]);
-
-        res.json({
-            success: true,
-            message: 'Contracts system is healthy',
-            status: 'healthy',
-            metrics: {
-                totalContracts,
-                totalTemplates,
-                totalSignatures,
-                averageSignaturesPerContract: totalContracts > 0 ? (totalSignatures / totalContracts).toFixed(2) : 0
-            },
-            timestamp: new Date().toISOString()
-        });
-    } catch (error) {
-        console.error('Contracts health check error:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Contracts system health check failed',
-            status: 'unhealthy',
-            error: error.message,
-            timestamp: new Date().toISOString()
         });
     }
 });
