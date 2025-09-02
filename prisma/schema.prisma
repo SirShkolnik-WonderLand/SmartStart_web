@@ -97,6 +97,13 @@ model User {
   connectionRequests UserConnection[] @relation("ConnectionRequester")
   connectionTargets  UserConnection[] @relation("ConnectionTarget")
 
+  // Team relationships
+  teamsLed        Team[] @relation("TeamLead")
+  teamMemberships TeamMember[]
+
+  // Company relationships
+  companiesOwned Company[] @relation("CompanyOwner")
+
   @@index([tenantId])
   @@index([status])
   @@index([level])
