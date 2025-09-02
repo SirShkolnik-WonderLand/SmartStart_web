@@ -543,6 +543,99 @@ router.get('/:userId/stats', async (req, res) => {
     }
 });
 
+// ===== TABLE CREATION ENDPOINT =====
+router.post('/create-tables', async (req, res) => {
+    try {
+        console.log('🔨 Creating user management system tables...');
+        
+        // Create UserProfile table
+        await prisma.$executeRaw`
+            CREATE TABLE IF NOT EXISTS "UserProfile" (
+                "id" TEXT NOT NULL,
+                "userId" TEXT NOT NULL,
+                "nickname" VARCHAR(40) NOT NULL,
+                "avatarFileId" TEXT,
+                "theme" TEXT NOT NULL DEFAULT 'auto',
+                "bio" VARCHAR(280),
+                "location" VARCHAR(80),
+                "websiteUrl" VARCHAR(200),
+                "level" INTEGER NOT NULL DEFAULT 1,
+                "xp" INTEGER NOT NULL DEFAULT 0,
+                "repScore" INTEGER NOT NULL DEFAULT 0,
+                "isPublic" BOOLEAN NOT NULL DEFAULT true,
+                "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                "updatedAt" TIMESTAMP(3) NOT NULL,
+                CONSTRAINT "UserProfile_pkey" PRIMARY KEY ("id")
+            );
+        `;
+        
+        // Create ProfilePrivacy table
+        await prisma.$executeRaw`
+            CREATE TABLE IF NOT EXISTS "ProfilePrivacy" (
+                "id" TEXT NOT NULL,
+                "userId" TEXT NOT NULL,
+                "showExactPercToHub" BOOLEAN NOT NULL DEFAULT false,
+                "showActivity" BOOLEAN NOT NULL DEFAULT true,
+                "showSkills" BOOLEAN NOT NULL DEFAULT true,
+                "showReputation" BOOLEAN NOT NULL DEFAULT true,
+                CONSTRAINT "ProfilePrivacy_pkey" PRIMARY KEY ("id")
+            );
+        `;
+        
+        // Create Wallet table
+        await prisma.$executeRaw`
+            CREATE TABLE IF NOT EXISTS "Wallet" (
+                "id" TEXT NOT NULL,
+                "userId" TEXT NOT NULL,
+                "buzBalance" INTEGER NOT NULL DEFAULT 0,
+                "pendingLock" INTEGER NOT NULL DEFAULT 0,
+                "chainAddress" TEXT,
+                "chainType" TEXT,
+                "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                "updatedAt" TIMESTAMP(3) NOT NULL,
+                CONSTRAINT "Wallet_pkey" PRIMARY KEY ("id")
+            );
+        `;
+        
+        // Create UserConnection table
+        await prisma.$executeRaw`
+            CREATE TABLE IF NOT EXISTS "UserConnection" (
+                "id" TEXT NOT NULL,
+                "requesterId" TEXT NOT NULL,
+                "targetId" TEXT NOT NULL,
+                "connectionType" TEXT NOT NULL DEFAULT 'CONNECTION',
+                "status" TEXT NOT NULL DEFAULT 'PENDING',
+                "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                "acceptedAt" TIMESTAMP(3),
+                "rejectedAt" TIMESTAMP(3),
+                CONSTRAINT "UserConnection_pkey" PRIMARY KEY ("id")
+            );
+        `;
+        
+        // Create indexes
+        await prisma.$executeRaw`CREATE UNIQUE INDEX IF NOT EXISTS "UserProfile_userId_key" ON "UserProfile"("userId");`;
+        await prisma.$executeRaw`CREATE UNIQUE INDEX IF NOT EXISTS "ProfilePrivacy_userId_key" ON "ProfilePrivacy"("userId");`;
+        await prisma.$executeRaw`CREATE UNIQUE INDEX IF NOT EXISTS "Wallet_userId_key" ON "Wallet"("userId");`;
+        await prisma.$executeRaw`CREATE UNIQUE INDEX IF NOT EXISTS "UserConnection_requesterId_targetId_key" ON "UserConnection"("requesterId", "targetId");`;
+        await prisma.$executeRaw`CREATE INDEX IF NOT EXISTS "UserConnection_requesterId_idx" ON "UserConnection"("requesterId");`;
+        await prisma.$executeRaw`CREATE INDEX IF NOT EXISTS "UserConnection_targetId_idx" ON "UserConnection"("targetId");`;
+        await prisma.$executeRaw`CREATE INDEX IF NOT EXISTS "UserConnection_status_idx" ON "UserConnection"("status");`;
+        
+        res.json({
+            success: true,
+            message: 'User management system tables created successfully',
+            timestamp: new Date().toISOString()
+        });
+    } catch (error) {
+        console.error('Table creation error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Table creation failed',
+            error: error.message
+        });
+    }
+});
+
 // ===== SYSTEM OPERATIONS =====
 
 // Get all users (admin)
