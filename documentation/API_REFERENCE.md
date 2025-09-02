@@ -4,6 +4,52 @@
 
 This document provides a comprehensive reference for all API endpoints available in the SmartStart Platform. The API follows RESTful principles and uses JWT-based authentication.
 
+**🎯 Current Status: 7 MAJOR SYSTEMS DEPLOYED & OPERATIONAL**
+- **Total Endpoints:** 145 endpoints
+- **Total Features:** 84 features
+- **Database Tables:** 31+ tables
+
+---
+
+## **✅ Deployed Systems**
+
+### **1. Legal Foundation System** 🏛️
+- **Endpoints:** 35+ endpoints
+- **Features:** Contracts, Templates, Signatures, Amendments, Compliance
+- **Base Path:** `/api/contracts/*`
+
+### **2. Company Management System** 🏢
+- **Endpoints:** 17 endpoints
+- **Features:** Company CRUD, Industry Classification, Hierarchy, Metrics, Documents, Tagging
+- **Base Path:** `/api/companies/*`
+
+### **3. Team Management System** 👥
+- **Endpoints:** 15 endpoints
+- **Features:** Team Structure, Collaboration, Goals, Metrics, Communication, Analytics
+- **Base Path:** `/api/teams/*`
+
+### **4. Contribution Pipeline System** 📋
+- **Endpoints:** 18 endpoints
+- **Features:** Project Management, Task Management, Workflow Automation, Performance Tracking, Contribution Analytics
+- **Base Path:** `/api/contribution/*`
+
+### **5. Gamification System** 🎮
+- **Endpoints:** 20+ endpoints
+- **Features:** XP, Levels, Badges, Reputation, Portfolio, Skills, Leaderboards
+- **Base Path:** `/api/gamification/*`
+
+### **6. User Management System** 👤
+- **Endpoints:** 25 endpoints
+- **Features:** User CRUD, Profiles, Privacy, Connections, Portfolio, Skills, Analytics
+- **Base Path:** `/api/users/*`
+
+### **7. Venture Management System** 🚀
+- **Endpoints:** 15 endpoints
+- **Features:** Ventures, Legal Entities, Equity, IT Packs, Growth Tracking
+- **Base Path:** `/api/ventures/*`
+
+---
+
 ## 🔐 Authentication
 
 ### JWT Token Format
@@ -80,6 +126,34 @@ Content-Type: application/json
 
 ## 🏠 Health & Status Endpoints
 
+### System Status
+```http
+GET /api/system/status
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "systemStatus": {
+    "platform": "SmartStart Platform",
+    "version": "2.0.0",
+    "status": "OPERATIONAL",
+    "deployedSystems": [
+      {
+        "name": "User Management System",
+        "status": "✅ DEPLOYED",
+        "endpoints": 25,
+        "features": ["CRUD", "Profiles", "Privacy", "Networking", "Portfolio", "Skills", "Analytics"]
+      }
+    ],
+    "totalEndpoints": 145,
+    "totalFeatures": 84,
+    "databaseTables": 31
+  }
+}
+```
+
 ### Health Check
 ```http
 GET /api/health
@@ -100,446 +174,576 @@ GET /api/health
 }
 ```
 
-### System Status
+## 🏢 Company Management System
+
+### Company Operations
 ```http
-GET /api/status
-Authorization: Bearer <token>
-```
+# Health check
+GET /api/companies/health
 
-**Response:**
-```json
-{
-  "database": "healthy",
-  "redis": "connected",
-  "uptime": 86400,
-  "memory": {
-    "heapUsed": 150000000,
-    "heapTotal": 200000000,
-    "external": 50000000
-  },
-  "timestamp": "2024-01-15T10:30:00.000Z"
-}
-```
-
-## 👤 User Management
-
-### Get Current User
-```http
-GET /api/auth/me
-Authorization: Bearer <token>
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "user": {
-    "id": "user-123",
-    "display_name": "User Name",
-    "email": "user@example.com",
-    "kyc_status": "verified",
-    "trust_score": 75.50,
-    "country_code": "US",
-    "created_at": "2024-01-01T00:00:00.000Z",
-    "updated_at": "2024-01-15T10:30:00.000Z"
-  }
-}
-```
-
-### Update User Profile
-```http
-PUT /api/users/profile
-Authorization: Bearer <token>
+# Create company
+POST /api/companies/create
 Content-Type: application/json
 
 {
-  "display_name": "New Display Name",
-  "country_code": "CA"
+  "name": "My Startup",
+  "industry": "Technology",
+  "size": "SMALL",
+  "description": "A revolutionary platform"
 }
-```
 
-### Get User Portfolio
-```http
-GET /api/users/portfolio
-Authorization: Bearer <token>
-```
+# List companies
+GET /api/companies/?page=1&limit=20
 
-**Response:**
-```json
-{
-  "success": true,
-  "portfolio": {
-    "ventures": [
-      {
-        "id": "venture-123",
-        "name": "My Startup",
-        "role": "owner",
-        "equity_percentage": 60.0,
-        "start_date": "2024-01-01",
-        "impact_summary": "Led technical development and team growth"
-      }
-    ],
-    "skills": [
-      {
-        "slug": "nodejs",
-        "name": "Node.js",
-        "level": "expert",
-        "verified": true
-      }
-    ],
-    "badges": [
-      {
-        "slug": "top_contributor_q1_2024",
-        "name": "Top Contributor Q1 2024",
-        "awarded_at": "2024-04-01T00:00:00.000Z"
-      }
-    ]
-  }
-}
-```
+# Get company details
+GET /api/companies/:id
 
-## 🏢 Venture Management
-
-### List Ventures
-```http
-GET /api/ventures?page=1&limit=20&status=active
-Authorization: Bearer <token>
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "ventures": [
-    {
-      "id": "venture-123",
-      "name": "My Startup",
-      "description": "A revolutionary platform",
-      "region": "US",
-      "status": "active",
-      "owner": {
-        "id": "user-123",
-        "display_name": "User Name",
-        "email": "user@example.com"
-      },
-      "equity_summary": {
-        "total_equity": 100.0,
-        "owner_equity": 60.0,
-        "alice_equity": 20.0,
-        "contributor_equity": 20.0
-      },
-      "created_at": "2024-01-01T00:00:00.000Z"
-    }
-  ],
-  "pagination": {
-    "page": 1,
-    "limit": 20,
-    "total": 5,
-    "pages": 1
-  }
-}
-```
-
-### Create Venture
-```http
-POST /api/ventures
-Authorization: Bearer <token>
+# Update company
+PUT /api/companies/:id
 Content-Type: application/json
 
 {
-  "name": "New Venture",
-  "description": "Description of the venture",
+  "description": "Updated description"
+}
+
+# Delete company
+DELETE /api/companies/:id
+
+# Search companies
+GET /api/companies/search/companies?q=startup&industry=tech
+```
+
+### Company Analytics
+```http
+# Get company metrics
+GET /api/companies/:id/metrics
+
+# Get company hierarchy
+GET /api/companies/:id/hierarchy
+
+# Get company documents
+GET /api/companies/:id/documents
+
+# Get company analytics
+GET /api/companies/:id/analytics
+```
+
+## 👥 Team Management System
+
+### Team Operations
+```http
+# Health check
+GET /api/teams/health
+
+# Create team
+POST /api/teams/create
+Content-Type: application/json
+
+{
+  "name": "Engineering Team",
+  "companyId": "company-123",
+  "purpose": "Build amazing products",
+  "size": "MEDIUM"
+}
+
+# List teams
+GET /api/teams/?page=1&limit=20
+
+# Get team details
+GET /api/teams/:id
+
+# Update team
+PUT /api/teams/:id
+Content-Type: application/json
+
+{
+  "purpose": "Updated purpose"
+}
+
+# Delete team
+DELETE /api/teams/:id
+```
+
+### Team Management
+```http
+# Get team members
+GET /api/teams/:id/members
+
+# Add team member
+POST /api/teams/:id/members
+Content-Type: application/json
+
+{
+  "userId": "user-123",
+  "role": "MEMBER"
+}
+
+# Get team goals
+GET /api/teams/:id/goals
+
+# Add team goal
+POST /api/teams/:id/goals
+Content-Type: application/json
+
+{
+  "title": "Launch MVP",
+  "description": "Launch minimum viable product",
+  "deadline": "2024-06-01"
+}
+
+# Get team metrics
+GET /api/teams/:id/metrics
+
+# Get team analytics
+GET /api/teams/:id/analytics
+```
+
+## 📋 Contribution Pipeline System
+
+### Project Management
+```http
+# Health check
+GET /api/contribution/health
+
+# Create project
+POST /api/contribution/projects/create
+Content-Type: application/json
+
+{
+  "name": "SmartStart Platform",
+  "companyId": "company-123",
+  "teamId": "team-123",
+  "description": "Build the ultimate startup platform",
+  "budget": 50000,
+  "deadline": "2024-12-31"
+}
+
+# List projects
+GET /api/contribution/projects/?page=1&limit=20
+
+# Get project details
+GET /api/contribution/projects/:id
+
+# Update project
+PUT /api/contribution/projects/:id
+Content-Type: application/json
+
+{
+  "status": "IN_PROGRESS"
+}
+```
+
+### Task Management
+```http
+# Create task
+POST /api/contribution/tasks/create
+Content-Type: application/json
+
+{
+  "title": "Implement User Authentication",
+  "projectId": "project-123",
+  "description": "Build secure user authentication system",
+  "estimatedHours": 40,
+  "priority": "HIGH",
+  "type": "DEVELOPMENT"
+}
+
+# List tasks
+GET /api/contribution/tasks/?page=1&limit=20
+
+# Get task details
+GET /api/contribution/tasks/:id
+
+# Assign task
+POST /api/contribution/tasks/:id/assign
+Content-Type: application/json
+
+{
+  "userId": "user-123",
+  "role": "DEVELOPER"
+}
+
+# Complete task
+POST /api/contribution/tasks/:id/complete
+Content-Type: application/json
+
+{
+  "actualHours": 35,
+  "quality": 9,
+  "notes": "Completed successfully"
+}
+```
+
+### Contribution Analytics
+```http
+# Get user contributions
+GET /api/contribution/contributions/:userId
+
+# Get project analytics
+GET /api/contribution/projects/:projectId/analytics
+
+# Get system overview
+GET /api/contribution/overview
+```
+
+## 🎮 Gamification System
+
+### User Profiles & XP
+```http
+# Get user profile
+GET /api/gamification/profile/:userId
+
+# Get user XP
+GET /api/gamification/xp/:userId
+
+# Add XP
+POST /api/gamification/xp/add
+Content-Type: application/json
+
+{
+  "userId": "user-123",
+  "amount": 100,
+  "reason": "Task completion"
+}
+```
+
+### Badges & Achievements
+```http
+# Get all badges
+GET /api/gamification/badges
+
+# Get user badges
+GET /api/gamification/badges/:userId
+
+# Check badge eligibility
+GET /api/gamification/badges/check/:userId
+```
+
+### Reputation & Skills
+```http
+# Get user reputation
+GET /api/gamification/reputation/:userId
+
+# Calculate reputation
+POST /api/gamification/reputation/calculate/:userId
+
+# Get user skills
+GET /api/gamification/skills/:userId
+
+# Endorse skill
+POST /api/gamification/skills/endorse
+Content-Type: application/json
+
+{
+  "userId": "user-123",
+  "skillId": "skill-123",
+  "rating": 5,
+  "comment": "Excellent work"
+}
+```
+
+### Portfolio & Analytics
+```http
+# Get user portfolio
+GET /api/gamification/portfolio/:userId
+
+# Get portfolio insights
+GET /api/gamification/portfolio/insights/:userId
+
+# Get community score
+GET /api/gamification/community/score/:userId
+```
+
+### Challenges & Leaderboards
+```http
+# Get daily challenges
+GET /api/gamification/challenges/daily/:userId
+
+# Get leaderboard
+GET /api/gamification/leaderboard/:category
+
+# Get all leaderboards
+GET /api/gamification/leaderboards
+```
+
+## 👤 User Management System
+
+### User Operations
+```http
+# Create user
+POST /api/users/create
+Content-Type: application/json
+
+{
+  "display_name": "John Doe",
+  "email": "john@example.com",
+  "password": "securepassword"
+}
+
+# Get all users
+GET /api/users/?page=1&limit=20
+
+# Get user details
+GET /api/users/:userId
+
+# Update user
+PUT /api/users/:userId
+Content-Type: application/json
+
+{
+  "display_name": "John Smith"
+}
+
+# Delete user
+DELETE /api/users/:userId
+```
+
+### User Profiles & Settings
+```http
+# Get user profile
+GET /api/users/:userId/profile
+
+# Update profile
+PUT /api/users/:userId/profile
+Content-Type: application/json
+
+{
+  "bio": "Software engineer passionate about startups"
+}
+
+# Get user privacy settings
+GET /api/users/:userId/privacy
+
+# Update privacy settings
+PUT /api/users/:userId/privacy
+Content-Type: application/json
+
+{
+  "profile_visible": true,
+  "email_visible": false
+}
+
+# Get user settings
+GET /api/users/:userId/settings
+
+# Update settings
+PUT /api/users/:userId/settings
+Content-Type: application/json
+
+{
+  "theme": "dark",
+  "notifications": true
+}
+```
+
+### User Connections & Portfolio
+```http
+# Get user connections
+GET /api/users/:userId/connections
+
+# Accept connection
+POST /api/users/:userId/connections/:connectionId/accept
+
+# Get user portfolio
+GET /api/users/:userId/portfolio
+
+# Get user skills
+GET /api/users/:userId/skills
+
+# Get user analytics
+GET /api/users/:userId/analytics
+
+# Get user activity
+GET /api/users/:userId/activity
+
+# Get user stats
+GET /api/users/:userId/stats
+```
+
+### User Search & System Stats
+```http
+# Search users
+GET /api/users/search?q=john&skills=javascript
+
+# Get system stats
+GET /api/users/stats/system
+```
+
+## 🚀 Venture Management System
+
+### Venture Operations
+```http
+# Create venture
+POST /api/ventures/create
+Content-Type: application/json
+
+{
+  "name": "My Startup",
+  "description": "A revolutionary platform",
   "region": "US"
 }
-```
 
-**Required Permissions:** `venture:create`
+# Get venture details
+GET /api/ventures/:ventureId
 
-### Get Venture Details
-```http
-GET /api/ventures/{ventureId}
-Authorization: Bearer <token>
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "venture": {
-    "id": "venture-123",
-    "name": "My Startup",
-    "description": "A revolutionary platform",
-    "region": "US",
-    "status": "active",
-    "owner": {
-      "id": "user-123",
-      "display_name": "User Name"
-    },
-    "equity_ledger": [
-      {
-        "holder_type": "user",
-        "holder_id": "user-123",
-        "percent": 60.0,
-        "effective_from": "2024-01-01",
-        "vesting_policy": {
-          "cliff_months": 12,
-          "duration_months": 48
-        }
-      }
-    ],
-    "it_pack": {
-      "m365_tenant_id": "tenant-123",
-      "email_address": "admin@mystartup.com",
-      "github_org": "mystartup",
-      "status": "active"
-    }
-  }
-}
-```
-
-### Update Venture
-```http
-PUT /api/ventures/{ventureId}
-Authorization: Bearer <token>
+# Update venture
+PUT /api/ventures/:ventureId
 Content-Type: application/json
 
 {
-  "description": "Updated description",
-  "status": "active"
+  "description": "Updated description"
 }
+
+# Get venture status
+GET /api/ventures/:ventureId/status
 ```
 
-**Required Permissions:** `venture:write`
-
-## 💰 Equity Management
-
-### Get Equity Ledger
+### Venture Infrastructure
 ```http
-GET /api/ventures/{ventureId}/equity
-Authorization: Bearer <token>
+# Get IT pack
+GET /api/ventures/:ventureId/it-pack
+
+# Get venture equity
+GET /api/ventures/:ventureId/equity
+
+# Get venture profile
+GET /api/ventures/:ventureId/profile
+
+# Get venture documents
+GET /api/ventures/:ventureId/documents
 ```
 
-**Response:**
-```json
-{
-  "success": true,
-  "equity_ledger": [
-    {
-      "id": "equity-123",
-      "holder_type": "user",
-      "holder": {
-        "id": "user-123",
-        "display_name": "User Name"
-      },
-      "percent": 60.0,
-      "effective_from": "2024-01-01",
-      "vesting_policy": {
-        "cliff_months": 12,
-        "duration_months": 48,
-        "vested_percentage": 25.0
-      }
-    }
-  ],
-  "total_equity": 100.0
-}
-```
-
-### Update Equity
+### Venture Analytics
 ```http
-PUT /api/ventures/{ventureId}/equity
-Authorization: Bearer <token>
+# Get venture statistics
+GET /api/ventures/statistics/overview
+
+# List all ventures
+GET /api/ventures/list/all
+```
+
+## 🏛️ Legal Foundation System
+
+### Contract Management
+```http
+# Health check
+GET /api/contracts/health
+
+# Get contract templates
+GET /api/contracts/templates
+
+# Get specific template
+GET /api/contracts/templates/:type
+
+# Create template
+POST /api/contracts/templates/create
 Content-Type: application/json
 
 {
-  "equity_changes": [
-    {
-      "holder_type": "user",
-      "holder_id": "user-456",
-      "percent": 10.0,
-      "effective_from": "2024-02-01"
-    }
-  ]
+  "type": "EMPLOYMENT_CONTRACT",
+  "content": "Contract template content"
 }
+
+# Approve template
+POST /api/contracts/templates/:id/approve
 ```
 
-**Required Permissions:** `equity:write`
-
-## 🎯 Task Management
-
-### List Tasks
+### Contract Operations
 ```http
-GET /api/ventures/{ventureId}/tasks?status=open&assignee={userId}
-Authorization: Bearer <token>
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "tasks": [
-    {
-      "id": "task-123",
-      "title": "Implement user authentication",
-      "type": "code",
-      "weight": 1.2,
-      "criticality": "high",
-      "status": "open",
-      "assignee": {
-        "id": "user-123",
-        "display_name": "User Name"
-      },
-      "created_by": {
-        "id": "user-456",
-        "display_name": "Creator Name"
-      },
-      "created_at": "2024-01-15T10:00:00.000Z"
-    }
-  ]
-}
-```
-
-### Create Task
-```http
-POST /api/ventures/{ventureId}/tasks
-Authorization: Bearer <token>
+# Create contract
+POST /api/contracts/create
 Content-Type: application/json
 
 {
-  "title": "New task title",
-  "type": "code",
-  "weight": 1.0,
-  "criticality": "medium",
-  "assignee_id": "user-123"
+  "templateId": "template-123",
+  "parties": ["user-123", "user-456"],
+  "terms": { "salary": 50000 }
 }
-```
 
-**Required Permissions:** `task:create`
+# Get all contracts
+GET /api/contracts
 
-### Submit Task
-```http
-POST /api/tasks/{taskId}/submit
-Authorization: Bearer <token>
+# Get contract details
+GET /api/contracts/:id
+
+# Sign contract
+POST /api/contracts/:id/sign
 Content-Type: application/json
 
 {
-  "artifact_hash": "sha256-hash-of-submitted-work",
-  "notes": "Task completion notes"
+  "signature": "digital_signature_data"
 }
+
+# Get contract signatures
+GET /api/contracts/:id/signatures
 ```
 
-### Review Task
+### Advanced Contracts
 ```http
-POST /api/tasks/{taskId}/review
-Authorization: Bearer <token>
+# Health check
+GET /api/contracts/advanced/health
+
+# Amend contract
+POST /api/contracts/advanced/:id/amend
 Content-Type: application/json
 
 {
-  "quality_score": 85,
-  "comments": "Good work, minor improvements needed",
-  "decision": "approve"
+  "amendment": "Updated terms"
 }
-```
 
-**Required Permissions:** `task:review`
+# Get amendments
+GET /api/contracts/advanced/:id/amendments
 
-## 🏆 BUZ Token System
-
-### Get BUZ Balance
-```http
-GET /api/users/buz-balance
-Authorization: Bearer <token>
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "balance": {
-    "available": 15000,
-    "locked": 5000,
-    "total": 20000,
-    "pending_vesting": 2500
-  }
-}
-```
-
-### Get BUZ Transactions
-```http
-GET /api/users/buz-transactions?page=1&limit=20
-Authorization: Bearer <token>
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "transactions": [
-    {
-      "id": "tx-123",
-      "type": "earn",
-      "amount": 1000,
-      "venture": {
-        "id": "venture-123",
-        "name": "My Startup"
-      },
-      "artifact_hash": "sha256-hash",
-      "created_at": "2024-01-15T10:00:00.000Z"
-    }
-  ]
-}
-```
-
-### Convert BUZ to Equity
-```http
-POST /api/ventures/{ventureId}/convert-buz
-Authorization: Bearer <token>
+# Multi-party signing
+POST /api/contracts/advanced/:id/sign/multi-party
 Content-Type: application/json
 
 {
-  "buz_amount": 10000
+  "signatures": ["sig1", "sig2"]
 }
-```
 
-## 📋 Contract Management
+# Enforce contract
+POST /api/contracts/advanced/:id/enforce
 
-### List Contracts
-```http
-GET /api/ventures/{ventureId}/contracts
-Authorization: Bearer <token>
-```
+# Get enforcement status
+GET /api/contracts/advanced/:id/enforcement
 
-**Response:**
-```json
-{
-  "success": true,
-  "contracts": [
-    {
-      "id": "contract-123",
-      "type": "contributor",
-      "version": 1,
-      "status": "signed",
-      "signers": [
-        {
-          "user_id": "user-123",
-          "name": "User Name",
-          "signed_at": "2024-01-15T10:00:00.000Z"
-        }
-      ],
-      "created_at": "2024-01-01T00:00:00.000Z"
-    }
-  ]
-}
-```
-
-### Sign Contract
-```http
-POST /api/contracts/{contractId}/sign
-Authorization: Bearer <token>
+# Verify signature
+POST /api/contracts/advanced/:id/verify-signature
 Content-Type: application/json
 
 {
-  "digital_signature": "base64-encoded-signature"
+  "signatureId": "sig-123"
 }
+```
+
+### Contract Auto-Issuance
+```http
+# Health check
+GET /api/contracts/auto-issuance/health
+
+# Get templates
+GET /api/contracts/auto-issuance/templates
+
+# Issue contract
+POST /api/contracts/auto-issuance/issue/:ventureId
+Content-Type: application/json
+
+{
+  "templateType": "EMPLOYMENT_CONTRACT"
+}
+
+# Onboard venture
+POST /api/contracts/auto-issuance/onboard/:ventureId
+
+# Preview contract
+GET /api/contracts/auto-issuance/preview/:ventureId
+
+# Validate template
+GET /api/contracts/auto-issuance/validate/:templateId
+
+# Get venture status
+GET /api/contracts/auto-issuance/venture/:ventureId/status
 ```
 
 ## 🔍 Search & Discovery
@@ -547,13 +751,11 @@ Content-Type: application/json
 ### Search Ventures
 ```http
 GET /api/search/ventures?q=startup&region=US&skills=nodejs
-Authorization: Bearer <token>
 ```
 
 ### Search Users
 ```http
 GET /api/search/users?q=developer&skills=react&region=US
-Authorization: Bearer <token>
 ```
 
 ### Get Skills
@@ -581,7 +783,6 @@ GET /api/skills?category=engineering
 ### Get Venture Analytics
 ```http
 GET /api/ventures/{ventureId}/analytics?period=q1_2024
-Authorization: Bearer <token>
 ```
 
 **Response:**
@@ -608,7 +809,6 @@ Authorization: Bearer <token>
 ### Get User Analytics
 ```http
 GET /api/users/analytics?period=q1_2024
-Authorization: Bearer <token>
 ```
 
 ## 🔒 Security & Compliance
@@ -616,7 +816,6 @@ Authorization: Bearer <token>
 ### Get KYC Status
 ```http
 GET /api/users/kyc-status
-Authorization: Bearer <token>
 ```
 
 ### Submit KYC Documents
@@ -634,14 +833,13 @@ Content-Type: multipart/form-data
 ### Get Device Posture
 ```http
 GET /api/users/device-posture
-Authorization: Bearer <token>
 ```
 
 ## 📁 File Management
 
 ### Upload File
 ```http
-POST /api/upload
+POST /api/files/upload
 Authorization: Bearer <token>
 Content-Type: multipart/form-data
 
@@ -774,4 +972,4 @@ https://api.smartstart.com/docs/openapi.json
 
 ---
 
-**This API reference covers all available endpoints. For the latest updates, check the OpenAPI specification or contact the development team.** 🚀
+**This API reference covers all 145 endpoints across 7 major systems. For the latest updates, check the OpenAPI specification or contact the development team.** 🚀
