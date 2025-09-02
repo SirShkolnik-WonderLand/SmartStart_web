@@ -12,7 +12,7 @@ const templateEngine = new ContractTemplateEngine();
  */
 
 // Health check endpoint
-router.get('/health', async(req, res) => {
+router.get('/health', async (req, res) => {
     try {
         const metrics = await getAutoIssuanceMetrics();
         res.json({
@@ -32,7 +32,7 @@ router.get('/health', async(req, res) => {
 });
 
 // Get available contract types for auto-issuance
-router.get('/templates', async(req, res) => {
+router.get('/templates', async (req, res) => {
     try {
         const templates = await templateEngine.getAvailableContractTypes();
         res.json({
@@ -52,7 +52,7 @@ router.get('/templates', async(req, res) => {
 });
 
 // Auto-issue contract for a venture
-router.post('/issue/:ventureId', async(req, res) => {
+router.post('/issue/:ventureId', async (req, res) => {
     try {
         const { ventureId } = req.params;
         const { contractType, context = {} } = req.body;
@@ -102,7 +102,7 @@ router.post('/issue/:ventureId', async(req, res) => {
 });
 
 // Auto-issue all required contracts for venture onboarding
-router.post('/onboard/:ventureId', async(req, res) => {
+router.post('/onboard/:ventureId', async (req, res) => {
     try {
         const { ventureId } = req.params;
         const { skipExisting = false } = req.body;
@@ -199,7 +199,7 @@ router.post('/onboard/:ventureId', async(req, res) => {
 });
 
 // Preview contract content before issuance
-router.post('/preview/:ventureId', async(req, res) => {
+router.post('/preview/:ventureId', async (req, res) => {
     try {
         const { ventureId } = req.params;
         const { contractType, context = {} } = req.body;
@@ -236,7 +236,7 @@ router.post('/preview/:ventureId', async(req, res) => {
 });
 
 // Validate contract template
-router.get('/validate/:templateId', async(req, res) => {
+router.get('/validate/:templateId', async (req, res) => {
     try {
         const { templateId } = req.params;
         const validation = await templateEngine.validateTemplate(templateId);
@@ -310,7 +310,7 @@ async function getAutoIssuanceMetrics() {
 }
 
 // Get venture contract status
-router.get('/venture/:ventureId/status', async(req, res) => {
+router.get('/venture/:ventureId/status', async (req, res) => {
     try {
         const { ventureId } = req.params;
 
