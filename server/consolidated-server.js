@@ -360,6 +360,10 @@ app.use('/api/gamification', gamificationApiRoutes);
 const userManagementApiRoutes = require('./routes/user-management-api');
 app.use('/api/users', userManagementApiRoutes);
 
+// Mount system instructions API routes
+const systemInstructionsApiRoutes = require('./routes/system-instructions-api');
+app.use('/api/system', systemInstructionsApiRoutes);
+
 // Error handling middleware
 app.use((error, req, res, next) => {
     logger.error('Unhandled error:', error);
