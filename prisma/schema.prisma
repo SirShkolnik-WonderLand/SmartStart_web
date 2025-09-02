@@ -1855,6 +1855,10 @@ model Venture {
   // Legal documents
   legalDocuments     LegalDocument[] @relation("VentureLegalDocuments")
   
+  // Equity relations
+  equityFrameworks   EquityFramework[] @relation("VentureEquityFramework")
+  equityLedger       EquityLedger[] @relation("VentureEquityLedger")
+  
   // Timestamps
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1882,7 +1886,7 @@ model VentureLegalEntity {
 model EquityFramework {
   id            String   @id @default(cuid())
   ventureId     String   @unique
-  venture       Venture  @relation(fields: [ventureId], references: [id], onDelete: Cascade)
+  venture       Venture  @relation("VentureEquityFramework", fields: [ventureId], references: [id], onDelete: Cascade)
   ownerPercent  Int      @default(35) // Minimum owner equity
   alicePercent  Int      @default(20) // Maximum AliceSolutions equity
   cepPercent    Int      @default(45) // Contributor Equity Pool
@@ -1899,7 +1903,7 @@ model EquityFramework {
 model EquityLedger {
   id              String   @id @default(cuid())
   ventureId       String
-  venture         Venture  @relation(fields: [ventureId], references: [id], onDelete: Cascade)
+  venture         Venture  @relation("VentureEquityLedger", fields: [ventureId], references: [id], onDelete: Cascade)
   holderType      String   // USER, ALICE, CONTRIBUTOR
   holderId        String?  // User.id for USER type, null for ALICE
   percent         Float    // Ownership percentage
