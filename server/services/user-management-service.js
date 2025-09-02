@@ -65,7 +65,7 @@ class UserManagementService {
                             isPublic: true
                         }
                     },
-                    profilePrivacy: {
+                    profile: {
                         create: {
                             showExactPercToHub: false,
                             showActivity: true,
@@ -82,7 +82,7 @@ class UserManagementService {
                 },
                 include: {
                     userProfile: true,
-                    profilePrivacy: true,
+                    profile: true,
                     wallet: true
                 }
             });
@@ -106,7 +106,7 @@ class UserManagementService {
                     createdAt: user.createdAt
                 },
                 profile: user.userProfile,
-                privacy: user.profilePrivacy,
+                privacy: user.profile,
                 wallet: user.wallet
             };
         } catch (error) {
@@ -124,7 +124,7 @@ class UserManagementService {
             
             // Build include object based on requested relations
             if (includeRelations.includes('profile')) include.userProfile = true;
-            if (includeRelations.includes('privacy')) include.profilePrivacy = true;
+            if (includeRelations.includes('privacy')) include.profile = true;
             if (includeRelations.includes('wallet')) include.wallet = true;
             if (includeRelations.includes('skills')) include.userSkills = { include: { skill: true } };
             if (includeRelations.includes('portfolio')) include.portfolio = true;
@@ -732,13 +732,13 @@ class UserManagementService {
 
     async getUserSettings(userId) {
         try {
-            const user = await prisma.user.findUnique({
-                where: { id: userId },
-                include: {
-                    userProfile: true,
-                    profilePrivacy: true
-                }
-            });
+                    const user = await prisma.user.findUnique({
+            where: { id: userId },
+            include: {
+                userProfile: true,
+                profile: true
+            }
+        });
 
             if (!user) {
                 return {
@@ -747,16 +747,16 @@ class UserManagementService {
                 };
             }
 
-            const settings = {
-                profile: user.userProfile || {},
-                privacy: user.profilePrivacy || {},
-                preferences: {
-                    theme: user.userProfile?.theme || 'auto',
-                    language: 'en',
-                    timezone: 'UTC',
-                    currency: 'USD'
-                }
-            };
+                    const settings = {
+            profile: user.userProfile || {},
+            privacy: user.profile || {},
+            preferences: {
+                theme: user.userProfile?.theme || 'auto',
+                language: 'en',
+                timezone: 'UTC',
+                currency: 'USD'
+            }
+        };
 
             return {
                 success: true,
