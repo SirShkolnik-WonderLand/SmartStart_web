@@ -7,6 +7,14 @@ const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://smartstart-api.onre
 
 type Step = 'account' | 'agreements' | 'finish'
 
+type TemplateRef = { id: string; code: string; title?: string }
+
+async function sha256Hex(input: string): Promise<string> {
+  const enc = new TextEncoder()
+  const buf = await crypto.subtle.digest('SHA-256', enc.encode(input))
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('')
+}
+
 export default function RegisterPage() {
   const [step, setStep] = useState<Step>('account')
   const [username, setUsername] = useState('')
@@ -23,18 +31,42 @@ export default function RegisterPage() {
   const [error, setError] = useState('')
   const [tos, setTos] = useState<string>('Loading Terms of Service...')
   const [contrib, setContrib] = useState<string>('Loading Contributor Agreement...')
+  const [tosTpl, setTosTpl] = useState<TemplateRef | null>(null)
+  const [contribTpl, setContribTpl] = useState<TemplateRef | null>(null)
+  const [tosDocId, setTosDocId] = useState<string | null>(null)
+  const [contribDocId, setContribDocId] = useState<string | null>(null)
   const tosRef = useRef<HTMLDivElement>(null)
   const contribRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
 
   useEffect(() => {
     if (step === 'agreements') {
-      fetch(`${API_BASE}/api/documents/templates?code=USER_TOS`)
-        .then(r => r.ok ? r.text() : Promise.resolve('SmartStart Terms of Service (summary)\n- Respect privacy & security\n- No abuse or fraud\n- Lawful use only\n- Data processed per policy'))
-        .then(setTos).catch(()=>{})
-      fetch(`${API_BASE}/api/documents/templates?code=CONTRIB_AGREEMENT`)
-        .then(r => r.ok ? r.text() : Promise.resolve('Contributor Agreement (summary)\n- You own your IP until assigned\n- License grants for collaboration\n- Proper attributions\n- Confidentiality & compliance'))
-        .then(setContrib).catch(()=>{})
+      const load = async () => {
+        try {
+          // Try to get TOS template by code
+          const t = await fetch(`${API_BASE}/api/documents/templates?code=USER_TOS`)
+          if (t.ok) {
+            const data = await t.json().catch(()=>null)
+            const item = Array.isArray(data) ? data[0] : (data?.template || data)
+            if (item?.content) setTos(item.content)
+            setTosTpl({ id: item?.id || 'USER_TOS', code: 'USER_TOS', title: item?.title })
+          } else {
+            setTos('SmartStart Terms of Service (summary)\n- Respect privacy & security\n- No abuse or fraud\n- Lawful use only\n- Data processed per policy')
+          }
+        } catch {}
+        try {
+          const c = await fetch(`${API_BASE}/api/documents/templates?code=CONTRIB_AGREEMENT`)
+          if (c.ok) {
+            const data = await c.json().catch(()=>null)
+            const item = Array.isArray(data) ? data[0] : (data?.template || data)
+            if (item?.content) setContrib(item.content)
+            setContribTpl({ id: item?.id || 'CONTRIB_AGREEMENT', code: 'CONTRIB_AGREEMENT', title: item?.title })
+          } else {
+            setContrib('Contributor Agreement (summary)\n- IP assignment optional\n- Proper licenses & attributions\n- Confidentiality & compliance')
+          }
+        } catch {}
+      }
+      load()
     }
   }, [step])
 
@@ -52,15 +84,56 @@ export default function RegisterPage() {
     setStep('agreements')
   }
 
+  async function generateAndSign(code: 'USER_TOS' | 'CONTRIB_AGREEMENT', contentFallback: string) {
+    // 1) generate document from template (or create ad-hoc if missing)
+    const payload = { templateCode: code, data: { username, email, timestamp: new Date().toISOString() } }
+    let genRes = await fetch(`${API_BASE}/api/documents/generate`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+    if (!genRes.ok) {
+      // If generation not supported, create a one-off document from provided content
+      genRes = await fetch(`${API_BASE}/api/documents/generate`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code, content: contentFallback, data: payload.data }) })
+    }
+    const gen = await genRes.json().catch(()=>null)
+    const documentId = gen?.documentId || gen?.id
+
+    // 2) compute signature hash (content + user + timestamp)
+    const content = gen?.content || contentFallback
+    const signedAt = new Date().toISOString()
+    const signatureHash = await sha256Hex([content, email, username, signedAt].join('|'))
+
+    // 3) store signature server-side (server records IP)
+    await fetch(`${API_BASE}/api/documents/sign`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ documentId, userIdentifier: email, signatureHash, signedAt, code }) })
+
+    return { documentId, signatureHash, signedAt }
+  }
+
   const submit = async () => {
     setError('')
     if (!agreeTos || !agreeContributor) return setError('You must agree to all terms to continue')
     setIsLoading(true)
     try {
+      // Create and sign TOS + Contributor docs
+      const tosRes = await generateAndSign('USER_TOS', tos)
+      const contribRes = await generateAndSign('CONTRIB_AGREEMENT', contrib)
+      setTosDocId(tosRes.documentId)
+      setContribDocId(contribRes.documentId)
+
+      // Finally create the account
       const res = await fetch(`${API_BASE}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, email, password, preferences: { operationalEmails: optOperationalEmails==='opt_in', publicListing: optPublicListing==='opt_in' } })
+        body: JSON.stringify({
+          username,
+          email,
+          password,
+          preferences: {
+            operationalEmails: optOperationalEmails==='opt_in',
+            publicListing: optPublicListing==='opt_in'
+          },
+          agreements: [
+            { code: 'USER_TOS', ...tosRes },
+            { code: 'CONTRIB_AGREEMENT', ...contribRes }
+          ]
+        })
       })
       const data = await res.json().catch(()=>({}))
       if (!res.ok) throw new Error(data?.error || data?.message || 'Registration failed')
@@ -118,7 +191,7 @@ export default function RegisterPage() {
           <div className="bg-gray-900 neon-border rounded-lg p-6 space-y-5">
             <div>
               <h3 className="font-bold text-green-400 mb-2">📜 Terms of Service</h3>
-              <div ref={tosRef} onScroll={(e)=>onScrollUnlock(e.currentTarget as HTMLDivElement, setTosUnlocked)} className="bg-black rounded p-3 neon-border h-40 overflow-auto text-green-300 whitespace-pre-wrap text-sm">{tos}\n\nPlatform rules:\n- Respect collaborators; no harassment\n- No illegal content or activity\n- Keep credentials and tokens secret\n- Report security issues responsibly\n- Follow contribution process & CLA\n- Data is processed per privacy policy</div>
+              <div ref={tosRef} onScroll={(e)=>onScrollUnlock(e.currentTarget as HTMLDivElement, setTosUnlocked)} className="bg-black rounded p-3 neon-border h-40 sm:h-52 overflow-auto text-green-300 whitespace-pre-wrap text-sm">{tos}\n\nPlatform rules:\n- Respect collaborators; no harassment\n- No illegal content or activity\n- Keep credentials and tokens secret\n- Report security issues responsibly\n- Follow contribution process & CLA\n- Data is processed per privacy policy</div>
               <label className="mt-2 flex items-center gap-2 text-sm">
                 <input type="checkbox" disabled={!tosUnlocked} checked={agreeTos} onChange={e=>setAgreeTos(e.target.checked)} />
                 I have read to the end and agree to the Terms of Service
@@ -127,7 +200,7 @@ export default function RegisterPage() {
             </div>
             <div>
               <h3 className="font-bold text-green-400 mb-2">🧾 Contributor Agreement</h3>
-              <div ref={contribRef} onScroll={(e)=>onScrollUnlock(e.currentTarget as HTMLDivElement, setContribUnlocked)} className="bg-black rounded p-3 neon-border h-40 overflow-auto text-green-300 whitespace-pre-wrap text-sm">{contrib}\n\nHighlights:\n- You can opt in to assign created IP to ventures/projects\n- You retain moral rights where applicable\n- You confirm originality or proper licenses\n- You agree to confidentiality for private repos</div>
+              <div ref={contribRef} onScroll={(e)=>onScrollUnlock(e.currentTarget as HTMLDivElement, setContribUnlocked)} className="bg-black rounded p-3 neon-border h-40 sm:h-52 overflow-auto text-green-300 whitespace-pre-wrap text-sm">{contrib}\n\nHighlights:\n- You can opt in to assign created IP to ventures/projects\n- You retain moral rights where applicable\n- You confirm originality or proper licenses\n- You agree to confidentiality for private repos</div>
               <label className="mt-2 flex items-center gap-2 text-sm">
                 <input type="checkbox" disabled={!contribUnlocked} checked={agreeContributor} onChange={e=>setAgreeContributor(e.target.checked)} />
                 I have read to the end and agree to the Contributor Agreement
