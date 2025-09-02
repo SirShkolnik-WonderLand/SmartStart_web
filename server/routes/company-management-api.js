@@ -895,9 +895,17 @@ router.post('/create-tables', async(req, res) => {
     try {
         console.log('🔨 Creating company management system tables...');
 
+        // Drop existing tables if they exist
+        console.log('🗑️ Dropping existing tables...');
+        await prisma.$executeRaw `DROP TABLE IF EXISTS "CompanyDocument" CASCADE;`;
+        await prisma.$executeRaw `DROP TABLE IF EXISTS "CompanyMetric" CASCADE;`;
+        await prisma.$executeRaw `DROP TABLE IF EXISTS "CompanyHierarchy" CASCADE;`;
+        await prisma.$executeRaw `DROP TABLE IF EXISTS "CompanyTag" CASCADE;`;
+        await prisma.$executeRaw `DROP TABLE IF EXISTS "Company" CASCADE;`;
+
         // Create Company table
         await prisma.$executeRaw `
-      CREATE TABLE IF NOT EXISTS "Company" (
+      CREATE TABLE "Company" (
         "id" TEXT NOT NULL,
         "name" TEXT NOT NULL,
         "description" TEXT,
@@ -921,7 +929,7 @@ router.post('/create-tables', async(req, res) => {
 
         // Create CompanyTag table
         await prisma.$executeRaw `
-      CREATE TABLE IF NOT EXISTS "CompanyTag" (
+      CREATE TABLE "CompanyTag" (
         "id" TEXT NOT NULL,
         "companyId" TEXT NOT NULL,
         "name" TEXT NOT NULL,
@@ -938,7 +946,7 @@ router.post('/create-tables', async(req, res) => {
 
         // Create CompanyHierarchy table
         await prisma.$executeRaw `
-      CREATE TABLE IF NOT EXISTS "CompanyHierarchy" (
+      CREATE TABLE "CompanyHierarchy" (
         "id" TEXT NOT NULL,
         "companyId" TEXT NOT NULL,
         "parentId" TEXT,
@@ -954,7 +962,7 @@ router.post('/create-tables', async(req, res) => {
 
         // Create CompanyMetric table
         await prisma.$executeRaw `
-      CREATE TABLE IF NOT EXISTS "CompanyMetric" (
+      CREATE TABLE "CompanyMetric" (
         "id" TEXT NOT NULL,
         "companyId" TEXT NOT NULL,
         "name" TEXT NOT NULL,
@@ -974,7 +982,7 @@ router.post('/create-tables', async(req, res) => {
 
         // Create CompanyDocument table
         await prisma.$executeRaw `
-      CREATE TABLE IF NOT EXISTS "CompanyDocument" (
+      CREATE TABLE "CompanyDocument" (
         "id" TEXT NOT NULL,
         "companyId" TEXT NOT NULL,
         "title" TEXT NOT NULL,
