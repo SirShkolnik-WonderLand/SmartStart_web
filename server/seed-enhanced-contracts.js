@@ -51,8 +51,7 @@ Trust Score: {{OWNER_TRUST_SCORE}}
 AliceSolutions Representative: [Authorized Signatory]
 Date: {{CURRENT_DATE}}`,
         requiresSignature: true,
-        complianceRequired: true,
-        description: 'Enhanced founder agreement with dynamic variable substitution'
+        complianceRequired: true
     },
     {
         title: 'Contributor Agreement Template - Enhanced',
@@ -114,8 +113,7 @@ Date: {{CURRENT_DATE}}
 AliceSolutions Representative: [Authorized Signatory]
 Date: {{CURRENT_DATE}}`,
         requiresSignature: true,
-        complianceRequired: true,
-        description: 'Enhanced contributor agreement with BUZ economy and equity opportunities'
+        complianceRequired: true
     },
     {
         title: 'IP Assignment Agreement Template - Enhanced',
@@ -177,8 +175,7 @@ Date: {{CURRENT_DATE}}
 AliceSolutions Representative: [Authorized Signatory]
 Date: {{CURRENT_DATE}}`,
         requiresSignature: true,
-        complianceRequired: true,
-        description: 'Enhanced IP assignment agreement with equity compensation framework'
+        complianceRequired: true
     },
     {
         title: 'NDA Template - Enhanced',
@@ -243,8 +240,7 @@ Date: {{CURRENT_DATE}}
 AliceSolutions Representative: [Authorized Signatory]
 Date: {{CURRENT_DATE}}`,
         requiresSignature: true,
-        complianceRequired: true,
-        description: 'Enhanced NDA with security requirements and legal enforcement'
+        complianceRequired: true
     },
     {
         title: 'Equity Split Agreement Template - Enhanced',
@@ -324,9 +320,7 @@ Equity: {{ALICE_EQUITY_PERCENT}}%
 Date: {{CURRENT_DATE}}
 Equity: [Specify Percentage]%`,
         requiresSignature: true,
-        complianceRequired: true,
-
-        description: 'Enhanced equity split agreement with governance rules and dispute resolution'
+        complianceRequired: true
     }
 ];
 

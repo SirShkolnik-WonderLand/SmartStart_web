@@ -267,21 +267,16 @@ async function getAutoIssuanceMetrics() {
             recentIssuances
         ] = await Promise.all([
             prisma.legalDocument.count({
-                where: { isTemplate: true, status: 'APPROVED' }
+                where: { entityId: null, projectId: null, status: 'APPROVED' }
             }),
             prisma.legalDocument.count({
                 where: { 
-                    createdBy: 'system-auto-issue',
-                    isTemplate: false
+                    createdBy: 'system-auto-issue'
                 }
             }),
-            prisma.venture.count({
+            prisma.legalDocument.count({
                 where: {
-                    legalDocuments: {
-                        some: {
-                            isTemplate: false
-                        }
-                    }
+                    entityId: { not: null }
                 }
             }),
             prisma.legalDocument.count({

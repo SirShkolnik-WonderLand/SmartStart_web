@@ -298,14 +298,14 @@ class ContractTemplateEngine {
     async getAvailableContractTypes() {
         return await prisma.legalDocument.findMany({
             where: {
-                isTemplate: true,
+                entityId: null,
+                projectId: null,
                 status: 'APPROVED'
             },
             select: {
                 type: true,
                 title: true,
-                version: true,
-                description: true
+                version: true
             },
             orderBy: { type: 'asc' }
         });
