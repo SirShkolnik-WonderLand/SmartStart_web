@@ -41,34 +41,26 @@ router.post('/create', async(req, res) => {
     try {
         const {
             name,
-            legalName,
+            description,
             industry,
-            sector,
             size,
             stage,
-            region,
-            founded,
-            revenue,
-            valuation,
-            employees,
-            customers,
-            tags,
-            description,
-            mission,
-            vision,
+            status = 'ACTIVE',
+            visibility = 'PUBLIC',
+            foundedDate,
             website,
-            email,
-            phone,
-            address,
+            location,
+            logoUrl,
             ownerId,
-            parentCompanyId
+            parentCompanyId,
+            settings = {}
         } = req.body;
 
         // Validate required fields
-        if (!name || !industry || !sector || !size || !stage || !region || !ownerId) {
+        if (!name || !industry || !size || !stage || !ownerId) {
             return res.status(400).json({
                 success: false,
-                message: 'Missing required fields: name, industry, sector, size, stage, region, ownerId'
+                message: 'Missing required fields: name, industry, size, stage, ownerId'
             });
         }
 
@@ -76,27 +68,19 @@ router.post('/create', async(req, res) => {
         const company = await prisma.company.create({
             data: {
                 name,
-                legalName,
+                description,
                 industry,
-                sector,
                 size,
                 stage,
-                region,
-                founded: founded ? new Date(founded) : null,
-                revenue,
-                valuation,
-                employees,
-                customers,
-                tags: tags || [],
-                description,
-                mission,
-                vision,
+                status,
+                visibility,
+                foundedDate: foundedDate ? new Date(foundedDate) : null,
                 website,
-                email,
-                phone,
-                address,
+                location,
+                logoUrl,
                 ownerId,
-                parentCompanyId
+                parentCompanyId,
+                settings
             },
             include: {
                 owner: {
