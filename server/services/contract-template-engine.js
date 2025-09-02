@@ -218,19 +218,19 @@ class ContractTemplateEngine {
      */
     async triggerContractWorkflow(contractId, contractType) {
         switch (contractType) {
-            case 'FOUNDER_AGREEMENT':
+            case 'EQUITY_AGREEMENT':
                 await this.triggerFounderWorkflow(contractId);
                 break;
-            case 'CONTRIBUTOR_AGREEMENT':
+            case 'EMPLOYMENT_CONTRACT':
                 await this.triggerContributorWorkflow(contractId);
                 break;
-            case 'IP_ASSIGNMENT':
+            case 'INTELLECTUAL_PROPERTY':
                 await this.triggerIPAssignmentWorkflow(contractId);
                 break;
-            case 'NDA':
+            case 'CONFIDENTIALITY_AGREEMENT':
                 await this.triggerNDAWorkflow(contractId);
                 break;
-            case 'EQUITY_SPLIT':
+            case 'VESTING_SCHEDULE':
                 await this.triggerEquitySplitWorkflow(contractId);
                 break;
             default:

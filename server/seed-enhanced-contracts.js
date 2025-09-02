@@ -9,7 +9,7 @@ const prisma = new PrismaClient();
 const enhancedContractTemplates = [
     {
         title: 'Founder Agreement Template - Enhanced',
-        type: 'FOUNDER_AGREEMENT',
+        type: 'EQUITY_AGREEMENT',
         content: `FOUNDER AGREEMENT
 
 This Founder Agreement (the "Agreement") is entered into on {{CURRENT_DATE}} by and between:
@@ -58,7 +58,7 @@ Date: {{CURRENT_DATE}}`,
     },
     {
         title: 'Contributor Agreement Template - Enhanced',
-        type: 'CONTRIBUTOR_AGREEMENT',
+        type: 'EMPLOYMENT_CONTRACT',
         content: `CONTRIBUTOR AGREEMENT
 
 This Contributor Agreement (the "Agreement") is entered into on {{CURRENT_DATE}} by and between:
@@ -122,7 +122,7 @@ Date: {{CURRENT_DATE}}`,
     },
     {
         title: 'IP Assignment Agreement Template - Enhanced',
-        type: 'IP_ASSIGNMENT',
+        type: 'INTELLECTUAL_PROPERTY',
         content: `INTELLECTUAL PROPERTY ASSIGNMENT AGREEMENT
 
 This Intellectual Property Assignment Agreement (the "Agreement") is entered into on {{CURRENT_DATE}} by and between:
@@ -186,7 +186,7 @@ Date: {{CURRENT_DATE}}`,
     },
     {
         title: 'NDA Template - Enhanced',
-        type: 'NDA',
+        type: 'CONFIDENTIALITY_AGREEMENT',
         content: `NON-DISCLOSURE AGREEMENT
 
 This Non-Disclosure Agreement (the "NDA") is entered into on {{CURRENT_DATE}} by and between:
@@ -253,7 +253,7 @@ Date: {{CURRENT_DATE}}`,
     },
     {
         title: 'Equity Split Agreement Template - Enhanced',
-        type: 'EQUITY_SPLIT',
+        type: 'VESTING_SCHEDULE',
         content: `EQUITY SPLIT AGREEMENT
 
 This Equity Split Agreement (the "Agreement") is entered into on {{CURRENT_DATE}} by and between:

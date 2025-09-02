@@ -121,9 +121,9 @@ router.post('/onboard/:ventureId', async (req, res) => {
 
         // Define required contracts for onboarding
         const requiredContracts = [
-            'FOUNDER_AGREEMENT',
-            'EQUITY_SPLIT',
-            'NDA'
+            'EQUITY_AGREEMENT',
+            'VESTING_SCHEDULE',
+            'CONFIDENTIALITY_AGREEMENT'
         ];
 
         const results = [];
