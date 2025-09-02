@@ -125,10 +125,8 @@ router.get('/', async(req, res) => {
     try {
         const {
             industry,
-            sector,
             size,
             stage,
-            region,
             status,
             visibility,
             page = 1,
@@ -801,10 +799,10 @@ router.get('/search/companies', async(req, res) => {
         const {
             query,
             industry,
-            sector,
             size,
             stage,
-            region,
+            status,
+            visibility,
             page = 1,
             limit = 20
         } = req.query;
@@ -818,16 +816,15 @@ router.get('/search/companies', async(req, res) => {
             where.OR = [
                 { name: { contains: query, mode: 'insensitive' } },
                 { description: { contains: query, mode: 'insensitive' } },
-                { industry: { contains: query, mode: 'insensitive' } },
-                { sector: { contains: query, mode: 'insensitive' } }
+                { industry: { contains: query, mode: 'insensitive' } }
             ];
         }
 
         if (industry) where.industry = industry;
-        if (sector) where.sector = sector;
         if (size) where.size = size;
         if (stage) where.stage = stage;
-        if (region) where.region = region;
+        if (status) where.status = status;
+        if (visibility) where.visibility = visibility;
 
         const companies = await prisma.company.findMany({
             where,
