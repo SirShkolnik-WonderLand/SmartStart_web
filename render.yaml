@@ -24,6 +24,21 @@ services:
         value: "false"
     autoDeploy: true
 
+  - name: smartstart-cli-web
+    type: web
+    runtime: node
+    plan: starter
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "3000"
+      - key: NEXT_PUBLIC_API_URL
+        value: https://smartstart-api.onrender.com
+    autoDeploy: true
+
 databases:
   - name: smartstart-db
     plan: basic-256mb
