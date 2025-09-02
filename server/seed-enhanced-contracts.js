@@ -332,9 +332,9 @@ async function seedEnhancedContractTemplates() {
         console.log('🌱 Starting enhanced contract templates seed...');
 
         for (const template of enhancedContractTemplates) {
-                        // Check if template already exists (templates have no entityId or projectId)
+            // Check if template already exists (templates have no entityId or projectId)
             const existingTemplate = await prisma.legalDocument.findFirst({
-                where: { 
+                where: {
                     title: template.title,
                     type: template.type,
                     entityId: null,
@@ -373,10 +373,10 @@ async function seedEnhancedContractTemplates() {
 
         // Display summary
         const templateCount = await prisma.legalDocument.count({
-            where: { 
-                entityId: null, 
-                projectId: null, 
-                status: 'APPROVED' 
+            where: {
+                entityId: null,
+                projectId: null,
+                status: 'APPROVED'
             }
         });
 

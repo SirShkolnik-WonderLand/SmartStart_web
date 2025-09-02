@@ -348,6 +348,10 @@ app.use('/api/contracts/advanced', advancedContractsApiRoutes);
 const contractAutoIssuanceApiRoutes = require('./routes/contract-auto-issuance-api');
 app.use('/api/contracts/auto-issuance', contractAutoIssuanceApiRoutes);
 
+// Mount venture management API routes
+const ventureManagementApiRoutes = require('./routes/venture-management-api');
+app.use('/api/ventures', ventureManagementApiRoutes);
+
 // Error handling middleware
 app.use((error, req, res, next) => {
     logger.error('Unhandled error:', error);

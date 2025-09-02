@@ -15,25 +15,25 @@ class ContractTemplateEngine {
             '{{VENTURE_PURPOSE}}': 'venture.purpose',
             '{{VENTURE_REGION}}': 'venture.region',
             '{{VENTURE_CREATED_AT}}': 'venture.createdAt',
-            
+
             // Owner variables
             '{{OWNER_NAME}}': 'owner.displayName',
             '{{OWNER_EMAIL}}': 'owner.email',
             '{{OWNER_KYC_STATUS}}': 'owner.kycStatus',
             '{{OWNER_TRUST_SCORE}}': 'owner.trustScore',
-            
+
             // Equity framework variables
             '{{OWNER_EQUITY_PERCENT}}': 'equity.ownerPercent',
             '{{ALICE_EQUITY_PERCENT}}': 'equity.alicePercent',
             '{{CEP_PERCENT}}': 'equity.cepPercent',
             '{{VESTING_POLICY}}': 'equity.vestingPolicy',
-            
+
             // Legal entity variables
             '{{LEGAL_ENTITY_NAME}}': 'legalEntity.name',
             '{{TAX_ID}}': 'legalEntity.taxId',
             '{{JURISDICTION}}': 'legalEntity.jurisdiction',
             '{{INCORPORATION_DATE}}': 'legalEntity.incorporationDate',
-            
+
             // System variables
             '{{CURRENT_DATE}}': 'system.currentDate',
             '{{CONTRACT_VERSION}}': 'system.contractVersion',
@@ -138,7 +138,7 @@ class ContractTemplateEngine {
             '{{VENTURE_NAME}}': venture.name || '',
             '{{VENTURE_PURPOSE}}': venture.purpose || '',
             '{{VENTURE_REGION}}': venture.region || '',
-            '{{VENTURE_CREATED_AT}}': venture.createdAt ? 
+            '{{VENTURE_CREATED_AT}}': venture.createdAt ?
                 new Date(venture.createdAt).toLocaleDateString('en-US') : ''
         };
 
@@ -146,13 +146,13 @@ class ContractTemplateEngine {
             '{{OWNER_NAME}}': venture.owner.displayName || '',
             '{{OWNER_EMAIL}}': venture.owner.email || '',
             '{{OWNER_KYC_STATUS}}': venture.owner.kycStatus || 'PENDING',
-            '{{OWNER_TRUST_SCORE}}': venture.owner.trustScore?.toString() || '0'
+            '{{OWNER_TRUST_SCORE}}': venture.owner.trustScore ? .toString() || '0'
         } : {};
 
         const equityContext = venture.equityFramework ? {
-            '{{OWNER_EQUITY_PERCENT}}': venture.equityFramework.ownerPercent?.toString() || '35',
-            '{{ALICE_EQUITY_PERCENT}}': venture.equityFramework.alicePercent?.toString() || '20',
-            '{{CEP_PERCENT}}': venture.equityFramework.cepPercent?.toString() || '45',
+            '{{OWNER_EQUITY_PERCENT}}': venture.equityFramework.ownerPercent ? .toString() || '35',
+            '{{ALICE_EQUITY_PERCENT}}': venture.equityFramework.alicePercent ? .toString() || '20',
+            '{{CEP_PERCENT}}': venture.equityFramework.cepPercent ? .toString() || '45',
             '{{VESTING_POLICY}}': venture.equityFramework.vestingPolicy || '4-year vest, 1-year cliff'
         } : {};
 
@@ -160,7 +160,7 @@ class ContractTemplateEngine {
             '{{LEGAL_ENTITY_NAME}}': venture.legalEntity.name || '',
             '{{TAX_ID}}': venture.legalEntity.taxId || '',
             '{{JURISDICTION}}': venture.legalEntity.jurisdiction || '',
-            '{{INCORPORATION_DATE}}': venture.legalEntity.incorporationDate ? 
+            '{{INCORPORATION_DATE}}': venture.legalEntity.incorporationDate ?
                 new Date(venture.legalEntity.incorporationDate).toLocaleDateString('en-US') : ''
         } : {};
 
