@@ -356,6 +356,10 @@ app.use('/api/ventures', ventureManagementApiRoutes);
 const gamificationApiRoutes = require('./routes/gamification-api');
 app.use('/api/gamification', gamificationApiRoutes);
 
+// Mount user management API routes
+const userManagementApiRoutes = require('./routes/user-management-api');
+app.use('/api/users', userManagementApiRoutes);
+
 // Error handling middleware
 app.use((error, req, res, next) => {
     logger.error('Unhandled error:', error);

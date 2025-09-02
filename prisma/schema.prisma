@@ -93,6 +93,10 @@ model User {
   // Venture ownership
   venturesOwned Venture[] @relation("VentureOwner")
 
+  // User connections
+  connectionRequests UserConnection[] @relation("ConnectionRequester")
+  connectionTargets  UserConnection[] @relation("ConnectionTarget")
+
   @@index([tenantId])
   @@index([status])
   @@index([level])
@@ -1609,6 +1613,25 @@ enum ComplianceStatus {
   OVERDUE
   NON_COMPLIANT
   EXEMPT
+}
+
+// ---------- USER CONNECTIONS & NETWORKING ----------
+model UserConnection {
+  id             String   @id @default(cuid())
+  requesterId    String
+  requester      User     @relation("ConnectionRequester", fields: [requesterId], references: [id], onDelete: Cascade)
+  targetId       String
+  target         User     @relation("ConnectionTarget", fields: [targetId], references: [id], onDelete: Cascade)
+  connectionType String   @default("CONNECTION") // CONNECTION, MENTOR, COLLABORATOR
+  status         String   @default("PENDING") // PENDING, ACCEPTED, REJECTED, BLOCKED
+  createdAt      DateTime @default(now())
+  acceptedAt     DateTime?
+  rejectedAt     DateTime?
+
+  @@unique([requesterId, targetId])
+  @@index([requesterId])
+  @@index([targetId])
+  @@index([status])
 }
 
 // ---------- GAMIFICATION & COMMUNITY ----------
