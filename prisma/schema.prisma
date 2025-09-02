@@ -90,6 +90,9 @@ model User {
   equityConversions         EquityConversion[]
   reviews                   Review[]
 
+  // Venture ownership
+  venturesOwned Venture[] @relation("VentureOwner")
+
   @@index([tenantId])
   @@index([status])
   @@index([level])
@@ -1234,9 +1237,14 @@ model LegalDocument {
 
   // Relations
   signatures LegalDocumentSignature[]
+  
+  // Venture relationship for auto-issuance
+  ventureId String?
+  venture   Venture? @relation("VentureLegalDocuments", fields: [ventureId], references: [id])
 
   @@index([entityId])
   @@index([projectId])
+  @@index([ventureId])
   @@index([type])
   @@index([status])
   @@index([effectiveDate])
@@ -1821,4 +1829,143 @@ model WormAudit {
   createdAt DateTime @default(now())
 
   @@index([scope, refId, createdAt])
+}
+
+// Venture Management System Models
+model Venture {
+  id        String   @id @default(cuid())
+  name      String
+  purpose   String
+  region    String   @default("US")
+  status    String   @default("DRAFT") // DRAFT, PENDING_CONTRACTS, ACTIVE, SUSPENDED, CLOSED
+  ownerUserId String
+  owner     User     @relation("VentureOwner", fields: [ownerUserId], references: [id])
+  
+  // Legal entity and equity framework
+  legalEntityId      String?
+  legalEntity        LegalEntity?
+  equityFrameworkId  String?
+  equityFramework    EquityFramework?
+  
+  // Venture profile and IT pack
+  ventureProfile     VentureProfile?
+  ventureITPack      VentureITPack?
+  
+  // Legal documents
+  legalDocuments     LegalDocument[] @relation("VentureLegalDocuments")
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([ownerUserId])
+  @@index([status])
+  @@index([region])
+}
+
+model LegalEntity {
+  id                String   @id @default(cuid())
+  ventureId         String   @unique
+  venture           Venture  @relation(fields: [ventureId], references: [id], onDelete: Cascade)
+  name              String
+  type              String   @default("LLC") // LLC, CORP, PARTNERSHIP, etc.
+  jurisdiction      String   @default("US")
+  taxId             String?
+  incorporationDate DateTime @default(now())
+  status            String   @default("PENDING") // PENDING, ACTIVE, SUSPENDED
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([jurisdiction])
+  @@index([status])
+}
+
+model EquityFramework {
+  id            String   @id @default(cuid())
+  ventureId     String   @unique
+  venture       Venture  @relation(fields: [ventureId], references: [id], onDelete: Cascade)
+  ownerPercent  Int      @default(35) // Minimum owner equity
+  alicePercent  Int      @default(20) // Maximum AliceSolutions equity
+  cepPercent    Int      @default(45) // Contributor Equity Pool
+  vestingPolicy String   @default("4-year vest, 1-year cliff")
+  status        String   @default("ACTIVE")
+  
+  // Equity ledger entries
+  equityLedger  EquityLedger[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model EquityLedger {
+  id              String   @id @default(cuid())
+  ventureId       String
+  venture         Venture  @relation(fields: [ventureId], references: [id], onDelete: Cascade)
+  holderType      String   // USER, ALICE, CONTRIBUTOR
+  holderId        String?  // User.id for USER type, null for ALICE
+  percent         Float    // Ownership percentage
+  vestingPolicyId String?
+  vestingPolicy   VestingPolicy? @relation(fields: [vestingPolicyId], references: [id])
+  effectiveFrom   DateTime @default(now())
+  effectiveTo     DateTime? // null means currently effective
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([ventureId])
+  @@index([holderType, holderId])
+  @@index([effectiveFrom, effectiveTo])
+}
+
+model VestingPolicy {
+  id             String   @id @default(cuid())
+  name           String
+  cliffMonths    Int      @default(12)
+  durationMonths Int      @default(48)
+  frequency      String   @default("MONTHLY") // MONTHLY, QUARTERLY, ANNUAL
+  
+  // Equity ledger entries using this policy
+  equityLedger   EquityLedger[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VentureProfile {
+  id          String   @id @default(cuid())
+  ventureId   String   @unique
+  venture     Venture  @relation(fields: [ventureId], references: [id], onDelete: Cascade)
+  description String?
+  industry    String   @default("Technology")
+  stage       String   @default("STARTUP") // STARTUP, GROWTH, SCALE, EXIT
+  fundingRound String  @default("PRE_SEED") // PRE_SEED, SEED, SERIES_A, etc.
+  teamSize    Int      @default(1)
+  website     String?
+  socialMedia Json?    // LinkedIn, Twitter, etc.
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([industry])
+  @@index([stage])
+  @@index([fundingRound])
+}
+
+model VentureITPack {
+  id               String   @id @default(cuid())
+  ventureId        String   @unique
+  venture          Venture  @relation(fields: [ventureId], references: [id], onDelete: Cascade)
+  m365TenantId     String?
+  emailAddress     String?
+  githubOrg        String?
+  renderServiceId  String?
+  backupPolicyId   String?
+  status           String   @default("PROVISIONING") // PROVISIONING, ACTIVE, FAILED
+  provisionedAt    DateTime?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
 }
