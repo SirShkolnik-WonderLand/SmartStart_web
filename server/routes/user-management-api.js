@@ -32,6 +32,29 @@ router.get('/health', async (req, res) => {
     }
 });
 
+// ===== USER SEARCH & DISCOVERY =====
+
+// Search users (MUST come before /:userId route)
+router.get('/search', async (req, res) => {
+    try {
+        const searchParams = req.query;
+        
+        const result = await userService.searchUsers(searchParams);
+        
+        if (result.success) {
+            res.json(result);
+        } else {
+            res.status(400).json(result);
+        }
+    } catch (error) {
+        console.error('Error searching users:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
 // ===== USER CRUD OPERATIONS =====
 
 // Create new user
@@ -488,28 +511,7 @@ router.put('/:userId/settings', async (req, res) => {
     }
 });
 
-// ===== USER SEARCH & DISCOVERY =====
 
-// Search users
-router.get('/search', async (req, res) => {
-    try {
-        const searchParams = req.query;
-        
-        const result = await userService.searchUsers(searchParams);
-        
-        if (result.success) {
-            res.json(result);
-        } else {
-            res.status(400).json(result);
-        }
-    } catch (error) {
-        console.error('Error searching users:', error);
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
-    }
-});
 
 // ===== USER STATISTICS =====
 
