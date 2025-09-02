@@ -11,7 +11,7 @@ class GamificationService {
             WISE_OWL: { min: 5000, max: 19999, multiplier: 1.5 },
             SKY_MASTER: { min: 20000, max: 99999, multiplier: 2.0 }
         };
-        
+
         this.xpRewards = {
             LOGIN: 5,
             CONTRIBUTION: 25,
@@ -151,31 +151,31 @@ class GamificationService {
     async evaluateBadgeCondition(badge, user) {
         try {
             const condition = JSON.parse(badge.condition);
-            
+
             switch (condition.type) {
                 case 'xp_threshold':
                     return user.xp >= condition.value;
-                
+
                 case 'contribution_count':
                     return user.contributions.length >= condition.value;
-                
+
                 case 'skill_level':
-                    return user.userSkills.some(skill => 
+                    return user.userSkills.some(skill =>
                         skill.level >= condition.value && skill.verified
                     );
-                
+
                 case 'endorsement_count':
                     return user.endorsementsReceived.length >= condition.value;
-                
+
                 case 'kudos_received':
                     return user.kudos.length >= condition.value;
-                
+
                 case 'project_completion':
-                    const completedProjects = user.contributions.filter(c => 
+                    const completedProjects = user.contributions.filter(c =>
                         c.status === 'COMPLETED'
                     ).length;
                     return completedProjects >= condition.value;
-                
+
                 case 'streak':
                     // Check for consecutive days of activity
                     const recentActivity = await prisma.userActivity.findMany({
@@ -187,15 +187,15 @@ class GamificationService {
                         },
                         orderBy: { createdAt: 'desc' }
                     });
-                    
+
                     const uniqueDays = new Set(
-                        recentActivity.map(a => 
+                        recentActivity.map(a =>
                             a.createdAt.toISOString().split('T')[0]
                         )
                     ).size;
-                    
+
                     return uniqueDays >= condition.days;
-                
+
                 default:
                     return false;
             }
@@ -227,7 +227,7 @@ class GamificationService {
             reputation += Math.floor(user.xp / 100);
 
             // Endorsement reputation (weighted by endorser trust)
-            const endorsementScore = user.endorsementsReceived.reduce((sum, end) => 
+            const endorsementScore = user.endorsementsReceived.reduce((sum, end) =>
                 sum + (end.weight || 1), 0
             );
             reputation += endorsementScore * 5;
@@ -291,11 +291,11 @@ class GamificationService {
             if (!user) return { success: false, message: 'User not found' };
 
             // Calculate portfolio metrics
-            const totalPortfolioValue = user.portfolio.reduce((sum, item) => 
+            const totalPortfolioValue = user.portfolio.reduce((sum, item) =>
                 sum + (item.buzEarned || 0), 0
             );
 
-            const activeProjectsCount = user.contributions.filter(c => 
+            const activeProjectsCount = user.contributions.filter(c =>
                 c.status === 'ACTIVE' || c.status === 'IN_PROGRESS'
             ).length;
 
@@ -386,12 +386,12 @@ class GamificationService {
                 })
             ]);
 
-            const recentXPTotal = recentXP._sum.data ? 
+            const recentXPTotal = recentXP._sum.data ?
                 recentXP._sum.data.reduce((sum, item) => sum + (item.xpEarned || 0), 0) : 0;
-            const previousXPTotal = previousXP._sum.data ? 
+            const previousXPTotal = previousXP._sum.data ?
                 previousXP._sum.data.reduce((sum, item) => sum + (item.xpEarned || 0), 0) : 0;
 
-            const growthRate = previousXPTotal > 0 ? 
+            const growthRate = previousXPTotal > 0 ?
                 ((recentXPTotal - previousXPTotal) / previousXPTotal) * 100 : 0;
 
             return {
@@ -420,7 +420,7 @@ class GamificationService {
                 marketValue: us.level * us.skill.demand
             }));
 
-            const totalMarketValue = skillDemand.reduce((sum, skill) => 
+            const totalMarketValue = skillDemand.reduce((sum, skill) =>
                 sum + skill.marketValue, 0
             );
 
@@ -499,8 +499,7 @@ class GamificationService {
 
             if (!user) return { success: false, message: 'User not found' };
 
-            const challenges = [
-                {
+            const challenges = [{
                     type: 'LOGIN',
                     description: 'Log in to the platform',
                     xpReward: this.xpRewards.LOGIN,
