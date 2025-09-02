@@ -56,7 +56,7 @@ router.post('/create', async (req, res) => {
             });
         }
 
-        // Create team using raw SQL to avoid enum type issues
+        // Create team using raw SQL to avoid enum type issues - FORCE REDEPLOY
         const teamId = `team_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         
         await prisma.$executeRaw`
