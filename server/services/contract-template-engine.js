@@ -89,7 +89,8 @@ class ContractTemplateEngine {
             where: {
                 type: templateType,
                 status: 'APPROVED',
-                isTemplate: true
+                entityId: null,
+                projectId: null
             },
             orderBy: { version: 'desc' }
         });
@@ -193,11 +194,9 @@ class ContractTemplateEngine {
                     status: 'DRAFT',
                     requiresSignature: true,
                     complianceRequired: true,
-                    isTemplate: false,
-                    ventureId: ventureId,
+                    entityId: ventureId, // Link to venture
                     createdBy: 'system-auto-issue',
-                    effectiveDate: null,
-                    templateId: generatedContract.templateId
+                    effectiveDate: null
                 }
             });
 

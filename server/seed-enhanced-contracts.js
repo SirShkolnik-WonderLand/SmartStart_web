@@ -6,8 +6,7 @@ const prisma = new PrismaClient();
  * Enhanced Contract Templates for AliceSolutions Hub
  * These templates use variables that get substituted by the ContractTemplateEngine
  */
-const enhancedContractTemplates = [
-    {
+const enhancedContractTemplates = [{
         title: 'Founder Agreement Template - Enhanced',
         type: 'EQUITY_AGREEMENT',
         content: `FOUNDER AGREEMENT
@@ -53,7 +52,6 @@ AliceSolutions Representative: [Authorized Signatory]
 Date: {{CURRENT_DATE}}`,
         requiresSignature: true,
         complianceRequired: true,
-        isTemplate: true,
         description: 'Enhanced founder agreement with dynamic variable substitution'
     },
     {
@@ -117,7 +115,6 @@ AliceSolutions Representative: [Authorized Signatory]
 Date: {{CURRENT_DATE}}`,
         requiresSignature: true,
         complianceRequired: true,
-        isTemplate: true,
         description: 'Enhanced contributor agreement with BUZ economy and equity opportunities'
     },
     {
@@ -181,7 +178,6 @@ AliceSolutions Representative: [Authorized Signatory]
 Date: {{CURRENT_DATE}}`,
         requiresSignature: true,
         complianceRequired: true,
-        isTemplate: true,
         description: 'Enhanced IP assignment agreement with equity compensation framework'
     },
     {
@@ -248,7 +244,6 @@ AliceSolutions Representative: [Authorized Signatory]
 Date: {{CURRENT_DATE}}`,
         requiresSignature: true,
         complianceRequired: true,
-        isTemplate: true,
         description: 'Enhanced NDA with security requirements and legal enforcement'
     },
     {
@@ -330,7 +325,7 @@ Date: {{CURRENT_DATE}}
 Equity: [Specify Percentage]%`,
         requiresSignature: true,
         complianceRequired: true,
-        isTemplate: true,
+
         description: 'Enhanced equity split agreement with governance rules and dispute resolution'
     }
 ];
@@ -341,14 +336,15 @@ Equity: [Specify Percentage]%`,
 async function seedEnhancedContractTemplates() {
     try {
         console.log('🌱 Starting enhanced contract templates seed...');
-        
+
         for (const template of enhancedContractTemplates) {
-            // Check if template already exists
+                        // Check if template already exists (templates have no entityId or projectId)
             const existingTemplate = await prisma.legalDocument.findFirst({
                 where: { 
                     title: template.title,
                     type: template.type,
-                    isTemplate: true
+                    entityId: null,
+                    projectId: null
                 }
             });
 
@@ -360,7 +356,8 @@ async function seedEnhancedContractTemplates() {
                         status: 'APPROVED',
                         effectiveDate: new Date(),
                         version: '2.0',
-                        isTemplate: true
+                        entityId: null, // This makes it a template
+                        projectId: null
                     }
                 });
                 console.log(`✅ Created enhanced template: ${createdTemplate.title} (${createdTemplate.type})`);
@@ -379,14 +376,18 @@ async function seedEnhancedContractTemplates() {
         }
 
         console.log('🎉 Enhanced contract templates seeding completed successfully!');
-        
+
         // Display summary
         const templateCount = await prisma.legalDocument.count({
-            where: { isTemplate: true, status: 'APPROVED' }
+            where: { 
+                entityId: null, 
+                projectId: null, 
+                status: 'APPROVED' 
+            }
         });
-        
+
         console.log(`📊 Total approved templates: ${templateCount}`);
-        
+
     } catch (error) {
         console.error('❌ Enhanced contract templates seeding failed:', error);
         throw error;
