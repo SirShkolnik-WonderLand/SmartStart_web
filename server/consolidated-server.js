@@ -340,6 +340,10 @@ app.use('/api/v1', v1ApiRoutes);
 const contractsApiRoutes = require('./routes/contracts-api');
 app.use('/api/contracts', contractsApiRoutes);
 
+// Mount advanced contracts API routes
+const advancedContractsApiRoutes = require('./routes/advanced-contracts-api');
+app.use('/api/contracts/advanced', advancedContractsApiRoutes);
+
 // Error handling middleware
 app.use((error, req, res, next) => {
     logger.error('Unhandled error:', error);
