@@ -64,24 +64,26 @@ router.post('/create', async(req, res) => {
             });
         }
 
-        // Create company
-        const company = await prisma.company.create({
-            data: {
-                name,
-                description,
-                industry,
-                size,
-                stage,
-                status,
-                visibility,
-                foundedDate: foundedDate ? new Date(foundedDate) : null,
-                website,
-                location,
-                logoUrl,
-                ownerId,
-                parentCompanyId,
-                settings
-            },
+        // Create company using raw SQL to avoid enum type issues
+        const companyId = `company_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        
+        await prisma.$executeRaw`
+            INSERT INTO "Company" (
+                "id", "name", "description", "industry", "size", "stage", 
+                "status", "visibility", "foundedDate", "website", "location", 
+                "logoUrl", "ownerId", "parentCompanyId", "settings", 
+                "createdAt", "updatedAt"
+            ) VALUES (
+                ${companyId}, ${name}, ${description}, ${industry}, ${size}, ${stage},
+                ${status}, ${visibility}, ${foundedDate ? new Date(foundedDate) : null}, ${website}, ${location},
+                ${logoUrl}, ${ownerId}, ${parentCompanyId}, ${JSON.stringify(settings)},
+                NOW(), NOW()
+            )
+        `;
+
+        // Fetch the created company
+        const company = await prisma.company.findUnique({
+            where: { id: companyId },
             include: {
                 owner: {
                     select: {
