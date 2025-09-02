@@ -44,8 +44,8 @@ class VentureManagementService {
 
             console.log(`✅ Venture created: ${venture.id}`);
 
-            // Create legal entity
-            const legalEntity = await this.createLegalEntity(venture.id, ventureData.legalEntity);
+            // Create legal entity (optional)
+            const legalEntity = await this.createLegalEntity(venture.id, ventureData.legalEntity || {});
 
             // Create equity framework
             const equityFramework = await this.createEquityFramework(venture.id, ventureData.ownerUserId);
@@ -82,7 +82,7 @@ class VentureManagementService {
     /**
      * Create legal entity for venture
      */
-    async createLegalEntity(ventureId, legalEntityData) {
+    async createLegalEntity(ventureId, legalEntityData = {}) {
         try {
             // First create the base legal entity
             const baseLegalEntity = await prisma.legalEntity.create({

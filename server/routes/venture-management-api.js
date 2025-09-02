@@ -12,7 +12,7 @@ const ventureService = new VentureManagementService();
  */
 
 // Health check endpoint
-router.get('/health', async (req, res) => {
+router.get('/health', async(req, res) => {
     try {
         const stats = await ventureService.getVentureStatistics();
         res.json({
@@ -32,7 +32,7 @@ router.get('/health', async (req, res) => {
 });
 
 // Create new venture
-router.post('/create', async (req, res) => {
+router.post('/create', async(req, res) => {
     try {
         const ventureData = req.body;
 
@@ -80,7 +80,7 @@ router.post('/create', async (req, res) => {
 });
 
 // Get venture details
-router.get('/:ventureId', async (req, res) => {
+router.get('/:ventureId', async(req, res) => {
     try {
         const { ventureId } = req.params;
         const venture = await ventureService.getVentureWithDetails(ventureId);
@@ -116,7 +116,7 @@ router.get('/:ventureId', async (req, res) => {
 });
 
 // Update venture status
-router.put('/:ventureId/status', async (req, res) => {
+router.put('/:ventureId/status', async(req, res) => {
     try {
         const { ventureId } = req.params;
         const { status } = req.body;
@@ -152,7 +152,7 @@ router.put('/:ventureId/status', async (req, res) => {
 });
 
 // Provision IT pack for venture
-router.post('/:ventureId/it-pack', async (req, res) => {
+router.post('/:ventureId/it-pack', async(req, res) => {
     try {
         const { ventureId } = req.params;
         const itPack = await ventureService.provisionITPack(ventureId);
@@ -183,7 +183,7 @@ router.post('/:ventureId/it-pack', async (req, res) => {
 });
 
 // Get venture statistics
-router.get('/statistics/overview', async (req, res) => {
+router.get('/statistics/overview', async(req, res) => {
     try {
         const stats = await ventureService.getVentureStatistics();
 
@@ -204,7 +204,7 @@ router.get('/statistics/overview', async (req, res) => {
 });
 
 // List all ventures
-router.get('/list/all', async (req, res) => {
+router.get('/list/all', async(req, res) => {
     try {
         const { page = 1, limit = 10, status } = req.query;
         const offset = (page - 1) * limit;
@@ -267,7 +267,7 @@ router.get('/list/all', async (req, res) => {
 });
 
 // Get venture equity details
-router.get('/:ventureId/equity', async (req, res) => {
+router.get('/:ventureId/equity', async(req, res) => {
     try {
         const { ventureId } = req.params;
 
@@ -301,7 +301,7 @@ router.get('/:ventureId/equity', async (req, res) => {
 });
 
 // Update venture profile
-router.put('/:ventureId/profile', async (req, res) => {
+router.put('/:ventureId/profile', async(req, res) => {
     try {
         const { ventureId } = req.params;
         const profileData = req.body;
@@ -331,11 +331,11 @@ router.put('/:ventureId/profile', async (req, res) => {
 });
 
 // Run venture management migration
-router.post('/migrate', async (req, res) => {
+router.post('/migrate', async(req, res) => {
     try {
         const { migrateVentureManagement } = require('../../migrate-venture-management');
         await migrateVentureManagement();
-        
+
         res.json({
             success: true,
             message: 'Venture Management System migration completed successfully',
@@ -351,13 +351,52 @@ router.post('/migrate', async (req, res) => {
     }
 });
 
+// Test venture creation with raw SQL
+router.post('/create-test', async(req, res) => {
+    try {
+        const { PrismaClient } = require('@prisma/client');
+        const prisma = new PrismaClient();
+
+        console.log('🧪 Creating test venture with raw SQL...');
+
+        // Create a test venture using raw SQL
+        const ventureId = 'test-venture-' + Date.now();
+        const result = await prisma.$executeRaw `
+            INSERT INTO "Venture" ("id", "name", "purpose", "region", "status", "ownerUserId", "createdAt", "updatedAt")
+            VALUES (${ventureId}, 'Test Venture', 'Testing Venture Management System', 'US', 'DRAFT', 'cmf1r92vo0001s8299wr0vh66', NOW(), NOW())
+        `;
+
+        // Fetch the created venture
+        const venture = await prisma.$queryRaw `
+            SELECT * FROM "Venture" WHERE "id" = ${ventureId}
+        `;
+
+        await prisma.$disconnect();
+
+        res.json({
+            success: true,
+            message: 'Test venture created successfully with raw SQL',
+            venture: venture[0],
+            timestamp: new Date().toISOString()
+        });
+
+    } catch (error) {
+        console.error('Raw SQL venture creation failed:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Raw SQL venture creation failed',
+            error: error.message
+        });
+    }
+});
+
 // Get venture legal documents
-router.get('/:ventureId/documents', async (req, res) => {
+router.get('/:ventureId/documents', async(req, res) => {
     try {
         const { ventureId } = req.params;
 
         const documents = await prisma.legalDocument.findMany({
-            where: { 
+            where: {
                 entityId: ventureId,
                 isTemplate: false
             },
@@ -389,143 +428,6 @@ router.get('/:ventureId/documents', async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Failed to get venture documents',
-            error: error.message
-        });
-    }
-});
-
-// Simple table creation endpoint
-router.post('/create-tables', async (req, res) => {
-    try {
-        const { PrismaClient } = require('@prisma/client');
-        const prisma = new PrismaClient();
-        
-        console.log('🔧 Creating Venture Management tables...');
-        
-        // Create Venture table
-        await prisma.$executeRaw`
-            CREATE TABLE IF NOT EXISTS "Venture" (
-                "id" TEXT NOT NULL,
-                "name" TEXT NOT NULL,
-                "purpose" TEXT NOT NULL,
-                "region" TEXT NOT NULL DEFAULT 'US',
-                "status" TEXT NOT NULL DEFAULT 'DRAFT',
-                "ownerUserId" TEXT NOT NULL,
-                "ventureLegalEntityId" TEXT,
-                "equityFrameworkId" TEXT,
-                "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                "updatedAt" TIMESTAMP(3) NOT NULL,
-                CONSTRAINT "Venture_pkey" PRIMARY KEY ("id")
-            );
-        `;
-        
-        // Create VentureLegalEntity table
-        await prisma.$executeRaw`
-            CREATE TABLE IF NOT EXISTS "VentureLegalEntity" (
-                "id" TEXT NOT NULL,
-                "ventureId" TEXT NOT NULL,
-                "legalEntityId" TEXT NOT NULL,
-                "status" TEXT NOT NULL DEFAULT 'PENDING',
-                "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                "updatedAt" TIMESTAMP(3) NOT NULL,
-                CONSTRAINT "VentureLegalEntity_pkey" PRIMARY KEY ("id")
-            );
-        `;
-        
-        // Create EquityFramework table
-        await prisma.$executeRaw`
-            CREATE TABLE IF NOT EXISTS "EquityFramework" (
-                "id" TEXT NOT NULL,
-                "ventureId" TEXT NOT NULL,
-                "ownerPercent" INTEGER NOT NULL DEFAULT 35,
-                "alicePercent" INTEGER NOT NULL DEFAULT 20,
-                "cepPercent" INTEGER NOT NULL DEFAULT 45,
-                "vestingPolicy" TEXT NOT NULL DEFAULT '4-year vest, 1-year cliff',
-                "status" TEXT NOT NULL DEFAULT 'ACTIVE',
-                "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                "updatedAt" TIMESTAMP(3) NOT NULL,
-                CONSTRAINT "EquityFramework_pkey" PRIMARY KEY ("id")
-            );
-        `;
-        
-        // Create EquityLedger table
-        await prisma.$executeRaw`
-            CREATE TABLE IF NOT EXISTS "EquityLedger" (
-                "id" TEXT NOT NULL,
-                "ventureId" TEXT NOT NULL,
-                "equityFrameworkId" TEXT,
-                "holderType" TEXT NOT NULL,
-                "holderId" TEXT,
-                "percent" DOUBLE PRECISION NOT NULL,
-                "vestingPolicyId" TEXT,
-                "effectiveFrom" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                "effectiveTo" TIMESTAMP(3),
-                "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                "updatedAt" TIMESTAMP(3) NOT NULL,
-                CONSTRAINT "EquityLedger_pkey" PRIMARY KEY ("id")
-            );
-        `;
-        
-        // Create indexes
-        await prisma.$executeRaw`CREATE INDEX IF NOT EXISTS "Venture_ownerUserId_idx" ON "Venture"("ownerUserId");`;
-        await prisma.$executeRaw`CREATE INDEX IF NOT EXISTS "Venture_status_idx" ON "Venture"("status");`;
-        await prisma.$executeRaw`CREATE INDEX IF NOT EXISTS "Venture_region_idx" ON "Venture"("region");`;
-        await prisma.$executeRaw`CREATE INDEX IF NOT EXISTS "EquityLedger_ventureId_idx" ON "EquityLedger"("ventureId");`;
-        await prisma.$executeRaw`CREATE INDEX IF NOT EXISTS "EquityLedger_equityFrameworkId_idx" ON "EquityLedger"("equityFrameworkId");`;
-        
-        await prisma.$disconnect();
-        
-        res.json({
-            success: true,
-            message: 'Venture Management tables created successfully',
-            tables: ['Venture', 'VentureLegalEntity', 'EquityFramework', 'EquityLedger'],
-            timestamp: new Date().toISOString()
-        });
-        
-    } catch (error) {
-        console.error('Table creation failed:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Table creation failed',
-            error: error.message
-        });
-    }
-});
-
-// Regenerate Prisma client
-router.post('/regenerate-prisma', async (req, res) => {
-    try {
-        console.log('🔄 Regenerating Prisma client...');
-        
-        // This will regenerate the Prisma client with the new models
-        const { execSync } = require('child_process');
-        
-        try {
-            execSync('npx prisma generate', { 
-                cwd: process.cwd(),
-                stdio: 'pipe',
-                timeout: 30000 
-            });
-            
-            res.json({
-                success: true,
-                message: 'Prisma client regenerated successfully',
-                timestamp: new Date().toISOString()
-            });
-        } catch (execError) {
-            console.error('Prisma generation failed:', execError);
-            res.status(500).json({
-                success: false,
-                message: 'Prisma generation failed',
-                error: execError.message
-            });
-        }
-        
-    } catch (error) {
-        console.error('Prisma regeneration failed:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Prisma regeneration failed',
             error: error.message
         });
     }
