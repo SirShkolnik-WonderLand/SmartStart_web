@@ -380,6 +380,14 @@ app.use('/api/auth', authenticationApiRoutes);
 const invitationApiRoutes = require('./routes/invitation-api');
 app.use('/api/invitations', invitationApiRoutes);
 
+// Mount file management API routes
+const fileManagementApiRoutes = require('./routes/file-management-api');
+app.use('/api/files', fileManagementApiRoutes);
+
+// Mount digital documents API routes
+const digitalDocumentsApiRoutes = require('./routes/digital-documents-api');
+app.use('/api/documents', digitalDocumentsApiRoutes);
+
 // Mount system instructions API routes
 const systemInstructionsApiRoutes = require('./routes/system-instructions-api');
 app.use('/api/system', systemInstructionsApiRoutes);
