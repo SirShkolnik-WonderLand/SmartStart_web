@@ -1,15 +1,8 @@
-import { PrismaClient } from '@prisma/client';
+const { PrismaClient } = require('@prisma/client');
 
 const prisma = new PrismaClient();
 
-export interface CmdCtx {
-  req: any;
-  userId: string;
-  roles: string[];
-  permissions: string[];
-}
-
-export async function getAuthCtx(req: any): Promise<CmdCtx> {
+async function getAuthCtx(req) {
   // Extract user ID from JWT token (you'll implement this)
   const userId = req.user?.id || 'anonymous';
   
@@ -38,26 +31,34 @@ export async function getAuthCtx(req: any): Promise<CmdCtx> {
   };
 }
 
-export async function requirePerm(ctx: CmdCtx, perm: string): Promise<void> {
+async function requirePerm(ctx, perm) {
   if (!ctx.permissions.includes(perm)) {
     const err = new Error('FORBIDDEN');
-    (err as any).code = 'FORBIDDEN';
+    err.code = 'FORBIDDEN';
     throw err;
   }
 }
 
-export async function hasPerm(ctx: CmdCtx, perm: string): Promise<boolean> {
+async function hasPerm(ctx, perm) {
   return ctx.permissions.includes(perm);
 }
 
-export async function requireRole(ctx: CmdCtx, role: string): Promise<void> {
+async function requireRole(ctx, role) {
   if (!ctx.roles.includes(role)) {
     const err = new Error('INSUFFICIENT_ROLE');
-    (err as any).code = 'INSUFFICIENT_ROLE';
+    err.code = 'INSUFFICIENT_ROLE';
     throw err;
   }
 }
 
-export async function hasRole(ctx: CmdCtx, role: string): Promise<boolean> {
+async function hasRole(ctx, role) {
   return ctx.roles.includes(role);
 }
+
+module.exports = {
+  getAuthCtx,
+  requirePerm,
+  hasPerm,
+  requireRole,
+  hasRole
+};

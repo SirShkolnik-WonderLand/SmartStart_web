@@ -1,23 +1,15 @@
-import { z } from 'zod';
-import type { CmdCtx } from '../middleware/rbac';
-import { requirePerm, hasPerm } from '../middleware/rbac';
-import { audit } from '../middleware/audit';
-import { PrismaClient } from '@prisma/client';
+const { z } = require('zod');
+const { requirePerm } = require('../middleware/rbac');
+const { audit } = require('../middleware/audit');
+const { PrismaClient } = require('@prisma/client');
 
 const prisma = new PrismaClient();
 
-type Handler<T> = (ctx: CmdCtx, args: T) => Promise<string>;
-
-function defineCommand<T>(
-  name: string, 
-  schema: z.ZodType<T>, 
-  perms: string[], 
-  handler: Handler<T>
-) {
+function defineCommand(name, schema, perms, handler) {
   return { name, schema, perms, handler };
 }
 
-export const commands = [
+const commands = [
   // Basic system commands
   defineCommand(
     'help',
@@ -438,7 +430,7 @@ export const commands = [
         
         acc[stat.command].total = acc[stat.command].success + acc[stat.command].failed;
         return acc;
-      }, {} as Record<string, { success: number; failed: number; total: number }>);
+      }, {});
       
       return [
         '📊 AUDIT STATISTICS',
@@ -449,7 +441,11 @@ export const commands = [
       ].join('\n');
     }
   )
-] as const;
+];
 
-export type CommandSpec = typeof commands[number];
-export const commandMap = new Map(commands.map(c => [c.name, c]));
+const commandMap = new Map(commands.map(c => [c.name, c]));
+
+module.exports = {
+  commands,
+  commandMap
+};

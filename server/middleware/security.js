@@ -1,10 +1,10 @@
-import express from 'express';
-import helmet from 'helmet';
-import rateLimit from 'express-rate-limit';
-import cookieParser from 'cookie-parser';
-import crypto from 'crypto';
+const express = require('express');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+const cookieParser = require('cookie-parser');
+const crypto = require('crypto');
 
-export function setupSecurity(app: express.Application) {
+function setupSecurity(app) {
   // Basic security headers
   app.disable('x-powered-by');
   
@@ -76,7 +76,7 @@ export function setupSecurity(app: express.Application) {
 }
 
 // CSRF token management
-export function issueCsrf(res: express.Response): string {
+function issueCsrf(res) {
   const token = crypto.randomBytes(24).toString('base64url');
   res.cookie('csrft', token, { 
     httpOnly: false, 
@@ -87,15 +87,22 @@ export function issueCsrf(res: express.Response): string {
   return token;
 }
 
-export function verifyCsrf(req: express.Request): boolean {
+function verifyCsrf(req) {
   const cookieToken = req.cookies?.csrft;
   const bodyToken = req.body?.csrf || req.get('x-csrf');
   return cookieToken && bodyToken && cookieToken === bodyToken;
 }
 
-export function requireCsrf(req: express.Request, res: express.Response, next: express.NextFunction) {
+function requireCsrf(req, res, next) {
   if (!verifyCsrf(req)) {
     return res.status(403).json({ ok: false, out: 'CSRF token validation failed' });
   }
   next();
 }
+
+module.exports = {
+  setupSecurity,
+  issueCsrf,
+  verifyCsrf,
+  requireCsrf
+};

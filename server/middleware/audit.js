@@ -1,16 +1,9 @@
-import { PrismaClient } from '@prisma/client';
-import crypto from 'crypto';
-import type { CmdCtx } from './rbac';
+const { PrismaClient } = require('@prisma/client');
+const crypto = require('crypto');
 
 const prisma = new PrismaClient();
 
-export async function audit(
-  ctx: CmdCtx, 
-  cmd: string, 
-  args: unknown, 
-  success: boolean, 
-  message?: string
-) {
+async function audit(ctx, cmd, args, success, message) {
   try {
     // Hash arguments to avoid logging PII
     const argHash = crypto
@@ -35,11 +28,7 @@ export async function audit(
   }
 }
 
-export async function getAuditLogs(
-  userId?: string,
-  limit: number = 100,
-  offset: number = 0
-) {
+async function getAuditLogs(userId, limit = 100, offset = 0) {
   const where = userId ? { userId } : {};
   
   return await prisma.auditLog.findMany({
@@ -58,7 +47,7 @@ export async function getAuditLogs(
   });
 }
 
-export async function getCommandStats() {
+async function getCommandStats() {
   const stats = await prisma.auditLog.groupBy({
     by: ['command', 'success'],
     _count: {
@@ -79,5 +68,11 @@ export async function getCommandStats() {
     
     acc[stat.command].total = acc[stat.command].success + acc[stat.command].failed;
     return acc;
-  }, {} as Record<string, { success: number; failed: number; total: number }>);
+  }, {});
 }
+
+module.exports = {
+  audit,
+  getAuditLogs,
+  getCommandStats
+};
