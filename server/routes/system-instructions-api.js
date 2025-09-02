@@ -440,7 +440,12 @@ router.get('/status', async (req, res) => {
             totalFeatures: 66,
             databaseTables: 25,
             lastDeployment: new Date().toISOString(),
-            nextPhase: "Contribution Pipeline & Workflow Automation"
+            nextPhase: "Contribution Pipeline & Workflow Automation",
+        currentIssues: [
+            "Company listing endpoint needs schema alignment fix",
+            "Team creation endpoint needs enum type resolution",
+            "Deployment caching issues being investigated"
+        ]
         };
 
         res.json({
