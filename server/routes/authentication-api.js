@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
+const { issueCsrf } = require('../middleware/security');
 const prisma = new PrismaClient();
 
 // ===== AUTHENTICATION API SYSTEM =====
@@ -16,6 +17,12 @@ const emailTransporter = nodemailer.createTransport({
         user: process.env.EMAIL_USER || 'your-email@gmail.com',
         pass: process.env.EMAIL_PASS || 'your-app-password'
     }
+});
+
+// CSRF token endpoint
+router.get('/csrf', (req, res) => {
+    const token = issueCsrf(res);
+    res.json({ ok: true, csrf: token });
 });
 
 // Health check

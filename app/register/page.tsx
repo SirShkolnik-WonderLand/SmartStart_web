@@ -38,6 +38,12 @@ export default function RegisterPage() {
   const tosRef = useRef<HTMLDivElement>(null)
   const contribRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
+  const [csrf, setCsrf] = useState('')
+
+  useEffect(() => {
+    // fetch CSRF token to set cookie + hold token for double submit
+    fetch(`${API_BASE}/api/auth/csrf`).then(r=>r.json()).then(d=>setCsrf(d?.csrf || '')).catch(()=>{})
+  }, [])
 
   useEffect(() => {
     if (step === 'agreements') {
@@ -101,7 +107,7 @@ export default function RegisterPage() {
     const signatureHash = await sha256Hex([content, email, username, signedAt].join('|'))
 
     // 3) store signature server-side (server records IP)
-    await fetch(`${API_BASE}/api/documents/sign`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ documentId, userIdentifier: email, signatureHash, signedAt, code }) })
+    await fetch(`${API_BASE}/api/documents/sign`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ documentId, userIdentifier: email, signatureHash, signedAt, code, csrf }) })
 
     return { documentId, signatureHash, signedAt }
   }
@@ -122,6 +128,7 @@ export default function RegisterPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          csrf,
           username,
           email,
           password,
