@@ -160,7 +160,7 @@ router.get('/:id/amendments', async (req, res) => {
         res.json({
             success: true,
             message: 'Contract amendments retrieved successfully',
-            amendments: amendments.map(a => ({
+            amendments: amendmentsWithSignatures.map(a => ({
                 id: a.id,
                 amendmentType: a.amendmentType,
                 reason: a.reason,
