@@ -330,6 +330,27 @@ router.put('/:ventureId/profile', async (req, res) => {
     }
 });
 
+// Run venture management migration
+router.post('/migrate', async (req, res) => {
+    try {
+        const { migrateVentureManagement } = require('../../migrate-venture-management');
+        await migrateVentureManagement();
+        
+        res.json({
+            success: true,
+            message: 'Venture Management System migration completed successfully',
+            timestamp: new Date().toISOString()
+        });
+    } catch (error) {
+        console.error('Migration failed:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Venture Management migration failed',
+            error: error.message
+        });
+    }
+});
+
 // Get venture legal documents
 router.get('/:ventureId/documents', async (req, res) => {
     try {
