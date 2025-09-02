@@ -344,6 +344,10 @@ app.use('/api/contracts', contractsApiRoutes);
 const advancedContractsApiRoutes = require('./routes/advanced-contracts-api');
 app.use('/api/contracts/advanced', advancedContractsApiRoutes);
 
+// Mount contract auto-issuance API routes
+const contractAutoIssuanceApiRoutes = require('./routes/contract-auto-issuance-api');
+app.use('/api/contracts/auto-issuance', contractAutoIssuanceApiRoutes);
+
 // Error handling middleware
 app.use((error, req, res, next) => {
     logger.error('Unhandled error:', error);
