@@ -368,6 +368,10 @@ app.use('/api/companies', companyManagementApiRoutes);
 const teamManagementApiRoutes = require('./routes/team-management-api');
 app.use('/api/teams', teamManagementApiRoutes);
 
+// Mount contribution pipeline API routes
+const contributionPipelineApiRoutes = require('./routes/contribution-pipeline-api');
+app.use('/api/contribution', contributionPipelineApiRoutes);
+
 // Mount system instructions API routes
 const systemInstructionsApiRoutes = require('./routes/system-instructions-api');
 app.use('/api/system', systemInstructionsApiRoutes);
