@@ -4,7 +4,7 @@ const { setupSecurity } = require('./middleware/security');
 
 const app = express();
 
-// Setup security middleware first
+// Setup security middleware first - CLI System Ready
 setupSecurity(app);
 
 // CORS configuration
@@ -23,7 +23,8 @@ app.get('/health', (req, res) => {
     status: 'healthy', 
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
-    environment: process.env.NODE_ENV || 'development'
+    environment: process.env.NODE_ENV || 'development',
+    cli: 'enabled'
   });
 });
 
