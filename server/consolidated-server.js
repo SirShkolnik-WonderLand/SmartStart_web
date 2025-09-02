@@ -24,13 +24,19 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
     environment: process.env.NODE_ENV || 'development',
-    cli: 'enabled'
+    cli: 'enabled',
+    version: '2.0.1'
   });
 });
+
+// Debug: Log when mounting CLI routes
+console.log('🚀 Mounting CLI API routes...');
 
 // Mount CLI API routes
 const cliApiRoutes = require('./routes/cli-api');
 app.use('/api/cli', cliApiRoutes);
+
+console.log('✅ CLI API routes mounted successfully');
 
 // Mount existing API routes
 const v1ApiRoutes = require('./routes/v1-api');
@@ -91,7 +97,8 @@ app.use((err, req, res, next) => {
 app.use('*', (req, res) => {
   res.status(404).json({ 
     error: 'Not found',
-    message: `Route ${req.originalUrl} not found`
+    message: `Route ${req.originalUrl} not found`,
+    availableRoutes: ['/health', '/api/cli/*', '/api/v1/*', '/api/users/*', '/api/companies/*', '/api/teams/*']
   });
 });
 
@@ -102,6 +109,7 @@ app.listen(PORT, () => {
   console.log(`📡 CLI API available at /api/cli`);
   console.log(`🔐 Security middleware enabled`);
   console.log(`📊 All 7 systems operational`);
+  console.log(`🔄 CLI System Version: 2.0.1`);
 });
 
 module.exports = app;
