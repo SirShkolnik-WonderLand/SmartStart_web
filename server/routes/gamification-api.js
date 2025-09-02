@@ -264,24 +264,7 @@ router.get('/reputation/:userId', async (req, res) => {
             select: {
                 id: true,
                 name: true,
-                reputation: true,
-                endorsementsReceived: {
-                    include: {
-                        endorser: {
-                            select: { name: true, reputation: true }
-                        },
-                        skill: {
-                            select: { name: true }
-                        }
-                    }
-                },
-                kudos: {
-                    include: {
-                        giver: {
-                            select: { name: true }
-                        }
-                    }
-                }
+                reputation: true
             }
         });
 
@@ -292,11 +275,33 @@ router.get('/reputation/:userId', async (req, res) => {
             });
         }
 
+        // Get endorsements and kudos separately to avoid relation issues
+        const endorsements = await prisma.endorsement.findMany({
+            where: { endorsedId: userId },
+            include: {
+                endorser: {
+                    select: { name: true, reputation: true }
+                },
+                skill: {
+                    select: { name: true }
+                }
+            }
+        });
+
+        const kudos = await prisma.kudos.findMany({
+            where: { userId },
+            include: {
+                giver: {
+                    select: { name: true }
+                }
+            }
+        });
+
         res.json({
             success: true,
             reputation: user.reputation,
-            endorsements: user.endorsementsReceived,
-            kudos: user.kudos
+            endorsements: endorsements,
+            kudos: kudos
         });
     } catch (error) {
         console.error('Error getting user reputation:', error);
@@ -333,9 +338,6 @@ router.get('/portfolio/:userId', async (req, res) => {
         
         const portfolioItems = await prisma.portfolioItem.findMany({
             where: { userId },
-            include: {
-                file: true
-            },
             orderBy: { createdAt: 'desc' },
             take: parseInt(limit),
             skip: parseInt(offset)
@@ -374,21 +376,28 @@ router.get('/skills/:userId', async (req, res) => {
         const userSkills = await prisma.userSkill.findMany({
             where: { userId },
             include: {
-                skill: true,
-                endorsements: {
-                    include: {
-                        endorser: {
-                            select: { name: true, reputation: true }
-                        }
-                    }
-                }
+                skill: true
             },
             orderBy: { level: 'desc' }
+        });
+
+        // Get endorsements separately to avoid relation issues
+        const endorsements = await prisma.endorsement.findMany({
+            where: { endorsedId: userId },
+            include: {
+                endorser: {
+                    select: { name: true, reputation: true }
+                },
+                skill: {
+                    select: { name: true }
+                }
+            }
         });
 
         res.json({
             success: true,
             skills: userSkills,
+            endorsements: endorsements,
             totalSkills: userSkills.length
         });
     } catch (error) {
