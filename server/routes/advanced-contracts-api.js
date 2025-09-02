@@ -812,9 +812,9 @@ router.get('/health', async (req, res) => {
             prisma.legalDocument.count(),
             prisma.legalDocument.count({ where: { status: 'APPROVED' } }),
             prisma.legalDocumentSignature.count(),
-            prisma.$queryRaw`SELECT COUNT(*) as count FROM "ContractAmendment"`.then(r => r[0].count),
-            prisma.$queryRaw`SELECT COUNT(*) as count FROM "ContractEnforcement"`.then(r => r[0].count),
-            prisma.$queryRaw`SELECT COUNT(*) as count FROM "SignatureVerification"`.then(r => r[0].count)
+            prisma.$queryRaw`SELECT COUNT(*) as count FROM "ContractAmendment"`.then(r => parseInt(r[0].count)),
+            prisma.$queryRaw`SELECT COUNT(*) as count FROM "ContractEnforcement"`.then(r => parseInt(r[0].count)),
+            prisma.$queryRaw`SELECT COUNT(*) as count FROM "SignatureVerification"`.then(r => parseInt(r[0].count))
         ]);
 
         res.json({
