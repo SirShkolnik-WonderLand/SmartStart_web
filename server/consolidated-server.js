@@ -364,6 +364,10 @@ app.use('/api/users', userManagementApiRoutes);
 const companyManagementApiRoutes = require('./routes/company-management-api');
 app.use('/api/companies', companyManagementApiRoutes);
 
+// Mount team management API routes
+const teamManagementApiRoutes = require('./routes/team-management-api');
+app.use('/api/teams', teamManagementApiRoutes);
+
 // Mount system instructions API routes
 const systemInstructionsApiRoutes = require('./routes/system-instructions-api');
 app.use('/api/system', systemInstructionsApiRoutes);
