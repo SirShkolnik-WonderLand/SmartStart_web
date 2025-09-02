@@ -57,7 +57,7 @@ class VentureManagementService {
             const updatedVenture = await prisma.venture.update({
                 where: { id: venture.id },
                 data: {
-                    legalEntityId: legalEntity.id,
+                    ventureLegalEntityId: legalEntity.ventureLegalEntity.id,
                     equityFrameworkId: equityFramework.id,
                     status: 'PENDING_CONTRACTS'
                 }
@@ -67,7 +67,8 @@ class VentureManagementService {
 
             return {
                 venture: updatedVenture,
-                legalEntity,
+                legalEntity: legalEntity.baseLegalEntity,
+                ventureLegalEntity: legalEntity.ventureLegalEntity,
                 equityFramework,
                 ventureProfile
             };
@@ -83,22 +84,36 @@ class VentureManagementService {
      */
     async createLegalEntity(ventureId, legalEntityData) {
         try {
-            const legalEntity = await prisma.legalEntity.create({
+            // First create the base legal entity
+            const baseLegalEntity = await prisma.legalEntity.create({
                 data: {
-                    ventureId: ventureId,
                     name: legalEntityData.name || 'New Venture LLC',
-                    type: legalEntityData.type || 'LLC',
+                    type: 'LLC', // Default type for ventures
                     jurisdiction: legalEntityData.jurisdiction || 'US',
                     taxId: legalEntityData.taxId || null,
                     incorporationDate: legalEntityData.incorporationDate || new Date(),
+                    legalForm: 'LLC',
+                    ownershipStructure: 'Single Member',
+                    governanceModel: 'Member-Managed',
+                    complianceStatus: 'PENDING',
+                    createdAt: new Date(),
+                    updatedAt: new Date()
+                }
+            });
+
+            // Then create the venture-specific legal entity link
+            const ventureLegalEntity = await prisma.ventureLegalEntity.create({
+                data: {
+                    ventureId: ventureId,
+                    legalEntityId: baseLegalEntity.id,
                     status: 'PENDING',
                     createdAt: new Date(),
                     updatedAt: new Date()
                 }
             });
 
-            console.log(`✅ Legal entity created: ${legalEntity.id}`);
-            return legalEntity;
+            console.log(`✅ Legal entity created: ${baseLegalEntity.id} with venture link: ${ventureLegalEntity.id}`);
+            return { baseLegalEntity, ventureLegalEntity };
 
         } catch (error) {
             console.error('❌ Failed to create legal entity:', error);
@@ -282,7 +297,11 @@ class VentureManagementService {
                             trustScore: true
                         }
                     },
-                    legalEntity: true,
+                    ventureLegalEntity: {
+                        include: {
+                            legalEntity: true
+                        }
+                    },
                     equityFramework: true,
                     ventureProfile: true,
                     ventureITPack: true,

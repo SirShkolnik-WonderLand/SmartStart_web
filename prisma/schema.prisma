@@ -1167,6 +1167,7 @@ model LegalEntity {
   members   LegalEntityMember[]
   documents LegalDocument[]
   coops     StartupCoop[]       @relation("CoopLegalEntity")
+  ventureLegalEntities VentureLegalEntity[]
 
   // Metadata
   createdAt DateTime @default(now())
@@ -1842,10 +1843,10 @@ model Venture {
   owner     User     @relation("VentureOwner", fields: [ownerUserId], references: [id])
   
   // Legal entity and equity framework
-  legalEntityId      String?
-  legalEntity        LegalEntity?
-  equityFrameworkId  String?
-  equityFramework    EquityFramework?
+  ventureLegalEntityId String?
+  ventureLegalEntity   VentureLegalEntity?
+  equityFrameworkId    String?
+  equityFramework      EquityFramework?
   
   // Venture profile and IT pack
   ventureProfile     VentureProfile?
@@ -1863,21 +1864,18 @@ model Venture {
   @@index([region])
 }
 
-model LegalEntity {
+// Venture-specific legal entity (extends existing LegalEntity)
+model VentureLegalEntity {
   id                String   @id @default(cuid())
   ventureId         String   @unique
   venture           Venture  @relation(fields: [ventureId], references: [id], onDelete: Cascade)
-  name              String
-  type              String   @default("LLC") // LLC, CORP, PARTNERSHIP, etc.
-  jurisdiction      String   @default("US")
-  taxId             String?
-  incorporationDate DateTime @default(now())
+  legalEntityId     String
+  legalEntity       LegalEntity @relation(fields: [legalEntityId], references: [id])
   status            String   @default("PENDING") // PENDING, ACTIVE, SUSPENDED
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([jurisdiction])
   @@index([status])
 }
 
