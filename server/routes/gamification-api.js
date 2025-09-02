@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 const gamificationService = new GamificationService();
 
 // ===== HEALTH CHECK =====
-router.get('/health', async (req, res) => {
+router.get('/health', async(req, res) => {
     try {
         const metrics = await getGamificationMetrics();
         res.json({
@@ -25,14 +25,14 @@ router.get('/health', async (req, res) => {
 });
 
 // ===== MIGRATION ENDPOINT =====
-router.post('/migrate', async (req, res) => {
+router.post('/migrate', async(req, res) => {
     try {
         console.log('🚀 Starting gamification system migration...');
-        
+
         // Import and run migration
         const { migrateGamificationSystem } = require('../migrate-gamification-system');
         await migrateGamificationSystem();
-        
+
         res.json({
             success: true,
             message: 'Gamification system migration completed successfully',
@@ -49,14 +49,14 @@ router.post('/migrate', async (req, res) => {
 });
 
 // ===== SEEDING ENDPOINT =====
-router.post('/seed', async (req, res) => {
+router.post('/seed', async(req, res) => {
     try {
         console.log('🌱 Starting gamification system seeding...');
-        
+
         // Import and run seeding
         const { seedGamification } = require('../seed-gamification');
         await seedGamification();
-        
+
         res.json({
             success: true,
             message: 'Gamification system seeding completed successfully',
@@ -73,12 +73,12 @@ router.post('/seed', async (req, res) => {
 });
 
 // ===== CREATE TABLES ENDPOINT =====
-router.post('/create-tables', async (req, res) => {
+router.post('/create-tables', async(req, res) => {
     try {
         console.log('🔨 Creating gamification system tables...');
-        
+
         // Create Skills table
-        await prisma.$executeRaw`
+        await prisma.$executeRaw `
             CREATE TABLE IF NOT EXISTS "Skill" (
                 "id" TEXT NOT NULL,
                 "name" TEXT NOT NULL,
@@ -90,9 +90,9 @@ router.post('/create-tables', async (req, res) => {
                 CONSTRAINT "Skill_pkey" PRIMARY KEY ("id")
             );
         `;
-        
+
         // Create UserSkills table
-        await prisma.$executeRaw`
+        await prisma.$executeRaw `
             CREATE TABLE IF NOT EXISTS "UserSkill" (
                 "id" TEXT NOT NULL,
                 "userId" TEXT NOT NULL,
@@ -104,9 +104,9 @@ router.post('/create-tables', async (req, res) => {
                 CONSTRAINT "UserSkill_pkey" PRIMARY KEY ("id")
             );
         `;
-        
+
         // Create Endorsements table
-        await prisma.$executeRaw`
+        await prisma.$executeRaw `
             CREATE TABLE IF NOT EXISTS "Endorsement" (
                 "id" TEXT NOT NULL,
                 "endorserId" TEXT NOT NULL,
@@ -118,9 +118,9 @@ router.post('/create-tables', async (req, res) => {
                 CONSTRAINT "Endorsement_pkey" PRIMARY KEY ("id")
             );
         `;
-        
+
         // Create PortfolioItems table
-        await prisma.$executeRaw`
+        await prisma.$executeRaw `
             CREATE TABLE IF NOT EXISTS "PortfolioItem" (
                 "id" TEXT NOT NULL,
                 "userId" TEXT NOT NULL,
@@ -137,9 +137,9 @@ router.post('/create-tables', async (req, res) => {
                 CONSTRAINT "PortfolioItem_pkey" PRIMARY KEY ("id")
             );
         `;
-        
+
         // Create UserActivity table
-        await prisma.$executeRaw`
+        await prisma.$executeRaw `
             CREATE TABLE IF NOT EXISTS "UserActivity" (
                 "id" TEXT NOT NULL,
                 "userId" TEXT NOT NULL,
@@ -151,9 +151,9 @@ router.post('/create-tables', async (req, res) => {
                 CONSTRAINT "UserActivity_pkey" PRIMARY KEY ("id")
             );
         `;
-        
+
         // Create Badges table
-        await prisma.$executeRaw`
+        await prisma.$executeRaw `
             CREATE TABLE IF NOT EXISTS "Badge" (
                 "id" TEXT NOT NULL,
                 "name" TEXT NOT NULL,
@@ -166,9 +166,9 @@ router.post('/create-tables', async (req, res) => {
                 CONSTRAINT "Badge_pkey" PRIMARY KEY ("id")
             );
         `;
-        
+
         // Create UserBadges table
-        await prisma.$executeRaw`
+        await prisma.$executeRaw `
             CREATE TABLE IF NOT EXISTS "UserBadge" (
                 "id" TEXT NOT NULL,
                 "userId" TEXT NOT NULL,
@@ -177,17 +177,17 @@ router.post('/create-tables', async (req, res) => {
                 CONSTRAINT "UserBadge_pkey" PRIMARY KEY ("id")
             );
         `;
-        
+
         // Create indexes
-        await prisma.$executeRaw`CREATE UNIQUE INDEX IF NOT EXISTS "Skill_name_key" ON "Skill"("name");`;
-        await prisma.$executeRaw`CREATE UNIQUE INDEX IF NOT EXISTS "UserSkill_userId_skillId_key" ON "UserSkill"("userId", "skillId");`;
-        await prisma.$executeRaw`CREATE INDEX IF NOT EXISTS "UserSkill_userId_idx" ON "UserSkill"("userId");`;
-        await prisma.$executeRaw`CREATE INDEX IF NOT EXISTS "Endorsement_endorsedId_idx" ON "Endorsement"("endorsedId");`;
-        await prisma.$executeRaw`CREATE INDEX IF NOT EXISTS "PortfolioItem_userId_idx" ON "PortfolioItem"("userId");`;
-        await prisma.$executeRaw`CREATE INDEX IF NOT EXISTS "UserActivity_userId_idx" ON "UserActivity"("userId");`;
-        await prisma.$executeRaw`CREATE UNIQUE INDEX IF NOT EXISTS "Badge_name_key" ON "Badge"("name");`;
-        await prisma.$executeRaw`CREATE UNIQUE INDEX IF NOT EXISTS "UserBadge_userId_badgeId_key" ON "UserBadge"("userId", "badgeId");`;
-        
+        await prisma.$executeRaw `CREATE UNIQUE INDEX IF NOT EXISTS "Skill_name_key" ON "Skill"("name");`;
+        await prisma.$executeRaw `CREATE UNIQUE INDEX IF NOT EXISTS "UserSkill_userId_skillId_key" ON "UserSkill"("userId", "skillId");`;
+        await prisma.$executeRaw `CREATE INDEX IF NOT EXISTS "UserSkill_userId_idx" ON "UserSkill"("userId");`;
+        await prisma.$executeRaw `CREATE INDEX IF NOT EXISTS "Endorsement_endorsedId_idx" ON "Endorsement"("endorsedId");`;
+        await prisma.$executeRaw `CREATE INDEX IF NOT EXISTS "PortfolioItem_userId_idx" ON "PortfolioItem"("userId");`;
+        await prisma.$executeRaw `CREATE INDEX IF NOT EXISTS "UserActivity_userId_idx" ON "UserActivity"("userId");`;
+        await prisma.$executeRaw `CREATE UNIQUE INDEX IF NOT EXISTS "Badge_name_key" ON "Badge"("name");`;
+        await prisma.$executeRaw `CREATE UNIQUE INDEX IF NOT EXISTS "UserBadge_userId_badgeId_key" ON "UserBadge"("userId", "badgeId");`;
+
         res.json({
             success: true,
             message: 'Gamification system tables created successfully',
@@ -206,10 +206,10 @@ router.post('/create-tables', async (req, res) => {
 // ===== XP & LEVEL MANAGEMENT =====
 
 // Add XP for user activity
-router.post('/xp/add', async (req, res) => {
+router.post('/xp/add', async(req, res) => {
     try {
         const { userId, activityType, amount } = req.body;
-        
+
         if (!userId || !activityType) {
             return res.status(400).json({
                 success: false,
@@ -218,7 +218,7 @@ router.post('/xp/add', async (req, res) => {
         }
 
         const result = await gamificationService.addXP(userId, activityType, amount);
-        
+
         if (result.success) {
             res.json(result);
         } else {
@@ -234,10 +234,10 @@ router.post('/xp/add', async (req, res) => {
 });
 
 // Get user XP and level info
-router.get('/xp/:userId', async (req, res) => {
+router.get('/xp/:userId', async(req, res) => {
     try {
         const { userId } = req.params;
-        
+
         const user = await prisma.user.findUnique({
             where: { id: userId },
             select: {
@@ -261,21 +261,21 @@ router.get('/xp/:userId', async (req, res) => {
         // Calculate XP progress to next level
         const currentLevel = user.level;
         const currentXP = user.xp;
-        
+
         const levels = ['OWLET', 'NIGHT_WATCHER', 'WISE_OWL', 'SKY_MASTER'];
         const currentLevelIndex = levels.indexOf(currentLevel);
         const nextLevel = levels[currentLevelIndex + 1];
-        
+
         let xpToNextLevel = 0;
         let progressPercentage = 100;
-        
+
         if (nextLevel) {
             const xpThresholds = {
                 'OWLET': 1000,
                 'NIGHT_WATCHER': 5000,
                 'WISE_OWL': 20000
             };
-            
+
             const nextThreshold = xpThresholds[currentLevel];
             if (nextThreshold) {
                 xpToNextLevel = nextThreshold - currentXP;
@@ -304,10 +304,10 @@ router.get('/xp/:userId', async (req, res) => {
 // ===== BADGE SYSTEM =====
 
 // Check and award badges for user
-router.post('/badges/check/:userId', async (req, res) => {
+router.post('/badges/check/:userId', async(req, res) => {
     try {
         const { userId } = req.params;
-        
+
         const result = await gamificationService.checkAndAwardBadges(userId);
         res.json(result);
     } catch (error) {
@@ -320,10 +320,10 @@ router.post('/badges/check/:userId', async (req, res) => {
 });
 
 // Get user badges
-router.get('/badges/:userId', async (req, res) => {
+router.get('/badges/:userId', async(req, res) => {
     try {
         const { userId } = req.params;
-        
+
         const userBadges = await prisma.userBadge.findMany({
             where: { userId },
             include: {
@@ -347,7 +347,7 @@ router.get('/badges/:userId', async (req, res) => {
 });
 
 // Get all available badges
-router.get('/badges', async (req, res) => {
+router.get('/badges', async(req, res) => {
     try {
         const badges = await prisma.badge.findMany({
             orderBy: { rarity: 'asc' }
@@ -370,10 +370,10 @@ router.get('/badges', async (req, res) => {
 // ===== REPUTATION SYSTEM =====
 
 // Calculate and update user reputation
-router.post('/reputation/calculate/:userId', async (req, res) => {
+router.post('/reputation/calculate/:userId', async(req, res) => {
     try {
         const { userId } = req.params;
-        
+
         const result = await gamificationService.calculateReputation(userId);
         res.json(result);
     } catch (error) {
@@ -386,10 +386,10 @@ router.post('/reputation/calculate/:userId', async (req, res) => {
 });
 
 // Get user reputation details
-router.get('/reputation/:userId', async (req, res) => {
+router.get('/reputation/:userId', async(req, res) => {
     try {
         const { userId } = req.params;
-        
+
         const user = await prisma.user.findUnique({
             where: { id: userId },
             select: {
@@ -446,10 +446,10 @@ router.get('/reputation/:userId', async (req, res) => {
 // ===== PORTFOLIO ANALYTICS =====
 
 // Generate portfolio insights for user
-router.post('/portfolio/insights/:userId', async (req, res) => {
+router.post('/portfolio/insights/:userId', async(req, res) => {
     try {
         const { userId } = req.params;
-        
+
         const result = await gamificationService.generatePortfolioInsights(userId);
         res.json(result);
     } catch (error) {
@@ -462,11 +462,11 @@ router.post('/portfolio/insights/:userId', async (req, res) => {
 });
 
 // Get user portfolio items
-router.get('/portfolio/:userId', async (req, res) => {
+router.get('/portfolio/:userId', async(req, res) => {
     try {
         const { userId } = req.params;
         const { limit = 20, offset = 0 } = req.query;
-        
+
         const portfolioItems = await prisma.portfolioItem.findMany({
             where: { userId },
             orderBy: { createdAt: 'desc' },
@@ -500,10 +500,10 @@ router.get('/portfolio/:userId', async (req, res) => {
 // ===== SKILLS & ENDORSEMENTS =====
 
 // Get user skills
-router.get('/skills/:userId', async (req, res) => {
+router.get('/skills/:userId', async(req, res) => {
     try {
         const { userId } = req.params;
-        
+
         const userSkills = await prisma.userSkill.findMany({
             where: { userId },
             include: {
@@ -541,10 +541,10 @@ router.get('/skills/:userId', async (req, res) => {
 });
 
 // Add skill endorsement
-router.post('/skills/endorse', async (req, res) => {
+router.post('/skills/endorse', async(req, res) => {
     try {
         const { endorserId, endorsedId, skillId, weight, note } = req.body;
-        
+
         if (!endorserId || !endorsedId || !weight) {
             return res.status(400).json({
                 success: false,
@@ -604,10 +604,10 @@ router.post('/skills/endorse', async (req, res) => {
 // ===== COMMUNITY ENGAGEMENT =====
 
 // Calculate community score
-router.post('/community/score/:userId', async (req, res) => {
+router.post('/community/score/:userId', async(req, res) => {
     try {
         const { userId } = req.params;
-        
+
         const result = await gamificationService.calculateCommunityScore(userId);
         res.json(result);
     } catch (error) {
@@ -620,10 +620,10 @@ router.post('/community/score/:userId', async (req, res) => {
 });
 
 // Generate daily challenge
-router.get('/challenges/daily/:userId', async (req, res) => {
+router.get('/challenges/daily/:userId', async(req, res) => {
     try {
         const { userId } = req.params;
-        
+
         const result = await gamificationService.generateDailyChallenge(userId);
         res.json(result);
     } catch (error) {
@@ -638,11 +638,11 @@ router.get('/challenges/daily/:userId', async (req, res) => {
 // ===== LEADERBOARDS =====
 
 // Get leaderboard by category
-router.get('/leaderboard/:category', async (req, res) => {
+router.get('/leaderboard/:category', async(req, res) => {
     try {
         const { category } = req.params;
         const { limit = 10 } = req.query;
-        
+
         const result = await gamificationService.getLeaderboard(category, parseInt(limit));
         res.json(result);
     } catch (error) {
@@ -655,7 +655,7 @@ router.get('/leaderboard/:category', async (req, res) => {
 });
 
 // Get all leaderboards
-router.get('/leaderboards', async (req, res) => {
+router.get('/leaderboards', async(req, res) => {
     try {
         const categories = ['xp', 'reputation', 'contributions', 'portfolio', 'badges'];
         const leaderboards = {};
@@ -684,11 +684,11 @@ router.get('/leaderboards', async (req, res) => {
 // ===== ACTIVITY TRACKING =====
 
 // Get user activity log
-router.get('/activity/:userId', async (req, res) => {
+router.get('/activity/:userId', async(req, res) => {
     try {
         const { userId } = req.params;
         const { limit = 50, offset = 0, type } = req.query;
-        
+
         const whereClause = { userId };
         if (type) {
             whereClause.type = type;
