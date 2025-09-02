@@ -372,6 +372,14 @@ app.use('/api/teams', teamManagementApiRoutes);
 const contributionPipelineApiRoutes = require('./routes/contribution-pipeline-api');
 app.use('/api/contribution', contributionPipelineApiRoutes);
 
+// Mount authentication API routes
+const authenticationApiRoutes = require('./routes/authentication-api');
+app.use('/api/auth', authenticationApiRoutes);
+
+// Mount invitation API routes
+const invitationApiRoutes = require('./routes/invitation-api');
+app.use('/api/invitations', invitationApiRoutes);
+
 // Mount system instructions API routes
 const systemInstructionsApiRoutes = require('./routes/system-instructions-api');
 app.use('/api/system', systemInstructionsApiRoutes);
