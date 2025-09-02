@@ -368,7 +368,7 @@ app.use('/api/companies', companyManagementApiRoutes);
 const teamManagementApiRoutes = require('./routes/team-management-api');
 app.use('/api/teams', teamManagementApiRoutes);
 
-// Mount contribution pipeline API routes
+// Mount contribution pipeline API routes - FORCE REDEPLOY
 const contributionPipelineApiRoutes = require('./routes/contribution-pipeline-api');
 app.use('/api/contribution', contributionPipelineApiRoutes);
 
