@@ -1,7 +1,9 @@
 const express = require('express');
 const router = express.Router();
+const { PrismaClient } = require('@prisma/client');
 const GamificationService = require('../services/gamification-service');
 
+const prisma = new PrismaClient();
 const gamificationService = new GamificationService();
 
 // ===== HEALTH CHECK =====
