@@ -9,6 +9,25 @@ const { PrismaClient } = require('@prisma/client');
 const router = express.Router();
 const prisma = new PrismaClient();
 
+// Root CLI endpoint
+router.get('/', (req, res) => {
+  res.json({
+    ok: true,
+    system: 'SmartStart Platform CLI',
+    version: '2.0.0',
+    status: 'OPERATIONAL',
+    endpoints: {
+      commands: '/api/cli/commands',
+      status: '/api/cli/status',
+      health: '/api/cli/health',
+      exec: '/api/cli/exec',
+      help: '/api/cli/help/:command'
+    },
+    totalCommands: commandMap.size,
+    documentation: 'Use /api/cli/commands to see all available commands'
+  });
+});
+
 // Command execution schema
 const ExecSchema = z.object({
   command: z.string().min(1).max(128),
@@ -188,7 +207,8 @@ router.get('/health', (req, res) => {
     ok: true, 
     status: 'healthy',
     timestamp: new Date().toISOString(),
-    uptime: process.uptime()
+    uptime: process.uptime(),
+    cli: 'enabled'
   });
 });
 
