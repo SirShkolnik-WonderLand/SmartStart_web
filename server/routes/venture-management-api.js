@@ -351,6 +351,49 @@ router.post('/migrate', async (req, res) => {
     }
 });
 
+// Get venture legal documents
+router.get('/:ventureId/documents', async (req, res) => {
+    try {
+        const { ventureId } = req.params;
+
+        const documents = await prisma.legalDocument.findMany({
+            where: { 
+                entityId: ventureId,
+                isTemplate: false
+            },
+            include: {
+                signatures: {
+                    include: {
+                        signer: {
+                            select: {
+                                id: true,
+                                displayName: true,
+                                email: true
+                            }
+                        }
+                    }
+                }
+            },
+            orderBy: { createdAt: 'desc' }
+        });
+
+        res.json({
+            success: true,
+            message: 'Venture legal documents retrieved successfully',
+            documents,
+            count: documents.length
+        });
+
+    } catch (error) {
+        console.error('Failed to get venture documents:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to get venture documents',
+            error: error.message
+        });
+    }
+});
+
 // Simple table creation endpoint
 router.post('/create-tables', async (req, res) => {
     try {
@@ -449,44 +492,40 @@ router.post('/create-tables', async (req, res) => {
     }
 });
 
-// Get venture legal documents
-router.get('/:ventureId/documents', async (req, res) => {
+// Regenerate Prisma client
+router.post('/regenerate-prisma', async (req, res) => {
     try {
-        const { ventureId } = req.params;
-
-        const documents = await prisma.legalDocument.findMany({
-            where: { 
-                entityId: ventureId,
-                isTemplate: false
-            },
-            include: {
-                signatures: {
-                    include: {
-                        signer: {
-                            select: {
-                                id: true,
-                                displayName: true,
-                                email: true
-                            }
-                        }
-                    }
-                }
-            },
-            orderBy: { createdAt: 'desc' }
-        });
-
-        res.json({
-            success: true,
-            message: 'Venture legal documents retrieved successfully',
-            documents,
-            count: documents.length
-        });
-
+        console.log('🔄 Regenerating Prisma client...');
+        
+        // This will regenerate the Prisma client with the new models
+        const { execSync } = require('child_process');
+        
+        try {
+            execSync('npx prisma generate', { 
+                cwd: process.cwd(),
+                stdio: 'pipe',
+                timeout: 30000 
+            });
+            
+            res.json({
+                success: true,
+                message: 'Prisma client regenerated successfully',
+                timestamp: new Date().toISOString()
+            });
+        } catch (execError) {
+            console.error('Prisma generation failed:', execError);
+            res.status(500).json({
+                success: false,
+                message: 'Prisma generation failed',
+                error: execError.message
+            });
+        }
+        
     } catch (error) {
-        console.error('Failed to get venture documents:', error);
+        console.error('Prisma regeneration failed:', error);
         res.status(500).json({
             success: false,
-            message: 'Failed to get venture documents',
+            message: 'Prisma regeneration failed',
             error: error.message
         });
     }
