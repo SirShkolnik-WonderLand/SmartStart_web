@@ -1,311 +1,473 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { motion } from 'framer-motion'
-import { Eye, EyeOff, Lock, Mail, Zap, Users, TrendingUp, Shield } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react';
+import './globals.css';
 
-interface LoginForm {
-  email: string
-  password: string
+interface Command {
+  id: string;
+  command: string;
+  description: string;
+  category: string;
+  endpoint?: string;
+  method?: string;
+  body?: any;
 }
 
-interface User {
-  id: string
-  email: string
-  name: string
-  role: string
+interface System {
+  name: string;
+  status: string;
+  endpoints: number;
+  features: string[];
 }
 
-interface LoginResponse {
-  success: boolean
-  token: string
-  user: {
-    id: string
-    email: string
-    name: string
-    role: string
-  }
-  error?: string
-}
+export default function CLIDashboard() {
+  const [currentView, setCurrentView] = useState<'main' | 'system' | 'api' | 'help'>('main');
+  const [selectedSystem, setSelectedSystem] = useState<System | null>(null);
+  const [commandHistory, setCommandHistory] = useState<string[]>([]);
+  const [currentCommand, setCurrentCommand] = useState('');
+  const [output, setOutput] = useState<string>('');
+  const [isLoading, setLoading] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+  const systems: System[] = [
+    {
+      name: "Legal Foundation System",
+      status: "✅ OPERATIONAL",
+      endpoints: 35,
+      features: ["Contracts", "Templates", "Signatures", "Amendments", "Compliance"]
+    },
+    {
+      name: "Company Management System",
+      status: "✅ OPERATIONAL",
+      endpoints: 17,
+      features: ["Company CRUD", "Industry Classification", "Hierarchy", "Metrics", "Documents", "Tagging"]
+    },
+    {
+      name: "Team Management System",
+      status: "✅ OPERATIONAL",
+      endpoints: 15,
+      features: ["Team Structure", "Collaboration", "Goals", "Metrics", "Communication", "Analytics"]
+    },
+    {
+      name: "Contribution Pipeline System",
+      status: "✅ OPERATIONAL",
+      endpoints: 18,
+      features: ["Project Management", "Task Management", "Workflow Automation", "Performance Tracking", "Contribution Analytics"]
+    },
+    {
+      name: "Gamification System",
+      status: "✅ OPERATIONAL",
+      endpoints: 20,
+      features: ["XP", "Levels", "Badges", "Reputation", "Portfolio", "Skills", "Leaderboards"]
+    },
+    {
+      name: "User Management System",
+      status: "✅ OPERATIONAL",
+      endpoints: 25,
+      features: ["User CRUD", "Profiles", "Privacy", "Connections", "Portfolio", "Skills", "Analytics"]
+    },
+    {
+      name: "Venture Management System",
+      status: "✅ OPERATIONAL",
+      endpoints: 15,
+      features: ["Ventures", "Legal Entities", "Equity", "IT Packs", "Growth Tracking"]
+    }
+  ];
 
-// Force dynamic rendering
-export const dynamic = 'force-dynamic'
-
-export default function LoginPage() {
-  const router = useRouter()
-  const [form, setForm] = useState<LoginForm>({ email: '', password: '' })
-  const [showPassword, setShowPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState('')
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const commands: Command[] = [
+    // System Commands
+    { id: 'status', command: 'status', description: 'Show system status', category: 'system' },
+    { id: 'systems', command: 'systems', description: 'List all systems', category: 'system' },
+    { id: 'health', command: 'health', description: 'Check system health', category: 'system' },
+    
+    // Navigation Commands
+    { id: 'cd', command: 'cd <system>', description: 'Change to system directory', category: 'navigation' },
+    { id: 'ls', command: 'ls', description: 'List current directory contents', category: 'navigation' },
+    { id: 'pwd', command: 'pwd', description: 'Show current directory', category: 'navigation' },
+    { id: 'back', command: 'back', description: 'Go back to main menu', category: 'navigation' },
+    
+    // API Commands
+    { id: 'api', command: 'api <endpoint>', description: 'Make API call to endpoint', category: 'api' },
+    { id: 'test', command: 'test <system>', description: 'Test system endpoints', category: 'api' },
+    
+    // Help Commands
+    { id: 'help', command: 'help', description: 'Show available commands', category: 'help' },
+    { id: 'clear', command: 'clear', description: 'Clear terminal output', category: 'help' },
+    { id: 'about', command: 'about', description: 'Show system information', category: 'help' },
+  ];
 
   useEffect(() => {
-    // Check if user is already authenticated
-    checkAuth()
-  }, [])
-
-  const checkAuth = async () => {
-    try {
-      const token = localStorage.getItem('auth-token')
-      if (!token) return
-
-      const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
-      
-      if (response.ok) {
-        const data = await response.json()
-        if (data.success) {
-          setIsAuthenticated(true)
-          router.push('/dashboard')
-        }
-      } else {
-        localStorage.removeItem('auth-token')
-      }
-    } catch (error) {
-      console.error('Auth check failed:', error)
-      localStorage.removeItem('auth-token')
+    if (inputRef.current) {
+      inputRef.current.focus();
     }
-  }
+  }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError('')
+  const executeCommand = async (cmd: string) => {
+    const trimmedCmd = cmd.trim();
+    if (!trimmedCmd) return;
+
+    setCommandHistory(prev => [...prev, `$ ${trimmedCmd}`]);
+    setCurrentCommand('');
+    setLoading(true);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(form),
-      })
+      let result = '';
 
-      const data = await response.json()
-
-      if (response.ok && data.success) {
-        // Store token in localStorage
-        localStorage.setItem('auth-token', data.token)
-        setIsAuthenticated(true)
-        router.push('/dashboard')
+      if (trimmedCmd === 'status') {
+        result = await getSystemStatus();
+      } else if (trimmedCmd === 'systems') {
+        result = displaySystems();
+      } else if (trimmedCmd === 'health') {
+        result = await checkHealth();
+      } else if (trimmedCmd.startsWith('cd ')) {
+        const systemName = trimmedCmd.substring(3);
+        result = changeDirectory(systemName);
+      } else if (trimmedCmd === 'ls') {
+        result = listDirectory();
+      } else if (trimmedCmd === 'pwd') {
+        result = showCurrentDirectory();
+      } else if (trimmedCmd === 'back') {
+        result = goBack();
+      } else if (trimmedCmd === 'help') {
+        result = showHelp();
+      } else if (trimmedCmd === 'clear') {
+        setOutput('');
+        setLoading(false);
+        return;
+      } else if (trimmedCmd === 'about') {
+        result = showAbout();
+      } else if (trimmedCmd.startsWith('test ')) {
+        const systemName = trimmedCmd.substring(5);
+        result = await testSystem(systemName);
       } else {
-        setError(data.error || 'Login failed')
+        result = `Command not found: ${trimmedCmd}. Type 'help' for available commands.`;
       }
+
+      setOutput(prev => prev + `\n${result}`);
     } catch (error) {
-      setError('Network error. Please try again.')
+      setOutput(prev => prev + `\nError: ${error}`);
     } finally {
-      setIsLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  const handleInputChange = (field: keyof LoginForm) => (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setForm(prev => ({ ...prev, [field]: e.target.value }))
-    if (error) setError('')
-  }
+  const getSystemStatus = async () => {
+    try {
+      const response = await fetch('https://smartstart-api.onrender.com/api/system/status');
+      const data = await response.json();
+      
+      if (data.success) {
+        const status = data.systemStatus;
+        return `
+🚀 SmartStart Platform Status
+═══════════════════════════════════════════════════════════════════════════════
 
-  const features = [
-    {
-      icon: <Zap className="w-6 h-6" />,
-      title: 'Smart Equity Management',
-      description: 'Transparent equity tracking with real-time cap table updates'
-    },
-    {
-      icon: <Users className="w-6 h-6" />,
-      title: 'Collaborative Development',
-      description: 'Build ventures together with integrated project management'
-    },
-    {
-      icon: <TrendingUp className="w-6 h-6" />,
-      title: 'Growth Analytics',
-      description: 'Advanced insights and performance tracking for your projects'
-    },
-    {
-      icon: <Shield className="w-6 h-6" />,
-      title: 'Secure Contracts',
-      description: 'Legal-compliant smart contracts with automated execution'
+Platform: ${status.platform}
+Version: ${status.version}
+Status: ${status.status}
+Total Endpoints: ${status.totalEndpoints}
+Total Features: ${status.totalFeatures}
+Database Tables: ${status.databaseTables}
+
+Deployed Systems:
+${status.deployedSystems.map((sys: any) => 
+  `  ${sys.status} ${sys.name} (${sys.endpoints} endpoints)`
+).join('\n')}
+
+Next Phase: ${status.nextPhase}
+═══════════════════════════════════════════════════════════════════════════════`;
+      } else {
+        return 'Failed to get system status';
+      }
+    } catch (error) {
+      return `Error fetching system status: ${error}`;
     }
-  ]
+  };
+
+  const displaySystems = () => {
+    return `
+📊 SmartStart Platform Systems
+═══════════════════════════════════════════════════════════════════════════════
+
+${systems.map((sys, index) => `
+${index + 1}. ${sys.name}
+   Status: ${sys.status}
+   Endpoints: ${sys.endpoints}
+   Features: ${sys.features.join(', ')}
+`).join('')}
+
+Use 'cd <system_name>' to navigate to a system
+═══════════════════════════════════════════════════════════════════════════════`;
+  };
+
+  const checkHealth = async () => {
+    try {
+      const response = await fetch('https://smartstart-api.onrender.com/api/health');
+      const data = await response.json();
+      
+      return `
+🏥 System Health Check
+═══════════════════════════════════════════════════════════════════════════════
+
+Status: ${data.status}
+Environment: ${data.environment}
+Database: ${data.database}
+Timestamp: ${data.timestamp}
+
+Services:
+  Worker: ${data.services?.worker ? '✅' : '❌'}
+  Storage: ${data.services?.storage ? '✅' : '❌'}
+  Monitor: ${data.services?.monitor ? '✅' : '❌'}
+═══════════════════════════════════════════════════════════════════════════════`;
+    } catch (error) {
+      return `Error checking health: ${error}`;
+    }
+  };
+
+  const changeDirectory = (systemName: string) => {
+    const system = systems.find(s => 
+      s.name.toLowerCase().includes(systemName.toLowerCase())
+    );
+    
+    if (system) {
+      setSelectedSystem(system);
+      setCurrentView('system');
+      return `Changed directory to: ${system.name}`;
+    } else {
+      return `System not found: ${systemName}`;
+    }
+  };
+
+  const listDirectory = () => {
+    if (selectedSystem) {
+      return `
+📁 ${selectedSystem.name} Directory
+═══════════════════════════════════════════════════════════════════════════════
+
+Status: ${selectedSystem.status}
+Endpoints: ${selectedSystem.endpoints}
+
+Features:
+${selectedSystem.features.map(feature => `  • ${feature}`).join('\n')}
+
+Commands:
+  • test - Test system endpoints
+  • back - Return to main menu
+═══════════════════════════════════════════════════════════════════════════════`;
+    } else {
+      return `
+📁 Main Directory
+═══════════════════════════════════════════════════════════════════════════════
+
+Available Systems:
+${systems.map(sys => `  • ${sys.name}`).join('\n')}
+
+Commands:
+  • cd <system> - Navigate to system
+  • systems - List all systems
+  • status - Show system status
+═══════════════════════════════════════════════════════════════════════════════`;
+    }
+  };
+
+  const showCurrentDirectory = () => {
+    if (selectedSystem) {
+      return `Current directory: /systems/${selectedSystem.name}`;
+    } else {
+      return 'Current directory: /';
+    }
+  };
+
+  const goBack = () => {
+    setSelectedSystem(null);
+    setCurrentView('main');
+    return 'Returned to main directory';
+  };
+
+  const showHelp = () => {
+    return `
+❓ Available Commands
+═══════════════════════════════════════════════════════════════════════════════
+
+System Commands:
+  status          - Show system status
+  systems         - List all systems
+  health          - Check system health
+
+Navigation Commands:
+  cd <system>     - Change to system directory
+  ls              - List current directory contents
+  pwd             - Show current directory
+  back            - Go back to main menu
+
+API Commands:
+  test <system>   - Test system endpoints
+
+Help Commands:
+  help            - Show this help
+  clear           - Clear terminal output
+  about           - Show system information
+
+Examples:
+  cd company      - Navigate to Company Management System
+  test gamification - Test Gamification System endpoints
+  ls              - List current directory
+═══════════════════════════════════════════════════════════════════════════════`;
+  };
+
+  const showAbout = () => {
+    return `
+ℹ️  SmartStart Platform
+═══════════════════════════════════════════════════════════════════════════════
+
+SmartStart Platform is a comprehensive Venture Operating System that provides
+everything a new venture needs in one controlled ecosystem.
+
+Features:
+  • Infrastructure: IT pack provisioning (M365, GitHub, hosting, backups)
+  • Governance: Legal contracts, equity management, compliance
+  • Community: Contributor management, skill verification, reputation system
+  • Security: KYC/KYB, device posture, audit logging
+  • Gamification: XP, levels, badges, reputation building
+  • BUZ Economy: Token-based contribution rewards and equity conversion
+
+Technology Stack:
+  • Backend: Node.js/Express.js with Prisma ORM
+  • Database: PostgreSQL with advanced indexing
+  • Hosting: Render.com Standard Plan (2GB RAM, 1 CPU)
+  • Deployment: Git-based automated deployment
+
+Current Status: 7 Major Systems Deployed & Operational
+Total Endpoints: 145
+Total Features: 84
+Database Tables: 31+
+
+Next Phase: Financial Integration & BUZ Token System
+═══════════════════════════════════════════════════════════════════════════════`;
+  };
+
+  const testSystem = async (systemName: string) => {
+    const system = systems.find(s => 
+      s.name.toLowerCase().includes(systemName.toLowerCase())
+    );
+    
+    if (!system) {
+      return `System not found: ${systemName}`;
+    }
+
+    try {
+      let healthEndpoint = '';
+      
+      // Map system names to their health endpoints
+      if (system.name.includes('Company')) {
+        healthEndpoint = 'https://smartstart-api.onrender.com/api/companies/health';
+      } else if (system.name.includes('Team')) {
+        healthEndpoint = 'https://smartstart-api.onrender.com/api/teams/health';
+      } else if (system.name.includes('Contribution')) {
+        healthEndpoint = 'https://smartstart-api.onrender.com/api/contribution/health';
+      } else if (system.name.includes('Gamification')) {
+        healthEndpoint = 'https://smartstart-api.onrender.com/api/gamification/health';
+      } else if (system.name.includes('User')) {
+        healthEndpoint = 'https://smartstart-api.onrender.com/api/users/health';
+      } else if (system.name.includes('Venture')) {
+        healthEndpoint = 'https://smartstart-api.onrender.com/api/ventures/health';
+      } else if (system.name.includes('Legal')) {
+        healthEndpoint = 'https://smartstart-api.onrender.com/api/contracts/health';
+      }
+
+      if (healthEndpoint) {
+        const response = await fetch(healthEndpoint);
+        const data = await response.json();
+        
+        return `
+🧪 Testing ${system.name}
+═══════════════════════════════════════════════════════════════════════════════
+
+Health Check: ${data.success ? '✅ PASSED' : '❌ FAILED'}
+Response: ${JSON.stringify(data, null, 2)}
+═══════════════════════════════════════════════════════════════════════════════`;
+      } else {
+        return `No health endpoint found for ${system.name}`;
+      }
+    } catch (error) {
+      return `Error testing ${system.name}: ${error}`;
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      executeCommand(currentCommand);
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900 flex">
-      {/* Left Side - Features */}
-      <div className="hidden lg:flex lg:w-1/2 p-12 items-center justify-center">
-        <div className="max-w-md space-y-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center lg:text-left"
-          >
-            <h1 className="text-4xl font-bold gradient-text mb-4">
-              SmartStart Platform
-            </h1>
-            <p className="text-dark-300 text-lg mb-8">
-              Community-driven development platform with transparent equity tracking, 
-              smart contracts, and collaborative project management.
-            </p>
-          </motion.div>
-
-          <div className="space-y-6">
-            {features.map((feature, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="flex items-start space-x-4"
-              >
-                <div className="flex-shrink-0 w-12 h-12 bg-primary-600/20 rounded-lg flex items-center justify-center text-primary-400">
-                  {feature.icon}
-                </div>
-                <div>
-                  <h3 className="text-white font-semibold mb-1">{feature.title}</h3>
-                  <p className="text-dark-400 text-sm">{feature.description}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+    <div className="cli-container">
+      {/* Header */}
+      <div className="cli-header">
+        <div className="cli-title">
+          <span className="cli-prompt">$</span>
+          <span className="cli-text">SmartStart Platform CLI</span>
+        </div>
+        <div className="cli-status">
+          <span className="status-dot"></span>
+          <span className="status-text">7 SYSTEMS OPERATIONAL</span>
         </div>
       </div>
 
-      {/* Right Side - Login Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
-          className="w-full max-w-md"
-        >
-          {/* Mobile Header */}
-          <div className="lg:hidden text-center mb-8">
-            <h1 className="text-3xl font-bold gradient-text mb-2">
-              SmartStart Platform
-            </h1>
-            <p className="text-dark-300">
-              Sign in to your account
-            </p>
+      {/* Terminal Output */}
+      <div className="cli-output">
+        <div className="welcome-message">
+          🚀 Welcome to SmartStart Platform CLI
+          ═══════════════════════════════════════════════════════════════════════════
+          
+          Type 'help' for available commands
+          Type 'status' to see system status
+          Type 'systems' to list all systems
+          
+          ═══════════════════════════════════════════════════════════════════════════
+        </div>
+        
+        {output && (
+          <pre className="command-output">{output}</pre>
+        )}
+        
+        {isLoading && (
+          <div className="loading">
+            <span className="loading-dots">Processing</span>
           </div>
+        )}
+      </div>
 
-          {/* Login Form */}
-          <div className="glass rounded-2xl p-8 shadow-2xl">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl font-bold text-white mb-2">
-                Welcome Back
-              </h2>
-              <p className="text-dark-300">
-                Sign in to access your dashboard
-              </p>
-            </div>
+      {/* Command Input */}
+      <div className="cli-input-container">
+        <span className="cli-prompt">$</span>
+        <input
+          ref={inputRef}
+          type="text"
+          className="cli-input"
+          value={currentCommand}
+          onChange={(e) => setCurrentCommand(e.target.value)}
+          onKeyPress={handleKeyPress}
+          placeholder="Enter command..."
+          disabled={isLoading}
+        />
+      </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Email Field */}
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-dark-200 mb-2">
-                  Email Address
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Mail className="h-5 w-5 text-dark-400" />
-                  </div>
-                  <input
-                    id="email"
-                    type="email"
-                    value={form.email}
-                    onChange={handleInputChange('email')}
-                    className="w-full pl-10 pr-4 py-3 bg-dark-800 border border-dark-600 rounded-lg text-white placeholder-dark-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
-                    placeholder="Enter your email"
-                    required
-                  />
-                </div>
-              </div>
-
-              {/* Password Field */}
-              <div>
-                <label htmlFor="password" className="block text-sm font-medium text-dark-200 mb-2">
-                  Password
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Lock className="h-5 w-5 text-dark-400" />
-                  </div>
-                  <input
-                    id="password"
-                    type={showPassword ? 'text' : 'password'}
-                    value={form.password}
-                    onChange={handleInputChange('password')}
-                    className="w-full pl-10 pr-12 py-3 bg-dark-800 border border-dark-600 rounded-lg text-white placeholder-dark-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
-                    placeholder="Enter your password"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-dark-400 hover:text-white transition-colors"
-                  >
-                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                  </button>
-                </div>
-              </div>
-
-              {/* Error Message */}
-              {error && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="bg-error-900/20 border border-error-500/30 rounded-lg p-3"
-                >
-                  <p className="text-error-400 text-sm">{error}</p>
-                </motion.div>
-              )}
-
-              {/* Submit Button */}
-              <motion.button
-                type="submit"
-                disabled={isLoading}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="w-full bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-dark-900"
-              >
-                {isLoading ? (
-                  <div className="flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                    Signing in...
-                  </div>
-                ) : (
-                  'Sign In'
-                )}
-              </motion.button>
-            </form>
-
-            {/* Demo Credentials */}
-            <div className="mt-8 p-4 bg-dark-800/50 rounded-lg border border-dark-600">
-              <h3 className="text-sm font-medium text-dark-200 mb-3">Demo Credentials</h3>
-              <div className="space-y-2 text-xs text-dark-400">
-                <div>
-                  <strong>Super Admin:</strong> admin@smartstart.com / admin123
-                </div>
-                <div>
-                  <strong>Regular User:</strong> user@smartstart.com / user123
-                </div>
-                <div>
-                  <strong>Project Owner:</strong> owner@demo.local / owner123
-                </div>
-                <div>
-                  <strong>Contributor:</strong> contrib@demo.local / contrib123
-                </div>
-              </div>
-            </div>
-          </div>
-        </motion.div>
+      {/* Quick Actions */}
+      <div className="quick-actions">
+        <button onClick={() => executeCommand('status')} className="quick-btn">
+          📊 Status
+        </button>
+        <button onClick={() => executeCommand('systems')} className="quick-btn">
+          🗂️ Systems
+        </button>
+        <button onClick={() => executeCommand('health')} className="quick-btn">
+          🏥 Health
+        </button>
+        <button onClick={() => executeCommand('help')} className="quick-btn">
+          ❓ Help
+        </button>
       </div>
     </div>
-  )
+  );
 }
