@@ -72,6 +72,137 @@ router.post('/seed', async (req, res) => {
     }
 });
 
+// ===== CREATE TABLES ENDPOINT =====
+router.post('/create-tables', async (req, res) => {
+    try {
+        console.log('🔨 Creating gamification system tables...');
+        
+        // Create Skills table
+        await prisma.$executeRaw`
+            CREATE TABLE IF NOT EXISTS "Skill" (
+                "id" TEXT NOT NULL,
+                "name" TEXT NOT NULL,
+                "category" TEXT NOT NULL,
+                "description" TEXT,
+                "demand" INTEGER NOT NULL DEFAULT 3,
+                "complexity" INTEGER NOT NULL DEFAULT 3,
+                "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                CONSTRAINT "Skill_pkey" PRIMARY KEY ("id")
+            );
+        `;
+        
+        // Create UserSkills table
+        await prisma.$executeRaw`
+            CREATE TABLE IF NOT EXISTS "UserSkill" (
+                "id" TEXT NOT NULL,
+                "userId" TEXT NOT NULL,
+                "skillId" TEXT NOT NULL,
+                "level" INTEGER NOT NULL DEFAULT 1,
+                "verified" BOOLEAN NOT NULL DEFAULT false,
+                "endorsements" INTEGER NOT NULL DEFAULT 0,
+                "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                CONSTRAINT "UserSkill_pkey" PRIMARY KEY ("id")
+            );
+        `;
+        
+        // Create Endorsements table
+        await prisma.$executeRaw`
+            CREATE TABLE IF NOT EXISTS "Endorsement" (
+                "id" TEXT NOT NULL,
+                "endorserId" TEXT NOT NULL,
+                "endorsedId" TEXT NOT NULL,
+                "skillId" TEXT,
+                "weight" INTEGER NOT NULL DEFAULT 1,
+                "note" VARCHAR(200),
+                "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                CONSTRAINT "Endorsement_pkey" PRIMARY KEY ("id")
+            );
+        `;
+        
+        // Create PortfolioItems table
+        await prisma.$executeRaw`
+            CREATE TABLE IF NOT EXISTS "PortfolioItem" (
+                "id" TEXT NOT NULL,
+                "userId" TEXT NOT NULL,
+                "title" TEXT NOT NULL,
+                "summary" VARCHAR(300),
+                "fileId" TEXT,
+                "externalUrl" VARCHAR(300),
+                "taskId" TEXT,
+                "buzEarned" INTEGER NOT NULL DEFAULT 0,
+                "impactScore" INTEGER NOT NULL DEFAULT 0,
+                "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                "updatedAt" TIMESTAMP(3) NOT NULL,
+                "isPublic" BOOLEAN NOT NULL DEFAULT true,
+                CONSTRAINT "PortfolioItem_pkey" PRIMARY KEY ("id")
+            );
+        `;
+        
+        // Create UserActivity table
+        await prisma.$executeRaw`
+            CREATE TABLE IF NOT EXISTS "UserActivity" (
+                "id" TEXT NOT NULL,
+                "userId" TEXT NOT NULL,
+                "type" TEXT NOT NULL,
+                "entity" TEXT,
+                "entityType" TEXT,
+                "data" JSONB NOT NULL,
+                "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                CONSTRAINT "UserActivity_pkey" PRIMARY KEY ("id")
+            );
+        `;
+        
+        // Create Badges table
+        await prisma.$executeRaw`
+            CREATE TABLE IF NOT EXISTS "Badge" (
+                "id" TEXT NOT NULL,
+                "name" TEXT NOT NULL,
+                "description" TEXT NOT NULL,
+                "icon" TEXT NOT NULL,
+                "condition" TEXT NOT NULL,
+                "category" TEXT,
+                "rarity" TEXT NOT NULL DEFAULT 'COMMON',
+                "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                CONSTRAINT "Badge_pkey" PRIMARY KEY ("id")
+            );
+        `;
+        
+        // Create UserBadges table
+        await prisma.$executeRaw`
+            CREATE TABLE IF NOT EXISTS "UserBadge" (
+                "id" TEXT NOT NULL,
+                "userId" TEXT NOT NULL,
+                "badgeId" TEXT NOT NULL,
+                "earnedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                CONSTRAINT "UserBadge_pkey" PRIMARY KEY ("id")
+            );
+        `;
+        
+        // Create indexes
+        await prisma.$executeRaw`CREATE UNIQUE INDEX IF NOT EXISTS "Skill_name_key" ON "Skill"("name");`;
+        await prisma.$executeRaw`CREATE UNIQUE INDEX IF NOT EXISTS "UserSkill_userId_skillId_key" ON "UserSkill"("userId", "skillId");`;
+        await prisma.$executeRaw`CREATE INDEX IF NOT EXISTS "UserSkill_userId_idx" ON "UserSkill"("userId");`;
+        await prisma.$executeRaw`CREATE INDEX IF NOT EXISTS "Endorsement_endorsedId_idx" ON "Endorsement"("endorsedId");`;
+        await prisma.$executeRaw`CREATE INDEX IF NOT EXISTS "PortfolioItem_userId_idx" ON "PortfolioItem"("userId");`;
+        await prisma.$executeRaw`CREATE INDEX IF NOT EXISTS "UserActivity_userId_idx" ON "UserActivity"("userId");`;
+        await prisma.$executeRaw`CREATE UNIQUE INDEX IF NOT EXISTS "Badge_name_key" ON "Badge"("name");`;
+        await prisma.$executeRaw`CREATE UNIQUE INDEX IF NOT EXISTS "UserBadge_userId_badgeId_key" ON "UserBadge"("userId", "badgeId");`;
+        
+        res.json({
+            success: true,
+            message: 'Gamification system tables created successfully',
+            timestamp: new Date().toISOString()
+        });
+    } catch (error) {
+        console.error('Table creation error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Table creation failed',
+            error: error.message
+        });
+    }
+});
+
 // ===== XP & LEVEL MANAGEMENT =====
 
 // Add XP for user activity
