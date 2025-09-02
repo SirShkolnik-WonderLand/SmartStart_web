@@ -830,50 +830,42 @@ class UserManagementService {
                 whereClause.level = level;
             }
 
-            if (location) {
-                whereClause.userProfile = {
-                    location: { contains: location, mode: 'insensitive' }
-                };
-            }
+            // Note: location filtering disabled until UserProfile table exists
+            // if (location) {
+            //     whereClause.userProfile = {
+            //         location: { contains: location, mode: 'insensitive' }
+            //     };
+            // }
 
             const users = await prisma.user.findMany({
                 where: whereClause,
-                include: {
-                    userProfile: {
-                        select: {
-                            nickname: true,
-                            bio: true,
-                            location: true,
-                            level: true
-                        }
-                    },
-                    userSkills: {
-                        include: {
-                            skill: {
-                                select: {
-                                    name: true,
-                                    category: true
-                                }
-                            }
-                        }
-                    }
+                select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    level: true,
+                    reputation: true,
+                    status: true,
+                    lastActive: true,
+                    createdAt: true
                 },
                 take: parseInt(limit),
                 skip: parseInt(offset),
                 orderBy: { reputation: 'desc' }
             });
 
-            // Filter by skills if specified
-            let filteredUsers = users;
-            if (skills && skills.length > 0) {
-                filteredUsers = users.filter(user => 
-                    skills.some(skill => 
-                        user.userSkills.some(userSkill => 
-                            userSkill.skill.name.toLowerCase().includes(skill.toLowerCase())
-                        )
-                    )
-                );
-            }
+            // Note: skills filtering disabled until UserSkill table exists
+            // let filteredUsers = users;
+            // if (skills && skills.length > 0) {
+            //     filteredUsers = users.filter(user => 
+            //         skills.some(skill => 
+            //             user.userSkills.some(userSkill => 
+            //                 userSkill.skill.name.toLowerCase().includes(skill.toLowerCase())
+            //             )
+            //         )
+            //     );
+            // }
+            const filteredUsers = users;
 
             const totalUsers = await prisma.user.count({ where: whereClause });
 
