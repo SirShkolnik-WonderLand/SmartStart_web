@@ -29,7 +29,7 @@ services:
     runtime: node
     plan: starter
     # Need devDependencies (tailwindcss/postcss/autoprefixer) at build time
-    buildCommand: NPM_CONFIG_PRODUCTION=false npm ci && npm run build
+    buildCommand: NPM_CONFIG_PRODUCTION=false npm install && npm run build
     startCommand: npm start
     envVars:
       - key: NODE_ENV
