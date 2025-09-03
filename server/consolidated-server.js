@@ -98,7 +98,18 @@ app.use('/api/user-portfolio', userPortfolioApiRoutes);
 const userGamificationApiRoutes = require('./routes/user-gamification-api');
 app.use('/api/user-gamification', userGamificationApiRoutes);
 
+// Mount Role-Based Business Systems
+const roleDashboardApiRoutes = require('./routes/role-dashboard-api');
+app.use('/api/role-dashboard', roleDashboardApiRoutes);
+
+const taskManagementApiRoutes = require('./routes/task-management-api');
+app.use('/api/tasks', taskManagementApiRoutes);
+
+const fundingPipelineApiRoutes = require('./routes/funding-pipeline-api');
+app.use('/api/funding', fundingPipelineApiRoutes);
+
 console.log('✅ User Journey APIs mounted successfully');
+console.log('✅ Role-Based Business Systems mounted successfully');
 
 // Error handling middleware
 app.use((err, req, res, next) => {
