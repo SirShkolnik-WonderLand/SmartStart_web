@@ -203,17 +203,35 @@ curl -s "https://smartstart-api.onrender.com/api/system/status"
 
 ## 📱 **FRONTEND ACCESS**
 
-### **CLI Web Interface:**
+### **🎨 Beautiful User Journey UI:**
+```
+https://smartstart-api.onrender.com/user-journey
+```
+*Role-based dashboards with modern, responsive design*
+
+### **🏠 Platform Hub:**
+```
+https://smartstart-api.onrender.com/platform-hub
+```
+*Complete platform overview and system navigation*
+
+### **💻 CLI Web Interface:**
 ```
 https://smartstart-api.onrender.com/cli-dashboard
 ```
-*Note: This requires the frontend to be deployed*
+*Terminal-style command interface for power users*
 
-### **Main Web Platform:**
+### **🏠 Main Landing Page:**
 ```
 https://smartstart-api.onrender.com
 ```
-*Note: This is the API backend - frontend needs to be built*
+*CLI-style login with platform navigation*
+
+### **📊 System Dashboard:**
+```
+https://smartstart-api.onrender.com/dashboard
+```
+*System overview and monitoring*
 
 ---
 
