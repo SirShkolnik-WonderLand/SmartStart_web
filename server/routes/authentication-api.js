@@ -308,13 +308,10 @@ router.post('/login', async (req, res) => {
             });
         }
 
-        // Find user by email or username
+        // Find user by email only (username field not available in production yet)
         const user = await prisma.user.findFirst({
             where: { 
-                OR: [
-                    { email: email.toLowerCase() },
-                    { username: email.toLowerCase() }
-                ]
+                email: email.toLowerCase()
             }
         });
 
