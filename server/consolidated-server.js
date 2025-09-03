@@ -7,25 +7,10 @@ const app = express();
 // Setup security middleware first - CLI System Ready
 setupSecurity(app);
 
-// Updated CORS configuration to allow both localhost and deployed frontend
-const allowedOrigins = [
-  'http://localhost:3000',
-  'https://smartstart-cli-web.onrender.com',
-  'https://smartstart-cli-web.onrender.com'
-];
-
-app.use(cors({ 
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true 
+// CORS configuration
+app.use(cors({
+    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    credentials: true
 }));
 
 // Basic middleware
@@ -34,14 +19,14 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Health check endpoint
 app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'healthy', 
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    environment: process.env.NODE_ENV || 'development',
-    cli: 'enabled',
-    version: '2.0.1'
-  });
+    res.json({
+        status: 'healthy',
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime(),
+        environment: process.env.NODE_ENV || 'development',
+        cli: 'enabled',
+        version: '2.0.1'
+    });
 });
 
 // Debug: Log when mounting CLI routes
@@ -50,6 +35,10 @@ console.log('🚀 Mounting CLI API routes...');
 // Mount CLI API routes
 const cliApiRoutes = require('./routes/cli-api');
 app.use('/api/cli', cliApiRoutes);
+
+// Mount AI CLI API routes
+const aiCliApiRoutes = require('./routes/ai-cli-api');
+app.use('/api/ai-cli', aiCliApiRoutes);
 
 console.log('✅ CLI API routes mounted successfully');
 
@@ -101,30 +90,30 @@ app.use('/api/documents', digitalDocumentsApiRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-  console.error('Server error:', err);
-  res.status(500).json({ 
-    error: 'Internal server error',
-    message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong'
-  });
+    console.error('Server error:', err);
+    res.status(500).json({
+        error: 'Internal server error',
+        message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong'
+    });
 });
 
 // 404 handler
 app.use('*', (req, res) => {
-  res.status(404).json({ 
-    error: 'Not found',
-    message: `Route ${req.originalUrl} not found`,
-    availableRoutes: ['/health', '/api/cli/*', '/api/v1/*', '/api/users/*', '/api/companies/*', '/api/teams/*']
-  });
+    res.status(404).json({
+        error: 'Not found',
+        message: `Route ${req.originalUrl} not found`,
+        availableRoutes: ['/health', '/api/cli/*', '/api/v1/*', '/api/users/*', '/api/companies/*', '/api/teams/*']
+    });
 });
 
 const PORT = process.env.PORT || 3001;
 
 app.listen(PORT, () => {
-  console.log(`🚀 SmartStart Platform Server running on port ${PORT}`);
-  console.log(`📡 CLI API available at /api/cli`);
-  console.log(`🔐 Security middleware enabled`);
-  console.log(`📊 All 7 systems operational`);
-  console.log(`🔄 CLI System Version: 2.0.1`);
+    console.log(`🚀 SmartStart Platform Server running on port ${PORT}`);
+    console.log(`📡 CLI API available at /api/cli`);
+    console.log(`🔐 Security middleware enabled`);
+    console.log(`📊 All 7 systems operational`);
+    console.log(`🔄 CLI System Version: 2.0.1`);
 });
 
 module.exports = app;

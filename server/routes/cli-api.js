@@ -11,132 +11,131 @@ const prisma = new PrismaClient();
 
 // Root CLI endpoint
 router.get('/', (req, res) => {
-  res.json({
-    ok: true,
-    system: 'SmartStart Platform CLI',
-    version: '2.0.0',
-    status: 'OPERATIONAL',
-    endpoints: {
-      commands: '/api/cli/commands',
-      status: '/api/cli/status',
-      health: '/api/cli/health',
-      exec: '/api/cli/exec',
-      help: '/api/cli/help/:command'
-    },
-    totalCommands: commandMap.size,
-    documentation: 'Use /api/cli/commands to see all available commands'
-  });
+    res.json({
+        ok: true,
+        system: 'SmartStart Platform CLI',
+        version: '2.0.0',
+        status: 'OPERATIONAL',
+        endpoints: {
+            commands: '/api/cli/commands',
+            status: '/api/cli/status',
+            health: '/api/cli/health',
+            exec: '/api/cli/exec',
+            help: '/api/cli/help/:command'
+        },
+        totalCommands: commandMap.size,
+        documentation: 'Use /api/cli/commands to see all available commands'
+    });
 });
 
 // Command execution schema
 const ExecSchema = z.object({
-  command: z.string().min(1).max(128),
-  args: z.record(z.any()).default({}),
-  csrf: z.string().min(24)
+    command: z.string().min(1).max(128),
+    args: z.record(z.any()).default({}),
+    csrf: z.string().min(24)
 });
 
 // CLI command execution endpoint
-router.post('/exec', requireCsrf, async (req, res) => {
-  try {
-    const { command, args } = ExecSchema.parse(req.body);
-    
-    // Get authentication context
-    const ctx = await getAuthCtx(req);
-    
-    // Find command specification
-    const spec = commandMap.get(command);
-    if (!spec) {
-      await audit(ctx, command, args, false, 'UNKNOWN_COMMAND');
-      return res.status(400).json({ 
-        ok: false, 
-        out: `Unknown command: ${command}\nType 'help' for available commands.` 
-      });
-    }
-
-    // Permission check (deny by default)
-    for (const perm of spec.perms) {
-      if (!ctx.permissions.includes(perm)) {
-        await audit(ctx, command, args, false, 'FORBIDDEN');
-        return res.status(403).json({ 
-          ok: false, 
-          out: `Access denied. Required permission: ${perm}` 
-        });
-      }
-    }
-
-    // Execute command
+router.post('/exec', requireCsrf, async(req, res) => {
     try {
-      const output = await spec.handler(ctx, spec.schema.parse(args));
-      await audit(ctx, command, args, true, 'SUCCESS');
-      res.json({ ok: true, out: output });
+        const { command, args } = ExecSchema.parse(req.body);
+
+        // Get authentication context
+        const ctx = await getAuthCtx(req);
+
+        // Find command specification
+        const spec = commandMap.get(command);
+        if (!spec) {
+            await audit(ctx, command, args, false, 'UNKNOWN_COMMAND');
+            return res.status(400).json({
+                ok: false,
+                out: `Unknown command: ${command}\nType 'help' for available commands.`
+            });
+        }
+
+        // Permission check (deny by default)
+        for (const perm of spec.perms) {
+            if (!ctx.permissions.includes(perm)) {
+                await audit(ctx, command, args, false, 'FORBIDDEN');
+                return res.status(403).json({
+                    ok: false,
+                    out: `Access denied. Required permission: ${perm}`
+                });
+            }
+        }
+
+        // Execute command
+        try {
+            const output = await spec.handler(ctx, spec.schema.parse(args));
+            await audit(ctx, command, args, true, 'SUCCESS');
+            res.json({ ok: true, out: output });
+        } catch (error) {
+            console.error(`Command execution error for ${command}:`, error);
+            await audit(ctx, command, args, false, error ? .message || 'EXECUTION_ERROR');
+            res.status(500).json({
+                ok: false,
+                out: `Command execution failed: ${error?.message || 'Unknown error'}`
+            });
+        }
+
     } catch (error) {
-      console.error(`Command execution error for ${command}:`, error);
-      await audit(ctx, command, args, false, error?.message || 'EXECUTION_ERROR');
-      res.status(500).json({ 
-        ok: false, 
-        out: `Command execution failed: ${error?.message || 'Unknown error'}` 
-      });
+        console.error('CLI API error:', error);
+        res.status(400).json({
+            ok: false,
+            out: `Invalid request: ${error?.message || 'Unknown error'}`
+        });
     }
-    
-  } catch (error) {
-    console.error('CLI API error:', error);
-    res.status(400).json({ 
-      ok: false, 
-      out: `Invalid request: ${error?.message || 'Unknown error'}` 
-    });
-  }
 });
 
 // Get available commands (for help system)
-router.get('/commands', async (req, res) => {
-  try {
-    const commands = Array.from(commandMap.values()).map(cmd => ({
-      name: cmd.name,
-      permissions: cmd.perms,
-      description: cmd.name.includes(':') ? 
-        `${cmd.name.split(':')[0]} management` : 
-        'System command'
-    }));
-    
-    res.json({ 
-      ok: true, 
-      commands,
-      total: commands.length
-    });
-  } catch (error) {
-    console.error('Commands list error:', error);
-    res.status(500).json({ 
-      ok: false, 
-      out: 'Failed to retrieve commands list' 
-    });
-  }
+router.get('/commands', async(req, res) => {
+    try {
+        const commands = Array.from(commandMap.values()).map(cmd => ({
+            name: cmd.name,
+            permissions: cmd.perms,
+            description: cmd.name.includes(':') ?
+                `${cmd.name.split(':')[0]} management` : 'System command'
+        }));
+
+        res.json({
+            ok: true,
+            commands,
+            total: commands.length
+        });
+    } catch (error) {
+        console.error('Commands list error:', error);
+        res.status(500).json({
+            ok: false,
+            out: 'Failed to retrieve commands list'
+        });
+    }
 });
 
 // Get command help
-router.get('/help/:command', async (req, res) => {
-  try {
-    const { command } = req.params;
-    const spec = commandMap.get(command);
-    
-    if (!spec) {
-      return res.status(404).json({ 
-        ok: false, 
-        out: `Command '${command}' not found` 
-      });
-    }
-    
-    // Generate help text based on command schema
-    const schemaHelp = Object.entries(spec.schema.shape || {})
-      .map(([key, schema]) => {
-        const required = schema._def.typeName === 'ZodOptional' ? 'optional' : 'required';
-        return `  --${key} <value>  (${required})`;
-      })
-      .join('\n');
-    
-    const helpText = [
-      `📖 HELP: ${command}`,
-      '='.repeat(20 + command.length),
-      `Description: ${spec.name.includes(':') ? 
+router.get('/help/:command', async(req, res) => {
+            try {
+                const { command } = req.params;
+                const spec = commandMap.get(command);
+
+                if (!spec) {
+                    return res.status(404).json({
+                        ok: false,
+                        out: `Command '${command}' not found`
+                    });
+                }
+
+                // Generate help text based on command schema
+                const schemaHelp = Object.entries(spec.schema.shape || {})
+                    .map(([key, schema]) => {
+                        const required = schema._def.typeName === 'ZodOptional' ? 'optional' : 'required';
+                        return `  --${key} <value>  (${required})`;
+                    })
+                    .join('\n');
+
+                const helpText = [
+                        `📖 HELP: ${command}`,
+                        '='.repeat(20 + command.length),
+                        `Description: ${spec.name.includes(':') ? 
         `${spec.name.split(':')[0]} management command` : 
         'System command'}`,
       '',
