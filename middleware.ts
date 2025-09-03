@@ -5,7 +5,7 @@ export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
 
   // Allowlist: login, register, static assets, API routes, favicon, health
-  const isAllowed =
+  const isAllowedPath =
     pathname === '/' ||
     pathname.startsWith('/register') ||
     pathname.startsWith('/api') ||
@@ -14,7 +14,7 @@ export function middleware(req: NextRequest) {
     pathname.startsWith('/public') ||
     pathname.startsWith('/health')
 
-  if (isAllowed) return NextResponse.next()
+  if (isAllowedPath) return NextResponse.next()
 
   // Require a simple web session cookie set after login
   const hasWebSession = req.cookies.get('web_session')?.value === '1'
@@ -28,6 +28,7 @@ export function middleware(req: NextRequest) {
   return NextResponse.next()
 }
 
+// Use a simple, valid matcher. Filter paths inside the middleware function.
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|.*\.(png|jpg|ico|svg|css|js)$).*)'],
+  matcher: ['/:path*'],
 }
