@@ -102,6 +102,16 @@ export default function LoginPage() {
     }
   }
 
+  const setWebSession = () => {
+    document.cookie = `web_session=1; Path=/; Max-Age=${60 * 60 * 24 * 7}; Secure; SameSite=Lax`
+  }
+
+  const redirectAfterLogin = () => {
+    const params = new URLSearchParams(window.location.search)
+    const target = params.get('redirect') || '/user-journey'
+    router.push(target)
+  }
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!username || !password) {
@@ -122,9 +132,9 @@ export default function LoginPage() {
 
       if (response.ok) {
         const data = await response.json()
-      if (data.success) {
-          // Redirect to CLI dashboard
-          router.push('/cli-dashboard')
+        if (data.success) {
+          setWebSession()
+          redirectAfterLogin()
         } else {
           setError(data.message || 'Login failed')
         }
@@ -142,11 +152,10 @@ export default function LoginPage() {
   const handleDemoLogin = async () => {
     setUsername('admin')
     setPassword('password123')
-    
-    // Simulate demo login
+    setWebSession()
     setTimeout(() => {
-      router.push('/cli-dashboard')
-    }, 1000)
+      redirectAfterLogin()
+    }, 300)
   }
 
   return (
