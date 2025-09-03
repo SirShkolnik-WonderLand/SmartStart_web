@@ -60,8 +60,8 @@ const APIInventory = () => {
     {
       id: 'auth-login',
       method: 'POST',
-      path: '/api/auth/login',
-      description: 'User login with email/username and password',
+      path: '/api/simple-auth/login',
+      description: 'User login with email and password (working endpoint)',
       category: 'auth',
       requiresAuth: false,
       icon: Lock,
