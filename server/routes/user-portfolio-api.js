@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { PrismaClient } = require('@prisma/client');
-const { authenticateToken } = require('../middleware/auth');
-const { requirePermission } = require('../middleware/rbac');
+const { authenticateToken, requirePermission } = require('../middleware/auth');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
