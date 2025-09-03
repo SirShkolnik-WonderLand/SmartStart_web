@@ -12,7 +12,12 @@ datasource db {
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
+  username  String?  @unique
+  password  String?
   name      String?
+  firstName String?
+  lastName  String?
+  role      String?  @default("TEAM_MEMBER")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
