@@ -159,17 +159,46 @@ router.get('/help/:command', async (req, res) => {
   }
 });
 
+// Simple health check (no database required)
+router.get('/health', (req, res) => {
+  res.json({
+    ok: true,
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    version: '2.0.0'
+  });
+});
+
 // Get system status
 router.get('/status', async (req, res) => {
   try {
-    const stats = await prisma.$queryRaw`
-      SELECT 
-        (SELECT COUNT(*) FROM "User") as user_count,
-        (SELECT COUNT(*) FROM "Company") as company_count,
-        (SELECT COUNT(*) FROM "Team") as team_count,
-        (SELECT COUNT(*) FROM "Project") as project_count,
-        (SELECT COUNT(*) FROM "Contract") as contract_count
-    `;
+    let stats = {
+      user_count: 0,
+      company_count: 0,
+      team_count: 0,
+      project_count: 0,
+      contract_count: 0
+    };
+    
+    try {
+      // Try to get stats, but don't fail if tables don't exist
+      const dbStats = await prisma.$queryRaw`
+        SELECT 
+          (SELECT COUNT(*) FROM "User" LIMIT 1) as user_count,
+          (SELECT COUNT(*) FROM "Company" LIMIT 1) as company_count,
+          (SELECT COUNT(*) FROM "Team" LIMIT 1) as team_count,
+          (SELECT COUNT(*) FROM "Project" LIMIT 1) as project_count,
+          (SELECT COUNT(*) FROM "Contract" LIMIT 1) as contract_count
+      `;
+      
+      if (dbStats && dbStats[0]) {
+        stats = dbStats[0];
+      }
+    } catch (dbError) {
+      console.log('Database stats query failed, using defaults:', dbError.message);
+      // Continue with default values
+    }
     
     const status = {
       ok: true,
@@ -179,11 +208,11 @@ router.get('/status', async (req, res) => {
       uptime: process.uptime(),
       timestamp: new Date().toISOString(),
       stats: {
-        users: stats[0]?.user_count || 0,
-        companies: stats[0]?.company_count || 0,
-        teams: stats[0]?.team_count || 0,
-        projects: stats[0]?.project_count || 0,
-        contracts: stats[0]?.contract_count || 0
+        users: parseInt(stats.user_count) || 0,
+        companies: parseInt(stats.company_count) || 0,
+        teams: parseInt(stats.team_count) || 0,
+        projects: parseInt(stats.project_count) || 0,
+        contracts: parseInt(stats.contract_count) || 0
       },
       commands: {
         total: commandMap.size,
@@ -199,17 +228,6 @@ router.get('/status', async (req, res) => {
       out: 'Failed to retrieve system status' 
     });
   }
-});
-
-// Health check
-router.get('/health', (req, res) => {
-  res.json({ 
-    ok: true, 
-    status: 'healthy',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    cli: 'enabled'
-  });
 });
 
 // Helper function to generate command examples
