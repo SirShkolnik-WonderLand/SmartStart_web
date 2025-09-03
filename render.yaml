@@ -2,20 +2,22 @@ services:
   - name: smartstart-api
     type: web
     runtime: node
-    plan: starter
+    plan: standard
     buildCommand: npm install --production && npx prisma generate
     startCommand: npm run start:api
     envVars:
       - key: NODE_ENV
         value: production
       - key: PORT
-        value: "3001"
+        value: "3000"
       - key: DATABASE_URL
         fromDatabase:
           name: smartstart-db
           property: connectionString
       - key: JWT_SECRET
         generateValue: true
+      - key: FRONTEND_URL
+        value: https://smartstart-cli-web.onrender.com
       - key: WORKER_ENABLED
         value: "false"
       - key: STORAGE_ENABLED
