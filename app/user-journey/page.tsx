@@ -110,6 +110,11 @@ const UserJourney = () => {
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' }
     })
+    if (res.status === 401) {
+      const err = new Error('401 Unauthorized') as any
+      ;(err as any).status = 401
+      throw err
+    }
     if (!res.ok) throw new Error(`${path} ${res.status}`)
     return res.json()
   }
@@ -119,7 +124,6 @@ const UserJourney = () => {
     setError('')
     const syncMarks: { label: string; at: string }[] = []
     try {
-      // 1) Auth context
       const profile = await secureGet('/api/auth/profile')
       const userId = profile && (profile.id || profile.userId)
       const resolvedUser: User = {
@@ -135,19 +139,14 @@ const UserJourney = () => {
       setUser(resolvedUser)
       syncMarks.push({ label: 'Profile', at: new Date().toISOString() })
 
-      // 2) Parallel fetches
       const requests: Array<Promise<any>> = [
         secureGet('/api/role-dashboard/dashboard'),
         secureGet('/api/tasks/tasks'),
         secureGet('/api/tasks/today'),
-        secureGet(`/api/user-gamification/dashboard/${encodeURIComponent(userId)}`)
-      ]
-
-      // Portfolio and profile detail endpoints may vary; try both analytics and portfolio detail
-      requests.push(
+        secureGet(`/api/user-gamification/dashboard/${encodeURIComponent(userId)}`),
         secureGet(`/api/user-portfolio/analytics`).catch(() => null),
         secureGet(`/api/user-profile/profile/${encodeURIComponent(userId)}`).catch(() => null)
-      )
+      ]
 
       const [roleDash, tasks, tasksToday, gamification, portfolioAnalytics, profileDetail] = await Promise.all(requests)
 
@@ -177,7 +176,12 @@ const UserJourney = () => {
       if (profileDetail) syncMarks.push({ label: 'Profile Detail', at: now })
       setLastSync(syncMarks)
     } catch (e: any) {
-      setError(e?.message || 'Failed to load dashboard')
+      if (e && e.status === 401) {
+        setUser(null)
+        setError('')
+      } else {
+        setError(e?.message || 'Failed to load dashboard')
+      }
     } finally {
       setIsLoading(false)
     }
@@ -226,6 +230,18 @@ const UserJourney = () => {
     )
   }
 
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+        <div className="bg-white border border-gray-200 rounded-xl p-6 max-w-md text-center">
+          <h2 className="text-lg font-semibold text-gray-900">Sign in required</h2>
+          <p className="text-sm text-gray-600 mt-1">Please sign in to access your dashboard.</p>
+          <a href="/" className="inline-block mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg">Go to Login</a>
+        </div>
+      </div>
+    )
+  }
+
   if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
@@ -236,18 +252,6 @@ const UserJourney = () => {
           </div>
           <div className="mt-2 text-sm">{error}</div>
           <button onClick={() => loadAll()} className="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg">Retry</button>
-        </div>
-      </div>
-    )
-  }
-
-  if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
-        <div className="bg-white border border-gray-200 rounded-xl p-6 max-w-md text-center">
-          <h2 className="text-lg font-semibold text-gray-900">Sign in required</h2>
-          <p className="text-sm text-gray-600 mt-1">Please sign in to access your dashboard.</p>
-          <a href="/" className="inline-block mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg">Go to Login</a>
         </div>
       </div>
     )
