@@ -28,7 +28,7 @@ async function createTestUser() {
         lastName: 'Shkolnik',
         role: 'STARTUP_FOUNDER',
         name: 'Udi Shkolnik',
-        level: 'FOUNDER',
+        level: 'SKY_MASTER',
         xp: 1000,
         reputation: 95,
         status: 'ACTIVE'

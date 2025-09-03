@@ -308,24 +308,33 @@ router.post('/login', async (req, res) => {
             });
         }
 
-        // Find user
+        // Find user by email or username
         const user = await prisma.user.findFirst({
-            where: { email: email.toLowerCase() },
-            include: {
-                profile: true,
-                account: true
+            where: { 
+                OR: [
+                    { email: email.toLowerCase() },
+                    { username: email.toLowerCase() }
+                ]
             }
         });
 
         if (!user) {
             return res.status(401).json({
                 success: false,
-                message: 'Invalid email or password'
+                message: 'Invalid email/username or password'
+            });
+        }
+
+        // Check if user has a password
+        if (!user.password) {
+            return res.status(401).json({
+                success: false,
+                message: 'Account not properly set up. Please contact support.'
             });
         }
 
         // Check if user is active
-        if (!user.isActive) {
+        if (user.status !== 'ACTIVE') {
             return res.status(401).json({
                 success: false,
                 message: 'Account is deactivated. Please contact support.'
@@ -337,15 +346,7 @@ router.post('/login', async (req, res) => {
         if (!isPasswordValid) {
             return res.status(401).json({
                 success: false,
-                message: 'Invalid email or password'
-            });
-        }
-
-        // Check if email is verified
-        if (!user.isEmailVerified) {
-            return res.status(401).json({
-                success: false,
-                message: 'Please verify your email address before logging in.'
+                message: 'Invalid email/username or password'
             });
         }
 
