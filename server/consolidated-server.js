@@ -88,6 +88,18 @@ app.use('/api/files', fileManagementApiRoutes);
 const digitalDocumentsApiRoutes = require('./routes/digital-documents-api');
 app.use('/api/documents', digitalDocumentsApiRoutes);
 
+// Mount User Journey APIs
+const userProfileApiRoutes = require('./routes/user-profile-api');
+app.use('/api/user-profile', userProfileApiRoutes);
+
+const userPortfolioApiRoutes = require('./routes/user-portfolio-api');
+app.use('/api/user-portfolio', userPortfolioApiRoutes);
+
+const userGamificationApiRoutes = require('./routes/user-gamification-api');
+app.use('/api/user-gamification', userGamificationApiRoutes);
+
+console.log('✅ User Journey APIs mounted successfully');
+
 // Error handling middleware
 app.use((err, req, res, next) => {
     console.error('Server error:', err);

@@ -122,7 +122,7 @@ export default function LoginPage() {
 
       if (response.ok) {
         const data = await response.json()
-        if (data.success) {
+      if (data.success) {
           // Redirect to CLI dashboard
           router.push('/cli-dashboard')
         } else {
@@ -192,7 +192,7 @@ export default function LoginPage() {
             <div className="flex items-center justify-between">
               <span>Systems:</span>
               <span className="text-green-400">{systemStatus.systems} DEPLOYED</span>
-            </div>
+          </div>
           </div>
         </div>
 
@@ -202,7 +202,7 @@ export default function LoginPage() {
             <h2 className="text-2xl font-bold mb-2">🔐 SYSTEM ACCESS REQUIRED</h2>
             <p className="text-green-300">Enter your credentials to access SmartStart Platform</p>
           </div>
-
+          
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
               <label className="block text-sm font-medium mb-2">USERNAME:</label>
@@ -218,15 +218,15 @@ export default function LoginPage() {
 
             <div>
               <label className="block text-sm font-medium mb-2">PASSWORD:</label>
-              <input
+                <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full p-3 bg-black border border-green-500 rounded text-green-400 placeholder-green-600 focus:border-green-400 focus:outline-none"
                 placeholder="Enter password..."
                 disabled={isLoading}
-              />
-            </div>
+                />
+              </div>
 
             {error && (
               <div className="p-3 bg-red-900/20 border border-red-500 rounded text-red-400 text-sm">
@@ -234,9 +234,9 @@ export default function LoginPage() {
               </div>
             )}
 
-            <button
+              <button 
               type="submit"
-              disabled={isLoading}
+                disabled={isLoading}
               className="w-full p-3 bg-green-600 hover:bg-green-700 disabled:bg-green-800 text-black font-bold rounded flex items-center justify-center transition-colors"
             >
               {isLoading ? (
@@ -260,8 +260,8 @@ export default function LoginPage() {
               className="text-green-300 hover:text-green-400 text-sm underline"
             >
               💡 Demo Access: admin / password123
-            </button>
-          </div>
+              </button>
+            </div>
 
           {/* Registration Link */}
           <div className="mt-6 text-center">
@@ -271,7 +271,7 @@ export default function LoginPage() {
             >
               Create a new account
             </a>
-          </div>
+      </div>
         </div>
 
         {/* Footer */}

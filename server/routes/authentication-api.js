@@ -26,16 +26,16 @@ router.get('/csrf', (req, res) => {
 });
 
 // Health check
-router.get('/health', async (req, res) => {
+router.get('/health', async(req, res) => {
     try {
-        const stats = await prisma.$queryRaw`
+        const stats = await prisma.$queryRaw `
             SELECT 
                 (SELECT COUNT(*) FROM "User") as users,
                 (SELECT COUNT(*) FROM "UserVerification") as verifications,
                 (SELECT COUNT(*) FROM "PasswordReset") as passwordResets,
                 (SELECT COUNT(*) FROM "UserSession") as activeSessions
         `;
-        
+
         res.json({
             success: true,
             message: 'Authentication System is healthy',
@@ -63,16 +63,16 @@ router.get('/health', async (req, res) => {
 });
 
 // Create tables for authentication system
-router.post('/create-tables', async (req, res) => {
+router.post('/create-tables', async(req, res) => {
     try {
         // Drop existing tables if they exist
-        await prisma.$executeRaw`DROP TABLE IF EXISTS "UserSession" CASCADE`;
-        await prisma.$executeRaw`DROP TABLE IF EXISTS "PasswordReset" CASCADE`;
-        await prisma.$executeRaw`DROP TABLE IF EXISTS "UserVerification" CASCADE`;
-        await prisma.$executeRaw`DROP TABLE IF EXISTS "UserInvitation" CASCADE`;
+        await prisma.$executeRaw `DROP TABLE IF EXISTS "UserSession" CASCADE`;
+        await prisma.$executeRaw `DROP TABLE IF EXISTS "PasswordReset" CASCADE`;
+        await prisma.$executeRaw `DROP TABLE IF EXISTS "UserVerification" CASCADE`;
+        await prisma.$executeRaw `DROP TABLE IF EXISTS "UserInvitation" CASCADE`;
 
         // Create UserVerification table
-        await prisma.$executeRaw`
+        await prisma.$executeRaw `
             CREATE TABLE "UserVerification" (
                 "id" TEXT NOT NULL,
                 "userId" TEXT NOT NULL,
@@ -87,7 +87,7 @@ router.post('/create-tables', async (req, res) => {
         `;
 
         // Create PasswordReset table
-        await prisma.$executeRaw`
+        await prisma.$executeRaw `
             CREATE TABLE "PasswordReset" (
                 "id" TEXT NOT NULL,
                 "userId" TEXT NOT NULL,
@@ -101,7 +101,7 @@ router.post('/create-tables', async (req, res) => {
         `;
 
         // Create UserSession table
-        await prisma.$executeRaw`
+        await prisma.$executeRaw `
             CREATE TABLE "UserSession" (
                 "id" TEXT NOT NULL,
                 "userId" TEXT NOT NULL,
@@ -116,7 +116,7 @@ router.post('/create-tables', async (req, res) => {
         `;
 
         // Create UserInvitation table
-        await prisma.$executeRaw`
+        await prisma.$executeRaw `
             CREATE TABLE "UserInvitation" (
                 "id" TEXT NOT NULL,
                 "invitedBy" TEXT NOT NULL,
@@ -136,14 +136,14 @@ router.post('/create-tables', async (req, res) => {
         `;
 
         // Create indexes for performance
-        await prisma.$executeRaw`CREATE INDEX "UserVerification_userId_idx" ON "UserVerification"("userId")`;
-        await prisma.$executeRaw`CREATE INDEX "UserVerification_token_idx" ON "UserVerification"("verificationToken")`;
-        await prisma.$executeRaw`CREATE INDEX "PasswordReset_userId_idx" ON "PasswordReset"("userId")`;
-        await prisma.$executeRaw`CREATE INDEX "PasswordReset_token_idx" ON "PasswordReset"("resetToken")`;
-        await prisma.$executeRaw`CREATE INDEX "UserSession_userId_idx" ON "UserSession"("userId")`;
-        await prisma.$executeRaw`CREATE INDEX "UserSession_token_idx" ON "UserSession"("sessionToken")`;
-        await prisma.$executeRaw`CREATE INDEX "UserInvitation_email_idx" ON "UserInvitation"("invitedEmail")`;
-        await prisma.$executeRaw`CREATE INDEX "UserInvitation_token_idx" ON "UserInvitation"("invitationToken")`;
+        await prisma.$executeRaw `CREATE INDEX "UserVerification_userId_idx" ON "UserVerification"("userId")`;
+        await prisma.$executeRaw `CREATE INDEX "UserVerification_token_idx" ON "UserVerification"("verificationToken")`;
+        await prisma.$executeRaw `CREATE INDEX "PasswordReset_userId_idx" ON "PasswordReset"("userId")`;
+        await prisma.$executeRaw `CREATE INDEX "PasswordReset_token_idx" ON "PasswordReset"("resetToken")`;
+        await prisma.$executeRaw `CREATE INDEX "UserSession_userId_idx" ON "UserSession"("userId")`;
+        await prisma.$executeRaw `CREATE INDEX "UserSession_token_idx" ON "UserSession"("sessionToken")`;
+        await prisma.$executeRaw `CREATE INDEX "UserInvitation_email_idx" ON "UserInvitation"("invitedEmail")`;
+        await prisma.$executeRaw `CREATE INDEX "UserInvitation_token_idx" ON "UserInvitation"("invitationToken")`;
 
         res.json({
             success: true,
@@ -162,45 +162,45 @@ router.post('/create-tables', async (req, res) => {
 });
 
 // User registration
-router.post('/register', async (req, res) => {
-    try {
-        const {
-            email,
-            password,
-            firstName,
-            lastName,
-            phone,
-            companyName,
-            role = 'FOUNDER'
-        } = req.body;
+router.post('/register', async(req, res) => {
+            try {
+                const {
+                    email,
+                    password,
+                    firstName,
+                    lastName,
+                    phone,
+                    companyName,
+                    role = 'FOUNDER'
+                } = req.body;
 
-        if (!email || !password || !firstName || !lastName) {
-            return res.status(400).json({
-                success: false,
-                message: 'Missing required fields: email, password, firstName, lastName'
-            });
-        }
+                if (!email || !password || !firstName || !lastName) {
+                    return res.status(400).json({
+                        success: false,
+                        message: 'Missing required fields: email, password, firstName, lastName'
+                    });
+                }
 
-        // Check if user already exists
-        const existingUser = await prisma.user.findFirst({
-            where: { email: email.toLowerCase() }
-        });
+                // Check if user already exists
+                const existingUser = await prisma.user.findFirst({
+                    where: { email: email.toLowerCase() }
+                });
 
-        if (existingUser) {
-            return res.status(400).json({
-                success: false,
-                message: 'User with this email already exists'
-            });
-        }
+                if (existingUser) {
+                    return res.status(400).json({
+                        success: false,
+                        message: 'User with this email already exists'
+                    });
+                }
 
-        // Hash password
-        const saltRounds = 12;
-        const hashedPassword = await bcrypt.hash(password, saltRounds);
+                // Hash password
+                const saltRounds = 12;
+                const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-        // Create user using raw SQL
-        const userId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-        
-        await prisma.$executeRaw`
+                // Create user using raw SQL
+                const userId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+                await prisma.$executeRaw `
             INSERT INTO "User" (
                 "id", "email", "password", "firstName", "lastName", "phone", 
                 "isEmailVerified", "isActive", "createdAt", "updatedAt"
@@ -210,8 +210,8 @@ router.post('/register', async (req, res) => {
             )
         `;
 
-        // Create user profile
-        await prisma.$executeRaw`
+                // Create user profile
+                await prisma.$executeRaw `
             INSERT INTO "UserProfile" (
                 "id", "userId", "displayName", "bio", "avatarUrl", "location", 
                 "website", "socialLinks", "createdAt", "updatedAt"
