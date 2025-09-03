@@ -71,10 +71,10 @@ router.post('/exec', requireCsrf, async(req, res) => {
             res.json({ ok: true, out: output });
         } catch (error) {
             console.error(`Command execution error for ${command}:`, error);
-            await audit(ctx, command, args, false, error ? .message || 'EXECUTION_ERROR');
+            await audit(ctx, command, args, false, error && error.message ? error.message : 'EXECUTION_ERROR');
             res.status(500).json({
                 ok: false,
-                out: `Command execution failed: ${error?.message || 'Unknown error'}`
+                out: `Command execution failed: ${error && error.message ? error.message : 'Unknown error'}`
             });
         }
 
@@ -82,7 +82,7 @@ router.post('/exec', requireCsrf, async(req, res) => {
         console.error('CLI API error:', error);
         res.status(400).json({
             ok: false,
-            out: `Invalid request: ${error?.message || 'Unknown error'}`
+            out: `Invalid request: ${error && error.message ? error.message : 'Unknown error'}`
         });
     }
 });
