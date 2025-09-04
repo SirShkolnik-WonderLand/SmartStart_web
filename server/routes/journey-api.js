@@ -282,6 +282,17 @@ router.get('/gates/:userId', async(req, res) => {
                                 details = nda ? { ndaId: nda.id } : null;
                                 break;
 
+                            case 'CONTRACT':
+                                const contract = await prisma.contractSignature.findFirst({
+                                    where: {
+                                        signerId: userId,
+                                        status: 'SIGNED'
+                                    }
+                                });
+                                isPassed = !!contract;
+                                details = contract ? { contractId: contract.id } : null;
+                                break;
+
                             case 'VERIFICATION':
                                 const user = await prisma.user.findUnique({
                                     where: { id: userId }

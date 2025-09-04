@@ -2772,6 +2772,7 @@ enum GateType {
   SUBSCRIPTION    // Requires active subscription
   LEGAL_PACK      // Requires signed legal pack
   NDA             // Requires signed NDA
+  CONTRACT        // Requires signed contract
   PAYMENT         // Requires payment
   VERIFICATION    // Requires email/phone verification
   PROFILE         // Requires complete profile
