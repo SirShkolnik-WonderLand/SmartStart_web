@@ -423,7 +423,7 @@ class AuthService {
             }
 
             // Generate token
-            const token = this.generateToken(accountWithUser);
+            const token = await this.generateToken(accountWithUser);
 
             // Create session
             const session = await this.createSession(result.account.id, token, deviceInfo);
