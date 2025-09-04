@@ -1,9 +1,10 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import Navigation from './components/Navigation'
 
 export const metadata: Metadata = {
-  title: 'SmartStart Platform CLI',
-  description: 'Venture Operating System - Terminal Interface',
+  title: 'SmartStart Hub - VentureGate™ Journey',
+  description: 'Turn strangers into trusted contributors through our comprehensive startup ecosystem platform',
   icons: {
     icon: '/favicon.ico',
     shortcut: '/favicon.ico',
@@ -18,7 +19,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="cli-terminal">
+      <body>
+        <Navigation />
         {children}
       </body>
     </html>

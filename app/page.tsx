@@ -102,14 +102,8 @@ export default function LoginPage() {
     }
   }
 
-  const setWebSession = () => {
-    document.cookie = `web_session=1; Path=/; Max-Age=${60 * 60 * 24 * 7}; Secure; SameSite=Lax`
-  }
-
   const redirectAfterLogin = () => {
-    const params = new URLSearchParams(window.location.search)
-    const target = params.get('redirect') || '/user-journey'
-    router.push(target)
+    router.push('/venture-gate')
   }
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -133,7 +127,6 @@ export default function LoginPage() {
       if (response.ok) {
         const data = await response.json()
         if (data.success) {
-          setWebSession()
           redirectAfterLogin()
         } else {
           setError(data.message || 'Login failed')
@@ -152,7 +145,6 @@ export default function LoginPage() {
   const handleDemoLogin = async () => {
     setUsername('admin')
     setPassword('password123')
-    setWebSession()
     setTimeout(() => {
       redirectAfterLogin()
     }, 300)
@@ -283,60 +275,7 @@ export default function LoginPage() {
       </div>
         </div>
 
-        {/* Platform Navigation */}
-        <div className="max-w-2xl mx-auto mt-8 p-6 border border-green-500 rounded bg-black/50">
-          <div className="text-center mb-4">
-            <h3 className="text-lg font-bold mb-2">🚀 PLATFORM ACCESS</h3>
-            <p className="text-green-300 text-sm">Explore different parts of the platform</p>
-          </div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <a
-              href="/platform-hub"
-              className="p-4 border border-green-500 rounded text-center hover:bg-green-500 hover:text-black transition-all duration-200"
-            >
-              <div className="text-lg mb-1">🏠</div>
-              <div className="font-medium">Platform Hub</div>
-              <div className="text-xs text-green-300">Overview & Navigation</div>
-            </a>
-            
-            <a
-              href="/user-journey"
-              className="p-4 border border-green-500 rounded text-center hover:bg-green-500 hover:text-black transition-all duration-200"
-            >
-              <div className="text-lg mb-1">👤</div>
-              <div className="font-medium">User Journey</div>
-              <div className="text-xs text-green-300">Role-Based Dashboards</div>
-            </a>
-            
-            <a
-              href="/cli-dashboard"
-              className="p-4 border border-green-500 rounded text-center hover:bg-green-500 hover:text-black transition-all duration-200"
-            >
-              <div className="text-lg mb-1">💻</div>
-              <div className="font-medium">CLI Interface</div>
-              <div className="text-xs text-green-300">Terminal Commands</div>
-            </a>
-            
-            <a
-              href="/dashboard"
-              className="p-4 border border-green-500 rounded text-center hover:bg-green-500 hover:text-black transition-all duration-200"
-            >
-              <div className="text-lg mb-1">📊</div>
-              <div className="font-medium">Dashboard</div>
-              <div className="text-xs text-green-300">System Overview</div>
-            </a>
-            
-            <a
-              href="/api-inventory"
-              className="p-4 border border-green-500 rounded text-center hover:bg-green-500 hover:text-black transition-all duration-200"
-            >
-              <div className="text-lg mb-1">🔌</div>
-              <div className="font-medium">API Inventory</div>
-              <div className="text-xs text-green-300">Test All APIs</div>
-            </a>
-          </div>
-        </div>
+
 
         {/* Footer */}
         <div className="text-center mt-12 text-sm text-green-600">
