@@ -140,10 +140,13 @@ export interface SystemStatus {
 
 class ApiService {
   private async fetchWithAuth(endpoint: string, options: RequestInit = {}) {
+    const token = localStorage.getItem('auth-token')
+    
     const response = await fetch(`${API_BASE}${endpoint}`, {
       ...options,
       headers: {
         'Content-Type': 'application/json',
+        ...(token && { 'Authorization': `Bearer ${token}` }),
         ...options.headers,
       },
       credentials: 'include',
@@ -171,7 +174,14 @@ class ApiService {
       throw new Error(`API Error: ${response.status} ${response.statusText}`)
     }
 
-    return response.json()
+    const data = await response.json()
+    
+    // Store user ID for getCurrentUser to use
+    if (data.success && data.user && data.user.id) {
+      localStorage.setItem('user-id', data.user.id)
+    }
+    
+    return data
   }
 
   async register(userData: any) {
@@ -188,11 +198,31 @@ class ApiService {
       throw new Error(`API Error: ${response.status} ${response.statusText}`)
     }
 
-    return response.json()
+    const data = await response.json()
+    
+    // Store user ID for getCurrentUser to use
+    if (data.success && data.user && data.user.id) {
+      localStorage.setItem('user-id', data.user.id)
+    }
+    
+    return data
   }
 
   async getCurrentUser(): Promise<User> {
-    return this.fetchWithAuth('/api/auth/me')
+    // Get user ID from token or localStorage
+    const token = localStorage.getItem('auth-token')
+    if (!token) {
+      throw new Error('No authentication token found')
+    }
+    
+    // For now, we'll need to get the user ID from the login response
+    // This is a temporary solution - ideally the backend should have /api/auth/me
+    const userId = localStorage.getItem('user-id')
+    if (!userId) {
+      throw new Error('User ID not found in localStorage')
+    }
+    
+    return this.fetchWithAuth(`/api/users/${userId}`)
   }
 
   async logout() {
