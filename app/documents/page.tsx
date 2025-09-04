@@ -1,5 +1,21 @@
 'use client'
 
+import Link from 'next/link'
+
+export default function DocumentsHome() {
+  return (
+    <div className="p-6 max-w-2xl mx-auto">
+      <h1 className="text-xl font-semibold mb-4">Documents</h1>
+      <div className="space-y-3">
+        <Link className="block p-3 rounded bg-gray-800" href="/documents/soba/new">Issue SOBA</Link>
+        <Link className="block p-3 rounded bg-gray-800" href="/documents/puoha/new">Issue PUOHA</Link>
+      </div>
+    </div>
+  )
+}
+
+'use client'
+
 import { useState, useEffect } from 'react'
 import { apiService, DocumentTemplate } from '../services/api'
 
