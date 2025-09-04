@@ -1,6 +1,6 @@
 const express = require('express');
 const { PrismaClient } = require('@prisma/client');
-const { authenticateToken } = require('../middleware/auth');
+const { authenticateToken } = require('../middleware/unified-auth');
 const fs = require('fs');
 const fsp = require('fs').promises;
 const path = require('path');
@@ -24,7 +24,7 @@ function formatDateYYYYMMDD(d) {
 }
 
 // ===== Issue SOBA =====
-router.post('/issue/soba', authenticateToken, async (req, res) => {
+router.post('/issue/soba', authenticateToken, async(req, res) => {
     try {
         const payload = req.body || {};
 
@@ -133,7 +133,7 @@ router.post('/issue/soba', authenticateToken, async (req, res) => {
 });
 
 // ===== Issue PUOHA =====
-router.post('/issue/puoha', authenticateToken, async (req, res) => {
+router.post('/issue/puoha', authenticateToken, async(req, res) => {
     try {
         const p = req.body || {};
         if (!p.project_owner_legal_name || p.project_owner_legal_name.length < 2 || p.project_owner_legal_name.length > 120)
@@ -228,7 +228,7 @@ router.post('/issue/puoha', authenticateToken, async (req, res) => {
 });
 
 // ===== Sign document (SOBA/PUOHA) =====
-router.post('/:docId/sign', authenticateToken, async (req, res) => {
+router.post('/:docId/sign', authenticateToken, async(req, res) => {
     try {
         const { docId } = req.params;
         const { signer_name, signer_title, signer_email, ip, user_agent, timestamp_iso, otp_or_mfa_code_last4, expected_doc_hash } = req.body || {};
@@ -295,7 +295,7 @@ const DOCUMENT_CATEGORIES = {
     }
 };
 
-router.get('/templates', async (req, res) => {
+router.get('/templates', async(req, res) => {
     try {
         const templates = [];
         const files = await fsp.readdir(CONTRACTS_DIR);
@@ -332,7 +332,7 @@ router.get('/templates', async (req, res) => {
     }
 });
 
-router.get('/templates/:id', async (req, res) => {
+router.get('/templates/:id', async(req, res) => {
     try {
         const { id } = req.params;
         const files = await fsp.readdir(CONTRACTS_DIR);
@@ -355,7 +355,7 @@ router.get('/templates/:id', async (req, res) => {
     }
 });
 
-router.get('/templates/category/:category', async (req, res) => {
+router.get('/templates/category/:category', async(req, res) => {
     try {
         const { category } = req.params;
         if (!DOCUMENT_CATEGORIES[category]) return res.status(400).json({ success: false, message: 'Invalid category' });
@@ -384,7 +384,7 @@ router.get('/templates/category/:category', async (req, res) => {
     }
 });
 
-router.get('/search', async (req, res) => {
+router.get('/search', async(req, res) => {
     try {
         const { q: query, category } = req.query;
         if (!query) return res.status(400).json({ success: false, message: 'Search query is required' });
@@ -415,7 +415,7 @@ router.get('/search', async (req, res) => {
     }
 });
 
-router.get('/stats', async (req, res) => {
+router.get('/stats', async(req, res) => {
     try {
         const files = await fsp.readdir(CONTRACTS_DIR);
         const stats = { totalDocuments: 0, totalSize: 0, totalWords: 0, totalLines: 0, categories: {}, lastModified: null };

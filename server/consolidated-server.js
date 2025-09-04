@@ -45,8 +45,7 @@ app.use('/api/ai-cli', aiCliApiRoutes);
 console.log('✅ CLI API routes mounted successfully');
 
 // Mount simple auth API routes (workaround for production)
-const simpleAuthRoutes = require('./routes/simple-auth-api');
-app.use('/api/simple-auth', simpleAuthRoutes);
+// Old simple-auth routes removed - using unified-auth-api instead
 
 // Mount existing API routes
 const v1ApiRoutes = require('./routes/v1-api');

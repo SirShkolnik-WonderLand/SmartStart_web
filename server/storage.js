@@ -42,57 +42,8 @@ app.use('/api/', limiter);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-// Authentication middleware
-const authenticateToken = async (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-
-  if (!token) {
-    return res.status(401).json({ error: 'Access token required' });
-  }
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await prisma.user.findUnique({
-      where: { id: decoded.userId },
-      include: {
-        account: {
-          include: {
-            role: {
-              include: {
-                rolePermissions: {
-                  include: {
-                    permission: true
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    });
-
-    if (!user || !user.account || !user.account.isActive) {
-      return res.status(401).json({ error: 'Invalid or inactive user' });
-    }
-
-    req.user = user;
-    req.permissions = user.account.role.rolePermissions.map(rp => rp.permission.name);
-    next();
-  } catch (error) {
-    return res.status(403).json({ error: 'Invalid token' });
-  }
-};
-
-// Permission checking middleware
-const requirePermission = (permission) => {
-  return (req, res, next) => {
-    if (!req.permissions.includes(permission)) {
-      return res.status(403).json({ error: 'Insufficient permissions' });
-    }
-    next();
-  };
-};
+// Use unified authentication middleware
+const { authenticateToken, requirePermission } = require('./middleware/unified-auth');
 
 // Configure multer for file uploads
 const upload = multer({
