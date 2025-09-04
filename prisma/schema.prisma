@@ -2784,6 +2784,7 @@ enum GateType {
   LAUNCH          // Requires launch readiness
   VENTURE         // Requires venture creation/participation
   TEAM            // Requires team creation/participation
+  PROJECT         // Requires project creation/participation
   CUSTOM          // Custom gate logic
 }
 

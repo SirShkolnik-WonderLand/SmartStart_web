@@ -364,6 +364,24 @@ router.get('/gates/:userId', async(req, res) => {
                 details = { teamCount: userTeams };
                 break;
 
+            case 'PROJECT':
+                // Check if user has created or joined a project
+                const userProjects = await prisma.project.count({
+                    where: {
+                        OR: [
+                            { ownerId: userId },
+                            {
+                                members: {
+                                    some: { userId: userId }
+                                }
+                            }
+                        ]
+                    }
+                });
+                isPassed = userProjects > 0;
+                details = { projectCount: userProjects };
+                break;
+
                             default:
                                 isPassed = false;
                                 details = { message: 'Custom gate logic not implemented' };
