@@ -182,12 +182,14 @@ const VentureGateJourney = () => {
       const storedId = typeof window !== 'undefined' ? localStorage.getItem('user-id') : null
       const resolvedUserId = (user as any)?.id || (user as any)?.data?.id || storedId
 
+      // For stages that need to be started first
+      if (resolvedUserId && ['stage_1', 'stage_7', 'stage_8'].includes(stage.id)) {
+        await apiService.startJourneyStage(resolvedUserId, stage.id)
+      }
+
       switch (stage.id) {
         case 'stage_1':
-          // Mark stage_1 as completed and move to next
-          if (resolvedUserId) {
-            await apiService.updateJourneyState(resolvedUserId, 1) // Move to stage_2
-          }
+          // Discover stage - just redirect to register
           router.push('/register')
           break
         case 'stage_2':
@@ -206,9 +208,11 @@ const VentureGateJourney = () => {
           router.push('/venture-gate/profile')
           break
         case 'stage_7':
+          // Explore ventures - can be completed inline
           router.push('/venture-gate/explore')
           break
         case 'stage_8':
+          // Submit offers - can be completed inline
           router.push('/venture-gate/explore')
           break
         case 'stage_9':
@@ -242,11 +246,7 @@ const VentureGateJourney = () => {
       const currentStageData = journeyStages[currentStage]
       console.log(`Completing stage: ${currentStageData.title}`)
 
-      // First, ensure the current stage is started
-      const currentStageId = `stage_${currentStage + 1}`
-      await apiService.startJourneyStage(resolvedUserId, currentStageId)
-
-      // Then complete the current stage
+      // Complete the current stage
       await apiService.updateJourneyState(resolvedUserId, currentStage)
 
       // Update journey state to next stage
@@ -260,8 +260,12 @@ const VentureGateJourney = () => {
         const updatedJourney = await apiService.getJourneyState(resolvedUserId)
         setJourneyState(updatedJourney)
         setCurrentStage(nextStageIndex)
+        
+        // Show success message
+        console.log(`✅ Stage completed! Moved to: ${journeyStages[nextStageIndex].title}`)
       } else {
         // Journey complete - redirect to dashboard
+        console.log('🎉 Journey complete! Redirecting to dashboard...')
         router.push('/dashboard')
       }
     } catch (error) {
@@ -305,160 +309,128 @@ const VentureGateJourney = () => {
 
   return (
     <div className="container" style={{ paddingTop: '2rem', paddingBottom: '4rem' }}>
-      {/* Header */}
-      <div className="text-center mb-8 animate-fade-in">
-        <h1>VentureGate™ Journey</h1>
-        <p className="text-secondary">
-          Complete this step to continue your journey
+      {/* Streamlined Header */}
+      <div className="text-center mb-6 animate-fade-in">
+        <h1 style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>VentureGate™ Journey</h1>
+        <p className="text-secondary" style={{ fontSize: '1.1rem' }}>
+          Step {currentStage + 1} of {journeyStages.length} • {Math.round((currentStage / (journeyStages.length - 1)) * 100)}% Complete
         </p>
         {user && (
-          <div className="mt-4">
-            <span className="status status-info">
+          <div className="mt-3">
+            <span className="status status-info" style={{ fontSize: '0.9rem' }}>
               Welcome, {user.name}
             </span>
           </div>
         )}
       </div>
 
-      {/* Progress Overview */}
-      <div className="card mb-8 animate-slide-in">
-        <div className="card-header">
-          <h3>Current Step</h3>
-          <p className="text-muted">
-            Step {currentStage + 1} of {journeyStages.length}
-          </p>
-        </div>
-        <div className="progress mb-4">
+      {/* Progress Bar */}
+      <div className="mb-8 animate-slide-in">
+        <div className="progress" style={{ height: '8px', borderRadius: '4px' }}>
           <div 
             className="progress-bar" 
-            style={{ width: `${(currentStage / (journeyStages.length - 1)) * 100}%` }}
+            style={{ 
+              width: `${(currentStage / (journeyStages.length - 1)) * 100}%`,
+              background: 'linear-gradient(90deg, #00ff88, #00cc6a)',
+              borderRadius: '4px'
+            }}
           />
         </div>
-        <div className="flex justify-between text-sm">
-          <span>{currentStageData.title}</span>
-          <span>{Math.round((currentStage / (journeyStages.length - 1)) * 100)}% Complete</span>
-        </div>
       </div>
 
-      {/* Current Step Focus */}
-      <div className="card mb-8 animate-fade-in">
-        <div className="flex items-start gap-6">
-          <div className="text-6xl">{currentStageData.icon}</div>
-          <div className="flex-1">
-            <div className="flex items-center gap-3 mb-4">
-              <h2 className="text-2xl font-bold">{currentStageData.title}</h2>
-              <span className="status status-info">Current Step</span>
-            </div>
-            <p className="text-lg text-secondary mb-6">{currentStageData.description}</p>
-            
-            {currentStageData.actions.length > 0 && (
-              <div className="mb-6">
-                <h3 className="text-lg font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>
-                  What you need to do:
-                </h3>
-                <div className="grid gap-3">
-                  {currentStageData.actions.map((action, i) => (
-                    <div key={i} className="flex items-center gap-3 p-3 rounded-lg" style={{ background: 'var(--bg-secondary)' }}>
-                      <div className="w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold" style={{ background: 'var(--accent-primary)', color: 'white' }}>
-                        {i + 1}
-                      </div>
-                      <span className="text-primary">{action}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-            
-            {currentStageData.requirements.length > 0 && (
-              <div className="mb-6">
-                <h3 className="text-lg font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>
-                  Requirements:
-                </h3>
-                <div className="grid gap-2">
-                  {currentStageData.requirements.map((req, i) => (
-                    <div key={i} className="flex items-center gap-3">
-                      <div className="w-2 h-2 rounded-full" style={{ background: 'var(--accent-primary)' }}></div>
-                      <span className="text-secondary">{req}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Action Buttons */}
-      <div className="card animate-fade-in">
+      {/* Current Step - Focused */}
+      <div className="card mb-6 animate-fade-in" style={{ maxWidth: '800px', margin: '0 auto' }}>
         <div className="text-center">
-          <h3 className="mb-4">Ready to continue?</h3>
-          <div className="flex gap-4 justify-center">
+          <div className="text-5xl mb-4">{currentStageData.icon}</div>
+          <h2 className="text-2xl font-bold mb-3">{currentStageData.title}</h2>
+          <p className="text-lg text-secondary mb-6">{currentStageData.description}</p>
+          
+          {/* Essential Actions Only */}
+          {currentStageData.actions.length > 0 && (
+            <div className="mb-6">
+              <div className="grid gap-2" style={{ maxWidth: '400px', margin: '0 auto' }}>
+                {currentStageData.actions.slice(0, 3).map((action, i) => (
+                  <div key={i} className="flex items-center gap-3 p-3 rounded-lg" style={{ 
+                    background: 'var(--bg-secondary)', 
+                    border: '1px solid var(--border-color)' 
+                  }}>
+                    <div className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold" style={{ 
+                      background: 'var(--accent-primary)', 
+                      color: 'white' 
+                    }}>
+                      {i + 1}
+                    </div>
+                    <span className="text-primary text-sm">{action}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Action Button - Single Focus */}
+      <div className="text-center animate-fade-in">
+        <button 
+          className="btn btn-primary btn-lg"
+          onClick={() => handleStageAction(currentStageData)}
+          style={{ 
+            padding: '12px 32px', 
+            fontSize: '1.1rem',
+            minWidth: '200px'
+          }}
+        >
+          {currentStageData.id === 'stage_1' ? 'Start Journey' : 
+           currentStageData.id === 'stage_2' ? 'Create Account' :
+           currentStageData.id === 'stage_3' ? 'Setup Security' :
+           currentStageData.id === 'stage_4' ? 'Choose Plan' :
+           currentStageData.id === 'stage_5' ? 'Sign Legal Pack' :
+           currentStageData.id === 'stage_6' ? 'Complete Profile' :
+           currentStageData.id === 'stage_7' ? 'Explore Ventures' :
+           currentStageData.id === 'stage_8' ? 'Submit Offer' :
+           currentStageData.id === 'stage_9' ? 'Sign NDA' :
+           currentStageData.id === 'stage_10' ? 'Get Approved' :
+           'Continue'} →
+        </button>
+        
+        {/* Quick Complete for simple stages */}
+        {(currentStageData.id === 'stage_1' || 
+          currentStageData.id === 'stage_7' || 
+          currentStageData.id === 'stage_8') && (
+          <div className="mt-4">
             <button 
-              className="btn btn-primary btn-lg"
-              onClick={() => handleStageAction(currentStageData)}
+              className="btn btn-success"
+              onClick={completeCurrentStage}
+              style={{ fontSize: '0.9rem', padding: '8px 16px' }}
             >
-              {currentStageData.id === 'stage_1' ? 'Start Journey' : 
-               currentStageData.id === 'stage_2' ? 'Create Account' :
-               currentStageData.id === 'stage_3' ? 'Setup Security' :
-               currentStageData.id === 'stage_4' ? 'Choose Plan' :
-               currentStageData.id === 'stage_5' ? 'Sign Legal Pack' :
-               currentStageData.id === 'stage_6' ? 'Complete Profile' :
-               currentStageData.id === 'stage_7' ? 'Explore Ventures' :
-               currentStageData.id === 'stage_8' ? 'Submit Offer' :
-               currentStageData.id === 'stage_9' ? 'Sign NDA' :
-               currentStageData.id === 'stage_10' ? 'Get Approved' :
-               'Continue'}
-            </button>
-            
-            {/* Show "Mark as Complete" button for stages that can be completed inline */}
-            {(currentStageData.id === 'stage_1' || 
-              currentStageData.id === 'stage_7' || 
-              currentStageData.id === 'stage_8') && (
-              <button 
-                className="btn btn-success"
-                onClick={completeCurrentStage}
-              >
-                ✓ Mark as Complete
-              </button>
-            )}
-            
-            <button 
-              className="btn btn-secondary"
-              onClick={() => router.push('/venture-gate/help')}
-            >
-              Get Help
+              ✓ Mark as Complete
             </button>
           </div>
-        </div>
+        )}
       </div>
 
-      {/* Trust & Security Notice */}
-      <div className="card mt-8 animate-fade-in">
-        <div className="text-center">
-          <h3>Trust-by-Design Security</h3>
-          <p className="text-muted mb-4">
-            Your journey is protected by enterprise-grade security measures
-          </p>
-          <div className="grid grid-4 gap-4 text-sm">
-            <div>
-              <div className="text-accent-primary mb-1">🔐</div>
-              <div>MFA Required</div>
-            </div>
-            <div>
-              <div className="text-accent-primary mb-1">📋</div>
-              <div>Legal Compliance</div>
-            </div>
-            <div>
-              <div className="text-accent-primary mb-1">🛡️</div>
-              <div>Data Protection</div>
-            </div>
-            <div>
-              <div className="text-accent-primary mb-1">📊</div>
-              <div>Audit Trail</div>
+      {/* Next Steps Preview - Only show next 2 steps */}
+      {currentStage < journeyStages.length - 1 && (
+        <div className="card mt-8 animate-fade-in" style={{ maxWidth: '600px', margin: '0 auto' }}>
+          <div className="text-center">
+            <h3 className="mb-4" style={{ fontSize: '1.2rem' }}>Coming Next</h3>
+            <div className="grid gap-3">
+              {journeyStages.slice(currentStage + 1, currentStage + 3).map((stage, i) => (
+                <div key={stage.id} className="flex items-center gap-3 p-3 rounded-lg" style={{ 
+                  background: 'var(--bg-secondary)', 
+                  opacity: 0.7 
+                }}>
+                  <div className="text-2xl">{stage.icon}</div>
+                  <div className="flex-1 text-left">
+                    <div className="font-semibold text-sm">{stage.title}</div>
+                    <div className="text-xs text-secondary">{stage.description}</div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }
