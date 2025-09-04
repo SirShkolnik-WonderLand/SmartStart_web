@@ -45,6 +45,19 @@ model User {
   portfolioDiversity      Int       @default(0) // Number of different project types
   lastEquityEarned        DateTime? // Last time equity was earned
 
+  // subscription & billing
+  subscriptions    Subscription[]
+  invoices         Invoice[]
+  payments         Payment[]
+
+  // platform legal pack
+  platformLegalPacks PlatformLegalPack[]
+  platformNDAs       PlatformNDA[]
+  eSignatureConsents ESignatureConsent[]
+
+  // user journey
+  journeyStates      UserJourneyState[]
+
   // relations
   projectsOwned    Project[]         @relation("ProjectOwner")
   contributions    Contribution[]
@@ -2476,4 +2489,292 @@ enum GoalPriority {
   MEDIUM      // Medium priority goal
   HIGH        // High priority goal
   CRITICAL    // Critical priority goal
+}
+
+// Subscription & Billing Models
+model Subscription {
+  id          String            @id @default(cuid())
+  userId      String
+  planId      String
+  status      SubscriptionStatus @default(ACTIVE)
+  startDate   DateTime          @default(now())
+  endDate     DateTime?
+  autoRenew   Boolean           @default(true)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  // relations
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan        BillingPlan       @relation(fields: [planId], references: [id])
+  invoices    Invoice[]
+
+  @@index([userId])
+  @@index([planId])
+  @@index([status])
+}
+
+model BillingPlan {
+  id          String            @id @default(cuid())
+  name        String
+  description String?
+  price       Float
+  currency    String            @default("USD")
+  interval    BillingInterval   @default(MONTHLY)
+  features    String[]          // JSON array of features
+  isActive    Boolean           @default(true)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  // relations
+  subscriptions Subscription[]
+
+  @@index([isActive])
+}
+
+model Invoice {
+  id              String        @id @default(cuid())
+  userId          String
+  subscriptionId  String?
+  amount          Float
+  currency        String        @default("USD")
+  status          InvoiceStatus @default(PENDING)
+  dueDate         DateTime
+  paidDate        DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  // relations
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subscription    Subscription? @relation(fields: [subscriptionId], references: [id])
+  payments        Payment[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([dueDate])
+}
+
+model Payment {
+  id          String        @id @default(cuid())
+  userId      String
+  invoiceId   String
+  amount      Float
+  currency    String        @default("USD")
+  method      PaymentMethod
+  status      PaymentStatus @default(PENDING)
+  transactionId String?
+  metadata    Json?         // Additional payment data
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  // relations
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  invoice     Invoice       @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([invoiceId])
+  @@index([status])
+}
+
+// Subscription & Billing Enums
+enum SubscriptionStatus {
+  ACTIVE      // Subscription is active
+  INACTIVE    // Subscription is inactive
+  CANCELLED   // Subscription is cancelled
+  EXPIRED     // Subscription has expired
+  SUSPENDED   // Subscription is suspended
+}
+
+enum BillingInterval {
+  MONTHLY     // Monthly billing
+  QUARTERLY   // Quarterly billing
+  YEARLY      // Yearly billing
+  LIFETIME    // One-time payment
+}
+
+enum InvoiceStatus {
+  DRAFT       // Invoice is in draft
+  PENDING     // Invoice is pending payment
+  PAID        // Invoice has been paid
+  OVERDUE     // Invoice is overdue
+  CANCELLED   // Invoice has been cancelled
+  REFUNDED    // Invoice has been refunded
+}
+
+enum PaymentMethod {
+  CREDIT_CARD // Credit card payment
+  DEBIT_CARD  // Debit card payment
+  BANK_TRANSFER // Bank transfer
+  PAYPAL      // PayPal payment
+  STRIPE      // Stripe payment
+  CRYPTO      // Cryptocurrency payment
+  CASH        // Cash payment
+}
+
+enum PaymentStatus {
+  PENDING     // Payment is pending
+  PROCESSING  // Payment is being processed
+  COMPLETED   // Payment is completed
+  FAILED      // Payment has failed
+  CANCELLED   // Payment has been cancelled
+  REFUNDED    // Payment has been refunded
+}
+
+// Platform Legal Pack Models
+model PlatformLegalPack {
+  id          String                    @id @default(cuid())
+  userId      String
+  status      PlatformLegalPackStatus   @default(PENDING)
+  signedAt    DateTime?
+  expiresAt   DateTime?
+  createdAt   DateTime                  @default(now())
+  updatedAt   DateTime                  @updatedAt
+
+  // relations
+  user        User                      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+}
+
+model PlatformNDA {
+  id          String        @id @default(cuid())
+  userId      String
+  status      NDAStatus     @default(PENDING)
+  signedAt    DateTime?
+  expiresAt   DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  // relations
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+}
+
+model ESignatureConsent {
+  id          String                @id @default(cuid())
+  userId      String
+  consentType ESignatureConsentType
+  status      ConsentStatus         @default(PENDING)
+  signedAt    DateTime?
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
+
+  // relations
+  user        User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([consentType])
+  @@index([status])
+}
+
+// Platform Legal Pack Enums
+enum PlatformLegalPackStatus {
+  PENDING     // Legal pack is pending signature
+  SIGNED      // Legal pack has been signed
+  EXPIRED     // Legal pack has expired
+  REVOKED     // Legal pack has been revoked
+}
+
+enum NDAStatus {
+  PENDING     // NDA is pending signature
+  SIGNED      // NDA has been signed
+  EXPIRED     // NDA has expired
+  REVOKED     // NDA has been revoked
+}
+
+enum ESignatureConsentType {
+  PLATFORM_TERMS    // Platform terms of service
+  PRIVACY_POLICY    // Privacy policy consent
+  COOKIE_CONSENT    // Cookie consent
+  MARKETING_CONSENT // Marketing communications consent
+  DATA_PROCESSING   // Data processing consent
+}
+
+enum ConsentStatus {
+  PENDING     // Consent is pending
+  GRANTED     // Consent has been granted
+  REVOKED     // Consent has been revoked
+  EXPIRED     // Consent has expired
+}
+
+// User Journey State Management Models
+model UserJourneyState {
+  id          String            @id @default(cuid())
+  userId      String
+  stageId     String
+  status      JourneyStageStatus @default(NOT_STARTED)
+  startedAt   DateTime?
+  completedAt DateTime?
+  metadata    Json?             // Additional stage-specific data
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  // relations
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stage       JourneyStage      @relation(fields: [stageId], references: [id])
+
+  @@unique([userId, stageId])
+  @@index([userId])
+  @@index([stageId])
+  @@index([status])
+}
+
+model JourneyStage {
+  id          String            @id @default(cuid())
+  name        String
+  description String?
+  order       Int
+  isActive    Boolean           @default(true)
+  gates       JourneyGate[]
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  // relations
+  userStates  UserJourneyState[]
+
+  @@index([order])
+  @@index([isActive])
+}
+
+model JourneyGate {
+  id          String        @id @default(cuid())
+  stageId     String
+  name        String
+  description String?
+  gateType    GateType
+  isRequired  Boolean       @default(true)
+  isActive    Boolean       @default(true)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  // relations
+  stage       JourneyStage  @relation(fields: [stageId], references: [id], onDelete: Cascade)
+
+  @@index([stageId])
+  @@index([gateType])
+  @@index([isActive])
+}
+
+// User Journey Enums
+enum JourneyStageStatus {
+  NOT_STARTED // Stage has not been started
+  IN_PROGRESS // Stage is in progress
+  COMPLETED   // Stage has been completed
+  BLOCKED     // Stage is blocked
+  SKIPPED     // Stage has been skipped
+}
+
+enum GateType {
+  SUBSCRIPTION    // Requires active subscription
+  LEGAL_PACK      // Requires signed legal pack
+  NDA             // Requires signed NDA
+  PAYMENT         // Requires payment
+  VERIFICATION    // Requires email/phone verification
+  PROFILE         // Requires complete profile
+  DOCUMENT        // Requires document upload
+  CUSTOM          // Custom gate logic
 }

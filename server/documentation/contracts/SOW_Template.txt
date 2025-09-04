@@ -1,0 +1,41 @@
+STATEMENT OF WORK (SOW)
+Under: Master Services Agreement (MSA)
+Version: 1.0
+Parties & Project
+Customer: ____________________
+Provider/AliceSolutions: ____________________
+Project Name / ID: ____________________
+Effective Date: __________ Term: __________
+Scope & Deliverables
+• Objectives: ____________________
+• Deliverables (with acceptance criteria):
+____________________ (criteria, tests)
+____________________ (criteria, tests)
+• Out of Scope: ____________________
+Timeline & Milestones
+Milestone | Date | Evidence of Completion | Fee
+--------- | ---- | --------------------- | ----
+M1 | ____ | ____ | CAD $____
+M2 | ____ | ____ | CAD $____
+Roles & Dependencies
+• Customer responsibilities (access, data, SMEs): __________
+• Provider team (roles): __________
+• Assumptions/Dependencies: __________
+Fees & Payment
+Fixed price / T&M (rate card): __________
+Invoicing schedule: __________
+Expenses: pre-approved only.
+Change Control
+Changes require a written change order with price/schedule impact.
+IP & License
+(choose one)
+☐ Assignment on payment.
+☐ License to use Deliverables; Provider retains background IP.
+Privacy & Security
+DPA applies if PI/PHI; Security tier: T__ (T1/T2/T3). Residency: ____. Sub-processors: ____.
+Acceptance
+Customer will accept/reject each Deliverable within 5 business days with reasons.
+Signatures
+Customer: __________ Name/Title: ______ Date: ____
+Provider: __________ Name/Title: ______ Date: ____
+— END SOW —

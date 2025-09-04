@@ -1,0 +1,131 @@
+Here’s a full, sign-ready refactor you can drop in as:
+
+`/documentation/contracts/Idea_Owner_Participation_Agreement.txt`
+
+---
+
+IDEA OWNER PARTICIPATION AGREEMENT
+(Inside the AliceSolutions Hub)
+Version: 1.0 • Governing Law: Ontario, Canada
+
+**Read first.** This agreement governs how an **Idea Owner** may disclose an idea for **evaluation inside the Hub**. It does **not** by itself create a partnership, joint venture, or obligation to build, fund, or commercialize anything. If an idea is selected, the parties will execute the appropriate **PCA/JDA**, **Equity/Vesting**, **SOW/MSA**, **Per-Project NDA Addendum (security-tiered)**, and, where applicable, a **DPA**.
+
+---
+
+## 1) Parties; Effective Date
+
+This Agreement is between **AliceSolutions Ventures Inc.** (“**AliceSolutions**”) and the submitting party identified at signature (“**Idea Owner**”). It takes effect on the date of last signature (the “**Effective Date**”).
+
+## 2) Definitions
+
+* **Idea**: The concept, problem statement, requirements, sketches, notes, demos, and all related materials disclosed by Idea Owner for evaluation (collectively, “**Idea Materials**”).
+* **Evaluation**: Review, scoping, diligence, feasibility analysis, and limited prototyping (if any) to determine whether to pursue the Idea.
+* **Project Agreements**: Any later contracts that govern build/commercialization (e.g., **Participant Collaboration Agreement (PCA)**, **Joint Development Agreement (JDA)**, **Statement of Work (SOW)** under an **MSA**, equity documents).
+* **Designated Systems**: AliceSolutions’ approved stack for confidential work (M365/Entra ID SSO + MFA, Intune + Defender, GitHub Org, approved CI/CD, secrets manager, Render.com, backups, DLP).
+
+## 3) Order of Precedence
+
+On the **same subject matter**, the following order controls: **Per-Project NDA Addendum (if issued)** → **this Agreement** → **Mutual NDA (Internal)** → **DPA** (for data terms only) → **Platform Participation Agreement (PPA)** → Hub policies.
+
+## 4) Submissions; Representations
+
+4.1 **Authority & Rights.** Idea Owner represents and warrants that it (a) owns, controls, or is duly licensed to disclose the Idea Materials; (b) disclosure does not breach any obligation to a third party (including employer, university, accelerator, or grant body); and (c) the materials do not knowingly infringe another’s IP.
+4.2 **No Harmful Content.** Idea Materials will be free of malware and will not include regulated/sensitive data unless pre-approved in writing and covered by the **DPA/PHIPA schedule** where applicable.
+4.3 **No Substitution for Filing.** Idea Owner remains responsible for any patent filings or other IP protection. Disclosure here is **not** a patent filing and may affect patentability if shared publicly by Idea Owner.
+
+## 5) Confidentiality & Security
+
+5.1 **NDA Applies.** The parties’ **Mutual NDA (Internal)** governs confidentiality for Idea Materials; if a **Per-Project NDA Addendum (security-tiered)** is issued, it applies to any hands-on review.
+5.2 **Designated Systems.** AliceSolutions will handle Idea Materials only in **Designated Systems** and will ensure reviewers are subject to confidentiality obligations.
+5.3 **Non-Exfiltration.** Neither party will export or store Idea Materials outside Designated Systems without written approval, and then only with equal or stronger protections.
+
+## 6) Evaluation License (Limited)
+
+6.1 **Grant.** Idea Owner grants AliceSolutions a **non-exclusive, worldwide, royalty-free, non-transferable (except to affiliates/contractors under NDA), revocable license** to **use, copy, display, and test** the Idea Materials **solely to evaluate** whether and how the Idea could be pursued in the Hub.
+6.2 **No Build Rights.** This license **does not** allow commercialization, public launch, or delivery to customers; such rights arise only under executed **Project Agreements**.
+6.3 **Contractors/Affiliates.** AliceSolutions may involve vetted contractors/affiliates for evaluation if they are bound by written confidentiality and security obligations at least as protective as this Agreement.
+
+## 7) Independent Development; No Exclusivity
+
+7.1 **Independent Development Safe Harbor.** AliceSolutions may already be, or later become, involved in concepts similar to the Idea. AliceSolutions will not use Idea Owner’s **Confidential Information** to develop a competing offering; however, **independent development** without use of such Confidential Information does not breach this Agreement.
+7.2 **No Exclusivity.** This Agreement does not grant exclusivity. Any exclusivity or right of first refusal must be expressly set out in later **Project Agreements**.
+
+## 8) No Obligation to Proceed; No Implied Compensation
+
+8.1 **Sole Discretion.** AliceSolutions has no obligation to pursue the Idea. Either party may end Evaluation at any time on written notice.
+8.2 **No Implied Payments.** Unless a **SOW** or other written agreement is executed, (a) AliceSolutions owes no fees for reviewing the Idea; and (b) Idea Owner owes no fees for submitting it.
+
+## 9) Selection & Next Steps
+
+If the Idea is selected for build/commercialization, the parties will promptly execute the relevant **Project Agreements** (e.g., **PCA/JDA**, **SOW/MSA**, equity/vesting). Until then, **no partnership, joint venture, IP assignment, revenue share, or employment** is created or implied.
+
+## 10) Intellectual Property
+
+10.1 **Background IP.** Each party retains all right, title, and interest in its **Background IP**.
+10.2 **Foreground IP.** Any IP created **during Evaluation** belongs to the creating party unless otherwise agreed in a signed **SOW/JDA**. Foreground IP generated **during build** will be governed by the executed **Project Agreements**.
+10.3 **Feedback.** Non-confidential feedback given by Idea Owner may be used to improve the Hub without obligation. Feedback expressly marked confidential is treated under the NDA.
+
+## 11) Data Protection & Privacy
+
+11.1 **DPA.** To the extent Idea Materials include **Personal Information**, the parties will execute and comply with the **Data Processing Addendum (DPA)** (PIPEDA/PHIPA baseline; GDPR/UK add-ons where needed).
+11.2 **Minimization.** Idea Owner agrees to **minimize** Personal Information in submissions and to avoid including any special category data unless pre-approved in writing.
+11.3 **Residency.** Default data residency is **Canada**; additional regions require Legal approval and entry in the sub-processor register.
+
+## 12) Non-Solicitation
+
+During Evaluation and for **12 months** thereafter, neither party will directly solicit the other’s employees or dedicated contractors **for work that would bypass the Hub process**. This does not prohibit general solicitations not targeted at the other party’s personnel.
+
+## 13) Term; Termination; Return/Deletion
+
+13.1 **Term.** This Agreement begins on the Effective Date and continues until (a) the parties sign Project Agreements; or (b) either party terminates Evaluation under §8.1.
+13.2 **Return/Deletion.** On termination, each party will promptly **return or delete** the other’s Confidential Information, except for (i) routine backups (held securely and purged per retention policy) and (ii) records needed to comply with law or enforce rights.
+13.3 **Exit Attestation.** Upon request, Idea Owner will sign a short **Exit Attestation** confirming return/deletion and cessation of use.
+
+## 14) Publicity
+
+No party may issue public statements about the Idea or the relationship without the other’s prior written consent, except as required by law (after giving reasonable notice to seek protective measures).
+
+## 15) Warranties; Disclaimers; Liability
+
+15.1 **Mutual Authority Warranty.** Each party warrants it has authority to enter and perform this Agreement.
+15.2 **Disclaimer.** **Except as expressly stated, all Idea Materials and Evaluation activities are provided “AS IS.”**
+15.3 **Limitation of Liability.** To the fullest extent permitted by law, neither party is liable for indirect, incidental, or consequential damages. Each party’s total direct liability under this Agreement is capped at **CAD \$5,000**, **except** for breaches of confidentiality, data protection violations, or willful misconduct.
+
+## 16) Indemnity (Third-Party IP Claims)
+
+Idea Owner will indemnify AliceSolutions against third-party claims that Idea Materials, as submitted, infringe IP rights—**excluding** claims arising from AliceSolutions’ modifications or combinations not supplied by Idea Owner. AliceSolutions will (a) notify promptly; (b) allow Idea Owner to control the defense; and (c) cooperate reasonably.
+
+## 17) Notices; E-Sign; Counterparts
+
+17.1 **Notices** may be delivered via the Hub and/or email addresses on the signature page.
+17.2 **E-Sign.** Electronic signatures and records are valid.
+17.3 **Counterparts.** This Agreement may be executed in counterparts, including PDF/e-signature copies.
+
+## 18) Assignment
+
+Neither party may assign this Agreement without the other’s consent, **except** to a successor (by merger, acquisition, or asset sale) that assumes all obligations. Any prohibited assignment is void.
+
+## 19) Governing Law; Disputes
+
+This Agreement is governed by the laws of **Ontario, Canada**. The parties submit to the **exclusive jurisdiction of the courts of Toronto, Ontario**. Before filing suit (other than for injunctive relief), the parties will attempt **good-faith resolution** through executive escalation.
+
+## 20) Survival; Entire Agreement; Amendments
+
+Sections **5 (Confidentiality & Security), 6 (Evaluation License) to the extent needed to wind-down, 7 (Independent Development), 10 (Intellectual Property), 11 (Data Protection), 12 (Non-Solicitation), 13.2–13.3 (Return/Deletion), 15 (Warranties/Disclaimers/Liability), 16 (Indemnity), 17–19 (Notices/Law)** survive termination. This is the **entire agreement** for evaluation of the Idea and may be amended only in a **signed writing** (including Hub click-accept, where permitted).
+
+---
+
+### SIGNATURES (E-SIGN PERMITTED)
+
+**Idea Owner**
+Legal Name (entity or individual): \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+Authorized Signatory: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_  Title: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+Email: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_  Date: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+Signature: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+
+**AliceSolutions Ventures Inc.**
+Authorized Signatory: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_  Title: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+Email: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_  Date: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+Signature: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+
+— END OF IDEA OWNER PARTICIPATION AGREEMENT —

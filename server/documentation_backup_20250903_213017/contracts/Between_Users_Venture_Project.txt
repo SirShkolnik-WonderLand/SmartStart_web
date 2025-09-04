@@ -1,0 +1,27 @@
+B) Between Users on the same venture/project (participant ↔ participant)
+Participant Collaboration Agreement (PCA)
+Who/When: Contributors who choose to co-build a stream together.
+Why: Roles, scope, decision rights, deliverables, acceptance, payment splits.
+Must-have: Governance (votes/tie-break), change control, dispute ladder, milestones.
+Capture: Roles per stream, milestone dates, % splits.
+Joint Development Agreement (JDA) (if co-creating core IP)
+Who/When: Two+ contributors pooling know-how.
+Why: Background vs Foreground IP; joint ownership or assignment to venture.
+Must-have: Licensing back; patent filing responsibility; OSS hygiene; confidentiality cross-reference.
+Capture: Background IP schedule; contribution logs.
+Contributor License Agreement (CLA) – Inbound
+Who/When: Anyone contributing code/docs/designs.
+Why: License/assign inbound rights cleanly to the venture.
+Must-have: Representations (right to contribute), license scope or assignment, moral-rights waiver/consent.
+Capture: Git handle, repo list, contribution type.
+Independent Contractor Agreement (peer-to-peer) (if one pays another)
+Who/When: Participants engaging each other directly under the Hub.
+Why: Statement of work, fees, timelines, acceptance; not employment.
+Must-have: Deliverables; IP outcome; confidentiality reference; indemnities; taxes responsibility.
+Capture: Rate, currency, payment schedule, SOW link.
+Data Sharing Agreement (DSA) (if PII/PHI shared)
+Who/When: Participant ↔ participant exchange of personal data.
+Why: Define controller/processor roles, security, and breach handling.
+Must-have: Purpose limitation; retention; sub-processor rules; cross-border.
+Capture: Data categories; lawful basis; residency.
+These sit on top of the platform NDA/PPA. Your Hub should auto-prompt the right one based on offer type and data classification of the project.

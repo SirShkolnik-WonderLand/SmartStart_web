@@ -1,0 +1,107 @@
+VULNERABILITY & PATCH MANAGEMENT POLICY
+AliceSolutions Ventures Inc. — Hub & Ventures
+Version: 1.0 • Owner: CISO • Effective: on publication
+
+0) PURPOSE & SCOPE
+Set mandatory practices and SLAs to discover, assess, remediate, verify, and report vulnerabilities and apply patches across code, dependencies, containers, operating systems, managed services, and third-party SaaS. Applies to all tiers (T0–T3); enforce HIGHEST tier present.
+
+0.1 REFERENCES
+• Security Controls Master (SC-40/41/45/46) • Secure SDLC Policy • Change/Release Policy
+• Logging & Monitoring Standard • Incident Response Plan • OSS Policy
+
+1) CLASSIFICATION & SOURCES
+1.1 Severity basis: CVSS v3.x base score + exploitability, exposure, data tier. Override upward if threat intel shows active exploitation.
+1.2 Sources:
+• SAST on PRs • Dependency/SBOM scanners (daily) • Container/IaC scans (nightly)
+• Cloud/managed service advisories • OS/Endpoint (Intune/Defender) • Bug bounty/Responsible Disclosure
+• Secret scanning (treated as CRITICAL) • CI/CD misconfiguration findings
+
+2) REMEDIATION SLAS (MAX TIME TO REMEDIATE, MTR)
+(“Working days” unless a Sev-1 incident—then ASAP per IRP. T3 uses the strictest edge.)
+
+| Severity                     | T1          | T2          | T3             |
+|-----------------------------|-------------|-------------|----------------|
+| **Critical** (CVSS ≥ 9.0 or actively exploited; leaked secret; unsigned artifact to prod) | 7 days  | 3 days  | 24–72 hours |
+| **High** (CVSS 7.0–8.9)     | 14 days     | 7 days      | 3 days         |
+| **Medium** (CVSS 4.0–6.9)   | 30 days     | 21 days     | 14 days        |
+| **Low** (CVSS < 4.0)        | 90 days     | 60 days     | 30 days        |
+
+Missing patches on endpoints/serverless base images follow the same table.
+
+3) SCAN CADENCE
+• SAST: per PR and on main. Block merge on Critical/High without approved waiver.  
+• SCA/Dependencies: daily for release branches; alert on newly disclosed vulns.  
+• Container/IaC: nightly scans; rebuild base images weekly (T2) / twice weekly (T3).  
+• Runtime/Managed Services: check provider advisories at least weekly; subscribe to Render.com/GitHub/MSRC feeds.  
+• Endpoint/OS: Intune/Defender compliance with emergency patches out-of-band; routine installs weekly (T2) / within 72h (T3).
+
+4) PROCESS (END-TO-END)
+4.1 Identify → Ticket: Auto-create `SEC-VULN-####` with finding details, severity, affected assets, tier, owner, due date per SLA.
+4.2 Assess: Validate exploitability, exposure (internet-facing?), data tier impact; group duplicates; decide fix vs. mitigate.
+4.3 Remediate: Patch/upgrade, code change, config change, or compensating control. For secrets exposure: rotate immediately (link to Secrets Policy).
+4.4 Verify: Re-scan shows closed; exploit attempt no longer succeeds; tests pass; change record logged.
+4.5 Deploy: Through controlled CI/CD with approvals; canary where feasible; rollback plan documented.
+4.6 Close: Ticket closed with proof (scan artifact, logs, commit refs). Link to release.
+
+5) EMERGENCY PATCHING (ZERO-DAY)
+• CISO may authorize bypass of normal change windows for zero-days with active exploitation.  
+• Perform rapid fix in staging, canary to small % of traffic, then full rollout.  
+• PIR required within 5 business days to refine playbooks and preventive controls.
+
+6) EXPOSURE MINIMIZATION & PREVENTION
+• Pin dependencies; use allow-listed base images; renovate/bot PRs for updates.  
+• Enforce branch protection and required reviews; CODEOWNERS for sensitive paths.  
+• Block unsigned/undigested artifacts from prod; verify signatures at deploy.  
+• Default-deny network paths; minimum scopes for cloud roles and tokens.
+
+7) THIRD-PARTY & SAAS
+• Track sub-processor advisories; evaluate impact within 48h of advisory; document outcome in Vendor Risk register.  
+• If vendor SLA is slower than our MTR and risk is high, apply compensating controls (e.g., IP restrictions, revocation of tokens) or consider service isolation.
+
+8) WAIVERS / RISK ACCEPTANCE
+• Only CISO may approve a **time-boxed waiver** with justification, compensating controls, owner, and expiry (≤ 30 days Critical/High; ≤ 60 days Medium).  
+• Stored in `security/exception_log_template.csv` and linked to the vuln ticket.  
+• Auto-remind 7/3/1 days pre-expiry; revoke access/disable feature if overdue.
+
+9) EOL & UNSUPPORTED SOFTWARE
+• Prohibited in production. Migrate before vendor EOL dates.  
+• Findings against EOL components are treated as **High** minimum; **Critical** if internet-facing.
+
+10) METRICS & REPORTING (WEEKLY/QUARTERLY)
+• % vulns within SLA by severity & tier • Mean/median MTR by severity  
+• Open backlog by age bucket • # emergency patches & time to deploy  
+• Recidivism (vulns reintroduced) • Exposure window (disclosure→fix)  
+• Endpoint patch compliance (by OS) • Container base image age p95
+
+11) EVIDENCE FOR AUDIT
+• Scanner dashboards/exports; CI logs; release approvals; signed artifacts; exception log; endpoint compliance reports; advisory reviews; PIRs for zero-days.
+
+12) ROLES & OWNERSHIP
+• SRE Lead: platform scans, container/IaC, managed services patching.  
+• Eng Leads: app code, dependencies, build pipelines, library upgrades.  
+• Security.Admin: severity validation, SLA tracking, detections for exploitation attempts.  
+• Project.Owner: prioritization & scheduling; ensures fixes meet product commitments.
+
+13) INTEGRATIONS & AUTOMATION
+• PR checks fail on Critical/High unless waiver label (`security-waiver-approved`) present.  
+• Bot creates upgrade PRs (version bumps) with changelog link & test plan template.  
+• CI blocks deploy if base image older than 30 days (T2) / 14 days (T3).  
+• SIEM correlation between exploitation IOCs and open vuln tickets → auto-escalate to IRP.
+
+14) CHANGE CONTROL
+• All production fixes follow Change/Release Policy: risk rating, approvals, rollback, and post-deploy verification.
+
+15) VERSIONING & REVIEW
+• Changes via PR; CISO approval. Next review: 12 months or after a Sev-1 exploitation incident.
+
+APPENDIX A — SEVERITY GUIDANCE (examples)
+• Critical: RCE on internet-facing service; leaked prod secrets; supply-chain compromise; unsigned artifact in prod; auth bypass.  
+• High: Priv-esc, SSRF with metadata access, SQLi needing auth, critical library with public PoC.  
+• Medium: XSS requiring uncommon preconditions; moderate-impact misconfig.  
+• Low: Informational leaks without sensitive data, best-practice gaps without exploit path.
+
+APPENDIX B — PATCH WINDOWS (ENDPOINTS)
+• T1: weekly; T2: weekly with emergency out-of-band; T3: within 24–72h for criticals, otherwise weekly; reboot required prompts within 24h (T3) / 72h (T2).
+
+APPENDIX C — SBOM
+• Generate SBOM (SPDX or CycloneDX) on each release; archive with artifact; diff SBOMs to surface new vulns quickly.

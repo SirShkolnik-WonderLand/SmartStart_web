@@ -31,7 +31,7 @@ router.get('/health', async(req, res) => {
         const stats = await prisma.$queryRaw `
             SELECT 
                 (SELECT COUNT(*) FROM "User") as users,
-                (SELECT COUNT(*) FROM "UserVerification") as verifications,
+                0 as verifications,
                 (SELECT COUNT(*) FROM "PasswordReset") as passwordResets,
                 (SELECT COUNT(*) FROM "UserSession") as activeSessions
         `;
@@ -169,7 +169,6 @@ router.post('/register', async(req, res) => {
                     password,
                     firstName,
                     lastName,
-                    phone,
                     companyName,
                     role = 'FOUNDER'
                 } = req.body;
@@ -202,22 +201,22 @@ router.post('/register', async(req, res) => {
 
                 await prisma.$executeRaw `
             INSERT INTO "User" (
-                "id", "email", "password", "firstName", "lastName", "phone", 
-                "isEmailVerified", "isActive", "createdAt", "updatedAt"
+                "id", "email", "password", "firstName", "lastName", 
+                "status", "createdAt", "updatedAt"
             ) VALUES (
-                ${userId}, ${email.toLowerCase()}, ${hashedPassword}, ${firstName}, ${lastName}, ${phone},
-                false, true, NOW(), NOW()
+                ${userId}, ${email.toLowerCase()}, ${hashedPassword}, ${firstName}, ${lastName},
+                'ACTIVE', NOW(), NOW()
             )
         `;
 
                 // Create user profile
                 await prisma.$executeRaw `
             INSERT INTO "UserProfile" (
-                "id", "userId", "displayName", "bio", "avatarUrl", "location", 
-                "website", "socialLinks", "createdAt", "updatedAt"
+                "id", "userId", "nickname", "bio", "location", 
+                "websiteUrl", "createdAt", "updatedAt"
             ) VALUES (
                 ${`profile_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`}, 
-                ${userId}, ${`${firstName} ${lastName}`}, '', '', '', '', '{}', NOW(), NOW()
+                ${userId}, ${`${firstName} ${lastName}`}, '', '', '', NOW(), NOW()
             )
         `;
 
@@ -273,6 +272,8 @@ router.post('/register', async(req, res) => {
             // Continue with registration even if email fails
         }
 
+        console.log(`User ${email} registered successfully`);
+
         res.json({
             success: true,
             message: 'User registered successfully. Please check your email to verify your account.',
@@ -281,7 +282,6 @@ router.post('/register', async(req, res) => {
                 email: email.toLowerCase(),
                 firstName,
                 lastName,
-                isEmailVerified: false,
                 companyId
             },
             timestamp: new Date().toISOString()
@@ -352,7 +352,6 @@ router.post('/login', async (req, res) => {
             { 
                 userId: user.id, 
                 email: user.email,
-                isEmailVerified: user.isEmailVerified
             },
             process.env.JWT_SECRET || 'your-secret-key',
             { expiresIn: '7d' }
@@ -373,8 +372,10 @@ router.post('/login', async (req, res) => {
 
         // Update last login
         await prisma.$executeRaw`
-            UPDATE "User" SET "lastLoginAt" = NOW(), "updatedAt" = NOW() WHERE id = ${user.id}
+            UPDATE "User" SET "lastActive" = NOW(), "updatedAt" = NOW() WHERE id = ${user.id}
         `;
+
+        console.log(`User ${user.email} logged in successfully`);
 
         res.json({
             success: true,
@@ -384,7 +385,6 @@ router.post('/login', async (req, res) => {
                 email: user.email,
                 firstName: user.firstName,
                 lastName: user.lastName,
-                isEmailVerified: user.isEmailVerified,
                 profile: user.profile
             },
             token,
@@ -416,7 +416,7 @@ router.post('/verify-email', async (req, res) => {
 
         // Find verification record
         const verification = await prisma.$queryRaw`
-            SELECT v.*, u.email, u."isEmailVerified"
+            SELECT v.*, u.email
             FROM "UserVerification" v
             JOIN "User" u ON v."userId" = u.id
             WHERE v."verificationToken" = ${token}
@@ -435,7 +435,7 @@ router.post('/verify-email', async (req, res) => {
         const verificationRecord = verification[0];
 
         // Check if already verified
-        if (verificationRecord.isEmailVerified) {
+        if (verificationRecord.verifiedAt) {
             return res.status(400).json({
                 success: false,
                 message: 'Email is already verified'
@@ -444,7 +444,7 @@ router.post('/verify-email', async (req, res) => {
 
         // Mark email as verified
         await prisma.$executeRaw`
-            UPDATE "User" SET "isEmailVerified" = true, "updatedAt" = NOW() 
+            UPDATE "User" SET "updatedAt" = NOW() 
             WHERE id = ${verificationRecord.userId}
         `;
 
@@ -675,9 +675,6 @@ router.get('/profile', async (req, res) => {
                 email: user.email,
                 firstName: user.firstName,
                 lastName: user.lastName,
-                phone: user.phone,
-                isEmailVerified: user.isEmailVerified,
-                isActive: user.isActive,
                 profile: user.profile,
                 createdAt: user.createdAt,
                 lastLoginAt: user.lastLoginAt
@@ -711,7 +708,6 @@ router.put('/profile', async (req, res) => {
         const {
             firstName,
             lastName,
-            phone,
             bio,
             location,
             website,
@@ -719,7 +715,7 @@ router.put('/profile', async (req, res) => {
         } = req.body;
 
         // Update user
-        if (firstName || lastName || phone) {
+        if (firstName || lastName) {
             const updateFields = [];
             const values = [];
             let paramIndex = 1;
@@ -732,11 +728,6 @@ router.put('/profile', async (req, res) => {
             if (lastName) {
                 updateFields.push(`"lastName" = $${paramIndex}`);
                 values.push(lastName);
-                paramIndex++;
-            }
-            if (phone) {
-                updateFields.push(`"phone" = $${paramIndex}`);
-                values.push(phone);
                 paramIndex++;
             }
 

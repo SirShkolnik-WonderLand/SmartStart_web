@@ -77,9 +77,9 @@ app.use('/api/advanced-contracts', advancedContractsApiRoutes);
 const contractAutoIssuanceApiRoutes = require('./routes/contract-auto-issuance-api');
 app.use('/api/contract-auto-issuance', contractAutoIssuanceApiRoutes);
 
-// Mount documents API routes (contract templates)
+// Mount documents API routes
 const documentsApiRoutes = require('./routes/documents-api');
-app.use('/api/contract-templates', documentsApiRoutes);
+app.use('/api/documents', documentsApiRoutes);
 
 const systemInstructionsApiRoutes = require('./routes/system-instructions-api');
 app.use('/api/system', systemInstructionsApiRoutes);
@@ -116,8 +116,36 @@ app.use('/api/tasks', taskManagementApiRoutes);
 const fundingPipelineApiRoutes = require('./routes/funding-pipeline-api');
 app.use('/api/funding', fundingPipelineApiRoutes);
 
+// Mount new Subscription & Billing APIs
+const subscriptionApiRoutes = require('./routes/subscription-api');
+app.use('/api/subscriptions', subscriptionApiRoutes);
+
+const billingApiRoutes = require('./routes/billing-api');
+app.use('/api/billing', billingApiRoutes);
+
+// Mount Platform Legal Pack APIs
+const legalPackApiRoutes = require('./routes/legal-pack-api');
+app.use('/api/legal-pack', legalPackApiRoutes);
+
+// Mount User Journey State Management APIs
+const journeyApiRoutes = require('./routes/journey-api');
+app.use('/api/journey', journeyApiRoutes);
+
+// Mount RBAC APIs
+const rbacApiRoutes = require('./routes/rbac-api');
+app.use('/api/rbac', rbacApiRoutes);
+
+// Mount Journey State Management APIs
+const journeyStateApiRoutes = require('./routes/journey-state-api');
+app.use('/api/journey-state', journeyStateApiRoutes);
+
 console.log('✅ User Journey APIs mounted successfully');
 console.log('✅ Role-Based Business Systems mounted successfully');
+console.log('✅ Subscription & Billing APIs mounted successfully');
+console.log('✅ Platform Legal Pack APIs mounted successfully');
+console.log('✅ User Journey State Management APIs mounted successfully');
+console.log('✅ RBAC APIs mounted successfully');
+console.log('✅ Journey State Management APIs mounted successfully');
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -133,7 +161,7 @@ app.use('*', (req, res) => {
     res.status(404).json({
         error: 'Not found',
         message: `Route ${req.originalUrl} not found`,
-        availableRoutes: ['/health', '/api/cli/*', '/api/v1/*', '/api/users/*', '/api/companies/*', '/api/teams/*']
+        availableRoutes: ['/health', '/api/cli/*', '/api/v1/*', '/api/users/*', '/api/companies/*', '/api/teams/*', '/api/subscriptions/*', '/api/billing/*', '/api/legal-pack/*', '/api/journey/*']
     });
 });
 
@@ -143,7 +171,7 @@ app.listen(PORT, () => {
     console.log(`🚀 SmartStart Platform Server running on port ${PORT}`);
     console.log(`📡 CLI API available at /api/cli`);
     console.log(`🔐 Security middleware enabled`);
-    console.log(`📊 All 7 systems operational`);
+    console.log(`📊 All 9 systems operational`);
     console.log(`🔄 CLI System Version: 2.0.1`);
 });
 

@@ -1,0 +1,17 @@
+Signing Flow & Gating (recommended order)
+Registration Gate
+PPA → 2. E-Signature Consent → 3. Privacy Notice + CASL (opt-in) →
+Payment Terms → 5. Mutual NDA → 6. Security & Tooling Acknowledgment → Member Activated
+Project Discovery Gate
+7. Per-Project NDA Addendum (upon shortlist) → 8. DPA/DSA if needed → 9. CLA (for code) → Provisioning
+Studio/Venture Gate (Idea Owner)
+10. Idea Submission Agreement → 11. Studio/Incubation Agreement → 12. IP Assignment/License →
+13. Equity & Vesting → 14. Shareholders’ Agreement → NewCo Live → MSAs/SOWs as needed.
+Minimal Field Checklist (to wire your forms/CLI)
+Identity: Legal entity, signatory name/title, email, jurisdiction.
+Privacy: Data categories handled; residency preference; DPO/contact.
+Security: Device encryption (Y/N), MFA (Y/N), EDR (Y/N), VPN (Y/N).
+Billing: Address, tax ID, payment token, plan.
+IP: Background IP list/URLs; OSS components policy acceptance.
+Project: Role, scope, deliverables, classification tier, tools requested.
+Consents: E-signature, CASL marketing, privacy notice read, policy acknowledgments.

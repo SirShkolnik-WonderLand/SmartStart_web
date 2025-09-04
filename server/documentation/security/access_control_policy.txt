@@ -1,0 +1,99 @@
+ACCESS CONTROL POLICY (ACP)
+AliceSolutions Ventures Inc. — Hub & Ventures
+Version: 1.0 • Owner: CISO • Effective: on publication
+
+0) PURPOSE & SCOPE
+Define the rules for identity, authentication, authorization, and access review for all systems used by the Hub and ventures (M365/Entra ID, Intune/Defender, GitHub Org, CI/CD, Render.com, DB/storage, Secrets Manager, Hub). Applies to all staff, contractors, and project participants. Enforce the HIGHEST data tier (T0–T3) present.
+
+0.1 REFERENCES
+• Security Controls Master (SC-20/21/22/31) • Logging & Monitoring Standard
+• BYOD/Endpoint Policy • Incident Response Plan • Data Classification Standard
+• Standardized Tooling & Hosting Compliance Addendum (STHCA) • DPA / NDAs
+
+1) PRINCIPLES
+• Least Privilege • Need-to-Know • Segregation of Duties • Just-in-Time (JIT) elevation
+• Time-boxed access • Centralized SSO (Entra ID) • MFA everywhere • No shared accounts
+
+2) ROLES (RACI)
+• CISO (A): owner of policy & exceptions; approves privileged models.
+• Security.Admin (R): Entra/CA/Conditional Access, PIM/JIT, reviews.
+• Org.Owner (A): approves org-wide role changes; break-glass custody.
+• Project.Owner (R): approves project access; runs quarterly reviews.
+• SRE Lead (R): CI/CD/Render/Secrets roles; service accounts.
+• Eng Leads (R): repo roles, CODEOWNERS; review write/prod access.
+• Legal/Admin (C): residency and contractual constraints.
+• All Users (R): comply; report anomalies immediately.
+
+3) IDENTITY & AUTHENTICATION
+3.1 Identity Provider (IdP): Entra ID is authoritative for human users; SSO is enforced for GitHub, Hub, CI/CD, and other SaaS where supported.
+3.2 MFA: Required for all accounts; T3 requires phishing-resistant MFA (FIDO2 security keys). CA blocks legacy/basic auth.
+3.3 Passwords: Where still used, length ≥ 14, no rotation without signal, block common passwords, risk-based step-up.
+3.4 Break-glass Accounts: Max 2 tenant-wide emergency accounts; random vault-stored passwords, FIDO2 on; monthly test login; monitored by SIEM; usage = Sev-1.
+3.5 Shared Accounts: Prohibited. Service accounts only (see §5) with named ownership.
+
+4) AUTHORIZATION MODEL
+4.1 RBAC Groups: Access granted via Entra ID groups mapped to app roles (e.g., “proj-<slug>-reader”, “proj-<slug>-writer”, “prod-deploy-approver”). Direct user-to-resource grants are prohibited.
+4.2 Time-boxed Grants (JIT/PIM): Admin/privileged roles are eligible for elevation only via PIM/JIT with:
+   • Business justification text • Max duration: T1=8h, T2=4h, T3=2h
+   • Approval: Security.Admin or Project.Owner for project-scoped roles
+4.3 Production Access: Command/console access to prod requires:
+   • Named role (“prod-operator”), PIM elevation, ticket reference, session logging.
+   • Screen recording is prohibited unless in secured jump host with banners.
+4.4 Segregation of Duties: A single user cannot both approve and deploy a change to prod. At least two reviewers for protected branches and release gates.
+
+5) SERVICE ACCOUNTS & NON-HUMAN IDENTITIES
+5.1 Creation: Ticket + owner + purpose + scope + expiry. Secrets live ONLY in Secrets Manager; minimum scopes; rotated per tier.
+5.2 Credentials: Prefer workload identities/OIDC short-lived tokens. If key needed: rotate T1=90d, T2=30d, T3=14–30d or on signal.
+5.3 Monitoring: All service accounts are tagged; anomalous use alerts enabled; disable if owner leaves or ticket closes.
+
+6) JOINER–MOVER–LEAVER (JML)
+6.1 Joiner: Requires signed PPA/NDA/DPA (as applicable), PTSA seat active, device compliant (Intune + Defender), role set via RBAC groups.
+6.2 Mover: Role change via ticket; remove old access the same day; update CODEOWNERS and CI/CD permissions.
+6.3 Leaver: Disable account within 4 hours of notice (immediately for cause); revoke tokens, remove groups, rotate secrets touched; collect return/delete attestations.
+
+7) ACCESS REVIEWS (QUARTERLY)
+7.1 Scope: Entra roles/groups; GitHub org & repo roles; CI/CD environment approvers; Render.com roles; DB/admin roles; Secrets Manager policies; M365 shares.
+7.2 Tiers: T1 review ≤ 90d; T2 ≤ 60d; T3 ≤ 30d for privileged sets.
+7.3 Process: Hub generates review tasks per resource owner. Owners attest “Keep/Remove/Adjust” with justification; removals executed within 5 business days.
+7.4 Evidence: Exported reports, signed attestations, removal tickets; stored under `/server/AccessReviews/YYYY-QX/`.
+
+8) CONDITIONAL ACCESS (CA)
+8.1 Baselines: Block legacy auth; require MFA; block high-risk sign-ins; require compliant devices for T2/T3; geofencing as needed.
+8.2 Exceptions: Time-boxed ≤ 30 days; tracked in Exception Log with mitigations (e.g., VDI).
+
+9) SOURCE CONTROL & CI/CD
+9.1 GitHub Org: SSO enforced; branch protection (status checks, required reviews, linear history) on default and release branches; secret scanning on; Dependabot on.
+9.2 CODEOWNERS: Required for protected files; changes require two approvals.
+9.3 CI/CD: Environment protection with manual approvers; prod deploys require change ticket and approvals; runners are least-privilege; no long-lived secrets in pipelines.
+
+10) DATA & OBJECT PERMISSIONS
+10.1 Storage/DB: Use role-based DB accounts; no shared “admin”; schema changes only via migrations and change records.
+10.2 M365: Disable external auto-forward; sharing defaults to internal; external shares require expiration and owner approval.
+
+11) MONITORING & ALERTS (MINIMUM)
+• New privileged role assignment (Sev-2) • SSO enforcement disabled (Sev-1)
+• Secret scanning “valid” (Sev-1) • Conditional Access policy change (Sev-2)
+• Mailbox forwarding rule created (Sev-2) • Break-glass sign-in (Sev-1)
+
+12) PHYSICAL & REMOTE
+• All access is remote via SSO; no local admin on corporate devices by default.
+• T3: VPN or approved private access path to management planes; no public Wi-Fi without VPN.
+
+13) EXCEPTIONS
+• Request via Hub form: scope, risk, compensating controls, owner, expiry (≤ 90 days).
+• Approvals: CISO (always), Legal if residency/contractual; auto-remind 7/3/1 days pre-expiry; revoke on expiry.
+
+14) ENFORCEMENT
+• Violations may trigger suspension, removal from projects, or termination of access; severe/intentional violations escalate under IRP and HR process.
+
+15) AUDIT EVIDENCE
+• Access review exports; PIM elevation logs; CA policies; GitHub org settings; CI/CD env protection; secret scanning status; mailbox sharing report; exception log.
+
+16) VERSIONING & REVIEW
+• Changes via PR; CISO approval. Next review: 12 months or after Sev-1.
+
+APPENDIX A — TIER MATRIX (summary)
+• JIT duration: T1 8h / T2 4h / T3 2h
+• Access review: T1 90d / T2 60d / T3 30d
+• Device requirement: T1 encrypted; T2 compliant (Intune+Defender); T3 compliant + VPN/HW keys
+• Printing/forwarding: T2 approval-only; T3 prohibited

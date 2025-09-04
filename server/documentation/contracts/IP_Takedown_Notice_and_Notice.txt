@@ -1,0 +1,178 @@
+
+IP TAKEDOWN (NOTICE-AND-NOTICE) POLICY & FORMS
+AliceSolutions Ventures Inc. — Hub & Ventures
+Version: 1.0 • Jurisdiction: Ontario, Canada
+
+> **Purpose.** This Policy describes how AliceSolutions handles copyright **notices of claimed infringement** under Canada’s **Notice-and-Notice** regime (Copyright Act ss. 41.25–41.27). We forward compliant notices “**as soon as feasible**,” retain subscriber-identifying records for **6 months** (or **1 year** if the claimant starts proceedings and notifies us), and communicate with the involved user(s). We may remove/disable access in clear cases or for repeat/serious violations under our Terms. ([Justice Laws][1])
+
+> **Not legal advice.** This document is operational guidance for the Hub. It is not legal advice.
+
+---
+
+# A) POLICY SUMMARY
+
+1. **We forward compliant notices.** When we receive a notice that **meets the statutory content requirements** and **excludes prohibited content**, we forward it to the user responsible for the identified location and inform the complainant that we did so. “As soon as feasible.” ([Justice Laws][2])
+2. **We retain records.** We keep records enabling identification of the user **for 6 months from receipt** of the notice, or **1 year** if the complainant commences proceedings and notifies us before the 6-month period ends. ([Justice Laws][1])
+3. **We may act on content.** Although Canadian law doesn’t mandate DMCA-style takedown, we **may** remove/disable access to clearly infringing or high-risk materials (e.g., public repo binaries/assets) and for **repeat infringers** under our Terms and Acceptable Use Policy. See Section C.
+4. **We reject non-compliant notices.** If a notice **includes settlement demands, payment requests, personal-info demands, or links to any of these**, we treat it as **non-compliant** and will not forward it; we’ll reply with a deficiency explanation. ([Justice Laws][2])
+5. **Fees.** We **do not charge** to forward notices unless a regulation sets a maximum fee. If **no maximum is fixed by regulation, no fee may be charged**. ([Justice Laws][1])
+6. **Privacy.** We **do not disclose** subscriber identity to complainants **without a valid court order or legal requirement**.
+7. **Records & audit.** We maintain a **Takedown Log** (notice, counter-notice, actions, timestamps, decision) for audit/compliance.
+
+(Background on Notice-and-Notice: Government of Canada overview. ([Canada.ca][3], [ISED Canada][4]))
+
+---
+
+# B) HOW TO SEND A NOTICE (COMPLAINANTS)
+
+**Send to:** `ip@alicesolutions.example` (preferred) or via the Hub IP portal.
+
+Your **Notice of Claimed Infringement** **must** be **in writing** and include **all** of the following statutory items (Copyright Act s. 41.25(2)), and **must not** include prohibited content (s. 41.25(3)):
+
+**Required content (ALL):**
+
+1. Your **name and address** (and any other contact particulars).
+2. Identification of the **copyrighted work/subject-matter**.
+3. A statement of your **interest/right** in the work.
+4. **Location data** for the **electronic location** (e.g., precise URL, repository path, file hash).
+5. The **infringement alleged** (what act and how).
+6. The **date and time** of the alleged infringement. ([Justice Laws][2])
+
+**Prohibited content (ANY = non-compliant):**
+• **Settlement offers**, **requests/demands for payment**, **demands for personal information**, or **links** to any of the foregoing. ([Justice Laws][2])
+
+We **acknowledge** receipt and will forward compliant notices to the identified user “as soon as feasible” and inform you of forwarding. ([Justice Laws][1])
+
+---
+
+# C) WHAT WE DO UPON RECEIPT
+
+1. **Initial check.** Verify the notice satisfies s. 41.25(2) and contains none of s. 41.25(3) **prohibited** content. Non-compliant notices are rejected with a deficiency reply and instructions to resubmit. ([Justice Laws][2])
+2. **Forwarding.** For compliant notices, we **forward electronically** to the user responsible for the location **as soon as feasible**, and inform the complainant of forwarding or reasons it was not possible. ([Justice Laws][1])
+3. **Record retention.** We retain subscriber-identifying records for **6 months**, or **1 year** if the complainant starts proceedings and notifies us before the 6 months end. ([Justice Laws][1])
+4. **Evaluate content action (platform governance).**
+
+   * **Clear cases** (e.g., unlicensed distribution of third-party binaries, obvious piracy in public artifacts): we **may** disable access/remove while the dispute is addressed.
+   * **Ambiguous disputes** (e.g., fair-dealing, license interpretation): we generally **do not remove** unless there is a court order, legal risk, or Terms/Policy breach beyond copyright.
+   * **Repeat/serious violations:** we may **suspend access** and notify project owners; repeated confirmed infringements can lead to account termination under our Terms.
+5. **Statutory damages against intermediaries.** A claimant’s sole remedy for our failure to perform forwarding/retention obligations is **statutory damages** between **\$5,000–\$10,000** (subject to regulation). ([Justice Laws][1])
+
+---
+
+# D) COUNTER-NOTICE (FOR USERS WHO RECEIVE A NOTICE)
+
+If you receive a forwarded notice and **disagree**, submit a **Counter-Notice** to `ip@alicesolutions.example` containing:
+
+1. Your **contact information**;
+2. Identification of the **material** and **location**;
+3. A statement **under penalty of perjury** that you **believe in good faith** the material was **misidentified**, **authorized**, or **lawful**;
+4. Your **signature** (electronic accepted).
+
+We will **forward** your Counter-Notice to the complainant. At our discretion, and where the facts/law support it, we **may restore** materials that aren’t clearly infringing, especially for ambiguous or fair-dealing scenarios.
+
+---
+
+# E) PRIVACY, DATA, AND DISCLOSURE
+
+• We **do not** disclose subscriber identity to complainants **without a court order** or other legal requirement.
+• We maintain a **Takedown Log** with notice, counter-notice, actions, timestamps, and outcomes.
+• Subscriber records retained under Notice-and-Notice are kept **securely** and purged per legal timelines (6 months/1 year, as applicable). ([Justice Laws][1])
+• Personal information is processed under our **Privacy Notice** and, where we act as Processor, under the **DPA**.
+
+---
+
+# F) ABUSE & MISUSE
+
+Knowingly **false notices**, inclusion of **prohibited content** (e.g., settlement demands), or abuse of the process may lead to **rejection**, **sanctions** under our Terms, and/or **reporting** to appropriate authorities. ([Justice Laws][2])
+
+---
+
+# G) CONTACT
+
+**IP Notices & Counter-Notices:** `ip@alicesolutions.example`
+**Legal/Privacy:** `legal@…` / `privacy@…`
+**Mailing:** \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ (Toronto, ON)
+
+---
+
+## APPENDIX 1 — NOTICE OF CLAIMED INFRINGEMENT (TEMPLATE)
+
+> Use this exact format to comply with s. 41.25(2). Do **not** include settlement demands, payment requests, or links to them (s. 41.25(3)).
+
+**To:** AliceSolutions IP Agent — `ip@alicesolutions.example`
+**From (Claimant):**
+• Legal name: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+• Address: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+• Email/Phone: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+
+**Work/Subject-matter Identified:** \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+**Claimant’s Rights/Interest:** \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+**Location Data (precise):** URL(s) \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ / Repo path(s) \_\_\_\_\_\_\_\_\_\_\_\_\_\_ / Commit/Tag/Hash \_\_\_\_\_\_\_\_\_\_
+**Claimed Infringement:** \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+**Date/Time of Alleged Infringement:** \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ (with timezone)
+
+**Statements:**
+• I am the owner/rightsholder or authorized to act on behalf of the owner.
+• The information in this notice is accurate.
+• This notice **does not** contain settlement offers, payment or personal-info demands, or links to such content.
+
+**Signature:** \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_  **Date:** \_\_\_\_\_\_\_\_\_\_\_\_  (electronic accepted)
+
+(Statutory content & prohibitions summarized from Copyright Act s. 41.25(2)–(3). ([Justice Laws][2]))
+
+---
+
+## APPENDIX 2 — COUNTER-NOTICE (TEMPLATE)
+
+**To:** AliceSolutions IP Agent — `ip@alicesolutions.example`
+**From (User/Project Owner):**
+• Legal name: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+• Address: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+• Email/Phone: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+• Account/Org/Repo: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+
+**Material & Location Identified in the Notice:** \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+**Explanation (check all that apply):**
+☐ Good-faith belief the material was **misidentified**.
+☐ Material is **authorized** (license, permission, or own work).
+☐ Use qualifies as **fair dealing** or other **exception**.
+☐ Other (explain): \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+
+**Statement (required):**
+“I declare **under penalty of perjury** that the information provided is accurate and that I have a **good-faith belief** the material identified above is not infringing for the reasons stated.”
+
+**Signature:** \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_  **Date:** \_\_\_\_\_\_\_\_\_\_\_\_  (electronic accepted)
+
+---
+
+## APPENDIX 3 — INTERNAL RUNBOOK (OPERATIONS)
+
+**Trigger:** Inbound email to `ip@…` or portal intake → Ticket opened (severity based on exposure).
+
+**Steps:**
+
+1. **Validate** statutory elements & check for prohibited content. If **non-compliant**, reply with deficiency; **do not forward**. ([Justice Laws][2])
+2. If **compliant**:
+
+   * **Forward** to user **asap**, include original content; notify complainant of forwarding / or reason forwarding wasn’t possible. ([Justice Laws][1])
+   * **Record retention clock**: set **6-month** retention; if claimant serves/commences proceedings and **notifies us within 6 months**, extend to **1 year**. ([Justice Laws][1])
+3. **Risk assessment:** public exposure? binary/assets? licensed media? Decide **disable/remove** where appropriate; notify project owner.
+4. **Repeat-infringer review:** apply Terms; escalate for suspension if pattern persists.
+5. **Closeout:** update **Takedown Log**, attach evidence, timestamps, and any restoration decision.
+
+**KPIs & Audit:** time-to-forward, time-to-acknowledge, retention flags, recurrence.
+
+---
+
+### Key Legal Sources (for your records)
+
+• **Content & prohibitions of notices** — Copyright Act **s. 41.25(2)–(3)**. ([Justice Laws][2])
+• **Forwarding & retention; fees; statutory damages** — **s. 41.26(1)–(3)**. ([Justice Laws][1])
+• **Government overview of Notice-and-Notice** — Canada.ca / ISED pages. ([Canada.ca][3], [ISED Canada][4])
+
+— END IP TAKEDOWN (NOTICE-AND-NOTICE) POLICY & FORMS —
+
+[1]: https://laws-lois.justice.gc.ca/eng/acts/c-42/page-14.html "Copyright Act"
+[2]: https://laws-lois.justice.gc.ca/eng/acts/c-42/section-41.25.html "Copyright Act"
+[3]: https://www.canada.ca/en/news/archive/2014/06/notice-notice-regime.html?utm_source=chatgpt.com "Notice and Notice Regime - Canada.ca"
+[4]: https://ised-isde.canada.ca/site/office-consumer-affairs/en/connected-consumer/notices-canadian-internet-subscribers?utm_source=chatgpt.com "Notices to Canadian Internet subscribers"

@@ -1,0 +1,189 @@
+Great—going one-at-a-time. Here’s a **full, sign-ready**:
+
+`/documentation/contracts/Participant_Collaboration_Agreement_(PCA).txt`
+
+---
+
+PARTICIPANT COLLABORATION AGREEMENT (PCA)
+AliceSolutions Ventures Inc. – Hub Projects
+Version: 1.0 • Governing Law: Ontario, Canada
+
+**WARNING (READ FIRST):** This PCA governs collaboration between **participants** on the **same venture/project** inside the Hub. It sits **under** the Platform Participation Agreement (PPA) and **alongside** project-specific NDAs/Addenda, the Data Processing Addendum (DPA), and the Standardized Tooling & Hosting Compliance Addendum (STHCA). If parties are **co-creating core IP** or forming a NewCo, use/attach a **Joint Development Agreement (JDA)**; this PCA can co-exist with a JDA.
+
+---
+
+## 1) Parties; Effective Date
+
+This PCA is entered into by the Hub project participants signing below (each, a **“Participant”**; collectively, the **“Participants”**) for the project identified in **Schedule A** (the **“Project”**). It is effective on the last signature date (the **“Effective Date”**).
+
+## 2) Order of Precedence
+
+If there is a conflict **on the same subject matter**, the following order applies:
+**Per-Project NDA Addendum (Security-Tiered)** → **JDA (if any)** → **this PCA** → **DPA (data terms control only data)** → **PTSA/STHCA (tooling & billing)** → **Mutual NDA (Internal)** → **PPA** → **Hub Policies**.
+
+## 3) Purpose & Roles
+
+3.1 **Purpose.** Define how Participants collaborate, contribute, and share outputs in the Project while protecting security, confidentiality, and IP.
+3.2 **Roles.** Each Participant designates a single **Authorized Representative** in **Schedule A**. The **Project Owner/Lead** (named in Schedule A) coordinates scope, acceptance, and access.
+3.3 **Independent Contractors.** Participants act as independent contractors to each other; no employment, partnership, or agency is created by this PCA.
+
+## 4) Security, Tooling, and Compliance (Hard Gates)
+
+4.1 **Mandatory Stack.** Participants must use the **standard tool stack** per STHCA (M365 tenant & domain, Entra ID SSO+MFA, Intune + Defender, GitHub Org, approved CI/CD, Secrets Manager, Render.com, backups, DLP).
+4.2 **Device Posture.** Any device accessing non-public Project data must be **Intune-compliant** with Defender EDR active. Conditional Access may block non-compliant access.
+4.3 **Data Tier.** The Project’s **security/data tier** (T0–T3) is set in Schedule A and the **Per-Project NDA Addendum**; the highest tier touching any data controls.
+4.4 **Confidentiality & Non-Exfiltration.** The Mutual NDA (Internal) and Per-Project NDA Addendum apply. No export outside **Designated Systems**. No personal email forwarding.
+4.5 **Records.** Participants agree to reasonable audit of compliance (access reviews, exception logs, device posture) and to cooperate in security incidents per the IRP.
+
+## 5) Contributions; Quality; Acceptance
+
+5.1 **Contributions.** Each Participant will deliver the **Contributions** described in **Schedule B** (tasks/deliverables), meeting the **Acceptance Criteria** in **Schedule C**.
+5.2 **Standards.** Work must be professional, conform to **Secure SDLC**, pass agreed tests/checks, and follow branching/CI rules (branch protection, required reviews, signed artifacts).
+5.3 **Acceptance.** The Project Owner/Lead will accept or reject each deliverable within **5 business days** of delivery, providing reasons if rejected. Failure to respond within the window = deemed accepted.
+5.4 **Remedy Window.** For rejected items, the contributor will correct within a commercially reasonable time (defaults: **5–10 business days** depending on severity).
+5.5 **Runbooks.** Each material deliverable includes minimal docs: how to run, configs, env variables (never the secret values), rollback plan.
+
+## 6) IP & Licences (Choose Model in Schedule D)
+
+**Important:** Select **one** model in **Schedule D** for Foreground IP created **in** the Project. Background IP always remains with the owning party.
+
+* **Model A — Assignment to Project Owner/NewCo (default).**
+  All Foreground IP in Contributions is assigned to the **Project Owner (or NewCo)** on acceptance and full payment of any agreed fees. The Contributor waives moral rights to the extent permitted by law and grants a limited license for internal use until acceptance.
+
+* **Model B — Broad License to Project Owner/NewCo.**
+  The Contributor retains ownership of its Foreground IP and grants the Project Owner/NewCo an **irrevocable, perpetual, worldwide, royalty-free** license (with rights to sublicense to the Project entity and its customers) to use, copy, modify, create derivative works from, and distribute the Contributions in connection with the Project. Contributor warrants the license is sufficient for commercial use of the Project.
+
+* **Background IP & Tools (all models).**
+  Each party retains its **Background IP** and reusable tools/frameworks. Where Background IP is included in a Contribution, the Contributor grants the Project Owner/NewCo a **non-exclusive, irrevocable, royalty-free** license to use such Background IP **as embedded in** the Contribution for the Project’s operation and commercialization (no broad reuse outside the Project unless separately agreed).
+
+* **Open-Source.**
+  Use only licenses on the allow-list and record them in the SBOM. No copyleft code (e.g., AGPL) in distributed builds without prior written approval.
+
+## 7) Compensation; Expenses (Optional)
+
+7.1 **Compensation.** If applicable, the compensation model appears in **Schedule E** (e.g., fixed fee, time & materials, milestone payments, equity/vesting, revenue share).
+7.2 **No Implied Equity.** Equity or token economics are not granted unless expressly listed in **Schedule E** or a separate Equity Agreement.
+7.3 **Expenses.** Pre-approved, reasonable, documented expenses are reimbursed by the **Payer** named in Schedule E.
+
+## 8) Governance; Decision-Making; Disputes
+
+8.1 **Working Method.** Participants use the Hub’s ticketing/PR workflow. Decisions are documented in tickets or meeting minutes in Designated Systems.
+8.2 **Tie-Break.** The **Project Owner/Lead** has final say on scope/acceptance timelines unless a JDA or Shareholders’ Agreement states otherwise.
+8.3 **Escalation.** Good-faith escalation to Org.Owner → CISO/Legal for security/privacy matters. Mediation may be used before litigation.
+8.4 **No Poaching.** Participants will not solicit or hire the other’s assigned personnel for work that would bypass this PCA during the Project and **6 months** after, except with written consent.
+
+## 9) Warranties; Non-Infringement; Malware-Free
+
+Each Participant warrants that: (a) it owns or has rights to provide its Contributions; (b) Contributions do not knowingly infringe third-party IP; (c) Contributions are free of malicious code and do not intentionally degrade security; (d) it will comply with applicable laws (including export controls, privacy, anti-spam).
+
+## 10) Liability; Indemnity; Limits
+
+10.1 **Indemnity.** Each Participant will indemnify the others against third-party claims arising from its **breach of this PCA**, **IP infringement** by its Contributions (excluding combinations not supplied by it), or **misuse of data**.
+10.2 **Limits.** No party is liable for indirect or consequential damages. Aggregate direct liability under this PCA for all claims is capped at the greater of **CAD \$25,000** or **the fees paid by/to the indemnifying party for the Project in the prior 6 months**, except for willful misconduct, fraud, or IP/Confidentiality breaches.
+10.3 **Injunctive Relief.** Breaches of confidentiality, security, or IP may cause irreparable harm; injunctive relief is available without posting bond.
+
+## 11) Privacy & Data Protection
+
+11.1 **DPA.** Where personal information is processed, the **DPA** governs roles, lawful bases, and cross-border rules. Participants must only ingest lawful data and minimize collection.
+11.2 **Residency.** Default residency is **Canada**; additional regions require Legal approval and entry in the project’s Sub-processor Register.
+11.3 **Logs.** Participants consent to security logging/monitoring for the Project.
+
+## 12) Term; Suspension; Termination
+
+12.1 **Term.** This PCA runs from Effective Date until Project completion, or earlier termination.
+12.2 **Suspension.** A Participant may be suspended for non-payment of PTSA fees, device non-compliance, security risk, or material breach.
+12.3 **Termination for Cause.** Any party may terminate this PCA for a material breach not cured within **15 days** of written notice (5 days for security/privacy breaches).
+12.4 **Convenience.** A Participant may withdraw on **10 business days’** written notice.
+12.5 **Effect of Termination.** Access is revoked; offboarding applies (§13). Fees due up to termination remain payable. Acceptance/licence/assignment already granted survives.
+
+## 13) Exit & Offboarding (Duties Persist)
+
+13.1 **Data & Materials.** Departing Participants must promptly return or delete Project data and materials not in Designated Systems.
+13.2 **Attestation.** Each departing Participant signs the **Exit Attestation** (Schedule F) confirming return/deletion and cessation of use.
+13.3 **Access Revocation.** Project Owner will remove access, rotate exposed secrets, and document the revocation.
+13.4 **Continuity.** Contributors will provide reasonable transition assistance (up to **10 hours** unless otherwise agreed in Schedule E).
+
+## 14) Notices; E-Sign
+
+Official notices via the Hub and/or email addresses listed in Schedule A. Electronic signatures/records are valid and binding.
+
+## 15) Miscellaneous
+
+15.1 **No Assignment** without consent, except to a successor in interest (e.g., NewCo or acquirer) who assumes obligations.
+15.2 **Severability.** If any provision is unenforceable, the rest remains effective.
+15.3 **Entire Agreement.** This PCA and referenced documents (and Schedules) are the entire agreement for its subject matter.
+15.4 **Amendments.** Changes must be in writing (including Hub click-through updates where allowed).
+
+---
+
+### SCHEDULE A — Project & Contacts
+
+* **Project Name/ID:** \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+* **Security/Data Tier (T0–T3):** \_\_\_\_\_\_
+* **Project Owner/Lead (entity & rep):** \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+* **Participants & Authorized Representatives:**
+
+  1. Entity/Name: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_  Email: \_\_\_\_\_\_\_\_\_\_\_\_\_\_  Role: \_\_\_\_\_\_
+  2. Entity/Name: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_  Email: \_\_\_\_\_\_\_\_\_\_\_\_\_\_  Role: \_\_\_\_\_\_
+  3. …
+* **Designated Systems:** (GitHub repos, CI/CD, Secrets namespace, DB/storage, Render services, M365 group/Teams channel)
+
+### SCHEDULE B — Contributions (Scope of Work)
+
+List tasks/deliverables per Participant with links to tickets/epics.
+Example rows:
+
+* Participant A: API gateway implementation; PRs #\_\_\_; Docs path: \_\_\_
+* Participant B: Frontend CLI screens; PRs #\_\_\_; Docs path: \_\_\_
+
+### SCHEDULE C — Acceptance Criteria
+
+* Functional tests pass; zero Critical/High vulns; SBOM attached.
+* CI checks (lint, tests, SAST) all green; signed artifact digest = \_\_\_
+* Performance bar: p95 latency ≤ \_\_\_ ms; error rate ≤ \_\_\_% at \_\_\_ RPS.
+* Security: secrets via manager; no PII in logs; DLP compliance.
+* Documentation: runbook + rollback plan delivered.
+
+### SCHEDULE D — IP Model (select one, initial)
+
+☐ **Model A (Assignment to Project Owner/NewCo)** — default
+☐ **Model B (Broad License to Project Owner/NewCo)** — see §6
+Background IP included (list & license scope): \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+
+### SCHEDULE E — Compensation (optional)
+
+* **Model:** ☐ Fixed fee ☐ T\&M ☐ Milestone ☐ Equity/vesting ☐ Rev-share
+* **Rates/Fees/Milestones:** \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+* **Payer (entity):** \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_  **Currency:** CAD
+* **Invoicing:** \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_  **Net:** \_\_\_ days
+* **Expenses:** pre-approved only; monthly cap CAD $\_\_\_\_\_
+* **Transition assistance cap (hours):** \_\_\_
+
+### SCHEDULE F — Exit Attestation (template)
+
+I, **\[name]** of **\[entity]**, certify that on **\[date]** I: (i) returned or deleted all Project data/materials not stored in Designated Systems; (ii) ceased any further use; (iii) surrendered access and credentials; (iv) disclosed any device loss or suspected compromise; (v) agree that confidentiality and non-exfiltration obligations **survive**.
+Signature: \_\_\_\_\_\_\_\_\_\_  Email: \_\_\_\_\_\_\_\_\_\_  Date: \_\_\_\_\_\_\_\_\_\_
+
+---
+
+**SIGNATURES (E-SIGN PERMITTED)**
+
+Participant 1 (Entity & Name): \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+Title: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_  Email: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_  Date: \_\_\_\_\_\_
+Signature: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+
+Participant 2 (Entity & Name): \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+Title: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_  Email: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_  Date: \_\_\_\_\_\_
+Signature: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+
+(Repeat as needed)
+
+Project Owner/Lead (acknowledged): \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+Title: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_  Email: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_  Date: \_\_\_\_\_\_
+Signature: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+
+— END PCA —
+
+---
+
+Say “**next**” and I’ll deliver the next full contract (e.g., **MSA**, **Marketplace Terms**, **ESignature Consent**, or **Public Terms/Privacy** if you want to switch to policies).
