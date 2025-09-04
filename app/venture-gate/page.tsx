@@ -176,6 +176,12 @@ const VentureGateJourney = () => {
 
   const handleStageAction = (stage: JourneyStage) => {
     switch (stage.id) {
+      case 'discover':
+        router.push('/venture-gate/explore')
+        break
+      case 'create-account':
+        router.push('/register')
+        break
       case 'verify-secure':
         router.push('/venture-gate/verify')
         break
