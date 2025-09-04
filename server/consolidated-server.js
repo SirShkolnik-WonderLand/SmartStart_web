@@ -204,10 +204,22 @@ app.listen(PORT, () => {
     console.log(`📊 All 12 systems operational`);
     console.log(`🔄 CLI System Version: 2.0.1`);
 
-    // Ensure Postgres enum GateType includes all expected values
-    (async() => {
+    // Ensure Postgres enum GateType exists and includes expected values
+    (async () => {
         try {
-            const required = ['SUBSCRIPTION', 'LEGAL_PACK', 'NDA', 'CONTRACT', 'PAYMENT', 'VERIFICATION', 'PROFILE', 'DOCUMENT', 'LAUNCH', 'VENTURE', 'TEAM', 'PROJECT', 'LEGAL_ENTITY', 'EQUITY', 'CUSTOM'];
+            const required = ['SUBSCRIPTION','LEGAL_PACK','NDA','CONTRACT','PAYMENT','VERIFICATION','PROFILE','DOCUMENT','LAUNCH','VENTURE','TEAM','PROJECT','LEGAL_ENTITY','EQUITY','CUSTOM'];
+
+            // Create enum if missing with all values at once
+            const typeExists = await prisma.$queryRawUnsafe("SELECT 1 FROM pg_type WHERE typname = 'GateType' LIMIT 1");
+            if (!typeExists || typeExists.length === 0) {
+                console.log('[DB] Creating GateType enum...');
+                const createEnum = `DO $$\nBEGIN\n  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'GateType') THEN\n    CREATE TYPE "GateType" AS ENUM (${required.map(v => `'${v}'`).join(', ')});\n  END IF;\nEND$$;`;
+                await prisma.$executeRawUnsafe(createEnum);
+                console.log('[DB] GateType enum created');
+                return;
+            }
+
+            // Add any missing values
             const existing = await prisma.$queryRawUnsafe("SELECT enumlabel FROM pg_enum e JOIN pg_type t ON e.enumtypid = t.oid WHERE t.typname = 'GateType'");
             const existingLabels = (existing || []).map(r => r.enumlabel);
             for (const label of required) {
