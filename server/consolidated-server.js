@@ -215,6 +215,10 @@ app.use('/api/mfa', mfaApiRoutes);
 const businessLogicApiRoutes = require('./routes/business-logic-api');
 app.use('/api/business-logic', businessLogicApiRoutes);
 
+// Mount Migration API
+const migrationApiRoutes = require('./routes/migration-api');
+app.use('/api/migration', migrationApiRoutes);
+
 console.log('✅ User Journey APIs mounted successfully');
 console.log('✅ Role-Based Business Systems mounted successfully');
 console.log('✅ Subscription & Billing APIs mounted successfully');
