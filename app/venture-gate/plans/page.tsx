@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { apiService } from '../../services/api'
 
 interface Plan {
   id: string
@@ -21,84 +22,56 @@ const ChoosePlans = () => {
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null)
   const [isProcessing, setIsProcessing] = useState(false)
 
-  const plans: Plan[] = [
-    {
-      id: 'member',
-      name: 'Member',
-      description: 'Perfect for contributors looking to join projects',
-      price: 29,
-      period: 'month',
-      icon: '👤',
-      color: 'var(--accent-secondary)',
-      features: [
-        'Submit contribution offers',
-        'Access to project briefs',
-        'Basic profile features',
-        'Community access',
-        'Email support'
-      ],
-      limitations: [
-        'Cannot create ventures',
-        'Limited project access',
-        'Basic analytics'
-      ]
-    },
-    {
-      id: 'pro',
-      name: 'Pro',
-      description: 'For active contributors and small teams',
-      price: 79,
-      period: 'month',
-      icon: '🚀',
-      color: 'var(--accent-primary)',
-      popular: true,
-      features: [
-        'Everything in Member',
-        'Create up to 3 ventures',
-        'Advanced project access',
-        'Priority support',
-        'Advanced analytics',
-        'Team collaboration tools',
-        'Custom integrations'
-      ],
-      limitations: [
-        'Limited to 3 ventures',
-        'Standard SLA'
-      ]
-    },
-    {
-      id: 'founder',
-      name: 'Founder',
-      description: 'For serious entrepreneurs and growing companies',
-      price: 199,
-      period: 'month',
-      icon: '👑',
-      color: 'var(--accent-warning)',
-      features: [
-        'Everything in Pro',
-        'Unlimited ventures',
-        'Full platform access',
-        'White-label options',
-        'Dedicated support',
-        'Custom legal templates',
-        'Advanced security features',
-        'API access',
-        'Custom integrations'
-      ],
-      limitations: []
+  const [plans, setPlans] = useState<Plan[]>([])
+  const [loadingPlans, setLoadingPlans] = useState(true)
+
+  useEffect(() => {
+    const loadPlans = async () => {
+      try {
+        const resp = await fetch('https://smartstart-api.onrender.com/api/subscriptions/plans')
+        const data = await resp.json()
+        if (Array.isArray(data?.plans)) {
+          const mapped: Plan[] = data.plans.map((p: any) => ({
+            id: p.id,
+            name: p.name,
+            description: p.description || '',
+            price: p.price,
+            period: p.period || 'month',
+            features: p.features || [],
+            limitations: p.limitations || [],
+            icon: p.icon || '💳',
+            color: 'var(--accent-primary)',
+            popular: p.popular || false
+          }))
+          setPlans(mapped)
+        } else {
+          setPlans([])
+        }
+      } catch (e) {
+        setPlans([])
+      } finally {
+        setLoadingPlans(false)
+      }
     }
-  ]
+    loadPlans()
+  }, [])
 
   const handlePlanSelection = async (planId: string) => {
     setSelectedPlan(planId)
     setIsProcessing(true)
-
-    // Simulate payment processing
-    setTimeout(() => {
+    try {
+      const resp = await apiService.fetchWithAuth('/api/subscriptions/create', {
+        method: 'POST',
+        body: JSON.stringify({ planId })
+      } as any)
+      if (resp?.success) {
+        router.push('/venture-gate/legal')
+      } else {
+        setIsProcessing(false)
+      }
+    } catch (e) {
       setIsProcessing(false)
-      // Navigate to next stage
-      router.push('/venture-gate/legal')
-    }, 3000)
+    }
   }
 
   return (
@@ -113,6 +86,11 @@ const ChoosePlans = () => {
 
       {/* Pricing Cards */}
       <div className="grid grid-3 gap-6 mb-8">
+        {loadingPlans && (
+          <div className="card">
+            <div className="text-center p-6">Loading plans…</div>
+          </div>
+        )}
         {plans.map((plan) => (
           <div
             key={plan.id}
