@@ -158,17 +158,37 @@ class ApiService {
 
   // Authentication
   async login(email: string, password: string) {
-    return this.fetchWithAuth('/api/auth/login', {
+    const response = await fetch(`${API_BASE}/api/auth/login`, {
       method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
       body: JSON.stringify({ email, password }),
     })
+
+    if (!response.ok) {
+      throw new Error(`API Error: ${response.status} ${response.statusText}`)
+    }
+
+    return response.json()
   }
 
   async register(userData: any) {
-    return this.fetchWithAuth('/api/auth/register', {
+    const response = await fetch(`${API_BASE}/api/auth/register`, {
       method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
       body: JSON.stringify(userData),
     })
+
+    if (!response.ok) {
+      throw new Error(`API Error: ${response.status} ${response.statusText}`)
+    }
+
+    return response.json()
   }
 
   async getCurrentUser(): Promise<User> {
