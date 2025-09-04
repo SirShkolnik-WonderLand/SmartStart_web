@@ -129,12 +129,21 @@ const VentureGateJourney = () => {
 
   const loadUserData = async () => {
     try {
-      // Get current user
+      // Get current user (robustly extract ID)
       const currentUser = await apiService.getCurrentUser()
       setUser(currentUser)
-      
+
+      const storedId = typeof window !== 'undefined' ? localStorage.getItem('user-id') : null
+      const resolvedUserId = (currentUser as any)?.id || (currentUser as any)?.data?.id || storedId
+
+      if (!resolvedUserId) {
+        console.warn('User ID missing; skipping journey state fetch')
+        setCurrentStage(2)
+        return
+      }
+
       // Load journey state
-      const journey = await apiService.getJourneyState(currentUser.id)
+      const journey = await apiService.getJourneyState(resolvedUserId)
       setJourneyState(journey)
       
       if (journey) {
