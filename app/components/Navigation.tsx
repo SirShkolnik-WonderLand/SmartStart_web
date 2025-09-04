@@ -17,8 +17,8 @@ const Navigation = () => {
 
   const handleLogout = () => {
     // Clear any stored auth data
-    localStorage.removeItem('auth-token')
-    localStorage.removeItem('sessionToken')
+    localStorage.removeItem('user-id')
+    localStorage.removeItem('user-data')
     router.push('/')
   }
 

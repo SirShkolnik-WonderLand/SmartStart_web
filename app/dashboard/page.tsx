@@ -102,7 +102,8 @@ export default function DashboardPage() {
     } catch (error) {
       console.error('Logout error:', error)
     } finally {
-      localStorage.removeItem('auth-token')
+      localStorage.removeItem('user-id')
+      localStorage.removeItem('user-data')
       router.push('/')
     }
   }

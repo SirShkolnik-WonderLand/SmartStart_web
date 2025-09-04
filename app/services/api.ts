@@ -213,20 +213,34 @@ class ApiService {
   }
 
   async getCurrentUser(): Promise<User> {
-    // Get user ID from token or localStorage
-    const token = localStorage.getItem('auth-token')
-    if (!token) {
-      throw new Error('No authentication token found')
+    // Use the /api/auth/me endpoint which works with HTTP-only cookies
+    try {
+      const response = await fetch(`${API_BASE}/api/auth/me`, {
+        method: 'GET',
+        credentials: 'include', // Include HTTP-only cookies
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+
+      if (!response.ok) {
+        throw new Error(`API Error: ${response.status} ${response.statusText}`)
+      }
+
+      const data = await response.json()
+      
+      if (data.success && data.user) {
+        // Store user data in localStorage for frontend use
+        localStorage.setItem('user-id', data.user.id)
+        localStorage.setItem('user-data', JSON.stringify(data.user))
+        return data.user
+      } else {
+        throw new Error('Invalid response from /api/auth/me')
+      }
+    } catch (error) {
+      console.error('Error getting current user:', error)
+      throw error
     }
-    
-    // For now, we'll need to get the user ID from the login response
-    // This is a temporary solution - ideally the backend should have /api/auth/me
-    const userId = localStorage.getItem('user-id')
-    if (!userId) {
-      throw new Error('User ID not found in localStorage')
-    }
-    
-    return this.fetchWithAuth(`/api/users/${userId}`)
   }
 
   async logout() {

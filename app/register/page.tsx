@@ -59,10 +59,8 @@ export default function RegisterPage() {
         if (response.user && response.user.id) {
           localStorage.setItem('user-id', response.user.id)
         }
-        // For now, we'll use a simple token since the backend doesn't return one
-        const simpleToken = `token_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-        localStorage.setItem('auth-token', simpleToken)
-        document.cookie = `web_session=${simpleToken}; path=/; HttpOnly; Secure; SameSite=Lax`
+        // Store user data for frontend use (auth token is now in HTTP-only cookie)
+        localStorage.setItem('user-data', JSON.stringify(response.user))
         router.push('/venture-gate')
       } else {
         setError(response.message || 'Registration failed. Please try again.')
