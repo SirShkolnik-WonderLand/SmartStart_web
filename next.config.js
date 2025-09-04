@@ -9,6 +9,12 @@ const nextConfig = {
     // Allow production builds to successfully complete even if there are ESLint errors
     ignoreDuringBuilds: true,
   },
+  // Fix hydration issues
+  experimental: {
+    esmExternals: false,
+  },
+  // Ensure consistent rendering
+  swcMinify: true,
 }
 
 module.exports = nextConfig;

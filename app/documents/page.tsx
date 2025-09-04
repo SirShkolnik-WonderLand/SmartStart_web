@@ -19,8 +19,10 @@ const DocumentsPage = () => {
   const [selectedTemplate, setSelectedTemplate] = useState<DocumentTemplate | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [stats, setStats] = useState<any>(null)
+  const [isClient, setIsClient] = useState(false)
 
   useEffect(() => {
+    setIsClient(true)
     loadDocuments()
     loadStats()
   }, [])
@@ -95,7 +97,7 @@ const DocumentsPage = () => {
         <p className="text-secondary">
           Comprehensive legal framework for AliceSolutions Ventures platform
         </p>
-        {stats && (
+        {isClient && stats && (
           <div className="mt-4">
             <span className="status status-info">
               {stats.totalDocuments} documents • {stats.totalWords.toLocaleString()} words
@@ -105,7 +107,7 @@ const DocumentsPage = () => {
       </div>
 
       {/* Stats Overview */}
-      {stats && (
+      {isClient && stats && (
         <div className="card mb-8 animate-slide-in">
           <div className="card-header">
             <h3>📊 Document Library Statistics</h3>

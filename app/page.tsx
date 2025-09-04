@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { Lock, Mail, Eye, EyeOff, ArrowRight, AlertCircle, CheckCircle, User, Shield, Zap, Rocket, Globe, Database } from 'lucide-react'
 import { apiService } from './services/api'
+import { useClientSide } from './hooks/useClientSide'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -17,6 +18,7 @@ export default function LoginPage() {
     api: 'OPERATIONAL',
     systems: 12
   })
+  const isClient = useClientSide()
   const router = useRouter()
 
   const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://smartstart-api.onrender.com'
@@ -109,7 +111,7 @@ export default function LoginPage() {
             <p className="text-gray-400">AliceSolutions Ventures</p>
             <div className="flex items-center justify-center mt-2 text-sm text-green-400">
               <Database className="w-4 h-4 mr-1" />
-              <span>{systemStatus.systems} Systems Online</span>
+              <span>{isClient ? systemStatus.systems : 12} Systems Online</span>
             </div>
           </motion.div>
 

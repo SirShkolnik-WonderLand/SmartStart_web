@@ -30,8 +30,10 @@ export default function DashboardPage() {
   const [portfolioData, setPortfolioData] = useState<PortfolioData | null>(null)
   const [journeyState, setJourneyState] = useState<JourneyState | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [isClient, setIsClient] = useState(false)
 
   useEffect(() => {
+    setIsClient(true)
     checkAuth()
   }, [])
 
@@ -177,7 +179,7 @@ export default function DashboardPage() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Gamification & Portfolio Overview */}
-        {(gamificationData || portfolioData) && (
+        {isClient && (gamificationData || portfolioData) && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {gamificationData && (
               <>
@@ -309,7 +311,7 @@ export default function DashboardPage() {
         )}
 
         {/* Journey Progress */}
-        {journeyState && (
+        {isClient && journeyState && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
