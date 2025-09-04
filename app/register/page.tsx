@@ -70,17 +70,17 @@ export default function RegisterPage() {
           transition={{ duration: 0.6 }}
           className="text-center mb-6"
         >
-          <div className="flex items-center justify-center mb-6">
-            <div className="w-16 h-16 bg-gradient-to-r from-green-400 to-blue-500 rounded-2xl flex items-center justify-center shadow-lg">
-              <div className="w-8 h-8 bg-white rounded-sm"></div>
+          <div className="flex items-center justify-center mb-4">
+            <div className="w-12 h-12 bg-gradient-to-r from-green-400 to-blue-500 rounded-xl flex items-center justify-center shadow-lg">
+              <div className="w-6 h-6 bg-white rounded-sm"></div>
             </div>
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">SmartStart</h1>
-          <p className="text-gray-400 text-base">AliceSolutions Ventures</p>
+          <h1 className="text-2xl font-bold text-white mb-1">SmartStart</h1>
+          <p className="text-gray-400 text-sm">AliceSolutions Ventures</p>
         </motion.div>
 
         {/* Progress Steps */}
-        <div className="flex items-center justify-center mb-8">
+        <div className="flex items-center justify-center mb-6">
           {steps.map((stepItem, index) => {
             const Icon = stepItem.icon
             const isActive = step === stepItem.id
@@ -109,11 +109,11 @@ export default function RegisterPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="card p-6"
+          className="card"
         >
           {step === 1 && (
             <div className="space-y-3">
-              <div className="text-center mb-6">
+              <div className="text-center mb-4">
                 <h2 className="text-lg font-semibold text-white mb-1">Account Details</h2>
                 <p className="text-gray-400 text-sm">Create your account credentials</p>
               </div>
@@ -211,11 +211,11 @@ export default function RegisterPage() {
                 </motion.div>
               )}
 
-              <button
-                onClick={handleRegister}
-                disabled={isLoading || !username || !email || !password || !confirmPassword}
-                className="btn btn-primary w-full py-3"
-              >
+                              <button
+                  onClick={handleRegister}
+                  disabled={isLoading || !username || !email || !password || !confirmPassword}
+                  className="btn btn-primary w-full py-2.5"
+                >
                 {isLoading ? (
                   <span className="flex items-center justify-center">
                     <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
@@ -224,7 +224,7 @@ export default function RegisterPage() {
                 ) : (
                   <span className="flex items-center justify-center">
                     Create Account
-                    <ArrowRight className="ml-2 w-5 h-5" />
+                    <ArrowRight className="ml-2 w-4 h-4" />
                   </span>
                 )}
               </button>
