@@ -1,0 +1,41 @@
+A) AliceSolutions ↔ User (at registration / onboarding)
+Platform Participation Agreement (PPA) (already drafted)
+Who/When: User (company rep) at account creation, pre-payment.
+Why: Terms of membership, acceptable use, IP framework, liability, termination.
+Must-have: MFA required; acceptable use & security; contribution/IP terms; fee/renewal; limitation of liability; governing law (Ontario); survival.
+Capture: Legal entity name, signing authority, billing email, plan, jurisdiction.
+Mutual NDA (Internal) + Non-Exfiltration (already drafted)
+Who/When: User and AliceSolutions immediately after plan selection and before any non-public previews.
+Why: Global confidentiality and 5-year survival from last access.
+Must-have: Designated Systems only; incident notice ≤24h; AI/LLM restrictions; return/deletion; injunctive relief.
+Capture: Legal name, email, country, device compliance attestation (MFA, encryption).
+E-Signature Consent
+Who/When: Same session as PPA.
+Why: Acknowledge electronic contracting under Ontario’s ECA.
+Must-have: Consent to e-records/e-signatures; how to withdraw; copies on request.
+Capture: IP/device, timestamp, consent checkbox.
+Privacy Notice Acknowledgment (PIPEDA)
+Who/When: At signup.
+Why: Inform about what personal data you collect/process and why.
+Must-have: Purposes, retention, safeguards, contact for access/correction, complaint route.
+Capture: Consent to processing; province/country.
+CASL Marketing Consent (optional)
+Who/When: Signup or profile.
+Why: Lawful commercial email/SMS to the user.
+Must-have: Express consent text; sender ID; unsubscribe mechanism.
+Capture: Separate opt-in toggle(s).
+Data Processing Addendum (DPA) (Controller–Processor)
+Who/When: If you process customer personal data on their behalf (B2B subscribers).
+Why: Allocate privacy/security duties, sub-processors, cross-border rules.
+Must-have: Roles; security schedule; breach notice; deletion; audits; SCCs/IDTA (if needed).
+Capture: Customer DPO/contact; data categories; regions allowed.
+Security & Tooling Policy Acknowledgment
+Who/When: After NDA, before accessing anything non-public.
+Why: Bind users to MDM/MFA/EDR, VPN, no external LLM, DLP/watermarks.
+Must-have: Device controls; network/VPN; secrets manager; no screenshares to unapproved endpoints.
+Capture: Device type, OS, encryption yes/no, EDR yes/no.
+Payment Terms / Billing Authorization
+Who/When: At checkout.
+Why: Recurring billing and tax handling.
+Must-have: Auto-renew; taxes; failed-payment remediation; refunds policy (B2B).
+Capture: Billing name/address, tax ID if any.

@@ -79,11 +79,27 @@ const ProfileSetup = () => {
   const handleSave = async () => {
     setIsSaving(true)
     
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      // Save profile data to API
+      const response = await fetch('/api/user-profile/profile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(profile)
+      })
+
+      if (response.ok) {
+        router.push('/venture-gate/explore')
+      } else {
+        console.error('Failed to save profile')
+      }
+    } catch (error) {
+      console.error('Error saving profile:', error)
+    } finally {
       setIsSaving(false)
-      router.push('/venture-gate/explore')
-    }, 2000)
+    }
   }
 
   const addSkill = () => {

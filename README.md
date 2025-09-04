@@ -1,6 +1,8 @@
-# 🚀 SmartStart Platform
+# 🚀 AliceSolutions Ventures Platform
 
 **Ultimate startup ecosystem platform with integrated legal, company, team, user, contribution, and financial management!**
+
+**Founded by Udi Shkolnik** | **VentureGate™ Journey Implementation**
 
 ## **🎯 Current Status: 7 MAJOR SYSTEMS DEPLOYED & OPERATIONAL**
 

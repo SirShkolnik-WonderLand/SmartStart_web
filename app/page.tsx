@@ -16,8 +16,8 @@ const artFrames = [
  ║   ███████║██║ ╚═╝ ██║██║  ██║██║  ██╗   ██║      ║██║     ║
  ║   ╚══════╝╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝      ╚═╝     ║
  ║                                                              ║
- ║                    SMARTSTART PLATFORM                       ║
- ║                   🚀 VENTURE OPERATING SYSTEM 🚀            ║
+ ║                  ALICESOLUTIONS VENTURES                     ║
+ ║                   🚀 Founded by Udi Shkolnik 🚀             ║
  ║                                                              ║
  ║              [7 SYSTEMS DEPLOYED • 145 ENDPOINTS]            ║
  ║                                                              ║
@@ -33,8 +33,8 @@ const artFrames = [
  ║   ███████║██║ ╚═╝ ██║██║  ██║██║  ██╗   ██║      ║██║     ║
  ║   ╚══════╝╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝      ╚═╝     ║
  ║                                                              ║
- ║                    SMARTSTART PLATFORM                       ║
- ║                   🚀 VENTURE OPERATING SYSTEM 🚀            ║
+ ║                  ALICESOLUTIONS VENTURES                     ║
+ ║                   🚀 Founded by Udi Shkolnik 🚀             ║
  ║                                                              ║
  ║              [7 SYSTEMS DEPLOYED • 145 ENDPOINTS]            ║
  ║                                                              ║
@@ -50,8 +50,8 @@ const artFrames = [
  ║   ███████║██║ ╚═╝ ██║██║  ██║██║  ██╗   ██║      ║██║     ║
  ║   ╚══════╝╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝      ╚═╝     ║
  ║                                                              ║
- ║                    SMARTSTART PLATFORM                       ║
- ║                   🚀 VENTURE OPERATING SYSTEM 🚀            ║
+ ║                  ALICESOLUTIONS VENTURES                     ║
+ ║                   🚀 Founded by Udi Shkolnik 🚀             ║
  ║                                                              ║
  ║              [7 SYSTEMS DEPLOYED • 145 ENDPOINTS]            ║
  ║                                                              ║
@@ -121,7 +121,7 @@ export default function LoginPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ username, password })
+                    body: JSON.stringify({ email: username, password })
       })
 
       if (response.ok) {

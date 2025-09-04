@@ -2,27 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { apiService, Venture } from '../../services/api'
 
-interface Venture {
-  id: string
-  name: string
-  description: string
-  stage: 'idea' | 'mvp' | 'growth' | 'scale'
-  industry: string
-  teamSize: number
-  lookingFor: string[]
-  rewards: {
-    type: 'equity' | 'cash' | 'hybrid'
-    amount: string
-  }
-  owner: {
-    name: string
-    avatar: string
-  }
-  createdAt: string
-  status: 'active' | 'paused' | 'completed'
-  tags: string[]
-}
+// Venture interface is now imported from api service
 
 const ExploreVentures = () => {
   const router = useRouter()
@@ -98,12 +80,22 @@ const ExploreVentures = () => {
   ]
 
   useEffect(() => {
-    // Simulate API call
-    setTimeout(() => {
-      setVentures(mockVentures)
-      setFilteredVentures(mockVentures)
-      setIsLoading(false)
-    }, 1000)
+    const loadVentures = async () => {
+      try {
+        const venturesData = await apiService.getVentures()
+        setVentures(venturesData)
+        setFilteredVentures(venturesData)
+      } catch (error) {
+        console.error('Failed to load ventures:', error)
+        // Fallback to mock data if API fails
+        setVentures(mockVentures)
+        setFilteredVentures(mockVentures)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadVentures()
   }, [])
 
   useEffect(() => {

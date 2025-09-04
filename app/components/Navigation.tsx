@@ -29,7 +29,7 @@ const Navigation = () => {
         <div className="flex items-center justify-between">
           {/* Brand */}
           <Link href="/venture-gate" className="nav-brand">
-            SmartStart Hub
+            AliceSolutions Ventures
           </Link>
 
           {/* Desktop Navigation */}
@@ -49,9 +49,9 @@ const Navigation = () => {
           {/* User Actions */}
           <div className="flex items-center gap-4">
             <div className="hidden md:flex items-center gap-2">
-              <span className="text-sm text-secondary">Welcome, Udi</span>
+              <span className="text-sm text-secondary">Welcome, Udi Shkolnik</span>
               <div className="w-8 h-8 bg-gradient-to-r from-green-400 to-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
-                U
+                US
               </div>
             </div>
             

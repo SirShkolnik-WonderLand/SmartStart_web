@@ -22,91 +22,113 @@ const PlatformLegal = () => {
   const legalDocuments: LegalDocument[] = [
     {
       id: 'platform-participation',
-      title: 'Platform Participation Agreement',
-      description: 'Core terms for using the SmartStart platform',
+      title: 'Platform Participation Agreement (PPA)',
+      description: 'Core terms for using the AliceSolutions Ventures platform',
       required: true,
       icon: '📋',
       content: `
-        PLATFORM PARTICIPATION AGREEMENT
+        AliceSolutions Ventures — Platform Participation Agreement (PPA)
+        (Terms of Membership & Contribution for the "Hub")
         
-        This Platform Participation Agreement ("Agreement") governs your use of the SmartStart platform operated by AliceSolutions Ventures.
+        Effective Date: When the Member accepts electronically in the Hub.
+        Parties: AliceSolutions Ventures Inc. ("AliceSolutions", "we/us")
+        The business user or individual acting for a business who accepts these terms ("Member", "you").
         
-        KEY TERMS:
+        1) Purpose & Scope
+        The Hub provides a secure platform for discovering ventures/projects, subscribing, proposing contributions, 
+        collaborating under project-specific NDAs/addenda, and tracking rewards. This PPA governs membership, 
+        payments, acceptable use, contribution/IP, security, liability, and enforcement across the platform.
         
-        1. PLATFORM ACCESS
-        - You may access and use the platform in accordance with your subscription tier
-        - Access is granted on a non-exclusive, non-transferable basis
-        - You are responsible for maintaining the security of your account
+        2) Account, Identity, and Security
+        - Accurate info: You'll keep account, billing, and contact details current
+        - MFA required: Multi-factor authentication is mandatory for access to any non-public content
+        - Access control: Accounts are individual; sharing credentials is prohibited
+        - Device & posture: For sensitive projects, we may require device encryption, current patches, and other posture checks before access
+        - Audit: Actions in the Hub may be logged for security, compliance, and dispute resolution
         
-        2. ACCEPTABLE USE
-        - Use the platform only for lawful purposes
-        - Respect intellectual property rights of others
-        - Do not attempt to circumvent security measures
-        - Report any security vulnerabilities responsibly
+        3) Subscriptions, Billing & Taxes
+        - Plans: You select a plan (e.g., Member / Pro / Founder). Plan features and limits are shown in the Hub
+        - Fees & renewal: Fees are billed in advance and auto-renew each term unless cancelled per Hub instructions
+        - Non-payment: If a charge fails, we may suspend or downgrade capabilities after a grace period
+        - Taxes: Prices exclude applicable taxes; you're responsible for them
         
-        3. CONTENT AND DATA
-        - You retain ownership of content you create
-        - You grant us necessary licenses to operate the platform
-        - We may use anonymized data to improve our services
+        4) Acceptable Use & Community Standards
+        You agree not to:
+        - breach the Legal Pack, attempt unauthorized access, defeat security, or misuse credentials
+        - upload malicious code, attempt data scraping/exfiltration, or use automation to harvest content
+        - disclose or export non-public materials outside Designated Systems
+        - harass, defame, or discriminate; or violate IP, privacy, or other laws
+        - use third-party AI/LLM tools with Confidential Information unless they are explicitly approved
         
-        4. TERMINATION
-        - Either party may terminate this agreement at any time
-        - Upon termination, your access to the platform will cease
-        - Certain obligations may survive termination
-        
-        5. LIMITATION OF LIABILITY
-        - Our liability is limited to the amount you paid in the last 12 months
-        - We are not liable for indirect or consequential damages
+        5) Contributions, IP & Licensing
+        - Your Background IP: Pre-existing IP you bring remains yours
+        - Foreground IP: All new work product created for the project is assigned to the project owner upon acceptance
+        - No conflict: You represent you can grant the above rights and your contributions won't knowingly infringe third-party IP
         
         By signing this agreement, you acknowledge that you have read, understood, and agree to be bound by these terms.
       `
     },
     {
       id: 'platform-nda',
-      title: 'Platform Non-Disclosure Agreement',
+      title: 'Mutual Confidentiality & Non-Exfiltration Agreement',
       description: 'Confidentiality obligations for platform access',
       required: true,
       icon: '🔒',
       content: `
-        PLATFORM NON-DISCLOSURE AGREEMENT
+        Mutual Confidentiality & Non-Exfiltration Agreement
+        (Internal—AliceSolutions Ventures & Participants)
         
-        This Non-Disclosure Agreement ("NDA") establishes confidentiality obligations for your use of the SmartStart platform.
+        Effective Date: The date the first Participant signs this Agreement electronically or physically.
+        Parties: AliceSolutions Ventures Inc. ("AliceSolutions"); and
+        Each individual or entity that executes this Agreement (each a "Participant").
         
-        CONFIDENTIAL INFORMATION:
+        1. Purpose
+        The Parties wish to explore, evaluate, build, or contribute to ventures and projects within the 
+        AliceSolutions ecosystem. In doing so, the Parties may disclose or access Confidential Information. 
+        This Agreement sets the rules for using, protecting, and returning that information and prohibits 
+        exfiltration or misuse.
         
-        1. DEFINITION
-        Confidential Information includes all non-public information disclosed through the platform, including:
-        - Technical specifications and documentation
-        - Business strategies and plans
-        - User data and analytics
-        - Proprietary algorithms and processes
-        - Any information marked as confidential
+        2. Key Definitions
+        2.1 "Confidential Information" means any non-public information disclosed or made accessible, 
+        directly or indirectly, by one Party ("Discloser") to another Party ("Recipient"), in any form 
+        (oral, written, visual, electronic, tangible), including without limitation:
+        - technical data, source code, repositories, designs, product plans, roadmaps, business strategies, 
+          pricing, P&L and financials, customer lists, marketing plans, operating procedures, security 
+          architecture, access credentials, logs, and any materials labelled or reasonably understood as confidential
+        - information made available through Designated Systems, even if not expressly marked
+        - personal information (as defined under applicable privacy laws) contained in or accompanying the above
         
-        2. OBLIGATIONS
-        You agree to:
-        - Maintain strict confidentiality of all Confidential Information
-        - Use Confidential Information solely for platform-related activities
-        - Not disclose Confidential Information to third parties
-        - Implement reasonable security measures to protect Confidential Information
+        2.2 "Designated Systems" means the systems, tools, and storage locations explicitly approved by 
+        AliceSolutions or the Project Lead for hosting, accessing, or processing Confidential Information.
         
-        3. EXCEPTIONS
-        Confidential Information does not include information that:
-        - Is publicly available through no breach of this agreement
-        - Was known to you prior to disclosure
-        - Is independently developed without use of Confidential Information
-        - Is required to be disclosed by law
+        3. Non-Disclosure, Non-Use & Need-to-Know
+        3.1 Non-Disclosure: Recipient must not disclose any Confidential Information to anyone except its 
+        own personnel and subcontractors who have a strict need-to-know for the Purpose and are bound by 
+        written obligations at least as protective as this Agreement.
         
-        4. DURATION
-        - This NDA remains in effect for 5 years after your last access to the platform
-        - Obligations survive termination of your account
-        - Return or destroy all Confidential Information upon request
+        3.2 Non-Use: Recipient must use Confidential Information solely for the Purpose and not for any 
+        other purpose (including personal use, competition, or development outside the AliceSolutions ecosystem).
         
-        5. REMEDIES
-        - Breach of this NDA may result in immediate account termination
-        - We may seek injunctive relief and damages
-        - You agree that monetary damages may be insufficient
+        4. Non-Exfiltration (Security & Handling Rules)
+        4.1 Approved Environments Only: Recipient will access, process, store, transmit, and collaborate 
+        on Confidential Information only through Designated Systems.
         
-        By signing this NDA, you acknowledge the sensitive nature of the information and agree to maintain its confidentiality.
+        4.2 Technical Controls: Recipient will maintain MFA on all accounts accessing Designated Systems, 
+        keep operating systems and security patches current, use device encryption on endpoints that cache 
+        or access Confidential Information, and comply with DLP, watermarking, and access-logging controls.
+        
+        4.3 AI/LLM & Automation: No uploading of Confidential Information to external AI/LLM or automation 
+        services unless the service is expressly approved as a Designated System and bound by terms that 
+        prohibit training on the data and ensure confidentiality and deletion on demand.
+        
+        5. Term; Survival
+        5.1 Term: This Agreement begins on the Effective Date for each Participant and continues until 
+        terminated as to that Participant on 10 days' written notice to AliceSolutions.
+        
+        5.2 Survival Period: Recipient's duties survive for five (5) years from the Recipient's last access 
+        to the relevant Confidential Information; trade secrets survive as long as they remain trade secrets.
+        
+        By signing this agreement, you acknowledge the sensitive nature of the information and agree to maintain its confidentiality.
       `
     },
     {
@@ -156,54 +178,76 @@ const PlatformLegal = () => {
       `
     },
     {
-      id: 'non-circumvention',
-      title: 'Non-Circumvention & Non-Solicitation',
-      description: 'Protection against competitive activities',
+      id: 'per-project-nda',
+      title: 'Per-Project NDA Addendum (Security-Tiered)',
+      description: 'Project-specific confidentiality and security controls',
       required: true,
-      icon: '🚫',
+      icon: '📄',
       content: `
-        NON-CIRCUMVENTION & NON-SOLICITATION AGREEMENT
+        Per-Project NDA Addendum (Security-Tiered)
+        AliceSolutions Ventures Inc. — Project-Level Addendum to Mutual NDA
         
-        This agreement protects against competitive activities that could harm the platform ecosystem.
+        Project Name / ID: [To be specified per project]
+        Effective Date: [To be specified per project]
+        Parties Covered: AliceSolutions; all Participants bound by the Platform NDA and PPA who are approved for this Project.
         
-        RESTRICTIONS:
+        1) Purpose & Scope
+        This Addendum sets project-specific confidentiality, security, and handling rules based on the Project's Security Tier. 
+        It defines Designated Systems, Permitted Tools, Access Grants, Data Classes, and Exit duties. No access to 
+        non-public project materials is permitted until this Addendum is signed.
         
-        1. NON-CIRCUMVENTION
-        You agree not to:
-        - Circumvent the platform to conduct business with other users
-        - Use platform information to contact users outside the platform
-        - Bypass platform fees or processes
-        - Create competing platforms using platform data
+        2) Data Classification & Security Tiers
+        Choose the highest tier that applies to any data a Participant will access:
         
-        2. NON-SOLICITATION
-        During your use of the platform and for 12 months after:
-        - Do not solicit platform users for competing services
-        - Do not recruit platform users for competing ventures
-        - Do not use platform connections for non-platform business
+        Tier 0 — Public: Non-confidential, intentionally public content (marketing, open docs)
+        Tier 1 — Confidential (Internal): Non-public business information (plans, drafts, non-sensitive code, non-identifiable logs)
+        Tier 2 — Restricted (Sensitive Commercial): Trade secrets, customer lists, financials, security architecture, credentials, production code, or personal information where present
+        Tier 3 — Highly Restricted (Critical/Regulated): Crown-jewel IP, unlaunched product code/keys, acquisitions, large-scale personal information, or personal health information (PHI)
         
-        3. EXCEPTIONS
-        These restrictions do not apply to:
-        - Pre-existing relationships documented before platform use
-        - Publicly available information
-        - Relationships formed through other channels
-        - General business networking not targeting platform users
+        3) Designated Systems & Permitted Tools
+        3.1 Designated Systems (authoritative list):
+        - Repos: [To be specified per project]
+        - Docs/Vault: [To be specified per project]
+        - Tickets: [To be specified per project]
+        - CI/CD: [To be specified per project]
+        - Secrets Manager: [To be specified per project]
+        - Data Stores: [To be specified per project]
         
-        4. ENFORCEMENT
-        - Violations may result in immediate account termination
-        - We may seek injunctive relief and damages
-        - You agree that these restrictions are reasonable and necessary
+        3.2 Permitted Tools/Integrations: Must be explicitly named and approved
         
-        5. SCOPE
-        - Restrictions apply to you and any entities you control
-        - Restrictions are limited to the geographic areas where we operate
-        - Restrictions are limited to the business activities we engage in
+        4) Access Provisioning & RBAC
+        4.1 Least-Privilege Grants: Access is role-based and limited to minimum necessary repositories, environments, and datasets
+        4.2 Expiry & Review:
+        - Tier 1: expiry ≤ 90 days; review every 90 days
+        - Tier 2: expiry ≤ 60 days; review every 60 days
+        - Tier 3: expiry ≤ 30 days; review every 30 days
         
-        6. SURVIVAL
-        - These restrictions survive termination of your account
-        - Obligations continue for the specified time periods
-        - Severability clause applies if any restriction is invalid
+        5) Endpoint, Identity & Network Controls
+        5.1 Identity: MFA required on all accounts; hardware security keys (FIDO2) required for Tier 3
+        5.2 Devices: Requirements vary by tier from basic encryption to managed devices only
+        5.3 Network: VPN requirements and geo-restrictions based on tier
+        5.4 Session Hygiene: Auto-logout after inactivity (≤ 15 min Tier 2, ≤ 10 min Tier 3)
         
-        By signing this agreement, you acknowledge the importance of protecting the platform ecosystem.
+        6) Data Handling, Storage & DLP
+        6.1 Storage Locations: Confidential/Restricted data must reside only in Designated Systems
+        6.2 Local Copies: Restrictions vary by tier from allowed if encrypted to forbidden
+        6.3 Printing/Export: From discouraged to forbidden based on tier
+        6.4 DLP & Watermarking: Do not remove/alter watermarks, disable copy/paste guards, or bypass download restrictions
+        
+        7) AI/LLM & Automation Policy
+        Default: No uploading or deriving prompts from Confidential/Restricted data to external AI/LLM tools.
+        If Approved: Provider must contractually prohibit training on our data, ensure confidentiality, disable cross-tenant reuse, support deletion and data export, and provide audit logs.
+        
+        8) Incident Response & Breach Notice
+        Report within 24 hours: suspected loss, unauthorized access, malware, misdirected email/share, or credentials compromise.
+        Include scope, timeline, impacted systems/data, mitigations taken, and support needed.
+        
+        9) Return, Deletion & Exit Attestation
+        On request or exit, stop use; return or securely delete all Confidential Information (including derivatives) not held in Designated Systems.
+        Provide Attestation of Return/Deletion within 7 days.
+        Duties of confidentiality/non-exfiltration survive for the period stated in the Platform NDA (typically 5 years from last access).
+        
+        By signing this Addendum, the Participant agrees to comply with project-specific security and confidentiality requirements.
       `
     }
   ]

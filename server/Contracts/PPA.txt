@@ -1,0 +1,145 @@
+AliceSolutions Ventures — Platform Participation Agreement (PPA)
+(Terms of Membership & Contribution for the “Hub”)
+Effective Date: When the Member accepts electronically in the Hub.
+Parties:
+AliceSolutions Ventures Inc. (“AliceSolutions”, “we/us”)
+The business user or individual acting for a business who accepts these terms (“Member”, “you”). This PPA is intended for B2B use.
+If an individual accepts for a company, they represent they have authority to bind that company; “Member” then means that company.
+1) Purpose & Scope
+The Hub provides a secure platform for discovering ventures/projects, subscribing, proposing contributions, collaborating under project-specific NDAs/addenda, and tracking rewards. This PPA governs membership, payments, acceptable use, contribution/IP, security, liability, and enforcement across the platform. It works together with any Mutual NDA and Per-Project NDA/Addenda you sign in the Hub (collectively, the “Legal Pack”). If there’s a conflict, a Per-Project Addendum controls for that project; otherwise the Mutual NDA controls confidentiality, and this PPA controls membership, payments, platform rules, and remedies.
+2) Account, Identity, and Security
+Accurate info: You’ll keep account, billing, and contact details current.
+MFA required: Multi-factor authentication is mandatory for access to any non-public content.
+Access control: Accounts are individual; sharing credentials is prohibited.
+Device & posture: For sensitive projects, we may require device encryption, current patches, and other posture checks before access.
+Audit: Actions in the Hub may be logged for security, compliance, and dispute resolution.
+3) Subscriptions, Billing & Taxes
+Plans: You select a plan (e.g., Member / Pro / Founder). Plan features and limits are shown in the Hub.
+Fees & renewal: Fees are billed in advance and auto-renew each term unless cancelled per Hub instructions.
+Non-payment: If a charge fails, we may suspend or downgrade capabilities (e.g., no new offers/creations) after a grace period.
+Refunds: Unless a plan explicitly states otherwise, fees are non-refundable for the current term (this clause applies to business users; if you are a consumer, mandatory consumer protections may apply despite this term). 
+Ontario
++1
+Legislative Assembly of Ontario
+Taxes: Prices exclude applicable taxes; you’re responsible for them.
+4) Acceptable Use & Community Standards
+You agree not to:
+breach the Legal Pack, attempt unauthorized access, defeat security, or misuse credentials;
+upload malicious code, attempt data scraping/exfiltration, or use automation to harvest content;
+disclose or export non-public materials outside Designated Systems (defined below);
+harass, defame, or discriminate; or violate IP, privacy, or other laws;
+use third-party AI/LLM tools with Confidential Information unless they are explicitly approved for the project as Designated Systems with no training on our data (and contractual confidentiality).
+We may remove content or restrict access that violates these rules.
+5) Confidentiality & Non-Exfiltration (Summary; see NDA)
+Legal Pack binds first. The Mutual NDA and Per-Project Addenda govern confidentiality and non-exfiltration.
+Designated Systems: Only the tools, repos, storage, ticketing, CI/CD, and document vaults we list for a project (in the Hub or provisioning notice) may host Confidential Information.
+AI/LLM usage: Prohibited unless a Per-Project Addendum or tool list expressly allows it under vendor terms that bar training/reuse of our data.
+Personal information: Handle any personal data with safeguards appropriate to sensitivity under PIPEDA and applicable provincial law. 
+Privacy Commissioner Canada
++1
+Justice Laws
+6) Contributions, IP & Licensing
+6.1 Your Background IP. Pre-existing IP you bring remains yours. You grant AliceSolutions and the relevant venture/project a non-exclusive, worldwide, royalty-free license to use your background IP only as needed to use, maintain, and exploit the contributions you make in-project.
+6.2 Foreground IP (project deliverables). Unless a Per-Project Addendum states otherwise, all new work product created for the project (“Foreground IP”) is:
+Assigned to the project owner (AliceSolutions or the venture) upon acceptance and payment/reward issuance; or, where assignment is not permitted,
+Exclusively licensed to the project owner with rights to use, modify, sublicense, and commercialize, irrevocably, for the life of the IP.
+Any OSS you include must be properly declared (license, version, repository) and compatible with the project’s licensing strategy.
+6.3 Moral rights. To the extent permitted, you waive moral rights in Foreground IP or agree not to enforce them against the project owner and its successors.
+6.4 No conflict. You represent you can grant the above rights and your contributions won’t knowingly infringe third-party IP.
+7) Project Offers, Approvals & Provisioning
+Offers: Members may submit structured offers (scope, deliverables, timeline, reward preference, conflict disclosures).
+Shortlist: If shortlisted, you’ll receive a Per-Project NDA/Addenda; no provisioning occurs without signature.
+Provisioning: Access is least-privilege, time-boxed, and revocable; elevated access may require additional approvals.
+Revocation: We may suspend or revoke access to protect security, comply with law, address complaints, or for plan violations.
+8) Data Handling, Privacy & Security
+Safeguards: Maintain administrative, technical, and physical safeguards appropriate to data sensitivity (encryption at rest and in transit where feasible, patching, MFA). 
+Privacy Commissioner Canada
+Justice Laws
+Breach notice: Notify us immediately (within 24 hours) of any suspected unauthorized access, loss, or disclosure involving Confidential Information.
+Subprocessors: Do not engage third-party processors of project data unless expressly allowed in the Per-Project Addenda/Designated Systems list.
+9) Employment Matters; Non-Compete Disclaimer
+The Hub is not an employment platform. Members are independent of AliceSolutions unless a separate written employment/contract is executed. We do not use non-compete clauses for employees where prohibited in Ontario. Reasonable non-solicit/non-circumvention terms may apply via the NDA. 
+Legislative Assembly of Ontario
+Ontario
+Bennett Jones
+10) Takedowns; IP Complaints
+We may remove or restrict content alleged to infringe IP or violate law and may share limited account info to address a credible claim. Repeated infringement may result in suspension or termination.
+11) Disclaimers
+THE HUB, PROJECT LISTINGS, AND ANY MATERIALS ARE PROVIDED “AS IS”. TO THE MAXIMUM EXTENT PERMITTED BY LAW, WE DISCLAIM ALL WARRANTIES, EXPRESS OR IMPLIED (INCLUDING MERCHANTABILITY, FITNESS, AND NON-INFRINGEMENT). You are responsible for validating suitability for your purpose.
+12) Limitation of Liability
+To the fullest extent permitted by law, neither party is liable for indirect, incidental, special, consequential, exemplary, or punitive damages; and each party’s aggregate liability arising out of or related to this PPA is capped at the fees you paid to AliceSolutions in the 12 months before the event giving rise to the claim.
+Carve-outs: The above limits do not apply to: (a) your payment obligations; (b) your breach of confidentiality/non-exfiltration or IP infringement; or (c) a party’s fraud or wilful misconduct (which cannot be limited under Canadian law).
+Fasken
+Lexology
+13) Indemnities
+Your indemnity to us: You will defend and indemnify AliceSolutions, its ventures, and their directors/officers against third-party claims, losses, and costs arising from: (i) your content/contributions; (ii) your breach of this PPA or the Legal Pack; (iii) your violation of law or third-party rights.
+Our indemnity to you: We will defend and indemnify you against third-party claims that the Hub software (as provided by us) directly infringes Canadian IP rights, excluding claims caused by your content/contributions, your modifications, or use with non-approved tools.
+Procedure: Prompt notice, control of defence by indemnifying party, and cooperation by the other party.
+14) Term, Suspension & Termination
+Term: Starts on acceptance and continues until terminated.
+Suspension: We may suspend access for security, legal, or material policy reasons.
+Termination: Either party may terminate for convenience on written notice; we may terminate immediately for your material breach (including non-payment after grace).
+Effect: On termination, fees are not refunded (unless required by law), provisioning ends, and surviving obligations continue (see §16).
+15) E-Signature & Electronic Transactions
+You agree the Hub’s electronic acceptance and e-signature flows satisfy signature requirements under the Ontario Electronic Commerce Act, 2000 (subject to statutory exceptions). Electronic records and signatures have the same legal effect as paper. 
+Ontario
+Legislative Assembly of Ontario
+Practical Law
+perlaw.ca
+16) Survival
+Sections 2–6, 8–13, 15–18 (and any other intended by context) survive termination, together with the NDA’s survival periods (e.g., five (5) years from last access for confidentiality unless longer for trade secrets, and as required for personal information).
+17) Governing Law & Forum
+This PPA is governed by the laws of the Province of Ontario and the federal laws of Canada applicable therein. The parties submit to the exclusive jurisdiction of the courts in Toronto, Ontario.
+18) General
+Order of precedence: Per-Project Addendum → Mutual NDA → this PPA → Hub policies.
+No assignment: You may not assign this PPA without our consent, except to a successor in a merger/acquisition that assumes all obligations.
+Notices: Via the Hub, confirmed email, or courier to your addresses on file.
+Severability: If a term is unenforceable, the rest remains in effect; the term will be enforced to the maximum lawful extent.
+Entire agreement; changes: This PPA + the Legal Pack + published Hub policies = the entire agreement for your platform use. We may update terms prospectively by notice in the Hub; continued use after the effective date = acceptance.
+Exhibit A — Community Code of Conduct (binding)
+Respect & professionalism: Collaborate constructively; no harassment or discrimination.
+No public leaks: Do not discuss or display non-public work on social media, streams, or public repos.
+Identity & conflicts: Use your real identity for contracting; disclose conflicts of interest.
+Security discipline: Follow least-privilege, keep secrets out of screenshots, and use only Designated Systems.
+OSS honesty: Declare all open-source components used, including licenses and links.
+Exhibit B — Contribution & IP Policy (binding)
+Declared scope wins: Stick to the scope in the approved offer; changes require written confirmation in the Hub.
+Definition of “done”: Deliverables must include source artifacts, build/run instructions, and license disclosures.
+IP transfer mechanics: Assignments or exclusive licenses take effect upon acceptance and reward issuance; you’ll sign reasonable confirmatory documents on request.
+License hygiene: No copyleft components in proprietary deliverables unless a Per-Project Addendum expressly allows it.
+Exhibit C — Security & Tooling Rules (binding)
+Designated Systems only: Use the repos, doc vaults, ticketing, CI/CD, and storage listed in the project space.
+No external LLM uploads: Unless the Addendum approves the provider and includes “no-training/no-reuse” commitments.
+MFA and encryption: Required on accounts/devices that access non-public data.
+Breach notice: Report suspected incidents within 24 hours via the Hub’s security channel.
+DLP compliance: Watermarks and copy/export restrictions must not be bypassed.
+Exhibit D — Payments & Rewards (summary; details in plan pages)
+Subscription fees: Prepaid and auto-renewing; non-refundable for current term (B2B).
+Project rewards: Paid as specified in the approved offer (cash, BUZ tokens, equity grants, or combinations).
+Equity grants: Documented separately (vesting, cliffs, forfeiture).
+Set-offs: We may offset amounts you owe us against rewards we owe you.
+Exhibit E — Definitions (selected)
+Designated Systems: The explicitly approved tools/locations for project data.
+Legal Pack: The Mutual NDA + any Per-Project NDA/Addenda you sign in the Hub.
+Foreground IP: Deliverables first created for and as part of a project.
+Background IP: Your pre-existing or independently developed IP.
+Confidential Information: As defined in the Mutual NDA.
+Signature / Acceptance
+By clicking Accept or using the Hub after notice of changes, you agree to this PPA.
+
+Legal notes & sources (Canada)
+E-signatures (Ontario ECA): Electronic signatures can satisfy legal signature requirements (with some exceptions). 
+Ontario
+Legislative Assembly of Ontario
+PIPEDA safeguards: Protect personal information by safeguards appropriate to sensitivity; guidance updated 2024–2025. 
+Privacy Commissioner Canada
++1
+Justice Laws
+Limitation of liability: Canadian courts generally uphold negotiated limitation clauses, with carve-outs (e.g., fraud/wilful misconduct). 
+Fasken
+Lexology
+Ontario non-compete restrictions (employees): Bill 27 amended the ESA to ban most employment non-competes in Ontario (limited exceptions). 
+Legislative Assembly of Ontario
+Ontario
+Consumer protection: If any user is a “consumer,” portions of the Ontario Consumer Protection Act (new CPA 2023 and related updates) may apply despite contractual terms; this PPA is aimed at B2B membership. 
+Ontario

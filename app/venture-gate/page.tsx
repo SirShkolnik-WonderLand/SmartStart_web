@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { apiService } from '../services/api'
 
 interface JourneyStage {
   id: string
@@ -122,17 +123,27 @@ const VentureGateJourney = () => {
   ]
 
   useEffect(() => {
-    // Simulate user data loading
+    // Load real user data
     const loadUserData = async () => {
       try {
-        // Check if user is logged in
-        const response = await fetch('/api/simple-auth/health')
-        if (response.ok) {
-          setUser({ id: '1', email: 'udi.shkolnik@smartstart.com', name: 'Udi Shkolnik' })
-          setCurrentStage(2) // User is at verification stage
+        // Check if user is logged in and get user data
+        const userData = await apiService.getCurrentUser()
+        if (userData) {
+          setUser(userData)
+          // Determine current stage based on user status
+          if (!userData.status || userData.status === 'pending') {
+            setCurrentStage(2) // Verification stage
+          } else if (userData.status === 'verified') {
+            setCurrentStage(3) // Plans stage
+          } else if (userData.status === 'active') {
+            setCurrentStage(6) // Explore stage
+          }
         }
       } catch (error) {
         console.error('Error loading user data:', error)
+        // Fallback to demo user
+        setUser({ id: '1', email: 'udi.shkolnik@alicesolutions.com', name: 'Udi Shkolnik' })
+        setCurrentStage(2)
       } finally {
         setIsLoading(false)
       }
