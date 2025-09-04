@@ -432,7 +432,7 @@ async function getCEODashboard(userId) {
             name: venture.name,
             status: venture.status,
             fundingRaised: venture.fundingRounds.reduce((sum, round) => sum + (round.amountRaised || 0), 0),
-            teamSize: venture.team ? .members.length || 0,
+            teamSize: venture.team?.members.length || 0,
             nextFundingRound: venture.fundingRounds.find(round => round.status === 'PLANNED')
         })),
         kpis: {
@@ -563,7 +563,7 @@ async function getCFODashboard(userId) {
         sum + venture.fundingRounds.reduce((roundSum, round) => roundSum + (round.amountRaised || 0), 0), 0);
 
     const monthlyRevenue = subscriptions.reduce((sum, sub) =>
-        sum + (sub.plan ? .price || 0), 0);
+        sum + (sub.plan?.price || 0), 0);
 
     const totalInvoiced = invoices.reduce((sum, invoice) => sum + invoice.amount, 0);
     const totalPaid = invoices.filter(invoice => invoice.status === 'PAID')
@@ -588,8 +588,8 @@ async function getCFODashboard(userId) {
         revenue: {
             subscriptions: subscriptions.map(sub => ({
                 id: sub.id,
-                plan: sub.plan ? .name,
-                price: sub.plan ? .price,
+                plan: sub.plan?.name,
+                price: sub.plan?.price,
                 status: sub.status,
                 startDate: sub.startDate,
                 endDate: sub.endDate
@@ -754,7 +754,7 @@ async function getEmployeeDashboard(userId) {
             status: task.status,
             priority: task.priority,
             project: task.project.name,
-            sprint: task.sprint ? .name,
+            sprint: task.sprint?.name,
             dueDate: task.dueDate,
             createdAt: task.createdAt
         })),
