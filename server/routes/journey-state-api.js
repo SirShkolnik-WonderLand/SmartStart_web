@@ -404,25 +404,28 @@ async function checkGates(userId, gates) {
                     break;
 
                 case 'LEGAL_PACK':
-                    const legalPack = await prisma.platformLegalPack.findFirst({
+                    // Check if user has signed any legal documents
+                    const legalDoc = await prisma.legalDocumentSignature.findFirst({
                         where: {
                             userId,
                             status: 'SIGNED'
                         }
                     });
-                    isPassed = !!legalPack;
-                    details = legalPack ? { status: legalPack.status, signedAt: legalPack.signedAt } : null;
+                    isPassed = !!legalDoc;
+                    details = legalDoc ? { status: legalDoc.status, signedAt: legalDoc.signedAt } : null;
                     break;
 
                 case 'NDA':
-                    const nda = await prisma.platformNDA.findFirst({
+                    // Check if user has signed any NDA documents
+                    const ndaDoc = await prisma.legalDocumentSignature.findFirst({
                         where: {
                             userId,
-                            status: 'SIGNED'
+                            status: 'SIGNED',
+                            documentType: 'NDA'
                         }
                     });
-                    isPassed = !!nda;
-                    details = nda ? { status: nda.status, signedAt: nda.signedAt } : null;
+                    isPassed = !!ndaDoc;
+                    details = ndaDoc ? { status: ndaDoc.status, signedAt: ndaDoc.signedAt } : null;
                     break;
 
                 case 'VERIFICATION':
@@ -442,6 +445,60 @@ async function checkGates(userId, gates) {
                         firstName: userProfile.firstName,
                         lastName: userProfile.lastName
                     } : null;
+                    break;
+
+                case 'VENTURE':
+                    const venture = await prisma.venture.findFirst({
+                        where: { userId }
+                    });
+                    isPassed = !!venture;
+                    details = venture ? { id: venture.id, name: venture.name } : null;
+                    break;
+
+                case 'TEAM':
+                    const teamMembers = await prisma.teamMember.findMany({
+                        where: { venture: { userId } }
+                    });
+                    isPassed = teamMembers.length > 0;
+                    details = { memberCount: teamMembers.length };
+                    break;
+
+                case 'PROJECT':
+                    const project = await prisma.project.findFirst({
+                        where: { venture: { userId } }
+                    });
+                    isPassed = !!project;
+                    details = project ? { id: project.id, name: project.name } : null;
+                    break;
+
+                case 'LEGAL_ENTITY':
+                    const legalEntity = await prisma.legalEntity.findFirst({
+                        where: { venture: { userId } }
+                    });
+                    isPassed = !!legalEntity;
+                    details = legalEntity ? { id: legalEntity.id, name: legalEntity.name } : null;
+                    break;
+
+                case 'EQUITY':
+                    const capTable = await prisma.capTableEntry.findFirst({
+                        where: { venture: { userId } }
+                    });
+                    isPassed = !!capTable;
+                    details = capTable ? { entries: 1 } : null;
+                    break;
+
+                case 'CONTRACT':
+                    const contract = await prisma.contractOffer.findFirst({
+                        where: { venture: { userId } }
+                    });
+                    isPassed = !!contract;
+                    details = contract ? { id: contract.id, status: contract.status } : null;
+                    break;
+
+                case 'LAUNCH':
+                    // For launch, check if all previous gates are completed
+                    isPassed = true; // This will be handled by the stage completion logic
+                    details = { status: 'ready_for_launch' };
                     break;
 
                 default:
