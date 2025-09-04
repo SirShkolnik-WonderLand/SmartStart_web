@@ -43,8 +43,15 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="w-96">
+    <>
+      <style jsx>{`
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
+      <div className="min-h-screen flex items-center justify-center p-4">
+      <div style={{ width: '320px' }}>
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -52,13 +59,13 @@ export default function LoginPage() {
           transition={{ duration: 0.6 }}
           className="text-center mb-8"
         >
-          <div className="flex items-center justify-center mb-4">
-            <div className="w-12 h-12 bg-gradient-to-r from-green-400 to-blue-500 rounded-xl flex items-center justify-center shadow-lg">
-              <div className="w-6 h-6 bg-white rounded-sm"></div>
+          <div className="flex items-center justify-center mb-3">
+            <div style={{ width: '40px', height: '40px' }} className="bg-gradient-to-r from-green-400 to-blue-500 rounded-lg flex items-center justify-center shadow-lg">
+              <div style={{ width: '20px', height: '20px' }} className="bg-white rounded-sm"></div>
             </div>
           </div>
-          <h1 className="text-2xl font-bold text-white mb-1">SmartStart</h1>
-          <p className="text-gray-400 text-sm">AliceSolutions Ventures</p>
+          <h1 style={{ fontSize: '20px' }} className="font-bold text-white mb-1">SmartStart</h1>
+          <p style={{ fontSize: '12px' }} className="text-gray-400">AliceSolutions Ventures</p>
         </motion.div>
 
         {/* Login Form */}
@@ -68,23 +75,23 @@ export default function LoginPage() {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="card"
         >
-          <div className="text-center mb-6">
-            <h2 className="text-lg font-semibold text-white mb-1">Welcome Back</h2>
-            <p className="text-gray-400 text-sm">Sign in to access your account</p>
+          <div className="text-center mb-4">
+            <h2 style={{ fontSize: '16px' }} className="font-semibold text-white mb-1">Welcome Back</h2>
+            <p style={{ fontSize: '12px' }} className="text-gray-400">Sign in to access your account</p>
           </div>
 
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div className="form-group">
-              <label className="form-label">
+          <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div style={{ marginBottom: '12px' }}>
+              <label style={{ fontSize: '11px', fontWeight: '500', color: '#ffffff', marginBottom: '4px', display: 'block', textTransform: 'uppercase', letterSpacing: '1px' }}>
                 Email Address
               </label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <div style={{ position: 'relative' }}>
+                <Mail style={{ position: 'absolute', left: '8px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af', width: '14px', height: '14px' }} />
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="form-input pl-10"
+                  style={{ width: '100%', padding: '8px 8px 8px 28px', background: '#1a1a1a', border: '1px solid #333333', borderRadius: '4px', color: '#ffffff', fontSize: '13px' }}
                   placeholder="Enter your email"
                   disabled={isLoading}
                   required
@@ -92,17 +99,17 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <div className="form-group">
-              <label className="form-label">
+            <div style={{ marginBottom: '12px' }}>
+              <label style={{ fontSize: '11px', fontWeight: '500', color: '#ffffff', marginBottom: '4px', display: 'block', textTransform: 'uppercase', letterSpacing: '1px' }}>
                 Password
               </label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <div style={{ position: 'relative' }}>
+                <Lock style={{ position: 'absolute', left: '8px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af', width: '14px', height: '14px' }} />
                 <input
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="form-input pl-10 pr-10"
+                  style={{ width: '100%', padding: '8px 32px 8px 28px', background: '#1a1a1a', border: '1px solid #333333', borderRadius: '4px', color: '#ffffff', fontSize: '13px' }}
                   placeholder="Enter your password"
                   disabled={isLoading}
                   required
@@ -110,9 +117,9 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300"
+                  style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af', background: 'none', border: 'none', cursor: 'pointer' }}
                 >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  {showPassword ? <EyeOff style={{ width: '14px', height: '14px' }} /> : <Eye style={{ width: '14px', height: '14px' }} />}
                 </button>
               </div>
             </div>
@@ -131,29 +138,43 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="btn btn-primary w-full py-2.5"
+              style={{ 
+                width: '100%', 
+                padding: '10px 16px', 
+                background: '#00ff88', 
+                color: '#000000', 
+                border: 'none', 
+                borderRadius: '4px', 
+                fontSize: '13px', 
+                fontWeight: '600', 
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '6px'
+              }}
             >
               {isLoading ? (
-                <span className="flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                <>
+                  <div style={{ width: '14px', height: '14px', border: '2px solid #000000', borderTop: '2px solid transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
                   Signing In...
-                </span>
+                </>
               ) : (
-                <span className="flex items-center justify-center">
+                <>
                   Sign In
-                  <ArrowRight className="ml-2 w-4 h-4" />
-                </span>
+                  <ArrowRight style={{ width: '14px', height: '14px' }} />
+                </>
               )}
             </button>
           </form>
 
           {/* Registration Link */}
-          <div className="mt-6 text-center">
-            <p className="text-gray-400 text-sm">
+          <div style={{ marginTop: '16px', textAlign: 'center' }}>
+            <p style={{ fontSize: '11px', color: '#9ca3af' }}>
               Don't have an account?{' '}
               <a
                 href="/register"
-                className="text-green-400 hover:text-green-300 font-medium underline"
+                style={{ color: '#00ff88', textDecoration: 'underline' }}
               >
                 Create Account
               </a>
@@ -161,6 +182,7 @@ export default function LoginPage() {
           </div>
         </motion.div>
       </div>
-    </div>
+      </div>
+    </>
   )
 }
