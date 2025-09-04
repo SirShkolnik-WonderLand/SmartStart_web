@@ -1,17 +1,17 @@
 const express = require('express');
 const router = express.Router();
 const { PrismaClient } = require('@prisma/client');
-const { authenticateToken, requirePermission } = require('../middleware/unified-auth');
+const { authenticateToken, requirePermission } = require('../middleware/auth');
 
 const prisma = new PrismaClient();
 
 // ===== ROLE-BASED DASHBOARD SYSTEM =====
 
 // Get user's role-based dashboard
-router.get('/dashboard', authenticateToken, async (req, res) => {
+router.get('/dashboard', authenticateToken, async(req, res) => {
     try {
         const userId = req.user.id;
-        
+
         // Get user with roles and permissions
         const user = await prisma.user.findUnique({
             where: { id: userId },
@@ -55,7 +55,7 @@ router.get('/dashboard', authenticateToken, async (req, res) => {
         // Determine user type and primary role
         const userType = determineUserType(user);
         const primaryRole = getPrimaryRole(user.roles);
-        
+
         // Get role-specific dashboard data
         const dashboardData = await getRoleBasedDashboard(userId, userType, primaryRole, user);
 
@@ -87,10 +87,10 @@ router.get('/dashboard', authenticateToken, async (req, res) => {
 });
 
 // Get startup founder dashboard
-router.get('/dashboard/founder', authenticateToken, async (req, res) => {
+router.get('/dashboard/founder', authenticateToken, async(req, res) => {
     try {
         const userId = req.user.id;
-        
+
         // Verify user is a founder
         const founderRole = await verifyFounderRole(userId);
         if (!founderRole) {
@@ -121,10 +121,10 @@ router.get('/dashboard/founder', authenticateToken, async (req, res) => {
 });
 
 // Get team member dashboard
-router.get('/dashboard/team-member', authenticateToken, async (req, res) => {
+router.get('/dashboard/team-member', authenticateToken, async(req, res) => {
     try {
         const userId = req.user.id;
-        
+
         const dashboardData = await getTeamMemberDashboard(userId);
 
         res.json({
@@ -146,10 +146,10 @@ router.get('/dashboard/team-member', authenticateToken, async (req, res) => {
 });
 
 // Get company manager dashboard
-router.get('/dashboard/manager', authenticateToken, async (req, res) => {
+router.get('/dashboard/manager', authenticateToken, async(req, res) => {
     try {
         const userId = req.user.id;
-        
+
         // Verify user is a manager
         const managerRole = await verifyManagerRole(userId);
         if (!managerRole) {
@@ -180,10 +180,10 @@ router.get('/dashboard/manager', authenticateToken, async (req, res) => {
 });
 
 // Get freelancer dashboard
-router.get('/dashboard/freelancer', authenticateToken, async (req, res) => {
+router.get('/dashboard/freelancer', authenticateToken, async(req, res) => {
     try {
         const userId = req.user.id;
-        
+
         const dashboardData = await getFreelancerDashboard(userId);
 
         res.json({
@@ -208,7 +208,7 @@ router.get('/dashboard/freelancer', authenticateToken, async (req, res) => {
 
 function determineUserType(user) {
     const roles = user.roles.map(r => r.role.name);
-    
+
     if (roles.includes('FOUNDER') || roles.includes('CEO')) {
         return 'FOUNDER';
     } else if (roles.includes('MANAGER') || roles.includes('DIRECTOR')) {
@@ -224,15 +224,15 @@ function determineUserType(user) {
 
 function getPrimaryRole(userRoles) {
     const priorityRoles = ['FOUNDER', 'CEO', 'DIRECTOR', 'MANAGER', 'TEAM_MEMBER', 'FREELANCER'];
-    
+
     for (const priorityRole of priorityRoles) {
         const role = userRoles.find(r => r.role.name === priorityRole);
         if (role) {
             return role.role.name;
         }
     }
-    
-    return userRoles[0]?.role.name || 'USER';
+
+    return userRoles[0] ? .role.name || 'USER';
 }
 
 async function getRoleBasedDashboard(userId, userType, primaryRole, user) {
@@ -312,7 +312,7 @@ async function getFounderDashboard(userId) {
 async function getManagerDashboard(userId) {
     // Get companies managed by user
     const managedCompanies = await prisma.companyMember.findMany({
-        where: { 
+        where: {
             userId,
             role: { in: ['MANAGER', 'DIRECTOR', 'CEO'] }
         },
@@ -337,7 +337,7 @@ async function getManagerDashboard(userId) {
 
     // Get project status
     const projects = await prisma.project.findMany({
-        where: { 
+        where: {
             companyId: { in: managedCompanies.map(m => m.companyId) }
         },
         include: {
@@ -363,7 +363,7 @@ async function getManagerDashboard(userId) {
         },
         teams: {
             performance: teamPerformance,
-            totalMembers: managedCompanies.reduce((sum, m) => 
+            totalMembers: managedCompanies.reduce((sum, m) =>
                 sum + m.company.teams.reduce((tSum, t) => tSum + t.members.length, 0), 0
             )
         },
@@ -456,7 +456,7 @@ async function getFreelancerDashboard(userId) {
 
     // Get client relationships
     const clients = await prisma.client.findMany({
-        where: { 
+        where: {
             projects: { some: { userId } }
         },
         include: {

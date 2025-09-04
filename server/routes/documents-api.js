@@ -1,6 +1,6 @@
 const express = require('express');
 const { PrismaClient } = require('@prisma/client');
-const { authenticateToken } = require('../middleware/unified-auth');
+const { authenticateToken } = require('../middleware/auth');
 const fs = require('fs');
 const fsp = require('fs').promises;
 const path = require('path');

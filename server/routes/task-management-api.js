@@ -1,14 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const { PrismaClient } = require('@prisma/client');
-const { authenticateToken, requirePermission } = require('../middleware/unified-auth');
+const { authenticateToken, requirePermission } = require('../middleware/auth');
 
 const prisma = new PrismaClient();
 
 // ===== TASK MANAGEMENT SYSTEM =====
 
 // Get user's tasks
-router.get('/tasks', authenticateToken, async (req, res) => {
+router.get('/tasks', authenticateToken, async(req, res) => {
     try {
         const userId = req.user.id;
         const { status, priority, projectId, dueDate } = req.query;
@@ -84,7 +84,7 @@ router.get('/tasks', authenticateToken, async (req, res) => {
 });
 
 // Get today's tasks
-router.get('/tasks/today', authenticateToken, async (req, res) => {
+router.get('/tasks/today', authenticateToken, async(req, res) => {
     try {
         const userId = req.user.id;
         const today = new Date();
@@ -158,7 +158,7 @@ router.get('/tasks/today', authenticateToken, async (req, res) => {
 });
 
 // Get upcoming tasks
-router.get('/tasks/upcoming', authenticateToken, async (req, res) => {
+router.get('/tasks/upcoming', authenticateToken, async(req, res) => {
     try {
         const userId = req.user.id;
         const { days = 7 } = req.query;
@@ -209,7 +209,7 @@ router.get('/tasks/upcoming', authenticateToken, async (req, res) => {
 });
 
 // Update task status
-router.put('/tasks/:taskId/status', authenticateToken, async (req, res) => {
+router.put('/tasks/:taskId/status', authenticateToken, async(req, res) => {
     try {
         const { taskId } = req.params;
         const { status, notes, completionTime } = req.body;
@@ -269,7 +269,7 @@ router.put('/tasks/:taskId/status', authenticateToken, async (req, res) => {
 });
 
 // Add task notes
-router.post('/tasks/:taskId/notes', authenticateToken, async (req, res) => {
+router.post('/tasks/:taskId/notes', authenticateToken, async(req, res) => {
     try {
         const { taskId } = req.params;
         const { note, isPrivate } = req.body;
@@ -318,7 +318,7 @@ router.post('/tasks/:taskId/notes', authenticateToken, async (req, res) => {
 });
 
 // Get task performance metrics
-router.get('/tasks/performance', authenticateToken, async (req, res) => {
+router.get('/tasks/performance', authenticateToken, async(req, res) => {
     try {
         const userId = req.user.id;
         const { period = 'month' } = req.query;
@@ -353,14 +353,14 @@ router.get('/tasks/performance', authenticateToken, async (req, res) => {
 
         // Calculate metrics
         const totalTasks = completedTasks.length;
-        const onTimeTasks = completedTasks.filter(t => 
+        const onTimeTasks = completedTasks.filter(t =>
             t.completedAt <= t.dueDate
         ).length;
         const lateTasks = totalTasks - onTimeTasks;
         const onTimeRate = totalTasks > 0 ? (onTimeTasks / totalTasks) * 100 : 0;
 
         // Calculate average completion time
-        const avgCompletionTime = completedTasks.length > 0 ? 
+        const avgCompletionTime = completedTasks.length > 0 ?
             completedTasks.reduce((sum, t) => sum + (t.completionTime || 0), 0) / completedTasks.length : 0;
 
         // Get performance by priority
@@ -401,7 +401,7 @@ router.get('/tasks/performance', authenticateToken, async (req, res) => {
 });
 
 // Get task recommendations
-router.get('/tasks/recommendations', authenticateToken, async (req, res) => {
+router.get('/tasks/recommendations', authenticateToken, async(req, res) => {
     try {
         const userId = req.user.id;
 
@@ -526,13 +526,13 @@ function getStartDate(period) {
 
 function calculatePerformanceByPriority(tasks) {
     const priorityGroups = {};
-    
+
     tasks.forEach(task => {
         const priority = task.priority || 'MEDIUM';
         if (!priorityGroups[priority]) {
             priorityGroups[priority] = { total: 0, onTime: 0, late: 0 };
         }
-        
+
         priorityGroups[priority].total++;
         if (task.completedAt <= task.dueDate) {
             priorityGroups[priority].onTime++;
@@ -552,18 +552,18 @@ function calculatePerformanceByPriority(tasks) {
 
 function calculatePerformanceByProject(tasks) {
     const projectGroups = {};
-    
+
     tasks.forEach(task => {
         const projectId = task.projectId || 'NO_PROJECT';
         if (!projectGroups[projectId]) {
-            projectGroups[projectId] = { 
-                total: 0, 
-                onTime: 0, 
+            projectGroups[projectId] = {
+                total: 0,
+                onTime: 0,
                 late: 0,
-                projectName: task.project?.name || 'Unknown Project'
+                projectName: task.project ? .name || 'Unknown Project'
             };
         }
-        
+
         projectGroups[projectId].total++;
         if (task.completedAt <= task.dueDate) {
             projectGroups[projectId].onTime++;

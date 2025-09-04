@@ -1,26 +1,26 @@
 const express = require('express');
 const router = express.Router();
 const { PrismaClient } = require('@prisma/client');
-const { authenticateToken, requirePermission } = require('../middleware/unified-auth');
+const { authenticateToken, requirePermission } = require('../middleware/auth');
 
 const prisma = new PrismaClient();
 
 // ===== BUSINESS LOGIC API SYSTEM FOR 1000+ USERS =====
 
 // Health check for Business Logic system
-router.get('/health', async (req, res) => {
+router.get('/health', async(req, res) => {
     try {
         const workflows = await prisma.workflow.count();
         const approvals = await prisma.approval.count();
         const notifications = await prisma.notification.count();
         const integrations = await prisma.integration.count();
-        
+
         res.json({
             success: true,
             message: 'Business Logic System is healthy',
-            stats: { 
-                workflows, 
-                approvals, 
+            stats: {
+                workflows,
+                approvals,
                 notifications,
                 integrations,
                 eventSystem: 'ACTIVE',
@@ -31,10 +31,10 @@ router.get('/health', async (req, res) => {
         });
     } catch (error) {
         console.error('Business Logic health check failed:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Business Logic System health check failed', 
-            error: error.message 
+        res.status(500).json({
+            success: false,
+            message: 'Business Logic System health check failed',
+            error: error.message
         });
     }
 });
@@ -42,7 +42,7 @@ router.get('/health', async (req, res) => {
 // ===== WORKFLOW ENGINE =====
 
 // Create workflow
-router.post('/workflows', authenticateToken, async (req, res) => {
+router.post('/workflows', authenticateToken, async(req, res) => {
     try {
         const { name, description, steps, triggers, conditions } = req.body;
         const userId = req.user.id;
@@ -66,16 +66,16 @@ router.post('/workflows', authenticateToken, async (req, res) => {
         });
     } catch (error) {
         console.error('Error creating workflow:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Failed to create workflow', 
-            error: error.message 
+        res.status(500).json({
+            success: false,
+            message: 'Failed to create workflow',
+            error: error.message
         });
     }
 });
 
 // Execute workflow
-router.post('/workflows/:workflowId/execute', authenticateToken, async (req, res) => {
+router.post('/workflows/:workflowId/execute', authenticateToken, async(req, res) => {
     try {
         const { workflowId } = req.params;
         const { context, data } = req.body;
@@ -90,21 +90,21 @@ router.post('/workflows/:workflowId/execute', authenticateToken, async (req, res
         });
     } catch (error) {
         console.error('Error executing workflow:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Failed to execute workflow', 
-            error: error.message 
+        res.status(500).json({
+            success: false,
+            message: 'Failed to execute workflow',
+            error: error.message
         });
     }
 });
 
 // Get workflow status
-router.get('/workflows/:workflowId/status', authenticateToken, async (req, res) => {
+router.get('/workflows/:workflowId/status', authenticateToken, async(req, res) => {
     try {
         const { workflowId } = req.params;
-        
+
         const status = await getWorkflowStatus(workflowId);
-        
+
         res.json({
             success: true,
             data: status,
@@ -112,10 +112,10 @@ router.get('/workflows/:workflowId/status', authenticateToken, async (req, res) 
         });
     } catch (error) {
         console.error('Error getting workflow status:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Failed to retrieve workflow status', 
-            error: error.message 
+        res.status(500).json({
+            success: false,
+            message: 'Failed to retrieve workflow status',
+            error: error.message
         });
     }
 });
@@ -123,7 +123,7 @@ router.get('/workflows/:workflowId/status', authenticateToken, async (req, res) 
 // ===== APPROVAL SYSTEM =====
 
 // Create approval request
-router.post('/approvals', authenticateToken, async (req, res) => {
+router.post('/approvals', authenticateToken, async(req, res) => {
     try {
         const { type, entityId, entityType, approvers, data, priority = 'MEDIUM' } = req.body;
         const userId = req.user.id;
@@ -145,16 +145,16 @@ router.post('/approvals', authenticateToken, async (req, res) => {
         });
     } catch (error) {
         console.error('Error creating approval request:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Failed to create approval request', 
-            error: error.message 
+        res.status(500).json({
+            success: false,
+            message: 'Failed to create approval request',
+            error: error.message
         });
     }
 });
 
 // Approve/Reject request
-router.post('/approvals/:approvalId/decision', authenticateToken, async (req, res) => {
+router.post('/approvals/:approvalId/decision', authenticateToken, async(req, res) => {
     try {
         const { approvalId } = req.params;
         const { decision, comments } = req.body;
@@ -169,21 +169,21 @@ router.post('/approvals/:approvalId/decision', authenticateToken, async (req, re
         });
     } catch (error) {
         console.error('Error processing approval decision:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Failed to process approval decision', 
-            error: error.message 
+        res.status(500).json({
+            success: false,
+            message: 'Failed to process approval decision',
+            error: error.message
         });
     }
 });
 
 // Get pending approvals
-router.get('/approvals/pending', authenticateToken, async (req, res) => {
+router.get('/approvals/pending', authenticateToken, async(req, res) => {
     try {
         const userId = req.user.id;
-        
+
         const pendingApprovals = await getPendingApprovals(userId);
-        
+
         res.json({
             success: true,
             data: pendingApprovals,
@@ -191,10 +191,10 @@ router.get('/approvals/pending', authenticateToken, async (req, res) => {
         });
     } catch (error) {
         console.error('Error getting pending approvals:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Failed to retrieve pending approvals', 
-            error: error.message 
+        res.status(500).json({
+            success: false,
+            message: 'Failed to retrieve pending approvals',
+            error: error.message
         });
     }
 });
@@ -202,7 +202,7 @@ router.get('/approvals/pending', authenticateToken, async (req, res) => {
 // ===== NOTIFICATION SYSTEM =====
 
 // Send notification
-router.post('/notifications', authenticateToken, async (req, res) => {
+router.post('/notifications', authenticateToken, async(req, res) => {
     try {
         const { recipients, type, title, message, data, priority = 'MEDIUM' } = req.body;
         const userId = req.user.id;
@@ -224,22 +224,22 @@ router.post('/notifications', authenticateToken, async (req, res) => {
         });
     } catch (error) {
         console.error('Error sending notification:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Failed to send notification', 
-            error: error.message 
+        res.status(500).json({
+            success: false,
+            message: 'Failed to send notification',
+            error: error.message
         });
     }
 });
 
 // Get user notifications
-router.get('/notifications/:userId', authenticateToken, async (req, res) => {
+router.get('/notifications/:userId', authenticateToken, async(req, res) => {
     try {
         const { userId } = req.params;
         const { unreadOnly = false, limit = 50 } = req.query;
-        
+
         const notifications = await getUserNotifications(userId, unreadOnly, limit);
-        
+
         res.json({
             success: true,
             data: notifications,
@@ -247,16 +247,16 @@ router.get('/notifications/:userId', authenticateToken, async (req, res) => {
         });
     } catch (error) {
         console.error('Error getting user notifications:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Failed to retrieve user notifications', 
-            error: error.message 
+        res.status(500).json({
+            success: false,
+            message: 'Failed to retrieve user notifications',
+            error: error.message
         });
     }
 });
 
 // Mark notification as read
-router.put('/notifications/:notificationId/read', authenticateToken, async (req, res) => {
+router.put('/notifications/:notificationId/read', authenticateToken, async(req, res) => {
     try {
         const { notificationId } = req.params;
         const userId = req.user.id;
@@ -269,10 +269,10 @@ router.put('/notifications/:notificationId/read', authenticateToken, async (req,
         });
     } catch (error) {
         console.error('Error marking notification as read:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Failed to mark notification as read', 
-            error: error.message 
+        res.status(500).json({
+            success: false,
+            message: 'Failed to mark notification as read',
+            error: error.message
         });
     }
 });
@@ -280,7 +280,7 @@ router.put('/notifications/:notificationId/read', authenticateToken, async (req,
 // ===== EVENT SYSTEM =====
 
 // Emit event
-router.post('/events', authenticateToken, async (req, res) => {
+router.post('/events', authenticateToken, async(req, res) => {
     try {
         const { eventType, data, source, target } = req.body;
         const userId = req.user.id;
@@ -300,16 +300,16 @@ router.post('/events', authenticateToken, async (req, res) => {
         });
     } catch (error) {
         console.error('Error emitting event:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Failed to emit event', 
-            error: error.message 
+        res.status(500).json({
+            success: false,
+            message: 'Failed to emit event',
+            error: error.message
         });
     }
 });
 
 // Subscribe to events
-router.post('/events/subscribe', authenticateToken, async (req, res) => {
+router.post('/events/subscribe', authenticateToken, async(req, res) => {
     try {
         const { eventTypes, callbackUrl, filters } = req.body;
         const userId = req.user.id;
@@ -328,10 +328,10 @@ router.post('/events/subscribe', authenticateToken, async (req, res) => {
         });
     } catch (error) {
         console.error('Error subscribing to events:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Failed to subscribe to events', 
-            error: error.message 
+        res.status(500).json({
+            success: false,
+            message: 'Failed to subscribe to events',
+            error: error.message
         });
     }
 });
@@ -339,7 +339,7 @@ router.post('/events/subscribe', authenticateToken, async (req, res) => {
 // ===== INTEGRATION HUB =====
 
 // Create integration
-router.post('/integrations', authenticateToken, async (req, res) => {
+router.post('/integrations', authenticateToken, async(req, res) => {
     try {
         const { name, type, config, credentials } = req.body;
         const userId = req.user.id;
@@ -359,21 +359,21 @@ router.post('/integrations', authenticateToken, async (req, res) => {
         });
     } catch (error) {
         console.error('Error creating integration:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Failed to create integration', 
-            error: error.message 
+        res.status(500).json({
+            success: false,
+            message: 'Failed to create integration',
+            error: error.message
         });
     }
 });
 
 // Test integration
-router.post('/integrations/:integrationId/test', authenticateToken, async (req, res) => {
+router.post('/integrations/:integrationId/test', authenticateToken, async(req, res) => {
     try {
         const { integrationId } = req.params;
-        
+
         const testResult = await testIntegration(integrationId);
-        
+
         res.json({
             success: true,
             data: testResult,
@@ -381,10 +381,10 @@ router.post('/integrations/:integrationId/test', authenticateToken, async (req, 
         });
     } catch (error) {
         console.error('Error testing integration:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Failed to test integration', 
-            error: error.message 
+        res.status(500).json({
+            success: false,
+            message: 'Failed to test integration',
+            error: error.message
         });
     }
 });
@@ -392,7 +392,7 @@ router.post('/integrations/:integrationId/test', authenticateToken, async (req, 
 // ===== DATA PIPELINE =====
 
 // Start data pipeline
-router.post('/pipelines', authenticateToken, async (req, res) => {
+router.post('/pipelines', authenticateToken, async(req, res) => {
     try {
         const { name, source, destination, transformations, schedule } = req.body;
         const userId = req.user.id;
@@ -413,21 +413,21 @@ router.post('/pipelines', authenticateToken, async (req, res) => {
         });
     } catch (error) {
         console.error('Error starting data pipeline:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Failed to start data pipeline', 
-            error: error.message 
+        res.status(500).json({
+            success: false,
+            message: 'Failed to start data pipeline',
+            error: error.message
         });
     }
 });
 
 // Get pipeline status
-router.get('/pipelines/:pipelineId/status', authenticateToken, async (req, res) => {
+router.get('/pipelines/:pipelineId/status', authenticateToken, async(req, res) => {
     try {
         const { pipelineId } = req.params;
-        
+
         const status = await getPipelineStatus(pipelineId);
-        
+
         res.json({
             success: true,
             data: status,
@@ -435,10 +435,10 @@ router.get('/pipelines/:pipelineId/status', authenticateToken, async (req, res) 
         });
     } catch (error) {
         console.error('Error getting pipeline status:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Failed to retrieve pipeline status', 
-            error: error.message 
+        res.status(500).json({
+            success: false,
+            message: 'Failed to retrieve pipeline status',
+            error: error.message
         });
     }
 });
@@ -446,7 +446,7 @@ router.get('/pipelines/:pipelineId/status', authenticateToken, async (req, res) 
 // ===== ANALYTICS ENGINE =====
 
 // Generate analytics report
-router.post('/analytics/reports', authenticateToken, async (req, res) => {
+router.post('/analytics/reports', authenticateToken, async(req, res) => {
     try {
         const { reportType, parameters, timeframe, format = 'JSON' } = req.body;
         const userId = req.user.id;
@@ -466,21 +466,21 @@ router.post('/analytics/reports', authenticateToken, async (req, res) => {
         });
     } catch (error) {
         console.error('Error generating analytics report:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Failed to generate analytics report', 
-            error: error.message 
+        res.status(500).json({
+            success: false,
+            message: 'Failed to generate analytics report',
+            error: error.message
         });
     }
 });
 
 // Get real-time metrics
-router.get('/analytics/metrics/realtime', authenticateToken, async (req, res) => {
+router.get('/analytics/metrics/realtime', authenticateToken, async(req, res) => {
     try {
         const { metricTypes } = req.query;
-        
+
         const metrics = await getRealtimeMetrics(metricTypes);
-        
+
         res.json({
             success: true,
             data: metrics,
@@ -488,10 +488,10 @@ router.get('/analytics/metrics/realtime', authenticateToken, async (req, res) =>
         });
     } catch (error) {
         console.error('Error getting real-time metrics:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Failed to retrieve real-time metrics', 
-            error: error.message 
+        res.status(500).json({
+            success: false,
+            message: 'Failed to retrieve real-time metrics',
+            error: error.message
         });
     }
 });
@@ -499,10 +499,10 @@ router.get('/analytics/metrics/realtime', authenticateToken, async (req, res) =>
 // ===== AUDIT SYSTEM =====
 
 // Get audit trail
-router.get('/audit/trail', authenticateToken, async (req, res) => {
+router.get('/audit/trail', authenticateToken, async(req, res) => {
     try {
         const { entityType, entityId, userId, action, startDate, endDate, limit = 100 } = req.query;
-        
+
         const auditTrail = await getAuditTrail({
             entityType,
             entityId,
@@ -512,7 +512,7 @@ router.get('/audit/trail', authenticateToken, async (req, res) => {
             endDate,
             limit
         });
-        
+
         res.json({
             success: true,
             data: auditTrail,
@@ -520,16 +520,16 @@ router.get('/audit/trail', authenticateToken, async (req, res) => {
         });
     } catch (error) {
         console.error('Error getting audit trail:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Failed to retrieve audit trail', 
-            error: error.message 
+        res.status(500).json({
+            success: false,
+            message: 'Failed to retrieve audit trail',
+            error: error.message
         });
     }
 });
 
 // Log audit event
-router.post('/audit/log', authenticateToken, async (req, res) => {
+router.post('/audit/log', authenticateToken, async(req, res) => {
     try {
         const { entityType, entityId, action, data, metadata } = req.body;
         const userId = req.user.id;
@@ -550,10 +550,10 @@ router.post('/audit/log', authenticateToken, async (req, res) => {
         });
     } catch (error) {
         console.error('Error logging audit event:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Failed to log audit event', 
-            error: error.message 
+        res.status(500).json({
+            success: false,
+            message: 'Failed to log audit event',
+            error: error.message
         });
     }
 });
@@ -561,10 +561,10 @@ router.post('/audit/log', authenticateToken, async (req, res) => {
 // ===== PERFORMANCE MONITORING =====
 
 // Get system performance
-router.get('/performance/system', authenticateToken, async (req, res) => {
+router.get('/performance/system', authenticateToken, async(req, res) => {
     try {
         const performance = await getSystemPerformance();
-        
+
         res.json({
             success: true,
             data: performance,
@@ -572,21 +572,21 @@ router.get('/performance/system', authenticateToken, async (req, res) => {
         });
     } catch (error) {
         console.error('Error getting system performance:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Failed to retrieve system performance', 
-            error: error.message 
+        res.status(500).json({
+            success: false,
+            message: 'Failed to retrieve system performance',
+            error: error.message
         });
     }
 });
 
 // Get API performance
-router.get('/performance/api', authenticateToken, async (req, res) => {
+router.get('/performance/api', authenticateToken, async(req, res) => {
     try {
         const { endpoint, timeframe = '1h' } = req.query;
-        
+
         const performance = await getAPIPerformance(endpoint, timeframe);
-        
+
         res.json({
             success: true,
             data: performance,
@@ -594,10 +594,10 @@ router.get('/performance/api', authenticateToken, async (req, res) => {
         });
     } catch (error) {
         console.error('Error getting API performance:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Failed to retrieve API performance', 
-            error: error.message 
+        res.status(500).json({
+            success: false,
+            message: 'Failed to retrieve API performance',
+            error: error.message
         });
     }
 });
@@ -682,18 +682,16 @@ async function processApprovalDecision(approvalId, decision, comments, userId) {
 
 async function getPendingApprovals(userId) {
     // Get pending approvals for user
-    return [
-        {
-            id: 'approval_1',
-            type: 'USER_ROLE_CHANGE',
-            entityId: 'user_123',
-            entityType: 'User',
-            priority: 'HIGH',
-            requester: 'John Doe',
-            createdAt: new Date(),
-            data: { newRole: 'MANAGER' }
-        }
-    ];
+    return [{
+        id: 'approval_1',
+        type: 'USER_ROLE_CHANGE',
+        entityId: 'user_123',
+        entityType: 'User',
+        priority: 'HIGH',
+        requester: 'John Doe',
+        createdAt: new Date(),
+        data: { newRole: 'MANAGER' }
+    }];
 }
 
 async function sendNotification({ recipients, type, title, message, data, priority, senderId }) {
@@ -716,17 +714,15 @@ async function sendNotification({ recipients, type, title, message, data, priori
 
 async function getUserNotifications(userId, unreadOnly, limit) {
     // Get user notifications
-    return [
-        {
-            id: 'notif_1',
-            type: 'TASK_ASSIGNED',
-            title: 'New Task Assigned',
-            message: 'You have been assigned a new task',
-            isRead: false,
-            priority: 'MEDIUM',
-            createdAt: new Date()
-        }
-    ];
+    return [{
+        id: 'notif_1',
+        type: 'TASK_ASSIGNED',
+        title: 'New Task Assigned',
+        message: 'You have been assigned a new task',
+        isRead: false,
+        priority: 'MEDIUM',
+        createdAt: new Date()
+    }];
 }
 
 async function markNotificationAsRead(notificationId, userId) {
@@ -850,17 +846,15 @@ async function getRealtimeMetrics(metricTypes) {
 
 async function getAuditTrail({ entityType, entityId, userId, action, startDate, endDate, limit }) {
     // Get audit trail
-    return [
-        {
-            id: 'audit_1',
-            entityType,
-            entityId,
-            action: 'UPDATE',
-            userId,
-            data: { changes: {} },
-            timestamp: new Date()
-        }
-    ];
+    return [{
+        id: 'audit_1',
+        entityType,
+        entityId,
+        action: 'UPDATE',
+        userId,
+        data: { changes: {} },
+        timestamp: new Date()
+    }];
 }
 
 async function logAuditEvent({ entityType, entityId, action, data, metadata, userId }) {

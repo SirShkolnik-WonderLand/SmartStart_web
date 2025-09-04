@@ -1,14 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const { PrismaClient } = require('@prisma/client');
-const { authenticateToken, requirePermission } = require('../middleware/unified-auth');
+const { authenticateToken, requirePermission } = require('../middleware/auth');
 
 const prisma = new PrismaClient();
 
 // ===== USER GAMIFICATION DASHBOARD =====
 
 // Get user gamification dashboard
-router.get('/dashboard/:userId', authenticateToken, async (req, res) => {
+router.get('/dashboard/:userId', authenticateToken, async(req, res) => {
     try {
         const { userId } = req.params;
         const requestingUser = req.user;
@@ -90,10 +90,10 @@ router.get('/dashboard/:userId', authenticateToken, async (req, res) => {
         // Get level progression
         const currentLevel = user.level;
         const currentXP = user.xp;
-        
+
         // Calculate next level requirements
         const levelRequirements = calculateLevelRequirements(currentLevel, currentXP);
-        
+
         // Get leaderboard position
         const leaderboardPosition = await getLeaderboardPosition(userId, currentXP);
 
@@ -128,7 +128,7 @@ router.get('/dashboard/:userId', authenticateToken, async (req, res) => {
                     current: skills,
                     progress: skillProgress,
                     totalSkills: skills.length,
-                    averageLevel: skills.length > 0 ? 
+                    averageLevel: skills.length > 0 ?
                         skills.reduce((sum, s) => sum + getSkillLevelValue(s.level), 0) / skills.length : 0
                 },
                 achievements: {
@@ -154,7 +154,7 @@ router.get('/dashboard/:userId', authenticateToken, async (req, res) => {
 });
 
 // Get user XP breakdown
-router.get('/dashboard/:userId/xp', authenticateToken, async (req, res) => {
+router.get('/dashboard/:userId/xp', authenticateToken, async(req, res) => {
     try {
         const { userId } = req.params;
         const requestingUser = req.user;
@@ -219,7 +219,7 @@ router.get('/dashboard/:userId/xp', authenticateToken, async (req, res) => {
 });
 
 // Get user skill development
-router.get('/dashboard/:userId/skills', authenticateToken, async (req, res) => {
+router.get('/dashboard/:userId/skills', authenticateToken, async(req, res) => {
     try {
         const { userId } = req.params;
         const requestingUser = req.user;
@@ -251,9 +251,9 @@ router.get('/dashboard/:userId/skills', authenticateToken, async (req, res) => {
         // Calculate skill growth
         const skillGrowth = skills.map(userSkill => {
             const history = skillHistory.filter(h => h.skillId === userSkill.skillId);
-            const growth = history.length > 1 ? 
+            const growth = history.length > 1 ?
                 history[0].level - history[history.length - 1].level : 0;
-            
+
             return {
                 ...userSkill,
                 growth,
@@ -267,7 +267,7 @@ router.get('/dashboard/:userId/skills', authenticateToken, async (req, res) => {
                 current: skillGrowth,
                 history: skillHistory,
                 totalSkills: skills.length,
-                averageLevel: skills.length > 0 ? 
+                averageLevel: skills.length > 0 ?
                     skills.reduce((sum, s) => sum + getSkillLevelValue(s.level), 0) / skills.length : 0
             }
         });
@@ -283,7 +283,7 @@ router.get('/dashboard/:userId/skills', authenticateToken, async (req, res) => {
 });
 
 // Get user achievements progress
-router.get('/dashboard/:userId/achievements', authenticateToken, async (req, res) => {
+router.get('/dashboard/:userId/achievements', authenticateToken, async(req, res) => {
     try {
         const { userId } = req.params;
         const requestingUser = req.user;
@@ -314,11 +314,11 @@ router.get('/dashboard/:userId/achievements', authenticateToken, async (req, res
         const achievementProgress = allAchievements.map(achievement => {
             const earned = earnedAchievements.find(e => e.achievementId === achievement.id);
             const progress = calculateAchievementProgress(userId, achievement);
-            
+
             return {
                 ...achievement,
                 isEarned: !!earned,
-                earnedAt: earned?.earnedAt,
+                earnedAt: earned ? .earnedAt,
                 progress,
                 canEarn: progress >= 100
             };
@@ -355,7 +355,7 @@ router.get('/dashboard/:userId/achievements', authenticateToken, async (req, res
 });
 
 // Get user leaderboard position
-router.get('/dashboard/:userId/leaderboard', authenticateToken, async (req, res) => {
+router.get('/dashboard/:userId/leaderboard', authenticateToken, async(req, res) => {
     try {
         const { userId } = req.params;
         const requestingUser = req.user;
@@ -432,14 +432,14 @@ router.get('/dashboard/:userId/leaderboard', authenticateToken, async (req, res)
 function calculateLevelRequirements(currentLevel, currentXP) {
     const baseXP = 100;
     const multiplier = 1.5;
-    
+
     const currentLevelXP = Math.floor(baseXP * Math.pow(multiplier, currentLevel - 1));
     const nextLevelXP = Math.floor(baseXP * Math.pow(multiplier, currentLevel));
-    
+
     const xpInCurrentLevel = currentXP - currentLevelXP;
     const xpNeededForNextLevel = nextLevelXP - currentXP;
     const progressPercentage = Math.min(100, (xpInCurrentLevel / (nextLevelXP - currentLevelXP)) * 100);
-    
+
     return {
         currentLevelXP,
         nextLevelXP,
@@ -466,7 +466,7 @@ async function getSkillDevelopmentProgress(userId) {
         where: { userId },
         include: { skill: true }
     });
-    
+
     return skills.map(skill => ({
         skillId: skill.skillId,
         skillName: skill.skill.name,
@@ -480,18 +480,18 @@ async function getAchievementProgress(userId) {
     const achievements = await prisma.achievement.findMany({
         where: { isActive: true }
     });
-    
+
     const earnedAchievements = await prisma.userAchievement.findMany({
         where: { userId }
     });
-    
+
     return achievements.map(achievement => {
         const earned = earnedAchievements.find(e => e.achievementId === achievement.id);
         return {
             achievementId: achievement.id,
             name: achievement.name,
             isEarned: !!earned,
-            earnedAt: earned?.earnedAt
+            earnedAt: earned ? .earnedAt
         };
     });
 }

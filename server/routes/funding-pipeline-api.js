@@ -1,17 +1,17 @@
 const express = require('express');
 const router = express.Router();
 const { PrismaClient } = require('@prisma/client');
-const { authenticateToken, requirePermission } = require('../middleware/unified-auth');
+const { authenticateToken, requirePermission } = require('../middleware/auth');
 
 const prisma = new PrismaClient();
 
 // ===== FUNDING PIPELINE SYSTEM =====
 
 // Get funding pipeline overview
-router.get('/pipeline', authenticateToken, async (req, res) => {
+router.get('/pipeline', authenticateToken, async(req, res) => {
     try {
         const userId = req.user.id;
-        
+
         // Get ventures owned by user
         const ventures = await prisma.venture.findMany({
             where: { founderId: userId },
@@ -36,7 +36,7 @@ router.get('/pipeline', authenticateToken, async (req, res) => {
 
         // Calculate funding metrics
         const fundingMetrics = calculateFundingMetrics(ventures);
-        
+
         // Get runway analysis
         const runwayAnalysis = await calculateRunwayAnalysis(ventures);
 
@@ -65,7 +65,7 @@ router.get('/pipeline', authenticateToken, async (req, res) => {
 });
 
 // Get specific venture funding details
-router.get('/pipeline/venture/:ventureId', authenticateToken, async (req, res) => {
+router.get('/pipeline/venture/:ventureId', authenticateToken, async(req, res) => {
     try {
         const { ventureId } = req.params;
         const userId = req.user.id;
@@ -111,10 +111,10 @@ router.get('/pipeline/venture/:ventureId', authenticateToken, async (req, res) =
 
         // Get funding timeline
         const fundingTimeline = await getFundingTimeline(ventureId);
-        
+
         // Get investor relationships
         const investorRelationships = await getInvestorRelationships(ventureId);
-        
+
         // Get market validation data
         const marketValidation = await getMarketValidationData(ventureId);
 
@@ -141,7 +141,7 @@ router.get('/pipeline/venture/:ventureId', authenticateToken, async (req, res) =
 });
 
 // Create new funding round
-router.post('/pipeline/venture/:ventureId/rounds', authenticateToken, async (req, res) => {
+router.post('/pipeline/venture/:ventureId/rounds', authenticateToken, async(req, res) => {
     try {
         const { ventureId } = req.params;
         const userId = req.user.id;
@@ -206,7 +206,7 @@ router.post('/pipeline/venture/:ventureId/rounds', authenticateToken, async (req
 });
 
 // Update funding round
-router.put('/pipeline/venture/:ventureId/rounds/:roundId', authenticateToken, async (req, res) => {
+router.put('/pipeline/venture/:ventureId/rounds/:roundId', authenticateToken, async(req, res) => {
     try {
         const { ventureId, roundId } = req.params;
         const userId = req.user.id;
@@ -253,7 +253,7 @@ router.put('/pipeline/venture/:ventureId/rounds/:roundId', authenticateToken, as
 });
 
 // Track investor interest
-router.post('/pipeline/venture/:ventureId/rounds/:roundId/investors', authenticateToken, async (req, res) => {
+router.post('/pipeline/venture/:ventureId/rounds/:roundId/investors', authenticateToken, async(req, res) => {
     try {
         const { ventureId, roundId } = req.params;
         const userId = req.user.id;
@@ -332,7 +332,7 @@ router.post('/pipeline/venture/:ventureId/rounds/:roundId/investors', authentica
 });
 
 // Get runway analysis
-router.get('/pipeline/runway', authenticateToken, async (req, res) => {
+router.get('/pipeline/runway', authenticateToken, async(req, res) => {
     try {
         const userId = req.user.id;
         const { ventureId } = req.query;
@@ -366,7 +366,7 @@ router.get('/pipeline/runway', authenticateToken, async (req, res) => {
 });
 
 // Get funding recommendations
-router.get('/pipeline/recommendations', authenticateToken, async (req, res) => {
+router.get('/pipeline/recommendations', authenticateToken, async(req, res) => {
     try {
         const userId = req.user.id;
 
@@ -433,16 +433,16 @@ async function calculateRunwayAnalysis(ventures) {
     for (const venture of ventures) {
         // Get monthly burn rate
         const monthlyBurn = await calculateMonthlyBurn(venture.id);
-        
+
         // Get current cash position
         const currentCash = await getCurrentCashPosition(venture.id);
-        
+
         // Calculate runway in months
         const runwayMonths = monthlyBurn > 0 ? currentCash / monthlyBurn : 0;
-        
+
         // Get next funding milestone
         const nextFunding = venture.fundingRounds.find(r => r.status === 'PLANNED');
-        
+
         runwayData.push({
             ventureId: venture.id,
             ventureName: venture.name,

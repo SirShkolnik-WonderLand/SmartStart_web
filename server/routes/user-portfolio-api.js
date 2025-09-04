@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { PrismaClient } = require('@prisma/client');
-const { authenticateToken, requirePermission } = require('../middleware/unified-auth');
+const { authenticateToken, requirePermission } = require('../middleware/auth');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
@@ -23,7 +23,7 @@ const storage = multer.diskStorage({
     }
 });
 
-const upload = multer({ 
+const upload = multer({
     storage: storage,
     limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
     fileFilter: (req, file, cb) => {
@@ -39,7 +39,7 @@ const upload = multer({
 // ===== USER PORTFOLIO MANAGEMENT =====
 
 // Get user portfolio overview
-router.get('/portfolio/:userId', authenticateToken, async (req, res) => {
+router.get('/portfolio/:userId', authenticateToken, async(req, res) => {
     try {
         const { userId } = req.params;
         const requestingUser = req.user;
@@ -117,7 +117,7 @@ router.get('/portfolio/:userId', authenticateToken, async (req, res) => {
 });
 
 // Create or update portfolio project
-router.put('/portfolio/:userId/projects/:projectId?', authenticateToken, async (req, res) => {
+router.put('/portfolio/:userId/projects/:projectId?', authenticateToken, async(req, res) => {
     try {
         const { userId, projectId } = req.params;
         const requestingUser = req.user;
@@ -254,7 +254,7 @@ router.put('/portfolio/:userId/projects/:projectId?', authenticateToken, async (
 });
 
 // Add client feedback to project
-router.post('/portfolio/:userId/projects/:projectId/feedback', authenticateToken, async (req, res) => {
+router.post('/portfolio/:userId/projects/:projectId/feedback', authenticateToken, async(req, res) => {
     try {
         const { userId, projectId } = req.params;
         const requestingUser = req.user;
@@ -305,7 +305,7 @@ router.post('/portfolio/:userId/projects/:projectId/feedback', authenticateToken
 });
 
 // Upload portfolio files
-router.post('/portfolio/:userId/upload', authenticateToken, upload.array('files', 5), async (req, res) => {
+router.post('/portfolio/:userId/upload', authenticateToken, upload.array('files', 5), async(req, res) => {
     try {
         const { userId } = req.params;
         const requestingUser = req.user;
@@ -329,7 +329,7 @@ router.post('/portfolio/:userId/upload', authenticateToken, upload.array('files'
 
         for (const file of req.files) {
             const fileUrl = `/uploads/portfolio/${file.filename}`;
-            
+
             const portfolioFile = await prisma.portfolioFile.create({
                 data: {
                     userId,
@@ -362,7 +362,7 @@ router.post('/portfolio/:userId/upload', authenticateToken, upload.array('files'
 });
 
 // Get portfolio analytics
-router.get('/portfolio/:userId/analytics', authenticateToken, async (req, res) => {
+router.get('/portfolio/:userId/analytics', authenticateToken, async(req, res) => {
     try {
         const { userId } = req.params;
         const requestingUser = req.user;
@@ -450,7 +450,7 @@ router.get('/portfolio/:userId/analytics', authenticateToken, async (req, res) =
 });
 
 // Get public portfolio (for sharing)
-router.get('/portfolio/:userId/public', async (req, res) => {
+router.get('/portfolio/:userId/public', async(req, res) => {
     try {
         const { userId } = req.params;
 

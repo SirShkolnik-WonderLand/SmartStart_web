@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { PrismaClient } = require('@prisma/client');
-const { authenticateToken, requirePermission } = require('../middleware/unified-auth');
+const { authenticateToken, requirePermission } = require('../middleware/auth');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
@@ -23,7 +23,7 @@ const storage = multer.diskStorage({
     }
 });
 
-const upload = multer({ 
+const upload = multer({
     storage: storage,
     limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
     fileFilter: (req, file, cb) => {
@@ -38,10 +38,10 @@ const upload = multer({
 // ===== USER PROFILE MANAGEMENT =====
 
 // Get current user profile (without userId)
-router.get('/profile', authenticateToken, async (req, res) => {
+router.get('/profile', authenticateToken, async(req, res) => {
     try {
         const userId = req.user.id; // Get from JWT token
-        
+
         const user = await prisma.user.findUnique({
             where: { id: userId },
             include: {
@@ -102,7 +102,7 @@ router.get('/profile', authenticateToken, async (req, res) => {
 });
 
 // Get user profile by userId
-router.get('/profile/:userId', authenticateToken, async (req, res) => {
+router.get('/profile/:userId', authenticateToken, async(req, res) => {
     try {
         const { userId } = req.params;
         const requestingUser = req.user;
@@ -179,7 +179,7 @@ router.get('/profile/:userId', authenticateToken, async (req, res) => {
 });
 
 // Update current user profile (without userId)
-router.put('/profile', authenticateToken, async (req, res) => {
+router.put('/profile', authenticateToken, async(req, res) => {
     try {
         const userId = req.user.id; // Get from JWT token
         const { firstName, lastName, name, bio, location, website, linkedin, github, twitter } = req.body;
@@ -237,7 +237,7 @@ router.put('/profile', authenticateToken, async (req, res) => {
 });
 
 // Create or update user profile by userId
-router.put('/profile/:userId', authenticateToken, async (req, res) => {
+router.put('/profile/:userId', authenticateToken, async(req, res) => {
     try {
         const { userId } = req.params;
         const requestingUser = req.user;
@@ -408,7 +408,7 @@ router.put('/profile/:userId', authenticateToken, async (req, res) => {
 });
 
 // Upload profile photo
-router.post('/profile/:userId/photo', authenticateToken, upload.single('photo'), async (req, res) => {
+router.post('/profile/:userId/photo', authenticateToken, upload.single('photo'), async(req, res) => {
     try {
         const { userId } = req.params;
         const requestingUser = req.user;
@@ -462,7 +462,7 @@ router.post('/profile/:userId/photo', authenticateToken, upload.single('photo'),
 });
 
 // Get user skills
-router.get('/profile/:userId/skills', authenticateToken, async (req, res) => {
+router.get('/profile/:userId/skills', authenticateToken, async(req, res) => {
     try {
         const { userId } = req.params;
         const requestingUser = req.user;
@@ -499,7 +499,7 @@ router.get('/profile/:userId/skills', authenticateToken, async (req, res) => {
 });
 
 // Get user achievements
-router.get('/profile/:userId/achievements', authenticateToken, async (req, res) => {
+router.get('/profile/:userId/achievements', authenticateToken, async(req, res) => {
     try {
         const { userId } = req.params;
         const requestingUser = req.user;
@@ -536,7 +536,7 @@ router.get('/profile/:userId/achievements', authenticateToken, async (req, res) 
 });
 
 // Get user privacy settings
-router.get('/profile/:userId/privacy', authenticateToken, async (req, res) => {
+router.get('/profile/:userId/privacy', authenticateToken, async(req, res) => {
     try {
         const { userId } = req.params;
         const requestingUser = req.user;
@@ -556,7 +556,7 @@ router.get('/profile/:userId/privacy', authenticateToken, async (req, res) => {
 
         res.json({
             success: true,
-            privacySettings: profile?.privacySettings || {}
+            privacySettings: profile ? .privacySettings || {}
         });
 
     } catch (error) {
@@ -570,7 +570,7 @@ router.get('/profile/:userId/privacy', authenticateToken, async (req, res) => {
 });
 
 // Update user privacy settings
-router.put('/profile/:userId/privacy', authenticateToken, async (req, res) => {
+router.put('/profile/:userId/privacy', authenticateToken, async(req, res) => {
     try {
         const { userId } = req.params;
         const requestingUser = req.user;

@@ -1,26 +1,26 @@
 const express = require('express');
 const router = express.Router();
 const { PrismaClient } = require('@prisma/client');
-const { authenticateToken, requirePermission } = require('../middleware/unified-auth');
+const { authenticateToken, requirePermission } = require('../middleware/auth');
 
 const prisma = new PrismaClient();
 
 // ===== ENHANCED JOURNEY SYSTEM FOR 1000+ USERS =====
 
 // Health check for Enhanced Journey system
-router.get('/health', async (req, res) => {
+router.get('/health', async(req, res) => {
     try {
         const stages = await prisma.journeyStage.count();
         const gates = await prisma.journeyGate.count();
         const userStates = await prisma.userJourneyState.count();
         const templates = await prisma.journeyTemplate.count();
-        
+
         res.json({
             success: true,
             message: 'Enhanced Journey System is healthy',
-            stats: { 
-                stages, 
-                gates, 
+            stats: {
+                stages,
+                gates,
                 userStates,
                 templates,
                 journeyTypes: 10,
@@ -31,16 +31,16 @@ router.get('/health', async (req, res) => {
         });
     } catch (error) {
         console.error('Enhanced Journey health check failed:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Enhanced Journey System health check failed', 
-            error: error.message 
+        res.status(500).json({
+            success: false,
+            message: 'Enhanced Journey System health check failed',
+            error: error.message
         });
     }
 });
 
 // Create journey template
-router.post('/templates', authenticateToken, async (req, res) => {
+router.post('/templates', authenticateToken, async(req, res) => {
     try {
         const { name, description, journeyType, stages, isPublic = false } = req.body;
         const userId = req.user.id;
@@ -63,19 +63,19 @@ router.post('/templates', authenticateToken, async (req, res) => {
         });
     } catch (error) {
         console.error('Error creating journey template:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Failed to create journey template', 
-            error: error.message 
+        res.status(500).json({
+            success: false,
+            message: 'Failed to create journey template',
+            error: error.message
         });
     }
 });
 
 // Get journey templates
-router.get('/templates', async (req, res) => {
+router.get('/templates', async(req, res) => {
     try {
         const { journeyType, isPublic } = req.query;
-        
+
         const where = {};
         if (journeyType) where.journeyType = journeyType;
         if (isPublic !== undefined) where.isPublic = isPublic === 'true';
@@ -97,16 +97,16 @@ router.get('/templates', async (req, res) => {
         });
     } catch (error) {
         console.error('Error getting journey templates:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Failed to retrieve journey templates', 
-            error: error.message 
+        res.status(500).json({
+            success: false,
+            message: 'Failed to retrieve journey templates',
+            error: error.message
         });
     }
 });
 
 // Create dynamic journey for user
-router.post('/dynamic/:userId', authenticateToken, async (req, res) => {
+router.post('/dynamic/:userId', authenticateToken, async(req, res) => {
     try {
         const { userId } = req.params;
         const { templateId, customizations = {} } = req.body;
@@ -117,9 +117,9 @@ router.post('/dynamic/:userId', authenticateToken, async (req, res) => {
         });
 
         if (!template) {
-            return res.status(404).json({ 
-                success: false, 
-                message: 'Journey template not found' 
+            return res.status(404).json({
+                success: false,
+                message: 'Journey template not found'
             });
         }
 
@@ -136,13 +136,13 @@ router.post('/dynamic/:userId', authenticateToken, async (req, res) => {
         });
 
         if (!user) {
-            return res.status(404).json({ 
-                success: false, 
-                message: 'User not found' 
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
             });
         }
 
-        const userRole = user.accounts[0]?.role?.name || 'MEMBER';
+        const userRole = user.accounts[0] ? .role ? .name || 'MEMBER';
         const dynamicJourney = await createDynamicJourney(userId, template, userRole, customizations);
 
         res.json({
@@ -152,21 +152,21 @@ router.post('/dynamic/:userId', authenticateToken, async (req, res) => {
         });
     } catch (error) {
         console.error('Error creating dynamic journey:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Failed to create dynamic journey', 
-            error: error.message 
+        res.status(500).json({
+            success: false,
+            message: 'Failed to create dynamic journey',
+            error: error.message
         });
     }
 });
 
 // Get journey analytics
-router.get('/analytics', authenticateToken, async (req, res) => {
+router.get('/analytics', authenticateToken, async(req, res) => {
     try {
         const { timeframe = '30d', journeyType } = req.query;
-        
+
         const analytics = await getJourneyAnalytics(timeframe, journeyType);
-        
+
         res.json({
             success: true,
             data: analytics,
@@ -174,21 +174,21 @@ router.get('/analytics', authenticateToken, async (req, res) => {
         });
     } catch (error) {
         console.error('Error getting journey analytics:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Failed to retrieve journey analytics', 
-            error: error.message 
+        res.status(500).json({
+            success: false,
+            message: 'Failed to retrieve journey analytics',
+            error: error.message
         });
     }
 });
 
 // Get journey optimization recommendations
-router.get('/optimization/:journeyId', authenticateToken, async (req, res) => {
+router.get('/optimization/:journeyId', authenticateToken, async(req, res) => {
     try {
         const { journeyId } = req.params;
-        
+
         const recommendations = await getJourneyOptimizationRecommendations(journeyId);
-        
+
         res.json({
             success: true,
             data: recommendations,
@@ -196,16 +196,16 @@ router.get('/optimization/:journeyId', authenticateToken, async (req, res) => {
         });
     } catch (error) {
         console.error('Error getting journey optimization:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Failed to retrieve journey optimization recommendations', 
-            error: error.message 
+        res.status(500).json({
+            success: false,
+            message: 'Failed to retrieve journey optimization recommendations',
+            error: error.message
         });
     }
 });
 
 // Start parallel journey track
-router.post('/parallel/:userId', authenticateToken, async (req, res) => {
+router.post('/parallel/:userId', authenticateToken, async(req, res) => {
     try {
         const { userId } = req.params;
         const { journeyType, stages } = req.body;
@@ -218,14 +218,14 @@ router.post('/parallel/:userId', authenticateToken, async (req, res) => {
             }
         });
 
-        const activeJourneys = existingJourneys.filter(js => 
+        const activeJourneys = existingJourneys.filter(js =>
             js.status === 'IN_PROGRESS' || js.status === 'NOT_STARTED'
         );
 
         if (activeJourneys.length >= 3) { // Limit to 3 parallel journeys
-            return res.status(400).json({ 
-                success: false, 
-                message: 'Maximum parallel journeys limit reached' 
+            return res.status(400).json({
+                success: false,
+                message: 'Maximum parallel journeys limit reached'
             });
         }
 
@@ -239,21 +239,21 @@ router.post('/parallel/:userId', authenticateToken, async (req, res) => {
         });
     } catch (error) {
         console.error('Error starting parallel journey:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Failed to start parallel journey', 
-            error: error.message 
+        res.status(500).json({
+            success: false,
+            message: 'Failed to start parallel journey',
+            error: error.message
         });
     }
 });
 
 // Get journey notifications
-router.get('/notifications/:userId', authenticateToken, async (req, res) => {
+router.get('/notifications/:userId', authenticateToken, async(req, res) => {
     try {
         const { userId } = req.params;
-        
+
         const notifications = await getJourneyNotifications(userId);
-        
+
         res.json({
             success: true,
             data: notifications,
@@ -261,16 +261,16 @@ router.get('/notifications/:userId', authenticateToken, async (req, res) => {
         });
     } catch (error) {
         console.error('Error getting journey notifications:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Failed to retrieve journey notifications', 
-            error: error.message 
+        res.status(500).json({
+            success: false,
+            message: 'Failed to retrieve journey notifications',
+            error: error.message
         });
     }
 });
 
 // Send journey reminder
-router.post('/reminder/:userId', authenticateToken, async (req, res) => {
+router.post('/reminder/:userId', authenticateToken, async(req, res) => {
     try {
         const { userId } = req.params;
         const { stageId, message, type = 'REMINDER' } = req.body;
@@ -284,21 +284,21 @@ router.post('/reminder/:userId', authenticateToken, async (req, res) => {
         });
     } catch (error) {
         console.error('Error sending journey reminder:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Failed to send journey reminder', 
-            error: error.message 
+        res.status(500).json({
+            success: false,
+            message: 'Failed to send journey reminder',
+            error: error.message
         });
     }
 });
 
 // Get journey gamification rewards
-router.get('/rewards/:userId', authenticateToken, async (req, res) => {
+router.get('/rewards/:userId', authenticateToken, async(req, res) => {
     try {
         const { userId } = req.params;
-        
+
         const rewards = await getJourneyRewards(userId);
-        
+
         res.json({
             success: true,
             data: rewards,
@@ -306,28 +306,28 @@ router.get('/rewards/:userId', authenticateToken, async (req, res) => {
         });
     } catch (error) {
         console.error('Error getting journey rewards:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Failed to retrieve journey rewards', 
-            error: error.message 
+        res.status(500).json({
+            success: false,
+            message: 'Failed to retrieve journey rewards',
+            error: error.message
         });
     }
 });
 
 // Complete journey stage with validation
-router.post('/complete-stage/:userId', authenticateToken, async (req, res) => {
+router.post('/complete-stage/:userId', authenticateToken, async(req, res) => {
     try {
         const { userId } = req.params;
         const { stageId, completionData = {} } = req.body;
 
         // Validate stage completion
         const validationResult = await validateStageCompletion(userId, stageId, completionData);
-        
+
         if (!validationResult.isValid) {
-            return res.status(400).json({ 
-                success: false, 
-                message: 'Stage completion validation failed', 
-                errors: validationResult.errors 
+            return res.status(400).json({
+                success: false,
+                message: 'Stage completion validation failed',
+                errors: validationResult.errors
             });
         }
 
@@ -354,21 +354,21 @@ router.post('/complete-stage/:userId', authenticateToken, async (req, res) => {
         });
     } catch (error) {
         console.error('Error completing journey stage:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Failed to complete journey stage', 
-            error: error.message 
+        res.status(500).json({
+            success: false,
+            message: 'Failed to complete journey stage',
+            error: error.message
         });
     }
 });
 
 // Get journey collaboration data
-router.get('/collaboration/:userId', authenticateToken, async (req, res) => {
+router.get('/collaboration/:userId', authenticateToken, async(req, res) => {
     try {
         const { userId } = req.params;
-        
+
         const collaboration = await getJourneyCollaboration(userId);
-        
+
         res.json({
             success: true,
             data: collaboration,
@@ -376,16 +376,16 @@ router.get('/collaboration/:userId', authenticateToken, async (req, res) => {
         });
     } catch (error) {
         console.error('Error getting journey collaboration:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Failed to retrieve journey collaboration data', 
-            error: error.message 
+        res.status(500).json({
+            success: false,
+            message: 'Failed to retrieve journey collaboration data',
+            error: error.message
         });
     }
 });
 
 // Integrate with third-party tools
-router.post('/integrate/:userId', authenticateToken, async (req, res) => {
+router.post('/integrate/:userId', authenticateToken, async(req, res) => {
     try {
         const { userId } = req.params;
         const { toolType, integrationData } = req.body;
@@ -399,10 +399,10 @@ router.post('/integrate/:userId', authenticateToken, async (req, res) => {
         });
     } catch (error) {
         console.error('Error integrating third-party tool:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Failed to integrate third-party tool', 
-            error: error.message 
+        res.status(500).json({
+            success: false,
+            message: 'Failed to integrate third-party tool',
+            error: error.message
         });
     }
 });
@@ -413,10 +413,10 @@ async function createDynamicJourney(userId, template, userRole, customizations) 
     // Create journey stages based on user role and customizations
     const roleBasedStages = getRoleBasedStages(userRole);
     const customizedStages = applyCustomizations(roleBasedStages, customizations);
-    
+
     // Create journey states for user
     const journeyStates = await Promise.all(
-        customizedStages.map(async (stage) => {
+        customizedStages.map(async(stage) => {
             return await prisma.userJourneyState.create({
                 data: {
                     userId,
@@ -498,8 +498,7 @@ async function createParallelJourney(userId, journeyType, stages) {
 
 async function getJourneyNotifications(userId) {
     // Get pending journey notifications for user
-    const notifications = [
-        {
+    const notifications = [{
             id: 'notif_1',
             type: 'STAGE_REMINDER',
             message: 'Complete your profile setup to continue',
@@ -537,8 +536,7 @@ async function sendJourneyReminder(userId, stageId, message, type) {
 
 async function getJourneyRewards(userId) {
     // Get journey-specific rewards for user
-    const rewards = [
-        {
+    const rewards = [{
             id: 'reward_1',
             type: 'XP_BONUS',
             amount: 100,
@@ -571,7 +569,7 @@ async function validateStageCompletion(userId, stageId, completionData) {
     }
 
     const errors = [];
-    
+
     // Check required gates
     for (const gate of stage.gates) {
         if (gate.isRequired) {
@@ -652,13 +650,11 @@ async function autoStartNextStages(userId, nextStages) {
 
 async function awardJourneyRewards(userId, stageId) {
     // Award rewards for completing journey stage
-    const rewards = [
-        {
-            type: 'XP',
-            amount: 50,
-            description: 'Stage completion bonus'
-        }
-    ];
+    const rewards = [{
+        type: 'XP',
+        amount: 50,
+        description: 'Stage completion bonus'
+    }];
 
     return rewards;
 }
@@ -690,6 +686,7 @@ async function integrateThirdPartyTool(userId, toolType, integrationData) {
 
 // Placeholder functions for complex calculations
 function getRoleBasedStages(userRole) { return []; }
+
 function applyCustomizations(stages, customizations) { return stages; }
 async function calculateCompletionRates(startDate) { return {}; }
 async function calculateDropOffPoints(startDate) { return []; }

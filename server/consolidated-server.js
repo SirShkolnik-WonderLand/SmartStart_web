@@ -31,6 +31,34 @@ app.get('/health', (req, res) => {
     });
 });
 
+// Route listing endpoint for debugging
+app.get('/api/routes', (req, res) => {
+    const routes = [];
+    app._router.stack.forEach((middleware) => {
+        if (middleware.route) {
+            routes.push({
+                path: middleware.route.path,
+                methods: Object.keys(middleware.route.methods)
+            });
+        } else if (middleware.name === 'router') {
+            middleware.handle.stack.forEach((handler) => {
+                if (handler.route) {
+                    routes.push({
+                        path: middleware.regexp.source.replace(/\\|\^|\$|\?|\*|\+|\(|\)|\[|\]|\{|\}/g, '') + handler.route.path,
+                        methods: Object.keys(handler.route.methods)
+                    });
+                }
+            });
+        }
+    });
+    
+    res.json({
+        success: true,
+        routes: routes,
+        timestamp: new Date().toISOString()
+    });
+});
+
 // Debug: Log when mounting CLI routes
 console.log('🚀 Mounting CLI API routes...');
 
@@ -44,8 +72,7 @@ app.use('/api/ai-cli', aiCliApiRoutes);
 
 console.log('✅ CLI API routes mounted successfully');
 
-// Mount simple auth API routes (workaround for production)
-// Old simple-auth routes removed - using unified-auth-api instead
+// Simple auth routes removed - using unified auth only
 
 // Mount existing API routes
 const v1ApiRoutes = require('./routes/v1-api');
@@ -79,12 +106,33 @@ const contractAutoIssuanceApiRoutes = require('./routes/contract-auto-issuance-a
 app.use('/api/contract-auto-issuance', contractAutoIssuanceApiRoutes);
 
 // Mount unified authentication API
-const unifiedAuthRoutes = require('./routes/unified-auth-api');
-app.use('/api/auth', unifiedAuthRoutes);
+try {
+    console.log('🚀 Mounting unified authentication API...');
+    const unifiedAuthRoutes = require('./routes/unified-auth-api');
+    app.use('/api/auth', unifiedAuthRoutes);
+    console.log('✅ Unified authentication API mounted successfully');
+} catch (error) {
+    console.error('❌ Failed to mount unified auth API:', error.message);
+    // Fallback to simple auth if unified auth fails
+    console.log('🔄 Falling back to simple auth...');
+    try {
+        const simpleAuthRoutes = require('./routes/simple-auth-api');
+        app.use('/api/auth', simpleAuthRoutes);
+        console.log('✅ Simple auth fallback mounted successfully');
+    } catch (fallbackError) {
+        console.error('❌ Simple auth fallback also failed:', fallbackError.message);
+    }
+}
 
 // Mount documents API routes (enhanced SOBA/PUOHA)
-const documentsApiRoutes = require('./routes/documents-api');
-app.use('/api/documents', documentsApiRoutes);
+try {
+    console.log('🚀 Mounting documents API...');
+    const documentsApiRoutes = require('./routes/documents-api');
+    app.use('/api/documents', documentsApiRoutes);
+    console.log('✅ Documents API mounted successfully');
+} catch (error) {
+    console.error('❌ Failed to mount documents API:', error.message);
+}
 
 const systemInstructionsApiRoutes = require('./routes/system-instructions-api');
 app.use('/api/system', systemInstructionsApiRoutes);
