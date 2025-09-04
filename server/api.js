@@ -98,6 +98,14 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Mount new Documents API (SOBA/PUOHA)
+try {
+  const documentsApiRoutes = require('./routes/documents-api');
+  app.use('/api/documents', documentsApiRoutes);
+} catch (e) {
+  console.error('Failed to mount documents-api routes:', e?.message);
+}
+
 // Authentication routes
 app.post('/api/auth/login', async (req, res) => {
   try {
