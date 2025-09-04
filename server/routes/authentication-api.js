@@ -347,12 +347,14 @@ router.post('/login', async (req, res) => {
             });
         }
 
-        // Find user by email only (username field not available in production yet)
-        const user = await prisma.user.findFirst({
-            where: { 
-                email: email.toLowerCase()
-            }
-        });
+        // Find user by email using raw SQL to ensure we get all fields
+        const userResult = await prisma.$queryRaw`
+            SELECT id, email, password, status, role, "firstName", "lastName"
+            FROM "User" 
+            WHERE email = ${email.toLowerCase()}
+        `;
+        
+        const user = userResult.length > 0 ? userResult[0] : null;
 
         if (!user) {
             // Increment failed attempts
