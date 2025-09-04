@@ -58,6 +58,10 @@ model User {
   // user journey
   journeyStates      UserJourneyState[]
 
+  // KYC and MFA
+  kycVerifications   KycVerification[]
+  mfaSetup          MfaSetup?
+
   // relations
   projectsOwned    Project[]         @relation("ProjectOwner")
   contributions    Contribution[]
@@ -2780,4 +2784,99 @@ enum GateType {
   LAUNCH          // Requires launch readiness
   VENTURE         // Requires venture creation/participation
   CUSTOM          // Custom gate logic
+}
+
+// ===== KYC/IDENTITY VERIFICATION MODELS =====
+
+model KycVerification {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Personal Information
+  fullName    String
+  dateOfBirth DateTime
+  country     String
+  phoneNumber String
+  
+  // Document Status
+  governmentIdStatus    VerificationStatus @default(PENDING)
+  proofOfAddressStatus  VerificationStatus @default(PENDING)
+  
+  // Verification Results
+  overallStatus         VerificationStatus @default(PENDING)
+  verifiedBy            String?
+  verifiedAt            DateTime?
+  rejectionReason       String?
+  
+  // Documents
+  documents             KycDocument[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@index([overallStatus])
+}
+
+model KycDocument {
+  id              String   @id @default(cuid())
+  kycId           String
+  kyc             KycVerification @relation(fields: [kycId], references: [id], onDelete: Cascade)
+  
+  documentType    DocumentType // GOVERNMENT_ID, PROOF_OF_ADDRESS
+  fileName        String
+  filePath        String
+  fileHash        String
+  
+  status          VerificationStatus @default(PENDING)
+  reviewedBy      String?
+  reviewedAt      DateTime?
+  rejectionReason String?
+  
+  createdAt       DateTime @default(now())
+
+  @@index([kycId])
+  @@index([documentType])
+  @@index([status])
+}
+
+enum VerificationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  EXPIRED
+}
+
+enum DocumentType {
+  GOVERNMENT_ID
+  PROOF_OF_ADDRESS
+}
+
+// ===== MULTI-FACTOR AUTHENTICATION MODELS =====
+
+model MfaSetup {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  method      MfaMethod // AUTHENTICATOR, EMAIL, SMS
+  secret      String?   // For authenticator apps
+  backupCodes String[]  // Backup codes
+  
+  isActive    Boolean   @default(false)
+  lastUsed    DateTime?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@index([method])
+  @@index([isActive])
+}
+
+enum MfaMethod {
+  AUTHENTICATOR
+  EMAIL
+  SMS
 }

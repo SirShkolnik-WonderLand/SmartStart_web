@@ -507,6 +507,136 @@ class ApiService {
       return null
     }
   }
+
+  // ===== KYC/IDENTITY VERIFICATION API METHODS =====
+
+  async submitKycInfo(kycData: any) {
+    try {
+      const response = await this.fetchWithAuth('/api/kyc/submit', {
+        method: 'POST',
+        body: JSON.stringify(kycData)
+      })
+      return response
+    } catch (error) {
+      console.error('Error submitting KYC info:', error)
+      throw error
+    }
+  }
+
+  async uploadKycDocument(file: File, documentType: string, userId: string) {
+    try {
+      const formData = new FormData()
+      formData.append('document', file)
+      formData.append('documentType', documentType)
+      formData.append('userId', userId)
+      
+      const response = await this.fetchWithAuth('/api/kyc/upload-document', {
+        method: 'POST',
+        body: formData
+      })
+      return response
+    } catch (error) {
+      console.error('Error uploading KYC document:', error)
+      throw error
+    }
+  }
+
+  async getKycStatus(userId: string) {
+    try {
+      const response = await this.fetchWithAuth(`/api/kyc/status/${userId}`)
+      return response
+    } catch (error) {
+      console.error('Error fetching KYC status:', error)
+      throw error
+    }
+  }
+
+  async getKycDocuments(userId: string) {
+    try {
+      const response = await this.fetchWithAuth(`/api/kyc/documents/${userId}`)
+      return response
+    } catch (error) {
+      console.error('Error fetching KYC documents:', error)
+      throw error
+    }
+  }
+
+  // ===== MULTI-FACTOR AUTHENTICATION API METHODS =====
+
+  async setupMfa(userId: string, method: string) {
+    try {
+      const response = await this.fetchWithAuth('/api/mfa/setup', {
+        method: 'POST',
+        body: JSON.stringify({ userId, method })
+      })
+      return response
+    } catch (error) {
+      console.error('Error setting up MFA:', error)
+      throw error
+    }
+  }
+
+  async verifyMfaCode(userId: string, code: string, isBackupCode: boolean = false) {
+    try {
+      const response = await this.fetchWithAuth('/api/mfa/verify', {
+        method: 'POST',
+        body: JSON.stringify({ userId, code, isBackupCode })
+      })
+      return response
+    } catch (error) {
+      console.error('Error verifying MFA code:', error)
+      throw error
+    }
+  }
+
+  async activateMfa(userId: string, code: string) {
+    try {
+      const response = await this.fetchWithAuth('/api/mfa/activate', {
+        method: 'POST',
+        body: JSON.stringify({ userId, code })
+      })
+      return response
+    } catch (error) {
+      console.error('Error activating MFA:', error)
+      throw error
+    }
+  }
+
+  async getMfaStatus(userId: string) {
+    try {
+      const response = await this.fetchWithAuth(`/api/mfa/status/${userId}`)
+      return response
+    } catch (error) {
+      console.error('Error fetching MFA status:', error)
+      throw error
+    }
+  }
+
+  async disableMfa(userId: string, code: string) {
+    try {
+      const response = await this.fetchWithAuth('/api/mfa/disable', {
+        method: 'POST',
+        body: JSON.stringify({ userId, code })
+      })
+      return response
+    } catch (error) {
+      console.error('Error disabling MFA:', error)
+      throw error
+    }
+  }
+
+  async sendMfaCode(userId: string, method: string) {
+    try {
+      const response = await this.fetchWithAuth('/api/mfa/send-code', {
+        method: 'POST',
+        body: JSON.stringify({ userId, method })
+      })
+      return response
+    } catch (error) {
+      console.error('Error sending MFA code:', error)
+      throw error
+    }
+  }
 }
 
 export const apiService = new ApiService()

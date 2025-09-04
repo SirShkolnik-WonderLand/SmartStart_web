@@ -151,6 +151,14 @@ app.use('/api/journey-state', journeyStateApiRoutes);
 const enhancedJourneyApiRoutes = require('./routes/enhanced-journey-api');
 app.use('/api/enhanced-journey', enhancedJourneyApiRoutes);
 
+// Mount KYC/Identity Verification APIs
+const kycApiRoutes = require('./routes/kyc-api');
+app.use('/api/kyc', kycApiRoutes);
+
+// Mount Multi-Factor Authentication APIs
+const mfaApiRoutes = require('./routes/mfa-api');
+app.use('/api/mfa', mfaApiRoutes);
+
 // Mount Business Logic APIs
 const businessLogicApiRoutes = require('./routes/business-logic-api');
 app.use('/api/business-logic', businessLogicApiRoutes);
