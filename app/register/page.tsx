@@ -157,7 +157,7 @@ export default function RegisterPage() {
                     type="text"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:border-green-400 focus:outline-none focus:ring-2 focus:ring-green-400/20 transition-all text-sm"
+                    className="w-full pl-10 pr-4 py-2.5 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-green-400 focus:outline-none focus:ring-2 focus:ring-green-400/20 transition-all text-sm"
                     placeholder="Choose a username"
                     required
                   />
@@ -174,7 +174,7 @@ export default function RegisterPage() {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:border-green-400 focus:outline-none focus:ring-2 focus:ring-green-400/20 transition-all text-sm"
+                    className="w-full pl-10 pr-4 py-2.5 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-green-400 focus:outline-none focus:ring-2 focus:ring-green-400/20 transition-all text-sm"
                     placeholder="Enter your email"
                     required
                   />
@@ -191,7 +191,7 @@ export default function RegisterPage() {
                     type={showPassword ? 'text' : 'password'}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-10 pr-12 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:border-green-400 focus:outline-none focus:ring-2 focus:ring-green-400/20 transition-all text-sm"
+                    className="w-full pl-10 pr-12 py-2.5 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-green-400 focus:outline-none focus:ring-2 focus:ring-green-400/20 transition-all text-sm"
                     placeholder="Create a password"
                     required
                   />
@@ -215,7 +215,7 @@ export default function RegisterPage() {
                     type={showConfirm ? 'text' : 'password'}
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full pl-10 pr-12 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:border-green-400 focus:outline-none focus:ring-2 focus:ring-green-400/20 transition-all text-sm"
+                    className="w-full pl-10 pr-12 py-2.5 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-green-400 focus:outline-none focus:ring-2 focus:ring-green-400/20 transition-all text-sm"
                     placeholder="Confirm your password"
                     required
                   />
@@ -245,7 +245,7 @@ export default function RegisterPage() {
                     id="tos"
                     checked={agreeTos}
                     onChange={(e) => setAgreeTos(e.target.checked)}
-                    className="mt-1 w-4 h-4 text-green-400 bg-white/5 border-white/10 rounded focus:ring-green-400 focus:ring-2"
+                    className="mt-1 w-4 h-4 text-green-400 bg-gray-800 border-gray-600 rounded focus:ring-green-400 focus:ring-2"
                   />
                   <label htmlFor="tos" className="text-sm text-gray-300">
                     I agree to the <span className="text-green-400 underline">Terms of Service</span> and <span className="text-green-400 underline">Privacy Policy</span>
@@ -258,7 +258,7 @@ export default function RegisterPage() {
                     id="contributor"
                     checked={agreeContributor}
                     onChange={(e) => setAgreeContributor(e.target.checked)}
-                    className="mt-1 w-4 h-4 text-green-400 bg-white/5 border-white/10 rounded focus:ring-green-400 focus:ring-2"
+                    className="mt-1 w-4 h-4 text-green-400 bg-gray-800 border-gray-600 rounded focus:ring-green-400 focus:ring-2"
                   />
                   <label htmlFor="contributor" className="text-sm text-gray-300">
                     I agree to the <span className="text-green-400 underline">Contributor Agreement</span> for platform participation
@@ -293,7 +293,7 @@ export default function RegisterPage() {
             {step > 1 && (
               <button
                 onClick={handleBack}
-                className="flex-1 py-2.5 bg-white/5 border border-white/10 text-white font-medium rounded-lg transition-all duration-200 flex items-center justify-center text-sm"
+                className="flex-1 py-2.5 bg-gray-800 border border-gray-600 text-white font-medium rounded-lg transition-all duration-200 flex items-center justify-center text-sm"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back
