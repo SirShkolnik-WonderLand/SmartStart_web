@@ -3,9 +3,14 @@ services:
     type: web
     runtime: node
     plan: standard
-    buildCommand: npm install --production && npx prisma generate
+    buildCommand: npm ci --omit=dev && npx prisma generate
     startCommand: npm run start:api
+    healthCheckPath: /health
+    healthCheckTimeout: 300
+    autoDeploy: true
     envVars:
+      - key: NODE_VERSION
+        value: 22.16.0
       - key: NODE_ENV
         value: production
       - key: PORT
@@ -24,14 +29,13 @@ services:
         value: "false"
       - key: MONITOR_ENABLED
         value: "false"
-    autoDeploy: true
 
   - name: smartstart-cli-web
     type: web
     runtime: node
     plan: starter
     # Need devDependencies (tailwindcss/postcss/autoprefixer) at build time
-    buildCommand: NPM_CONFIG_PRODUCTION=false npm install && npm run build
+    buildCommand: NPM_CONFIG_PRODUCTION=false npm ci && npm run build
     startCommand: npm start
     envVars:
       - key: NODE_ENV
