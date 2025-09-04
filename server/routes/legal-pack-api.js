@@ -49,9 +49,9 @@ router.get('/status/:userId', async(req, res) => {
                 legalPack: legalPack || null,
                 nda: nda || null,
                 consents: consents || [],
-                isComplete: legalPack ? .status === 'SIGNED' &&
-                    nda ? .status === 'SIGNED' &&
-                    consents.length > 0
+                                isComplete: legalPack?.status === 'SIGNED' && 
+                   nda?.status === 'SIGNED' && 
+                   consents.length > 0
             }
         });
     } catch (error) {
