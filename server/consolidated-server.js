@@ -205,9 +205,9 @@ app.listen(PORT, () => {
     console.log(`🔄 CLI System Version: 2.0.1`);
 
     // Ensure Postgres enum GateType includes all expected values
-    (async () => {
+    (async() => {
         try {
-            const required = ['SUBSCRIPTION','LEGAL_PACK','NDA','CONTRACT','PAYMENT','VERIFICATION','PROFILE','DOCUMENT','LAUNCH','VENTURE','TEAM','PROJECT','LEGAL_ENTITY','CUSTOM'];
+            const required = ['SUBSCRIPTION', 'LEGAL_PACK', 'NDA', 'CONTRACT', 'PAYMENT', 'VERIFICATION', 'PROFILE', 'DOCUMENT', 'LAUNCH', 'VENTURE', 'TEAM', 'PROJECT', 'LEGAL_ENTITY', 'EQUITY', 'CUSTOM'];
             const existing = await prisma.$queryRawUnsafe("SELECT enumlabel FROM pg_enum e JOIN pg_type t ON e.enumtypid = t.oid WHERE t.typname = 'GateType'");
             const existingLabels = (existing || []).map(r => r.enumlabel);
             for (const label of required) {

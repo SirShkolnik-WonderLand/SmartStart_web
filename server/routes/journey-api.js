@@ -404,6 +404,19 @@ router.get('/gates/:userId', async(req, res) => {
                 details = { companyCount: userCompanies };
                 break;
 
+            case 'EQUITY':
+                // Check if user has equity in any project/venture
+                // Assuming a Contribution or Portfolio table tracks equity assignments
+                const equityContributions = await prisma.contribution.count({
+                    where: {
+                        userId: userId,
+                        equityPercentage: { gt: 0 }
+                    }
+                }).catch(() => 0);
+                isPassed = (equityContributions || 0) > 0;
+                details = { equityAssignments: equityContributions || 0 };
+                break;
+
                             default:
                                 isPassed = false;
                                 details = { message: 'Custom gate logic not implemented' };
