@@ -62,13 +62,13 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-sm">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-8"
+          className="text-center mb-6"
         >
           <div className="flex items-center justify-center mb-6">
             <div className="w-16 h-16 bg-gradient-to-r from-green-400 to-blue-500 rounded-2xl flex items-center justify-center shadow-lg">
@@ -109,10 +109,10 @@ export default function RegisterPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="card"
+          className="card p-6"
         >
           {step === 1 && (
-            <div className="space-y-4">
+            <div className="space-y-3">
               <div className="text-center mb-6">
                 <h2 className="text-lg font-semibold text-white mb-1">Account Details</h2>
                 <p className="text-gray-400 text-sm">Create your account credentials</p>
