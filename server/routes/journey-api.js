@@ -56,7 +56,7 @@ router.get('/status/:userId', async(req, res) => {
         // Calculate progress
         const totalStages = stages.length;
         const completedStages = userStates.filter(state => state.status === 'COMPLETED').length;
-        const currentStage = userStates.find(state => state.status === 'IN_PROGRESS') ? .stage;
+        const currentStage = userStates.find(state => state.status === 'IN_PROGRESS')?.stage;
         const nextStage = stages.find(stage =>
             !userStates.find(state => state.stageId === stage.id && state.status === 'COMPLETED')
         );
