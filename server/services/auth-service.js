@@ -340,6 +340,130 @@ class AuthService {
   }
 
   /**
+   * Register a new user
+   * @param {object} userData - User registration data
+   * @param {object} deviceInfo - Device information
+   * @returns {Promise<object>} Registration result
+   */
+  async register(userData, deviceInfo = {}) {
+    try {
+      const { email, password, name, firstName, lastName } = userData;
+
+      // Check if user already exists
+      const existingAccount = await prisma.account.findUnique({
+        where: { email: email.toLowerCase() }
+      });
+
+      if (existingAccount) {
+        return {
+          success: false,
+          message: 'User already exists with this email',
+          code: 'USER_EXISTS'
+        };
+      }
+
+      // Hash password
+      const hashedPassword = await bcrypt.hash(password, 12);
+
+      // Get default role (GUEST)
+      const defaultRole = await prisma.role.findFirst({
+        where: { name: 'GUEST' }
+      });
+
+      if (!defaultRole) {
+        return {
+          success: false,
+          message: 'Default role not found',
+          code: 'ROLE_NOT_FOUND'
+        };
+      }
+
+      // Create user and account in transaction
+      const result = await prisma.$transaction(async (tx) => {
+        // Create user
+        const user = await tx.user.create({
+          data: {
+            name: name || email.split('@')[0],
+            firstName: firstName || null,
+            lastName: lastName || null,
+            email: email.toLowerCase(),
+            isActive: true
+          }
+        });
+
+        // Create account
+        const account = await tx.account.create({
+          data: {
+            email: email.toLowerCase(),
+            password: hashedPassword,
+            userId: user.id,
+            roleId: defaultRole.id,
+            isActive: true,
+            isVerified: false,
+            lastLoginAt: null
+          }
+        });
+
+        return { user, account };
+      });
+
+      // Generate token
+      const token = this.generateToken(result.user.id, result.account.id);
+
+      // Create session
+      const session = await this.createSession(result.user.id, token, deviceInfo);
+
+      // Get user with role information
+      const userWithRole = await prisma.user.findUnique({
+        where: { id: result.user.id },
+        include: {
+          account: {
+            include: {
+              role: {
+                include: {
+                  rolePermissions: {
+                    include: {
+                      permission: true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      });
+
+      return {
+        success: true,
+        message: 'Registration successful',
+        user: {
+          id: userWithRole.id,
+          email: userWithRole.email,
+          name: userWithRole.name,
+          firstName: userWithRole.firstName,
+          lastName: userWithRole.lastName,
+          role: userWithRole.account.role,
+          permissions: userWithRole.account.role.rolePermissions.map(rp => rp.permission.name),
+          level: 'NEW_USER',
+          xp: 0,
+          reputation: 0,
+          status: 'ACTIVE'
+        },
+        token,
+        sessionId: session.id
+      };
+
+    } catch (error) {
+      console.error('Registration error:', error);
+      return {
+        success: false,
+        message: 'Registration failed',
+        code: 'REGISTRATION_ERROR'
+      };
+    }
+  }
+
+  /**
    * Clean up expired sessions
    */
   async cleanupExpiredSessions() {

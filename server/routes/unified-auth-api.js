@@ -7,6 +7,64 @@ const { authenticateToken, rateLimit } = require('../middleware/unified-auth');
 const authRateLimit = rateLimit(10, 15 * 60 * 1000); // 10 requests per 15 minutes
 
 /**
+ * POST /api/auth/register
+ * Register a new user
+ */
+router.post('/register', authRateLimit, async (req, res) => {
+  try {
+    const { email, password, name, firstName, lastName } = req.body;
+    const deviceInfo = {
+      ipAddress: req.ip || req.connection.remoteAddress,
+      userAgent: req.get('User-Agent')
+    };
+
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email and password are required',
+        code: 'MISSING_CREDENTIALS'
+      });
+    }
+
+    const result = await authService.register({
+      email,
+      password,
+      name: name || `${firstName || ''} ${lastName || ''}`.trim() || email.split('@')[0],
+      firstName,
+      lastName
+    }, deviceInfo);
+
+    if (!result.success) {
+      return res.status(400).json(result);
+    }
+
+    // Set secure HTTP-only cookie
+    res.cookie('auth-token', result.token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      path: '/'
+    });
+
+    res.json({
+      success: true,
+      message: 'Registration successful',
+      user: result.user,
+      sessionId: result.sessionId
+    });
+
+  } catch (error) {
+    console.error('Registration error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      code: 'INTERNAL_ERROR'
+    });
+  }
+});
+
+/**
  * POST /api/auth/login
  * Authenticate user with email and password
  */
