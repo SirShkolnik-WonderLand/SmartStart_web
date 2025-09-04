@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import ConditionalLayout from './components/ConditionalLayout'
+import JourneyGuard from './components/JourneyGuard'
 
 export const metadata: Metadata = {
   title: 'SmartStart Platform - Venture Operating System',
@@ -21,7 +22,9 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <ConditionalLayout>
-          {children}
+          <JourneyGuard>
+            {children}
+          </JourneyGuard>
         </ConditionalLayout>
       </body>
     </html>

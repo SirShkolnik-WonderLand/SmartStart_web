@@ -170,31 +170,87 @@ const VentureGateJourney = () => {
     return 'locked'
   }
 
-  const handleStageAction = (stage: JourneyStage) => {
-    switch (stage.id) {
-      case 'discover':
-        router.push('/venture-gate/explore')
-        break
-      case 'create-account':
-        router.push('/register')
-        break
-      case 'verify-secure':
-        router.push('/venture-gate/verify')
-        break
-      case 'choose-plan':
-        router.push('/venture-gate/plans')
-        break
-      case 'platform-legal':
-        router.push('/venture-gate/legal')
-        break
-      case 'profile-fit':
-        router.push('/venture-gate/profile')
-        break
-      case 'explore-ventures':
-        router.push('/venture-gate/explore')
-        break
-      default:
-        console.log(`Action for ${stage.id} not implemented yet`)
+  const handleStageAction = async (stage: JourneyStage) => {
+    try {
+      // Get user ID for API calls
+      const storedId = typeof window !== 'undefined' ? localStorage.getItem('user-id') : null
+      const resolvedUserId = (user as any)?.id || (user as any)?.data?.id || storedId
+
+      switch (stage.id) {
+        case 'discover':
+          // Mark discover stage as completed and move to next
+          if (resolvedUserId) {
+            await apiService.updateJourneyState(resolvedUserId, 1) // Move to create-account
+          }
+          router.push('/register')
+          break
+        case 'create-account':
+          router.push('/register')
+          break
+        case 'verify-secure':
+          router.push('/venture-gate/verify')
+          break
+        case 'choose-plan':
+          router.push('/venture-gate/plans')
+          break
+        case 'platform-legal':
+          router.push('/venture-gate/legal')
+          break
+        case 'profile-fit':
+          router.push('/venture-gate/profile')
+          break
+        case 'explore-ventures':
+          router.push('/venture-gate/explore')
+          break
+        case 'offer-contribute':
+          router.push('/venture-gate/explore')
+          break
+        case 'project-nda':
+          router.push('/documents')
+          break
+        case 'approval-provisioning':
+          router.push('/dashboard')
+          break
+        case 'work-track-reward':
+          router.push('/dashboard')
+          break
+        default:
+          console.log(`Action for ${stage.id} not implemented yet`)
+      }
+    } catch (error) {
+      console.error('Error handling stage action:', error)
+    }
+  }
+
+  const completeCurrentStage = async () => {
+    try {
+      const storedId = typeof window !== 'undefined' ? localStorage.getItem('user-id') : null
+      const resolvedUserId = (user as any)?.id || (user as any)?.data?.id || storedId
+
+      if (!resolvedUserId) {
+        console.error('No user ID found')
+        return
+      }
+
+      // Mark current stage as completed
+      const currentStageData = journeyStages[currentStage]
+      console.log(`Completing stage: ${currentStageData.title}`)
+
+      // Update journey state to next stage
+      const nextStageIndex = currentStage + 1
+      if (nextStageIndex < journeyStages.length) {
+        await apiService.updateJourneyState(resolvedUserId, nextStageIndex)
+        
+        // Reload journey state to get updated progress
+        const updatedJourney = await apiService.getJourneyState(resolvedUserId)
+        setJourneyState(updatedJourney)
+        setCurrentStage(nextStageIndex)
+      } else {
+        // Journey complete - redirect to dashboard
+        router.push('/dashboard')
+      }
+    } catch (error) {
+      console.error('Error completing stage:', error)
     }
   }
 
@@ -211,13 +267,34 @@ const VentureGateJourney = () => {
     )
   }
 
+  // Check if user has completed all stages
+  const isJourneyComplete = currentStage >= journeyStages.length - 1 && journeyState?.progress === 100
+
+  // If journey is complete, redirect to main dashboard
+  if (isJourneyComplete) {
+    router.push('/dashboard')
+    return (
+      <div className="container" style={{ paddingTop: '4rem' }}>
+        <div className="text-center">
+          <div className="animate-pulse">
+            <h1>🎉 Journey Complete!</h1>
+            <p>Redirecting to your dashboard...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Get current stage
+  const currentStageData = journeyStages[currentStage]
+
   return (
     <div className="container" style={{ paddingTop: '2rem', paddingBottom: '4rem' }}>
       {/* Header */}
       <div className="text-center mb-8 animate-fade-in">
         <h1>VentureGate™ Journey</h1>
         <p className="text-secondary">
-          Your path from discovery to trusted contributor
+          Complete this step to continue your journey
         </p>
         {user && (
           <div className="mt-4">
@@ -231,9 +308,9 @@ const VentureGateJourney = () => {
       {/* Progress Overview */}
       <div className="card mb-8 animate-slide-in">
         <div className="card-header">
-          <h3>Journey Progress</h3>
+          <h3>Current Step</h3>
           <p className="text-muted">
-            Complete each stage to unlock the next level of access
+            Step {currentStage + 1} of {journeyStages.length}
           </p>
         </div>
         <div className="progress mb-4">
@@ -243,96 +320,93 @@ const VentureGateJourney = () => {
           />
         </div>
         <div className="flex justify-between text-sm">
-          <span>Stage {currentStage + 1} of {journeyStages.length}</span>
+          <span>{currentStageData.title}</span>
           <span>{Math.round((currentStage / (journeyStages.length - 1)) * 100)}% Complete</span>
         </div>
       </div>
 
-      {/* Journey Stages */}
-      <div className="grid grid-2 gap-6">
-        {journeyStages.map((stage, index) => {
-          const status = getStageStatus(index)
-          const isClickable = status === 'current' || status === 'available'
-          
-          return (
-            <div
-              key={stage.id}
-              className={`card ${isClickable ? 'cursor-pointer' : ''} ${
-                status === 'current' ? 'border-accent' : ''
-              }`}
-              onClick={() => isClickable && handleStageAction(stage)}
-              style={{
-                opacity: status === 'locked' ? 0.6 : 1,
-                cursor: isClickable ? 'pointer' : 'default',
-                borderColor: status === 'current' ? 'var(--accent-primary)' : undefined
-              }}
-            >
-              <div className="flex items-start gap-4">
-                <div className="text-3xl">{stage.icon}</div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <h3 className="card-title">{stage.title}</h3>
-                    <span className={`status ${
-                      status === 'completed' ? 'status-success' :
-                      status === 'current' ? 'status-info' :
-                      status === 'available' ? 'status-warning' :
-                      'status-danger'
-                    }`}>
-                      {status === 'completed' ? '✓' :
-                       status === 'current' ? '→' :
-                       status === 'available' ? '!' : '🔒'}
-                    </span>
-                  </div>
-                  <p className="text-secondary mb-4">{stage.description}</p>
-                  
-                  {stage.actions.length > 0 && (
-                    <div className="mb-3">
-                      <h4 className="text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
-                        Actions:
-                      </h4>
-                      <ul className="text-sm text-muted">
-                        {stage.actions.map((action, i) => (
-                          <li key={i} className="mb-1">• {action}</li>
-                        ))}
-                      </ul>
+      {/* Current Step Focus */}
+      <div className="card mb-8 animate-fade-in">
+        <div className="flex items-start gap-6">
+          <div className="text-6xl">{currentStageData.icon}</div>
+          <div className="flex-1">
+            <div className="flex items-center gap-3 mb-4">
+              <h2 className="text-2xl font-bold">{currentStageData.title}</h2>
+              <span className="status status-info">Current Step</span>
+            </div>
+            <p className="text-lg text-secondary mb-6">{currentStageData.description}</p>
+            
+            {currentStageData.actions.length > 0 && (
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>
+                  What you need to do:
+                </h3>
+                <div className="grid gap-3">
+                  {currentStageData.actions.map((action, i) => (
+                    <div key={i} className="flex items-center gap-3 p-3 rounded-lg" style={{ background: 'var(--bg-secondary)' }}>
+                      <div className="w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold" style={{ background: 'var(--accent-primary)', color: 'white' }}>
+                        {i + 1}
+                      </div>
+                      <span className="text-primary">{action}</span>
                     </div>
-                  )}
-                  
-                  {stage.requirements.length > 0 && (
-                    <div>
-                      <h4 className="text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
-                        Requirements:
-                      </h4>
-                      <ul className="text-sm text-muted">
-                        {stage.requirements.map((req, i) => (
-                          <li key={i} className="mb-1">• {req}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
+                  ))}
                 </div>
               </div>
-            </div>
-          )
-        })}
+            )}
+            
+            {currentStageData.requirements.length > 0 && (
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>
+                  Requirements:
+                </h3>
+                <div className="grid gap-2">
+                  {currentStageData.requirements.map((req, i) => (
+                    <div key={i} className="flex items-center gap-3">
+                      <div className="w-2 h-2 rounded-full" style={{ background: 'var(--accent-primary)' }}></div>
+                      <span className="text-secondary">{req}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
-      {/* Current Stage Actions */}
-      {currentStage < journeyStages.length && (
-        <div className="card mt-8 animate-fade-in">
-          <div className="card-header">
-            <h3>Next Steps</h3>
-            <p className="text-muted">
-              Complete the current stage to continue your journey
-            </p>
-          </div>
-          <div className="flex gap-4">
+      {/* Action Buttons */}
+      <div className="card animate-fade-in">
+        <div className="text-center">
+          <h3 className="mb-4">Ready to continue?</h3>
+          <div className="flex gap-4 justify-center">
             <button 
-              className="btn btn-primary"
-              onClick={() => handleStageAction(journeyStages[currentStage])}
+              className="btn btn-primary btn-lg"
+              onClick={() => handleStageAction(currentStageData)}
             >
-              Continue to {journeyStages[currentStage].title}
+              {currentStageData.id === 'discover' ? 'Start Journey' : 
+               currentStageData.id === 'create-account' ? 'Create Account' :
+               currentStageData.id === 'verify-secure' ? 'Setup Security' :
+               currentStageData.id === 'choose-plan' ? 'Choose Plan' :
+               currentStageData.id === 'platform-legal' ? 'Sign Legal Pack' :
+               currentStageData.id === 'profile-fit' ? 'Complete Profile' :
+               currentStageData.id === 'explore-ventures' ? 'Explore Ventures' :
+               currentStageData.id === 'offer-contribute' ? 'Submit Offer' :
+               currentStageData.id === 'project-nda' ? 'Sign NDA' :
+               currentStageData.id === 'approval-provisioning' ? 'Get Approved' :
+               'Continue'}
             </button>
+            
+            {/* Show "Mark as Complete" button for stages that can be completed inline */}
+            {(currentStageData.id === 'discover' || 
+              currentStageData.id === 'explore-ventures' || 
+              currentStageData.id === 'offer-contribute') && (
+              <button 
+                className="btn btn-success"
+                onClick={completeCurrentStage}
+              >
+                ✓ Mark as Complete
+              </button>
+            )}
+            
             <button 
               className="btn btn-secondary"
               onClick={() => router.push('/venture-gate/help')}
@@ -341,7 +415,7 @@ const VentureGateJourney = () => {
             </button>
           </div>
         </div>
-      )}
+      </div>
 
       {/* Trust & Security Notice */}
       <div className="card mt-8 animate-fade-in">
