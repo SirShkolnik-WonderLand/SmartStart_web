@@ -23,7 +23,7 @@ const VentureGateJourney = () => {
 
   const journeyStages: JourneyStage[] = [
     {
-      id: 'discover',
+      id: 'stage_1',
       title: 'Discover',
       description: 'Explore the SmartStart ecosystem and see what we offer',
       status: 'completed',
@@ -32,7 +32,7 @@ const VentureGateJourney = () => {
       requirements: []
     },
     {
-      id: 'create-account',
+      id: 'stage_2',
       title: 'Create Account',
       description: 'Establish your identity and accept our terms',
       status: 'completed',
@@ -41,7 +41,7 @@ const VentureGateJourney = () => {
       requirements: ['Valid email address']
     },
     {
-      id: 'verify-secure',
+      id: 'stage_3',
       title: 'Verify & Secure',
       description: 'Complete security setup and identity verification',
       status: 'current',
@@ -50,7 +50,7 @@ const VentureGateJourney = () => {
       requirements: ['MFA enabled', 'Email verified']
     },
     {
-      id: 'choose-plan',
+      id: 'stage_4',
       title: 'Choose Plan & Pay',
       description: 'Select your subscription tier and complete payment',
       status: 'available',
@@ -59,7 +59,7 @@ const VentureGateJourney = () => {
       requirements: ['Active subscription']
     },
     {
-      id: 'platform-legal',
+      id: 'stage_5',
       title: 'Platform Legal Pack',
       description: 'Sign the mandatory platform participation agreement',
       status: 'locked',
@@ -68,7 +68,7 @@ const VentureGateJourney = () => {
       requirements: ['Active subscription', 'MFA enabled']
     },
     {
-      id: 'profile-fit',
+      id: 'stage_6',
       title: 'Profile & Fit',
       description: 'Complete your profile for better matching',
       status: 'locked',
@@ -77,7 +77,7 @@ const VentureGateJourney = () => {
       requirements: ['Legal pack signed']
     },
     {
-      id: 'explore-ventures',
+      id: 'stage_7',
       title: 'Explore Ventures',
       description: 'Browse and discover projects in safe mode',
       status: 'locked',
@@ -86,7 +86,7 @@ const VentureGateJourney = () => {
       requirements: ['Profile complete']
     },
     {
-      id: 'offer-contribute',
+      id: 'stage_8',
       title: 'Offer to Contribute',
       description: 'Submit structured offers to projects',
       status: 'locked',
@@ -95,7 +95,7 @@ const VentureGateJourney = () => {
       requirements: ['Project access']
     },
     {
-      id: 'project-nda',
+      id: 'stage_9',
       title: 'Per-Project NDA',
       description: 'Sign project-specific confidentiality agreements',
       status: 'locked',
@@ -104,7 +104,7 @@ const VentureGateJourney = () => {
       requirements: ['Offer accepted']
     },
     {
-      id: 'approval-provisioning',
+      id: 'stage_10',
       title: 'Approval & Provisioning',
       description: 'Get approved and receive access to project resources',
       status: 'locked',
@@ -113,7 +113,7 @@ const VentureGateJourney = () => {
       requirements: ['NDA signed']
     },
     {
-      id: 'work-track-reward',
+      id: 'stage_11',
       title: 'Work, Track, Reward',
       description: 'Contribute to projects and earn rewards',
       status: 'locked',
@@ -177,41 +177,41 @@ const VentureGateJourney = () => {
       const resolvedUserId = (user as any)?.id || (user as any)?.data?.id || storedId
 
       switch (stage.id) {
-        case 'discover':
-          // Mark discover stage as completed and move to next
+        case 'stage_1':
+          // Mark stage_1 as completed and move to next
           if (resolvedUserId) {
-            await apiService.updateJourneyState(resolvedUserId, 1) // Move to create-account
+            await apiService.updateJourneyState(resolvedUserId, 1) // Move to stage_2
           }
           router.push('/register')
           break
-        case 'create-account':
+        case 'stage_2':
           router.push('/register')
           break
-        case 'verify-secure':
+        case 'stage_3':
           router.push('/venture-gate/verify')
           break
-        case 'choose-plan':
+        case 'stage_4':
           router.push('/venture-gate/plans')
           break
-        case 'platform-legal':
+        case 'stage_5':
           router.push('/venture-gate/legal')
           break
-        case 'profile-fit':
+        case 'stage_6':
           router.push('/venture-gate/profile')
           break
-        case 'explore-ventures':
+        case 'stage_7':
           router.push('/venture-gate/explore')
           break
-        case 'offer-contribute':
+        case 'stage_8':
           router.push('/venture-gate/explore')
           break
-        case 'project-nda':
+        case 'stage_9':
           router.push('/documents')
           break
-        case 'approval-provisioning':
+        case 'stage_10':
           router.push('/dashboard')
           break
-        case 'work-track-reward':
+        case 'stage_11':
           router.push('/dashboard')
           break
         default:
@@ -382,23 +382,23 @@ const VentureGateJourney = () => {
               className="btn btn-primary btn-lg"
               onClick={() => handleStageAction(currentStageData)}
             >
-              {currentStageData.id === 'discover' ? 'Start Journey' : 
-               currentStageData.id === 'create-account' ? 'Create Account' :
-               currentStageData.id === 'verify-secure' ? 'Setup Security' :
-               currentStageData.id === 'choose-plan' ? 'Choose Plan' :
-               currentStageData.id === 'platform-legal' ? 'Sign Legal Pack' :
-               currentStageData.id === 'profile-fit' ? 'Complete Profile' :
-               currentStageData.id === 'explore-ventures' ? 'Explore Ventures' :
-               currentStageData.id === 'offer-contribute' ? 'Submit Offer' :
-               currentStageData.id === 'project-nda' ? 'Sign NDA' :
-               currentStageData.id === 'approval-provisioning' ? 'Get Approved' :
+              {currentStageData.id === 'stage_1' ? 'Start Journey' : 
+               currentStageData.id === 'stage_2' ? 'Create Account' :
+               currentStageData.id === 'stage_3' ? 'Setup Security' :
+               currentStageData.id === 'stage_4' ? 'Choose Plan' :
+               currentStageData.id === 'stage_5' ? 'Sign Legal Pack' :
+               currentStageData.id === 'stage_6' ? 'Complete Profile' :
+               currentStageData.id === 'stage_7' ? 'Explore Ventures' :
+               currentStageData.id === 'stage_8' ? 'Submit Offer' :
+               currentStageData.id === 'stage_9' ? 'Sign NDA' :
+               currentStageData.id === 'stage_10' ? 'Get Approved' :
                'Continue'}
             </button>
             
             {/* Show "Mark as Complete" button for stages that can be completed inline */}
-            {(currentStageData.id === 'discover' || 
-              currentStageData.id === 'explore-ventures' || 
-              currentStageData.id === 'offer-contribute') && (
+            {(currentStageData.id === 'stage_1' || 
+              currentStageData.id === 'stage_7' || 
+              currentStageData.id === 'stage_8') && (
               <button 
                 className="btn btn-success"
                 onClick={completeCurrentStage}
