@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { apiService } from '../services/api'
+import { apiService, JourneyState } from '../services/api'
 
 interface JourneyStage {
   id: string
@@ -18,6 +18,7 @@ const VentureGateJourney = () => {
   const router = useRouter()
   const [currentStage, setCurrentStage] = useState(0)
   const [user, setUser] = useState<any>(null)
+  const [journeyState, setJourneyState] = useState<JourneyState | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
   const journeyStages: JourneyStage[] = [
@@ -123,28 +124,39 @@ const VentureGateJourney = () => {
   ]
 
   useEffect(() => {
-    // Set user data without API calls to avoid 404 errors
-    const loadUserData = () => {
-      try {
-        // Set demo user data
+    loadUserData()
+  }, [])
+
+  const loadUserData = async () => {
+    try {
+      // Get current user
+      const currentUser = await apiService.getCurrentUser()
+      setUser(currentUser)
+      
+      // Load journey state
+      const journey = await apiService.getJourneyState(currentUser.id)
+      setJourneyState(journey)
+      
+      if (journey) {
+        setCurrentStage(journey.currentStage)
+      } else {
+        // Fallback to demo data
         setUser({ 
           id: '1', 
           email: 'udi.shkolnik@alicesolutions.com', 
           name: 'Udi Shkolnik' 
         })
-        setCurrentStage(2) // Start at verification stage
-      } catch (error) {
-        console.error('Error setting user data:', error)
-        // Fallback to demo user
-        setUser({ id: '1', email: 'udi.shkolnik@alicesolutions.com', name: 'Udi Shkolnik' })
         setCurrentStage(2)
-      } finally {
-        setIsLoading(false)
       }
+    } catch (error) {
+      console.error('Error loading user data:', error)
+      // Fallback to demo user
+      setUser({ id: '1', email: 'udi.shkolnik@alicesolutions.com', name: 'Udi Shkolnik' })
+      setCurrentStage(2)
+    } finally {
+      setIsLoading(false)
     }
-
-    loadUserData()
-  }, [])
+  }
 
   const getStageStatus = (index: number): JourneyStage['status'] => {
     if (index < currentStage) return 'completed'

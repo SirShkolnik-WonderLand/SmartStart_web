@@ -1,23 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { apiService, DocumentTemplate } from '../services/api'
 
-interface DocumentTemplate {
-  id: string
-  title: string
-  filename: string
-  category: string
-  categoryInfo: {
-    name: string
-    description: string
-    icon: string
-  }
-  content: string
-  size: number
-  lastModified: string
-  wordCount: number
-  lineCount: number
-}
+// DocumentTemplate interface is now imported from api service
 
 interface DocumentCategory {
   name: string
@@ -41,11 +27,10 @@ const DocumentsPage = () => {
 
   const loadDocuments = async () => {
     try {
-      const response = await fetch('/api/documents/templates')
-      if (response.ok) {
-        const data = await response.json()
-        setTemplates(data.data.templates)
-        setCategories(data.data.categories)
+      const response = await apiService.getDocumentTemplates()
+      if (response && response.data) {
+        setTemplates(response.data.templates || [])
+        setCategories(response.data.categories || {})
       }
     } catch (error) {
       console.error('Error loading documents:', error)
@@ -56,10 +41,9 @@ const DocumentsPage = () => {
 
   const loadStats = async () => {
     try {
-      const response = await fetch('/api/documents/stats')
-      if (response.ok) {
-        const data = await response.json()
-        setStats(data.data)
+      const response = await apiService.getDocumentStats()
+      if (response && response.data) {
+        setStats(response.data)
       }
     } catch (error) {
       console.error('Error loading stats:', error)

@@ -33,6 +33,12 @@ export interface User {
   role?: string
   level?: string
   status?: string
+  xp?: number
+  reputation?: number
+  totalPortfolioValue?: number
+  activeProjectsCount?: number
+  totalContributions?: number
+  permissions?: string[]
 }
 
 export interface Company {
@@ -53,6 +59,83 @@ export interface Contract {
   status: string
   createdAt: string
   signedAt?: string
+}
+
+export interface GamificationData {
+  level: string
+  xp: number
+  reputation: number
+  badges: Badge[]
+  achievements: Achievement[]
+  leaderboardPosition?: number
+}
+
+export interface Badge {
+  id: string
+  name: string
+  description: string
+  icon: string
+  earnedAt: string
+}
+
+export interface Achievement {
+  id: string
+  name: string
+  description: string
+  progress: number
+  maxProgress: number
+  completed: boolean
+}
+
+export interface PortfolioData {
+  totalValue: number
+  activeProjects: number
+  totalContributions: number
+  equityOwned: number
+  projects: PortfolioProject[]
+}
+
+export interface PortfolioProject {
+  id: string
+  name: string
+  role: string
+  equity: number
+  status: string
+  value: number
+}
+
+export interface JourneyState {
+  currentStage: number
+  completedStages: number[]
+  totalStages: number
+  progress: number
+  nextAction?: string
+}
+
+export interface DocumentTemplate {
+  id: string
+  title: string
+  filename: string
+  category: string
+  categoryInfo: {
+    name: string
+    description: string
+    icon: string
+  }
+  content: string
+  size: number
+  lastModified: string
+  wordCount: number
+  lineCount: number
+}
+
+export interface SystemStatus {
+  status: string
+  version: string
+  uptime: number
+  endpoints: number
+  users: number
+  ventures: number
 }
 
 class ApiService {
@@ -81,8 +164,21 @@ class ApiService {
     })
   }
 
+  async register(userData: any) {
+    return this.fetchWithAuth('/api/auth/register', {
+      method: 'POST',
+      body: JSON.stringify(userData),
+    })
+  }
+
   async getCurrentUser(): Promise<User> {
     return this.fetchWithAuth('/api/auth/me')
+  }
+
+  async logout() {
+    return this.fetchWithAuth('/api/auth/logout', {
+      method: 'POST',
+    })
   }
 
   // Ventures
@@ -133,21 +229,53 @@ class ApiService {
   }
 
   // Gamification
-  async getUserGamification(userId: string) {
+  async getUserGamification(userId: string): Promise<GamificationData | null> {
     try {
-      return await this.fetchWithAuth(`/api/user-gamification/dashboard/${userId}`)
+      const response = await this.fetchWithAuth(`/api/user-gamification/dashboard/${userId}`)
+      return response.data || null
     } catch (error) {
       console.error('Error fetching gamification data:', error)
       return null
     }
   }
 
-  // Portfolio
-  async getUserPortfolio(userId: string) {
+  async getGamificationLeaderboard() {
     try {
-      return await this.fetchWithAuth(`/api/user-portfolio/analytics`)
+      return await this.fetchWithAuth('/api/gamification/leaderboard')
+    } catch (error) {
+      console.error('Error fetching leaderboard:', error)
+      return null
+    }
+  }
+
+  async addXP(userId: string, amount: number, reason: string) {
+    try {
+      return await this.fetchWithAuth('/api/gamification/xp/add', {
+        method: 'POST',
+        body: JSON.stringify({ userId, amount, reason }),
+      })
+    } catch (error) {
+      console.error('Error adding XP:', error)
+      return null
+    }
+  }
+
+  // Portfolio
+  async getUserPortfolio(userId: string): Promise<PortfolioData | null> {
+    try {
+      const response = await this.fetchWithAuth(`/api/user-portfolio/analytics`)
+      return response.data || null
     } catch (error) {
       console.error('Error fetching portfolio data:', error)
+      return null
+    }
+  }
+
+  async getPortfolioProjects(userId: string) {
+    try {
+      return await this.fetchWithAuth(`/api/user-portfolio/projects/${userId}`)
+    } catch (error) {
+      console.error('Error fetching portfolio projects:', error)
       return null
     }
   }
@@ -182,11 +310,101 @@ class ApiService {
   }
 
   // System Status
-  async getSystemStatus() {
+  async getSystemStatus(): Promise<SystemStatus | null> {
     try {
-      return await this.fetchWithAuth('/api/system-instructions/status')
+      const response = await this.fetchWithAuth('/api/system-instructions/status')
+      return response.data || null
     } catch (error) {
       console.error('Error fetching system status:', error)
+      return null
+    }
+  }
+
+  // User Journey
+  async getJourneyState(userId: string): Promise<JourneyState | null> {
+    try {
+      const response = await this.fetchWithAuth(`/api/journey/state/${userId}`)
+      return response.data || null
+    } catch (error) {
+      console.error('Error fetching journey state:', error)
+      return null
+    }
+  }
+
+  async updateJourneyState(userId: string, stage: number) {
+    try {
+      return await this.fetchWithAuth(`/api/journey/state/${userId}`, {
+        method: 'PUT',
+        body: JSON.stringify({ stage }),
+      })
+    } catch (error) {
+      console.error('Error updating journey state:', error)
+      return null
+    }
+  }
+
+  // Legal & Contracts
+  async getLegalPacks() {
+    try {
+      return await this.fetchWithAuth('/api/legal-pack/packs')
+    } catch (error) {
+      console.error('Error fetching legal packs:', error)
+      return null
+    }
+  }
+
+  async signLegalPack(packId: string, signature: string) {
+    try {
+      return await this.fetchWithAuth(`/api/legal-pack/sign/${packId}`, {
+        method: 'POST',
+        body: JSON.stringify({ signature }),
+      })
+    } catch (error) {
+      console.error('Error signing legal pack:', error)
+      return null
+    }
+  }
+
+  // Subscriptions
+  async getSubscriptions() {
+    try {
+      return await this.fetchWithAuth('/api/subscriptions/user')
+    } catch (error) {
+      console.error('Error fetching subscriptions:', error)
+      return null
+    }
+  }
+
+  async createSubscription(planId: string) {
+    try {
+      return await this.fetchWithAuth('/api/subscriptions/create', {
+        method: 'POST',
+        body: JSON.stringify({ planId }),
+      })
+    } catch (error) {
+      console.error('Error creating subscription:', error)
+      return null
+    }
+  }
+
+  // CLI Commands
+  async getCLICommands() {
+    try {
+      return await this.fetchWithAuth('/api/cli/commands')
+    } catch (error) {
+      console.error('Error fetching CLI commands:', error)
+      return null
+    }
+  }
+
+  async executeCLICommand(command: string, args: string[] = []) {
+    try {
+      return await this.fetchWithAuth('/api/cli/exec', {
+        method: 'POST',
+        body: JSON.stringify({ command, args }),
+      })
+    } catch (error) {
+      console.error('Error executing CLI command:', error)
       return null
     }
   }

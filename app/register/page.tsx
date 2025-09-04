@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { User, Mail, Lock, Eye, EyeOff, ArrowRight, ArrowLeft, CheckCircle, AlertCircle, FileText, Shield, Rocket } from 'lucide-react'
+import { apiService } from '../services/api'
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://smartstart-api.onrender.com'
 
@@ -61,13 +62,19 @@ export default function RegisterPage() {
     if (!agreeTos || !agreeContributor) return setError('You must agree to all terms to continue')
     setIsLoading(true)
     try {
-      const res = await fetch(`${API_BASE}/api/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, email, password, preferences: { operationalEmails: optOperationalEmails==='opt_in', publicListing: optPublicListing==='opt_in' } })
+      const response = await apiService.register({ 
+        username, 
+        email, 
+        password, 
+        preferences: { 
+          operationalEmails: optOperationalEmails==='opt_in', 
+          publicListing: optPublicListing==='opt_in' 
+        } 
       })
-      const data = await res.json().catch(()=>({}))
-      if (!res.ok) throw new Error(data?.error || data?.message || 'Registration failed')
+      
+      if (!response.success) {
+        throw new Error(response.message || 'Registration failed')
+      }
       router.push('/')
     } catch (e:any) {
       setError(e.message || 'Registration failed')

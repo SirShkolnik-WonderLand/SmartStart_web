@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { Lock, Mail, Eye, EyeOff, ArrowRight, AlertCircle, CheckCircle, User, Shield, Zap, Rocket, Globe, Database } from 'lucide-react'
+import { apiService } from './services/api'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -55,27 +56,19 @@ export default function LoginPage() {
     setError('')
 
     try {
-      const response = await fetch(`${API_BASE}/api/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ email, password })
-      })
-
-      if (response.ok) {
-        const data = await response.json()
-        if (data.success) {
-          // Store session token if provided
-          if (data.sessionToken) {
-            localStorage.setItem('sessionToken', data.sessionToken)
-          }
-          redirectAfterLogin()
-        } else {
-          setError(data.message || 'Login failed')
+      const response = await apiService.login(email, password)
+      
+      if (response.success) {
+        // Store session token if provided
+        if (response.sessionToken) {
+          localStorage.setItem('sessionToken', response.sessionToken)
         }
+        if (response.token) {
+          localStorage.setItem('auth-token', response.token)
+        }
+        redirectAfterLogin()
       } else {
-        const errorData = await response.json()
-        setError(errorData.message || 'Login failed')
+        setError(response.message || 'Login failed')
       }
     } catch (error) {
       setError('Network error. Please try again.')

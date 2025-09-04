@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { apiService, SystemStatus } from '../services/api'
 
 interface User { id: string; username: string; role: string; company: string; team: string; level: number; xp: number; reputation: number }
 
@@ -13,10 +14,23 @@ export default function CLIDashboard() {
   const [cmd, setCmd] = useState('')
   const [history, setHistory] = useState<string[]>([])
   const [histIdx, setHistIdx] = useState<number>(-1)
+  const [systemStatus, setSystemStatus] = useState<SystemStatus | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
 
-  useEffect(() => { inputRef.current?.focus() }, [])
+  useEffect(() => { 
+    inputRef.current?.focus()
+    loadSystemStatus()
+  }, [])
+
+  const loadSystemStatus = async () => {
+    try {
+      const status = await apiService.getSystemStatus()
+      setSystemStatus(status)
+    } catch (error) {
+      console.error('Error loading system status:', error)
+    }
+  }
 
   const print = (line: string) => setOutput(prev => [...prev, line])
 
