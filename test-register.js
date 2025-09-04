@@ -46,7 +46,7 @@ async function testRegister() {
                     firstName: null,
                     lastName: null,
                     email: email.toLowerCase(),
-                    isActive: true
+                    status: 'ACTIVE'
                 }
             });
             console.log(`✅ User created: ${user.id}`);
@@ -59,8 +59,9 @@ async function testRegister() {
                     userId: user.id,
                     roleId: defaultRole.id,
                     isActive: true,
-                    isVerified: false,
-                    lastLoginAt: null
+                    lastLogin: null,
+                    loginAttempts: 0,
+                    mfaEnabled: false
                 }
             });
             console.log(`✅ Account created: ${account.id}`);

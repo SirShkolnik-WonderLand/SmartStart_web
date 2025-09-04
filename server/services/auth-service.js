@@ -399,8 +399,9 @@ class AuthService {
               userId: user.id,
               roleId: defaultRole.id,
               isActive: true,
-              isVerified: false,
-              lastLoginAt: null
+              lastLogin: null,
+              loginAttempts: 0,
+              mfaEnabled: false
             }
           });
 
