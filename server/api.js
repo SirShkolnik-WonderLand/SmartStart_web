@@ -106,87 +106,15 @@ try {
   console.error('Failed to mount documents-api routes:', e?.message);
 }
 
-// Authentication routes
-app.post('/api/auth/login', async (req, res) => {
-  try {
-    const { email, password } = req.body;
+// Mount unified authentication API
+try {
+  const unifiedAuthRoutes = require('./routes/unified-auth-api');
+  app.use('/api/auth', unifiedAuthRoutes);
+} catch (e) {
+  console.error('Failed to mount unified auth routes:', e?.message);
+}
 
-    if (!email || !password) {
-      return res.status(400).json({ error: 'Email and password required' });
-    }
-
-    const account = await prisma.account.findUnique({
-      where: { email },
-      include: {
-        user: true,
-        role: true
-      }
-    });
-
-    if (!account || !account.isActive) {
-      return res.status(401).json({ error: 'Invalid credentials' });
-    }
-
-    const isValidPassword = await bcrypt.compare(password, account.password || '');
-    if (!isValidPassword) {
-      return res.status(401).json({ error: 'Invalid credentials' });
-    }
-
-    // Update last login
-    await prisma.account.update({
-      where: { id: account.id },
-      data: { lastLogin: new Date() }
-    });
-
-    // Generate JWT token
-    const token = jwt.sign(
-      {
-        userId: account.userId,
-        email: account.email,
-        roleId: account.roleId,
-        roleName: account.role.name
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: '24h' }
-    );
-
-    res.json({
-      success: true,
-      token,
-      user: {
-        id: account.user.id,
-        email: account.user.email,
-        name: account.user.name,
-        role: account.role.name
-      }
-    });
-  } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
-app.get('/api/auth/me', authenticateToken, async (req, res) => {
-  try {
-    res.json({
-      success: true,
-      user: {
-        id: req.user.id,
-        email: req.user.email,
-        name: req.user.name,
-        role: {
-          id: req.user.account.role.id,
-          name: req.user.account.role.name,
-          level: req.user.account.role.level
-        },
-        permissions: req.permissions
-      }
-    });
-  } catch (error) {
-    console.error('Auth me error:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
+// /api/auth/me is now handled by unified-auth-api
 
 // User management routes
 app.get('/api/users', authenticateToken, requirePermission('user:read'), async (req, res) => {

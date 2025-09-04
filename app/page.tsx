@@ -29,8 +29,7 @@ export default function LoginPage() {
     try {
       const response = await apiService.login(email, password)
       if (response.success) {
-        localStorage.setItem('auth-token', response.token)
-        document.cookie = `web_session=${response.token}; path=/; HttpOnly; Secure; SameSite=Lax`
+        // Token is now stored in HTTP-only cookie by the backend
         redirectAfterLogin()
       } else {
         setError(response.message || 'Login failed. Please check your credentials.')

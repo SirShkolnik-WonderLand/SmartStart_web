@@ -140,19 +140,21 @@ export interface SystemStatus {
 
 class ApiService {
   private async fetchWithAuth(endpoint: string, options: RequestInit = {}) {
-    const token = localStorage.getItem('auth-token')
-    
     const response = await fetch(`${API_BASE}${endpoint}`, {
       ...options,
       headers: {
         'Content-Type': 'application/json',
-        ...(token && { 'Authorization': `Bearer ${token}` }),
         ...options.headers,
       },
-      credentials: 'include',
+      credentials: 'include', // Include HTTP-only auth cookie
     })
 
     if (!response.ok) {
+      if (response.status === 401) {
+        // Clear stored user data on auth failure
+        localStorage.removeItem('user-id')
+        localStorage.removeItem('user-data')
+      }
       throw new Error(`API Error: ${response.status} ${response.statusText}`)
     }
 
@@ -161,27 +163,29 @@ class ApiService {
 
   // Authentication
   async login(email: string, password: string) {
-    const response = await fetch(`${API_BASE}/api/auth/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify({ email, password }),
-    })
+    try {
+      const response = await fetch(`${API_BASE}/api/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include', // Include cookies for HTTP-only auth token
+        body: JSON.stringify({ email, password }),
+      })
 
-    if (!response.ok) {
-      throw new Error(`API Error: ${response.status} ${response.statusText}`)
+      const data = await response.json()
+      
+      if (data.success && data.user) {
+        // Store user ID and data for frontend use
+        localStorage.setItem('user-id', data.user.id)
+        localStorage.setItem('user-data', JSON.stringify(data.user))
+      }
+      
+      return data
+    } catch (error) {
+      console.error('Login error:', error)
+      return { success: false, message: 'Login failed. Please try again.' }
     }
-
-    const data = await response.json()
-    
-    // Store user ID for getCurrentUser to use
-    if (data.success && data.user && data.user.id) {
-      localStorage.setItem('user-id', data.user.id)
-    }
-    
-    return data
   }
 
   async register(userData: any) {

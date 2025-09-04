@@ -16,6 +16,8 @@ export default function JourneyGuard({ children }: JourneyGuardProps) {
 
   // Pages that don't require journey completion
   const journeyPages = [
+    '/',
+    '/register',
     '/venture-gate',
     '/venture-gate/explore',
     '/venture-gate/verify',
@@ -23,8 +25,6 @@ export default function JourneyGuard({ children }: JourneyGuardProps) {
     '/venture-gate/legal',
     '/venture-gate/profile',
     '/venture-gate/help',
-    '/register',
-    '/login',
     '/documents',
     '/documents/soba/new',
     '/documents/puoha/new'
@@ -52,14 +52,14 @@ export default function JourneyGuard({ children }: JourneyGuardProps) {
           setIsJourneyComplete(isComplete)
 
           // If journey is not complete and user is not on a journey page, redirect to journey
-          if (!isComplete && !isJourneyPage && pathname !== '/') {
+          if (!isComplete && !isJourneyPage) {
             console.log('Journey not complete, redirecting to venture-gate')
             router.push('/venture-gate')
             return
           }
         } else {
           // No journey state found, redirect to journey
-          if (!isJourneyPage && pathname !== '/') {
+          if (!isJourneyPage) {
             console.log('No journey state found, redirecting to venture-gate')
             router.push('/venture-gate')
             return

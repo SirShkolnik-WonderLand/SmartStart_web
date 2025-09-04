@@ -45,33 +45,31 @@ export default function DashboardPage() {
 
   const checkAuth = async () => {
     try {
-      const token = localStorage.getItem('auth-token')
-      if (!token) {
-        router.push('/')
-        return
-      }
-
       const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+        credentials: 'include' // Include HTTP-only auth cookie
       })
       
       if (response.ok) {
         const data = await response.json()
         if (data.success) {
           setUser(data.user)
+          // Store user ID for journey state
+          localStorage.setItem('user-id', data.user.id)
+          localStorage.setItem('user-data', JSON.stringify(data.user))
         } else {
-          localStorage.removeItem('auth-token')
+          localStorage.removeItem('user-id')
+          localStorage.removeItem('user-data')
           router.push('/')
         }
       } else {
-        localStorage.removeItem('auth-token')
+        localStorage.removeItem('user-id')
+        localStorage.removeItem('user-data')
         router.push('/')
       }
     } catch (error) {
       console.error('Auth check failed:', error)
-      localStorage.removeItem('auth-token')
+      localStorage.removeItem('user-id')
+      localStorage.removeItem('user-data')
       router.push('/')
     } finally {
       setIsLoading(false)
