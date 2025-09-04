@@ -559,6 +559,66 @@ router.post('/gates', async(req, res) => {
     }
 });
 
+// Get journey state for a specific user (frontend relies on this endpoint)
+router.get('/state/:userId', async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        if (!userId) {
+            return res.status(400).json({ success: false, error: 'Missing userId' });
+        }
+
+        // Ensure user exists
+        const user = await prisma.user.findUnique({ where: { id: userId } });
+        if (!user) {
+            return res.status(404).json({ success: false, error: 'User not found' });
+        }
+
+        // Get all stages and user states
+        const stages = await prisma.journeyStage.findMany({ orderBy: { order: 'asc' } });
+        const userStates = await prisma.userJourneyState.findMany({ where: { userId } });
+
+        // Initialize first stage if user has no states yet
+        if (stages.length > 0 && userStates.length === 0) {
+            await prisma.userJourneyState.create({
+                data: {
+                    userId,
+                    stageId: stages[0].id,
+                    status: 'IN_PROGRESS',
+                    startedAt: new Date(),
+                }
+            });
+        }
+
+        const freshStates = userStates.length === 0
+            ? await prisma.userJourneyState.findMany({ where: { userId } })
+            : userStates;
+
+        const totalStages = stages.length;
+        const completedStages = freshStates.filter(s => s.status === 'COMPLETED').length;
+        const currentStageObj = freshStates.find(s => s.status === 'IN_PROGRESS');
+        const currentStageIndex = currentStageObj
+            ? stages.findIndex(s => s.id === currentStageObj.stageId)
+            : Math.min(completedStages, Math.max(0, totalStages - 1));
+        const progress = totalStages > 0 ? Math.round((completedStages / totalStages) * 100) : 0;
+
+        return res.json({
+            success: true,
+            data: {
+                currentStage: currentStageIndex >= 0 ? currentStageIndex : 0,
+                completedStages: freshStates
+                    .filter(s => s.status === 'COMPLETED')
+                    .map(s => stages.findIndex(st => st.id === s.stageId))
+                    .filter(i => i >= 0),
+                totalStages,
+                progress,
+            }
+        });
+    } catch (error) {
+        return res.status(500).json({ success: false, error: 'Failed to fetch journey state', details: error.message });
+    }
+});
+
 // Get all user journey states (admin)
 router.get('/states', async(req, res) => {
     try {
