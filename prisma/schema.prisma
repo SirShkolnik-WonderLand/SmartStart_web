@@ -2783,6 +2783,7 @@ enum GateType {
   DOCUMENT        // Requires document upload
   LAUNCH          // Requires launch readiness
   VENTURE         // Requires venture creation/participation
+  TEAM            // Requires team creation/participation
   CUSTOM          // Custom gate logic
 }
 

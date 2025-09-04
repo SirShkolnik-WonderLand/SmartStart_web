@@ -328,23 +328,41 @@ router.get('/gates/:userId', async(req, res) => {
                                 details = { completedStages, totalStages };
                                 break;
 
-                            case 'VENTURE':
-                                // Check if user has created or joined a venture
-                                const userVentures = await prisma.venture.count({
-                                    where: {
-                                        OR: [
-                                            { ownerId: userId },
-                                            { 
-                                                members: {
-                                                    some: { userId: userId }
-                                                }
-                                            }
-                                        ]
-                                    }
-                                });
-                                isPassed = userVentures > 0;
-                                details = { ventureCount: userVentures };
-                                break;
+                                        case 'VENTURE':
+                // Check if user has created or joined a venture
+                const userVentures = await prisma.venture.count({
+                    where: {
+                        OR: [
+                            { ownerId: userId },
+                            {
+                                members: {
+                                    some: { userId: userId }
+                                }
+                            }
+                        ]
+                    }
+                });
+                isPassed = userVentures > 0;
+                details = { ventureCount: userVentures };
+                break;
+
+            case 'TEAM':
+                // Check if user has created or joined a team
+                const userTeams = await prisma.team.count({
+                    where: {
+                        OR: [
+                            { ownerId: userId },
+                            {
+                                members: {
+                                    some: { userId: userId }
+                                }
+                            }
+                        ]
+                    }
+                });
+                isPassed = userTeams > 0;
+                details = { teamCount: userTeams };
+                break;
 
                             default:
                                 isPassed = false;
