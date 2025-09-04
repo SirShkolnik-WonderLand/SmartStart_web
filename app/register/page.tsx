@@ -55,8 +55,14 @@ export default function RegisterPage() {
         password 
       })
       if (response.success) {
-        localStorage.setItem('auth-token', response.token)
-        document.cookie = `web_session=${response.token}; path=/; HttpOnly; Secure; SameSite=Lax`
+        // Store user ID for API calls
+        if (response.user && response.user.id) {
+          localStorage.setItem('user-id', response.user.id)
+        }
+        // For now, we'll use a simple token since the backend doesn't return one
+        const simpleToken = `token_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+        localStorage.setItem('auth-token', simpleToken)
+        document.cookie = `web_session=${simpleToken}; path=/; HttpOnly; Secure; SameSite=Lax`
         router.push('/venture-gate')
       } else {
         setError(response.message || 'Registration failed. Please try again.')

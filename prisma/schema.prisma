@@ -2778,5 +2778,6 @@ enum GateType {
   PROFILE         // Requires complete profile
   DOCUMENT        // Requires document upload
   LAUNCH          // Requires launch readiness
+  VENTURE         // Requires venture creation/participation
   CUSTOM          // Custom gate logic
 }
