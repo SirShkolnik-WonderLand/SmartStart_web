@@ -6,97 +6,70 @@ import { useRouter } from 'next/navigation'
 
 const Navigation = () => {
   const router = useRouter()
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [user, setUser] = useState({ name: 'Udi Shkolnik', initials: 'US' })
 
   const navItems = [
+    { href: '/dashboard', label: 'Dashboard', icon: '📊' },
     { href: '/venture-gate', label: 'Journey', icon: '🚀' },
-    { href: '/venture-gate/explore', label: 'Explore', icon: '🔍' },
-    { href: '/venture-gate/verify', label: 'Security', icon: '🔐' },
-    { href: '/venture-gate/plans', label: 'Plans', icon: '💳' },
-    { href: '/venture-gate/legal', label: 'Legal', icon: '📋' },
-    { href: '/venture-gate/profile', label: 'Profile', icon: '👤' },
-    { href: '/documents', label: 'Documents', icon: '📚' }
+    { href: '/documents', label: 'Documents', icon: '📚' },
+    { href: '/cli-dashboard', label: 'System', icon: '💻' }
   ]
 
   const handleLogout = () => {
     // Clear any stored auth data
-    document.cookie = 'web_session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
+    localStorage.removeItem('auth-token')
+    localStorage.removeItem('sessionToken')
     router.push('/')
   }
 
-  // Set user data on mount (no API calls to avoid errors)
+  // Set user data on mount
   useEffect(() => {
     setUser({ name: 'Udi Shkolnik', initials: 'US' })
   }, [])
 
   return (
-    <nav className="nav">
-      <div className="container">
-        <div className="flex items-center justify-between">
+    <nav className="bg-gray-900/50 backdrop-blur-lg border-b border-white/10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
           {/* Brand */}
-          <Link href="/venture-gate" className="nav-brand">
-            AliceSolutions Ventures
+          <Link href="/dashboard" className="flex items-center space-x-3">
+            <div className="w-8 h-8 bg-gradient-to-r from-green-400 to-blue-500 rounded-lg flex items-center justify-center">
+              <div className="w-4 h-4 bg-white rounded-sm"></div>
+            </div>
+            <span className="text-xl font-bold text-white">SmartStart</span>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex nav-links">
+          <div className="hidden md:flex items-center space-x-8">
             {navItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className="nav-link"
+                className="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors duration-200"
               >
-                <span className="mr-2">{item.icon}</span>
-                {item.label}
+                <span className="text-sm">{item.icon}</span>
+                <span className="text-sm font-medium">{item.label}</span>
               </Link>
             ))}
           </div>
 
-          {/* User Actions */}
-          <div className="flex items-center gap-4">
-            <div className="hidden md:flex items-center gap-2">
-              <span className="text-sm text-secondary">Welcome, {user.name}</span>
+          {/* User Profile */}
+          <div className="flex items-center space-x-4">
+            <div className="hidden md:flex items-center space-x-3">
               <div className="w-8 h-8 bg-gradient-to-r from-green-400 to-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
                 {user.initials}
               </div>
+              <span className="text-sm text-gray-300">{user.name}</span>
             </div>
             
             <button
-              className="btn btn-secondary"
               onClick={handleLogout}
+              className="text-sm text-gray-400 hover:text-white transition-colors duration-200"
             >
-              Logout
-            </button>
-
-            {/* Mobile Menu Button */}
-            <button
-              className="md:hidden btn btn-secondary"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-            >
-              ☰
+              Sign Out
             </button>
           </div>
         </div>
-
-        {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <div className="md:hidden mt-4 pt-4 border-t border-gray-700">
-            <div className="flex flex-col gap-2">
-              {navItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="nav-link py-2"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <span className="mr-2">{item.icon}</span>
-                  {item.label}
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
     </nav>
   )
