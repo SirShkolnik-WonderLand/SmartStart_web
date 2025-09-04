@@ -77,9 +77,9 @@ app.use('/api/advanced-contracts', advancedContractsApiRoutes);
 const contractAutoIssuanceApiRoutes = require('./routes/contract-auto-issuance-api');
 app.use('/api/contract-auto-issuance', contractAutoIssuanceApiRoutes);
 
-// Mount documents API routes
+// Mount documents API routes (contract templates)
 const documentsApiRoutes = require('./routes/documents-api');
-app.use('/api/documents', documentsApiRoutes);
+app.use('/api/contract-templates', documentsApiRoutes);
 
 const systemInstructionsApiRoutes = require('./routes/system-instructions-api');
 app.use('/api/system', systemInstructionsApiRoutes);
