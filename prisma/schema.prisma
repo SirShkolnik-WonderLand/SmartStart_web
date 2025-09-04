@@ -2785,6 +2785,7 @@ enum GateType {
   VENTURE         // Requires venture creation/participation
   TEAM            // Requires team creation/participation
   PROJECT         // Requires project creation/participation
+  LEGAL_ENTITY    // Requires company/legal entity on file
   CUSTOM          // Custom gate logic
 }
 

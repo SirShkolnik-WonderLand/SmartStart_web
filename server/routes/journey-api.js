@@ -382,6 +382,28 @@ router.get('/gates/:userId', async(req, res) => {
                 details = { projectCount: userProjects };
                 break;
 
+            case 'LEGAL_ENTITY':
+                // Check if user has at least one company or is part of a company
+                const userCompanies = await prisma.company.count({
+                    where: {
+                        OR: [
+                            { ownerId: userId },
+                            {
+                                team: {
+                                    some: {
+                                        members: {
+                                            some: { userId: userId }
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                });
+                isPassed = userCompanies > 0;
+                details = { companyCount: userCompanies };
+                break;
+
                             default:
                                 isPassed = false;
                                 details = { message: 'Custom gate logic not implemented' };
