@@ -10,6 +10,8 @@ export default function RegisterPage() {
   const [step, setStep] = useState(1)
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -45,7 +47,13 @@ export default function RegisterPage() {
     setIsLoading(true)
     setError('')
     try {
-      const response = await apiService.register({ username, email, password })
+      const response = await apiService.register({ 
+        username, 
+        email, 
+        firstName, 
+        lastName, 
+        password 
+      })
       if (response.success) {
         localStorage.setItem('auth-token', response.token)
         document.cookie = `web_session=${response.token}; path=/; HttpOnly; Secure; SameSite=Lax`
@@ -142,6 +150,35 @@ export default function RegisterPage() {
                 </div>
               </div>
 
+              <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+                <div style={{ flex: 1 }}>
+                  <label style={{ fontSize: '11px', fontWeight: '500', color: '#ffffff', marginBottom: '4px', display: 'block', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                    First Name
+                  </label>
+                  <input
+                    type="text"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    style={{ width: '100%', padding: '8px', background: '#1a1a1a', border: '1px solid #333333', borderRadius: '4px', color: '#ffffff', fontSize: '13px' }}
+                    placeholder="First name"
+                    required
+                  />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label style={{ fontSize: '11px', fontWeight: '500', color: '#ffffff', marginBottom: '4px', display: 'block', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                    Last Name
+                  </label>
+                  <input
+                    type="text"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    style={{ width: '100%', padding: '8px', background: '#1a1a1a', border: '1px solid #333333', borderRadius: '4px', color: '#ffffff', fontSize: '13px' }}
+                    placeholder="Last name"
+                    required
+                  />
+                </div>
+              </div>
+
               <div style={{ marginBottom: '12px' }}>
                 <label style={{ fontSize: '11px', fontWeight: '500', color: '#ffffff', marginBottom: '4px', display: 'block', textTransform: 'uppercase', letterSpacing: '1px' }}>
                   Email Address
@@ -220,7 +257,7 @@ export default function RegisterPage() {
 
               <button
                 onClick={handleRegister}
-                disabled={isLoading || !username || !email || !password || !confirmPassword}
+                disabled={isLoading || !username || !email || !firstName || !lastName || !password || !confirmPassword}
                 style={{ 
                   width: '100%', 
                   padding: '10px 16px', 
