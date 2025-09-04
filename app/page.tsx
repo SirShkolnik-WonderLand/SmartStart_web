@@ -24,50 +24,37 @@ export default function LoginPage() {
       setError('Please enter both email and password')
       return
     }
-
     setIsLoading(true)
     setError('')
-
     try {
       const response = await apiService.login(email, password)
-      
       if (response.success) {
-        // Store session token if provided
-        if (response.sessionToken) {
-          localStorage.setItem('sessionToken', response.sessionToken)
-        }
-        if (response.token) {
-          localStorage.setItem('auth-token', response.token)
-        }
+        localStorage.setItem('auth-token', response.token)
+        document.cookie = `web_session=${response.token}; path=/; HttpOnly; Secure; SameSite=Lax`
         redirectAfterLogin()
       } else {
-        setError(response.message || 'Login failed')
+        setError(response.message || 'Login failed. Please check your credentials.')
       }
-    } catch (error) {
-      setError('Network error. Please try again.')
+    } catch (e: any) {
+      setError(e.message || 'An unexpected error occurred during login.')
     } finally {
       setIsLoading(false)
     }
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800 flex items-center justify-center p-6">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-20" style={{
-        backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2300ff88' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
-      }} />
-      
-      <div className="relative z-10 w-full max-w-sm">
+    <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-10"
+          className="text-center mb-8"
         >
           <div className="flex items-center justify-center mb-6">
-            <div className="w-14 h-14 bg-gradient-to-r from-green-400 to-blue-500 rounded-2xl flex items-center justify-center shadow-lg">
-              <div className="w-7 h-7 bg-white rounded-md"></div>
+            <div className="w-16 h-16 bg-gradient-to-r from-green-400 to-blue-500 rounded-2xl flex items-center justify-center shadow-lg">
+              <div className="w-8 h-8 bg-white rounded-sm"></div>
             </div>
           </div>
           <h1 className="text-3xl font-bold text-white mb-2">SmartStart</h1>
@@ -79,25 +66,25 @@ export default function LoginPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl p-8 shadow-xl"
+          className="card"
         >
           <div className="text-center mb-8">
             <h2 className="text-xl font-semibold text-white mb-2">Welcome Back</h2>
-            <p className="text-gray-400">Sign in to access your account</p>
+            <p className="text-gray-400 text-sm">Sign in to access your account</p>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-3">
+            <div className="form-group">
+              <label className="form-label">
                 Email Address
               </label>
               <div className="relative">
-                <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-green-400 focus:outline-none focus:ring-2 focus:ring-green-400/20 transition-all"
+                  className="form-input pl-11"
                   placeholder="Enter your email"
                   disabled={isLoading}
                   required
@@ -105,17 +92,17 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-3">
+            <div className="form-group">
+              <label className="form-label">
                 Password
               </label>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-12 pr-14 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-green-400 focus:outline-none focus:ring-2 focus:ring-green-400/20 transition-all"
+                  className="form-input pl-11 pr-12"
                   placeholder="Enter your password"
                   disabled={isLoading}
                   required
@@ -123,7 +110,7 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300 transition-colors"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300"
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
@@ -132,44 +119,44 @@ export default function LoginPage() {
 
             {error && (
               <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex items-center space-x-3 text-red-400 text-sm bg-red-500/10 border border-red-500/20 rounded-xl p-4"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm flex items-center"
               >
-                <AlertCircle className="w-5 h-5 flex-shrink-0" />
-                <span>{error}</span>
+                <AlertCircle className="w-4 h-4 mr-2" />
+                {error}
               </motion.div>
             )}
 
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-3 bg-gradient-to-r from-green-400 to-blue-500 hover:from-green-500 hover:to-blue-600 disabled:from-gray-600 disabled:to-gray-700 text-white font-semibold rounded-xl transition-all duration-200 flex items-center justify-center shadow-lg"
+              className="btn btn-primary w-full py-3"
             >
               {isLoading ? (
-                <div className="flex items-center space-x-2">
-                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  <span>Signing In...</span>
-                </div>
+                <span className="flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                  Signing In...
+                </span>
               ) : (
-                <div className="flex items-center space-x-2">
-                  <span>Sign In</span>
-                  <ArrowRight className="w-5 h-5" />
-                </div>
+                <span className="flex items-center justify-center">
+                  Sign In
+                  <ArrowRight className="ml-2 w-5 h-5" />
+                </span>
               )}
             </button>
           </form>
 
           {/* Registration Link */}
-          <div className="mt-8 text-center">
-            <p className="text-gray-400">
+          <div className="mt-6 text-center">
+            <p className="text-gray-400 text-sm">
               Don't have an account?{' '}
-              <button
-                onClick={() => router.push('/register')}
-                className="text-green-400 hover:text-green-300 font-medium underline transition-colors"
+              <a
+                href="/register"
+                className="text-green-400 hover:text-green-300 font-medium underline"
               >
                 Create Account
-              </button>
+              </a>
             </p>
           </div>
         </motion.div>
