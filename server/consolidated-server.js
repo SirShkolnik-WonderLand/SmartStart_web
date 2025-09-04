@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const { setupSecurity } = require('./middleware/security');
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 
 const app = express();
 
@@ -201,6 +203,24 @@ app.listen(PORT, () => {
     console.log(`🔐 Security middleware enabled`);
     console.log(`📊 All 12 systems operational`);
     console.log(`🔄 CLI System Version: 2.0.1`);
+
+    // Ensure Postgres enum GateType includes all expected values
+    (async () => {
+        try {
+            const required = ['SUBSCRIPTION','LEGAL_PACK','NDA','CONTRACT','PAYMENT','VERIFICATION','PROFILE','DOCUMENT','LAUNCH','VENTURE','TEAM','PROJECT','LEGAL_ENTITY','CUSTOM'];
+            const existing = await prisma.$queryRawUnsafe("SELECT enumlabel FROM pg_enum e JOIN pg_type t ON e.enumtypid = t.oid WHERE t.typname = 'GateType'");
+            const existingLabels = (existing || []).map(r => r.enumlabel);
+            for (const label of required) {
+                if (!existingLabels.includes(label)) {
+                    console.log(`[DB] Adding missing GateType value: ${label}`);
+                    await prisma.$executeRawUnsafe(`ALTER TYPE "GateType" ADD VALUE IF NOT EXISTS '${label}'`);
+                }
+            }
+            console.log('[DB] GateType enum synchronized');
+        } catch (e) {
+            console.error('[DB] Failed to synchronize GateType enum:', e.message);
+        }
+    })();
 });
 
 module.exports = app;
