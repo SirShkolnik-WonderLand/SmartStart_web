@@ -127,6 +127,8 @@ router.get('/', async(req, res) => {
     try {
         const {
             industry,
+            sector,
+            region,
             size,
             stage,
             status,
