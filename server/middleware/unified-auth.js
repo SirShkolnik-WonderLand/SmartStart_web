@@ -7,8 +7,13 @@ const authService = require('../services/auth-service');
 function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+  
+  // Also check for token in HTTP-only cookie
+  const cookieToken = req.cookies && req.cookies['auth-token'];
+  
+  const authToken = token || cookieToken;
 
-  if (!token) {
+  if (!authToken) {
     return res.status(401).json({
       success: false,
       message: 'Access token required',
@@ -16,7 +21,7 @@ function authenticateToken(req, res, next) {
     });
   }
 
-  authService.verifyToken(token)
+  authService.verifyToken(authToken)
     .then(user => {
       if (!user) {
         return res.status(401).json({
@@ -27,7 +32,7 @@ function authenticateToken(req, res, next) {
       }
 
       req.user = user;
-      req.token = token;
+      req.token = authToken;
       next();
     })
     .catch(error => {
@@ -47,16 +52,21 @@ function authenticateToken(req, res, next) {
 function optionalAuth(req, res, next) {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
+  
+  // Also check for token in HTTP-only cookie
+  const cookieToken = req.cookies && req.cookies['auth-token'];
+  
+  const authToken = token || cookieToken;
 
-  if (!token) {
+  if (!authToken) {
     req.user = null;
     return next();
   }
 
-  authService.verifyToken(token)
+  authService.verifyToken(authToken)
     .then(user => {
       req.user = user;
-      req.token = token;
+      req.token = authToken;
       next();
     })
     .catch(() => {
