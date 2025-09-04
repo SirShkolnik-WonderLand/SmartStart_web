@@ -296,15 +296,54 @@ router.post('/register', async(req, res) => {
     }
 });
 
+// Rate limiting for login attempts
+const loginAttempts = new Map();
+const MAX_LOGIN_ATTEMPTS = 5;
+const LOCKOUT_TIME = 15 * 60 * 1000; // 15 minutes
+
 // User login
 router.post('/login', async (req, res) => {
     try {
         const { email, password, deviceInfo = {}, ipAddress } = req.body;
+        const clientIP = req.ip || req.connection.remoteAddress || 'unknown';
 
         if (!email || !password) {
             return res.status(400).json({
                 success: false,
                 message: 'Missing required fields: email, password'
+            });
+        }
+
+        // Check rate limiting
+        const attemptKey = `${clientIP}:${email.toLowerCase()}`;
+        const attempts = loginAttempts.get(attemptKey) || { count: 0, lastAttempt: 0 };
+        
+        if (attempts.count >= MAX_LOGIN_ATTEMPTS) {
+            const timeSinceLastAttempt = Date.now() - attempts.lastAttempt;
+            if (timeSinceLastAttempt < LOCKOUT_TIME) {
+                const remainingTime = Math.ceil((LOCKOUT_TIME - timeSinceLastAttempt) / 60000);
+                return res.status(429).json({
+                    success: false,
+                    message: `Too many login attempts. Please try again in ${remainingTime} minutes.`
+                });
+            } else {
+                // Reset attempts after lockout period
+                loginAttempts.delete(attemptKey);
+            }
+        }
+
+        // Validate password strength
+        if (password.length < 8) {
+            return res.status(400).json({
+                success: false,
+                message: 'Password must be at least 8 characters long'
+            });
+        }
+
+        if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Password must contain at least one uppercase letter, one lowercase letter, and one number'
             });
         }
 
@@ -316,6 +355,11 @@ router.post('/login', async (req, res) => {
         });
 
         if (!user) {
+            // Increment failed attempts
+            loginAttempts.set(attemptKey, { 
+                count: attempts.count + 1, 
+                lastAttempt: Date.now() 
+            });
             return res.status(401).json({
                 success: false,
                 message: 'Invalid email/username or password'
@@ -324,6 +368,11 @@ router.post('/login', async (req, res) => {
 
         // Check if user has a password
         if (!user.password) {
+            // Increment failed attempts
+            loginAttempts.set(attemptKey, { 
+                count: attempts.count + 1, 
+                lastAttempt: Date.now() 
+            });
             return res.status(401).json({
                 success: false,
                 message: 'Account not properly set up. Please contact support.'
@@ -332,6 +381,11 @@ router.post('/login', async (req, res) => {
 
         // Check if user is active
         if (user.status !== 'ACTIVE') {
+            // Increment failed attempts
+            loginAttempts.set(attemptKey, { 
+                count: attempts.count + 1, 
+                lastAttempt: Date.now() 
+            });
             return res.status(401).json({
                 success: false,
                 message: 'Account is deactivated. Please contact support.'
@@ -341,11 +395,19 @@ router.post('/login', async (req, res) => {
         // Verify password
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
+            // Increment failed attempts
+            loginAttempts.set(attemptKey, { 
+                count: attempts.count + 1, 
+                lastAttempt: Date.now() 
+            });
             return res.status(401).json({
                 success: false,
                 message: 'Invalid email/username or password'
             });
         }
+
+        // Clear failed attempts on successful login
+        loginAttempts.delete(attemptKey);
 
         // Generate JWT token
         const token = jwt.sign(

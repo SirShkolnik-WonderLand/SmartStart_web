@@ -18,7 +18,7 @@ function authenticateToken(req, res, next) {
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
         
-        // Get user from database
+        // Get user from database and validate session
         prisma.user.findUnique({
             where: { id: decoded.userId },
             select: {
@@ -29,9 +29,10 @@ function authenticateToken(req, res, next) {
                 xp: true,
                 reputation: true,
                 status: true,
-                permissions: true
+                permissions: true,
+                lastActive: true
             }
-        }).then(user => {
+        }).then(async user => {
             if (!user) {
                 return res.status(401).json({
                     success: false,
@@ -45,6 +46,21 @@ function authenticateToken(req, res, next) {
                     message: 'Account is deactivated. Please contact support.'
                 });
             }
+
+            // Check if session is still valid (last active within 7 days)
+            const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+            if (user.lastActive && user.lastActive < sevenDaysAgo) {
+                return res.status(401).json({
+                    success: false,
+                    message: 'Session expired. Please log in again.'
+                });
+            }
+
+            // Update last active timestamp
+            await prisma.user.update({
+                where: { id: user.id },
+                data: { lastActive: new Date() }
+            });
 
             // Add user to request object
             req.user = {

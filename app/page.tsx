@@ -113,6 +113,17 @@ export default function LoginPage() {
       return
     }
 
+    // Validate password strength
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters long')
+      return
+    }
+
+    if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) {
+      setError('Password must contain at least one uppercase letter, one lowercase letter, and one number')
+      return
+    }
+
     setIsLoading(true)
     setError('')
 
@@ -145,9 +156,8 @@ export default function LoginPage() {
   const handleDemoLogin = async () => {
     setUsername('admin')
     setPassword('password123')
-    setTimeout(() => {
-      redirectAfterLogin()
-    }, 300)
+    // Actually authenticate with the demo credentials instead of bypassing
+    await handleLogin(new Event('submit') as any)
   }
 
   return (
