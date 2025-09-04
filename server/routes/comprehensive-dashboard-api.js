@@ -5,6 +5,28 @@ const { authenticateToken, requirePermission } = require('../middleware/auth');
 
 const prisma = new PrismaClient();
 
+// ===== HELPER FUNCTIONS =====
+async function calculateTeamPerformance(teamId) { return 0; }
+async function calculateTeamProductivity(teams) { return 0; }
+async function calculateProjectDelivery(projects) { return 0; }
+async function calculateMemberSatisfaction(teams) { return 0; }
+async function calculateGoalAchievement(teams) { return 0; }
+async function getManagerAlerts(userId) { return []; }
+async function calculateTaskCompletionRate(userId) { return 0; }
+async function calculateProjectSuccessRate(userId) { return 0; }
+async function calculateTeamCollaboration(teams) { return 0; }
+async function calculateResourceUtilization(userId) { return 0; }
+async function calculateBudgetUtilization(userId) { return 0; }
+async function calculateTimelineAdherence(userId) { return 0; }
+async function calculateQualityMetrics(userId) { return 0; }
+async function calculateStakeholderSatisfaction(userId) { return 0; }
+async function calculateRiskMitigation(userId) { return 0; }
+async function calculateInnovationIndex(userId) { return 0; }
+async function calculateLearningGrowth(userId) { return 0; }
+async function calculateBurnRate(userId) { return 0; }
+async function calculateBreakEvenPoint(userId) { return 0; }
+async function getCFOAlerts(userId) { return []; }
+
 // ===== COMPREHENSIVE DASHBOARD SYSTEM FOR 1000+ USERS =====
 
 // Health check for Comprehensive Dashboard system
@@ -637,7 +659,7 @@ async function getManagerDashboard(userId) {
             totalProjects: managedProjects.length,
             activeProjects: managedProjects.filter(p => !p.deletedAt).length
         },
-        teams: managedTeams.map(team => ({
+        teams: await Promise.all(managedTeams.map(async team => ({
             id: team.id,
             name: team.name,
             company: team.company.name,
@@ -645,7 +667,7 @@ async function getManagerDashboard(userId) {
             activeMembers: team.members.filter(m => m.isActive).length,
             recentGoals: team.goals.slice(0, 3),
             performance: await calculateTeamPerformance(team.id)
-        })),
+        }))),
         projects: managedProjects.map(project => ({
             id: project.id,
             name: project.name,
@@ -797,7 +819,7 @@ async function getInvestorDashboard(userId) {
             roi: roi,
             activeInvestments: investments.filter(v => v.status === 'ACTIVE').length
         },
-        portfolio: investments.map(venture => ({
+        portfolio: await Promise.all(investments.map(async venture => ({
             id: venture.id,
             name: venture.name,
             status: venture.status,
@@ -806,7 +828,7 @@ async function getInvestorDashboard(userId) {
             teamSize: venture.team.length,
             lastFundingRound: venture.fundingRounds[venture.fundingRounds.length - 1],
             performance: await calculateVenturePerformance(venture.id)
-        })),
+        }))),
         performance: {
             portfolioGrowth: await calculatePortfolioGrowth(userId),
             sectorBreakdown: await getSectorBreakdown(investments),
@@ -942,16 +964,6 @@ async function getDevelopmentExpenses(userId) { return 0; }
 async function getTotalExpenses(userId) { return 0; }
 async function calculateGrossMargin(userId) { return 0; }
 async function calculateNetMargin(userId) { return 0; }
-async function calculateBurnRate(userId) { return 0; }
-async function calculateBreakEvenPoint(userId) { return 0; }
-async function getCFOAlerts(userId) { return []; }
-async function calculateTeamPerformance(teamId) { return 0; }
-async function calculateTeamProductivity(teams) { return 0; }
-async function calculateProjectDelivery(projects) { return 0; }
-async function calculateMemberSatisfaction(teams) { return 0; }
-async function calculateGoalAchievement(teams) { return 0; }
-async function getManagerAlerts(userId) { return []; }
-async function calculateTaskCompletionRate(userId) { return 0; }
 async function calculateContributionValue(userId) { return 0; }
 async function calculateTeamCollaboration(userId) { return 0; }
 async function calculateSkillGrowth(userId) { return 0; }
