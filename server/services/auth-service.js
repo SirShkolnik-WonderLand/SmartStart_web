@@ -408,11 +408,20 @@ class AuthService {
           return { user, account };
         });
 
+      // Get account with user and role for token generation
+      const accountWithUser = await prisma.account.findUnique({
+        where: { id: result.account.id },
+        include: {
+          user: true,
+          role: true
+        }
+      });
+
       // Generate token
-      const token = this.generateToken(result.user.id, result.account.id);
+      const token = this.generateToken(accountWithUser);
 
       // Create session
-      const session = await this.createSession(result.user.id, token, deviceInfo);
+      const session = await this.createSession(result.account.id, token, deviceInfo);
 
       // Get user with role information
       const userWithRole = await prisma.user.findUnique({
