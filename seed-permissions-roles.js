@@ -6,54 +6,63 @@ async function seedPermissionsAndRoles() {
     try {
         console.log('🌱 Seeding permissions and roles...');
 
-        // Clear existing data
+        // Clear existing data (in correct order to avoid foreign key constraints)
         await prisma.rolePermission.deleteMany({});
         await prisma.permission.deleteMany({});
-        await prisma.role.deleteMany({});
+        
+        // Check if roles exist
+        const existingRoles = await prisma.role.count();
+        if (existingRoles > 0) {
+            console.log(`Found ${existingRoles} existing roles. Skipping role deletion to avoid foreign key constraints.`);
+        } else {
+            await prisma.role.deleteMany({});
+        }
 
         // Create permissions
         const permissions = [
             // User management
-            { name: 'user:read', description: 'Read user information', resource: 'user' },
-            { name: 'user:write', description: 'Create and update users', resource: 'user' },
-            { name: 'user:delete', description: 'Delete users', resource: 'user' },
+            { name: 'user:read', description: 'Read user information', resource: 'user', action: 'read' },
+            { name: 'user:write', description: 'Create and update users', resource: 'user', action: 'write' },
+            { name: 'user:delete', description: 'Delete users', resource: 'user', action: 'delete' },
+            { name: 'user:admin', description: 'User administration', resource: 'user', action: 'admin' },
 
             // Project management
-            { name: 'project:read', description: 'Read project information', resource: 'project' },
-            { name: 'project:write', description: 'Create and update projects', resource: 'project' },
-            { name: 'project:delete', description: 'Delete projects', resource: 'project' },
-            { name: 'project:manage', description: 'Full project management', resource: 'project' },
+            { name: 'project:read', description: 'Read project information', resource: 'project', action: 'read' },
+            { name: 'project:write', description: 'Create and update projects', resource: 'project', action: 'write' },
+            { name: 'project:delete', description: 'Delete projects', resource: 'project', action: 'delete' },
+            { name: 'project:admin', description: 'Full project management', resource: 'project', action: 'admin' },
 
             // Company management
-            { name: 'company:read', description: 'Read company information', resource: 'company' },
-            { name: 'company:write', description: 'Create and update companies', resource: 'company' },
-            { name: 'company:delete', description: 'Delete companies', resource: 'company' },
+            { name: 'company:read', description: 'Read company information', resource: 'company', action: 'read' },
+            { name: 'company:write', description: 'Create and update companies', resource: 'company', action: 'write' },
+            { name: 'company:delete', description: 'Delete companies', resource: 'company', action: 'delete' },
 
             // Contract management
-            { name: 'contract:read', description: 'Read contract information', resource: 'contract' },
-            { name: 'contract:write', description: 'Create and update contracts', resource: 'contract' },
-            { name: 'contract:sign', description: 'Sign contracts', resource: 'contract' },
-            { name: 'contract:issue', description: 'Issue contracts', resource: 'contract' },
+            { name: 'contract:read', description: 'Read contract information', resource: 'contract', action: 'read' },
+            { name: 'contract:write', description: 'Create and update contracts', resource: 'contract', action: 'write' },
+            { name: 'contract:sign', description: 'Sign contracts', resource: 'contract', action: 'sign' },
+            { name: 'contract:issue', description: 'Issue contracts', resource: 'contract', action: 'issue' },
+            { name: 'contract:admin', description: 'Contract administration', resource: 'contract', action: 'admin' },
 
             // Document management
-            { name: 'document:read', description: 'Read documents', resource: 'document' },
-            { name: 'document:write', description: 'Create and update documents', resource: 'document' },
-            { name: 'document:sign', description: 'Sign documents', resource: 'document' },
+            { name: 'document:read', description: 'Read documents', resource: 'document', action: 'read' },
+            { name: 'document:write', description: 'Create and update documents', resource: 'document', action: 'write' },
+            { name: 'document:sign', description: 'Sign documents', resource: 'document', action: 'sign' },
 
             // Financial management
-            { name: 'financial:read', description: 'Read financial information', resource: 'financial' },
-            { name: 'financial:write', description: 'Manage financial data', resource: 'financial' },
-            { name: 'financial:approve', description: 'Approve financial transactions', resource: 'financial' },
+            { name: 'financial:read', description: 'Read financial information', resource: 'financial', action: 'read' },
+            { name: 'financial:write', description: 'Manage financial data', resource: 'financial', action: 'write' },
+            { name: 'financial:approve', description: 'Approve financial transactions', resource: 'financial', action: 'approve' },
 
             // System administration
-            { name: 'system:admin', description: 'System administration', resource: 'system' },
-            { name: 'system:config', description: 'System configuration', resource: 'system' },
-            { name: 'system:monitor', description: 'System monitoring', resource: 'system' },
+            { name: 'system:admin', description: 'System administration', resource: 'system', action: 'admin' },
+            { name: 'system:config', description: 'System configuration', resource: 'system', action: 'config' },
+            { name: 'system:monitor', description: 'System monitoring', resource: 'system', action: 'monitor' },
 
             // Journey management
-            { name: 'journey:read', description: 'Read journey information', resource: 'journey' },
-            { name: 'journey:write', description: 'Update journey state', resource: 'journey' },
-            { name: 'journey:admin', description: 'Journey administration', resource: 'journey' },
+            { name: 'journey:read', description: 'Read journey information', resource: 'journey', action: 'read' },
+            { name: 'journey:write', description: 'Update journey state', resource: 'journey', action: 'write' },
+            { name: 'journey:admin', description: 'Journey administration', resource: 'journey', action: 'admin' },
         ];
 
         console.log('Creating permissions...');
@@ -208,12 +217,14 @@ async function seedPermissionsAndRoles() {
             }
         ];
 
-        console.log('Creating roles...');
+        console.log('Creating/updating roles...');
         for (const roleData of roles) {
             const { permissions: rolePermissions, ...roleInfo } = roleData;
 
-            const role = await prisma.role.create({
-                data: roleInfo
+            const role = await prisma.role.upsert({
+                where: { name: roleInfo.name },
+                update: roleInfo,
+                create: roleInfo
             });
 
             // Assign permissions to role

@@ -378,34 +378,34 @@ class AuthService {
         };
       }
 
-      // Create user and account in transaction
-      const result = await prisma.$transaction(async (tx) => {
-        // Create user
-        const user = await tx.user.create({
-          data: {
-            name: name || email.split('@')[0],
-            firstName: firstName || null,
-            lastName: lastName || null,
-            email: email.toLowerCase(),
-            isActive: true
-          }
-        });
+              // Create user and account in transaction
+        const result = await prisma.$transaction(async (tx) => {
+          // Create user
+          const user = await tx.user.create({
+            data: {
+              name: name || email.split('@')[0],
+              firstName: firstName || null,
+              lastName: lastName || null,
+              email: email.toLowerCase(),
+              status: 'ACTIVE'
+            }
+          });
 
-        // Create account
-        const account = await tx.account.create({
-          data: {
-            email: email.toLowerCase(),
-            password: hashedPassword,
-            userId: user.id,
-            roleId: defaultRole.id,
-            isActive: true,
-            isVerified: false,
-            lastLoginAt: null
-          }
-        });
+          // Create account
+          const account = await tx.account.create({
+            data: {
+              email: email.toLowerCase(),
+              password: hashedPassword,
+              userId: user.id,
+              roleId: defaultRole.id,
+              isActive: true,
+              isVerified: false,
+              lastLoginAt: null
+            }
+          });
 
-        return { user, account };
-      });
+          return { user, account };
+        });
 
       // Generate token
       const token = this.generateToken(result.user.id, result.account.id);
