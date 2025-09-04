@@ -56,7 +56,7 @@ router.get('/status/:userId', async(req, res) => {
         // Calculate progress
         const totalStages = stages.length;
         const completedStages = userStates.filter(state => state.status === 'COMPLETED').length;
-        const currentStage = userStates.find(state => state.status === 'IN_PROGRESS') ? .stage;
+        const currentStage = userStates.find(state => state.status === 'IN_PROGRESS')?.stage;
         const nextStage = stages.find(stage =>
             !userStates.find(state => state.stageId === stage.id && state.status === 'COMPLETED')
         );
@@ -297,7 +297,7 @@ router.get('/gates/:userId', async(req, res) => {
                                 const user = await prisma.user.findUnique({
                                     where: { id: userId }
                                 });
-                                isPassed = !!user ? .email; // Basic email verification
+                                isPassed = !!user?.email; // Basic email verification
                                 details = user ? { email: user.email } : null;
                                 break;
 
@@ -305,7 +305,7 @@ router.get('/gates/:userId', async(req, res) => {
                                 const userProfile = await prisma.user.findUnique({
                                     where: { id: userId }
                                 });
-                                isPassed = !!(userProfile ? .name && userProfile ? .firstName && userProfile ? .lastName);
+                                isPassed = !!(userProfile?.name && userProfile?.firstName && userProfile?.lastName);
                                 details = userProfile ? {
                                     name: userProfile.name,
                                     firstName: userProfile.firstName,
