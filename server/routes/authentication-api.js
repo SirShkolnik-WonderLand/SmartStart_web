@@ -332,20 +332,7 @@ router.post('/login', async (req, res) => {
             }
         }
 
-        // Validate password strength
-        if (password.length < 8) {
-            return res.status(400).json({
-                success: false,
-                message: 'Password must be at least 8 characters long'
-            });
-        }
-
-        if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) {
-            return res.status(400).json({
-                success: false,
-                message: 'Password must contain at least one uppercase letter, one lowercase letter, and one number'
-            });
-        }
+        // Do not enforce password complexity at login; only verify credentials
 
         // Find user by email using raw SQL to ensure we get all fields
         const userResult = await prisma.$queryRaw`
