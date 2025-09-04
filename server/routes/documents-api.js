@@ -2,8 +2,9 @@ const express = require('express');
 const { PrismaClient } = require('@prisma/client');
 const { authenticateToken } = require('../middleware/auth');
 const fs = require('fs');
+const fsp = require('fs').promises;
 const path = require('path');
-const { isEmail, isIsoDate, isDomain, isYN, toCentsFromCadString, isCurrency } = require('../utils/validators');
+const { isEmail, isIsoDate, isDomain, isYN, toCentsFromCadString } = require('../utils/validators');
 const { computeDocumentHash } = require('../utils/canonicalize');
 const { emitEvent } = require('../utils/events');
 
@@ -22,16 +23,8 @@ function formatDateYYYYMMDD(d) {
     return `${y}${m}${dd}`;
 }
 
-// Permission check placeholders; integrate with your auth middleware if present
-async function requireRole(req, res, roles) {
-    const roleName = req.user ? .account ? .role ? .name || req.user ? .role ? .name || req.user ? .role;
-    if (!roles.includes(roleName)) {
-        return res.status(403).json({ error: 'Forbidden' });
-    }
-}
-
 // ===== Issue SOBA =====
-router.post('/issue/soba', authenticateToken, async(req, res) => {
+router.post('/issue/soba', authenticateToken, async (req, res) => {
     try {
         const payload = req.body || {};
 
@@ -140,7 +133,7 @@ router.post('/issue/soba', authenticateToken, async(req, res) => {
 });
 
 // ===== Issue PUOHA =====
-router.post('/issue/puoha', authenticateToken, async(req, res) => {
+router.post('/issue/puoha', authenticateToken, async (req, res) => {
     try {
         const p = req.body || {};
         if (!p.project_owner_legal_name || p.project_owner_legal_name.length < 2 || p.project_owner_legal_name.length > 120)
@@ -184,8 +177,8 @@ router.post('/issue/puoha', authenticateToken, async(req, res) => {
             `PUOHA – Project Upgrades Summary`,
             `Project: ${p.project_id} | Payer: ${p.payer_entity}`,
             `Residency: ${residency}`,
-            `Line items (CAD/mo): Render=${(est_render/100).toFixed(2)} DBs=${(est_db_total/100).toFixed(2)} GH-AS=${(est_gh/100).toFixed(2)} Sec/Testing=${(est_sec/100).toFixed(2)} Monitoring=${(est_mon/100).toFixed(2)} Other=${(est_other/100).toFixed(2)}`,
-            `Estimated total (CAD/mo): ${(est_total_cents/100).toFixed(2)} (+ tax if applicable)`
+            `Line items (CAD/mo): Render=${(est_render / 100).toFixed(2)} DBs=${(est_db_total / 100).toFixed(2)} GH-AS=${(est_gh / 100).toFixed(2)} Sec/Testing=${(est_sec / 100).toFixed(2)} Monitoring=${(est_mon / 100).toFixed(2)} Other=${(est_other / 100).toFixed(2)}`,
+            `Estimated total (CAD/mo): ${(est_total_cents / 100).toFixed(2)} (+ tax if applicable)`
         ].join('\n');
 
         const { canonicalText, hash } = computeDocumentHash(summaryText);
@@ -235,7 +228,7 @@ router.post('/issue/puoha', authenticateToken, async(req, res) => {
 });
 
 // ===== Sign document (SOBA/PUOHA) =====
-router.post('/:docId/sign', authenticateToken, async(req, res) => {
+router.post('/:docId/sign', authenticateToken, async (req, res) => {
     try {
         const { docId } = req.params;
         const { signer_name, signer_title, signer_email, ip, user_agent, timestamp_iso, otp_or_mfa_code_last4, expected_doc_hash } = req.body || {};
@@ -252,7 +245,7 @@ router.post('/:docId/sign', authenticateToken, async(req, res) => {
         const { hash } = computeDocumentHash(contentWithoutHash);
         if (hash !== expected_doc_hash) return res.status(400).json({ error: 'Hash mismatch. Re-generate and sign again.' });
 
-        // Persist signature evidence (using a generic table via Prisma if available; otherwise write a JSON log)
+        // Persist signature evidence (JSON log)
         const evidenceDir = path.join(process.cwd(), 'server', 'Contracts', 'payloads');
         ensureDir(evidenceDir);
         const ev = { docId, signer_name, signer_title, signer_email, ip, user_agent, timestamp_iso: timestamp_iso || new Date().toISOString(), otp_or_mfa_code_last4: otp_or_mfa_code_last4 || null, doc_hash_sha256: hash };
@@ -261,7 +254,6 @@ router.post('/:docId/sign', authenticateToken, async(req, res) => {
         emitEvent('document.signed', { docId, signer_email });
         emitEvent('document.fully_executed', { docId });
 
-        // Emit flow-specific updates
         if (docId.startsWith('soba_')) emitEvent('billing.seats.updated', { docId });
         if (docId.startsWith('puoha_')) emitEvent('project.upgrades.updated', { docId });
 
@@ -272,17 +264,9 @@ router.post('/:docId/sign', authenticateToken, async(req, res) => {
     }
 });
 
-module.exports = router;
+// ===== Templates & Library Endpoints =====
+const CONTRACTS_DIR = path.join(__dirname, '../Contracts');
 
-const express = require('express')
-const router = express.Router()
-const fs = require('fs').promises
-const path = require('path')
-
-// Document templates from Contracts folder
-const CONTRACTS_DIR = path.join(__dirname, '../Contracts')
-
-// Document categories
 const DOCUMENT_CATEGORIES = {
     'platform-agreements': {
         name: 'Platform Agreements',
@@ -309,340 +293,161 @@ const DOCUMENT_CATEGORIES = {
         description: 'Joint development and collaboration agreements',
         icon: '🤝'
     }
-}
+};
 
-// Get all available document templates
-router.get('/templates', async(req, res) => {
+router.get('/templates', async (req, res) => {
     try {
-        const templates = []
-
-        // Read all contract files
-        const files = await fs.readdir(CONTRACTS_DIR)
-
+        const templates = [];
+        const files = await fsp.readdir(CONTRACTS_DIR);
         for (const file of files) {
             if (file.endsWith('.txt')) {
-                const filePath = path.join(CONTRACTS_DIR, file)
-                const content = await fs.readFile(filePath, 'utf8')
-                const stats = await fs.stat(filePath)
-
-                // Determine category based on filename
-                let category = 'platform-agreements'
-                if (file.toLowerCase().includes('nda') || file.toLowerCase().includes('confidentiality')) {
-                    category = 'confidentiality'
-                } else if (file.toLowerCase().includes('ip') || file.toLowerCase().includes('intellectual')) {
-                    category = 'intellectual-property'
-                } else if (file.toLowerCase().includes('project') || file.toLowerCase().includes('addendum')) {
-                    category = 'project-specific'
-                } else if (file.toLowerCase().includes('collaboration') || file.toLowerCase().includes('joint')) {
-                    category = 'collaboration'
-                }
+                const filePath = path.join(CONTRACTS_DIR, file);
+                const content = await fsp.readFile(filePath, 'utf8');
+                const stats = await fsp.stat(filePath);
+                let category = 'platform-agreements';
+                const lower = file.toLowerCase();
+                if (lower.includes('nda') || lower.includes('confidentiality')) category = 'confidentiality';
+                else if (lower.includes('ip') || lower.includes('intellectual')) category = 'intellectual-property';
+                else if (lower.includes('project') || lower.includes('addendum')) category = 'project-specific';
+                else if (lower.includes('collaboration') || lower.includes('joint')) category = 'collaboration';
 
                 templates.push({
                     id: file.replace('.txt', '').toLowerCase().replace(/[^a-z0-9]/g, '-'),
                     title: file.replace('.txt', ''),
                     filename: file,
-                    category: category,
+                    category,
                     categoryInfo: DOCUMENT_CATEGORIES[category],
-                    content: content,
+                    content,
                     size: stats.size,
                     lastModified: stats.mtime,
                     wordCount: content.split(/\s+/).length,
                     lineCount: content.split('\n').length
-                })
+                });
             }
         }
-
-        res.json({
-            success: true,
-            data: {
-                templates,
-                categories: DOCUMENT_CATEGORIES,
-                totalTemplates: templates.length
-            }
-        })
+        res.json({ success: true, data: { templates, categories: DOCUMENT_CATEGORIES, totalTemplates: templates.length } });
     } catch (error) {
-        console.error('Error fetching document templates:', error)
-        res.status(500).json({
-            success: false,
-            message: 'Failed to fetch document templates',
-            error: error.message
-        })
+        console.error('Error fetching document templates:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch document templates', error: error.message });
     }
-})
+});
 
-// Get specific document template
-router.get('/templates/:id', async(req, res) => {
+router.get('/templates/:id', async (req, res) => {
     try {
-        const { id } = req.params
-
-        // Find the template by ID
-        const files = await fs.readdir(CONTRACTS_DIR)
-        const file = files.find(f => f.replace('.txt', '').toLowerCase().replace(/[^a-z0-9]/g, '-') === id)
-
-        if (!file) {
-            return res.status(404).json({
-                success: false,
-                message: 'Document template not found'
-            })
-        }
-
-        const filePath = path.join(CONTRACTS_DIR, file)
-        const content = await fs.readFile(filePath, 'utf8')
-        const stats = await fs.stat(filePath)
-
-        // Determine category
-        let category = 'platform-agreements'
-        if (file.toLowerCase().includes('nda') || file.toLowerCase().includes('confidentiality')) {
-            category = 'confidentiality'
-        } else if (file.toLowerCase().includes('ip') || file.toLowerCase().includes('intellectual')) {
-            category = 'intellectual-property'
-        } else if (file.toLowerCase().includes('project') || file.toLowerCase().includes('addendum')) {
-            category = 'project-specific'
-        } else if (file.toLowerCase().includes('collaboration') || file.toLowerCase().includes('joint')) {
-            category = 'collaboration'
-        }
-
-        const template = {
-            id: id,
-            title: file.replace('.txt', ''),
-            filename: file,
-            category: category,
-            categoryInfo: DOCUMENT_CATEGORIES[category],
-            content: content,
-            size: stats.size,
-            lastModified: stats.mtime,
-            wordCount: content.split(/\s+/).length,
-            lineCount: content.split('\n').length
-        }
-
-        res.json({
-            success: true,
-            data: template
-        })
+        const { id } = req.params;
+        const files = await fsp.readdir(CONTRACTS_DIR);
+        const file = files.find(f => f.replace('.txt', '').toLowerCase().replace(/[^a-z0-9]/g, '-') === id);
+        if (!file) return res.status(404).json({ success: false, message: 'Document template not found' });
+        const filePath = path.join(CONTRACTS_DIR, file);
+        const content = await fsp.readFile(filePath, 'utf8');
+        const stats = await fsp.stat(filePath);
+        let category = 'platform-agreements';
+        const lower = file.toLowerCase();
+        if (lower.includes('nda') || lower.includes('confidentiality')) category = 'confidentiality';
+        else if (lower.includes('ip') || lower.includes('intellectual')) category = 'intellectual-property';
+        else if (lower.includes('project') || lower.includes('addendum')) category = 'project-specific';
+        else if (lower.includes('collaboration') || lower.includes('joint')) category = 'collaboration';
+        const template = { id, title: file.replace('.txt', ''), filename: file, category, categoryInfo: DOCUMENT_CATEGORIES[category], content, size: stats.size, lastModified: stats.mtime, wordCount: content.split(/\s+/).length, lineCount: content.split('\n').length };
+        res.json({ success: true, data: template });
     } catch (error) {
-        console.error('Error fetching document template:', error)
-        res.status(500).json({
-            success: false,
-            message: 'Failed to fetch document template',
-            error: error.message
-        })
+        console.error('Error fetching document template:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch document template', error: error.message });
     }
-})
+});
 
-// Get documents by category
-router.get('/templates/category/:category', async(req, res) => {
+router.get('/templates/category/:category', async (req, res) => {
     try {
-        const { category } = req.params
-
-        if (!DOCUMENT_CATEGORIES[category]) {
-            return res.status(400).json({
-                success: false,
-                message: 'Invalid category'
-            })
-        }
-
-        const templates = []
-        const files = await fs.readdir(CONTRACTS_DIR)
-
+        const { category } = req.params;
+        if (!DOCUMENT_CATEGORIES[category]) return res.status(400).json({ success: false, message: 'Invalid category' });
+        const templates = [];
+        const files = await fsp.readdir(CONTRACTS_DIR);
         for (const file of files) {
             if (file.endsWith('.txt')) {
-                // Determine category based on filename
-                let fileCategory = 'platform-agreements'
-                if (file.toLowerCase().includes('nda') || file.toLowerCase().includes('confidentiality')) {
-                    fileCategory = 'confidentiality'
-                } else if (file.toLowerCase().includes('ip') || file.toLowerCase().includes('intellectual')) {
-                    fileCategory = 'intellectual-property'
-                } else if (file.toLowerCase().includes('project') || file.toLowerCase().includes('addendum')) {
-                    fileCategory = 'project-specific'
-                } else if (file.toLowerCase().includes('collaboration') || file.toLowerCase().includes('joint')) {
-                    fileCategory = 'collaboration'
-                }
-
+                let fileCategory = 'platform-agreements';
+                const lower = file.toLowerCase();
+                if (lower.includes('nda') || lower.includes('confidentiality')) fileCategory = 'confidentiality';
+                else if (lower.includes('ip') || lower.includes('intellectual')) fileCategory = 'intellectual-property';
+                else if (lower.includes('project') || lower.includes('addendum')) fileCategory = 'project-specific';
+                else if (lower.includes('collaboration') || lower.includes('joint')) fileCategory = 'collaboration';
                 if (fileCategory === category) {
-                    const filePath = path.join(CONTRACTS_DIR, file)
-                    const content = await fs.readFile(filePath, 'utf8')
-                    const stats = await fs.stat(filePath)
-
-                    templates.push({
-                        id: file.replace('.txt', '').toLowerCase().replace(/[^a-z0-9]/g, '-'),
-                        title: file.replace('.txt', ''),
-                        filename: file,
-                        category: fileCategory,
-                        categoryInfo: DOCUMENT_CATEGORIES[fileCategory],
-                        content: content,
-                        size: stats.size,
-                        lastModified: stats.mtime,
-                        wordCount: content.split(/\s+/).length,
-                        lineCount: content.split('\n').length
-                    })
+                    const filePath = path.join(CONTRACTS_DIR, file);
+                    const content = await fsp.readFile(filePath, 'utf8');
+                    const stats = await fsp.stat(filePath);
+                    templates.push({ id: file.replace('.txt', '').toLowerCase().replace(/[^a-z0-9]/g, '-'), title: file.replace('.txt', ''), filename: file, category: fileCategory, categoryInfo: DOCUMENT_CATEGORIES[fileCategory], content, size: stats.size, lastModified: stats.mtime, wordCount: content.split(/\s+/).length, lineCount: content.split('\n').length });
                 }
             }
         }
-
-        res.json({
-            success: true,
-            data: {
-                templates,
-                category: DOCUMENT_CATEGORIES[category],
-                totalTemplates: templates.length
-            }
-        })
+        res.json({ success: true, data: { templates, category: DOCUMENT_CATEGORIES[category], totalTemplates: templates.length } });
     } catch (error) {
-        console.error('Error fetching documents by category:', error)
-        res.status(500).json({
-            success: false,
-            message: 'Failed to fetch documents by category',
-            error: error.message
-        })
+        console.error('Error fetching documents by category:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch documents by category', error: error.message });
     }
-})
+});
 
-// Search documents
-router.get('/search', async(req, res) => {
+router.get('/search', async (req, res) => {
     try {
-        const { q: query, category } = req.query
-
-        if (!query) {
-            return res.status(400).json({
-                success: false,
-                message: 'Search query is required'
-            })
-        }
-
-        const templates = []
-        const files = await fs.readdir(CONTRACTS_DIR)
-        const searchTerm = query.toLowerCase()
-
+        const { q: query, category } = req.query;
+        if (!query) return res.status(400).json({ success: false, message: 'Search query is required' });
+        const templates = [];
+        const files = await fsp.readdir(CONTRACTS_DIR);
+        const searchTerm = String(query).toLowerCase();
         for (const file of files) {
             if (file.endsWith('.txt')) {
-                const filePath = path.join(CONTRACTS_DIR, file)
-                const content = await fs.readFile(filePath, 'utf8')
-
-                // Search in filename and content
-                if (file.toLowerCase().includes(searchTerm) || content.toLowerCase().includes(searchTerm)) {
-                    const stats = await fs.stat(filePath)
-
-                    // Determine category
-                    let fileCategory = 'platform-agreements'
-                    if (file.toLowerCase().includes('nda') || file.toLowerCase().includes('confidentiality')) {
-                        fileCategory = 'confidentiality'
-                    } else if (file.toLowerCase().includes('ip') || file.toLowerCase().includes('intellectual')) {
-                        fileCategory = 'intellectual-property'
-                    } else if (file.toLowerCase().includes('project') || file.toLowerCase().includes('addendum')) {
-                        fileCategory = 'project-specific'
-                    } else if (file.toLowerCase().includes('collaboration') || file.toLowerCase().includes('joint')) {
-                        fileCategory = 'collaboration'
-                    }
-
-                    // Filter by category if specified
-                    if (category && fileCategory !== category) {
-                        continue
-                    }
-
-                    templates.push({
-                        id: file.replace('.txt', '').toLowerCase().replace(/[^a-z0-9]/g, '-'),
-                        title: file.replace('.txt', ''),
-                        filename: file,
-                        category: fileCategory,
-                        categoryInfo: DOCUMENT_CATEGORIES[fileCategory],
-                        content: content,
-                        size: stats.size,
-                        lastModified: stats.mtime,
-                        wordCount: content.split(/\s+/).length,
-                        lineCount: content.split('\n').length
-                    })
+                const filePath = path.join(CONTRACTS_DIR, file);
+                const content = await fsp.readFile(filePath, 'utf8');
+                const lower = file.toLowerCase();
+                if (lower.includes(searchTerm) || content.toLowerCase().includes(searchTerm)) {
+                    const stats = await fsp.stat(filePath);
+                    let fileCategory = 'platform-agreements';
+                    if (lower.includes('nda') || lower.includes('confidentiality')) fileCategory = 'confidentiality';
+                    else if (lower.includes('ip') || lower.includes('intellectual')) fileCategory = 'intellectual-property';
+                    else if (lower.includes('project') || lower.includes('addendum')) fileCategory = 'project-specific';
+                    else if (lower.includes('collaboration') || lower.includes('joint')) fileCategory = 'collaboration';
+                    if (category && fileCategory !== category) continue;
+                    templates.push({ id: file.replace('.txt', '').toLowerCase().replace(/[^a-z0-9]/g, '-'), title: file.replace('.txt', ''), filename: file, category: fileCategory, categoryInfo: DOCUMENT_CATEGORIES[fileCategory], content, size: stats.size, lastModified: stats.mtime, wordCount: content.split(/\s+/).length, lineCount: content.split('\n').length });
                 }
             }
         }
-
-        res.json({
-            success: true,
-            data: {
-                templates,
-                query,
-                category: category || 'all',
-                totalResults: templates.length
-            }
-        })
+        res.json({ success: true, data: { templates, query, category: category || 'all', totalResults: templates.length } });
     } catch (error) {
-        console.error('Error searching documents:', error)
-        res.status(500).json({
-            success: false,
-            message: 'Failed to search documents',
-            error: error.message
-        })
+        console.error('Error searching documents:', error);
+        res.status(500).json({ success: false, message: 'Failed to search documents', error: error.message });
     }
-})
+});
 
-// Get document statistics
-router.get('/stats', async(req, res) => {
+router.get('/stats', async (req, res) => {
     try {
-        const files = await fs.readdir(CONTRACTS_DIR)
-        const stats = {
-            totalDocuments: 0,
-            totalSize: 0,
-            totalWords: 0,
-            totalLines: 0,
-            categories: {},
-            lastModified: null
-        }
-
+        const files = await fsp.readdir(CONTRACTS_DIR);
+        const stats = { totalDocuments: 0, totalSize: 0, totalWords: 0, totalLines: 0, categories: {}, lastModified: null };
         for (const file of files) {
             if (file.endsWith('.txt')) {
-                const filePath = path.join(CONTRACTS_DIR, file)
-                const content = await fs.readFile(filePath, 'utf8')
-                const fileStats = await fs.stat(filePath)
-
-                // Determine category
-                let category = 'platform-agreements'
-                if (file.toLowerCase().includes('nda') || file.toLowerCase().includes('confidentiality')) {
-                    category = 'confidentiality'
-                } else if (file.toLowerCase().includes('ip') || file.toLowerCase().includes('intellectual')) {
-                    category = 'intellectual-property'
-                } else if (file.toLowerCase().includes('project') || file.toLowerCase().includes('addendum')) {
-                    category = 'project-specific'
-                } else if (file.toLowerCase().includes('collaboration') || file.toLowerCase().includes('joint')) {
-                    category = 'collaboration'
-                }
-
-                stats.totalDocuments++
-                    stats.totalSize += fileStats.size
-                stats.totalWords += content.split(/\s+/).length
-                stats.totalLines += content.split('\n').length
-
-                if (!stats.categories[category]) {
-                    stats.categories[category] = 0
-                }
-                stats.categories[category]++
-
-                    if (!stats.lastModified || fileStats.mtime > stats.lastModified) {
-                        stats.lastModified = fileStats.mtime
-                    }
+                const filePath = path.join(CONTRACTS_DIR, file);
+                const content = await fsp.readFile(filePath, 'utf8');
+                const fileStats = await fsp.stat(filePath);
+                let category = 'platform-agreements';
+                const lower = file.toLowerCase();
+                if (lower.includes('nda') || lower.includes('confidentiality')) category = 'confidentiality';
+                else if (lower.includes('ip') || lower.includes('intellectual')) category = 'intellectual-property';
+                else if (lower.includes('project') || lower.includes('addendum')) category = 'project-specific';
+                else if (lower.includes('collaboration') || lower.includes('joint')) category = 'collaboration';
+                stats.totalDocuments++;
+                stats.totalSize += fileStats.size;
+                stats.totalWords += content.split(/\s+/).length;
+                stats.totalLines += content.split('\n').length;
+                if (!stats.categories[category]) stats.categories[category] = 0;
+                stats.categories[category]++;
+                if (!stats.lastModified || fileStats.mtime > stats.lastModified) stats.lastModified = fileStats.mtime;
             }
         }
-
-        res.json({
-            success: true,
-            data: stats
-        })
+        res.json({ success: true, data: stats });
     } catch (error) {
-        console.error('Error fetching document statistics:', error)
-        res.status(500).json({
-            success: false,
-            message: 'Failed to fetch document statistics',
-            error: error.message
-        })
+        console.error('Error fetching document statistics:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch document statistics', error: error.message });
     }
-})
+});
 
-// Health check
 router.get('/health', (req, res) => {
-    res.json({
-        success: true,
-        message: 'Documents API is healthy',
-        timestamp: new Date().toISOString(),
-        version: '1.0.0'
-    })
-})
+    res.json({ success: true, message: 'Documents API is healthy', timestamp: new Date().toISOString(), version: '1.0.0' });
+});
 
-module.exports = router
+module.exports = router;
