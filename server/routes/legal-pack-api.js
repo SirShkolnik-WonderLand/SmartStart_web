@@ -407,4 +407,175 @@ router.get('/consents', async(req, res) => {
     }
 });
 
+// Get legal pack templates
+router.get('/templates', async(req, res) => {
+    try {
+        const templates = [
+            {
+                id: 'platform-participation',
+                title: 'Platform Participation Agreement (PPA)',
+                description: 'Core terms for using the AliceSolutions Ventures platform',
+                required: true,
+                icon: '📋',
+                content: `AliceSolutions Ventures — Platform Participation Agreement (PPA)
+(Terms of Membership & Contribution for the "Hub")
+
+Effective Date: When the Member accepts electronically in the Hub.
+Parties: AliceSolutions Ventures Inc. ("AliceSolutions", "we/us")
+The business user or individual acting for a business who accepts these terms ("Member", "you").
+
+1) Purpose & Scope
+The Hub provides a secure platform for discovering ventures/projects, subscribing, proposing contributions, 
+collaborating under project-specific NDAs/addenda, and tracking rewards. This PPA governs membership, 
+payments, acceptable use, contribution/IP, security, liability, and enforcement across the platform.
+
+2) Account, Identity, and Security
+- Accurate info: You'll keep account, billing, and contact details current
+- MFA required: Multi-factor authentication is mandatory for access to any non-public content
+- Access control: Accounts are individual; sharing credentials is prohibited
+- Device & posture: For sensitive projects, we may require device encryption, current patches, and other posture checks before access
+- Audit: Actions in the Hub may be logged for security, compliance, and dispute resolution
+
+3) Subscriptions, Billing & Taxes
+- Plans: You select a plan (e.g., Member / Pro / Founder). Plan features and limits are shown in the Hub
+- Fees & renewal: Fees are billed in advance and auto-renew each term unless cancelled per Hub instructions
+- Non-payment: If a charge fails, we may suspend or downgrade capabilities after a grace period
+- Taxes: Prices exclude applicable taxes; you're responsible for them
+
+4) Acceptable Use & Community Standards
+You agree not to:
+- breach the Legal Pack, attempt unauthorized access, defeat security, or misuse credentials
+- upload malicious code, attempt data scraping/exfiltration, or use automation to harvest content
+- disclose or export non-public materials outside Designated Systems
+- harass, defame, or discriminate; or violate IP, privacy, or other laws
+- use third-party AI/LLM tools with Confidential Information unless they are explicitly approved
+
+5) Contributions, IP & Licensing
+- Your Background IP: Pre-existing IP you bring remains yours
+- Foreground IP: All new work product created for the project is assigned to the project owner upon acceptance
+- No conflict: You represent you can grant the above rights and your contributions won't knowingly infringe third-party IP
+
+By signing this agreement, you acknowledge that you have read, understood, and agree to be bound by these terms.`
+            },
+            {
+                id: 'platform-nda',
+                title: 'Mutual Confidentiality & Non-Exfiltration Agreement',
+                description: 'Confidentiality obligations for platform access',
+                required: true,
+                icon: '🔒',
+                content: `Mutual Confidentiality & Non-Exfiltration Agreement
+(Internal—AliceSolutions Ventures & Participants)
+
+Effective Date: The date the first Participant signs this Agreement electronically or physically.
+Parties: AliceSolutions Ventures Inc. ("AliceSolutions"); and
+Each individual or entity that executes this Agreement (each a "Participant").
+
+1. Purpose
+The Parties wish to explore, evaluate, build, or contribute to ventures and projects within the 
+AliceSolutions ecosystem. In doing so, the Parties may disclose or access Confidential Information. 
+This Agreement sets the rules for using, protecting, and returning that information and prohibits 
+exfiltration or misuse.
+
+2. Key Definitions
+2.1 "Confidential Information" means any non-public information disclosed or made accessible, 
+directly or indirectly, by one Party ("Discloser") to another Party ("Recipient"), in any form 
+(oral, written, visual, electronic, tangible), including without limitation:
+- technical data, source code, repositories, designs, product plans, roadmaps, business strategies, 
+  pricing, P&L and financials, customer lists, marketing plans, operating procedures, security 
+  architecture, access credentials, logs, and any materials labelled or reasonably understood as confidential
+- information made available through Designated Systems, even if not expressly marked
+- personal information (as defined under applicable privacy laws) contained in or accompanying the above
+
+2.2 "Designated Systems" means the systems, tools, and storage locations explicitly approved by 
+AliceSolutions or the Project Lead for hosting, accessing, or processing Confidential Information.
+
+3. Non-Disclosure, Non-Use & Need-to-Know
+3.1 Non-Disclosure: Recipient must not disclose any Confidential Information to anyone except its 
+own personnel and subcontractors who have a strict need-to-know for the Purpose and are bound by 
+written obligations at least as protective as this Agreement.
+
+3.2 Non-Use: Recipient must use Confidential Information solely for the Purpose and not for any 
+other purpose (including personal use, competition, or development outside the AliceSolutions ecosystem).
+
+4. Non-Exfiltration (Security & Handling Rules)
+4.1 Approved Environments Only: Recipient will access, process, store, transmit, and collaborate 
+on Confidential Information only through Designated Systems.
+
+4.2 Technical Controls: Recipient will maintain MFA on all accounts accessing Designated Systems, 
+keep operating systems and security patches current, use device encryption on endpoints that cache 
+or access Confidential Information, and comply with DLP, watermarking, and access-logging controls.
+
+4.3 AI/LLM & Automation: No uploading of Confidential Information to external AI/LLM or automation 
+services unless the service is expressly approved as a Designated System and bound by terms that 
+prohibit training on the data and ensure confidentiality and deletion on demand.
+
+5. Term; Survival
+5.1 Term: This Agreement begins on the Effective Date for each Participant and continues until 
+terminated as to that Participant on 10 days' written notice to AliceSolutions.
+
+5.2 Survival Period: Recipient's duties survive for five (5) years from the Recipient's last access 
+to the relevant Confidential Information; trade secrets survive as long as they remain trade secrets.
+
+By signing this agreement, you acknowledge the sensitive nature of the information and agree to maintain its confidentiality.`
+            },
+            {
+                id: 'inventions-ip',
+                title: 'Inventions & Intellectual Property',
+                description: 'IP ownership and assignment terms',
+                required: true,
+                icon: '💡',
+                content: `INVENTIONS & INTELLECTUAL PROPERTY AGREEMENT
+
+This agreement governs the ownership and assignment of intellectual property created through platform use.
+
+INTELLECTUAL PROPERTY RIGHTS:
+
+1. BACKGROUND IP
+- You retain ownership of intellectual property you owned before using the platform
+- You may use your Background IP in connection with platform activities
+- You represent that you have the right to use your Background IP
+
+2. FOREGROUND IP
+- Intellectual property created through platform use is governed by project-specific agreements
+- Default ownership depends on the nature of the contribution
+- Specific terms are outlined in individual project NDAs
+
+3. PLATFORM IP
+- We retain all rights to the platform, including software, algorithms, and processes
+- You may not reverse engineer or attempt to extract platform IP
+- Any improvements to the platform become our property
+
+4. OPEN SOURCE COMPLIANCE
+- You must comply with all applicable open source licenses
+- You must disclose any open source components in your contributions
+- You may not incorporate GPL-licensed code without proper disclosure
+
+5. ASSIGNMENT
+- For work-for-hire projects, IP is assigned to the project owner
+- For collaborative projects, IP is shared according to contribution agreements
+- You grant necessary licenses for platform operation
+
+6. MORAL RIGHTS
+- You waive moral rights to the extent permitted by law
+- You consent to modifications of your contributions
+- You agree not to assert moral rights against us or other users
+
+By signing this agreement, you understand the IP framework and agree to its terms.`
+            }
+        ];
+
+        res.json({
+            success: true,
+            data: templates,
+            count: templates.length
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: 'Failed to fetch legal pack templates',
+            details: error.message
+        });
+    }
+});
+
 module.exports = router;
