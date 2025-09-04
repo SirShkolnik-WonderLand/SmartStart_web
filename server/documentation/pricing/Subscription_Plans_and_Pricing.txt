@@ -1,0 +1,91 @@
+SUBSCRIPTION PLANS & PRICING
+AliceSolutions Ventures Inc. — Hub & Ventures
+Version: 1.0 • Currency: CAD • Timezone: America/Toronto • Governing Law: Ontario, Canada
+
+Purpose. Define the Hub seat plans, entitlements, limits, and upgrade rules. These plans align with PUOHA/PTSA, STHCA/STA, MSA/SOW, Support SLA, and Billing & Transactions Policy.
+Seat rule. Anyone who views or touches non-public project data must hold an active seat and use Designated Systems (SSO+MFA, Intune+Defender, GitHub SSO, Secrets Manager, Render.com, approved backups/observability).
+
+# 0) FOUNDERS PASS — “GOLDEN GATE”
+
+Price (temporary): CAD $100 / seat / month + tax
+Who: First-round participants starting with AliceSolutions (limited cohort).
+What you get: Access to everything needed to build in the Hub, with fair-use caps and security compliance.
+
+Entitlements (inclusive):
+- Tooling: M365 account (Hub domain) + Entra SSO/MFA; Intune+Defender device compliance; GitHub Org (SSO); CI/CD shared runners; Secrets Manager; Render.com (dev+stage+prod on approval); approved backups/observability.
+- Security tiers: T1–T3 permitted (project-appropriate).
+- Support: Standard Support SLA (P1 best-effort after hours).
+- Quotas (fair-use): CI minutes (pooled) reasonable for a small team; logs & backups per STHCA baseline; spend caps per project enabled (Owner can raise on request).
+- Add-ons: Eligible to use any catalog add-on; high-cost items may require Owner approval but are allowed for Founders.
+
+Duration & migration: Offered until general availability (GA) or cohort cap reached. Seats created under Founders Pass are price-locked for 12 months from activation. After that, they can (a) choose any standard tier, or (b) auto-migrate to TEAM with a lifetime 20% discount (per seat) while in good standing.
+
+# 1) STANDARD PLANS (post-Founders)
+
+| Plan        | Price (per seat / mo) | For whom                            | Security tiers              | Support                | Key limits & inclusions |
+| ----------- | --------------------- | ----------------------------------- | --------------------------- | ---------------------- | ----------------------- |
+| BUILDER     | CAD $149 + tax        | Solo builders / small prototypes    | T1–T2 (no T3)               | Standard               | Dev+Stage hosting; 1 active project seat; pooled CI minutes 10k/mo/seat; logs hot retention 90d; backups baseline; 1x secrets namespace per project; DPA available (T2) |
+| TEAM        | CAD $249 + tax        | 3–15 person squads shipping MVPs    | T1–T2 (T3 by exception)     | Standard               | Dev+Stage+Prod (on approval); CI minutes 25k/mo/seat; logs hot 12mo for T2; backup retention 90d; 3x secrets namespaces/project; 1x Render Pro service/project included; DPA included for PI processing |
+| VENTURE     | CAD $399 + tax        | Venture builds, regulated, or scale | T1–T3                        | Enhanced (24×7 P1)     | Dev+Stage+Prod; CI minutes 50k/mo/seat; logs hot 12mo + archive; backup retention 180d; unlimited secrets namespaces; 1x Render Pro + private networking per project included; optional data residency; annual pen-test summary; audit support |
+
+Notes & rationale
+- Prices are more expensive than the Founders Pass as requested.
+- All plans inherit STA/STHCA controls and must use Designated Systems.
+- CI/Logs/Backups are pooled per tenant; fair-use applies; increases via add-ons.
+
+# 2) WHAT’S INCLUDED IN EVERY PLAN (baseline PTSA seat)
+- Identity/Email: M365 under Hub domain, Entra SSO+MFA, Conditional Access.
+- Endpoint: Intune enrollment; Defender EDR; disk encryption; patch baselines.
+- Source/CI: GitHub Org (SSO); protected branches; required reviews; secret scanning; shared runners.
+- Secrets: Access to Designated Secrets Manager; no secrets in code/tickets/chat/logs.
+- Hosting: Render.com (Dev+Stage baseline; Prod on approval per plan).
+- Backups/Observability: Hub-managed; retention per plan.
+- Compliance: Access only from compliant devices; data in approved tenants/orgs; labeling & DLP per tier.
+
+# 3) ADD-ONS & USAGE (catalog pricing applies)
+- Render upgrades (Pro/Plus tiers, dedicated, private networking, static IP, storage/egress packs).
+- GitHub Advanced Security (per seat).
+- Observability uplift (longer retention, higher volume).
+- Backup retention uplift (90/180/365+ days).
+- Enhanced Support (for Builder/Team) to 24×7 P1.
+- Extra CI minutes / Secrets Manager ops / storage bundles.
+- Region pinning outside Canada (subject to TIA/SCCs/UK Addendum).
+
+Billing model: Seats billed monthly in advance; add-ons & metered usage billed in arrears (see Billing & Transactions Policy).
+
+# 4) FAIR-USE QUOTAS (per seat, pooled; not hard caps unless stated)
+- CI minutes: Builder 10k, Team 25k, Venture 50k per seat per month.
+- Logs hot retention: Builder 90 days, Team/Venture 12 months; archive add-on.
+- Backups retention: Builder 30–60 days, Team 90 days, Venture 180d (or per contract/regulation).
+- Secrets Manager ops: Reasonable; heavy/automated rotation → purchase ops bundles.
+- Runner concurrency: Builder up to 2, Team up to 5, Venture up to 10 concurrent jobs (expandable with add-ons).
+- Render resources: Builder (Dev+Stage), Team (includes 1× Pro), Venture (includes 1× Pro + private networking). Additional services are add-ons.
+
+# 5) SECURITY & DATA HANDLING BY PLAN
+- Builder: T1–T2 projects; no T3 workloads. Printing/export approval (T2). DPA optional (if PI processed).
+- Team: T1–T2 standard; T3 by exception with CISO approval + compensating controls (logs retention, signed artifacts). DPA included.
+- Venture: T1–T3 allowed; Enhanced Support; JIT/PIM for admin; signed commits/artifacts; quarterly restore tests mandatory; DPIA/TIA pack support.
+
+# 6) UPGRADES, DOWNGRADES & MIGRATION
+- Upgrade anytime; new price effective immediately (prorated).
+- Downgrade effective next cycle; ensure workloads meet lower plan limits.
+- Founders migration: After 12 months, keep Founders discount by choosing TEAM (20% lifetime per Founders seat) or switch to any plan at current rates.
+- Plan review: We may adjust features/limits; material reductions with 30 days’ notice.
+
+# 7) SPEND CAPS & OVERAGES
+- Per-project monthly spend caps can be set in the Hub. At a hard cap, non-critical workloads pause unless extended by the Owner.
+- Overages (CI, storage, egress, secrets ops) are billed per the catalog in arrears; repeated over-use may auto-recommend a plan upgrade.
+
+# 8) COMPLIANCE NOTES
+- Processing PI/PHI triggers the DPA (Processor terms) or DSA (controller↔controller).
+- Cross-border transfers require a TIA and appropriate transfer tool (Adequacy/SCCs/IDTA).
+- All users must accept STA and STHCA and use compliant devices.
+
+# 9) QUICK FAQ (internal)
+- Can Builder do production? Yes for T1–T2 light workloads; Venture recommended for regulated/T3.
+- Do we price per organization or per user? Per user/seat. Some add-ons per project/service.
+- Are Founders “unlimited”? No; all modules enabled with fair-use and spend caps. High usage may require upgrades to protect costs.
+
+Contact: billing@alicesolutions… (pricing/billing) • support@… (technical) • legal@… (contracts)
+
+— END SUBSCRIPTION PLANS & PRICING —
