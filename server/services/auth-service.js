@@ -418,6 +418,10 @@ class AuthService {
                 }
             });
 
+            if (!accountWithUser) {
+                throw new Error('Account with user and role not found after creation');
+            }
+
             // Generate token
             const token = this.generateToken(accountWithUser);
 
