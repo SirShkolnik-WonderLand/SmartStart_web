@@ -129,35 +129,41 @@ const VentureGateJourney = () => {
 
   const loadUserData = async () => {
     try {
-      // Get current user (robustly extract ID)
-      const currentUser = await apiService.getCurrentUser()
-      setUser(currentUser)
-
-      const storedId = typeof window !== 'undefined' ? localStorage.getItem('user-id') : null
-      const resolvedUserId = (currentUser as any)?.id || (currentUser as any)?.data?.id || storedId
-
-      if (!resolvedUserId) {
-        console.warn('User ID missing; skipping journey state fetch')
-        setCurrentStage(0) // Start at stage 0 (discover)
-        return
-      }
-
-      // Load journey state
-      const journey = await apiService.getJourneyState(resolvedUserId)
-      setJourneyState(journey)
+      // Check if user is authenticated by looking at localStorage first
+      const storedUserData = typeof window !== 'undefined' ? localStorage.getItem('user-data') : null
+      const storedUserId = typeof window !== 'undefined' ? localStorage.getItem('user-id') : null
       
-      if (journey) {
-        setCurrentStage(journey.currentStage)
-        console.log('Journey state loaded:', journey)
+      if (storedUserData && storedUserId) {
+        // User is authenticated, use stored data
+        const userData = JSON.parse(storedUserData)
+        setUser(userData)
+        
+        // Load journey state
+        const journey = await apiService.getJourneyState(storedUserId)
+        setJourneyState(journey)
+        
+        if (journey) {
+          setCurrentStage(journey.currentStage)
+          console.log('Journey state loaded:', journey)
+        } else {
+          // No journey state found - user needs to start from beginning
+          console.log('No journey state found, starting from stage 0')
+          setCurrentStage(0) // Start at stage 0 (discover)
+        }
       } else {
-        // No journey state found - user needs to start from beginning
-        console.log('No journey state found, starting from stage 0')
-        setCurrentStage(0) // Start at stage 0 (discover)
+        // User is not authenticated, redirect to login
+        console.log('User not authenticated, redirecting to login')
+        router.push('/')
+        return
       }
     } catch (error) {
       console.error('Error loading user data:', error)
-      // Fallback to starting from stage 0
-      setCurrentStage(0)
+      // If there's an error, clear stored data and redirect to login
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('user-data')
+        localStorage.removeItem('user-id')
+      }
+      router.push('/')
     } finally {
       setIsLoading(false)
     }
@@ -236,10 +242,19 @@ const VentureGateJourney = () => {
       const currentStageData = journeyStages[currentStage]
       console.log(`Completing stage: ${currentStageData.title}`)
 
+      // First, ensure the current stage is started
+      const currentStageId = `stage_${currentStage + 1}`
+      await apiService.startJourneyStage(resolvedUserId, currentStageId)
+
+      // Then complete the current stage
+      await apiService.updateJourneyState(resolvedUserId, currentStage)
+
       // Update journey state to next stage
       const nextStageIndex = currentStage + 1
       if (nextStageIndex < journeyStages.length) {
-        await apiService.updateJourneyState(resolvedUserId, nextStageIndex)
+        // Start the next stage
+        const nextStageId = `stage_${nextStageIndex + 1}`
+        await apiService.startJourneyStage(resolvedUserId, nextStageId)
         
         // Reload journey state to get updated progress
         const updatedJourney = await apiService.getJourneyState(resolvedUserId)
