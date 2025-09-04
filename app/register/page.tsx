@@ -62,13 +62,13 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="w-full max-w-sm">
+      <div className="w-96">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-6"
+          className="text-center mb-8"
         >
           <div className="flex items-center justify-center mb-4">
             <div className="w-12 h-12 bg-gradient-to-r from-green-400 to-blue-500 rounded-xl flex items-center justify-center shadow-lg">
@@ -211,11 +211,11 @@ export default function RegisterPage() {
                 </motion.div>
               )}
 
-                              <button
-                  onClick={handleRegister}
-                  disabled={isLoading || !username || !email || !password || !confirmPassword}
-                  className="btn btn-primary w-full py-2.5"
-                >
+              <button
+                onClick={handleRegister}
+                disabled={isLoading || !username || !email || !password || !confirmPassword}
+                className="btn btn-primary w-full py-2.5"
+              >
                 {isLoading ? (
                   <span className="flex items-center justify-center">
                     <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
