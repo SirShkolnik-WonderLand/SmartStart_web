@@ -30,22 +30,22 @@ async function getCFOAlerts(userId) { return []; }
 // ===== COMPREHENSIVE DASHBOARD SYSTEM FOR 1000+ USERS =====
 
 // Health check for Comprehensive Dashboard system
-router.get('/health', async (req, res) => {
+router.get('/health', async(req, res) => {
     try {
         const users = await prisma.user.count();
         const projects = await prisma.project.count();
         const companies = await prisma.company.count();
         const teams = await prisma.team.count();
         const ventures = await prisma.venture.count();
-        
+
         res.json({
             success: true,
             message: 'Comprehensive Dashboard System is healthy',
-            stats: { 
-                users, 
-                projects, 
-                companies, 
-                teams, 
+            stats: {
+                users,
+                projects,
+                companies,
+                teams,
                 ventures,
                 dashboardTypes: 15,
                 realTimeUpdates: 'ENABLED',
@@ -55,20 +55,20 @@ router.get('/health', async (req, res) => {
         });
     } catch (error) {
         console.error('Comprehensive Dashboard health check failed:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Comprehensive Dashboard System health check failed', 
-            error: error.message 
+        res.status(500).json({
+            success: false,
+            message: 'Comprehensive Dashboard System health check failed',
+            error: error.message
         });
     }
 });
 
 // Get role-based dashboard
-router.get('/dashboard/:roleType', authenticateToken, async (req, res) => {
+router.get('/dashboard/:roleType', authenticateToken, async(req, res) => {
     try {
         const { roleType } = req.params;
         const userId = req.user.id;
-        
+
         // Get user with roles and permissions
         const user = await prisma.user.findUnique({
             where: { id: userId },
@@ -146,11 +146,11 @@ router.get('/dashboard/:roleType', authenticateToken, async (req, res) => {
 });
 
 // Get CEO Dashboard
-router.get('/dashboard/ceo', authenticateToken, async (req, res) => {
+router.get('/dashboard/ceo', authenticateToken, async(req, res) => {
     try {
         const userId = req.user.id;
         const dashboardData = await getCEODashboard(userId);
-        
+
         res.json({
             success: true,
             data: dashboardData,
@@ -167,11 +167,11 @@ router.get('/dashboard/ceo', authenticateToken, async (req, res) => {
 });
 
 // Get CTO Dashboard
-router.get('/dashboard/cto', authenticateToken, async (req, res) => {
+router.get('/dashboard/cto', authenticateToken, async(req, res) => {
     try {
         const userId = req.user.id;
         const dashboardData = await getCTODashboard(userId);
-        
+
         res.json({
             success: true,
             data: dashboardData,
@@ -188,11 +188,11 @@ router.get('/dashboard/cto', authenticateToken, async (req, res) => {
 });
 
 // Get CFO Dashboard
-router.get('/dashboard/cfo', authenticateToken, async (req, res) => {
+router.get('/dashboard/cfo', authenticateToken, async(req, res) => {
     try {
         const userId = req.user.id;
         const dashboardData = await getCFODashboard(userId);
-        
+
         res.json({
             success: true,
             data: dashboardData,
@@ -209,11 +209,11 @@ router.get('/dashboard/cfo', authenticateToken, async (req, res) => {
 });
 
 // Get Manager Dashboard
-router.get('/dashboard/manager', authenticateToken, async (req, res) => {
+router.get('/dashboard/manager', authenticateToken, async(req, res) => {
     try {
         const userId = req.user.id;
         const dashboardData = await getManagerDashboard(userId);
-        
+
         res.json({
             success: true,
             data: dashboardData,
@@ -230,11 +230,11 @@ router.get('/dashboard/manager', authenticateToken, async (req, res) => {
 });
 
 // Get Employee Dashboard
-router.get('/dashboard/employee', authenticateToken, async (req, res) => {
+router.get('/dashboard/employee', authenticateToken, async(req, res) => {
     try {
         const userId = req.user.id;
         const dashboardData = await getEmployeeDashboard(userId);
-        
+
         res.json({
             success: true,
             data: dashboardData,
@@ -251,11 +251,11 @@ router.get('/dashboard/employee', authenticateToken, async (req, res) => {
 });
 
 // Get Investor Dashboard
-router.get('/dashboard/investor', authenticateToken, async (req, res) => {
+router.get('/dashboard/investor', authenticateToken, async(req, res) => {
     try {
         const userId = req.user.id;
         const dashboardData = await getInvestorDashboard(userId);
-        
+
         res.json({
             success: true,
             data: dashboardData,
@@ -272,13 +272,13 @@ router.get('/dashboard/investor', authenticateToken, async (req, res) => {
 });
 
 // Get Analytics Dashboard
-router.get('/analytics', authenticateToken, async (req, res) => {
+router.get('/analytics', authenticateToken, async(req, res) => {
     try {
         const userId = req.user.id;
         const { timeframe = '30d', metric = 'all' } = req.query;
-        
+
         const analyticsData = await getAnalyticsData(userId, timeframe, metric);
-        
+
         res.json({
             success: true,
             data: analyticsData,
@@ -295,10 +295,10 @@ router.get('/analytics', authenticateToken, async (req, res) => {
 });
 
 // Get Real-time Metrics
-router.get('/metrics/realtime', authenticateToken, async (req, res) => {
+router.get('/metrics/realtime', authenticateToken, async(req, res) => {
     try {
         const realtimeMetrics = await getRealtimeMetrics();
-        
+
         res.json({
             success: true,
             data: realtimeMetrics,
@@ -396,14 +396,14 @@ async function getCEODashboard(userId) {
     });
 
     // Calculate KPIs
-    const totalEmployees = companies.reduce((sum, company) => 
+    const totalEmployees = companies.reduce((sum, company) =>
         sum + company.teams.reduce((teamSum, team) => teamSum + team.members.length, 0), 0);
-    
-    const totalRevenue = ventures.reduce((sum, venture) => 
+
+    const totalRevenue = ventures.reduce((sum, venture) =>
         sum + venture.fundingRounds.reduce((roundSum, round) => roundSum + (round.amountRaised || 0), 0), 0);
 
     const activeProjects = await prisma.project.count({
-        where: { 
+        where: {
             ownerId: userId,
             deletedAt: null
         }
@@ -432,7 +432,7 @@ async function getCEODashboard(userId) {
             name: venture.name,
             status: venture.status,
             fundingRaised: venture.fundingRounds.reduce((sum, round) => sum + (round.amountRaised || 0), 0),
-            teamSize: venture.team?.members.length || 0,
+            teamSize: venture.team ? .members.length || 0,
             nextFundingRound: venture.fundingRounds.find(round => round.status === 'PLANNED')
         })),
         kpis: {
@@ -475,8 +475,7 @@ async function getCTODashboard(userId) {
                 }
             },
             user: {
-                role: {
-                    in: ['DEVELOPER', 'SENIOR_DEVELOPER', 'CTO', 'VP_ENGINEERING']
+                role: { in: ['DEVELOPER', 'SENIOR_DEVELOPER', 'CTO', 'VP_ENGINEERING']
                 }
             }
         },
@@ -494,11 +493,11 @@ async function getCTODashboard(userId) {
 
     // Calculate technical metrics
     const totalCodeTasks = projects.reduce((sum, project) => sum + project.tasks.length, 0);
-    const completedTasks = projects.reduce((sum, project) => 
+    const completedTasks = projects.reduce((sum, project) =>
         sum + project.tasks.filter(task => task.status === 'COMPLETED').length, 0);
-    
-    const averageSprintVelocity = projects.reduce((sum, project) => 
-        sum + project.sprints.reduce((sprintSum, sprint) => sprintSum + sprint.velocity, 0), 0) / 
+
+    const averageSprintVelocity = projects.reduce((sum, project) =>
+            sum + project.sprints.reduce((sprintSum, sprint) => sprintSum + sprint.velocity, 0), 0) /
         projects.reduce((sum, project) => sum + project.sprints.length, 0) || 0;
 
     return {
@@ -515,7 +514,7 @@ async function getCTODashboard(userId) {
             name: project.name,
             totalTasks: project.tasks.length,
             completedTasks: project.tasks.filter(task => task.status === 'COMPLETED').length,
-            completionRate: project.tasks.length > 0 ? 
+            completionRate: project.tasks.length > 0 ?
                 (project.tasks.filter(task => task.status === 'COMPLETED').length / project.tasks.length) * 100 : 0,
             recentSprints: project.sprints.slice(0, 3)
         })),
@@ -560,12 +559,12 @@ async function getCFODashboard(userId) {
     });
 
     // Calculate financial metrics
-    const totalRaised = ventures.reduce((sum, venture) => 
+    const totalRaised = ventures.reduce((sum, venture) =>
         sum + venture.fundingRounds.reduce((roundSum, round) => roundSum + (round.amountRaised || 0), 0), 0);
-    
-    const monthlyRevenue = subscriptions.reduce((sum, sub) => 
-        sum + (sub.plan?.price || 0), 0);
-    
+
+    const monthlyRevenue = subscriptions.reduce((sum, sub) =>
+        sum + (sub.plan ? .price || 0), 0);
+
     const totalInvoiced = invoices.reduce((sum, invoice) => sum + invoice.amount, 0);
     const totalPaid = invoices.filter(invoice => invoice.status === 'PAID')
         .reduce((sum, invoice) => sum + invoice.amount, 0);
@@ -589,8 +588,8 @@ async function getCFODashboard(userId) {
         revenue: {
             subscriptions: subscriptions.map(sub => ({
                 id: sub.id,
-                plan: sub.plan?.name,
-                price: sub.plan?.price,
+                plan: sub.plan ? .name,
+                price: sub.plan ? .price,
                 status: sub.status,
                 startDate: sub.startDate,
                 endDate: sub.endDate
@@ -673,7 +672,7 @@ async function getManagerDashboard(userId) {
             name: project.name,
             totalTasks: project.tasks.length,
             completedTasks: project.tasks.filter(task => task.status === 'COMPLETED').length,
-            completionRate: project.tasks.length > 0 ? 
+            completionRate: project.tasks.length > 0 ?
                 (project.tasks.filter(task => task.status === 'COMPLETED').length / project.tasks.length) * 100 : 0,
             recentSprints: project.sprints.slice(0, 2)
         })),
@@ -755,7 +754,7 @@ async function getEmployeeDashboard(userId) {
             status: task.status,
             priority: task.priority,
             project: task.project.name,
-            sprint: task.sprint?.name,
+            sprint: task.sprint ? .name,
             dueDate: task.dueDate,
             createdAt: task.createdAt
         })),
@@ -781,7 +780,7 @@ async function getEmployeeDashboard(userId) {
 async function getInvestorDashboard(userId) {
     // Get investments
     const investments = await prisma.venture.findMany({
-        where: { 
+        where: {
             team: {
                 some: {
                     userId: userId,

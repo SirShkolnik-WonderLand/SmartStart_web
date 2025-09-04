@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Terminal, Database, Server, CheckCircle, AlertCircle, ArrowRight } from 'lucide-react'
+import { Terminal, Database, Server, CheckCircle, AlertCircle, ArrowRight, Lock, Key, User, Eye, EyeOff } from 'lucide-react'
 
 const artFrames = [
   `
@@ -65,6 +65,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [systemStatus, setSystemStatus] = useState({
     database: 'CHECKING',
     api: 'CHECKING',
@@ -113,17 +114,6 @@ export default function LoginPage() {
       return
     }
 
-    // Validate password strength
-    if (password.length < 8) {
-      setError('Password must be at least 8 characters long')
-      return
-    }
-
-    if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) {
-      setError('Password must contain at least one uppercase letter, one lowercase letter, and one number')
-      return
-    }
-
     setIsLoading(true)
     setError('')
 
@@ -132,12 +122,16 @@ export default function LoginPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-                    body: JSON.stringify({ email: username, password })
+        body: JSON.stringify({ email: username, password })
       })
 
       if (response.ok) {
         const data = await response.json()
         if (data.success) {
+          // Store session token if provided
+          if (data.sessionToken) {
+            localStorage.setItem('sessionToken', data.sessionToken)
+          }
           redirectAfterLogin()
         } else {
           setError(data.message || 'Login failed')
@@ -154,8 +148,8 @@ export default function LoginPage() {
   }
 
   const handleDemoLogin = async () => {
-    setUsername('admin')
-    setPassword('password123')
+    setUsername('admin@smartstart.com')
+    setPassword('AdminPass123!')
     // Actually authenticate with the demo credentials instead of bypassing
     await handleLogin(new Event('submit') as any)
   }
@@ -210,34 +204,52 @@ export default function LoginPage() {
         {/* Login Form */}
         <div className="max-w-md mx-auto">
           <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold mb-2">🔐 SYSTEM ACCESS REQUIRED</h2>
+            <div className="flex items-center justify-center mb-2">
+              <Lock className="w-6 h-6 mr-2 text-yellow-400" />
+              <h2 className="text-2xl font-bold">SYSTEM ACCESS REQUIRED</h2>
+            </div>
             <p className="text-green-300">Enter your credentials to access SmartStart Platform</p>
           </div>
           
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-2">USERNAME:</label>
+              <label className="block text-sm font-medium mb-2 flex items-center">
+                <User className="w-4 h-4 mr-2" />
+                USERNAME:
+              </label>
               <input
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full p-3 bg-black border border-green-500 rounded text-green-400 placeholder-green-600 focus:border-green-400 focus:outline-none"
+                className="w-full p-3 bg-black border border-green-500 rounded text-green-400 placeholder-green-600 focus:border-green-400 focus:outline-none font-mono"
                 placeholder="Enter username..."
                 disabled={isLoading}
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">PASSWORD:</label>
+              <label className="block text-sm font-medium mb-2 flex items-center">
+                <Lock className="w-4 h-4 mr-2" />
+                PASSWORD:
+              </label>
+              <div className="relative">
                 <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full p-3 bg-black border border-green-500 rounded text-green-400 placeholder-green-600 focus:border-green-400 focus:outline-none"
-                placeholder="Enter password..."
-                disabled={isLoading}
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full p-3 bg-black border border-green-500 rounded text-green-400 placeholder-green-600 focus:border-green-400 focus:outline-none font-mono pr-12"
+                  placeholder="Enter password..."
+                  disabled={isLoading}
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-600 hover:text-green-400"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
               </div>
+            </div>
 
             {error && (
               <div className="p-3 bg-red-900/20 border border-red-500 rounded text-red-400 text-sm">
@@ -265,32 +277,85 @@ export default function LoginPage() {
           </form>
 
           {/* Demo Access */}
-          <div className="mt-6 text-center">
+          <div className="mt-6 p-4 bg-gray-900/50 border border-yellow-500/30 rounded">
+            <div className="flex items-center justify-center mb-2">
+              <Key className="w-4 h-4 mr-2 text-yellow-400" />
+              <span className="text-sm text-yellow-300 font-medium">Demo Access</span>
+            </div>
             <button
               onClick={handleDemoLogin}
-              className="text-green-300 hover:text-green-400 text-sm underline"
+              className="text-yellow-300 hover:text-yellow-200 text-sm underline font-mono"
             >
-              💡 Demo Access: admin / password123
-              </button>
-            </div>
+              admin@smartstart.com / AdminPass123!
+            </button>
+          </div>
 
           {/* Registration Link */}
           <div className="mt-6 text-center">
+            <div className="text-sm text-green-600 mb-2">New to SmartStart?</div>
             <a
               href="/register"
-              className="text-green-300 hover:text-green-400 text-sm underline"
+              className="inline-flex items-center px-4 py-2 border border-green-500 text-green-400 hover:bg-green-500 hover:text-black transition-colors rounded font-mono text-sm"
             >
-              Create a new account
+              <User className="w-4 h-4 mr-2" />
+              Create New Account
             </a>
-      </div>
+          </div>
         </div>
 
 
 
         {/* Footer */}
         <div className="text-center mt-12 text-sm text-green-600">
-          <p>SmartStart Platform v2.0.0 • All Systems Operational</p>
-          <p className="mt-1">🚀 Ready for Production Use</p>
+          <div className="max-w-4xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+              {/* System Status */}
+              <div className="p-4 bg-gray-900/30 border border-green-500/20 rounded">
+                <h3 className="text-green-400 font-bold mb-2">System Status</h3>
+                <div className="space-y-1 text-xs">
+                  <div className="flex justify-between">
+                    <span>Database:</span>
+                    <span className="text-green-400">ONLINE</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>API Services:</span>
+                    <span className="text-green-400">OPERATIONAL</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Security:</span>
+                    <span className="text-green-400">ENABLED</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Platform Info */}
+              <div className="p-4 bg-gray-900/30 border border-green-500/20 rounded">
+                <h3 className="text-green-400 font-bold mb-2">Platform Info</h3>
+                <div className="space-y-1 text-xs">
+                  <div>Version: 2.0.0</div>
+                  <div>Founder: Udi Shkolnik</div>
+                  <div>Location: Toronto, Canada</div>
+                  <div>Status: Production Ready</div>
+                </div>
+              </div>
+
+              {/* Quick Links */}
+              <div className="p-4 bg-gray-900/30 border border-green-500/20 rounded">
+                <h3 className="text-green-400 font-bold mb-2">Quick Links</h3>
+                <div className="space-y-1 text-xs">
+                  <a href="/register" className="block text-green-300 hover:text-green-400">Create Account</a>
+                  <a href="/venture-gate" className="block text-green-300 hover:text-green-400">VentureGate™</a>
+                  <a href="/documents" className="block text-green-300 hover:text-green-400">Documentation</a>
+                  <a href="/support" className="block text-green-300 hover:text-green-400">Support</a>
+                </div>
+              </div>
+            </div>
+            
+            <div className="border-t border-green-500/20 pt-4">
+              <p className="text-green-500">SmartStart Platform v2.0.0 • All Systems Operational</p>
+              <p className="mt-1 text-green-600">🚀 Ready for Production Use • Built with ❤️ in Toronto</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>

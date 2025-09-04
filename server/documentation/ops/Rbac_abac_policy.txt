@@ -1,0 +1,169 @@
+
+
+GDPR INTERNATIONAL TRANSFER CHECKLIST (TIA-READY)
+AliceSolutions Ventures Inc. — Hub & Ventures
+Version: 1.0 • Primary Law: GDPR (EU/EEA) • Notes: UK/EU variants included
+
+> Purpose. Use this checklist **before any cross-border disclosure** of personal data. It helps you decide **(a)** whether the flow is a Chapter V “transfer”, **(b)** which **transfer tool** to use (Adequacy, SCCs, DPF, IDTA, etc.), and **(c)** what **supplementary measures** are required (per EDPB Rec. 01/2020), with a built-in **Transfer Impact Assessment (TIA) summary**. Keep the completed checklist with the project DPIA and ROPA. ([edpb.europa.eu][1])
+
+---
+
+## 0) Is this a “TRANSFER” under GDPR? (Gate)
+
+All three must be **Yes**:
+
+\[ ] **Exporter** is a controller/processor **subject to GDPR** for this processing (Art. 3).
+\[ ] Data will be **disclosed or made available** to a **separate** controller/processor (the importer).
+\[ ] The importer is in a **third country** (outside EEA) or an **international organisation** (regardless of whether the importer is itself subject to GDPR).
+If **any** are **No**, Chapter V may not apply (still assess general GDPR risks). ([edpb.europa.eu][2])
+
+Notes: For UK-origin data, apply **UK GDPR** rules and tools (IDTA or UK Addendum). ([ico.org.uk][3])
+
+---
+
+## 1) Map & Minimise (Data Flow Snapshot)
+
+Project/Venture: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_  Owner: \_\_\_\_\_\_\_\_\_\_  Date: \_\_\_\_\_\_
+Data subjects: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_  Volumes/Frequency: \_\_\_\_\_\_\_\_\_\_\_\_
+Categories (tick): \[ ] Identifiers  \[ ] Contact  \[ ] Auth/SSO  \[ ] Telemetry
+\[ ] Financial metadata  \[ ] Special categories (Art. 9)  \[ ] Children/Vulnerable (Y/N)
+Purpose(s) & necessity (brief): \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+**Minimisation applied** (remove fields, aggregate, mask): \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+
+---
+
+## 2) Choose the Transfer Tool (one per route)
+
+### 2.1 Adequacy decision?
+
+Destination: \_\_\_\_\_\_\_\_\_\_  Adequacy in force? \[ ] Yes  \[ ] No
+(If **Yes**: cite decision; keep evidence. If **US** and recipient certified to **EU-US DPF**, record program participation and scope.) ([EUR-Lex][4], [dataprivacyframework.gov][5], [European Commission][6])
+
+> Note: As of **Sep 3, 2025**, the EU’s General Court **upheld** the EU-US Data Privacy Framework adequacy decision (case **T-553/23**). Appeals may follow; monitor legal updates. ([Reuters][7])
+
+### 2.2 If **no Adequacy**, select:
+
+\[ ] **EU SCCs (2021/914)** — pick correct **Module**: C→C / C→P / P→P / P→C; fill **Annex I–III** and **TOMs**. ([EUR-Lex][8], [European Commission][9])
+\[ ] **UK IDTA** or **UK Addendum** to EU SCCs (for UK transfers). ([ico.org.uk][10])
+\[ ] **Art. 49 Derogation** (exceptional, one-off, necessary & proportionate) — justify and document.
+
+---
+
+## 3) TIA — Six Steps (EDPB Rec. 01/2020)
+
+**3.1 Know your transfers.** List all importers/onward recipients & sub-processors.
+**3.2 Identify your tool.** (Adequacy, SCCs, IDTA/Addendum, DPF, or Derogation).
+**3.3 Assess destination law & practices** (public-authority access, redress, importer obligations).
+\*\*3.4 Adopt **supplementary measures** (technical/contractual/organisational).
+**3.5 Procedural steps** (sign SCCs/IDTA, update annexes, consult DPO if high risk).
+**3.6 Re-evaluate periodically** or on change signals (vendor, law, scope). ([edpb.europa.eu][11])
+
+(For quick methodology guidance you may also reference the **CNIL TIA Guide** — optional aid aligned to the EDPB steps.) ([cnil.fr][12])
+
+---
+
+## 4) TIA Summary (fill once per transfer path)
+
+**Route ID:** \_\_\_\_\_\_  **Exporter Role:** \[ ] C \[ ] P   **Importer Role:** \[ ] C \[ ] P
+**Tool:** \[ ] Adequacy  \[ ] SCCs (Module \_\_)  \[ ] DPF  \[ ] IDTA/Addendum  \[ ] Derogation
+**Importer details:** Legal name, address, contact, DPO: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+**Onward transfers?** \[ ] No  \[ ] Yes → list chain & tools: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+
+**4.1 Laws & practices (risk factors)**
+• Government access proportionality & redress (signals/regulatory reports): \_\_\_\_\_\_\_\_
+• Importer’s ability to comply with SCC/IDTA clauses: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+• Sector-specific laws (e.g., telecom, financial, health): \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+• Prior incidents/regulator findings (if any): \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+
+**4.2 Supplementary Measures (choose/apply)**
+**Technical (preferred):**
+\[ ] End-to-end encryption; **keys controlled in EEA/Canada/UK** (not accessible to importer);
+\[ ] Pseudonymisation with **separate key** held by exporter;
+\[ ] Data minimisation (drop fields), hashing/tokenisation;
+\[ ] Split-processing / proxy / blind index;
+\[ ] At-rest encryption with HSM/KMS under exporter control.
+**Contractual:**
+\[ ] SCCs/IDTA with detailed **TOMs**; **no back-door** clause; notify & challenge access requests;
+\[ ] Onward-transfer restrictions; audit & transparency commitments;
+\[ ] Sub-processor flow-down; termination & return/delete.
+**Organisational:**
+\[ ] Access least-privilege; **SSO+MFA**; staff screening/training;
+\[ ] DLP & logging; incident playbooks; periodic re-assessments.
+
+**4.3 Residual Risk** (post-measures)
+Likelihood (1–5): \_\_  Impact (1–5): \_\_  **Score:** \_\_ / 25 → \[ ] Low \[ ] Moderate \[ ] High
+If **High**, consider **prior consultation** with the authority (Art. 36) or change design. ([edpb.europa.eu][11])
+
+Decision: \[ ] Approve  \[ ] Approve with conditions  \[ ] Do not proceed
+Owner: \_\_\_\_\_\_\_\_\_\_  DPO: \_\_\_\_\_\_\_\_\_\_  Date: \_\_\_\_\_\_  Next review: \_\_\_\_\_\_
+
+---
+
+## 5) SCCs / IDTA Annex Aide (attach to contract)
+
+**Annex I (Parties & Transfer details):** purposes, categories, frequency, retention, recipients, contact points.
+**Annex II (TOMs):** crypto at rest/in transit, key mgmt/residency, access controls, logging, backups, DLP, incident response, vulnerability mgmt, secure dev/CI (SBOM, SAST/dep scan), secrets mgmt.
+**Annex III (Sub-processors):** list & services; add onboarding/notification clause. ([EUR-Lex][8])
+
+**UK:** If using **EU SCCs + UK Addendum**, ensure Addendum tables completed; or use **IDTA** standalone. ([ico.org.uk][10])
+
+---
+
+## 6) Special Cases
+
+**US transfers:** If importer is **DPF-certified**, record the **DPF scope** (HR vs. non-HR data) and check list enrolment. If not certified, use **SCCs** + TIA + measures. Monitor DPF legal landscape. ([dataprivacyframework.gov][5], [EUR-Lex][4], [Reuters][7])
+**Processor-to-Processor / Processor-to-Controller:** choose the right **SCC Module** and confirm controller instructions & onward limits. ([EUR-Lex][8])
+**UK origin:** Apply **IDTA/Addendum**; consider UK-US **data bridge** status for context (still complete tool selection). ([ico.org.uk][10])
+
+---
+
+## 7) Records & Evidence (tick all before go-live)
+
+\[ ] Completed **DPIA** (or documented not required) with transfer references.
+\[ ] Signed **SCCs/IDTA/Addendum/DPF** evidence saved.
+\[ ] **Annexes** (I–III / TOMs) completed with encryption/key-residency specifics.
+\[ ] **Sub-processor Register** updated; onward transfers mapped.
+\[ ] **Runbooks** updated (access requests, government demands, incident/breach).
+\[ ] **Re-evaluation trigger** set (vendor change, new law, scope change, incident).
+
+---
+
+## 8) Quick Reference (authorities & guidance)
+
+• **EDPB Rec. 01/2020** — supplementary measures & 6-step roadmap (final 18 Jun 2021). ([edpb.europa.eu][11])
+• **EU SCCs (2021/914)** — transfer clauses (4 Jun 2021). ([EUR-Lex][8])
+• **EDPB Guidelines 05/2021** — what counts as a “transfer” (final 24 Feb 2023). ([edpb.europa.eu][1])
+• **EU-US DPF Adequacy (10 Jul 2023)** — program overview & Q\&A + **2025 General Court ruling** affirming adequacy (case T-553/23). ([EUR-Lex][4], [European Commission][6], [Reuters][7])
+• **UK ICO** — **IDTA** & **Addendum** guidance (UK-GDPR transfers). ([ico.org.uk][10])
+
+---
+
+### APPENDIX — One-Page TIA Worksheet (duplicate per route)
+
+**Route ID:** \_\_\_\_  **Exporter:** \_\_\_\_  **Importer:** \_\_\_\_  **Destination:** \_\_\_\_
+**Tool:** Adequacy / SCCs (Module \_\_) / IDTA / Addendum / DPF / Derogation
+
+1. **Context & Data** (purpose, categories, volumes): \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+2. **Importer profile** (role, sector, security certs): \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+3. **Destination law** (access powers, oversight, redress): \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+4. **Measures applied** (T/C/O): \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+5. **Keys/crypto control** (who holds keys; where; split-knowledge?): \_\_\_\_\_\_\_\_\_
+6. **Onward transfers** (who; tool; limits): \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+7. **Residual risk score** (L×I): \_\_\_\_ / 25  **Outcome:** \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+8. **Re-eval cadence** (e.g., 12 months or on trigger): \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+   **Sign-off:** Owner \_\_\_  DPO \_\_\_  Security \_\_\_  Date \_\_\_
+
+— END GDPR INTERNATIONAL TRANSFER CHECKLIST (TIA-READY) —
+
+[1]: https://www.edpb.europa.eu/our-work-tools/our-documents/guidelines/guidelines-052021-interplay-between-application-article-3_en?utm_source=chatgpt.com "Guidelines 05/2021 on the Interplay between the application ..."
+[2]: https://www.edpb.europa.eu/system/files/2023-02/edpb_guidelines_05-2021_interplay_between_the_application_of_art3-chapter_v_of_the_gdpr_v2_en_0.pdf?utm_source=chatgpt.com "Guidelines 05/2021 on the Interplay between the application ..."
+[3]: https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/international-transfers/international-transfers-a-guide/?utm_source=chatgpt.com "A guide to international transfers | ICO"
+[4]: https://eur-lex.europa.eu/eli/dec_impl/2023/1795/oj/eng?utm_source=chatgpt.com "Implementing decision - 2023/1795 - EN - EUR-Lex"
+[5]: https://www.dataprivacyframework.gov/Program-Overview?utm_source=chatgpt.com "EU-U.S. Data Privacy Framework (DPF)"
+[6]: https://ec.europa.eu/commission/presscorner/detail/en/qanda_23_3752?utm_source=chatgpt.com "Questions & Answers: EU-US Data Privacy Framework"
+[7]: https://www.reuters.com/sustainability/boards-policy-regulation/eu-court-backs-latest-data-transfer-deal-agreed-by-us-eu-2025-09-03/?utm_source=chatgpt.com "EU court backs latest data transfer deal agreed by US and EU"
+[8]: https://eur-lex.europa.eu/eli/dec_impl/2021/914/oj/eng?utm_source=chatgpt.com "Implementing decision - 2021/914 - EN - EUR-Lex"
+[9]: https://commission.europa.eu/law/law-topic/data-protection/international-dimension-data-protection/new-standard-contractual-clauses-questions-and-answers-overview_en?utm_source=chatgpt.com "New Standard Contractual Clauses - European Commission"
+[10]: https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/international-transfers/international-data-transfer-agreement-and-guidance/?utm_source=chatgpt.com "International data transfer agreement and guidance | ICO"
+[11]: https://www.edpb.europa.eu/our-work-tools/our-documents/recommendations/recommendations-012020-measures-supplement-transfer_en?utm_source=chatgpt.com "Recommendations 01/2020 - European Data Protection Board"
+[12]: https://www.cnil.fr/en/transfer-impact-assessment-tia-cnil-publishes-final-version-its-guide?utm_source=chatgpt.com "Transfer Impact Assessment (TIA): the CNIL publishes ..."
