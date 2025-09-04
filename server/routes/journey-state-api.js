@@ -407,25 +407,34 @@ async function checkGates(userId, gates) {
                     // Check if user has signed any legal documents
                     const legalDoc = await prisma.legalDocumentSignature.findFirst({
                         where: {
-                            userId,
-                            status: 'SIGNED'
+                            signerId: userId,
+                            termsAccepted: true,
+                            privacyAccepted: true
                         }
                     });
                     isPassed = !!legalDoc;
-                    details = legalDoc ? { status: legalDoc.status, signedAt: legalDoc.signedAt } : null;
+                    details = legalDoc ? { 
+                        signedAt: legalDoc.signedAt,
+                        termsAccepted: legalDoc.termsAccepted,
+                        privacyAccepted: legalDoc.privacyAccepted
+                    } : null;
                     break;
 
                 case 'NDA':
                     // Check if user has signed any NDA documents
                     const ndaDoc = await prisma.legalDocumentSignature.findFirst({
                         where: {
-                            userId,
-                            status: 'SIGNED',
-                            documentType: 'NDA'
+                            signerId: userId,
+                            termsAccepted: true,
+                            privacyAccepted: true
                         }
                     });
                     isPassed = !!ndaDoc;
-                    details = ndaDoc ? { status: ndaDoc.status, signedAt: ndaDoc.signedAt } : null;
+                    details = ndaDoc ? { 
+                        signedAt: ndaDoc.signedAt,
+                        termsAccepted: ndaDoc.termsAccepted,
+                        privacyAccepted: ndaDoc.privacyAccepted
+                    } : null;
                     break;
 
                 case 'VERIFICATION':
@@ -449,50 +458,90 @@ async function checkGates(userId, gates) {
 
                 case 'VENTURE':
                     const venture = await prisma.venture.findFirst({
-                        where: { userId }
+                        where: { ownerUserId: userId }
                     });
                     isPassed = !!venture;
-                    details = venture ? { id: venture.id, name: venture.name } : null;
+                    details = venture ? { id: venture.id, name: venture.name, status: venture.status } : null;
                     break;
 
                 case 'TEAM':
+                    // Check if user has any team memberships
                     const teamMembers = await prisma.teamMember.findMany({
-                        where: { venture: { userId } }
+                        where: { 
+                            userId,
+                            isActive: true
+                        }
                     });
                     isPassed = teamMembers.length > 0;
-                    details = { memberCount: teamMembers.length };
+                    details = { memberCount: teamMembers.length, activeMembers: teamMembers.length };
                     break;
 
                 case 'PROJECT':
+                    // Check if user has projects through team membership
+                    const userTeams = await prisma.teamMember.findMany({
+                        where: { 
+                            userId,
+                            isActive: true
+                        },
+                        select: { teamId: true }
+                    });
+                    const teamIds = userTeams.map(tm => tm.teamId);
                     const project = await prisma.project.findFirst({
-                        where: { venture: { userId } }
+                        where: { 
+                            teamId: { in: teamIds },
+                            status: 'ACTIVE'
+                        }
                     });
                     isPassed = !!project;
-                    details = project ? { id: project.id, name: project.name } : null;
+                    details = project ? { id: project.id, name: project.name, status: project.status } : null;
                     break;
 
                 case 'LEGAL_ENTITY':
+                    // Check if user has legal entities through ventures
+                    const userVentures = await prisma.venture.findMany({
+                        where: { ownerUserId: userId },
+                        select: { id: true }
+                    });
+                    const ventureIds = userVentures.map(v => v.id);
                     const legalEntity = await prisma.legalEntity.findFirst({
-                        where: { venture: { userId } }
+                        where: { 
+                            ventureId: { in: ventureIds }
+                        }
                     });
                     isPassed = !!legalEntity;
                     details = legalEntity ? { id: legalEntity.id, name: legalEntity.name } : null;
                     break;
 
                 case 'EQUITY':
+                    // Check if user has cap table entries through ventures
+                    const userVenturesForEquity = await prisma.venture.findMany({
+                        where: { ownerUserId: userId },
+                        select: { id: true }
+                    });
+                    const ventureIdsForEquity = userVenturesForEquity.map(v => v.id);
                     const capTable = await prisma.capTableEntry.findFirst({
-                        where: { venture: { userId } }
+                        where: { 
+                            ventureId: { in: ventureIdsForEquity }
+                        }
                     });
                     isPassed = !!capTable;
-                    details = capTable ? { entries: 1 } : null;
+                    details = capTable ? { entries: 1, ventureId: capTable.ventureId } : null;
                     break;
 
                 case 'CONTRACT':
+                    // Check if user has contract offers through ventures
+                    const userVenturesForContract = await prisma.venture.findMany({
+                        where: { ownerUserId: userId },
+                        select: { id: true }
+                    });
+                    const ventureIdsForContract = userVenturesForContract.map(v => v.id);
                     const contract = await prisma.contractOffer.findFirst({
-                        where: { venture: { userId } }
+                        where: { 
+                            ventureId: { in: ventureIdsForContract }
+                        }
                     });
                     isPassed = !!contract;
-                    details = contract ? { id: contract.id, status: contract.status } : null;
+                    details = contract ? { id: contract.id, status: contract.status, ventureId: contract.ventureId } : null;
                     break;
 
                 case 'LAUNCH':
