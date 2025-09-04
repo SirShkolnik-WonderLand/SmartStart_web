@@ -427,7 +427,7 @@ class ApiService {
     try {
       // Convert stage number to stage ID (stage_1, stage_2, etc.)
       const stageId = `stage_${stage + 1}`
-      return await this.fetchWithAuth(`/api/journey-state/start`, {
+      return await this.fetchWithAuth(`/api/journey-state/complete`, {
         method: 'POST',
         body: JSON.stringify({ userId, stageId }),
       })
