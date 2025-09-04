@@ -138,7 +138,7 @@ const VentureGateJourney = () => {
 
       if (!resolvedUserId) {
         console.warn('User ID missing; skipping journey state fetch')
-        setCurrentStage(2)
+        setCurrentStage(0) // Start at stage 0 (discover)
         return
       }
 
@@ -148,20 +148,16 @@ const VentureGateJourney = () => {
       
       if (journey) {
         setCurrentStage(journey.currentStage)
+        console.log('Journey state loaded:', journey)
       } else {
-        // Fallback to demo data
-        setUser({ 
-          id: '1', 
-          email: 'udi.shkolnik@alicesolutions.com', 
-          name: 'Udi Shkolnik' 
-        })
-        setCurrentStage(2)
+        // No journey state found - user needs to start from beginning
+        console.log('No journey state found, starting from stage 0')
+        setCurrentStage(0) // Start at stage 0 (discover)
       }
     } catch (error) {
       console.error('Error loading user data:', error)
-      // Fallback to demo user
-      setUser({ id: '1', email: 'udi.shkolnik@alicesolutions.com', name: 'Udi Shkolnik' })
-      setCurrentStage(2)
+      // Fallback to starting from stage 0
+      setCurrentStage(0)
     } finally {
       setIsLoading(false)
     }

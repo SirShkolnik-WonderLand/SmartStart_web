@@ -373,8 +373,32 @@ class ApiService {
   // User Journey
   async getJourneyState(userId: string): Promise<JourneyState | null> {
     try {
-      const response = await this.fetchWithAuth(`/api/journey/state/${userId}`)
-      return response.data || null
+      const response = await this.fetchWithAuth(`/api/journey-state/progress/${userId}`)
+      if (response.success && response.data) {
+        // Transform the response to match the expected JourneyState interface
+        const data = response.data
+        
+        // Find the current stage index (0-based)
+        let currentStageIndex = 0
+        if (data.currentStage) {
+          currentStageIndex = data.stages.findIndex((s: any) => s.id === data.currentStage.id)
+        } else if (data.nextStage) {
+          // If no current stage but there's a next stage, user is at the stage before it
+          currentStageIndex = data.stages.findIndex((s: any) => s.id === data.nextStage.id) - 1
+        }
+        
+        // Ensure currentStageIndex is not negative
+        currentStageIndex = Math.max(0, currentStageIndex)
+        
+        return {
+          currentStage: currentStageIndex,
+          completedStages: data.stages.filter((s: any) => s.status === 'COMPLETED').map((s: any, index: number) => index),
+          totalStages: data.progress.totalStages,
+          progress: data.progress.percentage,
+          nextAction: data.nextStage ? data.nextStage.name : undefined
+        }
+      }
+      return null
     } catch (error) {
       console.error('Error fetching journey state:', error)
       return null
@@ -383,9 +407,9 @@ class ApiService {
 
   async updateJourneyState(userId: string, stage: number) {
     try {
-      return await this.fetchWithAuth(`/api/journey/state/${userId}`, {
-        method: 'PUT',
-        body: JSON.stringify({ stage }),
+      return await this.fetchWithAuth(`/api/journey-state/start`, {
+        method: 'POST',
+        body: JSON.stringify({ userId, stageId: stage }),
       })
     } catch (error) {
       console.error('Error updating journey state:', error)
