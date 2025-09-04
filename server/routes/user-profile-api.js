@@ -37,7 +37,71 @@ const upload = multer({
 
 // ===== USER PROFILE MANAGEMENT =====
 
-// Get user profile
+// Get current user profile (without userId)
+router.get('/profile', authenticateToken, async (req, res) => {
+    try {
+        const userId = req.user.id; // Get from JWT token
+        
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            include: {
+                profile: true,
+                companies: {
+                    include: {
+                        company: true,
+                        role: true
+                    }
+                },
+                teams: {
+                    include: {
+                        team: {
+                            include: {
+                                company: true
+                            }
+                        },
+                        role: true
+                    }
+                }
+            }
+        });
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            data: {
+                id: user.id,
+                email: user.email,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                name: user.name,
+                level: user.level,
+                xp: user.xp,
+                reputation: user.reputation,
+                status: user.status,
+                lastActive: user.lastActive,
+                profile: user.profile,
+                companies: user.companies,
+                teams: user.teams
+            },
+            message: 'User profile retrieved successfully'
+        });
+    } catch (error) {
+        console.error('Error getting user profile:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to retrieve user profile',
+            error: error.message
+        });
+    }
+});
+
+// Get user profile by userId
 router.get('/profile/:userId', authenticateToken, async (req, res) => {
     try {
         const { userId } = req.params;
@@ -114,7 +178,65 @@ router.get('/profile/:userId', authenticateToken, async (req, res) => {
     }
 });
 
-// Create or update user profile
+// Update current user profile (without userId)
+router.put('/profile', authenticateToken, async (req, res) => {
+    try {
+        const userId = req.user.id; // Get from JWT token
+        const { firstName, lastName, name, bio, location, website, linkedin, github, twitter } = req.body;
+
+        // Update user basic info
+        const updatedUser = await prisma.user.update({
+            where: { id: userId },
+            data: {
+                firstName,
+                lastName,
+                name: name || `${firstName} ${lastName}`.trim(),
+                updatedAt: new Date()
+            }
+        });
+
+        // Update or create profile
+        const updatedProfile = await prisma.userProfile.upsert({
+            where: { userId: userId },
+            update: {
+                bio,
+                location,
+                website,
+                linkedin,
+                github,
+                twitter,
+                updatedAt: new Date()
+            },
+            create: {
+                userId: userId,
+                bio,
+                location,
+                website,
+                linkedin,
+                github,
+                twitter
+            }
+        });
+
+        res.json({
+            success: true,
+            data: {
+                user: updatedUser,
+                profile: updatedProfile
+            },
+            message: 'User profile updated successfully'
+        });
+    } catch (error) {
+        console.error('Error updating user profile:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to update user profile',
+            error: error.message
+        });
+    }
+});
+
+// Create or update user profile by userId
 router.put('/profile/:userId', authenticateToken, async (req, res) => {
     try {
         const { userId } = req.params;

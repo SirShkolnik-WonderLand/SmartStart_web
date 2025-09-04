@@ -17,7 +17,7 @@ interface User {
   permissions: string[]
 }
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://smartstart-api.onrender.com'
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic'
