@@ -560,7 +560,7 @@ function calculatePerformanceByProject(tasks) {
                 total: 0,
                 onTime: 0,
                 late: 0,
-                projectName: task.project ? .name || 'Unknown Project'
+                projectName: task.project?.name || 'Unknown Project'
             };
         }
 

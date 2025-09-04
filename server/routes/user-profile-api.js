@@ -556,7 +556,7 @@ router.get('/profile/:userId/privacy', authenticateToken, async(req, res) => {
 
         res.json({
             success: true,
-            privacySettings: profile ? .privacySettings || {}
+            privacySettings: profile?.privacySettings || {}
         });
 
     } catch (error) {

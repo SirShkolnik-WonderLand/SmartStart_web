@@ -142,7 +142,7 @@ router.post('/dynamic/:userId', authenticateToken, async(req, res) => {
             });
         }
 
-        const userRole = user.accounts[0] ? .role ? .name || 'MEMBER';
+        const userRole = user.accounts[0]?.role?.name || 'MEMBER';
         const dynamicJourney = await createDynamicJourney(userId, template, userRole, customizations);
 
         res.json({

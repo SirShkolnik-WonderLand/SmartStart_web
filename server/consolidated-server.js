@@ -51,7 +51,7 @@ app.get('/api/routes', (req, res) => {
             });
         }
     });
-    
+
     res.json({
         success: true,
         routes: routes,

@@ -318,7 +318,7 @@ router.get('/dashboard/:userId/achievements', authenticateToken, async(req, res)
             return {
                 ...achievement,
                 isEarned: !!earned,
-                earnedAt: earned ? .earnedAt,
+                earnedAt: earned?.earnedAt,
                 progress,
                 canEarn: progress >= 100
             };
@@ -491,7 +491,7 @@ async function getAchievementProgress(userId) {
             achievementId: achievement.id,
             name: achievement.name,
             isEarned: !!earned,
-            earnedAt: earned ? .earnedAt
+            earnedAt: earned?.earnedAt
         };
     });
 }

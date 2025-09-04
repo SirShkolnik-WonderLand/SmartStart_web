@@ -232,7 +232,7 @@ function getPrimaryRole(userRoles) {
         }
     }
 
-    return userRoles[0] ? .role.name || 'USER';
+    return userRoles[0]?.role.name || 'USER';
 }
 
 async function getRoleBasedDashboard(userId, userType, primaryRole, user) {
