@@ -135,9 +135,25 @@ app.use('/api/journey', journeyApiRoutes);
 const rbacApiRoutes = require('./routes/rbac-api');
 app.use('/api/rbac', rbacApiRoutes);
 
+// Mount Enhanced RBAC APIs
+const enhancedRbacApiRoutes = require('./routes/enhanced-rbac-api');
+app.use('/api/enhanced-rbac', enhancedRbacApiRoutes);
+
+// Mount Comprehensive Dashboard APIs
+const comprehensiveDashboardApiRoutes = require('./routes/comprehensive-dashboard-api');
+app.use('/api/dashboard', comprehensiveDashboardApiRoutes);
+
 // Mount Journey State Management APIs
 const journeyStateApiRoutes = require('./routes/journey-state-api');
 app.use('/api/journey-state', journeyStateApiRoutes);
+
+// Mount Enhanced Journey APIs
+const enhancedJourneyApiRoutes = require('./routes/enhanced-journey-api');
+app.use('/api/enhanced-journey', enhancedJourneyApiRoutes);
+
+// Mount Business Logic APIs
+const businessLogicApiRoutes = require('./routes/business-logic-api');
+app.use('/api/business-logic', businessLogicApiRoutes);
 
 console.log('✅ User Journey APIs mounted successfully');
 console.log('✅ Role-Based Business Systems mounted successfully');
@@ -146,6 +162,10 @@ console.log('✅ Platform Legal Pack APIs mounted successfully');
 console.log('✅ User Journey State Management APIs mounted successfully');
 console.log('✅ RBAC APIs mounted successfully');
 console.log('✅ Journey State Management APIs mounted successfully');
+console.log('✅ Enhanced RBAC APIs mounted successfully');
+console.log('✅ Comprehensive Dashboard APIs mounted successfully');
+console.log('✅ Enhanced Journey APIs mounted successfully');
+console.log('✅ Business Logic APIs mounted successfully');
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -171,7 +191,7 @@ app.listen(PORT, () => {
     console.log(`🚀 SmartStart Platform Server running on port ${PORT}`);
     console.log(`📡 CLI API available at /api/cli`);
     console.log(`🔐 Security middleware enabled`);
-    console.log(`📊 All 9 systems operational`);
+    console.log(`📊 All 12 systems operational`);
     console.log(`🔄 CLI System Version: 2.0.1`);
 });
 
