@@ -56,7 +56,7 @@ router.get('/status/:userId', async(req, res) => {
         // Calculate progress
         const totalStages = stages.length;
         const completedStages = userStates.filter(state => state.status === 'COMPLETED').length;
-        const currentStage = userStates.find(state => state.status === 'IN_PROGRESS')?.stage;
+        const currentStage = userStates.find(state => state.status === 'IN_PROGRESS') ? .stage;
         const nextStage = stages.find(stage =>
             !userStates.find(state => state.stageId === stage.id && state.status === 'COMPLETED')
         );
@@ -311,6 +311,21 @@ router.get('/gates/:userId', async(req, res) => {
                                     firstName: userProfile.firstName,
                                     lastName: userProfile.lastName
                                 } : null;
+                                break;
+
+                            case 'LAUNCH':
+                                // Check if user has completed all required stages for launch
+                                const completedStages = await prisma.userJourneyState.count({
+                                    where: {
+                                        userId,
+                                        status: 'COMPLETED'
+                                    }
+                                });
+                                const totalStages = await prisma.journeyStage.count({
+                                    where: { isActive: true }
+                                });
+                                isPassed = completedStages >= totalStages - 1; // All stages except launch itself
+                                details = { completedStages, totalStages };
                                 break;
 
                             default:

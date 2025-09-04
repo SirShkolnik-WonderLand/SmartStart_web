@@ -2777,5 +2777,6 @@ enum GateType {
   VERIFICATION    // Requires email/phone verification
   PROFILE         // Requires complete profile
   DOCUMENT        // Requires document upload
+  LAUNCH          // Requires launch readiness
   CUSTOM          // Custom gate logic
 }
