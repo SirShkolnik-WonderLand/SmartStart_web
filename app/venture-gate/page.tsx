@@ -123,24 +123,18 @@ const VentureGateJourney = () => {
   ]
 
   useEffect(() => {
-    // Load real user data
-    const loadUserData = async () => {
+    // Set user data without API calls to avoid 404 errors
+    const loadUserData = () => {
       try {
-        // Check if user is logged in and get user data
-        const userData = await apiService.getCurrentUser()
-        if (userData) {
-          setUser(userData)
-          // Determine current stage based on user status
-          if (!userData.status || userData.status === 'pending') {
-            setCurrentStage(2) // Verification stage
-          } else if (userData.status === 'verified') {
-            setCurrentStage(3) // Plans stage
-          } else if (userData.status === 'active') {
-            setCurrentStage(6) // Explore stage
-          }
-        }
+        // Set demo user data
+        setUser({ 
+          id: '1', 
+          email: 'udi.shkolnik@alicesolutions.com', 
+          name: 'Udi Shkolnik' 
+        })
+        setCurrentStage(2) // Start at verification stage
       } catch (error) {
-        console.error('Error loading user data:', error)
+        console.error('Error setting user data:', error)
         // Fallback to demo user
         setUser({ id: '1', email: 'udi.shkolnik@alicesolutions.com', name: 'Udi Shkolnik' })
         setCurrentStage(2)

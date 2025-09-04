@@ -200,6 +200,45 @@ class ApiService {
       return null
     }
   }
+
+  // Documents API
+  async getDocumentTemplates() {
+    try {
+      return await this.fetchWithAuth('/api/documents/templates')
+    } catch (error) {
+      console.error('Error fetching document templates:', error)
+      return null
+    }
+  }
+
+  async getDocumentTemplate(id: string) {
+    try {
+      return await this.fetchWithAuth(`/api/documents/templates/${id}`)
+    } catch (error) {
+      console.error('Error fetching document template:', error)
+      return null
+    }
+  }
+
+  async searchDocuments(query: string, category?: string) {
+    try {
+      const params = new URLSearchParams({ q: query })
+      if (category) params.append('category', category)
+      return await this.fetchWithAuth(`/api/documents/search?${params}`)
+    } catch (error) {
+      console.error('Error searching documents:', error)
+      return null
+    }
+  }
+
+  async getDocumentStats() {
+    try {
+      return await this.fetchWithAuth('/api/documents/stats')
+    } catch (error) {
+      console.error('Error fetching document stats:', error)
+      return null
+    }
+  }
 }
 
 export const apiService = new ApiService()

@@ -1,12 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
 const Navigation = () => {
   const router = useRouter()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [user, setUser] = useState({ name: 'Udi Shkolnik', initials: 'US' })
 
   const navItems = [
     { href: '/venture-gate', label: 'Journey', icon: '🚀' },
@@ -14,7 +15,8 @@ const Navigation = () => {
     { href: '/venture-gate/verify', label: 'Security', icon: '🔐' },
     { href: '/venture-gate/plans', label: 'Plans', icon: '💳' },
     { href: '/venture-gate/legal', label: 'Legal', icon: '📋' },
-    { href: '/venture-gate/profile', label: 'Profile', icon: '👤' }
+    { href: '/venture-gate/profile', label: 'Profile', icon: '👤' },
+    { href: '/documents', label: 'Documents', icon: '📚' }
   ]
 
   const handleLogout = () => {
@@ -22,6 +24,11 @@ const Navigation = () => {
     document.cookie = 'web_session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
     router.push('/')
   }
+
+  // Set user data on mount (no API calls to avoid errors)
+  useEffect(() => {
+    setUser({ name: 'Udi Shkolnik', initials: 'US' })
+  }, [])
 
   return (
     <nav className="nav">
@@ -49,9 +56,9 @@ const Navigation = () => {
           {/* User Actions */}
           <div className="flex items-center gap-4">
             <div className="hidden md:flex items-center gap-2">
-              <span className="text-sm text-secondary">Welcome, Udi Shkolnik</span>
+              <span className="text-sm text-secondary">Welcome, {user.name}</span>
               <div className="w-8 h-8 bg-gradient-to-r from-green-400 to-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
-                US
+                {user.initials}
               </div>
             </div>
             

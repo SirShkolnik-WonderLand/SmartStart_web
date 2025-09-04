@@ -1,0 +1,184 @@
+Below are **two sign-ready, plain-text documents** you can paste into the Hub. They’re Ontario/Canada-oriented, align with your PPA/NDA/DPA stack, and make (1) the **\$100 CAD/mo mandatory tools subscription** a gating requirement, and (2) enforce **standardized tooling** (Microsoft 365 domain, Intune/Defender, backups, GitHub org, Render.com hosting, etc.).
+*Not legal advice—have counsel review before first use.*
+
+---
+
+PLATFORM TOOLS SUBSCRIPTION AGREEMENT (PTSA)
+(AliceSolutions Hub – Mandatory “365 + Security + Backups” Pack)
+Version: 1.0
+
+1. PARTIES; EFFECTIVE DATE
+   This Platform Tools Subscription Agreement (“Agreement”) is entered into as of the date of the last signature below (“Effective Date”) by and between:
+   (a) **AliceSolutions Ventures Inc.** (“AliceSolutions”, “we/us”); and
+   (b) The Hub member identified on the signature page (“Subscriber”, “you”).
+
+2. PURPOSE; GATING CONDITION
+   2.1 Purpose. To enable secure collaboration in the Hub, AliceSolutions provides a standardized tools bundle (the “**Platform Pack**”) including Microsoft 365 services, security controls, device management, and backups.
+   2.2 Mandatory. **Active subscription to the Platform Pack is required** for any user who accesses non-public projects, submits offers, is provisioned to repos/environments, or otherwise collaborates inside the Hub. No subscription → **no access** (except public previews).
+
+3. SERVICES INCLUDED (Platform Pack)
+   3.1 Core Suite (Microsoft 365): organization email (@{your-project-domain}), calendaring, contacts, Teams/meetings, OneDrive/SharePoint, collaboration apps.
+   3.2 Identity & Security: Azure AD/Entra ID SSO, MFA, Conditional Access; **Microsoft Intune** device management (MDM/MAM) for enrolled devices; **Microsoft Defender** (endpoint, identity, email).
+   3.3 Backups & Continuity: managed **M365 backups** (mail/SharePoint/OneDrive/Teams) and **endpoint backup** for enrolled devices (where technically feasible).
+   3.4 Administration: account provisioning, license assignment, baseline security policies, access reviews, and revocation on exit.
+   3.5 Add-Ons (project-driven): at Subscriber’s request/approval, AliceSolutions may procure additional SaaS or higher-tier licenses (e.g., GitHub Enterprise, Render.com tiers, scanners, monitoring). Add-Ons are billed **at pass-through cost** (plus applicable taxes/fees); separate approvals recorded in the Hub.
+
+4. FEES; BILLING; TAXES
+   4.1 Price. **CAD \$100 per active seat per month** (the “Base Seat Fee”). Taxes extra.
+   4.2 Auto-Renew. Billed monthly in advance; renews until cancelled under §10.
+   4.3 Proration. Seats activated mid-cycle are prorated; deactivations take effect end of current cycle.
+   4.4 Payment Failure. If payment fails and isn’t cured within **5 days**, we may suspend the seat and downstream access (including repos/environments) until resolved.
+   4.5 Price Changes. We may change the Base Seat Fee with **30 days’ notice**; you may cancel before the effective date. Continued use after the effective date = acceptance.
+   4.6 Add-Ons. Add-Ons are invoiced as incurred or monthly in arrears.
+   4.7 Non-Refundable. Fees for the current month are **non-refundable** unless required by law.
+
+5. SUBSCRIBER DUTIES
+   5.1 Eligibility. Seats are **named users** (no sharing). Subscriber ensures users follow Hub security policies and enroll devices in Intune per §6.
+   5.2 Accurate Info. Keep billing, company, and contact details current.
+   5.3 Compliance. Follow Microsoft product terms and any third-party terms for components included in the Platform Pack.
+
+6. DEVICE & SECURITY POSTURE (Zero-Trust Baseline)
+   6.1 MFA is mandatory on all tenant accounts.
+   6.2 Device Management. Any device accessing non-public project data must be **enrolled in Intune** (or an approved managed profile) with: full-disk encryption, screen lock, OS and security patches current, and Defender/EDR active.
+   6.3 Conditional Access may block access on non-compliant devices, risky sign-ins, or prohibited geographies.
+   6.4 Data Handling. Use only **Designated Systems**; do not forward Hub mail to personal accounts; do not store project material outside approved locations; respect DLP/watermarks.
+
+7. SUPPORT; SLAS; MAINTENANCE
+   7.1 Support windows and response targets are published in the Hub; maintenance windows may apply.
+   7.2 Microsoft/third-party outages are out of scope for our SLAs; we’ll coordinate commercially reasonable escalations.
+
+8. DATA; PRIVACY; BACKUPS
+   8.1 Ownership. Subscriber retains ownership of its data; AliceSolutions acts per the **DPA** for processing.
+   8.2 Backups. We operate reasonable backup policies for included services; restore is subject to technical feasibility and retention limits.
+   8.3 Offboarding. On termination or seat removal, we will disable access, retain data per policy/contract, and, upon request, provide reasonable export **or** deletion, subject to lawful retention and technical limits.
+
+9. ACCEPTABLE USE
+   No credential sharing, scraping, circumvention of DLP, or unapproved third-party integrations. Follow anti-abuse and security rules published in the Hub.
+
+10. TERM; SUSPENSION; TERMINATION
+    10.1 Term. Month-to-month from Effective Date.
+    10.2 Subscriber Cancellation. You may cancel seats effective end of current cycle via the Hub.
+    10.3 Suspension. We may suspend for non-payment, security risk, or material breach.
+    10.4 Termination. Either party may terminate on **30 days’ notice**; we may terminate immediately for uncured material breach or legal/safety reasons.
+    10.5 Effect. Access is revoked; §8 survives; fees through the end of the cycle remain due.
+
+11. LIABILITY (CAP & EXCLUSIONS)
+    To the maximum extent permitted by law, neither party is liable for indirect/special/consequential damages. Each party’s aggregate liability arising from this Agreement is capped at **the greater of (a) CAD \$5,000; or (b) the Base Seat Fees paid in the 6 months** preceding the event, **except** for fraud or wilful misconduct, or Subscriber’s breaches of security/acceptable use causing third-party claims.
+
+12. GOVERNING LAW; E-SIGNATURE
+    Ontario law; Toronto courts (exclusive). Electronic signatures/records are binding.
+
+13. ORDER OF PRECEDENCE
+    For tools/billing: **this PTSA → DPA (data) → PPA → NDA/Addenda → Hub policies** (subject-matter specific).
+
+— — — — — — — — — — — — — — — — — — — — — — — —
+
+SIGNATURES
+
+ALICESOLUTIONS VENTURES INC.
+Authorized Signatory: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_  Date: \_\_\_\_\_\_\_\_\_\_
+
+SUBSCRIBER (Company/Individual)
+Authorized Signatory: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_  Date: \_\_\_\_\_\_\_\_\_\_
+Billing Email: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_  Seats: \_\_\_\_\_\_\_\_\_
+
+SCHEDULE A — INCLUDED SERVICES (checklist to complete in Hub)
+\[ ] M365 org email & calendaring \[ ] Teams/Meetings
+\[ ] OneDrive/SharePoint      \[ ] Entra ID SSO/MFA
+\[ ] Intune device management   \[ ] Defender (endpoint/email)
+\[ ] M365 backups         \[ ] Endpoint backup (if feasible)
+Add-Ons (as approved): \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+
+SCHEDULE B — SECURITY BASELINES
+• MFA required; CA policies enforced.
+• Device encryption; patch ≤30 days; Defender/EDR on.
+• DLP/watermarking; no personal email forwarding.
+• Access reviews quarterly; revocation on exit.
+
+— — — — — — — — — — — — — — — — — — — — — — — —
+
+STANDARDIZED TOOLING & HOSTING COMPLIANCE ADDENDUM (STHCA)
+(Projects inside the AliceSolutions Hub)
+Version: 1.0
+
+1. PURPOSE
+   This Addendum mandates **common tools and environments** for all projects to reduce risk and enable support at scale. It binds project participants and project owners and supplements the PPA/NDA/Per-Project Addendum and the PTSA.
+
+2. SCOPE; PRECEDENCE
+   For any non-public project: **this STHCA → Per-Project Addendum → NDA → PPA/PTSA → Hub policies** (tooling/hosting subject matter).
+
+3. STANDARD TOOLING (MANDATORY)
+   3.1 **Email & Identity**: All project communications use the **AliceSolutions-managed Microsoft 365 tenant** and project domain addresses. No personal emails or external aliases for project business.
+   3.2 **Device & Security**: Devices must be **Intune-enrolled** (or approved managed profile) and protected by **Microsoft Defender**; Conditional Access may block non-compliant endpoints.
+   3.3 **Source Control**: All repos reside in the **AliceSolutions GitHub Organization**. No external repos for project code/assets. Access via SSO; branch protection and required reviews enforced.
+   3.4 **CI/CD & Secrets**: Use the **approved CI/CD pipelines** and the **Designated Secrets Manager**. No secrets in code, tickets, or chat.
+   3.5 **Hosting/Runtime**: Default deployment on **Render.com** under AliceSolutions-managed accounts/spaces. Project owners may choose higher-tier or additional Render.com services according to need and budget.
+   3.6 **Backups & Observability**: Use platform-approved backup jobs, logs, metrics, and alerting.
+   3.7 **DLP**: Respect watermarks, export limits, and content scanning in all tools.
+
+4. COSTS; BILLING LOGIC
+   4.1 Base Seat Fees. Each active collaborator must maintain a PTSA seat (CAD \$100/mo, taxes extra).
+   4.2 Project-Level Upgrades. If a project requires paid upgrades (e.g., Render.com Pro or Autoscale, GitHub Advanced Security, higher database tiers), the **Project Owner** designates a payer (owner, venture budget, or cost-share across team).
+   4.3 Pass-Through. Tooling/hosting upgrades are billed **at pass-through cost** (plus applicable taxes/fees). The payer agrees to monthly charges until downgraded or project closure.
+   4.4 Future Changes. Standard tools may evolve; materially different tools will be notified in advance, and costs disclosed before enablement.
+
+5. EXCEPTIONS PROCESS
+   5.1 Requests. A Project Lead may request a tooling exception in the Hub (business need, security impact, duration, cost).
+   5.2 Approvals. Security reviews Tier 2/3 data exceptions; Legal reviews data residency/processor terms. Approved exceptions are **time-boxed** and recorded in the project’s **Exception Log (Schedule C)**.
+   5.3 Revocation. Exceptions may be revoked for security, cost, or compliance reasons.
+
+6. ENFORCEMENT & ACCESS
+   6.1 Provisioning ties to compliance. Non-compliant users/tools are blocked by policy (SSO/Conditional Access, org restrictions, environment policy).
+   6.2 Violations (e.g., external repos, personal email, unmanaged devices) may trigger suspension until corrected and can lead to removal from the project.
+
+7. DATA RESIDENCY & PRIVACY
+   7.1 Default residency is **Canada** unless the Per-Project Addendum allows otherwise.
+   7.2 Any additional processors (Render.com tiers, GitHub features, scanners) must be listed in the project’s Sub-processor register and covered by DPA terms.
+
+8. DELIVERY & RELEASE PRACTICES
+   8.1 Branching, reviews, SBOMs, and security scans per project policy.
+   8.2 Production releases require: (i) passing checks; (ii) change record; (iii) rollback plan; (iv) secrets injected from the approved manager only.
+
+9. TERMINATION; OFFBOARDING
+   9.1 On exit, users lose access and must return/delete local data not in Designated Systems; repos remain under the org.
+   9.2 We will provide reasonable data exports for the project owner upon closure, subject to DPA/NDA and lawful retention.
+
+10. LIABILITY; REMEDIES
+    Breach of tooling/hosting controls can cause material risk; AliceSolutions and/or the Project Owner may seek **injunctive** relief and recover direct damages caused by non-compliance. Caps/exclusions in the PPA/PTSA apply except for wilful misconduct or security breaches caused by circumvention.
+
+11. GOVERNING LAW; E-SIGNATURE
+    Ontario law; Toronto courts (exclusive). Electronic signatures/records are binding.
+
+— — — — — — — — — — — — — — — — — — — — — — — —
+
+SIGNATURES
+
+ALICESOLUTIONS VENTURES INC.
+Authorized Signatory: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_  Date: \_\_\_\_\_\_\_\_\_\_
+
+PROJECT OWNER (if different)
+Authorized Signatory: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_  Date: \_\_\_\_\_\_\_\_\_\_
+
+TEAM/COMPANY (each participating org)
+Authorized Signatory: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_  Date: \_\_\_\_\_\_\_\_\_\_
+
+SCHEDULE A — STANDARD TOOL STACK (mark “ON” / “N/A”)
+Email/Identity: M365 org email (ON) | Entra ID SSO (ON) | MFA (ON)
+Device Mgmt: Intune (ON) | Defender EDR (ON) | Conditional Access (ON)
+Code: GitHub Org (ON) | Branch Protection (ON) | Required Reviews (ON)
+CI/CD: Approved Pipelines (ON) | Secrets Manager (ON)
+Hosting: Render.com (Starter/Pro/Enterprise): \_\_\_\_\_\_
+Data: Backups (ON) | Logs/Metrics/Alerts (ON) | DLP/Watermarking (ON)
+
+SCHEDULE B — PROJECT-LEVEL UPGRADES & PAYER
+• Render.com plan/tier: \_\_\_\_\_\_\_\_\_\_  Payer: \_\_\_\_\_\_\_\_\_\_  Start: \_\_\_
+• DB/storage tier: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_  Payer: \_\_\_\_\_\_\_\_\_\_  Start: \_\_\_
+• GitHub Advanced Security: \_\_\_\_\_\_  Payer: \_\_\_\_\_\_\_\_\_\_  Start: \_\_\_
+• Scanners/Monitoring: \_\_\_\_\_\_\_\_\_\_\_  Payer: \_\_\_\_\_\_\_\_\_\_  Start: \_\_\_
+• Other Add-Ons: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_  Payer: \_\_\_\_\_\_\_\_\_\_  Start: \_\_\_
+
+SCHEDULE C — EXCEPTION LOG
+ID | Tool/Service | Reason | Approved By | Start | Expiry | Notes
+***|**\_\_\_\_\_\_\_\_\_\_\_|*******|************|**\_\_\_\_\_|*******|***\_\_
+
+---
