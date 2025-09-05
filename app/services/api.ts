@@ -140,13 +140,16 @@ export interface SystemStatus {
 
 class ApiService {
   private async fetchWithAuth(endpoint: string, options: RequestInit = {}) {
+    // Get JWT token from localStorage
+    const token = localStorage.getItem('auth-token')
+    
     const response = await fetch(`${API_BASE}${endpoint}`, {
       ...options,
       headers: {
         'Content-Type': 'application/json',
+        ...(token && { 'Authorization': `Bearer ${token}` }),
         ...options.headers,
       },
-      credentials: 'include', // Include HTTP-only auth cookie
     })
 
     if (!response.ok) {
@@ -154,6 +157,7 @@ class ApiService {
         // Clear stored user data on auth failure
         localStorage.removeItem('user-id')
         localStorage.removeItem('user-data')
+        localStorage.removeItem('auth-token')
       }
       throw new Error(`API Error: ${response.status} ${response.statusText}`)
     }
@@ -169,16 +173,16 @@ class ApiService {
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include', // Include cookies for HTTP-only auth token
         body: JSON.stringify({ email, password }),
       })
 
       const data = await response.json()
       
-      if (data.success && data.user) {
-        // Store user ID and data for frontend use
+      if (data.success && data.user && data.token) {
+        // Store user ID, data, and JWT token for frontend use
         localStorage.setItem('user-id', data.user.id)
         localStorage.setItem('user-data', JSON.stringify(data.user))
+        localStorage.setItem('auth-token', data.token)
       }
       
       return data
@@ -194,7 +198,6 @@ class ApiService {
       headers: {
         'Content-Type': 'application/json',
       },
-      credentials: 'include',
       body: JSON.stringify(userData),
     })
 
@@ -204,36 +207,31 @@ class ApiService {
 
     const data = await response.json()
     
-    // Store user ID for getCurrentUser to use
-    if (data.success && data.user && data.user.id) {
+    // Store user ID and token for getCurrentUser to use
+    if (data.success && data.user && data.user.id && data.token) {
       localStorage.setItem('user-id', data.user.id)
+      localStorage.setItem('auth-token', data.token)
     }
     
     return data
   }
 
   async getCurrentUser(): Promise<User> {
-    // Use the /api/auth/me endpoint which works with HTTP-only cookies
+    // Get user data from localStorage if available
+    const userData = localStorage.getItem('user-data')
+    if (userData) {
+      return JSON.parse(userData)
+    }
+
+    // If no user data in localStorage, try to get it from the server
     try {
-      const response = await fetch(`${API_BASE}/api/auth/me`, {
-        method: 'GET',
-        credentials: 'include', // Include HTTP-only cookies
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-
-      if (!response.ok) {
-        throw new Error(`API Error: ${response.status} ${response.statusText}`)
-      }
-
-      const data = await response.json()
+      const response = await this.fetchWithAuth('/api/auth/me')
       
-      if (data.success && data.user) {
+      if (response.success && response.user) {
         // Store user data in localStorage for frontend use
-        localStorage.setItem('user-id', data.user.id)
-        localStorage.setItem('user-data', JSON.stringify(data.user))
-        return data.user
+        localStorage.setItem('user-id', response.user.id)
+        localStorage.setItem('user-data', JSON.stringify(response.user))
+        return response.user
       } else {
         throw new Error('Invalid response from /api/auth/me')
       }
