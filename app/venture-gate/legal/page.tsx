@@ -276,8 +276,6 @@ const PlatformLegal = () => {
     }, 2000)
   }
 
-  const isAllSigned = signedDocs.size === legalDocuments.length
-
   return (
     <div className="container" style={{ paddingTop: '1.5rem', paddingBottom: '2rem' }}>
       {/* Compact Header */}
@@ -436,6 +434,7 @@ const PlatformLegal = () => {
             </div>
           </div>
         )}
+        </div>
       </div>
 
       {/* Legal Notice */}
