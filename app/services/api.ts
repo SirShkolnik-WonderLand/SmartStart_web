@@ -482,14 +482,61 @@ class ApiService {
     }
   }
 
-  async signLegalPack(packId: string, signature: string) {
+  async signLegalPack(packId?: string, signature?: string) {
     try {
-      return await this.fetchWithAuth(`/api/legal-pack/sign/${packId}`, {
+      return await this.fetchWithAuth('/api/legal-pack/sign', {
         method: 'POST',
-        body: JSON.stringify({ signature }),
+        body: JSON.stringify({ 
+          userId: this.getCurrentUserId(),
+          ipAddress: '127.0.0.1',
+          userAgent: navigator.userAgent
+        }),
       })
     } catch (error) {
       console.error('Error signing legal pack:', error)
+      return null
+    }
+  }
+
+  async signNDA() {
+    try {
+      return await this.fetchWithAuth('/api/legal-pack/nda/sign', {
+        method: 'POST',
+        body: JSON.stringify({ 
+          userId: this.getCurrentUserId(),
+          ipAddress: '127.0.0.1',
+          userAgent: navigator.userAgent
+        }),
+      })
+    } catch (error) {
+      console.error('Error signing NDA:', error)
+      return null
+    }
+  }
+
+  async grantConsent(consentType: string) {
+    try {
+      return await this.fetchWithAuth('/api/legal-pack/consent', {
+        method: 'POST',
+        body: JSON.stringify({ 
+          userId: this.getCurrentUserId(),
+          consentType,
+          ipAddress: '127.0.0.1',
+          userAgent: navigator.userAgent
+        }),
+      })
+    } catch (error) {
+      console.error('Error granting consent:', error)
+      return null
+    }
+  }
+
+  async getLegalPackStatus() {
+    try {
+      const userId = this.getCurrentUserId()
+      return await this.fetchWithAuth(`/api/legal-pack/status/${userId}`)
+    } catch (error) {
+      console.error('Error fetching legal pack status:', error)
       return null
     }
   }

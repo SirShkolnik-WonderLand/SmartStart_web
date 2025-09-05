@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { apiService } from '../../services/api'
 
 interface LegalDocument {
   id: string
@@ -18,6 +19,8 @@ const PlatformLegal = () => {
   const [signedDocs, setSignedDocs] = useState<Set<string>>(new Set())
   const [isSigning, setIsSigning] = useState(false)
   const [userSignature, setUserSignature] = useState('')
+  const [legalPackStatus, setLegalPackStatus] = useState<any>(null)
+  const [isLoading, setIsLoading] = useState(true)
 
   const legalDocuments: LegalDocument[] = [
     {
@@ -252,6 +255,38 @@ const PlatformLegal = () => {
     }
   ]
 
+  // Load legal pack status on component mount
+  useEffect(() => {
+    const loadLegalPackStatus = async () => {
+      try {
+        const response = await apiService.getLegalPackStatus()
+        if (response.success) {
+          setLegalPackStatus(response.data)
+          
+          // Check which documents are already signed
+          const signed = new Set<string>()
+          if (response.data.legalPack?.status === 'SIGNED') {
+            signed.add('platform-participation')
+          }
+          if (response.data.nda?.status === 'SIGNED') {
+            signed.add('platform-nda')
+          }
+          if (response.data.consents?.length > 0) {
+            signed.add('inventions-ip')
+            signed.add('per-project-nda')
+          }
+          setSignedDocs(signed)
+        }
+      } catch (error) {
+        console.error('Failed to load legal pack status:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadLegalPackStatus()
+  }, [])
+
   const handleSignature = async (docId: string) => {
     if (!userSignature.trim()) {
       alert('Please provide your signature')
@@ -260,20 +295,82 @@ const PlatformLegal = () => {
 
     setIsSigning(true)
     
-    // Simulate signature process
-    setTimeout(() => {
-      setSignedDocs(prev => new Set([...prev, docId]))
-      setIsSigning(false)
-      setUserSignature('')
+    try {
+      let response
       
-      // Move to next document if not all are signed
-      if (currentDoc < legalDocuments.length - 1) {
-        setCurrentDoc(currentDoc + 1)
-      } else {
-        // All documents signed, proceed to next stage
-        router.push('/venture-gate/profile')
+      // Call appropriate API based on document type
+      switch (docId) {
+        case 'platform-participation':
+          response = await apiService.signLegalPack()
+          break
+        case 'platform-nda':
+          response = await apiService.signNDA()
+          break
+        case 'inventions-ip':
+        case 'per-project-nda':
+          response = await apiService.grantConsent('PLATFORM_IP')
+          break
+        default:
+          throw new Error('Unknown document type')
       }
-    }, 2000)
+
+      if (response.success) {
+        setSignedDocs(prev => new Set([...prev, docId]))
+        setUserSignature('')
+        
+        // Move to next document if not all are signed
+        if (currentDoc < legalDocuments.length - 1) {
+          setCurrentDoc(currentDoc + 1)
+        } else {
+          // All documents signed, complete the stage and proceed to subscription
+          await apiService.updateJourneyState('stage_3', 'COMPLETED')
+          router.push('/venture-gate/plans')
+        }
+      } else {
+        alert(`Failed to sign document: ${response.error || 'Unknown error'}`)
+      }
+    } catch (error) {
+      console.error('Error signing document:', error)
+      alert(`Failed to sign document: ${error.message}`)
+    } finally {
+      setIsSigning(false)
+    }
+  }
+
+  // Check if all documents are signed
+  const allDocumentsSigned = signedDocs.size === legalDocuments.length
+
+  // If all documents are signed, show completion message
+  if (allDocumentsSigned && !isLoading) {
+    return (
+      <div className="container" style={{ paddingTop: '1.5rem', paddingBottom: '2rem' }}>
+        <div className="text-center">
+          <div className="text-6xl mb-4">✅</div>
+          <h1 style={{ fontSize: '1.8rem', marginBottom: '0.5rem' }}>Legal Pack Complete!</h1>
+          <p className="text-secondary mb-6">
+            All required legal documents have been signed and recorded.
+          </p>
+          <button
+            className="btn btn-primary"
+            onClick={() => router.push('/venture-gate/plans')}
+          >
+            Continue to Subscription Selection
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  if (isLoading) {
+    return (
+      <div className="container" style={{ paddingTop: '1.5rem', paddingBottom: '2rem' }}>
+        <div className="text-center">
+          <div className="text-3xl mb-4">⏳</div>
+          <h1 style={{ fontSize: '1.8rem', marginBottom: '0.5rem' }}>Loading Legal Pack...</h1>
+          <p className="text-secondary">Checking your legal document status...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -426,9 +523,9 @@ const PlatformLegal = () => {
               ) : (
                 <button
                   className="btn btn-primary"
-                  onClick={() => router.push('/venture-gate/profile')}
+                  onClick={() => router.push('/venture-gate/plans')}
                 >
-                  Continue to Profile Setup
+                  Continue to Subscription Selection
                 </button>
               )}
             </div>
