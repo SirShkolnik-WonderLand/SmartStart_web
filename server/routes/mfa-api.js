@@ -117,13 +117,16 @@ router.post('/setup', async (req, res) => {
         // Create MFA setup record
         const mfaId = `mfa_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         
+        // Convert backup codes to PostgreSQL array format
+        const backupCodesArray = `{${mfaData.backupCodes.map(code => `"${code}"`).join(',')}}`;
+        
         await prisma.$executeRaw`
             INSERT INTO "MfaSetup" (
                 "id", "userId", "method", "secret", "backupCodes", "isActive",
                 "createdAt", "updatedAt"
             ) VALUES (
                 ${mfaId}, ${userId}, ${mfaData.method}::"MfaMethod", ${mfaData.secret}, 
-                ${mfaData.backupCodes}::text[], false, NOW(), NOW()
+                ${backupCodesArray}::text[], false, NOW(), NOW()
             )
         `;
 
