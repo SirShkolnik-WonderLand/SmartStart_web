@@ -9,6 +9,30 @@ const MainDashboard = () => {
   const [user, setUser] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('overview')
+  const [subscription, setSubscription] = useState<any>(null)
+  const [subscriptionLoading, setSubscriptionLoading] = useState(false)
+
+  const loadSubscriptionData = async () => {
+    if (!user?.id) return
+    
+    setSubscriptionLoading(true)
+    try {
+      const response = await fetch(`https://smartstart-api.onrender.com/api/subscriptions/user/${user.id}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('auth-token')}`,
+          'Content-Type': 'application/json'
+        }
+      })
+      const data = await response.json()
+      if (data.success && data.data.length > 0) {
+        setSubscription(data.data[0]) // Get the first (most recent) subscription
+      }
+    } catch (error) {
+      console.error('Failed to load subscription data:', error)
+    } finally {
+      setSubscriptionLoading(false)
+    }
+  }
 
   useEffect(() => {
     const loadUserData = async () => {
@@ -26,6 +50,12 @@ const MainDashboard = () => {
 
     loadUserData()
   }, [router])
+
+  useEffect(() => {
+    if (user?.id) {
+      loadSubscriptionData()
+    }
+  }, [user])
 
   if (isLoading) {
     return (
@@ -61,6 +91,7 @@ const MainDashboard = () => {
     { id: 'explore', label: 'Explore', icon: '🔍' },
     { id: 'team', label: 'Team', icon: '👥' },
     { id: 'legal', label: 'Legal', icon: '⚖️' },
+    { id: 'subscription', label: 'Subscription', icon: '💳' },
     { id: 'profile', label: 'Profile', icon: '👤' }
   ]
 
@@ -77,7 +108,7 @@ const MainDashboard = () => {
         <div className="flex gap-4">
           <button 
             className="btn btn-secondary"
-            onClick={() => router.push('/venture-gate/profile')}
+            onClick={() => setActiveTab('profile')}
           >
             Edit Profile
           </button>
@@ -250,16 +281,186 @@ const MainDashboard = () => {
         {activeTab === 'legal' && (
           <div className="p-6">
             <h2 className="text-2xl font-bold mb-6">⚖️ Legal & Compliance</h2>
-            <div className="text-center py-12">
-              <div className="text-6xl mb-4">⚖️</div>
-              <h3 className="text-xl font-bold mb-4">Legal Framework</h3>
-              <p className="text-muted mb-6">
-                Handle legal entities, equity distribution, contracts, and compliance
-              </p>
-              <button className="btn btn-primary btn-lg">
-                Manage Legal Matters
-              </button>
+            
+            <div className="grid grid-2 gap-8">
+              <div>
+                <h3 className="text-xl font-bold mb-4">Legal Documents</h3>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 p-3 bg-gray-800 rounded">
+                    <div className="text-2xl">📋</div>
+                    <div>
+                      <p className="font-bold">Platform Agreements</p>
+                      <p className="text-sm text-muted">Terms of service and privacy policy</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-gray-800 rounded">
+                    <div className="text-2xl">📄</div>
+                    <div>
+                      <p className="font-bold">NDA Documents</p>
+                      <p className="text-sm text-muted">Non-disclosure agreements</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-gray-800 rounded">
+                    <div className="text-2xl">📝</div>
+                    <div>
+                      <p className="font-bold">Contract Templates</p>
+                      <p className="text-sm text-muted">Pre-built legal templates</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="mt-6">
+                  <button 
+                    className="btn btn-primary w-full"
+                    onClick={() => router.push('/venture-gate/legal')}
+                  >
+                    📋 Manage Legal Documents
+                  </button>
+                </div>
+              </div>
+              
+              <div>
+                <h3 className="text-xl font-bold mb-4">Quick Actions</h3>
+                <div className="space-y-3">
+                  <button className="btn btn-secondary w-full justify-start">
+                    🏢 Create Legal Entity
+                  </button>
+                  <button className="btn btn-secondary w-full justify-start">
+                    📊 Equity Distribution
+                  </button>
+                  <button className="btn btn-secondary w-full justify-start">
+                    📋 Contract Management
+                  </button>
+                  <button className="btn btn-secondary w-full justify-start">
+                    ✅ Compliance Check
+                  </button>
+                </div>
+                
+                <div className="mt-6">
+                  <h4 className="text-lg font-bold mb-3">Legal Status</h4>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span>Platform Agreements:</span>
+                      <span className="text-green-400">✅ Signed</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span>NDA Status:</span>
+                      <span className="text-green-400">✅ Active</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span>Legal Entity:</span>
+                      <span className="text-yellow-400">⚠️ Not Created</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
+          </div>
+        )}
+
+        {activeTab === 'subscription' && (
+          <div className="p-6">
+            <h2 className="text-2xl font-bold mb-6">💳 Subscription Management</h2>
+            
+            {subscriptionLoading ? (
+              <div className="text-center py-8">
+                <div className="loading-spinner"></div>
+                <p className="text-muted mt-4">Loading subscription data...</p>
+              </div>
+            ) : subscription ? (
+              <div className="grid grid-2 gap-8">
+                <div>
+                  <h3 className="text-xl font-bold mb-4">Current Subscription</h3>
+                  <div className="card bg-gray-800 border border-green-500">
+                    <div className="p-6">
+                      <div className="flex justify-between items-start mb-4">
+                        <div>
+                          <h4 className="text-lg font-bold text-green-400">{subscription.plan.name}</h4>
+                          <p className="text-sm text-muted">{subscription.plan.description}</p>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-2xl font-bold text-green-400">
+                            ${subscription.plan.price}
+                          </div>
+                          <div className="text-sm text-muted">per {subscription.plan.interval.toLowerCase()}</div>
+                        </div>
+                      </div>
+                      
+                      <div className="mb-4">
+                        <div className="flex justify-between text-sm mb-2">
+                          <span>Status:</span>
+                          <span className={`font-bold ${subscription.status === 'ACTIVE' ? 'text-green-400' : 'text-yellow-400'}`}>
+                            {subscription.status}
+                          </span>
+                        </div>
+                        <div className="flex justify-between text-sm mb-2">
+                          <span>Start Date:</span>
+                          <span>{new Date(subscription.startDate).toLocaleDateString()}</span>
+                        </div>
+                        <div className="flex justify-between text-sm mb-2">
+                          <span>End Date:</span>
+                          <span>{subscription.endDate ? new Date(subscription.endDate).toLocaleDateString() : 'Lifetime'}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span>Auto Renew:</span>
+                          <span>{subscription.autoRenew ? 'Yes' : 'No'}</span>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <button className="btn btn-secondary w-full">
+                          📋 View Invoice
+                        </button>
+                        <button className="btn btn-secondary w-full">
+                          🔄 Change Plan
+                        </button>
+                        {subscription.autoRenew && (
+                          <button className="btn btn-secondary w-full">
+                            ⏸️ Pause Auto-Renew
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="text-xl font-bold mb-4">Plan Features</h3>
+                  <div className="space-y-3">
+                    {subscription.plan.features.map((feature: string, index: number) => (
+                      <div key={index} className="flex items-center gap-3 p-3 bg-gray-800 rounded">
+                        <div className="text-green-400">✓</div>
+                        <span className="text-sm">{feature}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="mt-6">
+                    <h4 className="text-lg font-bold mb-3">Available Plans</h4>
+                    <button 
+                      className="btn btn-primary w-full"
+                      onClick={() => router.push('/venture-gate/plans')}
+                    >
+                      💳 View All Plans
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <div className="text-6xl mb-4">💳</div>
+                <h3 className="text-xl font-bold mb-4">No Active Subscription</h3>
+                <p className="text-muted mb-6">
+                  Choose a subscription plan to unlock all platform features
+                </p>
+                <button 
+                  className="btn btn-primary btn-lg"
+                  onClick={() => router.push('/venture-gate/plans')}
+                >
+                  Choose Your Plan
+                </button>
+              </div>
+            )}
           </div>
         )}
 
@@ -287,7 +488,7 @@ const MainDashboard = () => {
                   className="btn btn-primary mt-4"
                   onClick={() => router.push('/venture-gate/profile')}
                 >
-                  Edit Profile
+                  Edit Profile Details
                 </button>
               </div>
               

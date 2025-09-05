@@ -65,7 +65,7 @@ const ChoosePlans = () => {
         body: JSON.stringify({ planId })
       } as any)
       if (resp?.success) {
-        router.push('/venture-gate/legal')
+        router.push('/venture-gate/explore')
       } else {
         setIsProcessing(false)
       }
