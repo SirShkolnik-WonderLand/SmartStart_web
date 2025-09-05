@@ -24,102 +24,102 @@ const VentureGateJourney = () => {
   const journeyStages: JourneyStage[] = [
     {
       id: 'stage_1',
-      title: 'Discover',
-      description: 'Explore the SmartStart ecosystem and see what we offer',
-      status: 'completed',
-      icon: '🔍',
-      actions: ['Browse public ventures', 'View platform features', 'Read success stories'],
-      requirements: []
-    },
-    {
-      id: 'stage_2',
-      title: 'Create Account',
-      description: 'Establish your identity and accept our terms',
+      title: 'Account Creation',
+      description: 'User creates account and verifies email',
       status: 'completed',
       icon: '👤',
       actions: ['Email verification', 'Password setup', 'Terms acceptance'],
       requirements: ['Valid email address']
     },
     {
-      id: 'stage_3',
-      title: 'Verify & Secure',
-      description: 'Complete security setup and identity verification',
+      id: 'stage_2',
+      title: 'Profile Setup',
+      description: 'User completes profile information',
       status: 'current',
-      icon: '🔐',
-      actions: ['Enable MFA', 'Device verification', 'KYC completion'],
-      requirements: ['MFA enabled', 'Email verified']
+      icon: '🎯',
+      actions: ['Complete profile', 'Add skills', 'Set preferences'],
+      requirements: ['Profile completion']
+    },
+    {
+      id: 'stage_3',
+      title: 'Platform Legal Pack',
+      description: 'User signs platform agreements',
+      status: 'locked',
+      icon: '📋',
+      actions: ['Review PPA', 'Sign NDA', 'Accept terms'],
+      requirements: ['Platform agreements']
     },
     {
       id: 'stage_4',
-      title: 'Choose Plan & Pay',
-      description: 'Select your subscription tier and complete payment',
-      status: 'available',
+      title: 'Subscription Selection',
+      description: 'User selects subscription plan',
+      status: 'locked',
       icon: '💳',
       actions: ['Select plan', 'Payment processing', 'Invoice generation'],
       requirements: ['Active subscription']
     },
     {
       id: 'stage_5',
-      title: 'Platform Legal Pack',
-      description: 'Sign the mandatory platform participation agreement',
+      title: 'Venture Creation',
+      description: 'User creates their first venture',
       status: 'locked',
-      icon: '📋',
-      actions: ['Review PPA', 'Sign NDA', 'Accept terms'],
-      requirements: ['Active subscription', 'MFA enabled']
+      icon: '🚀',
+      actions: ['Create venture', 'Set up structure', 'Define goals'],
+      requirements: ['Venture created']
     },
     {
       id: 'stage_6',
-      title: 'Profile & Fit',
-      description: 'Complete your profile for better matching',
+      title: 'Team Building',
+      description: 'User invites team members',
       status: 'locked',
-      icon: '🎯',
-      actions: ['Skills setup', 'Availability', 'Portfolio connection'],
-      requirements: ['Legal pack signed']
+      icon: '👥',
+      actions: ['Invite members', 'Set roles', 'Build team'],
+      requirements: ['Team members']
     },
     {
       id: 'stage_7',
-      title: 'Explore Ventures',
-      description: 'Browse and discover projects in safe mode',
+      title: 'Project Planning',
+      description: 'User creates project and sets goals',
       status: 'locked',
-      icon: '🚀',
-      actions: ['Browse projects', 'View briefs', 'Create ventures'],
-      requirements: ['Profile complete']
+      icon: '📊',
+      actions: ['Create project', 'Set goals', 'Plan milestones'],
+      requirements: ['Project setup']
     },
     {
       id: 'stage_8',
-      title: 'Offer to Contribute',
-      description: 'Submit structured offers to projects',
+      title: 'Legal Entity Setup',
+      description: 'User sets up legal entity for venture',
       status: 'locked',
-      icon: '🤝',
-      actions: ['Submit offers', 'Define scope', 'Set preferences'],
-      requirements: ['Project access']
+      icon: '🏢',
+      actions: ['Set up entity', 'Legal structure', 'Compliance'],
+      requirements: ['Legal entity']
     },
     {
       id: 'stage_9',
-      title: 'Per-Project NDA',
-      description: 'Sign project-specific confidentiality agreements',
+      title: 'Equity Distribution',
+      description: 'User distributes equity to team',
       status: 'locked',
-      icon: '📄',
-      actions: ['Review NDA', 'Sign agreement', 'Accept terms'],
-      requirements: ['Offer accepted']
+      icon: '💰',
+      actions: ['Distribute equity', 'Set vesting', 'Cap table'],
+      requirements: ['Equity distribution']
     },
     {
       id: 'stage_10',
-      title: 'Approval & Provisioning',
-      description: 'Get approved and receive access to project resources',
+      title: 'Contract Execution',
+      description: 'User executes team contracts',
       status: 'locked',
-      icon: '✅',
-      actions: ['Get approved', 'Receive access', 'Start contributing'],
-      requirements: ['NDA signed']
+      icon: '📄',
+      actions: ['Execute contracts', 'Legal agreements', 'Team contracts'],
+      requirements: ['Contract execution']
     },
     {
       id: 'stage_11',
-      title: 'Work, Track, Reward',
-      description: 'Contribute to projects and earn rewards',
+      title: 'Launch Preparation',
+      description: 'User prepares for venture launch',
       status: 'locked',
-      icon: '🏆',
-      actions: ['Complete tasks', 'Earn XP', 'Receive rewards'],
-      requirements: ['Provisioned access']
+      icon: '🚀',
+      actions: ['Launch prep', 'Final checks', 'Go live'],
+      requirements: ['Launch ready']
     }
   ]
 
@@ -182,46 +182,59 @@ const VentureGateJourney = () => {
       const storedId = typeof window !== 'undefined' ? localStorage.getItem('user-id') : null
       const resolvedUserId = (user as any)?.id || (user as any)?.data?.id || storedId
 
-      // For stages that need to be started first
-      if (resolvedUserId && ['stage_1', 'stage_7', 'stage_8'].includes(stage.id)) {
-        await apiService.startJourneyStage(resolvedUserId, stage.id)
+      // For stages that need to be started first (only if not already started)
+      if (resolvedUserId && ['stage_5', 'stage_6', 'stage_7'].includes(stage.id)) {
+        try {
+          await apiService.startJourneyStage(resolvedUserId, stage.id)
+        } catch (error) {
+          // Stage might already be started, continue anyway
+          console.log('Stage might already be started:', error)
+        }
       }
 
       switch (stage.id) {
         case 'stage_1':
-          // Discover stage - just redirect to register
+          // Account Creation - redirect to register (already completed)
           router.push('/register')
           break
         case 'stage_2':
-          router.push('/register')
+          // Profile Setup
+          router.push('/venture-gate/profile')
           break
         case 'stage_3':
-          router.push('/venture-gate/verify')
+          // Platform Legal Pack
+          router.push('/venture-gate/legal')
           break
         case 'stage_4':
+          // Subscription Selection
           router.push('/venture-gate/plans')
           break
         case 'stage_5':
-          router.push('/venture-gate/legal')
+          // Venture Creation
+          router.push('/venture-gate/explore')
           break
         case 'stage_6':
-          router.push('/venture-gate/profile')
+          // Team Building
+          router.push('/dashboard')
           break
         case 'stage_7':
-          // Explore ventures - can be completed inline
-          router.push('/venture-gate/explore')
+          // Project Planning
+          router.push('/dashboard')
           break
         case 'stage_8':
-          // Submit offers - can be completed inline
-          router.push('/venture-gate/explore')
+          // Legal Entity Setup
+          router.push('/dashboard')
           break
         case 'stage_9':
-          router.push('/documents')
+          // Equity Distribution
+          router.push('/dashboard')
           break
         case 'stage_10':
+          // Contract Execution
           router.push('/dashboard')
           break
         case 'stage_11':
+          // Launch Preparation
           router.push('/dashboard')
           break
         default:
@@ -381,23 +394,24 @@ const VentureGateJourney = () => {
               minWidth: '180px'
             }}
           >
-            {currentStageData.id === 'stage_1' ? 'Start Journey' : 
-             currentStageData.id === 'stage_2' ? 'Create Account' :
-             currentStageData.id === 'stage_3' ? 'Setup Security' :
+            {currentStageData.id === 'stage_1' ? 'Account Created' : 
+             currentStageData.id === 'stage_2' ? 'Complete Profile' :
+             currentStageData.id === 'stage_3' ? 'Sign Legal Pack' :
              currentStageData.id === 'stage_4' ? 'Choose Plan' :
-             currentStageData.id === 'stage_5' ? 'Sign Legal Pack' :
-             currentStageData.id === 'stage_6' ? 'Complete Profile' :
-             currentStageData.id === 'stage_7' ? 'Explore Ventures' :
-             currentStageData.id === 'stage_8' ? 'Submit Offer' :
-             currentStageData.id === 'stage_9' ? 'Sign NDA' :
-             currentStageData.id === 'stage_10' ? 'Get Approved' :
+             currentStageData.id === 'stage_5' ? 'Create Venture' :
+             currentStageData.id === 'stage_6' ? 'Build Team' :
+             currentStageData.id === 'stage_7' ? 'Plan Project' :
+             currentStageData.id === 'stage_8' ? 'Setup Legal Entity' :
+             currentStageData.id === 'stage_9' ? 'Distribute Equity' :
+             currentStageData.id === 'stage_10' ? 'Execute Contracts' :
+             currentStageData.id === 'stage_11' ? 'Launch Preparation' :
              'Continue'} →
           </button>
           
           {/* Quick Complete for simple stages */}
-          {(currentStageData.id === 'stage_1' || 
-            currentStageData.id === 'stage_7' || 
-            currentStageData.id === 'stage_8') && (
+          {(currentStageData.id === 'stage_5' || 
+            currentStageData.id === 'stage_6' || 
+            currentStageData.id === 'stage_7') && (
             <div className="mt-3">
               <button 
                 className="btn btn-success"
