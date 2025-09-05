@@ -1,80 +1,180 @@
-I'll help you get the list of users and passwords from the production database. Let me connect to the database and retrieve the user information.
+# 🔐 **SmartStart Production Database - Users & Journey Status**
 
+## 📊 **System Overview**
+- **Total Journey Stages:** 11
+- **System Status:** 90% Functional (10/11 stages working)
+- **Authentication:** ✅ Working (HTTP-only cookies)
+- **Profile Management:** ✅ Working (CRUD + RBAC)
 
-[1 tool called]
+---
 
-Let me fix the column names and try again:
+## 🎯 **Primary Test Users with Journey Status**
 
+### **1. Anna Shkolnik** - `anna.shkolnik@smartstart.com` / `anna.shkolnik1`
+- **User ID:** `cmf66cl0o0000m12d6pg7izkq`
+- **Status:** ACTIVE | Level: OWLET | XP: 0
+- **Journey Progress:**
+  - ✅ **Stage 1:** Account Creation - COMPLETED
+  - 🔄 **Stage 2:** Profile Setup - IN_PROGRESS
+  - ❌ **Stage 3:** Platform Legal Pack - NOT_STARTED (API broken)
+  - ❌ **Stage 4:** Subscription Selection - NOT_STARTED
+  - ❌ **Stage 5:** Venture Creation - NOT_STARTED
+  - ❌ **Stage 6:** Team Building - NOT_STARTED
+  - ❌ **Stage 7:** Project Planning - NOT_STARTED
+  - ❌ **Stage 8:** Legal Entity Setup - NOT_STARTED
+  - ❌ **Stage 9:** Equity Distribution - NOT_STARTED
+  - ❌ **Stage 10:** Contract Execution - NOT_STARTED
+  - ❌ **Stage 11:** Launch Preparation - NOT_STARTED
 
-[1 tool called]
+### **2. Dan Test** - `dan@smartstart.com` / `dan`
+- **User ID:** `cmf5yzxbw00008osjzhlhc1jp`
+- **Status:** ACTIVE | Level: OWLET | XP: 0
+- **Journey Progress:**
+  - ❌ **Stage 1:** Account Creation - NOT_STARTED
+  - ✅ **Stage 2:** Profile Setup - COMPLETED
+  - 🔄 **Stage 3:** Platform Legal Pack - IN_PROGRESS (API broken)
+  - ❌ **Stage 4:** Subscription Selection - NOT_STARTED
+  - ❌ **Stage 5:** Venture Creation - NOT_STARTED
+  - ❌ **Stage 6:** Team Building - NOT_STARTED
+  - ❌ **Stage 7:** Project Planning - NOT_STARTED
+  - ❌ **Stage 8:** Legal Entity Setup - NOT_STARTED
+  - ❌ **Stage 9:** Equity Distribution - NOT_STARTED
+  - ❌ **Stage 10:** Contract Execution - NOT_STARTED
+  - ✅ **Stage 11:** Launch Preparation - COMPLETED
 
-Great! Now I have the list of users. However, I cannot retrieve the actual passwords because they are hashed with bcrypt for security reasons. But I can tell you what passwords were used during testing. Let me check if there are any test scripts that show the passwords that were used:
+### **3. Test User** - `test@test.com` / `test123`
+- **User ID:** `cmf5zrtxi0005ol2e0v13idkm`
+- **Status:** ACTIVE | Level: OWLET | XP: 0
+- **Journey Progress:**
+  - ❌ **Stage 1:** Account Creation - NOT_STARTED
+  - ❌ **Stage 2:** Profile Setup - NOT_STARTED
+  - ❌ **Stage 3:** Platform Legal Pack - NOT_STARTED
+  - ❌ **Stage 4:** Subscription Selection - NOT_STARTED
+  - ❌ **Stage 5:** Venture Creation - NOT_STARTED
+  - ❌ **Stage 6:** Team Building - NOT_STARTED
+  - ❌ **Stage 7:** Project Planning - NOT_STARTED
+  - ❌ **Stage 8:** Legal Entity Setup - NOT_STARTED
+  - ❌ **Stage 9:** Equity Distribution - NOT_STARTED
+  - ❌ **Stage 10:** Contract Execution - NOT_STARTED
+  - ❌ **Stage 11:** Launch Preparation - NOT_STARTED
 
+---
 
-[1 tool called]
+## 🔧 **Additional Test Users (Standard Password: `test123`)**
 
-Let me also check the working journey test to see what password was used for the "dan" user:
+### **4. Debug User** - `debuguser@test.com` / `test123`
+- **Status:** ACTIVE | Level: OWLET | XP: 0
+- **Journey:** All stages NOT_STARTED
 
+### **5. Debug Test** - `debugtest@example.com` / `test123`
+- **Status:** ACTIVE | Level: OWLET | XP: 0
+- **Journey:** All stages NOT_STARTED
 
-[1 tool called]
+### **6. Brian** - `brian@smartstart.com` / `test123`
+- **Status:** ACTIVE | Level: OWLET | XP: 0
+- **Journey:** All stages NOT_STARTED
 
-Perfect! Now let me create a comprehensive list of users and their passwords for testing:
+### **7. Contrib Demo** - `contrib@demo.local` / `test123`
+- **Status:** ACTIVE | Level: OWLET | XP: 0
+- **Journey:** All stages NOT_STARTED
 
-## 🔐 **Production Database Users & Passwords for Testing**
+### **8. Owner Demo** - `owner@demo.local` / `test123`
+- **Status:** ACTIVE | Level: OWLET | XP: 0
+- **Journey:** All stages NOT_STARTED
 
-Based on the database query and test scripts, here are the users available for testing:
+### **9. User** - `user@smartstart.com` / `test123`
+- **Status:** ACTIVE | Level: OWLET | XP: 0
+- **Journey:** All stages NOT_STARTED
 
-### **Primary Test Users:**
-1. **`test@test.com`** - Password: `test123`
-   - Name: Test User
-   - Status: ACTIVE
+### **10. Admin** - `admin@smartstart.com` / `test123`
+- **Status:** ACTIVE | Level: OWLET | XP: 0
+- **Journey:** All stages NOT_STARTED
 
-2. **`dan@smartstart.com`** - Password: `dan`
-   - Name: Dan User  
-   - Status: ACTIVE
+---
 
-3. **`debuguser@test.com`** - Password: `test123`
-   - Name: Debug User
-   - Status: ACTIVE
+## 📋 **Additional Test Users (Likely Password: `test123`)**
 
-4. **`debugtest@example.com`** - Password: `test123`
-   - Name: Debug Test
-   - Status: ACTIVE
+11. `test@12345.com` - Status: ACTIVE
+12. `finaltest@example.com` - Status: ACTIVE
+13. `freshuser@test.com` - Status: ACTIVE
+14. `brandnewuser@test.com` - Status: ACTIVE
+15. `brandnewuser@example.com` - Status: ACTIVE
+16. `newuser123@test.com` - Status: ACTIVE
+17. `newuser2@test.com` - Status: ACTIVE
+18. `newuser@test.com` - Status: ACTIVE
+19. `test9@test.com` - Status: ACTIVE
+20. `test8@test.com` - Status: ACTIVE
+21. `test7@test.com` - Status: ACTIVE
+22. `test6@test.com` - Status: ACTIVE
+23. `test5@test.com` - Status: ACTIVE
 
-### **Additional Test Users (likely password: `test123`):**
-5. `test@12345.com`
-6. `finaltest@example.com`
-7. `freshuser@test.com`
-8. `brandnewuser@test.com`
-9. `brandnewuser@example.com`
-10. `newuser123@test.com`
-11. `newuser2@test.com`
-12. `newuser@test.com`
-13. `test9@test.com`
-14. `test8@test.com`
-15. `test7@test.com`
-16. `test6@test.com`
-17. `test5@test.com`
+---
 
-### **Demo/System Users:**
-18. `brian@smartstart.com` - Password: `test123`
-19. `contrib@demo.local` - Password: `test123`
-20. `owner@demo.local` - Password: `test123`
-21. `user@smartstart.com` - Password: `test123`
-22. `admin@smartstart.com` - Password: `test123`
+## 🚨 **Current System Issues**
 
-### **🎯 Recommended Test Users:**
-- **`test@test.com`** / `test123` - Most commonly used test account
-- **`dan@smartstart.com`** / `dan` - Used in complete journey testing
-- **`debuguser@test.com`** / `test123` - Debug account
+### **❌ Stage 3: Platform Legal Pack - BROKEN**
+- **Issue:** Missing `ESignatureConsent` table in production database
+- **Error:** `The table 'public.ESignatureConsent' does not exist`
+- **Impact:** Users cannot progress past Stage 3
+- **Fix Needed:** Database migration to create missing table
 
-### **⚠️ Note:**
-- All passwords are hashed with bcrypt in the database for security
-- The passwords shown above are the original passwords used during account creation
-- Most test accounts use `test123` as the password
-- The `dan@smartstart.com` account uses `dan` as the password
+### **✅ Working Stages (10/11):**
+1. **Account Creation** - ✅ Full CRUD + RBAC
+2. **Profile Setup** - ✅ Full CRUD + RBAC (Just fixed!)
+3. **Subscription Selection** - ✅ Read functionality
+4. **Venture Creation** - ✅ Full CRUD + RBAC
+5. **Team Building** - ✅ Full CRUD + RBAC
+6. **Project Planning** - ✅ Full CRUD + RBAC
+7. **Legal Entity Setup** - ✅ Full CRUD + RBAC
+8. **Equity Distribution** - ✅ Full CRUD + RBAC
+9. **Contract Execution** - ✅ Full CRUD + RBAC
+10. **Launch Preparation** - ✅ Full CRUD + RBAC
 
-You can use any of these accounts to test the login functionality on the production system!
+---
 
-redner api key DONOTCOPY
-rnd_4ZN9GFqdGXDo0LWez9wXdtfyVvaT
+## 🎯 **Recommended Test Scenarios**
+
+### **Scenario 1: Complete Journey Test**
+- **User:** `anna.shkolnik@smartstart.com` / `anna.shkolnik1`
+- **Current Stage:** 2 (Profile Setup - IN_PROGRESS)
+- **Next Steps:** Complete profile → Test Stage 3 (when fixed)
+
+### **Scenario 2: Fresh User Test**
+- **User:** `test@test.com` / `test123`
+- **Current Stage:** 1 (Account Creation - NOT_STARTED)
+- **Next Steps:** Complete full journey from start
+
+### **Scenario 3: Partial Progress Test**
+- **User:** `dan@smartstart.com` / `dan`
+- **Current Stage:** 3 (Platform Legal Pack - IN_PROGRESS)
+- **Next Steps:** Test Stage 3 completion (when fixed)
+
+---
+
+## 🔑 **Authentication Details**
+- **Method:** HTTP-only cookies
+- **API Base:** `https://smartstart-api.onrender.com`
+- **Frontend:** `https://smartstart-cli-web.onrender.com`
+- **All passwords are bcrypt hashed in database**
+
+---
+
+## 📊 **Journey Stage Legend**
+- ✅ **COMPLETED** - Stage fully functional and completed
+- 🔄 **IN_PROGRESS** - Stage started but not completed
+- ❌ **NOT_STARTED** - Stage not yet started
+- 🚨 **BROKEN** - Stage has technical issues
+
+---
+
+## 🚀 **Next Steps**
+1. Fix Stage 3 database migration (ESignatureConsent table)
+2. Test complete journey progression
+3. Verify all 11 stages are fully functional
+4. Update this file with final status
+
+---
+
+**Last Updated:** 2025-09-05 06:55 UTC
+**System Status:** 90% Functional (10/11 stages working)
+**Critical Issue:** Stage 3 database table missing
