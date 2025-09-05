@@ -118,7 +118,7 @@ router.post('/submit', async (req, res) => {
                 "governmentIdStatus", "proofOfAddressStatus", "overallStatus",
                 "createdAt", "updatedAt"
             ) VALUES (
-                ${kycId}, ${userId}, ${fullName}, ${dateOfBirth}, ${country}, ${phoneNumber},
+                ${kycId}, ${userId}, ${fullName}, ${dateOfBirth}::timestamp, ${country}, ${phoneNumber},
                 'PENDING', 'PENDING', 'PENDING', NOW(), NOW()
             )
         `;
