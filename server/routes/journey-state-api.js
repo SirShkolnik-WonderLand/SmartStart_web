@@ -246,7 +246,7 @@ router.get('/progress/:userId', async(req, res) => {
         const percentage = totalStages > 0 ? Math.round((completedStages / totalStages) * 100) : 0;
 
         // Find current stage
-        const currentStage = userStates.find(state => state.status === 'IN_PROGRESS')?.stage;
+        const currentStage = userStates.find(state => state.status === 'IN_PROGRESS') ? .stage;
 
         // Find next stage
         const nextStage = stages.find(stage =>
@@ -259,9 +259,9 @@ router.get('/progress/:userId', async(req, res) => {
             return {
                 ...stage,
                 userState: userState || null,
-                status: userState?.status || 'NOT_STARTED',
+                status: userState ? .status || 'NOT_STARTED',
                 canStart: !userState || userState.status === 'NOT_STARTED',
-                canComplete: userState?.status === 'IN_PROGRESS'
+                canComplete: userState ? .status === 'IN_PROGRESS'
             };
         });
 
@@ -413,7 +413,7 @@ async function checkGates(userId, gates) {
                         }
                     });
                     isPassed = !!legalDoc;
-                    details = legalDoc ? { 
+                    details = legalDoc ? {
                         signedAt: legalDoc.signedAt,
                         termsAccepted: legalDoc.termsAccepted,
                         privacyAccepted: legalDoc.privacyAccepted
@@ -430,7 +430,7 @@ async function checkGates(userId, gates) {
                         }
                     });
                     isPassed = !!ndaDoc;
-                    details = ndaDoc ? { 
+                    details = ndaDoc ? {
                         signedAt: ndaDoc.signedAt,
                         termsAccepted: ndaDoc.termsAccepted,
                         privacyAccepted: ndaDoc.privacyAccepted
@@ -441,7 +441,7 @@ async function checkGates(userId, gates) {
                     const user = await prisma.user.findUnique({
                         where: { id: userId }
                     });
-                    isPassed = !!user?.email;
+                    isPassed = !!user ? .email;
                     details = user ? { email: user.email } : null;
                     break;
 
@@ -449,7 +449,7 @@ async function checkGates(userId, gates) {
                     const userProfile = await prisma.user.findUnique({
                         where: { id: userId }
                     });
-                    isPassed = !!(userProfile?.firstName && userProfile?.lastName);
+                    isPassed = !!(userProfile ? .firstName && userProfile ? .lastName);
                     details = userProfile ? {
                         firstName: userProfile.firstName,
                         lastName: userProfile.lastName
@@ -467,7 +467,7 @@ async function checkGates(userId, gates) {
                 case 'TEAM':
                     // Check if user has any team memberships
                     const teamMembers = await prisma.teamMember.findMany({
-                        where: { 
+                        where: {
                             userId,
                             isActive: true
                         }
@@ -479,7 +479,7 @@ async function checkGates(userId, gates) {
                 case 'PROJECT':
                     // Check if user has projects through team membership
                     const userTeams = await prisma.teamMember.findMany({
-                        where: { 
+                        where: {
                             userId,
                             isActive: true
                         },
@@ -487,7 +487,7 @@ async function checkGates(userId, gates) {
                     });
                     const teamIds = userTeams.map(tm => tm.teamId);
                     const project = await prisma.project.findFirst({
-                        where: { 
+                        where: {
                             teamId: { in: teamIds },
                             status: 'ACTIVE'
                         }
@@ -504,7 +504,7 @@ async function checkGates(userId, gates) {
                     });
                     const ventureIds = userVentures.map(v => v.id);
                     const legalEntity = await prisma.legalEntity.findFirst({
-                        where: { 
+                        where: {
                             ventureId: { in: ventureIds }
                         }
                     });
@@ -520,7 +520,7 @@ async function checkGates(userId, gates) {
                     });
                     const ventureIdsForEquity = userVenturesForEquity.map(v => v.id);
                     const capTable = await prisma.capTableEntry.findFirst({
-                        where: { 
+                        where: {
                             ventureId: { in: ventureIdsForEquity }
                         }
                     });
@@ -536,7 +536,7 @@ async function checkGates(userId, gates) {
                     });
                     const ventureIdsForContract = userVenturesForContract.map(v => v.id);
                     const contract = await prisma.contractOffer.findFirst({
-                        where: { 
+                        where: {
                             ventureId: { in: ventureIdsForContract }
                         }
                     });
