@@ -97,10 +97,29 @@ const ProfileSetup = () => {
       const response = await apiService.saveProfile(profileData)
       
       if (response && response.success) {
-        // Update journey state to next stage
+        // Check current journey state before updating
         const userId = localStorage.getItem('user-id')
         if (userId) {
-          await apiService.updateJourneyState(userId, 2) // Complete stage 2 (Profile Setup)
+          try {
+            // Get current journey state to see what stage we're on
+            const journeyState = await apiService.getJourneyState(userId)
+            if (journeyState && journeyState.currentStage) {
+              const currentStageId = journeyState.currentStage.id
+              console.log('Current stage:', currentStageId)
+              
+              // Only complete stage 2 if we're not already past it
+              if (currentStageId === 'stage_2' || currentStageId === 'stage_1') {
+                await apiService.updateJourneyState(userId, 2) // Complete stage 2 (Profile Setup)
+                console.log('Completed stage 2 (Profile Setup)')
+              } else {
+                console.log('Already past stage 2, skipping completion')
+              }
+            }
+          } catch (journeyError) {
+            console.error('Error checking journey state:', journeyError)
+            // Fallback: try to complete stage 2 anyway
+            await apiService.updateJourneyState(userId, 2)
+          }
         }
         
         router.push('/venture-gate/explore')
