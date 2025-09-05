@@ -128,7 +128,7 @@ function requireRoleLevel(requiredLevel) {
                 message: 'Insufficient role level',
                 code: 'INSUFFICIENT_ROLE_LEVEL',
                 required: requiredLevel,
-                userLevel: req.user.role ? .level
+                userLevel: req.user.role?.level
             });
         }
 

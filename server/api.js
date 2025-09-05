@@ -103,7 +103,7 @@ try {
     const documentsApiRoutes = require('./routes/documents-api');
     app.use('/api/documents', documentsApiRoutes);
 } catch (e) {
-    console.error('Failed to mount documents-api routes:', e ? .message);
+    console.error('Failed to mount documents-api routes:', e?.message);
 }
 
 // Mount unified authentication API
@@ -111,7 +111,7 @@ try {
     const unifiedAuthRoutes = require('./routes/unified-auth-api');
     app.use('/api/auth', unifiedAuthRoutes);
 } catch (e) {
-    console.error('Failed to mount unified auth routes:', e ? .message);
+    console.error('Failed to mount unified auth routes:', e?.message);
 }
 
 // /api/auth/me is now handled by unified-auth-api
@@ -135,8 +135,8 @@ app.get('/api/users', authenticateToken, requirePermission('user:read'), async(r
                 id: user.id,
                 email: user.email,
                 name: user.name,
-                role: user.account ? .role.name,
-                isActive: user.account ? .isActive
+                role: user.account?.role.name,
+                isActive: user.account?.isActive
             }))
         });
     } catch (error) {
@@ -283,7 +283,7 @@ app.get('/api/tasks', authenticateToken, requirePermission('project:read'), asyn
                 title: task.title,
                 type: task.type,
                 status: task.status,
-                assignee: task.assignee ? .name,
+                assignee: task.assignee?.name,
                 project: task.project.name,
                 effort: task.effort,
                 impact: task.impact,
