@@ -182,7 +182,7 @@ router.get('/profile/:userId', authenticateToken, async(req, res) => {
 router.put('/profile', authenticateToken, async(req, res) => {
     try {
         const userId = req.user.id; // Get from JWT token
-        const { firstName, lastName, name, bio, location, website, linkedin, github, twitter } = req.body;
+        const { firstName, lastName, name, bio, location, websiteUrl } = req.body;
 
         // Update user basic info
         const updatedUser = await prisma.user.update({
@@ -201,10 +201,7 @@ router.put('/profile', authenticateToken, async(req, res) => {
             update: {
                 bio,
                 location,
-                websiteUrl: website,
-                linkedin,
-                github,
-                twitter,
+                websiteUrl,
                 updatedAt: new Date()
             },
             create: {
@@ -212,10 +209,7 @@ router.put('/profile', authenticateToken, async(req, res) => {
                 nickname: name || `${firstName} ${lastName}`.trim(),
                 bio,
                 location,
-                websiteUrl: website,
-                linkedin,
-                github,
-                twitter
+                websiteUrl
             }
         });
 
@@ -274,7 +268,7 @@ router.put('/profile/:userId', authenticateToken, async(req, res) => {
             update: {
                 bio,
                 location,
-                websiteUrl: website,
+                website,
                 phone,
                 dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : null,
                 gender,
@@ -288,7 +282,7 @@ router.put('/profile/:userId', authenticateToken, async(req, res) => {
                 userId,
                 bio,
                 location,
-                websiteUrl: website,
+                website,
                 phone,
                 dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : null,
                 gender,
@@ -557,7 +551,7 @@ router.get('/profile/:userId/privacy', authenticateToken, async(req, res) => {
 
         res.json({
             success: true,
-            privacySettings: profile?.privacySettings || {}
+            privacySettings: profile ? .privacySettings || {}
         });
 
     } catch (error) {

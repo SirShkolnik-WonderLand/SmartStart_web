@@ -83,8 +83,18 @@ const ProfileSetup = () => {
     setIsSaving(true)
     
     try {
+      // Prepare profile data for API - only send fields that exist in the schema
+      const profileData = {
+        firstName: profile.firstName,
+        lastName: profile.lastName,
+        name: profile.name,
+        bio: profile.bio,
+        location: profile.location,
+        websiteUrl: profile.website || profile.portfolio.website
+      }
+      
       // Save profile data to API using the API service
-      const response = await apiService.saveProfile(profile)
+      const response = await apiService.saveProfile(profileData)
       
       if (response && response.success) {
         // Update journey state to next stage
