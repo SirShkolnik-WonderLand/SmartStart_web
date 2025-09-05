@@ -121,10 +121,22 @@ router.post('/setup-database', async (req, res) => {
       )
     `;
     
-    // Add foreign key constraints
-    await prisma.$executeRaw`ALTER TABLE "KycVerification" ADD CONSTRAINT "KycVerification_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE`;
-    await prisma.$executeRaw`ALTER TABLE "KycDocument" ADD CONSTRAINT "KycDocument_kycId_fkey" FOREIGN KEY ("kycId") REFERENCES "KycVerification"("id") ON DELETE CASCADE ON UPDATE CASCADE`;
-    await prisma.$executeRaw`ALTER TABLE "MfaSetup" ADD CONSTRAINT "MfaSetup_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE`;
+    // Add foreign key constraints (ignore if they already exist)
+    try {
+      await prisma.$executeRaw`ALTER TABLE "KycVerification" ADD CONSTRAINT "KycVerification_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE`;
+    } catch (e) {
+      console.log('KycVerification foreign key already exists');
+    }
+    try {
+      await prisma.$executeRaw`ALTER TABLE "KycDocument" ADD CONSTRAINT "KycDocument_kycId_fkey" FOREIGN KEY ("kycId") REFERENCES "KycVerification"("id") ON DELETE CASCADE ON UPDATE CASCADE`;
+    } catch (e) {
+      console.log('KycDocument foreign key already exists');
+    }
+    try {
+      await prisma.$executeRaw`ALTER TABLE "MfaSetup" ADD CONSTRAINT "MfaSetup_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE`;
+    } catch (e) {
+      console.log('MfaSetup foreign key already exists');
+    }
     
     // Create indexes
     await prisma.$executeRaw`CREATE INDEX IF NOT EXISTS "KycVerification_userId_idx" ON "KycVerification"("userId")`;
