@@ -232,13 +232,24 @@ const MainDashboard = () => {
             <h2 className="text-2xl font-bold mb-6">🚀 My Ventures</h2>
             <div className="text-center py-12">
               <div className="text-6xl mb-4">🚀</div>
-              <h3 className="text-xl font-bold mb-4">No Ventures Yet</h3>
+              <h3 className="text-xl font-bold mb-4">Venture Management</h3>
               <p className="text-muted mb-6">
-                Create your first venture to start building something amazing
+                Create, manage, and track your ventures
               </p>
-              <button className="btn btn-primary btn-lg">
-                Create Your First Venture
-              </button>
+              <div className="flex gap-4 justify-center">
+                <button 
+                  className="btn btn-primary btn-lg"
+                  onClick={() => router.push('/ventures')}
+                >
+                  Manage Ventures
+                </button>
+                <button 
+                  className="btn btn-secondary btn-lg"
+                  onClick={() => router.push('/venture-gate/create')}
+                >
+                  Create New Venture
+                </button>
+              </div>
             </div>
           </div>
         )}
@@ -252,12 +263,20 @@ const MainDashboard = () => {
               <p className="text-muted mb-6">
                 Browse ventures, find projects to contribute to, and connect with other entrepreneurs
               </p>
-              <button 
-                className="btn btn-primary btn-lg"
-                onClick={() => router.push('/venture-gate/explore')}
-              >
-                Browse Ventures
-              </button>
+              <div className="flex gap-4 justify-center">
+                <button 
+                  className="btn btn-primary btn-lg"
+                  onClick={() => router.push('/venture-gate/explore')}
+                >
+                  Browse Ventures
+                </button>
+                <button 
+                  className="btn btn-secondary btn-lg"
+                  onClick={() => router.push('/ventures')}
+                >
+                  My Ventures
+                </button>
+              </div>
             </div>
           </div>
         )}

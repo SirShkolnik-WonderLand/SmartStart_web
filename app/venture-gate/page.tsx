@@ -157,7 +157,7 @@ const VentureGateJourney = () => {
           break
         case 'stage_5':
           // Platform Orientation
-          router.push('/venture-gate/explore')
+          router.push('/venture-gate/orientation')
           break
         case 'stage_6':
           // Welcome & Dashboard
