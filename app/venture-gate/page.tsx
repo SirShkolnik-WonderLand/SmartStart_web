@@ -129,32 +129,21 @@ const VentureGateJourney = () => {
 
   const loadUserData = async () => {
     try {
-      // Check if user is authenticated by looking at localStorage first
-      const storedUserData = typeof window !== 'undefined' ? localStorage.getItem('user-data') : null
-      const storedUserId = typeof window !== 'undefined' ? localStorage.getItem('user-id') : null
+      // Try to get current user from API (this will check localStorage first, then API)
+      const userData = await apiService.getCurrentUser()
+      setUser(userData)
       
-      if (storedUserData && storedUserId) {
-        // User is authenticated, use stored data
-        const userData = JSON.parse(storedUserData)
-        setUser(userData)
-        
-        // Load journey state
-        const journey = await apiService.getJourneyState(storedUserId)
-        setJourneyState(journey)
-        
-        if (journey) {
-          setCurrentStage(journey.currentStage)
-          console.log('Journey state loaded:', journey)
-        } else {
-          // No journey state found - user needs to start from beginning
-          console.log('No journey state found, starting from stage 0')
-          setCurrentStage(0) // Start at stage 0 (discover)
-        }
+      // Load journey state
+      const journey = await apiService.getJourneyState(userData.id)
+      setJourneyState(journey)
+      
+      if (journey) {
+        setCurrentStage(journey.currentStage)
+        console.log('Journey state loaded:', journey)
       } else {
-        // User is not authenticated, redirect to login
-        console.log('User not authenticated, redirecting to login')
-        router.push('/')
-        return
+        // No journey state found - user needs to start from beginning
+        console.log('No journey state found, starting from stage 0')
+        setCurrentStage(0) // Start at stage 0 (discover)
       }
     } catch (error) {
       console.error('Error loading user data:', error)
@@ -162,7 +151,9 @@ const VentureGateJourney = () => {
       if (typeof window !== 'undefined') {
         localStorage.removeItem('user-data')
         localStorage.removeItem('user-id')
+        localStorage.removeItem('auth-token')
       }
+      console.log('User not authenticated, redirecting to login')
       router.push('/')
     } finally {
       setIsLoading(false)
