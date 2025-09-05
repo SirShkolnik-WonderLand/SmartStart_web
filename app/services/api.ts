@@ -239,6 +239,10 @@ class ApiService {
     }
   }
 
+  getCurrentUserId(): string | null {
+    return localStorage.getItem('user-id')
+  }
+
   async logout() {
     return this.fetchWithAuth('/api/auth/logout', {
       method: 'POST',
