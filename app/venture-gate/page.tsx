@@ -25,7 +25,7 @@ const VentureGateJourney = () => {
     {
       id: 'stage_1',
       title: 'Account Creation',
-      description: 'User creates account and verifies email',
+      description: 'Create your account and verify email',
       status: 'completed',
       icon: '👤',
       actions: ['Email verification', 'Password setup', 'Terms acceptance'],
@@ -34,7 +34,7 @@ const VentureGateJourney = () => {
     {
       id: 'stage_2',
       title: 'Profile Setup',
-      description: 'User completes profile information',
+      description: 'Complete your profile with skills and experience',
       status: 'current',
       icon: '🎯',
       actions: ['Complete profile', 'Add skills', 'Set preferences'],
@@ -43,7 +43,7 @@ const VentureGateJourney = () => {
     {
       id: 'stage_3',
       title: 'Platform Legal Pack',
-      description: 'User signs platform agreements',
+      description: 'Sign required platform agreements',
       status: 'locked',
       icon: '📋',
       actions: ['Review PPA', 'Sign NDA', 'Accept terms'],
@@ -52,7 +52,7 @@ const VentureGateJourney = () => {
     {
       id: 'stage_4',
       title: 'Subscription Selection',
-      description: 'User selects subscription plan',
+      description: 'Choose your subscription plan',
       status: 'locked',
       icon: '💳',
       actions: ['Select plan', 'Payment processing', 'Invoice generation'],
@@ -60,66 +60,21 @@ const VentureGateJourney = () => {
     },
     {
       id: 'stage_5',
-      title: 'Venture Creation',
-      description: 'User creates their first venture',
+      title: 'Platform Orientation',
+      description: 'Learn how the platform works',
       status: 'locked',
-      icon: '🚀',
-      actions: ['Create venture', 'Set up structure', 'Define goals'],
-      requirements: ['Venture created']
+      icon: '🎓',
+      actions: ['Platform tour', 'Feature overview', 'Examples'],
+      requirements: ['Platform understanding']
     },
     {
       id: 'stage_6',
-      title: 'Team Building',
-      description: 'User invites team members',
+      title: 'Welcome & Dashboard',
+      description: 'Access your main dashboard',
       status: 'locked',
-      icon: '👥',
-      actions: ['Invite members', 'Set roles', 'Build team'],
-      requirements: ['Team members']
-    },
-    {
-      id: 'stage_7',
-      title: 'Project Planning',
-      description: 'User creates project and sets goals',
-      status: 'locked',
-      icon: '📊',
-      actions: ['Create project', 'Set goals', 'Plan milestones'],
-      requirements: ['Project setup']
-    },
-    {
-      id: 'stage_8',
-      title: 'Legal Entity Setup',
-      description: 'User sets up legal entity for venture',
-      status: 'locked',
-      icon: '🏢',
-      actions: ['Set up entity', 'Legal structure', 'Compliance'],
-      requirements: ['Legal entity']
-    },
-    {
-      id: 'stage_9',
-      title: 'Equity Distribution',
-      description: 'User distributes equity to team',
-      status: 'locked',
-      icon: '💰',
-      actions: ['Distribute equity', 'Set vesting', 'Cap table'],
-      requirements: ['Equity distribution']
-    },
-    {
-      id: 'stage_10',
-      title: 'Contract Execution',
-      description: 'User executes team contracts',
-      status: 'locked',
-      icon: '📄',
-      actions: ['Execute contracts', 'Legal agreements', 'Team contracts'],
-      requirements: ['Contract execution']
-    },
-    {
-      id: 'stage_11',
-      title: 'Launch Preparation',
-      description: 'User prepares for venture launch',
-      status: 'locked',
-      icon: '🚀',
-      actions: ['Launch prep', 'Final checks', 'Go live'],
-      requirements: ['Launch ready']
+      icon: '🏠',
+      actions: ['Dashboard access', 'Next steps', 'Get started'],
+      requirements: ['Onboarding complete']
     }
   ]
 
@@ -201,32 +156,12 @@ const VentureGateJourney = () => {
           router.push('/venture-gate/plans')
           break
         case 'stage_5':
-          // Venture Creation
+          // Platform Orientation
           router.push('/venture-gate/explore')
           break
         case 'stage_6':
-          // Team Building
-          router.push('/dashboard')
-          break
-        case 'stage_7':
-          // Project Planning
-          router.push('/dashboard')
-          break
-        case 'stage_8':
-          // Legal Entity Setup
-          router.push('/dashboard')
-          break
-        case 'stage_9':
-          // Equity Distribution
-          router.push('/dashboard')
-          break
-        case 'stage_10':
-          // Contract Execution
-          router.push('/dashboard')
-          break
-        case 'stage_11':
-          // Launch Preparation
-          router.push('/dashboard')
+          // Welcome & Dashboard
+          router.push('/venture-gate/welcome')
           break
         default:
           console.log(`Action for ${stage.id} not implemented yet`)
@@ -389,13 +324,8 @@ const VentureGateJourney = () => {
              currentStageData.id === 'stage_2' ? 'Complete Profile' :
              currentStageData.id === 'stage_3' ? 'Sign Legal Pack' :
              currentStageData.id === 'stage_4' ? 'Choose Plan' :
-             currentStageData.id === 'stage_5' ? 'Create Venture' :
-             currentStageData.id === 'stage_6' ? 'Build Team' :
-             currentStageData.id === 'stage_7' ? 'Plan Project' :
-             currentStageData.id === 'stage_8' ? 'Setup Legal Entity' :
-             currentStageData.id === 'stage_9' ? 'Distribute Equity' :
-             currentStageData.id === 'stage_10' ? 'Execute Contracts' :
-             currentStageData.id === 'stage_11' ? 'Launch Preparation' :
+             currentStageData.id === 'stage_5' ? 'Learn Platform' :
+             currentStageData.id === 'stage_6' ? 'Access Dashboard' :
              'Continue'} →
           </button>
           

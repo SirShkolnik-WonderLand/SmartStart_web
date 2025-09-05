@@ -80,11 +80,11 @@ async function seedNewSystems() {
             }
         }
 
-        // Create journey stages
+        // Create journey stages (NEW 6-STEP LOGICAL STRUCTURE)
         console.log('🚀 Creating journey stages...');
         const stages = [{
-                name: 'Registration',
-                description: 'User registration and account creation',
+                name: 'Account Creation',
+                description: 'Create your account and verify email',
                 order: 1,
                 gates: [{
                     name: 'Email Verification',
@@ -95,7 +95,7 @@ async function seedNewSystems() {
             },
             {
                 name: 'Profile Setup',
-                description: 'Complete user profile information',
+                description: 'Complete your profile with skills and experience',
                 order: 2,
                 gates: [{
                     name: 'Complete Profile',
@@ -105,8 +105,8 @@ async function seedNewSystems() {
                 }]
             },
             {
-                name: 'Legal Pack',
-                description: 'Sign platform legal agreements',
+                name: 'Platform Legal Pack',
+                description: 'Sign required platform agreements',
                 order: 3,
                 gates: [{
                         name: 'Platform Legal Pack',
@@ -123,8 +123,8 @@ async function seedNewSystems() {
                 ]
             },
             {
-                name: 'Subscription',
-                description: 'Choose and activate subscription plan',
+                name: 'Subscription Selection',
+                description: 'Choose your subscription plan',
                 order: 4,
                 gates: [{
                     name: 'Active Subscription',
@@ -134,46 +134,26 @@ async function seedNewSystems() {
                 }]
             },
             {
-                name: 'Venture Creation',
-                description: 'Create first venture or join existing one',
+                name: 'Platform Orientation',
+                description: 'Learn how the platform works',
                 order: 5,
-                gates: []
+                gates: [{
+                    name: 'Platform Understanding',
+                    description: 'User must complete platform orientation',
+                    gateType: 'ORIENTATION',
+                    isRequired: true
+                }]
             },
             {
-                name: 'Team Building',
-                description: 'Build or join a team',
+                name: 'Welcome & Dashboard',
+                description: 'Access your main dashboard',
                 order: 6,
-                gates: []
-            },
-            {
-                name: 'Project Launch',
-                description: 'Launch first project',
-                order: 7,
-                gates: []
-            },
-            {
-                name: 'Contribution',
-                description: 'Make first contribution',
-                order: 8,
-                gates: []
-            },
-            {
-                name: 'Collaboration',
-                description: 'Collaborate with other users',
-                order: 9,
-                gates: []
-            },
-            {
-                name: 'Growth',
-                description: 'Scale and grow the venture',
-                order: 10,
-                gates: []
-            },
-            {
-                name: 'Success',
-                description: 'Achieve venture success',
-                order: 11,
-                gates: []
+                gates: [{
+                    name: 'Dashboard Access',
+                    description: 'User must complete onboarding and access dashboard',
+                    gateType: 'DASHBOARD',
+                    isRequired: true
+                }]
             }
         ];
 

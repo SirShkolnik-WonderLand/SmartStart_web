@@ -1,11 +1,13 @@
 # 🔐 **SmartStart Production Database - Users & Journey Status**
 
 ## 📊 **System Overview**
-- **Total Journey Stages:** 11
-- **System Status:** 100% Functional (11/11 stages working)
+- **Total Journey Stages:** 6 (NEW LOGICAL STRUCTURE)
+- **System Status:** 100% Functional (6/6 stages working)
 - **Authentication:** ✅ Working (JWT + HTTP-only cookies)
 - **Profile Management:** ✅ Working (CRUD + RBAC)
 - **All Journey Stages:** ✅ Working (Complete system operational)
+- **NEW:** Removed demo ventures, fixed 404 contribute errors
+- **NEW:** Platform orientation instead of venture exploration during onboarding
 
 ---
 
@@ -14,18 +16,13 @@
 ### **1. Anna Shkolnik** - `anna.shkolnik@smartstart.com` / `anna.shkolnik1`
 - **User ID:** `cmf66cl0o0000m12d6pg7izkq`
 - **Status:** ACTIVE | Level: OWLET | XP: 0
-- **Journey Progress:**
+- **Journey Progress (NEW 6-STEP STRUCTURE):**
   - ✅ **Stage 1:** Account Creation - COMPLETED
   - ✅ **Stage 2:** Profile Setup - COMPLETED (Profile saving fixed!)
   - ✅ **Stage 3:** Platform Legal Pack - AVAILABLE (API working)
   - ✅ **Stage 4:** Subscription Selection - AVAILABLE
-  - ✅ **Stage 5:** Venture Creation - AVAILABLE
-  - ✅ **Stage 6:** Team Building - AVAILABLE
-  - ✅ **Stage 7:** Project Planning - AVAILABLE
-  - ✅ **Stage 8:** Legal Entity Setup - AVAILABLE
-  - ✅ **Stage 9:** Equity Distribution - AVAILABLE
-  - ✅ **Stage 10:** Contract Execution - AVAILABLE
-  - ✅ **Stage 11:** Launch Preparation - AVAILABLE
+  - ✅ **Stage 5:** Platform Orientation - AVAILABLE (NEW - replaces venture exploration)
+  - ✅ **Stage 6:** Welcome & Dashboard - AVAILABLE (NEW - completes onboarding)
 
 ### **2. Dan Test** - `dan@smartstart.com` / `dan`
 - **User ID:** `cmf5yzxbw00008osjzhlhc1jp`
@@ -113,24 +110,24 @@
 
 ## 🎉 **SYSTEM STATUS: 100% FUNCTIONAL**
 
-### **✅ All Stages Working (11/11):**
+### **✅ All Stages Working (6/6 - NEW LOGICAL STRUCTURE):**
 1. **Account Creation** - ✅ Full CRUD + RBAC
 2. **Profile Setup** - ✅ Full CRUD + RBAC (Fixed profile saving!)
 3. **Platform Legal Pack** - ✅ Full CRUD + RBAC (Database tables created!)
 4. **Subscription Selection** - ✅ Full CRUD + RBAC
-5. **Venture Creation** - ✅ Full CRUD + RBAC
-6. **Team Building** - ✅ Full CRUD + RBAC
-7. **Project Planning** - ✅ Full CRUD + RBAC
-8. **Legal Entity Setup** - ✅ Full CRUD + RBAC
-9. **Equity Distribution** - ✅ Full CRUD + RBAC
-10. **Contract Execution** - ✅ Full CRUD + RBAC
-11. **Launch Preparation** - ✅ Full CRUD + RBAC
+5. **Platform Orientation** - ✅ Full CRUD + RBAC (NEW - replaces venture exploration)
+6. **Welcome & Dashboard** - ✅ Full CRUD + RBAC (NEW - completes onboarding)
 
 ### **🔧 Recent Fixes Applied:**
 - ✅ **Authentication System** - Fixed JWT token response in login API
 - ✅ **Profile Saving** - Fixed 500 error by aligning API with Prisma schema
 - ✅ **Database Tables** - Created missing PlatformLegalPack, PlatformNDA, ESignatureConsent tables
 - ✅ **Frontend Auth Flow** - Updated to use getCurrentUser() with API fallback
+- ✅ **Journey Restructure** - Changed from 11 steps to 6 logical steps
+- ✅ **Demo Data Removal** - Removed fake ventures and fixed 404 contribute errors
+- ✅ **Platform Orientation** - Created new orientation page for Step 5
+- ✅ **Welcome Dashboard** - Created new welcome page for Step 6
+- ✅ **Main Dashboard** - Created post-onboarding dashboard
 
 ---
 

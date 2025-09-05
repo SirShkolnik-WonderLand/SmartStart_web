@@ -2,453 +2,318 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { motion } from 'framer-motion'
-import { LogOut, User, Shield, TrendingUp, Users, Briefcase, Settings, Star, Target, Zap, Award } from 'lucide-react'
-import { apiService, User as ApiUser, GamificationData, PortfolioData, JourneyState } from '../services/api'
+import { apiService } from '../services/api'
 
-interface User {
-  id: string
-  email: string
-  name: string
-  role: {
-    id: string
-    name: string
-    level: number
-  }
-  permissions: string[]
-}
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://smartstart-api.onrender.com'
-
-// Force dynamic rendering
-export const dynamic = 'force-dynamic'
-
-export default function DashboardPage() {
+const MainDashboard = () => {
   const router = useRouter()
-  const [user, setUser] = useState<User | null>(null)
-  const [gamificationData, setGamificationData] = useState<GamificationData | null>(null)
-  const [portfolioData, setPortfolioData] = useState<PortfolioData | null>(null)
-  const [journeyState, setJourneyState] = useState<JourneyState | null>(null)
+  const [user, setUser] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const [isClient, setIsClient] = useState(false)
+  const [activeTab, setActiveTab] = useState('overview')
 
   useEffect(() => {
-    setIsClient(true)
-    checkAuth()
-  }, [])
-
-  useEffect(() => {
-    if (user) {
-      loadUserData()
-    }
-  }, [user])
-
-  const checkAuth = async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
-        credentials: 'include' // Include HTTP-only auth cookie
-      })
-      
-      if (response.ok) {
-        const data = await response.json()
-        if (data.success) {
-          setUser(data.user)
-          // Store user ID for journey state
-          localStorage.setItem('user-id', data.user.id)
-          localStorage.setItem('user-data', JSON.stringify(data.user))
-        } else {
-          localStorage.removeItem('user-id')
-          localStorage.removeItem('user-data')
-          router.push('/')
-        }
-      } else {
-        localStorage.removeItem('user-id')
-        localStorage.removeItem('user-data')
+    const loadUserData = async () => {
+      try {
+        const userData = await apiService.getCurrentUser()
+        setUser(userData)
+      } catch (error) {
+        console.error('Failed to load user data:', error)
+        // Redirect to login if not authenticated
         router.push('/')
+      } finally {
+        setIsLoading(false)
       }
-    } catch (error) {
-      console.error('Auth check failed:', error)
-      localStorage.removeItem('user-id')
-      localStorage.removeItem('user-data')
-      router.push('/')
-    } finally {
-      setIsLoading(false)
     }
-  }
 
-  const loadUserData = async () => {
-    if (!user) return
-    
-    try {
-      // Load gamification data
-      const gamification = await apiService.getUserGamification(user.id)
-      setGamificationData(gamification)
-      
-      // Load portfolio data
-      const portfolio = await apiService.getUserPortfolio(user.id)
-      setPortfolioData(portfolio)
-      
-      // Load journey state
-      const journey = await apiService.getJourneyState(user.id)
-      setJourneyState(journey)
-    } catch (error) {
-      console.error('Error loading user data:', error)
-    }
-  }
-
-  const handleLogout = async () => {
-    try {
-      await apiService.logout()
-    } catch (error) {
-      console.error('Logout error:', error)
-    } finally {
-      localStorage.removeItem('user-id')
-      localStorage.removeItem('user-data')
-      router.push('/')
-    }
-  }
-
-  const getRoleColor = (roleName: string) => {
-    switch (roleName) {
-      case 'SUPER_ADMIN':
-        return 'text-red-400 bg-red-900/20'
-      case 'ADMIN':
-        return 'text-orange-400 bg-orange-900/20'
-      case 'OWNER':
-        return 'text-purple-400 bg-purple-900/20'
-      case 'CONTRIBUTOR':
-        return 'text-blue-400 bg-blue-900/20'
-      case 'MEMBER':
-        return 'text-green-400 bg-green-900/20'
-      default:
-        return 'text-gray-400 bg-gray-900/20'
-    }
-  }
-
-  const getPermissionGroups = (permissions: string[]) => {
-    const groups: { [key: string]: string[] } = {}
-    permissions.forEach(permission => {
-      const [resource] = permission.split(':')
-      if (!groups[resource]) {
-        groups[resource] = []
-      }
-      groups[resource].push(permission)
-    })
-    return groups
-  }
+    loadUserData()
+  }, [router])
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900 flex items-center justify-center">
+      <div className="container" style={{ paddingTop: '2rem', paddingBottom: '2rem' }}>
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto mb-4"></div>
-          <p className="text-dark-300">Loading dashboard...</p>
+          <div className="loading-spinner"></div>
+          <p className="text-muted mt-4">Loading dashboard...</p>
         </div>
       </div>
     )
   }
 
   if (!user) {
-    return null
+    return (
+      <div className="container" style={{ paddingTop: '2rem', paddingBottom: '2rem' }}>
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Access Denied</h1>
+          <p className="text-muted mb-4">Please log in to access your dashboard.</p>
+          <button 
+            className="btn btn-primary"
+            onClick={() => router.push('/')}
+          >
+            Go to Login
+          </button>
+        </div>
+      </div>
+    )
   }
 
+  const tabs = [
+    { id: 'overview', label: 'Overview', icon: '📊' },
+    { id: 'ventures', label: 'My Ventures', icon: '🚀' },
+    { id: 'explore', label: 'Explore', icon: '🔍' },
+    { id: 'team', label: 'Team', icon: '👥' },
+    { id: 'legal', label: 'Legal', icon: '⚖️' },
+    { id: 'profile', label: 'Profile', icon: '👤' }
+  ]
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900">
+    <div className="container" style={{ paddingTop: '2rem', paddingBottom: '2rem' }}>
       {/* Header */}
-      <header className="bg-dark-800/50 backdrop-blur-sm border-b border-dark-600">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <div className="flex items-center space-x-4">
-              <h1 className="text-2xl font-bold gradient-text">SmartStart Dashboard</h1>
+      <div className="flex justify-between items-center mb-8">
+        <div>
+          <h1 className="text-4xl font-bold mb-2" style={{ color: '#00ff88' }}>
+            Welcome back, {user.firstName || user.name || 'there'}!
+          </h1>
+          <p className="text-muted">Ready to build something amazing?</p>
+        </div>
+        <div className="flex gap-4">
+          <button 
+            className="btn btn-secondary"
+            onClick={() => router.push('/venture-gate/profile')}
+          >
+            Edit Profile
+          </button>
+          <button 
+            className="btn btn-primary"
+            onClick={() => setActiveTab('ventures')}
+          >
+            Create Venture
+          </button>
+        </div>
+      </div>
+
+      {/* Navigation Tabs */}
+      <div className="card mb-8">
+        <div className="flex gap-2 p-4">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              className={`btn ${activeTab === tab.id ? 'btn-primary' : 'btn-secondary'} flex items-center gap-2`}
+              onClick={() => setActiveTab(tab.id)}
+            >
+              <span>{tab.icon}</span>
+              <span>{tab.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Tab Content */}
+      <div className="card">
+        {activeTab === 'overview' && (
+          <div className="p-6">
+            <h2 className="text-2xl font-bold mb-6">📊 Dashboard Overview</h2>
+            
+            <div className="grid grid-4 gap-6 mb-8">
+              <div className="text-center">
+                <div className="text-4xl mb-2">🚀</div>
+                <div className="text-2xl font-bold">0</div>
+                <p className="text-sm text-muted">My Ventures</p>
+              </div>
+              <div className="text-center">
+                <div className="text-4xl mb-2">👥</div>
+                <div className="text-2xl font-bold">0</div>
+                <p className="text-sm text-muted">Team Members</p>
+              </div>
+              <div className="text-center">
+                <div className="text-4xl mb-2">📋</div>
+                <div className="text-2xl font-bold">0</div>
+                <p className="text-sm text-muted">Active Projects</p>
+              </div>
+              <div className="text-center">
+                <div className="text-4xl mb-2">⚖️</div>
+                <div className="text-2xl font-bold">0</div>
+                <p className="text-sm text-muted">Legal Documents</p>
+              </div>
             </div>
-            <div className="flex items-center space-x-4">
-              <span className="text-dark-300">Welcome, {user.name}</span>
-              <button
-                onClick={handleLogout}
-                className="flex items-center space-x-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors"
-              >
-                <LogOut className="w-4 h-4" />
-                <span>Logout</span>
+
+            <div className="grid grid-2 gap-8">
+              <div>
+                <h3 className="text-xl font-bold mb-4">🎯 Quick Actions</h3>
+                <div className="space-y-3">
+                  <button 
+                    className="btn btn-primary w-full justify-start"
+                    onClick={() => setActiveTab('ventures')}
+                  >
+                    🚀 Create Your First Venture
+                  </button>
+                  <button 
+                    className="btn btn-secondary w-full justify-start"
+                    onClick={() => setActiveTab('explore')}
+                  >
+                    🔍 Explore Other Ventures
+                  </button>
+                  <button 
+                    className="btn btn-secondary w-full justify-start"
+                    onClick={() => setActiveTab('team')}
+                  >
+                    👥 Build Your Team
+                  </button>
+                  <button 
+                    className="btn btn-secondary w-full justify-start"
+                    onClick={() => setActiveTab('legal')}
+                  >
+                    ⚖️ Handle Legal Matters
+                  </button>
+                </div>
+              </div>
+              
+              <div>
+                <h3 className="text-xl font-bold mb-4">📈 Recent Activity</h3>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 p-3 bg-gray-800 rounded">
+                    <div className="text-2xl">✅</div>
+                    <div>
+                      <p className="font-bold">Onboarding Complete</p>
+                      <p className="text-sm text-muted">Welcome to SmartStart!</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-gray-800 rounded">
+                    <div className="text-2xl">🎯</div>
+                    <div>
+                      <p className="font-bold">Profile Setup</p>
+                      <p className="text-sm text-muted">Your profile is complete</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-gray-800 rounded">
+                    <div className="text-2xl">📋</div>
+                    <div>
+                      <p className="font-bold">Legal Agreements</p>
+                      <p className="text-sm text-muted">Platform agreements signed</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'ventures' && (
+          <div className="p-6">
+            <h2 className="text-2xl font-bold mb-6">🚀 My Ventures</h2>
+            <div className="text-center py-12">
+              <div className="text-6xl mb-4">🚀</div>
+              <h3 className="text-xl font-bold mb-4">No Ventures Yet</h3>
+              <p className="text-muted mb-6">
+                Create your first venture to start building something amazing
+              </p>
+              <button className="btn btn-primary btn-lg">
+                Create Your First Venture
               </button>
             </div>
           </div>
-        </div>
-      </header>
+        )}
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Gamification & Portfolio Overview */}
-        {isClient && (gamificationData || portfolioData) && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            {gamificationData && (
-              <>
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="bg-gradient-to-br from-purple-600 to-purple-800 rounded-xl p-6 text-white"
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-purple-200 text-sm">Level</p>
-                      <p className="text-2xl font-bold">{gamificationData.level}</p>
-                    </div>
-                    <Star className="w-8 h-8 text-purple-200" />
-                  </div>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 }}
-                  className="bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl p-6 text-white"
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-blue-200 text-sm">Experience Points</p>
-                      <p className="text-2xl font-bold">{gamificationData.xp.toLocaleString()}</p>
-                    </div>
-                    <Zap className="w-8 h-8 text-blue-200" />
-                  </div>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 }}
-                  className="bg-gradient-to-br from-green-600 to-green-800 rounded-xl p-6 text-white"
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-green-200 text-sm">Reputation</p>
-                      <p className="text-2xl font-bold">{gamificationData.reputation}</p>
-                    </div>
-                    <Award className="w-8 h-8 text-green-200" />
-                  </div>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
-                  className="bg-gradient-to-br from-orange-600 to-orange-800 rounded-xl p-6 text-white"
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-orange-200 text-sm">Badges Earned</p>
-                      <p className="text-2xl font-bold">{gamificationData.badges.length}</p>
-                    </div>
-                    <Target className="w-8 h-8 text-orange-200" />
-                  </div>
-                </motion.div>
-              </>
-            )}
-
-            {portfolioData && (
-              <>
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
-                  className="bg-gradient-to-br from-indigo-600 to-indigo-800 rounded-xl p-6 text-white"
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-indigo-200 text-sm">Portfolio Value</p>
-                      <p className="text-2xl font-bold">${portfolioData.totalValue.toLocaleString()}</p>
-                    </div>
-                    <TrendingUp className="w-8 h-8 text-indigo-200" />
-                  </div>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5 }}
-                  className="bg-gradient-to-br from-pink-600 to-pink-800 rounded-xl p-6 text-white"
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-pink-200 text-sm">Active Projects</p>
-                      <p className="text-2xl font-bold">{portfolioData.activeProjects}</p>
-                    </div>
-                    <Briefcase className="w-8 h-8 text-pink-200" />
-                  </div>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.6 }}
-                  className="bg-gradient-to-br from-teal-600 to-teal-800 rounded-xl p-6 text-white"
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-teal-200 text-sm">Total Contributions</p>
-                      <p className="text-2xl font-bold">{portfolioData.totalContributions}</p>
-                    </div>
-                    <Users className="w-8 h-8 text-teal-200" />
-                  </div>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.7 }}
-                  className="bg-gradient-to-br from-amber-600 to-amber-800 rounded-xl p-6 text-white"
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-amber-200 text-sm">Equity Owned</p>
-                      <p className="text-2xl font-bold">{portfolioData.equityOwned.toFixed(2)}%</p>
-                    </div>
-                    <Shield className="w-8 h-8 text-amber-200" />
-                  </div>
-                </motion.div>
-              </>
-            )}
+        {activeTab === 'explore' && (
+          <div className="p-6">
+            <h2 className="text-2xl font-bold mb-6">🔍 Explore Ventures</h2>
+            <div className="text-center py-12">
+              <div className="text-6xl mb-4">🔍</div>
+              <h3 className="text-xl font-bold mb-4">Discover Opportunities</h3>
+              <p className="text-muted mb-6">
+                Browse ventures, find projects to contribute to, and connect with other entrepreneurs
+              </p>
+              <button 
+                className="btn btn-primary btn-lg"
+                onClick={() => router.push('/venture-gate/explore')}
+              >
+                Browse Ventures
+              </button>
+            </div>
           </div>
         )}
 
-        {/* Journey Progress */}
-        {isClient && journeyState && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8 }}
-            className="bg-dark-800/50 backdrop-blur-sm rounded-xl p-6 mb-8 border border-dark-600"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-semibold text-white">Journey Progress</h3>
-              <span className="text-dark-300 text-sm">Stage {journeyState.currentStage} of {journeyState.totalStages}</span>
+        {activeTab === 'team' && (
+          <div className="p-6">
+            <h2 className="text-2xl font-bold mb-6">👥 Team Management</h2>
+            <div className="text-center py-12">
+              <div className="text-6xl mb-4">👥</div>
+              <h3 className="text-xl font-bold mb-4">Build Your Team</h3>
+              <p className="text-muted mb-6">
+                Find talented team members, manage roles, and collaborate effectively
+              </p>
+              <button className="btn btn-primary btn-lg">
+                Start Building Your Team
+              </button>
             </div>
-            <div className="w-full bg-dark-700 rounded-full h-3 mb-4">
-              <div 
-                className="bg-gradient-to-r from-primary-500 to-primary-600 h-3 rounded-full transition-all duration-500"
-                style={{ width: `${journeyState.progress}%` }}
-              />
-            </div>
-            <p className="text-dark-300 text-sm">
-              {journeyState.nextAction && `Next: ${journeyState.nextAction}`}
-            </p>
-          </motion.div>
+          </div>
         )}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* User Profile Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="glass rounded-2xl p-6"
-          >
-            <div className="flex items-center space-x-4 mb-6">
-              <div className="w-16 h-16 bg-primary-600/20 rounded-full flex items-center justify-center">
-                <User className="w-8 h-8 text-primary-400" />
-              </div>
-              <div>
-                <h2 className="text-xl font-semibold text-white">{user.name}</h2>
-                <p className="text-dark-300">{user.email}</p>
-              </div>
-            </div>
 
-            <div className="space-y-4">
-              <div>
-                <span className="text-sm text-dark-400">Role</span>
-                <div className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getRoleColor(user.role.name)}`}>
-                  {user.role.name}
-                </div>
-              </div>
-              <div>
-                <span className="text-sm text-dark-400">Role Level</span>
-                <p className="text-white">{user.role.level}</p>
-              </div>
+        {activeTab === 'legal' && (
+          <div className="p-6">
+            <h2 className="text-2xl font-bold mb-6">⚖️ Legal & Compliance</h2>
+            <div className="text-center py-12">
+              <div className="text-6xl mb-4">⚖️</div>
+              <h3 className="text-xl font-bold mb-4">Legal Framework</h3>
+              <p className="text-muted mb-6">
+                Handle legal entities, equity distribution, contracts, and compliance
+              </p>
+              <button className="btn btn-primary btn-lg">
+                Manage Legal Matters
+              </button>
             </div>
-          </motion.div>
+          </div>
+        )}
 
-          {/* Permissions & Features */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="lg:col-span-2 space-y-6"
-          >
-            {/* Permissions Overview */}
-            <div className="glass rounded-2xl p-6">
-              <h3 className="text-lg font-semibold text-white mb-4">Your Permissions</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {Object.entries(getPermissionGroups(user.permissions)).map(([resource, perms]) => (
-                  <div key={resource} className="bg-dark-800/50 rounded-lg p-4">
-                    <h4 className="text-primary-400 font-medium mb-2 capitalize">{resource}</h4>
-                    <div className="space-y-1">
-                      {perms.map(permission => (
-                        <div key={permission} className="text-sm text-dark-300">
-                          • {permission}
-                        </div>
-                      ))}
-                    </div>
+        {activeTab === 'profile' && (
+          <div className="p-6">
+            <h2 className="text-2xl font-bold mb-6">👤 Profile & Settings</h2>
+            <div className="grid grid-2 gap-8">
+              <div>
+                <h3 className="text-xl font-bold mb-4">Profile Information</h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-bold mb-2">Name</label>
+                    <p className="text-muted">{user.firstName} {user.lastName}</p>
                   </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Quick Actions */}
-            <div className="glass rounded-2xl p-6">
-              <h3 className="text-lg font-semibold text-white mb-4">Quick Actions</h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {user.permissions.includes('project:write') && (
-                  <button className="flex flex-col items-center space-y-2 p-4 bg-primary-600/20 hover:bg-primary-600/30 rounded-lg transition-colors">
-                    <Briefcase className="w-6 h-6 text-primary-400" />
-                    <span className="text-sm text-white">Create Project</span>
-                  </button>
-                )}
-                {user.permissions.includes('user:read') && (
-                  <button className="flex flex-col items-center space-y-2 p-4 bg-blue-600/20 hover:bg-blue-600/30 rounded-lg transition-colors">
-                    <Users className="w-6 h-6 text-blue-400" />
-                    <span className="text-sm text-white">View Users</span>
-                  </button>
-                )}
-                {user.permissions.includes('system:read') && (
-                  <button className="flex flex-col items-center space-y-2 p-4 bg-purple-600/20 hover:bg-purple-600/30 rounded-lg transition-colors">
-                    <Settings className="w-6 h-6 text-purple-400" />
-                    <span className="text-sm text-white">System Settings</span>
-                  </button>
-                )}
-                <button className="flex flex-col items-center space-y-2 p-4 bg-green-600/20 hover:bg-green-600/30 rounded-lg transition-colors">
-                  <TrendingUp className="w-6 h-6 text-green-400" />
-                  <span className="text-sm text-white">Analytics</span>
+                  <div>
+                    <label className="block text-sm font-bold mb-2">Email</label>
+                    <p className="text-muted">{user.email}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold mb-2">Level</label>
+                    <p className="text-muted">{user.level || 'OWLET'}</p>
+                  </div>
+                </div>
+                <button 
+                  className="btn btn-primary mt-4"
+                  onClick={() => router.push('/venture-gate/profile')}
+                >
+                  Edit Profile
                 </button>
               </div>
-            </div>
-
-            {/* API Server Info */}
-            <div className="glass rounded-2xl p-6">
-              <h3 className="text-lg font-semibold text-white mb-4">API Server Status</h3>
-              <p className="text-dark-300 mb-4">
-                This dashboard is now connected to the dedicated API server at: <code className="bg-dark-800 px-2 py-1 rounded">{API_BASE_URL}</code>
-              </p>
               
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                <div className="bg-green-600/20 border border-green-600/30 rounded-lg p-3">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                    <span className="text-green-400">API Connected</span>
-                  </div>
-                </div>
-                <div className="bg-blue-600/20 border border-blue-600/30 rounded-lg p-3">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                    <span className="text-blue-400">RBAC Active</span>
-                  </div>
-                </div>
-                <div className="bg-purple-600/20 border border-purple-600/30 rounded-lg p-3">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                    <span className="text-purple-400">Real-time Data</span>
-                  </div>
+              <div>
+                <h3 className="text-xl font-bold mb-4">Account Settings</h3>
+                <div className="space-y-4">
+                  <button className="btn btn-secondary w-full justify-start">
+                    🔒 Change Password
+                  </button>
+                  <button className="btn btn-secondary w-full justify-start">
+                    📧 Email Preferences
+                  </button>
+                  <button className="btn btn-secondary w-full justify-start">
+                    🔔 Notification Settings
+                  </button>
+                  <button className="btn btn-secondary w-full justify-start">
+                    🗑️ Delete Account
+                  </button>
                 </div>
               </div>
             </div>
-          </motion.div>
-        </div>
-      </main>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
+
+export default MainDashboard

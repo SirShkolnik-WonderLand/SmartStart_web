@@ -2787,6 +2787,8 @@ enum GateType {
   PROJECT         // Requires project creation/participation
   LEGAL_ENTITY    // Requires company/legal entity on file
   EQUITY          // Requires equity-based participation
+  ORIENTATION     // Requires platform orientation completion
+  DASHBOARD       // Requires dashboard access
   CUSTOM          // Custom gate logic
 }
 
