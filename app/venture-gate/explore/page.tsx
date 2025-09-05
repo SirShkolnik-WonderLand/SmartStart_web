@@ -82,6 +82,23 @@ const ExploreVentures = () => {
   useEffect(() => {
     const loadVentures = async () => {
       try {
+        // Check if user has completed onboarding first
+        const userId = localStorage.getItem('user-id')
+        if (userId) {
+          const journeyState = await apiService.getJourneyState(userId)
+          if (journeyState && journeyState.currentStage) {
+            const currentStageId = journeyState.currentStage.id
+            console.log('Current stage:', currentStageId)
+            
+            // Only allow access if user has completed basic onboarding (stage 3 or later)
+            if (currentStageId === 'stage_1' || currentStageId === 'stage_2') {
+              console.log('User not ready for venture exploration, redirecting to onboarding')
+              router.push('/venture-gate')
+              return
+            }
+          }
+        }
+
         const venturesData = await apiService.getVentures()
         setVentures(venturesData)
         setFilteredVentures(venturesData)
@@ -96,7 +113,7 @@ const ExploreVentures = () => {
     }
 
     loadVentures()
-  }, [])
+  }, [router])
 
   useEffect(() => {
     let filtered = ventures
@@ -126,7 +143,9 @@ const ExploreVentures = () => {
   }
 
   const handleOfferContribution = (venture: Venture) => {
-    router.push(`/venture-gate/offer/${venture.id}`)
+    // Check if user has completed onboarding first
+    // For now, redirect to the main venture gate to continue onboarding
+    router.push('/venture-gate')
   }
 
   const getStageColor = (stage: string) => {

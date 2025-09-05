@@ -249,10 +249,42 @@ class ApiService {
   async getVentures(): Promise<Venture[]> {
     try {
       const response = await this.fetchWithAuth('/api/ventures/list/all')
-      return response.ventures || []
+      const apiVentures = response.ventures || []
+      
+      // Map API response to frontend Venture interface
+      return apiVentures.map((venture: any) => ({
+        id: venture.id,
+        name: venture.name,
+        description: venture.purpose || 'No description available',
+        stage: this.mapVentureStatusToStage(venture.status),
+        industry: venture.industry || 'Unknown Industry',
+        teamSize: venture.teamSize || 1,
+        lookingFor: venture.lookingFor || ['Contributors'],
+        rewards: {
+          type: 'equity' as const,
+          amount: 'TBD'
+        },
+        owner: {
+          name: venture.owner?.name || 'Unknown Owner',
+          avatar: '👤'
+        },
+        createdAt: venture.createdAt,
+        status: venture.status === 'PENDING_CONTRACTS' ? 'active' as const : 'paused' as const,
+        tags: venture.tags || ['Venture']
+      }))
     } catch (error) {
       console.error('Error fetching ventures:', error)
       return []
+    }
+  }
+
+  private mapVentureStatusToStage(status: string): 'idea' | 'mvp' | 'growth' | 'scale' {
+    switch (status) {
+      case 'DRAFT': return 'idea'
+      case 'PENDING_CONTRACTS': return 'mvp'
+      case 'ACTIVE': return 'growth'
+      case 'COMPLETED': return 'scale'
+      default: return 'idea'
     }
   }
 
