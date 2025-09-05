@@ -223,6 +223,10 @@ app.use('/api/business-logic', businessLogicApiRoutes);
 const migrationApiRoutes = require('./routes/migration-api');
 app.use('/api/migration', migrationApiRoutes);
 
+// Mount Database Fix API
+const databaseFixApiRoutes = require('./routes/database-fix-api');
+app.use('/api/database-fix', databaseFixApiRoutes);
+
 console.log('✅ User Journey APIs mounted successfully');
 console.log('✅ Role-Based Business Systems mounted successfully');
 console.log('✅ Subscription & Billing APIs mounted successfully');
