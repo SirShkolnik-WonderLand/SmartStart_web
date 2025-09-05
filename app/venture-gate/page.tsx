@@ -308,121 +308,123 @@ const VentureGateJourney = () => {
   const currentStageData = journeyStages[currentStage]
 
   return (
-    <div className="container" style={{ paddingTop: '2rem', paddingBottom: '4rem' }}>
-      {/* Streamlined Header */}
-      <div className="text-center mb-6 animate-fade-in">
-        <h1 style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>VentureGate™ Journey</h1>
-        <p className="text-secondary" style={{ fontSize: '1.1rem' }}>
-          Step {currentStage + 1} of {journeyStages.length} • {Math.round((currentStage / (journeyStages.length - 1)) * 100)}% Complete
-        </p>
+    <div className="container" style={{ paddingTop: '1.5rem', paddingBottom: '2rem' }}>
+      {/* Compact Header */}
+      <div className="text-center mb-4">
+        <div className="flex items-center justify-center gap-3 mb-2">
+          <div className="text-3xl">{currentStageData.icon}</div>
+          <div>
+            <h1 style={{ fontSize: '1.8rem', marginBottom: '0.25rem' }}>{currentStageData.title}</h1>
+            <p className="text-secondary" style={{ fontSize: '0.9rem' }}>
+              Step {currentStage + 1} of {journeyStages.length} • {Math.round((currentStage / (journeyStages.length - 1)) * 100)}% Complete
+            </p>
+          </div>
+        </div>
         {user && (
-          <div className="mt-3">
-            <span className="status status-info" style={{ fontSize: '0.9rem' }}>
-              Welcome, {user.name}
-            </span>
+          <div className="inline-block px-3 py-1 rounded-full text-xs font-medium" style={{ 
+            background: 'var(--accent-primary)', 
+            color: 'white' 
+          }}>
+            Welcome, {user.name}
           </div>
         )}
       </div>
 
-      {/* Progress Bar */}
-      <div className="mb-8 animate-slide-in">
-        <div className="progress" style={{ height: '8px', borderRadius: '4px' }}>
+      {/* Compact Progress Bar */}
+      <div className="mb-6">
+        <div className="progress" style={{ height: '6px', borderRadius: '3px' }}>
           <div 
             className="progress-bar" 
             style={{ 
               width: `${(currentStage / (journeyStages.length - 1)) * 100}%`,
               background: 'linear-gradient(90deg, #00ff88, #00cc6a)',
-              borderRadius: '4px'
+              borderRadius: '3px'
             }}
           />
         </div>
       </div>
 
-      {/* Current Step - Focused */}
-      <div className="card mb-6 animate-fade-in" style={{ maxWidth: '800px', margin: '0 auto' }}>
-        <div className="text-center">
-          <div className="text-5xl mb-4">{currentStageData.icon}</div>
-          <h2 className="text-2xl font-bold mb-3">{currentStageData.title}</h2>
-          <p className="text-lg text-secondary mb-6">{currentStageData.description}</p>
+      {/* Main Action Card - Compact */}
+      <div className="card mb-4" style={{ maxWidth: '600px', margin: '0 auto' }}>
+        <div className="text-center p-4">
+          <p className="text-secondary mb-4" style={{ fontSize: '0.95rem' }}>{currentStageData.description}</p>
           
-          {/* Essential Actions Only */}
+          {/* Essential Actions - Compact */}
           {currentStageData.actions.length > 0 && (
-            <div className="mb-6">
-              <div className="grid gap-2" style={{ maxWidth: '400px', margin: '0 auto' }}>
-                {currentStageData.actions.slice(0, 3).map((action, i) => (
-                  <div key={i} className="flex items-center gap-3 p-3 rounded-lg" style={{ 
+            <div className="mb-4">
+              <div className="grid gap-2" style={{ maxWidth: '350px', margin: '0 auto' }}>
+                {currentStageData.actions.slice(0, 2).map((action, i) => (
+                  <div key={i} className="flex items-center gap-2 p-2 rounded-md text-sm" style={{ 
                     background: 'var(--bg-secondary)', 
                     border: '1px solid var(--border-color)' 
                   }}>
-                    <div className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold" style={{ 
+                    <div className="w-4 h-4 rounded-full flex items-center justify-center text-xs font-bold" style={{ 
                       background: 'var(--accent-primary)', 
                       color: 'white' 
                     }}>
                       {i + 1}
                     </div>
-                    <span className="text-primary text-sm">{action}</span>
+                    <span className="text-primary">{action}</span>
                   </div>
                 ))}
               </div>
             </div>
           )}
+
+          {/* Action Button */}
+          <button 
+            className="btn btn-primary"
+            onClick={() => handleStageAction(currentStageData)}
+            style={{ 
+              padding: '10px 24px', 
+              fontSize: '1rem',
+              minWidth: '180px'
+            }}
+          >
+            {currentStageData.id === 'stage_1' ? 'Start Journey' : 
+             currentStageData.id === 'stage_2' ? 'Create Account' :
+             currentStageData.id === 'stage_3' ? 'Setup Security' :
+             currentStageData.id === 'stage_4' ? 'Choose Plan' :
+             currentStageData.id === 'stage_5' ? 'Sign Legal Pack' :
+             currentStageData.id === 'stage_6' ? 'Complete Profile' :
+             currentStageData.id === 'stage_7' ? 'Explore Ventures' :
+             currentStageData.id === 'stage_8' ? 'Submit Offer' :
+             currentStageData.id === 'stage_9' ? 'Sign NDA' :
+             currentStageData.id === 'stage_10' ? 'Get Approved' :
+             'Continue'} →
+          </button>
+          
+          {/* Quick Complete for simple stages */}
+          {(currentStageData.id === 'stage_1' || 
+            currentStageData.id === 'stage_7' || 
+            currentStageData.id === 'stage_8') && (
+            <div className="mt-3">
+              <button 
+                className="btn btn-success"
+                onClick={completeCurrentStage}
+                style={{ fontSize: '0.85rem', padding: '6px 12px' }}
+              >
+                ✓ Mark as Complete
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Action Button - Single Focus */}
-      <div className="text-center animate-fade-in">
-        <button 
-          className="btn btn-primary btn-lg"
-          onClick={() => handleStageAction(currentStageData)}
-          style={{ 
-            padding: '12px 32px', 
-            fontSize: '1.1rem',
-            minWidth: '200px'
-          }}
-        >
-          {currentStageData.id === 'stage_1' ? 'Start Journey' : 
-           currentStageData.id === 'stage_2' ? 'Create Account' :
-           currentStageData.id === 'stage_3' ? 'Setup Security' :
-           currentStageData.id === 'stage_4' ? 'Choose Plan' :
-           currentStageData.id === 'stage_5' ? 'Sign Legal Pack' :
-           currentStageData.id === 'stage_6' ? 'Complete Profile' :
-           currentStageData.id === 'stage_7' ? 'Explore Ventures' :
-           currentStageData.id === 'stage_8' ? 'Submit Offer' :
-           currentStageData.id === 'stage_9' ? 'Sign NDA' :
-           currentStageData.id === 'stage_10' ? 'Get Approved' :
-           'Continue'} →
-        </button>
-        
-        {/* Quick Complete for simple stages */}
-        {(currentStageData.id === 'stage_1' || 
-          currentStageData.id === 'stage_7' || 
-          currentStageData.id === 'stage_8') && (
-          <div className="mt-4">
-            <button 
-              className="btn btn-success"
-              onClick={completeCurrentStage}
-              style={{ fontSize: '0.9rem', padding: '8px 16px' }}
-            >
-              ✓ Mark as Complete
-            </button>
-          </div>
-        )}
-      </div>
-
-      {/* Next Steps Preview - Only show next 2 steps */}
+      {/* Next Steps Preview - Compact */}
       {currentStage < journeyStages.length - 1 && (
-        <div className="card mt-8 animate-fade-in" style={{ maxWidth: '600px', margin: '0 auto' }}>
-          <div className="text-center">
-            <h3 className="mb-4" style={{ fontSize: '1.2rem' }}>Coming Next</h3>
-            <div className="grid gap-3">
-              {journeyStages.slice(currentStage + 1, currentStage + 3).map((stage, i) => (
-                <div key={stage.id} className="flex items-center gap-3 p-3 rounded-lg" style={{ 
+        <div className="card" style={{ maxWidth: '500px', margin: '0 auto' }}>
+          <div className="text-center p-3">
+            <h3 className="mb-3" style={{ fontSize: '1rem' }}>Coming Next</h3>
+            <div className="grid gap-2">
+              {journeyStages.slice(currentStage + 1, currentStage + 2).map((stage, i) => (
+                <div key={stage.id} className="flex items-center gap-2 p-2 rounded-md text-sm" style={{ 
                   background: 'var(--bg-secondary)', 
-                  opacity: 0.7 
+                  opacity: 0.8 
                 }}>
-                  <div className="text-2xl">{stage.icon}</div>
+                  <div className="text-lg">{stage.icon}</div>
                   <div className="flex-1 text-left">
-                    <div className="font-semibold text-sm">{stage.title}</div>
+                    <div className="font-medium">{stage.title}</div>
                     <div className="text-xs text-secondary">{stage.description}</div>
                   </div>
                 </div>

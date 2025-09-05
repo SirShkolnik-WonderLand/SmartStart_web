@@ -162,86 +162,84 @@ const ExploreVentures = () => {
   }
 
   return (
-    <div className="container" style={{ paddingTop: '2rem', paddingBottom: '4rem' }}>
-      {/* Header */}
-      <div className="text-center mb-8 animate-fade-in">
-        <h1>Explore Ventures</h1>
-        <p className="text-secondary">
-          Discover exciting projects and find your next opportunity
-        </p>
-        <div className="mt-4">
-          <span className="status status-info">
+    <div className="container" style={{ paddingTop: '1.5rem', paddingBottom: '2rem' }}>
+      {/* Compact Header */}
+      <div className="text-center mb-6">
+        <div className="flex items-center justify-center gap-3 mb-2">
+          <div className="text-3xl">🔍</div>
+          <div>
+            <h1 style={{ fontSize: '1.8rem', marginBottom: '0.25rem' }}>Explore Ventures</h1>
+            <p className="text-secondary" style={{ fontSize: '0.9rem' }}>Discover exciting projects and find your next opportunity</p>
+          </div>
+        </div>
+        <div className="mt-2">
+          <span className="status status-info text-xs">
             {filteredVentures.length} ventures available
           </span>
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="card mb-8 animate-slide-in">
-        <div className="card-header">
-          <h3>🔍 Filter Ventures</h3>
-          <p className="text-muted">
-            Narrow down your search to find the perfect match
-          </p>
-        </div>
-        
-        <div className="grid grid-2 gap-6">
-          <div className="form-group">
-            <label className="form-label">Search</label>
-            <input
-              type="text"
-              className="form-input"
-              placeholder="Search by name, description, or tags..."
-              value={filters.search}
-              onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-            />
-          </div>
-          <div className="form-group">
-            <label className="form-label">Stage</label>
-            <select
-              className="form-input"
-              value={filters.stage}
-              onChange={(e) => setFilters(prev => ({ ...prev, stage: e.target.value }))}
-            >
-              <option value="">All Stages</option>
-              <option value="idea">Idea Stage</option>
-              <option value="mvp">MVP Stage</option>
-              <option value="growth">Growth Stage</option>
-              <option value="scale">Scale Stage</option>
-            </select>
-          </div>
-          <div className="form-group">
-            <label className="form-label">Industry</label>
-            <select
-              className="form-input"
-              value={filters.industry}
-              onChange={(e) => setFilters(prev => ({ ...prev, industry: e.target.value }))}
-            >
-              <option value="">All Industries</option>
-              <option value="Sustainability">Sustainability</option>
-              <option value="Healthcare">Healthcare</option>
-              <option value="EdTech">EdTech</option>
-              <option value="FinTech">FinTech</option>
-            </select>
-          </div>
-          <div className="form-group">
-            <label className="form-label">Reward Type</label>
-            <select
-              className="form-input"
-              value={filters.rewardType}
-              onChange={(e) => setFilters(prev => ({ ...prev, rewardType: e.target.value }))}
-            >
-              <option value="">All Types</option>
-              <option value="equity">Equity Only</option>
-              <option value="cash">Cash Only</option>
-              <option value="hybrid">Hybrid (Cash + Equity)</option>
-            </select>
+      {/* Compact Filters */}
+      <div className="card mb-6" style={{ maxWidth: '800px', margin: '0 auto' }}>
+        <div className="p-4">
+          <div className="grid grid-2 gap-3">
+            <div className="form-group">
+              <label className="form-label text-sm">Search</label>
+              <input
+                type="text"
+                className="form-input"
+                placeholder="Search ventures..."
+                value={filters.search}
+                onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label text-sm">Stage</label>
+              <select
+                className="form-input"
+                value={filters.stage}
+                onChange={(e) => setFilters(prev => ({ ...prev, stage: e.target.value }))}
+              >
+                <option value="">All Stages</option>
+                <option value="idea">Idea Stage</option>
+                <option value="mvp">MVP Stage</option>
+                <option value="growth">Growth Stage</option>
+                <option value="scale">Scale Stage</option>
+              </select>
+            </div>
+            <div className="form-group">
+              <label className="form-label text-sm">Industry</label>
+              <select
+                className="form-input"
+                value={filters.industry}
+                onChange={(e) => setFilters(prev => ({ ...prev, industry: e.target.value }))}
+              >
+                <option value="">All Industries</option>
+                <option value="Sustainability">Sustainability</option>
+                <option value="Healthcare">Healthcare</option>
+                <option value="EdTech">EdTech</option>
+                <option value="FinTech">FinTech</option>
+              </select>
+            </div>
+            <div className="form-group">
+              <label className="form-label text-sm">Reward Type</label>
+              <select
+                className="form-input"
+                value={filters.rewardType}
+                onChange={(e) => setFilters(prev => ({ ...prev, rewardType: e.target.value }))}
+              >
+                <option value="">All Types</option>
+                <option value="equity">Equity Only</option>
+                <option value="cash">Cash Only</option>
+                <option value="hybrid">Hybrid (Cash + Equity)</option>
+              </select>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Ventures Grid */}
-      <div className="grid grid-2 gap-6 mb-8">
+      {/* Compact Ventures Grid */}
+      <div className="grid grid-2 gap-4 mb-6">
         {filteredVentures.map((venture) => (
           <div
             key={venture.id}
@@ -249,60 +247,60 @@ const ExploreVentures = () => {
             onClick={() => handleVentureClick(venture)}
             style={{ transition: 'all 0.3s ease' }}
           >
-            <div className="flex justify-between items-start mb-4">
-              <div>
-                <h3 className="card-title">{venture.name}</h3>
-                <div className="flex items-center gap-2 mb-2">
-                  <span 
-                    className="status"
-                    style={{ 
-                      background: `rgba(${getStageColor(venture.stage)}, 0.2)`,
-                      color: getStageColor(venture.stage),
-                      border: `1px solid ${getStageColor(venture.stage)}`
-                    }}
-                  >
-                    {venture.stage.toUpperCase()}
-                  </span>
-                  <span className="status status-info">{venture.industry}</span>
+            <div className="p-4">
+              <div className="flex justify-between items-start mb-3">
+                <div>
+                  <h3 className="text-lg font-bold mb-1">{venture.name}</h3>
+                  <div className="flex items-center gap-2">
+                    <span 
+                      className="status text-xs"
+                      style={{ 
+                        background: `rgba(${getStageColor(venture.stage)}, 0.2)`,
+                        color: getStageColor(venture.stage),
+                        border: `1px solid ${getStageColor(venture.stage)}`
+                      }}
+                    >
+                      {venture.stage.toUpperCase()}
+                    </span>
+                    <span className="status status-info text-xs">{venture.industry}</span>
+                  </div>
+                </div>
+                <div className="text-xl">{venture.owner.avatar}</div>
+              </div>
+
+              <p className="text-secondary text-sm mb-3 line-clamp-2">{venture.description}</p>
+
+              <div className="mb-3">
+                <div className="flex flex-wrap gap-1">
+                  {venture.lookingFor.slice(0, 2).map((role, index) => (
+                    <span key={index} className="status status-warning text-xs">
+                      {role}
+                    </span>
+                  ))}
+                  {venture.lookingFor.length > 2 && (
+                    <span className="status status-warning text-xs">
+                      +{venture.lookingFor.length - 2} more
+                    </span>
+                  )}
                 </div>
               </div>
-              <div className="text-2xl">{venture.owner.avatar}</div>
-            </div>
 
-            <p className="text-secondary mb-4">{venture.description}</p>
-
-            <div className="mb-4">
-              <h5 className="mb-2">Looking for:</h5>
-              <div className="flex flex-wrap gap-2">
-                {venture.lookingFor.map((role, index) => (
-                  <span key={index} className="status status-warning">
-                    {role}
-                  </span>
-                ))}
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">{getRewardIcon(venture.rewards.type)}</span>
+                  <span className="font-medium text-sm">{venture.rewards.amount}</span>
+                </div>
+                <button
+                  className="btn btn-primary text-sm"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleOfferContribution(venture)
+                  }}
+                  style={{ padding: '6px 12px' }}
+                >
+                  Contribute
+                </button>
               </div>
-            </div>
-
-            <div className="mb-4">
-              <h5 className="mb-2">Rewards:</h5>
-              <div className="flex items-center gap-2">
-                <span className="text-xl">{getRewardIcon(venture.rewards.type)}</span>
-                <span className="font-medium">{venture.rewards.amount}</span>
-              </div>
-            </div>
-
-            <div className="flex justify-between items-center">
-              <div className="text-sm text-muted">
-                Team: {venture.teamSize} members
-              </div>
-              <button
-                className="btn btn-primary"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  handleOfferContribution(venture)
-                }}
-              >
-                Offer to Contribute
-              </button>
             </div>
           </div>
         ))}
