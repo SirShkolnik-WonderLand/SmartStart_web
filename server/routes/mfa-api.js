@@ -123,7 +123,7 @@ router.post('/setup', async (req, res) => {
                 "createdAt", "updatedAt"
             ) VALUES (
                 ${mfaId}, ${userId}, ${mfaData.method}::"MfaMethod", ${mfaData.secret}, 
-                ${JSON.stringify(mfaData.backupCodes)}::text[], false, NOW(), NOW()
+                ${mfaData.backupCodes}::text[], false, NOW(), NOW()
             )
         `;
 
