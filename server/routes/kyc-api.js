@@ -119,7 +119,7 @@ router.post('/submit', async (req, res) => {
                 "createdAt", "updatedAt"
             ) VALUES (
                 ${kycId}, ${userId}, ${fullName}, ${dateOfBirth}::timestamp, ${country}, ${phoneNumber},
-                'PENDING', 'PENDING', 'PENDING', NOW(), NOW()
+                'PENDING'::"VerificationStatus", 'PENDING'::"VerificationStatus", 'PENDING'::"VerificationStatus", NOW(), NOW()
             )
         `;
 
@@ -205,8 +205,8 @@ router.post('/upload-document', upload.single('document'), async (req, res) => {
                 "id", "kycId", "documentType", "fileName", "filePath", "fileHash",
                 "status", "createdAt"
             ) VALUES (
-                ${documentId}, ${kyc[0].id}, ${documentType}, ${req.file.filename}, 
-                ${req.file.path}, ${fileHash}, 'PENDING', NOW()
+                ${documentId}, ${kyc[0].id}, ${documentType}::"DocumentType", ${req.file.filename}, 
+                ${req.file.path}, ${fileHash}, 'PENDING'::"VerificationStatus", NOW()
             )
         `;
 
@@ -214,13 +214,13 @@ router.post('/upload-document', upload.single('document'), async (req, res) => {
         if (documentType === 'GOVERNMENT_ID') {
             await prisma.$executeRaw`
                 UPDATE "KycVerification" 
-                SET "governmentIdStatus" = 'PENDING', "updatedAt" = NOW()
+                SET "governmentIdStatus" = 'PENDING'::"VerificationStatus", "updatedAt" = NOW()
                 WHERE "id" = ${kyc[0].id}
             `;
         } else if (documentType === 'PROOF_OF_ADDRESS') {
             await prisma.$executeRaw`
                 UPDATE "KycVerification" 
-                SET "proofOfAddressStatus" = 'PENDING', "updatedAt" = NOW()
+                SET "proofOfAddressStatus" = 'PENDING'::"VerificationStatus", "updatedAt" = NOW()
                 WHERE "id" = ${kyc[0].id}
             `;
         }
