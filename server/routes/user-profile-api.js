@@ -46,20 +46,10 @@ router.get('/profile', authenticateToken, async(req, res) => {
             where: { id: userId },
             include: {
                 profile: true,
-                companies: {
+                companiesOwned: true,
+                teamMemberships: {
                     include: {
-                        company: true,
-                        role: true
-                    }
-                },
-                teams: {
-                    include: {
-                        team: {
-                            include: {
-                                company: true
-                            }
-                        },
-                        role: true
+                        team: true
                     }
                 }
             }
@@ -86,8 +76,8 @@ router.get('/profile', authenticateToken, async(req, res) => {
                 status: user.status,
                 lastActive: user.lastActive,
                 profile: user.profile,
-                companies: user.companies,
-                teams: user.teams
+                companiesOwned: user.companiesOwned,
+                teamMemberships: user.teamMemberships
             },
             message: 'User profile retrieved successfully'
         });
