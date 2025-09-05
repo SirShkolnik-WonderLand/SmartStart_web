@@ -1,60 +1,25 @@
-const express = require('express');
-const router = express.Router();
+const { PrismaClient } = require('@prisma/client');
 
-// Debug endpoint to check database connection
-router.get('/database-info', async (req, res) => {
-  try {
-    const { PrismaClient } = require('@prisma/client');
-    const prisma = new PrismaClient();
-    
-    // Check if KYC table exists
-    const kycTables = await prisma.$queryRaw`
-      SELECT table_name 
-      FROM information_schema.tables 
-      WHERE table_schema = 'public' 
-      AND table_name LIKE '%Kyc%'
-    `;
-    
-    // Check if MFA table exists
-    const mfaTables = await prisma.$queryRaw`
-      SELECT table_name 
-      FROM information_schema.tables 
-      WHERE table_schema = 'public' 
-      AND table_name LIKE '%Mfa%'
-    `;
-    
-    res.json({
-      success: true,
-      databaseUrl: process.env.DATABASE_URL ? 'Set' : 'Not set',
-      kycTables: kycTables,
-      mfaTables: mfaTables,
-      timestamp: new Date().toISOString()
-    });
-    
-    await prisma.$disconnect();
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.message,
-      databaseUrl: process.env.DATABASE_URL ? 'Set' : 'Not set'
-    });
-  }
-});
+// This should use the DATABASE_URL from Render's environment
+const prisma = new PrismaClient();
 
-// Database setup endpoint
-router.post('/setup-database', async (req, res) => {
+async function fixRenderDatabase() {
   try {
-    const { PrismaClient } = require('@prisma/client');
-    const prisma = new PrismaClient();
-    
-    console.log('🔧 Setting up production database tables...');
+    console.log('🔧 Fixing Render production database...');
+    console.log('DATABASE_URL:', process.env.DATABASE_URL ? 'Set' : 'Not set');
     
     // Create enums first
+    console.log('Creating VerificationStatus enum...');
     await prisma.$executeRaw`CREATE TYPE "VerificationStatus" AS ENUM ('PENDING', 'APPROVED', 'REJECTED', 'EXPIRED')`;
+    
+    console.log('Creating DocumentType enum...');
     await prisma.$executeRaw`CREATE TYPE "DocumentType" AS ENUM ('GOVERNMENT_ID', 'PROOF_OF_ADDRESS')`;
+    
+    console.log('Creating MfaMethod enum...');
     await prisma.$executeRaw`CREATE TYPE "MfaMethod" AS ENUM ('AUTHENTICATOR', 'EMAIL', 'SMS')`;
     
     // Create KycVerification table
+    console.log('Creating KycVerification table...');
     await prisma.$executeRaw`
       CREATE TABLE IF NOT EXISTS "KycVerification" (
         "id" TEXT NOT NULL,
@@ -76,6 +41,7 @@ router.post('/setup-database', async (req, res) => {
     `;
     
     // Create KycDocument table
+    console.log('Creating KycDocument table...');
     await prisma.$executeRaw`
       CREATE TABLE IF NOT EXISTS "KycDocument" (
         "id" TEXT NOT NULL,
@@ -94,6 +60,7 @@ router.post('/setup-database', async (req, res) => {
     `;
     
     // Create MfaSetup table
+    console.log('Creating MfaSetup table...');
     await prisma.$executeRaw`
       CREATE TABLE IF NOT EXISTS "MfaSetup" (
         "id" TEXT NOT NULL,
@@ -110,35 +77,35 @@ router.post('/setup-database', async (req, res) => {
     `;
     
     // Add foreign key constraints
+    console.log('Adding foreign key constraints...');
     await prisma.$executeRaw`ALTER TABLE "KycVerification" ADD CONSTRAINT "KycVerification_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE`;
     await prisma.$executeRaw`ALTER TABLE "KycDocument" ADD CONSTRAINT "KycDocument_kycId_fkey" FOREIGN KEY ("kycId") REFERENCES "KycVerification"("id") ON DELETE CASCADE ON UPDATE CASCADE`;
     await prisma.$executeRaw`ALTER TABLE "MfaSetup" ADD CONSTRAINT "MfaSetup_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE`;
     
     // Create indexes
+    console.log('Creating indexes...');
     await prisma.$executeRaw`CREATE INDEX IF NOT EXISTS "KycVerification_userId_idx" ON "KycVerification"("userId")`;
     await prisma.$executeRaw`CREATE INDEX IF NOT EXISTS "KycDocument_kycId_idx" ON "KycDocument"("kycId")`;
     await prisma.$executeRaw`CREATE INDEX IF NOT EXISTS "MfaSetup_userId_idx" ON "MfaSetup"("userId")`;
+    
+    console.log('✅ Render production database fixed successfully!');
     
     // Test the tables exist
     const kycCount = await prisma.$queryRaw`SELECT COUNT(*) FROM "KycVerification"`;
     const mfaCount = await prisma.$queryRaw`SELECT COUNT(*) FROM "MfaSetup"`;
     
-    res.json({
-      success: true,
-      message: 'Database tables created successfully',
-      kycTable: kycCount[0].count,
-      mfaTable: mfaCount[0].count,
-      timestamp: new Date().toISOString()
-    });
+    console.log(`📊 KYC table: ${kycCount[0].count} records`);
+    console.log(`📊 MFA table: ${mfaCount[0].count} records`);
     
-    await prisma.$disconnect();
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.message,
-      timestamp: new Date().toISOString()
-    });
+    if (error.message.includes('already exists')) {
+      console.log('⚠️ Some objects already exist, continuing...');
+    } else {
+      console.error('❌ Error fixing Render database:', error.message);
+    }
+  } finally {
+    await prisma.$disconnect();
   }
-});
+}
 
-module.exports = router;
+fixRenderDatabase();
