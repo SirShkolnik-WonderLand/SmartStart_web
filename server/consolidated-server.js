@@ -211,6 +211,10 @@ app.use('/api/kyc', kycApiRoutes);
 const mfaApiRoutes = require('./routes/mfa-api');
 app.use('/api/mfa', mfaApiRoutes);
 
+// Debug API for troubleshooting
+const debugApiRoutes = require('./routes/debug-api');
+app.use('/api/debug', debugApiRoutes);
+
 // Mount Business Logic APIs
 const businessLogicApiRoutes = require('./routes/business-logic-api');
 app.use('/api/business-logic', businessLogicApiRoutes);
