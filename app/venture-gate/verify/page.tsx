@@ -25,9 +25,26 @@ const VerifyAndSecurePage = () => {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    const uid = typeof window !== 'undefined' ? localStorage.getItem('user-id') : null
-    setUserId(uid)
-    setIsLoading(false)
+    const loadUserData = async () => {
+      const uid = typeof window !== 'undefined' ? localStorage.getItem('user-id') : null
+      setUserId(uid)
+      
+      if (uid) {
+        try {
+          // Check if MFA is already set up
+          const existingMfa = await apiService.getMfaStatus(uid)
+          if (existingMfa?.success && existingMfa?.mfa) {
+            setMfaSetup(existingMfa.mfa)
+          }
+        } catch (err) {
+          console.log('No existing MFA setup found')
+        }
+      }
+      
+      setIsLoading(false)
+    }
+    
+    loadUserData()
   }, [])
 
   const handleSubmitKyc = async (e: React.FormEvent) => {
@@ -82,9 +99,30 @@ const VerifyAndSecurePage = () => {
     if (!userId) return
     try {
       setError(null)
+      
+      // First check if MFA is already set up
+      const existingMfa = await apiService.getMfaStatus(userId)
+      if (existingMfa?.success && existingMfa?.mfa) {
+        setMfaSetup(existingMfa.mfa)
+        return
+      }
+      
+      // If not set up, create new MFA
       const setup = await apiService.setupMfa(userId, 'AUTHENTICATOR')
       setMfaSetup(setup?.mfa || setup)
     } catch (err: any) {
+      // If MFA already exists, try to get the existing setup
+      if (err?.message?.includes('already setup')) {
+        try {
+          const existingMfa = await apiService.getMfaStatus(userId)
+          if (existingMfa?.success && existingMfa?.mfa) {
+            setMfaSetup(existingMfa.mfa)
+            return
+          }
+        } catch (statusErr) {
+          console.error('Error fetching existing MFA:', statusErr)
+        }
+      }
       setError(err?.message || 'Failed to setup MFA')
     }
   }
@@ -191,19 +229,31 @@ const VerifyAndSecurePage = () => {
 
           {mfaSetup && (
             <div className="mt-4">
-              {mfaSetup.qrCodeUrl && (
-                <div className="mb-4">
-                  <div className="text-sm mb-2">Scan this QR in Google Authenticator / 1Password:</div>
-                  <img src={mfaSetup.qrCodeUrl} alt="MFA QR" style={{ width: 180, height: 180 }} />
+              {mfaSetup.isActive ? (
+                <div className="text-center">
+                  <div className="text-green-400 text-lg mb-2">✅ MFA Already Active</div>
+                  <div className="text-sm text-muted mb-4">Your account is protected with Multi-Factor Authentication</div>
+                  <button className="btn btn-primary" onClick={() => router.push('/venture-gate/plans')}>
+                    Continue to Next Step
+                  </button>
+                </div>
+              ) : (
+                <div>
+                  {mfaSetup.qrCodeUrl && (
+                    <div className="mb-4">
+                      <div className="text-sm mb-2">Scan this QR in Google Authenticator / 1Password:</div>
+                      <img src={mfaSetup.qrCodeUrl} alt="MFA QR" style={{ width: 180, height: 180 }} />
+                    </div>
+                  )}
+                  <div className="form-group">
+                    <label className="form-label">Enter 6-digit code</label>
+                    <input className="form-input" value={mfaCode} onChange={e => setMfaCode(e.target.value)} placeholder="123456" />
+                  </div>
+                  <button className="btn btn-primary" onClick={handleActivateMfa} disabled={!mfaCode}>
+                    Activate MFA
+                  </button>
                 </div>
               )}
-              <div className="form-group">
-                <label className="form-label">Enter 6-digit code</label>
-                <input className="form-input" value={mfaCode} onChange={e => setMfaCode(e.target.value)} placeholder="123456" />
-              </div>
-              <button className="btn btn-primary" onClick={handleActivateMfa} disabled={!mfaCode}>
-                Activate MFA
-              </button>
             </div>
           )}
         </div>
