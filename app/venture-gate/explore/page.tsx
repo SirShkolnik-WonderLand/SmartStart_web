@@ -250,7 +250,7 @@ const ExploreVentures = () => {
             <div className="p-4">
               <div className="flex justify-between items-start mb-3">
                 <div>
-                  <h3 className="text-lg font-bold mb-1">{venture.name}</h3>
+                  <h3 className="text-lg font-bold mb-1">{venture.name || 'Unnamed Venture'}</h3>
                   <div className="flex items-center gap-2">
                     <span 
                       className="status text-xs"
@@ -260,26 +260,26 @@ const ExploreVentures = () => {
                         border: `1px solid ${getStageColor(venture.stage)}`
                       }}
                     >
-                      {venture.stage.toUpperCase()}
+                      {venture.stage?.toUpperCase() || 'UNKNOWN'}
                     </span>
-                    <span className="status status-info text-xs">{venture.industry}</span>
+                    <span className="status status-info text-xs">{venture.industry || 'Unknown Industry'}</span>
                   </div>
                 </div>
-                <div className="text-xl">{venture.owner.avatar}</div>
+                <div className="text-xl">{venture.owner?.avatar || '👤'}</div>
               </div>
 
-              <p className="text-secondary text-sm mb-3 line-clamp-2">{venture.description}</p>
+              <p className="text-secondary text-sm mb-3 line-clamp-2">{venture.description || 'No description available'}</p>
 
               <div className="mb-3">
                 <div className="flex flex-wrap gap-1">
-                  {venture.lookingFor.slice(0, 2).map((role, index) => (
+                  {(venture.lookingFor || []).slice(0, 2).map((role, index) => (
                     <span key={index} className="status status-warning text-xs">
                       {role}
                     </span>
                   ))}
-                  {venture.lookingFor.length > 2 && (
+                  {(venture.lookingFor || []).length > 2 && (
                     <span className="status status-warning text-xs">
-                      +{venture.lookingFor.length - 2} more
+                      +{(venture.lookingFor || []).length - 2} more
                     </span>
                   )}
                 </div>
@@ -287,8 +287,8 @@ const ExploreVentures = () => {
 
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-2">
-                  <span className="text-lg">{getRewardIcon(venture.rewards.type)}</span>
-                  <span className="font-medium text-sm">{venture.rewards.amount}</span>
+                  <span className="text-lg">{getRewardIcon(venture.rewards?.type || 'equity')}</span>
+                  <span className="font-medium text-sm">{venture.rewards?.amount || 'TBD'}</span>
                 </div>
                 <button
                   className="btn btn-primary text-sm"
@@ -322,7 +322,7 @@ const ExploreVentures = () => {
                       border: `1px solid ${getStageColor(selectedVenture.stage)}`
                     }}
                   >
-                    {selectedVenture.stage.toUpperCase()}
+                    {selectedVenture.stage?.toUpperCase() || 'UNKNOWN'}
                   </span>
                   <span className="status status-info">{selectedVenture.industry}</span>
                 </div>

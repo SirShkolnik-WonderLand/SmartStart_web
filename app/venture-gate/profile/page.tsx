@@ -100,7 +100,7 @@ const ProfileSetup = () => {
         // Update journey state to next stage
         const userId = localStorage.getItem('user-id')
         if (userId) {
-          await apiService.updateJourneyState(userId, 1) // Complete stage 2 (Profile Setup)
+          await apiService.updateJourneyState(userId, 2) // Complete stage 2 (Profile Setup)
         }
         
         router.push('/venture-gate/explore')
