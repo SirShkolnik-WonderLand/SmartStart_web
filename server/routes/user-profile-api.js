@@ -209,6 +209,7 @@ router.put('/profile', authenticateToken, async(req, res) => {
             },
             create: {
                 userId: userId,
+                nickname: name || `${firstName} ${lastName}`.trim(),
                 bio,
                 location,
                 website,
