@@ -33,6 +33,31 @@ const VerifyAndSecurePage = () => {
   const handleSubmitKyc = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!userId) return
+    
+    // Validate form data
+    if (!kycForm.fullName || kycForm.fullName.length < 2) {
+      setError('Please enter a valid full name (at least 2 characters)')
+      return
+    }
+    if (!kycForm.dateOfBirth) {
+      setError('Please enter your date of birth')
+      return
+    }
+    if (!kycForm.country || kycForm.country.length < 2) {
+      setError('Please enter a valid country name')
+      return
+    }
+    if (!kycForm.phoneNumber || kycForm.phoneNumber.length < 10) {
+      setError('Please enter a valid phone number (at least 10 digits)')
+      return
+    }
+    
+    // Check for placeholder/invalid data
+    if (kycForm.fullName === '123' || kycForm.country === '123' || kycForm.phoneNumber === '123') {
+      setError('Please enter real information, not placeholder data')
+      return
+    }
+    
     try {
       setError(null)
       setKycSubmitting(true)
