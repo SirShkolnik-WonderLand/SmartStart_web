@@ -27,7 +27,7 @@ router.get('/health', async(req, res) => {
 router.get('/plans', async(req, res) => {
     try {
         const plans = await prisma.billingPlan.findMany({
-            where: { isactive: true },
+            where: { isActive: true },
             orderBy: { price: 'asc' }
         });
 
