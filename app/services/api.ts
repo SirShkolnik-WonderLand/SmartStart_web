@@ -252,8 +252,8 @@ class ApiService {
   // Ventures
   async getVentures(): Promise<Venture[]> {
     try {
-      const response = await this.fetchWithAuth('/api/venture-management/ventures')
-      return response.data || []
+      const response = await this.fetchWithAuth('/api/ventures/list/all')
+      return response.ventures || []
     } catch (error) {
       console.error('Error fetching ventures:', error)
       return []
@@ -261,13 +261,13 @@ class ApiService {
   }
 
   async getVenture(id: string): Promise<Venture> {
-    return this.fetchWithAuth(`/api/venture-management/ventures/${id}`)
+    return this.fetchWithAuth(`/api/ventures/${id}`)
   }
 
   // Companies
   async getCompanies(): Promise<Company[]> {
     try {
-      const response = await this.fetchWithAuth('/api/company-management/companies')
+      const response = await this.fetchWithAuth('/api/companies')
       return response.data || []
     } catch (error) {
       console.error('Error fetching companies:', error)
@@ -278,7 +278,7 @@ class ApiService {
   // Contracts
   async getContracts(): Promise<Contract[]> {
     try {
-      const response = await this.fetchWithAuth('/api/contracts/contracts')
+      const response = await this.fetchWithAuth('/api/contracts')
       return response.data || []
     } catch (error) {
       console.error('Error fetching contracts:', error)
@@ -299,11 +299,21 @@ class ApiService {
   // Gamification
   async getUserGamification(userId: string): Promise<GamificationData | null> {
     try {
-      const response = await this.fetchWithAuth(`/api/user-gamification/dashboard/${userId}`)
-      return response.data || null
+      const [xpResponse, badgesResponse, reputationResponse] = await Promise.all([
+        this.fetchWithAuth(`/api/gamification/xp/${userId}`),
+        this.fetchWithAuth(`/api/gamification/badges/${userId}`),
+        this.fetchWithAuth(`/api/gamification/reputation/${userId}`)
+      ])
+      
+      return {
+        xp: xpResponse.xp || 0,
+        badges: badgesResponse.badges || [],
+        reputation: reputationResponse.reputation || 0,
+        level: Math.floor((xpResponse.xp || 0) / 1000) + 1
+      }
     } catch (error) {
       console.error('Error fetching gamification data:', error)
-      return null
+      return { xp: 0, badges: [], reputation: 0, level: 1 }
     }
   }
 
@@ -331,11 +341,15 @@ class ApiService {
   // Portfolio
   async getUserPortfolio(userId: string): Promise<PortfolioData | null> {
     try {
-      const response = await this.fetchWithAuth(`/api/user-portfolio/analytics`)
-      return response.data || null
+      const response = await this.fetchWithAuth(`/api/gamification/portfolio/${userId}`)
+      return {
+        totalValue: response.portfolio?.reduce((sum: number, item: any) => sum + (item.value || 0), 0) || 0,
+        activeProjects: response.portfolio?.filter((item: any) => item.status === 'active').length || 0,
+        totalContributions: response.portfolio?.length || 0
+      }
     } catch (error) {
       console.error('Error fetching portfolio data:', error)
-      return null
+      return { totalValue: 0, activeProjects: 0, totalContributions: 0 }
     }
   }
 

@@ -279,42 +279,42 @@ const PlatformLegal = () => {
   const isAllSigned = signedDocs.size === legalDocuments.length
 
   return (
-    <div className="container" style={{ paddingTop: '2rem', paddingBottom: '4rem' }}>
-      {/* Header */}
-      <div className="text-center mb-8 animate-fade-in">
-        <h1>Platform Legal Pack</h1>
-        <p className="text-secondary">
-          Review and sign the required legal documents to access the platform
-        </p>
-        <div className="mt-4">
-          <span className="status status-warning">
+    <div className="container" style={{ paddingTop: '1.5rem', paddingBottom: '2rem' }}>
+      {/* Compact Header */}
+      <div className="text-center mb-6">
+        <div className="flex items-center justify-center gap-3 mb-2">
+          <div className="text-3xl">📋</div>
+          <div>
+            <h1 style={{ fontSize: '1.8rem', marginBottom: '0.25rem' }}>Platform Legal Pack</h1>
+            <p className="text-secondary" style={{ fontSize: '0.9rem' }}>Review and sign the required legal documents</p>
+          </div>
+        </div>
+        <div className="mt-2">
+          <span className="status status-warning text-xs">
             {signedDocs.size} of {legalDocuments.length} documents signed
           </span>
         </div>
       </div>
 
-      {/* Progress */}
-      <div className="card mb-8 animate-slide-in">
-        <div className="card-header">
-          <h3>Document Progress</h3>
-          <p className="text-muted">
-            Complete all required documents to proceed
-          </p>
-        </div>
-        <div className="progress mb-4">
-          <div 
-            className="progress-bar" 
-            style={{ width: `${(signedDocs.size / legalDocuments.length) * 100}%` }}
-          />
-        </div>
-        <div className="flex justify-between text-sm">
-          <span>{signedDocs.size} of {legalDocuments.length} completed</span>
-          <span>{Math.round((signedDocs.size / legalDocuments.length) * 100)}% Complete</span>
+      {/* Compact Progress */}
+      <div className="card mb-6" style={{ maxWidth: '600px', margin: '0 auto' }}>
+        <div className="p-4">
+          <h3 className="text-lg font-bold mb-3">Document Progress</h3>
+          <div className="progress mb-3" style={{ height: '6px' }}>
+            <div 
+              className="progress-bar" 
+              style={{ width: `${(signedDocs.size / legalDocuments.length) * 100}%` }}
+            />
+          </div>
+          <div className="flex justify-between text-sm">
+            <span>{signedDocs.size} of {legalDocuments.length} completed</span>
+            <span>{Math.round((signedDocs.size / legalDocuments.length) * 100)}% Complete</span>
+          </div>
         </div>
       </div>
 
-      {/* Document List */}
-      <div className="grid grid-2 gap-4 mb-8">
+      {/* Compact Document List */}
+      <div className="grid grid-2 gap-3 mb-6" style={{ maxWidth: '800px', margin: '0 auto' }}>
         {legalDocuments.map((doc, index) => (
           <div
             key={doc.id}
@@ -327,35 +327,34 @@ const PlatformLegal = () => {
             }}
             onClick={() => setCurrentDoc(index)}
           >
-            <div className="flex items-start gap-4">
-              <div className="text-3xl">{doc.icon}</div>
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-2">
-                  <h4 className="card-title">{doc.title}</h4>
-                  {signedDocs.has(doc.id) ? (
-                    <span className="status status-success">✓ Signed</span>
-                  ) : (
-                    <span className="status status-danger">⏳ Pending</span>
+            <div className="p-3">
+              <div className="flex items-start gap-3">
+                <div className="text-xl">{doc.icon}</div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h4 className="text-sm font-bold">{doc.title}</h4>
+                    {signedDocs.has(doc.id) ? (
+                      <span className="status status-success text-xs">✓ Signed</span>
+                    ) : (
+                      <span className="status status-danger text-xs">⏳ Pending</span>
+                    )}
+                  </div>
+                  <p className="text-secondary text-xs mb-1">{doc.description}</p>
+                  {doc.required && (
+                    <span className="status status-warning text-xs">Required</span>
                   )}
                 </div>
-                <p className="text-secondary text-sm">{doc.description}</p>
-                {doc.required && (
-                  <div className="mt-2">
-                    <span className="status status-warning">Required</span>
-                  </div>
-                )}
               </div>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Current Document */}
-      <div className="card animate-fade-in">
-        <div className="card-header">
-          <h3>{legalDocuments[currentDoc].icon} {legalDocuments[currentDoc].title}</h3>
-          <p className="text-muted">{legalDocuments[currentDoc].description}</p>
-        </div>
+      {/* Current Document - Compact */}
+      <div className="card animate-fade-in" style={{ maxWidth: '800px', margin: '0 auto' }}>
+        <div className="p-4">
+          <h3 className="text-lg font-bold mb-2">{legalDocuments[currentDoc].icon} {legalDocuments[currentDoc].title}</h3>
+          <p className="text-muted text-sm mb-4">{legalDocuments[currentDoc].description}</p>
 
         {!signedDocs.has(legalDocuments[currentDoc].id) ? (
           <div>
