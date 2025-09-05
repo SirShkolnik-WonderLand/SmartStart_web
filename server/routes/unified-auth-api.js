@@ -103,6 +103,7 @@ router.post('/login', authRateLimit, async (req, res) => {
       success: true,
       message: 'Login successful',
       user: result.user,
+      token: result.token,
       sessionId: result.sessionId
     });
 
