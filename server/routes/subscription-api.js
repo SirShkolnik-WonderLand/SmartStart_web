@@ -133,10 +133,14 @@ router.post('/create', async(req, res) => {
             }
         });
 
+        // If user has an existing subscription, cancel it first (plan change)
         if (existingSubscription) {
-            return res.status(400).json({
-                success: false,
-                error: 'User already has an active subscription'
+            await prisma.subscription.update({
+                where: { id: existingSubscription.id },
+                data: {
+                    status: 'CANCELLED',
+                    autoRenew: false
+                }
             });
         }
 
@@ -198,7 +202,7 @@ router.post('/create', async(req, res) => {
                 subscription,
                 invoice
             },
-            message: 'Subscription created successfully'
+            message: existingSubscription ? 'Subscription plan changed successfully' : 'Subscription created successfully'
         });
     } catch (error) {
         res.status(500).json({
