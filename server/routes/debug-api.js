@@ -126,8 +126,8 @@ router.post('/setup-database', async (req, res) => {
     res.json({
       success: true,
       message: 'Database tables created successfully',
-      kycTable: kycCount[0].count,
-      mfaTable: mfaCount[0].count,
+      kycTable: Number(kycCount[0].count),
+      mfaTable: Number(mfaCount[0].count),
       timestamp: new Date().toISOString()
     });
     
