@@ -300,7 +300,7 @@ class ApiService {
     try {
       return await this.fetchWithAuth('/api/user-profile/profile', {
         method: 'PUT',
-        body: JSON.stringify(profileData)
+        body: JSON.stringify(profileData),
       })
     } catch (error) {
       console.error('Error saving profile:', error)

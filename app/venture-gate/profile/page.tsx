@@ -18,13 +18,15 @@ const ProfileSetup = () => {
   
   // Profile data
   const [profile, setProfile] = useState({
-    firstName: 'Udi',
+    firstName: 'Anna',
     lastName: 'Shkolnik',
+    name: 'Anna Shkolnik',
     bio: '',
     location: '',
-    timezone: '',
-    availability: 'full-time',
-    experience: '5+ years',
+    website: '',
+    linkedin: '',
+    github: '',
+    twitter: '',
     interests: [] as string[],
     skills: [] as Skill[],
     portfolio: {
@@ -81,19 +83,19 @@ const ProfileSetup = () => {
     setIsSaving(true)
     
     try {
-      // Save profile data to API
+      // Save profile data to API using the API service
       const response = await apiService.saveProfile(profile)
-
-      if (response.success) {
-        // Update journey state to complete profile setup stage
+      
+      if (response && response.success) {
+        // Update journey state to next stage
         const userId = localStorage.getItem('user-id')
         if (userId) {
-          await apiService.updateJourneyState(userId, 1) // Stage 2 (Profile Setup)
+          await apiService.updateJourneyState(userId, 1) // Complete stage 2 (Profile Setup)
         }
         
         router.push('/venture-gate/explore')
       } else {
-        console.error('Failed to save profile:', response.message)
+        console.error('Failed to save profile:', response?.message || 'Unknown error')
       }
     } catch (error) {
       console.error('Error saving profile:', error)
@@ -321,21 +323,21 @@ const ProfileSetup = () => {
               </div>
               
               {profile.skills.map((skill) => (
-                <div key={skill.id} className="grid grid-4 gap-3 mb-3 p-3" style={{ background: 'var(--bg-secondary)', borderRadius: '8px' }}>
+                <div key={skill.id} className="grid grid-3 gap-4 mb-4 p-4" style={{ background: 'var(--bg-secondary)', borderRadius: '8px' }}>
                   <div className="form-group">
-                    <label className="form-label text-sm">Skill Name</label>
+                    <label className="form-label">Skill Name</label>
                     <input
                       type="text"
-                      className="form-input form-input-sm"
-                      placeholder="e.g., React, Python"
+                      className="form-input"
+                      placeholder="e.g., React, Python, Product Management"
                       value={skill.name}
                       onChange={(e) => updateSkill(skill.id, 'name', e.target.value)}
                     />
                   </div>
                   <div className="form-group">
-                    <label className="form-label text-sm">Category</label>
+                    <label className="form-label">Category</label>
                     <select
-                      className="form-input form-input-sm"
+                      className="form-input"
                       value={skill.category}
                       onChange={(e) => updateSkill(skill.id, 'category', e.target.value)}
                     >
@@ -345,9 +347,9 @@ const ProfileSetup = () => {
                     </select>
                   </div>
                   <div className="form-group">
-                    <label className="form-label text-sm">Level</label>
+                    <label className="form-label">Level</label>
                     <select
-                      className="form-input form-input-sm"
+                      className="form-input"
                       value={skill.level}
                       onChange={(e) => updateSkill(skill.id, 'level', e.target.value)}
                     >
@@ -357,9 +359,9 @@ const ProfileSetup = () => {
                       <option value="expert">Expert</option>
                     </select>
                   </div>
-                  <div className="form-group flex items-end">
+                  <div className="col-span-3 flex justify-end">
                     <button
-                      className="btn btn-danger btn-sm"
+                      className="btn btn-danger"
                       onClick={() => removeSkill(skill.id)}
                     >
                       Remove
@@ -372,13 +374,12 @@ const ProfileSetup = () => {
             {/* Interests */}
             <div>
               <h4 className="mb-4">Areas of Interest</h4>
-              <div className="grid grid-4 gap-2">
+              <div className="grid grid-3 gap-3">
                 {interestOptions.map((interest) => (
                   <button
                     key={interest}
-                    className={`btn btn-sm ${profile.interests.includes(interest) ? 'btn-primary' : 'btn-secondary'}`}
+                    className={`btn ${profile.interests.includes(interest) ? 'btn-primary' : 'btn-secondary'}`}
                     onClick={() => toggleInterest(interest)}
-                    style={{ fontSize: '0.875rem', padding: '0.5rem 0.75rem' }}
                   >
                     {interest}
                   </button>
@@ -404,11 +405,8 @@ const ProfileSetup = () => {
                   type="url"
                   className="form-input"
                   placeholder="https://github.com/username"
-                  value={profile.portfolio.github}
-                  onChange={(e) => setProfile(prev => ({ 
-                    ...prev, 
-                    portfolio: { ...prev.portfolio, github: e.target.value }
-                  }))}
+                  value={profile.github}
+                  onChange={(e) => setProfile(prev => ({ ...prev, github: e.target.value }))}
                 />
               </div>
               <div className="form-group">
@@ -417,11 +415,8 @@ const ProfileSetup = () => {
                   type="url"
                   className="form-input"
                   placeholder="https://linkedin.com/in/username"
-                  value={profile.portfolio.linkedin}
-                  onChange={(e) => setProfile(prev => ({ 
-                    ...prev, 
-                    portfolio: { ...prev.portfolio, linkedin: e.target.value }
-                  }))}
+                  value={profile.linkedin}
+                  onChange={(e) => setProfile(prev => ({ ...prev, linkedin: e.target.value }))}
                 />
               </div>
             </div>
@@ -432,11 +427,8 @@ const ProfileSetup = () => {
                 type="url"
                 className="form-input"
                 placeholder="https://yourwebsite.com"
-                value={profile.portfolio.website}
-                onChange={(e) => setProfile(prev => ({ 
-                  ...prev, 
-                  portfolio: { ...prev.portfolio, website: e.target.value }
-                }))}
+                value={profile.website}
+                onChange={(e) => setProfile(prev => ({ ...prev, website: e.target.value }))}
               />
             </div>
 
@@ -575,11 +567,11 @@ const ProfileSetup = () => {
         
         <div className="grid grid-2 gap-6">
           <div>
-            <h4 className="mb-3">{profile.firstName} {profile.lastName}</h4>
+            <h4 className="mb-3">{profile.name}</h4>
             <p className="text-secondary mb-4">{profile.bio || 'No bio provided'}</p>
             <div className="text-sm text-muted">
               <div>📍 {profile.location || 'Location not specified'}</div>
-              <div>⏰ {profile.availability} • {profile.experience}</div>
+              <div>🌐 {profile.website || 'No website'}</div>
             </div>
           </div>
           <div>
