@@ -18,9 +18,7 @@ app.use(compression());
 
 // CORS configuration
 app.use(cors({
-    origin: process.env.NODE_ENV === 'production' ?
-        ['https://smartstart-platform.onrender.com'] :
-        ['http://localhost:3000'],
+    origin: process.env.NODE_ENV === 'production' ? ['https://smartstart-platform.onrender.com'] : ['http://localhost:3000'],
     credentials: true
 }));
 

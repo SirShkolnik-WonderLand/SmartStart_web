@@ -75,3 +75,6 @@ Based on the database query and test scripts, here are the users available for t
 - The `dan@smartstart.com` account uses `dan` as the password
 
 You can use any of these accounts to test the login functionality on the production system!
+
+redner api key DONOTCOPY
+rnd_4ZN9GFqdGXDo0LWez9wXdtfyVvaT
