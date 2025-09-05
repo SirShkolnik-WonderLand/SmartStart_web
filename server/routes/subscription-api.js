@@ -26,63 +26,10 @@ router.get('/health', async(req, res) => {
 // Get all billing plans
 router.get('/plans', async(req, res) => {
     try {
-        // For now, return hardcoded plans until BillingPlan table is created
-        const plans = [
-            {
-                id: 'member',
-                name: 'Member',
-                description: 'Perfect for contributors looking to join projects',
-                price: 29,
-                currency: 'CAD',
-                interval: 'MONTHLY',
-                features: [
-                    'Submit contribution offers',
-                    'Access to project briefs',
-                    'Basic profile features',
-                    'Community access',
-                    'Email support'
-                ],
-                isActive: true
-            },
-            {
-                id: 'pro',
-                name: 'Pro',
-                description: 'For active contributors and small teams',
-                price: 79,
-                currency: 'CAD',
-                interval: 'MONTHLY',
-                features: [
-                    'Everything in Member',
-                    'Create up to 3 ventures',
-                    'Advanced project access',
-                    'Priority support',
-                    'Advanced analytics',
-                    'Team collaboration tools',
-                    'Custom integrations'
-                ],
-                isActive: true
-            },
-            {
-                id: 'founder',
-                name: 'Founder',
-                description: 'For serious entrepreneurs and growing companies',
-                price: 199,
-                currency: 'CAD',
-                interval: 'MONTHLY',
-                features: [
-                    'Everything in Pro',
-                    'Unlimited ventures',
-                    'Full platform access',
-                    'White-label options',
-                    'Dedicated support',
-                    'Custom legal templates',
-                    'Advanced security features',
-                    'API access',
-                    'Custom integrations'
-                ],
-                isActive: true
-            }
-        ];
+        const plans = await prisma.billingPlan.findMany({
+            where: { isactive: true },
+            orderBy: { price: 'asc' }
+        });
 
         res.json({
             success: true,
