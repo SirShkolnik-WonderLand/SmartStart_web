@@ -30,18 +30,18 @@ const ChoosePlans = () => {
       try {
         const resp = await fetch('https://smartstart-api.onrender.com/api/subscriptions/plans')
         const data = await resp.json()
-        if (Array.isArray(data?.plans)) {
-          const mapped: Plan[] = data.plans.map((p: any) => ({
+        if (Array.isArray(data?.data)) {
+          const mapped: Plan[] = data.data.map((p: any, index: number) => ({
             id: p.id,
             name: p.name,
             description: p.description || '',
             price: p.price,
-            period: p.period || 'month',
+            period: p.interval?.toLowerCase() || 'month',
             features: p.features || [],
             limitations: p.limitations || [],
             icon: p.icon || '💳',
             color: 'var(--accent-primary)',
-            popular: p.popular || false
+            popular: index === 2 // Mark the 3rd plan (Scale) as popular
           }))
           setPlans(mapped)
         } else {
