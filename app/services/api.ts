@@ -217,13 +217,7 @@ class ApiService {
   }
 
   async getCurrentUser(): Promise<User> {
-    // Get user data from localStorage if available
-    const userData = localStorage.getItem('user-data')
-    if (userData) {
-      return JSON.parse(userData)
-    }
-
-    // If no user data in localStorage, try to get it from the server
+    // Always validate the token by calling the server, even if we have cached data
     try {
       const response = await this.fetchWithAuth('/api/auth/me')
       
@@ -237,6 +231,10 @@ class ApiService {
       }
     } catch (error) {
       console.error('Error getting current user:', error)
+      // Clear any stale data on authentication failure
+      localStorage.removeItem('user-id')
+      localStorage.removeItem('user-data')
+      localStorage.removeItem('auth-token')
       throw error
     }
   }
