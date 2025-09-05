@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { apiService } from '../../services/api'
 
 interface Skill {
   id: string
@@ -81,19 +82,18 @@ const ProfileSetup = () => {
     
     try {
       // Save profile data to API
-      const response = await fetch('/api/user-profile/profile', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify(profile)
-      })
+      const response = await apiService.saveProfile(profile)
 
-      if (response.ok) {
+      if (response.success) {
+        // Update journey state to complete profile setup stage
+        const userId = localStorage.getItem('user-id')
+        if (userId) {
+          await apiService.updateJourneyState(userId, 1) // Stage 2 (Profile Setup)
+        }
+        
         router.push('/venture-gate/explore')
       } else {
-        console.error('Failed to save profile')
+        console.error('Failed to save profile:', response.message)
       }
     } catch (error) {
       console.error('Error saving profile:', error)
@@ -321,21 +321,21 @@ const ProfileSetup = () => {
               </div>
               
               {profile.skills.map((skill) => (
-                <div key={skill.id} className="grid grid-3 gap-4 mb-4 p-4" style={{ background: 'var(--bg-secondary)', borderRadius: '8px' }}>
+                <div key={skill.id} className="grid grid-4 gap-3 mb-3 p-3" style={{ background: 'var(--bg-secondary)', borderRadius: '8px' }}>
                   <div className="form-group">
-                    <label className="form-label">Skill Name</label>
+                    <label className="form-label text-sm">Skill Name</label>
                     <input
                       type="text"
-                      className="form-input"
-                      placeholder="e.g., React, Python, Product Management"
+                      className="form-input form-input-sm"
+                      placeholder="e.g., React, Python"
                       value={skill.name}
                       onChange={(e) => updateSkill(skill.id, 'name', e.target.value)}
                     />
                   </div>
                   <div className="form-group">
-                    <label className="form-label">Category</label>
+                    <label className="form-label text-sm">Category</label>
                     <select
-                      className="form-input"
+                      className="form-input form-input-sm"
                       value={skill.category}
                       onChange={(e) => updateSkill(skill.id, 'category', e.target.value)}
                     >
@@ -345,9 +345,9 @@ const ProfileSetup = () => {
                     </select>
                   </div>
                   <div className="form-group">
-                    <label className="form-label">Level</label>
+                    <label className="form-label text-sm">Level</label>
                     <select
-                      className="form-input"
+                      className="form-input form-input-sm"
                       value={skill.level}
                       onChange={(e) => updateSkill(skill.id, 'level', e.target.value)}
                     >
@@ -357,9 +357,9 @@ const ProfileSetup = () => {
                       <option value="expert">Expert</option>
                     </select>
                   </div>
-                  <div className="col-span-3 flex justify-end">
+                  <div className="form-group flex items-end">
                     <button
-                      className="btn btn-danger"
+                      className="btn btn-danger btn-sm"
                       onClick={() => removeSkill(skill.id)}
                     >
                       Remove
@@ -372,12 +372,13 @@ const ProfileSetup = () => {
             {/* Interests */}
             <div>
               <h4 className="mb-4">Areas of Interest</h4>
-              <div className="grid grid-3 gap-3">
+              <div className="grid grid-4 gap-2">
                 {interestOptions.map((interest) => (
                   <button
                     key={interest}
-                    className={`btn ${profile.interests.includes(interest) ? 'btn-primary' : 'btn-secondary'}`}
+                    className={`btn btn-sm ${profile.interests.includes(interest) ? 'btn-primary' : 'btn-secondary'}`}
                     onClick={() => toggleInterest(interest)}
+                    style={{ fontSize: '0.875rem', padding: '0.5rem 0.75rem' }}
                   >
                     {interest}
                   </button>

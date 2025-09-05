@@ -296,6 +296,18 @@ class ApiService {
     }
   }
 
+  async saveProfile(profileData: any) {
+    try {
+      return await this.fetchWithAuth('/api/user-profile/profile', {
+        method: 'PUT',
+        body: JSON.stringify(profileData)
+      })
+    } catch (error) {
+      console.error('Error saving profile:', error)
+      throw error
+    }
+  }
+
   // Gamification
   async getUserGamification(userId: string): Promise<GamificationData | null> {
     try {
