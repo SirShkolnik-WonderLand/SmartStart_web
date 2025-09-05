@@ -49,10 +49,22 @@ router.post('/setup-database', async (req, res) => {
     
     console.log('🔧 Setting up production database tables...');
     
-    // Create enums first
-    await prisma.$executeRaw`CREATE TYPE "VerificationStatus" AS ENUM ('PENDING', 'APPROVED', 'REJECTED', 'EXPIRED')`;
-    await prisma.$executeRaw`CREATE TYPE "DocumentType" AS ENUM ('GOVERNMENT_ID', 'PROOF_OF_ADDRESS')`;
-    await prisma.$executeRaw`CREATE TYPE "MfaMethod" AS ENUM ('AUTHENTICATOR', 'EMAIL', 'SMS')`;
+    // Create enums first (ignore if they already exist)
+    try {
+      await prisma.$executeRaw`CREATE TYPE "VerificationStatus" AS ENUM ('PENDING', 'APPROVED', 'REJECTED', 'EXPIRED')`;
+    } catch (e) {
+      console.log('VerificationStatus enum already exists');
+    }
+    try {
+      await prisma.$executeRaw`CREATE TYPE "DocumentType" AS ENUM ('GOVERNMENT_ID', 'PROOF_OF_ADDRESS')`;
+    } catch (e) {
+      console.log('DocumentType enum already exists');
+    }
+    try {
+      await prisma.$executeRaw`CREATE TYPE "MfaMethod" AS ENUM ('AUTHENTICATOR', 'EMAIL', 'SMS')`;
+    } catch (e) {
+      console.log('MfaMethod enum already exists');
+    }
     
     // Create KycVerification table
     await prisma.$executeRaw`
