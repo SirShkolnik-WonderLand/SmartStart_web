@@ -308,7 +308,7 @@ const PlatformLegal = () => {
           break
         case 'inventions-ip':
         case 'per-project-nda':
-          response = await apiService.grantConsent('PLATFORM_IP')
+          response = await apiService.grantConsent('PLATFORM_TERMS')
           break
         default:
           throw new Error('Unknown document type')
