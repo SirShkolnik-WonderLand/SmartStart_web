@@ -201,7 +201,7 @@ router.put('/profile', authenticateToken, async(req, res) => {
             update: {
                 bio,
                 location,
-                website,
+                websiteUrl: website,
                 linkedin,
                 github,
                 twitter,
@@ -212,7 +212,7 @@ router.put('/profile', authenticateToken, async(req, res) => {
                 nickname: name || `${firstName} ${lastName}`.trim(),
                 bio,
                 location,
-                website,
+                websiteUrl: website,
                 linkedin,
                 github,
                 twitter
@@ -274,7 +274,7 @@ router.put('/profile/:userId', authenticateToken, async(req, res) => {
             update: {
                 bio,
                 location,
-                website,
+                websiteUrl: website,
                 phone,
                 dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : null,
                 gender,
@@ -288,7 +288,7 @@ router.put('/profile/:userId', authenticateToken, async(req, res) => {
                 userId,
                 bio,
                 location,
-                website,
+                websiteUrl: website,
                 phone,
                 dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : null,
                 gender,
