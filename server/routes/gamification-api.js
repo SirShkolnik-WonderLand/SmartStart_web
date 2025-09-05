@@ -681,6 +681,31 @@ router.get('/leaderboards', async(req, res) => {
     }
 });
 
+// Get default leaderboard (XP-based)
+router.get('/leaderboard', async(req, res) => {
+    try {
+        const result = await gamificationService.getLeaderboard('xp', 10);
+        if (result.success) {
+            res.json({
+                success: true,
+                leaderboard: result.leaderboard,
+                timestamp: new Date().toISOString()
+            });
+        } else {
+            res.status(500).json({
+                success: false,
+                error: 'Failed to get leaderboard'
+            });
+        }
+    } catch (error) {
+        console.error('Error getting leaderboard:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to get leaderboard'
+        });
+    }
+});
+
 // ===== ACTIVITY TRACKING =====
 
 // Get user activity log

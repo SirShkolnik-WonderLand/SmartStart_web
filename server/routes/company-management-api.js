@@ -177,13 +177,6 @@ router.get('/', async(req, res) => {
                         name: true,
                         size: true
                     }
-                },
-                ventures: {
-                    select: {
-                        id: true,
-                        name: true,
-                        status: true
-                    }
                 }
             },
             skip,

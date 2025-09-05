@@ -267,6 +267,44 @@ router.patch('/consent/:consentId/revoke', async(req, res) => {
     }
 });
 
+// Get all legal packs (public endpoint)
+router.get('/packs', async(req, res) => {
+    try {
+        const legalPacks = await prisma.platformLegalPack.findMany({
+            select: {
+                id: true,
+                userId: true,
+                status: true,
+                signedAt: true,
+                expiresAt: true,
+                createdAt: true,
+                user: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true
+                    }
+                }
+            },
+            orderBy: { createdAt: 'desc' }
+        });
+
+        res.json({
+            success: true,
+            packs: legalPacks,
+            count: legalPacks.length,
+            timestamp: new Date().toISOString()
+        });
+    } catch (error) {
+        console.error('Error fetching legal packs:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to fetch legal packs',
+            message: error.message
+        });
+    }
+});
+
 // Get all legal packs (admin)
 router.get('/legal-packs', async(req, res) => {
     try {
