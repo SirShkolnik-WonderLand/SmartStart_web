@@ -204,7 +204,9 @@ class ApiService {
       const response = await this.fetchWithAuth<{ user: User }>('/api/auth/me')
       
       // Handle both response formats: { success: true, user: {...} } and { success: true, data: { user: {...} } }
-      const user = response.user || response.data?.user
+      // Type assertion to handle the actual backend response format
+      const responseData = response as ApiResponse<{ user: User }> & { user?: User }
+      const user = responseData.user || response.data?.user
       
       if (response.success && user) {
         localStorage.setItem('user-id', user.id)
