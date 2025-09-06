@@ -97,7 +97,7 @@ export default function AnalyticsPage() {
         <div className="flex items-center gap-4">
           <select
             value={timeRange}
-            onChange={(e) => setTimeRange(e.target.value as string)}
+            onChange={(e) => setTimeRange(e.target.value as '7d' | '30d' | '90d' | '1y')}
             className="bg-glass-surface border border-border rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary/20 focus:border-primary"
           >
             <option value="7d">Last 7 days</option>
