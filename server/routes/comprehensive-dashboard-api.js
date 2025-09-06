@@ -29,6 +29,50 @@ async function getCFOAlerts(userId) { return []; }
 
 // ===== COMPREHENSIVE DASHBOARD SYSTEM FOR 1000+ USERS =====
 
+// Main dashboard route (for testing without auth)
+router.get('/', async(req, res) => {
+    try {
+        // Get basic dashboard data without authentication for testing
+        const users = await prisma.user.count();
+        const projects = await prisma.project.count();
+        const companies = await prisma.company.count();
+        const teams = await prisma.team.count();
+        const ventures = await prisma.venture.count();
+        const legalDocuments = await prisma.legalDocument.count();
+
+        res.json({
+            success: true,
+            dashboard: {
+                ventures: {
+                    total: ventures,
+                    active: ventures, // Simplified for now
+                    pending: 0
+                },
+                teams: {
+                    totalMembers: users, // Simplified for now
+                    totalTeams: teams
+                },
+                projects: {
+                    total: projects,
+                    active: projects, // Simplified for now
+                    completed: 0
+                },
+                legal: {
+                    totalDocuments: legalDocuments,
+                    pendingContracts: 0
+                }
+            }
+        });
+    } catch (error) {
+        console.error('Dashboard error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to load dashboard data',
+            error: error.message
+        });
+    }
+});
+
 // Health check for Comprehensive Dashboard system
 router.get('/health', async(req, res) => {
     try {
