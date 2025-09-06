@@ -90,6 +90,7 @@ const MainDashboard = () => {
     { id: 'ventures', label: 'My Ventures', icon: '🚀' },
     { id: 'explore', label: 'Explore', icon: '🔍' },
     { id: 'team', label: 'Team', icon: '👥' },
+    { id: 'projects', label: 'Projects', icon: '📋' },
     { id: 'legal', label: 'Legal', icon: '⚖️' },
     { id: 'subscription', label: 'Subscription', icon: '💳' },
     { id: 'profile', label: 'Profile', icon: '👤' }
@@ -286,13 +287,51 @@ const MainDashboard = () => {
             <h2 className="text-2xl font-bold mb-6">👥 Team Management</h2>
             <div className="text-center py-12">
               <div className="text-6xl mb-4">👥</div>
-              <h3 className="text-xl font-bold mb-4">Build Your Team</h3>
+              <h3 className="text-xl font-bold mb-4">Team Management</h3>
               <p className="text-muted mb-6">
-                Find talented team members, manage roles, and collaborate effectively
+                Create teams, invite members, and collaborate effectively
               </p>
-              <button className="btn btn-primary btn-lg">
-                Start Building Your Team
-              </button>
+              <div className="flex gap-4 justify-center">
+                <button 
+                  className="btn btn-primary btn-lg"
+                  onClick={() => router.push('/teams')}
+                >
+                  Manage Teams
+                </button>
+                <button 
+                  className="btn btn-secondary btn-lg"
+                  onClick={() => router.push('/teams/create')}
+                >
+                  Create New Team
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'projects' && (
+          <div className="p-6">
+            <h2 className="text-2xl font-bold mb-6">📋 Project Management</h2>
+            <div className="text-center py-12">
+              <div className="text-6xl mb-4">📋</div>
+              <h3 className="text-xl font-bold mb-4">Project Management</h3>
+              <p className="text-muted mb-6">
+                Create, manage, and track your projects
+              </p>
+              <div className="flex gap-4 justify-center">
+                <button 
+                  className="btn btn-primary btn-lg"
+                  onClick={() => router.push('/projects')}
+                >
+                  Manage Projects
+                </button>
+                <button 
+                  className="btn btn-secondary btn-lg"
+                  onClick={() => router.push('/projects/create')}
+                >
+                  Create New Project
+                </button>
+              </div>
             </div>
           </div>
         )}
