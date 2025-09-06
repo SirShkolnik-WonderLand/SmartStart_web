@@ -176,6 +176,7 @@ export interface LegalDocument {
   required: boolean
   status: 'pending' | 'signed' | 'expired'
   signedAt?: string
+  createdAt?: string
   version: string
   templateId?: string
 }
