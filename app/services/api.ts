@@ -557,9 +557,13 @@ class ApiService {
 
   async createSubscription(planId: string) {
     try {
+      const userId = this.getCurrentUserId()
+      if (!userId) {
+        throw new Error('No user ID found')
+      }
       return await this.fetchWithAuth('/api/subscriptions/create', {
         method: 'POST',
-        body: JSON.stringify({ planId }),
+        body: JSON.stringify({ userId, planId }),
       })
     } catch (error) {
       console.error('Error creating subscription:', error)

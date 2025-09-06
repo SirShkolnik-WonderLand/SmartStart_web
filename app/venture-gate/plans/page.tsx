@@ -60,9 +60,16 @@ const ChoosePlans = () => {
     setSelectedPlan(planId)
     setIsProcessing(true)
     try {
+      const userId = apiService.getCurrentUserId()
+      if (!userId) {
+        console.error('No user ID found')
+        setIsProcessing(false)
+        return
+      }
+      
       const resp = await apiService.fetchWithAuth('/api/subscriptions/create', {
         method: 'POST',
-        body: JSON.stringify({ planId })
+        body: JSON.stringify({ userId, planId })
       } as any)
       if (resp?.success) {
         router.push('/venture-gate/explore')
@@ -70,6 +77,7 @@ const ChoosePlans = () => {
         setIsProcessing(false)
       }
     } catch (e) {
+      console.error('Plan selection error:', e)
       setIsProcessing(false)
     }
   }
