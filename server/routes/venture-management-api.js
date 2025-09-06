@@ -403,7 +403,7 @@ router.get('/:ventureId/documents', async(req, res) => {
                         signer: {
                             select: {
                                 id: true,
-                                displayName: true,
+                                name: true,
                                 email: true
                             }
                         }

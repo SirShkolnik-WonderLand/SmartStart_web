@@ -17,7 +17,7 @@ class ContractTemplateEngine {
             '{{VENTURE_CREATED_AT}}': 'venture.createdAt',
 
             // Owner variables
-            '{{OWNER_NAME}}': 'owner.displayName',
+            '{{OWNER_NAME}}': 'owner.name',
             '{{OWNER_EMAIL}}': 'owner.email',
             '{{OWNER_KYC_STATUS}}': 'owner.kycStatus',
             '{{OWNER_TRUST_SCORE}}': 'owner.trustScore',
@@ -106,7 +106,7 @@ class ContractTemplateEngine {
                 owner: {
                     select: {
                         id: true,
-                        displayName: true,
+                        name: true,
                         email: true,
                         kycStatus: true,
                         trustScore: true
@@ -143,7 +143,7 @@ class ContractTemplateEngine {
         };
 
         const ownerContext = venture.owner ? {
-            '{{OWNER_NAME}}': venture.owner.displayName || '',
+            '{{OWNER_NAME}}': venture.owner.name || '',
             '{{OWNER_EMAIL}}': venture.owner.email || '',
             '{{OWNER_KYC_STATUS}}': venture.owner.kycStatus || 'PENDING',
             '{{OWNER_TRUST_SCORE}}': venture.owner.trustScore?.toString() || '0'
