@@ -10,7 +10,6 @@ import {
   CheckCircle, 
   Settings,
   ChevronLeft,
-  ChevronRight,
   Key,
   Clock
 } from 'lucide-react'

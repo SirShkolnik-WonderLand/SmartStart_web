@@ -9,13 +9,10 @@ import {
   Briefcase, 
   Target,
   Award,
-  Clock,
-  Calendar,
-  Filter,
   Download,
   RefreshCw
 } from 'lucide-react'
-import { comprehensiveApiService as apiService, AnalyticsData } from '@/lib/api-comprehensive'
+import { AnalyticsData } from '@/lib/api-comprehensive'
 
 export default function AnalyticsPage() {
   const [data, setData] = useState<AnalyticsData | null>(null)
@@ -217,7 +214,7 @@ export default function AnalyticsPage() {
         <div className="glass rounded-xl p-6">
           <h3 className="text-lg font-semibold text-foreground mb-4">Monthly Growth Trends</h3>
           <div className="space-y-4">
-            {data.monthlyStats.map((month, index) => (
+            {data.monthlyStats.map((month) => (
               <div key={month.month} className="space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium text-foreground">{month.month}</span>

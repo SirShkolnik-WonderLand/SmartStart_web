@@ -14,7 +14,7 @@ interface MainLayoutProps {
 
 export function MainLayout({ children }: MainLayoutProps) {
   const { theme } = useTheme()
-  const { isAuthenticated, user } = useAuthStore()
+  const { isAuthenticated } = useAuthStore()
   const { setGlobalLoading } = useUIStore()
 
   useEffect(() => {
@@ -92,6 +92,6 @@ export function MainLayout({ children }: MainLayoutProps) {
   )
 }
 
-function cn(...classes: (string | undefined | null | false)[]): string {
-  return classes.filter(Boolean).join(' ')
-}
+// function cn(...classes: (string | undefined | null | false)[]): string {
+//   return classes.filter(Boolean).join(' ')
+// }

@@ -26,8 +26,6 @@ const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
 
 export function ThemeProvider({
   children,
-  defaultTheme = 'wonderlight',
-  storageKey = 'wonderland-theme',
   ...props
 }: ThemeProviderProps) {
   const { theme, setTheme, toggleTheme, initializeTheme } = useThemeStore()

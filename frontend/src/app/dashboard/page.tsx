@@ -12,8 +12,6 @@ import {
   Briefcase,
   Target,
   FileText,
-  UserCheck,
-  BarChart3,
   Star,
   Award,
   ChevronRight,
@@ -26,7 +24,7 @@ export default function DashboardPage() {
   const [analytics, setAnalytics] = useState<unknown>(null)
   const [ventures, setVentures] = useState<unknown[]>([])
   const [offers, setOffers] = useState<unknown[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+  const [, setIsLoading] = useState(true)
 
   useEffect(() => {
     const loadDashboardData = async () => {
@@ -173,7 +171,7 @@ export default function DashboardPage() {
                   Recent Activity
                 </h3>
                 <div className="space-y-4">
-                  {ventures.slice(0, 3).map((venture, index) => (
+                  {ventures.slice(0, 3).map((venture) => (
                     <div key={venture.id} className="flex items-start gap-3 p-3 hover:bg-glass-surface rounded-lg transition-colors">
                       <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
                         <Briefcase className="w-4 h-4 text-primary" />
