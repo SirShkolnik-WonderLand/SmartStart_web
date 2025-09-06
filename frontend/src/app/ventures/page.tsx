@@ -5,8 +5,8 @@ import { comprehensiveApiService as apiService } from '@/lib/api-comprehensive'
 import { Briefcase, Users, Calendar, TrendingUp, Plus } from 'lucide-react'
 
 export default function VenturesPage() {
-  const [ventures, setVentures] = useState<any[]>([])
-  const [analytics, setAnalytics] = useState<any>(null)
+  const [ventures, setVentures] = useState<unknown[]>([])
+  const [analytics, setAnalytics] = useState<unknown>(null)
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {

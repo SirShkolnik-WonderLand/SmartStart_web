@@ -5,7 +5,7 @@ const API_BASE = process.env.NODE_ENV === 'production'
   ? 'https://smartstart-api.onrender.com' 
   : 'http://localhost:3001'
 
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success: boolean
   data?: T
   message?: string
@@ -277,7 +277,7 @@ export interface UserMetrics {
 // ============================================================================
 
 class ComprehensiveApiService {
-  private async fetchWithAuth<T = any>(
+  private async fetchWithAuth<T = unknown>(
     endpoint: string, 
     options: RequestInit = {}
   ): Promise<ApiResponse<T>> {
