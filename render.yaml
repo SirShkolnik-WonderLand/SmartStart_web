@@ -6,7 +6,6 @@ services:
   - type: pserv
     name: smartstart-db
     plan: starter
-    runtime: postgresql
 
   # Backend API Service
   - type: web
