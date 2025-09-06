@@ -1,20 +1,21 @@
+# render.yaml - SmartStart Platform Deployment Configuration
+# This file defines the services for Render.com deployment
+
 services:
-  - name: smartstart-api
-    type: web
-    runtime: node
-    plan: standard
-    buildCommand: npm ci --omit=dev && npx prisma generate
-    startCommand: npm run start:api
+  # Backend API Service (existing - smartstart-api)
+  - type: web
+    name: smartstart-api
+    env: node
+    plan: starter
+    buildCommand: npm install
+    startCommand: node server/consolidated-server.js
+    rootDir: ./
     healthCheckPath: /health
-    healthCheckTimeout: 300
-    autoDeploy: true
     envVars:
-      - key: NODE_VERSION
-        value: 22.16.0
       - key: NODE_ENV
         value: production
       - key: PORT
-        value: "3000"
+        value: 3000
       - key: DATABASE_URL
         fromDatabase:
           name: smartstart-db
@@ -23,30 +24,36 @@ services:
         generateValue: true
       - key: FRONTEND_URL
         value: https://smartstart-cli-web.onrender.com
-      - key: WORKER_ENABLED
-        value: "false"
-      - key: STORAGE_ENABLED
-        value: "false"
       - key: MONITOR_ENABLED
-        value: "false"
+        value: false
+      - key: STORAGE_ENABLED
+        value: false
+      - key: WORKER_ENABLED
+        value: false
 
-  - name: smartstart-cli-web
-    type: web
-    runtime: node
+  # Frontend Service (new Next.js app)
+  - type: web
+    name: smartstart-frontend
+    env: node
     plan: starter
-    # Need devDependencies (tailwindcss/postcss/autoprefixer) at build time
-    buildCommand: NPM_CONFIG_PRODUCTION=false npm ci && npm run build
-    startCommand: npm start
+    buildCommand: cd frontend && npm install && npm run build
+    startCommand: cd frontend && npm start
+    rootDir: ./
+    healthCheckPath: /
     envVars:
       - key: NODE_ENV
         value: production
       - key: PORT
-        value: "3000"
+        value: 3000
       - key: NEXT_PUBLIC_API_URL
-        value: https://smartstart-api.onrender.com
-    autoDeploy: true
+        fromService:
+          type: web
+          name: smartstart-api
+          property: host
 
-databases:
-  - name: smartstart-db
-    plan: basic-256mb
-    databaseName: smartstart
+  # Database Service (PostgreSQL)
+  - type: pserv
+    name: smartstart-db
+    plan: starter
+    env: postgresql
+    ipAllowList: []

@@ -1,0 +1,246 @@
+@import "tailwindcss";
+
+/* Wonderland Theme System */
+
+:root {
+    /* Wonderlight Theme (Default) */
+    --background: 255 248 240;
+    /* #FFF8F0 */
+    --foreground: 15 23 42;
+    /* #0F172A */
+    --foreground-body: 51 65 85;
+    /* #334155 */
+    --foreground-muted: 100 116 139;
+    /* #64748B */
+    /* Glass Surfaces */
+    --glass-surface: rgba(246, 248, 251, 0.88);
+    --glass-border: rgba(15, 23, 42, 0.08);
+    --glass-highlight: rgba(15, 23, 42, 0.04);
+    --glass-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    --glass-shadow-lg: 0 10px 28px rgba(0, 0, 0, 0.12);
+    /* Wonderland Brand Colors */
+    --primary: 59 130 246;
+    /* #3B82F6 */
+    --primary-foreground: 255 255 255;
+    --accent: 232 121 249;
+    /* #E879F9 */
+    --accent-foreground: 255 255 255;
+    --highlight: 245 158 11;
+    /* #F59E0B */
+    --highlight-foreground: 255 255 255;
+    /* Interactive States */
+    --hover: rgba(15, 23, 42, 0.04);
+    --active: rgba(15, 23, 42, 0.08);
+    --focus: 59 130 246;
+    /* Borders & Dividers */
+    --border: rgba(15, 23, 42, 0.12);
+    --border-light: rgba(15, 23, 42, 0.08);
+    /* Status Colors */
+    --success: 34 197 94;
+    --warning: 245 158 11;
+    --error: 239 68 68;
+    --info: 59 130 246;
+    /* Border Radius */
+    --radius: 12px;
+}
+
+
+/* Midnight Glass Theme */
+
+[data-theme="midnight"] {
+    --background: 11 16 33;
+    /* #0B1021 */
+    --foreground: 245 247 250;
+    /* #F5F7FA */
+    --foreground-body: 209 213 225;
+    /* #D1D5E1 */
+    --foreground-muted: 152 162 184;
+    /* #98A2B8 */
+    /* Glass Surfaces */
+    --glass-surface: rgba(18, 23, 54, 0.72);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-highlight: rgba(255, 255, 255, 0.05);
+    --glass-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+    --glass-shadow-lg: 0 18px 48px rgba(0, 0, 0, 0.45);
+    /* Wonderland Brand Colors */
+    --primary: 58 123 222;
+    /* #3A7BDE */
+    --accent: 222 110 166;
+    /* #DE6EA6 */
+    --highlight: 245 158 11;
+    /* #F59E0B */
+    /* Interactive States */
+    --hover: rgba(255, 255, 255, 0.05);
+    --active: rgba(255, 255, 255, 0.1);
+    /* Borders & Dividers */
+    --border: rgba(255, 255, 255, 0.1);
+    --border-light: rgba(255, 255, 255, 0.05);
+}
+
+
+/* Base Styles */
+
+body {
+    background: rgb(var(--background));
+    color: rgb(var(--foreground));
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+
+/* Wonderland Background */
+
+.wonderland-bg {
+    background: linear-gradient(135deg, rgb(var(--background)) 0%, rgb(var(--glass-surface)) 100%);
+    min-height: 100vh;
+}
+
+
+/* Glass Morphism Components */
+
+.glass {
+    background: var(--glass-surface);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+}
+
+.glass-lg {
+    background: var(--glass-surface);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow-lg);
+}
+
+.glass-button {
+    background: var(--glass-surface);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid var(--glass-border);
+    transition: all 0.2s ease;
+}
+
+.glass-button:hover {
+    background: var(--glass-highlight);
+    transform: translateY(-1px);
+    box-shadow: var(--glass-shadow-lg);
+}
+
+
+/* Wonder Button */
+
+.wonder-button {
+    background: linear-gradient(135deg, rgb(var(--primary)) 0%, rgb(var(--accent)) 100%);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius);
+    font-weight: 600;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.wonder-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+}
+
+
+/* Text Colors */
+
+.text-foreground {
+    color: rgb(var(--foreground));
+}
+
+.text-foreground-body {
+    color: rgb(var(--foreground-body));
+}
+
+.text-foreground-muted {
+    color: rgb(var(--foreground-muted));
+}
+
+
+/* Status Colors */
+
+.text-success {
+    color: rgb(var(--success));
+}
+
+.text-warning {
+    color: rgb(var(--warning));
+}
+
+.text-error {
+    color: rgb(var(--error));
+}
+
+
+/* Background Colors */
+
+.bg-glass-surface {
+    background: var(--glass-surface);
+}
+
+.bg-glass-highlight {
+    background: var(--glass-highlight);
+}
+
+
+/* Border Colors */
+
+.border-glass-border {
+    border-color: var(--glass-border);
+}
+
+
+/* Focus States */
+
+.focus\:ring-primary:focus {
+    --tw-ring-color: rgb(var(--focus));
+}
+
+
+/* Animations */
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+@keyframes glow {
+    0%,
+    100% {
+        opacity: 0.6;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+@keyframes door-open {
+    0% {
+        transform: scaleX(0);
+    }
+    100% {
+        transform: scaleX(1);
+    }
+}
+
+@keyframes key-glint {
+    0% {
+        transform: scale(1) rotate(0deg);
+    }
+    50% {
+        transform: scale(1.1) rotate(180deg);
+    }
+    100% {
+        transform: scale(1) rotate(360deg);
+    }
+}
