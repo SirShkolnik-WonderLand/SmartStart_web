@@ -1,19 +1,14 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Disable Turbopack for production builds to avoid CSS processing issues
+  // Output configuration for monorepo
+  outputFileTracingRoot: '../',
+  // Disable experimental features that cause issues
   experimental: {
-    turbo: {
-      // Only use Turbopack in development
-      rules: {}
-    }
+    // Remove deprecated turbo config
   },
-  // Ensure stable builds
-  swcMinify: true,
-  // Optimize for production
+  // Enable compression
   compress: true,
-  // Handle CSS properly
-  cssModules: false,
 };
 
 export default nextConfig;
