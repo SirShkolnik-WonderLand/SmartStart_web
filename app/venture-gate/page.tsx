@@ -226,7 +226,7 @@ const VentureGateJourney = () => {
   }
 
   // Check if user has completed all stages
-  const isJourneyComplete = currentStage >= journeyStages.length - 1 && journeyState?.progress === 100
+  const isJourneyComplete = currentStage >= journeyStages.length - 1
 
   // If journey is complete, redirect to main dashboard
   if (isJourneyComplete) {

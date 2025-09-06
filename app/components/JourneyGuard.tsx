@@ -24,6 +24,9 @@ export default function JourneyGuard({ children }: JourneyGuardProps) {
     '/venture-gate/plans',
     '/venture-gate/legal',
     '/venture-gate/profile',
+    '/venture-gate/orientation',
+    '/venture-gate/welcome',
+    '/venture-gate/create',
     '/venture-gate/help',
     '/documents',
     '/documents/soba/new',
@@ -47,8 +50,8 @@ export default function JourneyGuard({ children }: JourneyGuardProps) {
         const journeyState = await apiService.getJourneyState(storedId)
         
         if (journeyState) {
-          // Check if journey is complete (all 11 stages done)
-          const isComplete = journeyState.progress === 100 && journeyState.currentStage >= 10
+          // Check if journey is complete (all 6 stages done)
+          const isComplete = journeyState.progress === 100 && journeyState.currentStage >= 5
           setIsJourneyComplete(isComplete)
 
           // If journey is not complete and user is not on a journey page, redirect to journey

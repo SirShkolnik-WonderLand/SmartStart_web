@@ -254,7 +254,7 @@ const MainDashboard = () => {
                 </button>
                 <button 
                   className="btn btn-secondary btn-lg"
-                  onClick={() => router.push('/venture-gate/create')}
+                  onClick={() => router.push('/ventures/create')}
                 >
                   Create New Venture
                 </button>
@@ -275,7 +275,7 @@ const MainDashboard = () => {
               <div className="flex gap-4 justify-center">
                 <button 
                   className="btn btn-primary btn-lg"
-                  onClick={() => router.push('/venture-gate/explore')}
+                  onClick={() => router.push('/ventures')}
                 >
                   Browse Ventures
                 </button>
@@ -378,7 +378,7 @@ const MainDashboard = () => {
                 <div className="mt-6">
                   <button 
                     className="btn btn-primary w-full"
-                    onClick={() => router.push('/venture-gate/legal')}
+                    onClick={() => router.push('/legal')}
                   >
                     📋 Manage Legal Documents
                   </button>
@@ -505,7 +505,7 @@ const MainDashboard = () => {
                     <h4 className="text-lg font-bold mb-3">Available Plans</h4>
                     <button 
                       className="btn btn-primary w-full"
-                      onClick={() => router.push('/venture-gate/plans')}
+                      onClick={() => router.push('/subscription')}
                     >
                       💳 View All Plans
                     </button>
@@ -521,7 +521,7 @@ const MainDashboard = () => {
                 </p>
                 <button 
                   className="btn btn-primary btn-lg"
-                  onClick={() => router.push('/venture-gate/plans')}
+                  onClick={() => router.push('/subscription')}
                 >
                   Choose Your Plan
                 </button>
@@ -552,7 +552,7 @@ const MainDashboard = () => {
                 </div>
                 <button 
                   className="btn btn-primary mt-4"
-                  onClick={() => router.push('/venture-gate/profile')}
+                  onClick={() => router.push('/profile')}
                 >
                   Edit Profile Details
                 </button>

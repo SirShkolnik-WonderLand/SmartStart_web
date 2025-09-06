@@ -464,8 +464,8 @@ class ApiService {
   async updateJourneyState(userId: string, stage: number) {
     try {
       // Convert stage number to stage ID (stage_1, stage_2, etc.)
-      // stage 2 = stage_2, stage 3 = stage_3, etc.
-      const stageId = `stage_${stage}`
+      // stage 0 = stage_1, stage 1 = stage_2, etc.
+      const stageId = `stage_${stage + 1}`
       return await this.fetchWithAuth(`/api/journey-state/complete`, {
         method: 'POST',
         body: JSON.stringify({ userId, stageId }),

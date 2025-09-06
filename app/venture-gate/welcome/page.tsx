@@ -28,7 +28,7 @@ const WelcomeDashboard = () => {
     try {
       // Complete the onboarding journey
       if (user?.id) {
-        await apiService.updateJourneyState(user.id, 6) // Complete stage 6
+        await apiService.updateJourneyState(user.id, 5) // Complete stage 6 (index 5)
       }
       
       // Redirect to main dashboard
