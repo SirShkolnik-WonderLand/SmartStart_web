@@ -13,6 +13,49 @@ const MainDashboard = () => {
   const [subscription, setSubscription] = useState<any>(null)
   const [subscriptionLoading, setSubscriptionLoading] = useState(false)
   const [showExplanation, setShowExplanation] = useState(false)
+  const [dashboardData, setDashboardData] = useState<any>(null)
+  const [dashboardLoading, setDashboardLoading] = useState(false)
+  const [dashboardError, setDashboardError] = useState<string | null>(null)
+
+  const loadDashboardData = async () => {
+    if (!user?.id) return
+    
+    setDashboardLoading(true)
+    setDashboardError(null)
+    try {
+      const response = await fetch(`https://smartstart-api.onrender.com/api/dashboard`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('auth-token')}`,
+          'Content-Type': 'application/json'
+        }
+      })
+      const data = await response.json()
+      if (data.success && data.dashboard) {
+        setDashboardData(data.dashboard)
+      } else {
+        setDashboardError(data.message || 'Failed to load dashboard data')
+        // Fallback to basic data if API fails
+        setDashboardData({
+          ventures: { total: 0, active: 0, pending: 0 },
+          teams: { totalMembers: 0 },
+          projects: { total: 0, active: 0, completed: 0 },
+          legal: { totalDocuments: 0, pendingContracts: 0 }
+        })
+      }
+    } catch (error) {
+      console.error('Failed to load dashboard data:', error)
+      setDashboardError('Network error - using offline data')
+      // Fallback to basic data if API fails
+      setDashboardData({
+        ventures: { total: 0, active: 0, pending: 0 },
+        teams: { totalMembers: 0 },
+        projects: { total: 0, active: 0, completed: 0 },
+        legal: { totalDocuments: 0, pendingContracts: 0 }
+      })
+    } finally {
+      setDashboardLoading(false)
+    }
+  }
 
   const loadSubscriptionData = async () => {
     if (!user?.id) return
@@ -62,6 +105,7 @@ const MainDashboard = () => {
   useEffect(() => {
     if (user?.id) {
       loadSubscriptionData()
+      loadDashboardData()
     }
   }, [user])
 
@@ -150,28 +194,81 @@ const MainDashboard = () => {
       <div className="card">
         {activeTab === 'overview' && (
           <div className="p-6">
-            <h2 className="text-2xl font-bold mb-6">📊 Dashboard Overview</h2>
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold">📊 Dashboard Overview</h2>
+              <button 
+                className="btn btn-secondary btn-sm"
+                onClick={loadDashboardData}
+                disabled={dashboardLoading}
+              >
+                {dashboardLoading ? '⏳' : '🔄'} Refresh
+              </button>
+            </div>
+            
+            {dashboardLoading && (
+              <div className="text-center py-8">
+                <div className="loading-spinner"></div>
+                <p className="text-muted mt-4">Loading dashboard data...</p>
+              </div>
+            )}
+            
+            {dashboardError && (
+              <div className="bg-yellow-900 border border-yellow-500 rounded p-4 mb-6">
+                <div className="flex items-center gap-2">
+                  <span className="text-yellow-400">⚠️</span>
+                  <span className="text-yellow-200">{dashboardError}</span>
+                </div>
+              </div>
+            )}
             
             <div className="grid grid-4 gap-6 mb-8">
               <div className="text-center">
                 <div className="text-4xl mb-2">🚀</div>
-                <div className="text-2xl font-bold">0</div>
+                <div className="text-2xl font-bold">
+                  {dashboardLoading ? '...' : (dashboardData?.ventures?.total || 0)}
+                </div>
                 <p className="text-sm text-muted">My Ventures</p>
+                {dashboardData?.ventures && (
+                  <p className="text-xs text-muted">
+                    {dashboardData.ventures.active} active, {dashboardData.ventures.pending} pending
+                  </p>
+                )}
               </div>
               <div className="text-center">
                 <div className="text-4xl mb-2">👥</div>
-                <div className="text-2xl font-bold">0</div>
+                <div className="text-2xl font-bold">
+                  {dashboardLoading ? '...' : (dashboardData?.teams?.totalMembers || 0)}
+                </div>
                 <p className="text-sm text-muted">Team Members</p>
+                {dashboardData?.teams && (
+                  <p className="text-xs text-muted">
+                    Across {dashboardData.teams.totalTeams || 0} teams
+                  </p>
+                )}
               </div>
               <div className="text-center">
                 <div className="text-4xl mb-2">📋</div>
-                <div className="text-2xl font-bold">0</div>
+                <div className="text-2xl font-bold">
+                  {dashboardLoading ? '...' : (dashboardData?.projects?.total || 0)}
+                </div>
                 <p className="text-sm text-muted">Active Projects</p>
+                {dashboardData?.projects && (
+                  <p className="text-xs text-muted">
+                    {dashboardData.projects.active} active, {dashboardData.projects.completed} completed
+                  </p>
+                )}
               </div>
               <div className="text-center">
                 <div className="text-4xl mb-2">⚖️</div>
-                <div className="text-2xl font-bold">0</div>
+                <div className="text-2xl font-bold">
+                  {dashboardLoading ? '...' : (dashboardData?.legal?.totalDocuments || 0)}
+                </div>
                 <p className="text-sm text-muted">Legal Documents</p>
+                {dashboardData?.legal && (
+                  <p className="text-xs text-muted">
+                    {dashboardData.legal.pendingContracts} pending
+                  </p>
+                )}
               </div>
             </div>
 
@@ -181,25 +278,25 @@ const MainDashboard = () => {
                 <div className="space-y-3">
                   <button 
                     className="btn btn-primary w-full justify-start"
-                    onClick={() => setActiveTab('ventures')}
+                    onClick={() => router.push('/ventures/create')}
                   >
                     🚀 Create Your First Venture
                   </button>
                   <button 
                     className="btn btn-secondary w-full justify-start"
-                    onClick={() => setActiveTab('explore')}
+                    onClick={() => router.push('/ventures')}
                   >
                     🔍 Explore Other Ventures
                   </button>
                   <button 
                     className="btn btn-secondary w-full justify-start"
-                    onClick={() => setActiveTab('team')}
+                    onClick={() => router.push('/teams/create')}
                   >
                     👥 Build Your Team
                   </button>
                   <button 
                     className="btn btn-secondary w-full justify-start"
-                    onClick={() => setActiveTab('legal')}
+                    onClick={() => router.push('/legal')}
                   >
                     ⚖️ Handle Legal Matters
                   </button>
@@ -281,7 +378,7 @@ const MainDashboard = () => {
                 </button>
                 <button 
                   className="btn btn-secondary btn-lg"
-                  onClick={() => router.push('/ventures')}
+                  onClick={() => setActiveTab('ventures')}
                 >
                   My Ventures
                 </button>
