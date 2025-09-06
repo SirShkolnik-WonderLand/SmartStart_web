@@ -17,30 +17,6 @@ import {
 } from 'lucide-react'
 import { comprehensiveApiService as apiService, AnalyticsData } from '@/lib/api-comprehensive'
 
-interface AnalyticsData {
-  totalVentures: number
-  totalUsers: number
-  totalOffers: number
-  totalRevenue: number
-  ventureGrowth: number
-  userGrowth: number
-  offerGrowth: number
-  revenueGrowth: number
-  topVentures: Array<{
-    id: string
-    name: string
-    value: number
-    growth: number
-  }>
-  monthlyStats: Array<{
-    month: string
-    ventures: number
-    users: number
-    offers: number
-    revenue: number
-  }>
-}
-
 export default function AnalyticsPage() {
   const [data, setData] = useState<AnalyticsData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
