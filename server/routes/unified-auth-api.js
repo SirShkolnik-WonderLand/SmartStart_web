@@ -371,4 +371,142 @@ router.get('/health', async (req, res) => {
   }
 });
 
+/**
+ * POST /api/auth/seed
+ * Seed the database with test users (development/staging only)
+ */
+router.post('/seed', async (req, res) => {
+  try {
+    // Only allow seeding in development or if explicitly enabled
+    if (process.env.NODE_ENV === 'production' && !process.env.ALLOW_SEEDING) {
+      return res.status(403).json({
+        success: false,
+        message: 'Seeding is not allowed in production',
+        code: 'SEEDING_DISABLED'
+      });
+    }
+
+    const { PrismaClient } = require('@prisma/client');
+    const bcrypt = require('bcryptjs');
+    const prisma = new PrismaClient();
+
+    // Test users to create
+    const testUsers = [
+      {
+        name: 'Admin User',
+        email: 'admin@smartstart.com',
+        password: 'admin123',
+        roleName: 'SUPER_ADMIN',
+        level: 'WISE_OWL',
+        xp: 250
+      },
+      {
+        name: 'Regular User',
+        email: 'user@smartstart.com',
+        password: 'user123',
+        roleName: 'MEMBER',
+        level: 'WISE_OWL',
+        xp: 250
+      },
+      {
+        name: 'Brian Johnson',
+        email: 'brian@smartstart.com',
+        password: 'brian123',
+        roleName: 'MEMBER',
+        level: 'WISE_OWL',
+        xp: 180
+      }
+    ];
+
+    const createdUsers = [];
+
+    for (const userData of testUsers) {
+      const hashedPassword = await bcrypt.hash(userData.password, 12);
+      
+      // Check if user already exists
+      const existingUser = await prisma.user.findUnique({
+        where: { email: userData.email }
+      });
+
+      if (existingUser) {
+        console.log(`User ${userData.email} already exists, skipping...`);
+        createdUsers.push({
+          email: userData.email,
+          status: 'already_exists'
+        });
+        continue;
+      }
+
+      // Create user
+      const user = await prisma.user.create({
+        data: {
+          email: userData.email,
+          name: userData.name,
+          password: hashedPassword,
+          xp: userData.xp,
+          level: userData.level,
+          status: 'ACTIVE',
+          createdAt: new Date(),
+          updatedAt: new Date()
+        }
+      });
+
+      // Find or create role
+      let role = await prisma.role.findUnique({
+        where: { name: userData.roleName }
+      });
+
+      if (!role) {
+        role = await prisma.role.create({
+          data: {
+            name: userData.roleName,
+            description: `${userData.roleName} role`,
+            level: 1,
+            createdAt: new Date(),
+            updatedAt: new Date()
+          }
+        });
+      }
+
+      // Create account
+      const account = await prisma.account.create({
+        data: {
+          email: userData.email,
+          password: hashedPassword,
+          isActive: true,
+          userId: user.id,
+          roleId: role.id,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        }
+      });
+
+      createdUsers.push({
+        email: userData.email,
+        userId: user.id,
+        accountId: account.id,
+        status: 'created'
+      });
+
+      console.log(`Created user: ${userData.email}`);
+    }
+
+    res.json({
+      success: true,
+      message: 'Database seeded successfully',
+      users: createdUsers,
+      timestamp: new Date().toISOString()
+    });
+
+  } catch (error) {
+    console.error('Seeding error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Seeding failed',
+      error: error.message,
+      code: 'SEEDING_ERROR'
+    });
+  }
+});
+
 module.exports = router;
