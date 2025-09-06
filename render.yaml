@@ -6,8 +6,6 @@ services:
   - type: pserv
     name: smartstart-db
     plan: starter
-    env: postgresql
-    ipAllowList: []
 
   # Backend API Service
   - type: web
@@ -39,7 +37,7 @@ services:
       - key: WORKER_ENABLED
         value: false
 
-  # Frontend Service (Next.js)
+  # Frontend Service (Next.js) - New Wonderland Frontend
   - type: web
     name: smartstart-frontend
     env: node
