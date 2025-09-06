@@ -56,10 +56,40 @@ router.post('/start', async(req, res) => {
             });
         }
 
-        // Check if stage exists
-        const stage = await prisma.journeyStage.findUnique({
-            where: { id: stageId }
-        });
+        // Find stage by name or ID
+        let stage;
+        if (stageId.startsWith('stage_')) {
+            // Handle old format (stage_1, stage_2, etc.)
+            const stageNumber = parseInt(stageId.replace('stage_', '')) - 1;
+            const stageMapping = [
+                'Account Creation',
+                'Profile Setup', 
+                'Platform Legal Pack',
+                'Subscription Selection',
+                'Platform Orientation',
+                'Welcome & Dashboard'
+            ];
+            const stageName = stageMapping[stageNumber];
+            if (!stageName) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Invalid stage number'
+                });
+            }
+            stage = await prisma.journeyStage.findFirst({
+                where: { name: stageName }
+            });
+        } else {
+            // Handle stage name or ID
+            stage = await prisma.journeyStage.findFirst({
+                where: {
+                    OR: [
+                        { id: stageId },
+                        { name: stageId }
+                    ]
+                }
+            });
+        }
 
         if (!stage) {
             return res.status(404).json({
@@ -73,7 +103,7 @@ router.post('/start', async(req, res) => {
             where: {
                 userId_stageId: {
                     userId,
-                    stageId
+                    stageId: stage.id
                 }
             }
         });
@@ -90,7 +120,7 @@ router.post('/start', async(req, res) => {
         const journeyState = await prisma.userJourneyState.create({
             data: {
                 userId,
-                stageId,
+                stageId: stage.id,
                 status: 'IN_PROGRESS',
                 startedAt: new Date(),
                 metadata
@@ -130,12 +160,54 @@ router.post('/complete', async(req, res) => {
             });
         }
 
+        // First, find the stage by name or ID
+        let stage;
+        if (stageId.startsWith('stage_')) {
+            // Handle old format (stage_1, stage_2, etc.)
+            const stageNumber = parseInt(stageId.replace('stage_', '')) - 1;
+            const stageMapping = [
+                'Account Creation',
+                'Profile Setup', 
+                'Platform Legal Pack',
+                'Subscription Selection',
+                'Platform Orientation',
+                'Welcome & Dashboard'
+            ];
+            const stageName = stageMapping[stageNumber];
+            if (!stageName) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Invalid stage number'
+                });
+            }
+            stage = await prisma.journeyStage.findFirst({
+                where: { name: stageName }
+            });
+        } else {
+            // Handle stage name or ID
+            stage = await prisma.journeyStage.findFirst({
+                where: {
+                    OR: [
+                        { id: stageId },
+                        { name: stageId }
+                    ]
+                }
+            });
+        }
+
+        if (!stage) {
+            return res.status(404).json({
+                success: false,
+                message: 'Journey stage not found'
+            });
+        }
+
         // Find existing journey state
         const existingState = await prisma.userJourneyState.findUnique({
             where: {
                 userId_stageId: {
                     userId,
-                    stageId
+                    stageId: stage.id
                 }
             },
             include: {
@@ -183,7 +255,7 @@ router.post('/complete', async(req, res) => {
             where: {
                 userId_stageId: {
                     userId,
-                    stageId
+                    stageId: stage.id
                 }
             },
             data: {

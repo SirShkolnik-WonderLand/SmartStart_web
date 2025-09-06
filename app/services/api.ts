@@ -463,12 +463,24 @@ class ApiService {
 
   async updateJourneyState(userId: string, stage: number) {
     try {
-      // Convert stage number to stage ID (stage_1, stage_2, etc.)
-      // stage 0 = stage_1, stage 1 = stage_2, etc.
-      const stageId = `stage_${stage + 1}`
+      // Map stage number to actual stage names from database
+      const stageMapping = [
+        'Account Creation',      // stage 0
+        'Profile Setup',         // stage 1
+        'Platform Legal Pack',   // stage 2
+        'Subscription Selection', // stage 3
+        'Platform Orientation',  // stage 4
+        'Welcome & Dashboard'    // stage 5
+      ]
+      
+      const stageName = stageMapping[stage]
+      if (!stageName) {
+        throw new Error(`Invalid stage number: ${stage}`)
+      }
+      
       return await this.fetchWithAuth(`/api/journey-state/complete`, {
         method: 'POST',
-        body: JSON.stringify({ userId, stageId }),
+        body: JSON.stringify({ userId, stageId: stageName }),
       })
     } catch (error) {
       console.error('Error updating journey state:', error)
