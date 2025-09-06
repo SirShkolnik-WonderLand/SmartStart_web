@@ -11,7 +11,7 @@ import { useAuthStore } from '@/store/useAuthStore'
 
 export function Header() {
   const { theme, toggleTheme } = useTheme()
-  const { setSidebarOpen, setMobileMenuOpen } = useUIStore()
+  const { setSidebarOpen } = useUIStore()
   const { user, logout } = useAuthStore()
   const [searchQuery, setSearchQuery] = useState('')
 
@@ -19,98 +19,91 @@ export function Header() {
     e.preventDefault()
     // TODO: Implement search functionality
     console.log('Search:', searchQuery)
-  // }
+  }
 
   // const handleLogout = () => {
-    logout()
+  //   logout()
   // }
 
   return (
     <motion.header
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur border-b"
+      transition={{ duration: 0.3 }}
+      className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
     >
-      <div className="flex items-center justify-between h-16 px-4">
-        {/* Left Section */}
-        <div className="flex items-center space-x-4">
+      <div className="container flex h-16 max-w-screen-2xl items-center justify-between px-4">
+        {/* Left side - Logo and Navigation */}
+        <div className="flex items-center gap-6">
           <Button
             variant="ghost"
             size="icon"
             onClick={() => setSidebarOpen(true)}
-            className="lg:hidden"
+            className="md:hidden"
           >
             <Menu className="h-5 w-5" />
           </Button>
           
-          <div className="flex items-center space-x-2">
-            <div className="h-8 w-8 rounded bg-gradient-to-r from-primary to-accent flex items-center justify-center">
-              <Key className="h-4 w-4 text-white" />
+          <div className="flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+              <Key className="h-4 w-4" />
             </div>
-            <span className="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              SmartStart
-            </span>
+            <span className="text-xl font-bold text-foreground">SmartStart</span>
           </div>
         </div>
 
-        {/* Center Section - Search */}
-        <div className="flex-1 max-w-md mx-4">
-          <form onSubmit={handleSearch} className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="text"
-              placeholder="Search ventures, opportunities..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 pr-4"
-            />
+        {/* Center - Search */}
+        <div className="hidden md:flex flex-1 max-w-md mx-8">
+          <form onSubmit={handleSearch} className="w-full">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                type="search"
+                placeholder="Search ventures, roles, or people..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 pr-4"
+              />
+            </div>
           </form>
         </div>
 
-        {/* Right Section */}
-        <div className="flex items-center space-x-2">
-          {/* Theme Toggle */}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={toggleTheme}
-            className="hidden sm:flex"
-          >
+        {/* Right side - Actions and Profile */}
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="icon" className="hidden sm:flex">
+            <Bell className="h-4 w-4" />
+          </Button>
+          
+          <Button variant="ghost" size="icon" onClick={toggleTheme}>
             {theme === 'wonderlight' ? (
-              <Moon className="h-5 w-5" />
+              <Moon className="h-4 w-4" />
             ) : (
-              <Sun className="h-5 w-5" />
+              <Sun className="h-4 w-4" />
             )}
           </Button>
 
-          {/* Notifications */}
-          <Button variant="ghost" size="icon" className="relative">
-            <Bell className="h-5 w-5" />
-            <span className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full text-xs flex items-center justify-center text-white">
-              3
-            </span>
-          </Button>
-
-          {/* Create Button */}
-          <Button className="hidden sm:flex">
-            <Plus className="h-4 w-4 mr-2" />
+          <Button size="sm" className="hidden sm:flex">
+            <Plus className="mr-2 h-4 w-4" />
             Create
           </Button>
 
-          {/* User Menu */}
-          {user && (
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              className="flex items-center space-x-2 cursor-pointer"
-            >
-              <div className="h-8 w-8 rounded-full bg-gradient-to-r from-primary to-accent flex items-center justify-center text-white text-sm font-medium">
-                {user.name.charAt(0).toUpperCase()}
+          {/* User Profile */}
+          {user ? (
+            <div className="flex items-center gap-2 ml-2">
+              <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                <span className="text-sm font-medium text-primary">
+                  {user.name?.charAt(0) || 'U'}
+                </span>
               </div>
-              <div className="hidden sm:block">
-                <p className="text-sm font-medium">{user.name}</p>
+              <div className="hidden lg:block">
+                <p className="text-sm font-medium text-foreground">{user.name}</p>
                 <p className="text-xs text-muted-foreground">{typeof user.role === 'string' ? user.role : user.role?.name || 'User'}</p>
               </div>
-            </motion.div>
+            </div>
+          ) : (
+            <Button variant="outline" size="sm">
+              Sign In
+            </Button>
           )}
         </div>
       </div>
