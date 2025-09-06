@@ -100,7 +100,7 @@ export default function AnalyticsPage() {
         <div className="flex items-center gap-4">
           <select
             value={timeRange}
-            onChange={(e) => setTimeRange(e.target.value as any)}
+            onChange={(e) => setTimeRange(e.target.value as string)}
             className="bg-glass-surface border border-border rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary/20 focus:border-primary"
           >
             <option value="7d">Last 7 days</option>
@@ -251,7 +251,7 @@ export default function AnalyticsPage() {
               <Award className="w-4 h-4 text-success" />
             </div>
             <div className="flex-1">
-              <p className="text-sm text-foreground-body">New venture "Quantum AI Labs" reached $45K valuation</p>
+              <p className="text-sm text-foreground-body">New venture &quot;Quantum AI Labs&quot; reached $45K valuation</p>
               <p className="text-xs text-foreground-muted">2 hours ago</p>
             </div>
           </div>

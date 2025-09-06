@@ -117,7 +117,7 @@ export default function DocumentsPage() {
           <Filter className="w-4 h-4 text-foreground-muted" />
           <select
             value={filter}
-            onChange={(e) => setFilter(e.target.value as any)}
+            onChange={(e) => setFilter(e.target.value as string)}
             className="bg-glass-surface border border-border rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary/20 focus:border-primary"
           >
             <option value="all">All Documents</option>
@@ -201,7 +201,7 @@ export default function DocumentsPage() {
                       <div className="flex-1">
                         <h3 className="font-medium text-foreground">{doc.title}</h3>
                         <p className="text-sm text-foreground-muted">
-                          {doc.type} • {(doc as any).packName || 'General'}
+                          {doc.type} • {(doc as Record<string, unknown>).packName || 'General'}
                         </p>
                       </div>
                       <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(doc.status)}`}>

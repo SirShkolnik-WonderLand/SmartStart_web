@@ -23,9 +23,9 @@ import { comprehensiveApiService as apiService, User } from '@/lib/api-comprehen
 
 export default function DashboardPage() {
   const [user, setUser] = useState<User | null>(null)
-  const [analytics, setAnalytics] = useState<any>(null)
-  const [ventures, setVentures] = useState<any[]>([])
-  const [offers, setOffers] = useState<any[]>([])
+  const [analytics, setAnalytics] = useState<unknown>(null)
+  const [ventures, setVentures] = useState<unknown[]>([])
+  const [offers, setOffers] = useState<unknown[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -191,7 +191,7 @@ export default function DashboardPage() {
                       </div>
                       <div className="flex-1">
                         <p className="text-sm text-foreground-body">No ventures yet. Create your first venture to get started!</p>
-                        <p className="text-xs text-foreground-muted">Click the "Create New" button above</p>
+                        <p className="text-xs text-foreground-muted">Click the &quot;Create New&quot; button above</p>
                       </div>
                     </div>
                   )}

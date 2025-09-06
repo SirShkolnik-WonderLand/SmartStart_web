@@ -112,7 +112,7 @@ export default function ApprovalsPage() {
             <Filter className="w-4 h-4 text-foreground-muted" />
             <select
               value={filter}
-              onChange={(e) => setFilter(e.target.value as any)}
+              onChange={(e) => setFilter(e.target.value as string)}
               className="bg-glass-surface border border-border rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary/20 focus:border-primary"
             >
               <option value="all">All Status</option>
