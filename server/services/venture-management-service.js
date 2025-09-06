@@ -58,7 +58,7 @@ class VentureManagementService {
             // Create venture profile (optional for now)
             let ventureProfile = null;
             try {
-                ventureProfile = await this.createVentureProfile(venture.id, ventureData);
+                // ventureProfile = await this.createVentureProfile(venture.id, ventureData);
             } catch (profileError) {
                 console.log('⚠️ Venture profile creation skipped:', profileError.message);
             }
