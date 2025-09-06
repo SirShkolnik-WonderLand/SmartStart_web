@@ -4,7 +4,7 @@
 databases:
   # Database Service (PostgreSQL) - Must be defined first for references
   - name: smartstart-db
-    plan: starter
+    plan: free
 
 services:
   # Backend API Service
