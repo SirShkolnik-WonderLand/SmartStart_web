@@ -9,9 +9,9 @@ const prisma = new PrismaClient();
 class VentureManagementService {
     constructor() {
         this.defaultEquityStructure = {
-            ownerPercent: 35,      // Minimum owner equity
-            alicePercent: 20,      // Maximum AliceSolutions equity
-            cepPercent: 45,        // Contributor Equity Pool
+            ownerPercent: 35, // Minimum owner equity
+            alicePercent: 20, // Maximum AliceSolutions equity
+            cepPercent: 45, // Contributor Equity Pool
             vestingPolicy: '4-year vest, 1-year cliff'
         };
     }
@@ -68,11 +68,11 @@ class VentureManagementService {
                 ventureLegalEntityId: legalEntity.ventureLegalEntity.id,
                 status: 'PENDING_CONTRACTS'
             };
-            
+
             if (equityFramework) {
                 updateData.equityFrameworkId = equityFramework.id;
             }
-            
+
             const updatedVenture = await prisma.venture.update({
                 where: { id: venture.id },
                 data: updateData
@@ -261,7 +261,7 @@ class VentureManagementService {
             });
 
             // Simulate provisioning process
-            setTimeout(async () => {
+            setTimeout(async() => {
                 await this.updateITPackStatus(ventureId, 'ACTIVE');
             }, 5000); // 5 seconds simulation
 
@@ -306,11 +306,10 @@ class VentureManagementService {
                     owner: {
                         select: {
                             id: true,
-                            name: true,
+                            displayName: true,
                             email: true,
-                            level: true,
-                            xp: true,
-                            reputation: true
+                            kycStatus: true,
+                            trustScore: true
                         }
                     },
                     ventureLegalEntity: {
@@ -318,7 +317,15 @@ class VentureManagementService {
                             legalEntity: true
                         }
                     },
-                    equityFramework: true
+                    equityFramework: true,
+                    ventureProfile: true,
+                    ventureITPack: true,
+                    legalDocuments: {
+                        where: { isTemplate: false },
+                        include: {
+                            signatures: true
+                        }
+                    }
                 }
             });
 
@@ -440,7 +447,7 @@ class VentureManagementService {
                 activeVentures,
                 pendingContracts,
                 activeContracts,
-                completionRate: totalVentures > 0 ? 
+                completionRate: totalVentures > 0 ?
                     ((activeVentures / totalVentures) * 100).toFixed(2) + '%' : '0%'
             };
 

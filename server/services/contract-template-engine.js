@@ -17,7 +17,7 @@ class ContractTemplateEngine {
             '{{VENTURE_CREATED_AT}}': 'venture.createdAt',
 
             // Owner variables
-            '{{OWNER_NAME}}': 'owner.name',
+            '{{OWNER_NAME}}': 'owner.displayName',
             '{{OWNER_EMAIL}}': 'owner.email',
             '{{OWNER_KYC_STATUS}}': 'owner.kycStatus',
             '{{OWNER_TRUST_SCORE}}': 'owner.trustScore',
@@ -106,7 +106,7 @@ class ContractTemplateEngine {
                 owner: {
                     select: {
                         id: true,
-                        name: true,
+                        displayName: true,
                         email: true,
                         kycStatus: true,
                         trustScore: true
@@ -143,16 +143,16 @@ class ContractTemplateEngine {
         };
 
         const ownerContext = venture.owner ? {
-            '{{OWNER_NAME}}': venture.owner.name || '',
+            '{{OWNER_NAME}}': venture.owner.displayName || '',
             '{{OWNER_EMAIL}}': venture.owner.email || '',
             '{{OWNER_KYC_STATUS}}': venture.owner.kycStatus || 'PENDING',
-            '{{OWNER_TRUST_SCORE}}': venture.owner.trustScore?.toString() || '0'
+            '{{OWNER_TRUST_SCORE}}': venture.owner.trustScore ? .toString() || '0'
         } : {};
 
         const equityContext = venture.equityFramework ? {
-            '{{OWNER_EQUITY_PERCENT}}': venture.equityFramework.ownerPercent?.toString() || '35',
-            '{{ALICE_EQUITY_PERCENT}}': venture.equityFramework.alicePercent?.toString() || '20',
-            '{{CEP_PERCENT}}': venture.equityFramework.cepPercent?.toString() || '45',
+            '{{OWNER_EQUITY_PERCENT}}': venture.equityFramework.ownerPercent ? .toString() || '35',
+            '{{ALICE_EQUITY_PERCENT}}': venture.equityFramework.alicePercent ? .toString() || '20',
+            '{{CEP_PERCENT}}': venture.equityFramework.cepPercent ? .toString() || '45',
             '{{VESTING_POLICY}}': venture.equityFramework.vestingPolicy || '4-year vest, 1-year cliff'
         } : {};
 

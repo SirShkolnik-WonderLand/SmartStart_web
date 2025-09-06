@@ -42,118 +42,144 @@ interface Venture {
     teamSize: number
     website: string
   }
+  legalDocuments?: Array<{
+    id: string
+    name: string
+    type: string
+    status: string
+    createdAt: string
+  }>
+}
+
+interface TeamMember {
+  id: string
+  name: string
+  email: string
+  role: string
+  status: string
+  joinedAt: string
+}
+
+interface Project {
+  id: string
+  name: string
+  description: string
+  status: string
+  progress: number
+  createdAt: string
 }
 
 const VentureDetailsPage = () => {
   const router = useRouter()
   const params = useParams()
   const ventureId = params.id as string
-  
-  const [user, setUser] = useState<any>(null)
+
   const [venture, setVenture] = useState<Venture | null>(null)
+  const [teams, setTeams] = useState<TeamMember[]>([])
+  const [projects, setProjects] = useState<Project[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [isEditing, setIsEditing] = useState(false)
+  const [activeTab, setActiveTab] = useState('overview')
+  const [showEditForm, setShowEditForm] = useState(false)
   const [editData, setEditData] = useState<Partial<Venture>>({})
-  const [isSaving, setIsSaving] = useState(false)
 
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        const userData = await apiService.getCurrentUser()
-        setUser(userData)
-        await loadVenture()
-      } catch (error) {
-        console.error('Failed to load data:', error)
-        router.push('/')
-      } finally {
-        setIsLoading(false)
-      }
+    if (ventureId) {
+      loadVentureDetails()
     }
-    loadData()
-  }, [router, ventureId])
+  }, [ventureId])
 
-  const loadVenture = async () => {
+  const loadVentureDetails = async () => {
     try {
-      const response = await fetch(`https://smartstart-api.onrender.com/api/ventures/${ventureId}`, {
+      setIsLoading(true)
+      
+      // Load venture details
+      const ventureResponse = await fetch(`https://smartstart-api.onrender.com/api/ventures/${ventureId}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('auth-token')}`,
           'Content-Type': 'application/json'
         }
       })
-      const data = await response.json()
+      const ventureData = await ventureResponse.json()
       
-      if (data.success) {
-        setVenture(data.venture)
-        setEditData(data.venture)
-      } else {
-        console.error('Failed to load venture:', data.message)
-        router.push('/ventures')
+      if (ventureData.success) {
+        setVenture(ventureData.venture)
+        setEditData(ventureData.venture)
       }
+
+      // Load team members (placeholder - would need team API)
+      setTeams([
+        {
+          id: '1',
+          name: 'John Doe',
+          email: 'john@example.com',
+          role: 'Co-Founder',
+          status: 'ACTIVE',
+          joinedAt: '2025-01-01'
+        },
+        {
+          id: '2',
+          name: 'Jane Smith',
+          email: 'jane@example.com',
+          role: 'CTO',
+          status: 'ACTIVE',
+          joinedAt: '2025-01-15'
+        }
+      ])
+
+      // Load projects (placeholder - would need project API)
+      setProjects([
+        {
+          id: '1',
+          name: 'MVP Development',
+          description: 'Building the minimum viable product',
+          status: 'IN_PROGRESS',
+          progress: 75,
+          createdAt: '2025-01-01'
+        },
+        {
+          id: '2',
+          name: 'Market Research',
+          description: 'Analyzing target market and competitors',
+          status: 'COMPLETED',
+          progress: 100,
+          createdAt: '2025-01-01'
+        }
+      ])
+
     } catch (error) {
-      console.error('Failed to load venture:', error)
-      router.push('/ventures')
+      console.error('Failed to load venture details:', error)
+    } finally {
+      setIsLoading(false)
     }
   }
 
-  const handleEdit = () => {
-    setIsEditing(true)
-    setEditData(venture || {})
-  }
-
-  const handleCancel = () => {
-    setIsEditing(false)
-    setEditData(venture || {})
-  }
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target
-    setEditData(prev => ({
-      ...prev,
-      [name]: value
-    }))
-  }
-
-  const handleSave = async () => {
-    if (!venture) return
-    
-    setIsSaving(true)
+  const handleUpdateVenture = async () => {
     try {
-      // Update venture profile
-      if (editData.name || editData.purpose || editData.region) {
-        const response = await fetch(`https://smartstart-api.onrender.com/api/ventures/${ventureId}/profile`, {
-          method: 'PUT',
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('auth-token')}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            name: editData.name,
-            purpose: editData.purpose,
-            region: editData.region,
-            description: editData.description
-          })
-        })
-        
-        const result = await response.json()
-        if (!result.success) {
-          throw new Error(result.message || 'Failed to update venture')
-        }
-      }
+      const response = await fetch(`https://smartstart-api.onrender.com/api/ventures/${ventureId}/profile`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('auth-token')}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(editData)
+      })
 
-      // Reload venture data
-      await loadVenture()
-      setIsEditing(false)
+      const result = await response.json()
+      
+      if (result.success) {
+        setVenture(prev => prev ? { ...prev, ...editData } : null)
+        setShowEditForm(false)
+        alert('Venture updated successfully!')
+      } else {
+        alert(`Failed to update venture: ${result.message}`)
+      }
     } catch (error) {
-      console.error('Failed to save venture:', error)
-      alert('Failed to save venture. Please try again.')
-    } finally {
-      setIsSaving(false)
+      console.error('Failed to update venture:', error)
+      alert('Failed to update venture. Please try again.')
     }
   }
 
   const handleStatusUpdate = async (newStatus: string) => {
-    if (!venture) return
-    
     try {
       const response = await fetch(`https://smartstart-api.onrender.com/api/ventures/${ventureId}/status`, {
         method: 'PUT',
@@ -163,10 +189,12 @@ const VentureDetailsPage = () => {
         },
         body: JSON.stringify({ status: newStatus })
       })
-      
+
       const result = await response.json()
+      
       if (result.success) {
-        await loadVenture() // Reload data
+        setVenture(prev => prev ? { ...prev, status: newStatus } : null)
+        alert('Venture status updated successfully!')
       } else {
         alert(`Failed to update status: ${result.message}`)
       }
@@ -176,16 +204,14 @@ const VentureDetailsPage = () => {
     }
   }
 
-  const handleDelete = async () => {
-    if (!venture) return
-    
-    if (!confirm(`Are you sure you want to delete "${venture.name}"? This action cannot be undone.`)) {
+  const handleDeleteVenture = async () => {
+    if (!confirm('Are you sure you want to delete this venture? This action cannot be undone.')) {
       return
     }
-    
+
     try {
-      // For now, we'll just update status to CLOSED (soft delete)
-      await handleStatusUpdate('CLOSED')
+      // Soft delete - update status to DELETED
+      await handleStatusUpdate('DELETED')
       router.push('/ventures')
     } catch (error) {
       console.error('Failed to delete venture:', error)
@@ -221,232 +247,138 @@ const VentureDetailsPage = () => {
     )
   }
 
-  const isOwner = user?.id === venture.owner.id
+  const tabs = [
+    { id: 'overview', label: 'Overview', icon: '📊' },
+    { id: 'team', label: 'Team', icon: '👥' },
+    { id: 'projects', label: 'Projects', icon: '📋' },
+    { id: 'legal', label: 'Legal', icon: '⚖️' },
+    { id: 'equity', label: 'Equity', icon: '💎' },
+    { id: 'settings', label: 'Settings', icon: '⚙️' }
+  ]
 
   return (
     <div className="container" style={{ paddingTop: '2rem', paddingBottom: '2rem' }}>
       {/* Header */}
       <div className="flex justify-between items-start mb-8">
         <div>
-          <div className="flex items-center gap-4 mb-4">
-            <button 
-              className="btn btn-secondary"
-              onClick={() => router.push('/ventures')}
-            >
-              ← Back to Ventures
-            </button>
-            <h1 className="text-4xl font-bold" style={{ color: '#00ff88' }}>
-              {isEditing ? 'Edit Venture' : venture.name}
-            </h1>
-          </div>
-          <div className="flex gap-2 mb-2">
+          <h1 className="text-4xl font-bold mb-2" style={{ color: '#00ff88' }}>
+            {venture.name}
+          </h1>
+          <p className="text-muted mb-4">{venture.purpose}</p>
+          <div className="flex gap-2">
+            <span className="badge badge-secondary">{venture.industry}</span>
             <span className="badge badge-secondary">{venture.region}</span>
             <span className={`badge ${
               venture.status === 'ACTIVE' ? 'badge-success' : 
               venture.status === 'DRAFT' ? 'badge-warning' : 
               venture.status === 'PENDING_CONTRACTS' ? 'badge-info' : 'badge-secondary'
             }`}>
-              {venture.status.replace('_', ' ')}
+              {venture.status}
             </span>
           </div>
         </div>
-        
-        {isOwner && (
-          <div className="flex gap-2">
-            {!isEditing ? (
-              <>
-                <button 
-                  className="btn btn-secondary"
-                  onClick={handleEdit}
-                >
-                  Edit Venture
-                </button>
-                <button 
-                  className="btn btn-danger"
-                  onClick={handleDelete}
-                >
-                  Delete Venture
-                </button>
-              </>
-            ) : (
-              <>
-                <button 
-                  className="btn btn-secondary"
-                  onClick={handleCancel}
-                  disabled={isSaving}
-                >
-                  Cancel
-                </button>
-                <button 
-                  className="btn btn-primary"
-                  onClick={handleSave}
-                  disabled={isSaving}
-                >
-                  {isSaving ? 'Saving...' : 'Save Changes'}
-                </button>
-              </>
-            )}
-          </div>
-        )}
+        <div className="flex gap-2">
+          <button 
+            className="btn btn-secondary"
+            onClick={() => router.push('/ventures')}
+          >
+            Back to Ventures
+          </button>
+          <button 
+            className="btn btn-primary"
+            onClick={() => setShowEditForm(true)}
+          >
+            Edit Venture
+          </button>
+        </div>
       </div>
 
-      {/* Main Content */}
-      <div className="grid grid-2 gap-8">
-        {/* Left Column - Basic Info */}
-        <div className="space-y-6">
-          {/* Basic Information */}
+      {/* Tabs */}
+      <div className="flex gap-2 mb-8 border-b border-gray-700">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+              activeTab === tab.id
+                ? 'border-green-500 text-green-400'
+                : 'border-transparent text-gray-400 hover:text-gray-300'
+            }`}
+          >
+            {tab.icon} {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Tab Content */}
+      {activeTab === 'overview' && (
+        <div className="grid grid-2 gap-8">
+          {/* Basic Info */}
           <div className="card">
             <div className="card-header">
               <h3 className="text-xl font-bold">Basic Information</h3>
             </div>
             <div className="p-6">
-              {isEditing ? (
-                <div className="space-y-4">
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm font-bold text-gray-400">Venture Name</label>
+                  <p className="text-lg">{venture.name}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-bold text-gray-400">Purpose & Mission</label>
+                  <p className="text-gray-300">{venture.purpose}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-bold text-gray-400">Description</label>
+                  <p className="text-gray-300">{venture.description || 'No description provided'}</p>
+                </div>
+                <div className="grid grid-2 gap-4">
                   <div>
-                    <label className="block text-sm font-bold mb-2">Venture Name</label>
-                    <input
-                      type="text"
-                      name="name"
-                      value={editData.name || ''}
-                      onChange={handleInputChange}
-                      className="input w-full"
-                    />
+                    <label className="text-sm font-bold text-gray-400">Industry</label>
+                    <p>{venture.industry}</p>
                   </div>
                   <div>
-                    <label className="block text-sm font-bold mb-2">Purpose & Mission</label>
-                    <textarea
-                      name="purpose"
-                      value={editData.purpose || ''}
-                      onChange={handleInputChange}
-                      className="input w-full"
-                      rows={3}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-bold mb-2">Description</label>
-                    <textarea
-                      name="description"
-                      value={editData.description || ''}
-                      onChange={handleInputChange}
-                      className="input w-full"
-                      rows={4}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-bold mb-2">Region</label>
-                    <select
-                      name="region"
-                      value={editData.region || ''}
-                      onChange={handleInputChange}
-                      className="input w-full"
-                    >
-                      <option value="US">United States</option>
-                      <option value="CA">Canada</option>
-                      <option value="UK">United Kingdom</option>
-                      <option value="EU">European Union</option>
-                      <option value="AU">Australia</option>
-                      <option value="Other">Other</option>
-                    </select>
+                    <label className="text-sm font-bold text-gray-400">Region</label>
+                    <p>{venture.region}</p>
                   </div>
                 </div>
-              ) : (
-                <div className="space-y-4">
+                <div className="grid grid-2 gap-4">
                   <div>
-                    <label className="block text-sm font-bold mb-2">Venture Name</label>
-                    <p className="text-muted">{venture.name}</p>
+                    <label className="text-sm font-bold text-gray-400">Created</label>
+                    <p>{new Date(venture.createdAt).toLocaleDateString()}</p>
                   </div>
                   <div>
-                    <label className="block text-sm font-bold mb-2">Purpose & Mission</label>
-                    <p className="text-muted">{venture.purpose}</p>
-                  </div>
-                  {venture.description && (
-                    <div>
-                      <label className="block text-sm font-bold mb-2">Description</label>
-                      <p className="text-muted">{venture.description}</p>
-                    </div>
-                  )}
-                  <div>
-                    <label className="block text-sm font-bold mb-2">Region</label>
-                    <p className="text-muted">{venture.region}</p>
+                    <label className="text-sm font-bold text-gray-400">Last Updated</label>
+                    <p>{new Date(venture.updatedAt).toLocaleDateString()}</p>
                   </div>
                 </div>
-              )}
+              </div>
             </div>
           </div>
 
-          {/* Owner Information */}
+          {/* Owner Info */}
           <div className="card">
             <div className="card-header">
               <h3 className="text-xl font-bold">Owner Information</h3>
             </div>
             <div className="p-6">
-              <div className="space-y-2">
+              <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-bold mb-1">Owner Name</label>
-                  <p className="text-muted">{venture.owner.name}</p>
+                  <label className="text-sm font-bold text-gray-400">Owner Name</label>
+                  <p className="text-lg">{venture.owner.name}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-bold mb-1">Email</label>
-                  <p className="text-muted">{venture.owner.email}</p>
+                  <label className="text-sm font-bold text-gray-400">Email</label>
+                  <p className="text-gray-300">{venture.owner.email}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-bold text-gray-400">Owner ID</label>
+                  <p className="text-sm text-gray-400 font-mono">{venture.owner.id}</p>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Status Management */}
-          {isOwner && (
-            <div className="card">
-              <div className="card-header">
-                <h3 className="text-xl font-bold">Status Management</h3>
-              </div>
-              <div className="p-6">
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-bold mb-2">Current Status</label>
-                    <p className="text-muted">{venture.status.replace('_', ' ')}</p>
-                  </div>
-                  <div className="flex gap-2">
-                    {venture.status === 'DRAFT' && (
-                      <button 
-                        className="btn btn-primary btn-sm"
-                        onClick={() => handleStatusUpdate('PENDING_CONTRACTS')}
-                      >
-                        Submit for Review
-                      </button>
-                    )}
-                    {venture.status === 'PENDING_CONTRACTS' && (
-                      <button 
-                        className="btn btn-success btn-sm"
-                        onClick={() => handleStatusUpdate('ACTIVE')}
-                      >
-                        Activate Venture
-                      </button>
-                    )}
-                    {venture.status === 'ACTIVE' && (
-                      <button 
-                        className="btn btn-warning btn-sm"
-                        onClick={() => handleStatusUpdate('SUSPENDED')}
-                      >
-                        Suspend Venture
-                      </button>
-                    )}
-                    {venture.status === 'SUSPENDED' && (
-                      <button 
-                        className="btn btn-success btn-sm"
-                        onClick={() => handleStatusUpdate('ACTIVE')}
-                      >
-                        Reactivate Venture
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Right Column - Advanced Info */}
-        <div className="space-y-6">
           {/* Legal Entity */}
           {venture.ventureLegalEntity && (
             <div className="card">
@@ -454,18 +386,18 @@ const VentureDetailsPage = () => {
                 <h3 className="text-xl font-bold">Legal Entity</h3>
               </div>
               <div className="p-6">
-                <div className="space-y-2">
+                <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-bold mb-1">Entity Name</label>
-                    <p className="text-muted">{venture.ventureLegalEntity.legalEntity.name}</p>
+                    <label className="text-sm font-bold text-gray-400">Entity Name</label>
+                    <p className="text-lg">{venture.ventureLegalEntity.legalEntity.name}</p>
                   </div>
                   <div>
-                    <label className="block text-sm font-bold mb-1">Entity Type</label>
-                    <p className="text-muted">{venture.ventureLegalEntity.legalEntity.type}</p>
+                    <label className="text-sm font-bold text-gray-400">Entity Type</label>
+                    <p>{venture.ventureLegalEntity.legalEntity.type}</p>
                   </div>
                   <div>
-                    <label className="block text-sm font-bold mb-1">Jurisdiction</label>
-                    <p className="text-muted">{venture.ventureLegalEntity.legalEntity.jurisdiction}</p>
+                    <label className="text-sm font-bold text-gray-400">Jurisdiction</label>
+                    <p>{venture.ventureLegalEntity.legalEntity.jurisdiction}</p>
                   </div>
                 </div>
               </div>
@@ -479,115 +411,362 @@ const VentureDetailsPage = () => {
                 <h3 className="text-xl font-bold">Equity Framework</h3>
               </div>
               <div className="p-6">
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span>Owner Equity:</span>
-                    <span className="font-bold">{venture.equityFramework.ownerPercent}%</span>
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-bold text-gray-400">Owner Equity</label>
+                    <p className="text-lg text-green-400">{venture.equityFramework.ownerPercent}%</p>
                   </div>
-                  <div className="flex justify-between">
-                    <span>AliceSolutions Equity:</span>
-                    <span className="font-bold">{venture.equityFramework.alicePercent}%</span>
+                  <div>
+                    <label className="text-sm font-bold text-gray-400">Alice Solutions</label>
+                    <p className="text-lg text-blue-400">{venture.equityFramework.alicePercent}%</p>
                   </div>
-                  <div className="flex justify-between">
-                    <span>Contributor Pool:</span>
-                    <span className="font-bold">{venture.equityFramework.cepPercent}%</span>
+                  <div>
+                    <label className="text-sm font-bold text-gray-400">Contributor Pool</label>
+                    <p className="text-lg text-purple-400">{venture.equityFramework.cepPercent}%</p>
                   </div>
                 </div>
               </div>
             </div>
           )}
+        </div>
+      )}
 
-          {/* Venture Profile */}
-          {venture.ventureProfile && (
-            <div className="card">
-              <div className="card-header">
-                <h3 className="text-xl font-bold">Venture Profile</h3>
+      {activeTab === 'team' && (
+        <div className="card">
+          <div className="card-header">
+            <h3 className="text-xl font-bold">Team Members</h3>
+          </div>
+          <div className="p-6">
+            {teams.length === 0 ? (
+              <div className="text-center py-8">
+                <div className="text-4xl mb-4">👥</div>
+                <h4 className="text-lg font-bold mb-2">No Team Members Yet</h4>
+                <p className="text-muted mb-4">Start building your team by inviting collaborators</p>
+                <button className="btn btn-primary">Invite Team Members</button>
               </div>
-              <div className="p-6">
-                <div className="space-y-2">
-                  <div>
-                    <label className="block text-sm font-bold mb-1">Industry</label>
-                    <p className="text-muted">{venture.ventureProfile.industry}</p>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-bold mb-1">Stage</label>
-                    <p className="text-muted">{venture.ventureProfile.stage}</p>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-bold mb-1">Funding Round</label>
-                    <p className="text-muted">{venture.ventureProfile.fundingRound}</p>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-bold mb-1">Team Size</label>
-                    <p className="text-muted">{venture.ventureProfile.teamSize}</p>
-                  </div>
-                  {venture.ventureProfile.website && (
+            ) : (
+              <div className="space-y-4">
+                {teams.map((member) => (
+                  <div key={member.id} className="flex items-center justify-between p-4 border border-gray-700 rounded-lg">
                     <div>
-                      <label className="block text-sm font-bold mb-1">Website</label>
-                      <a 
-                        href={venture.ventureProfile.website} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="text-blue-400 hover:text-blue-300"
-                      >
-                        {venture.ventureProfile.website}
-                      </a>
+                      <h4 className="font-bold">{member.name}</h4>
+                      <p className="text-sm text-muted">{member.email}</p>
+                      <span className="badge badge-secondary text-xs">{member.role}</span>
                     </div>
-                  )}
+                    <div className="text-right">
+                      <p className="text-sm text-muted">Joined: {new Date(member.joinedAt).toLocaleDateString()}</p>
+                      <span className={`badge ${
+                        member.status === 'ACTIVE' ? 'badge-success' : 'badge-warning'
+                      } text-xs`}>
+                        {member.status}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'projects' && (
+        <div className="card">
+          <div className="card-header">
+            <h3 className="text-xl font-bold">Projects</h3>
+          </div>
+          <div className="p-6">
+            {projects.length === 0 ? (
+              <div className="text-center py-8">
+                <div className="text-4xl mb-4">📋</div>
+                <h4 className="text-lg font-bold mb-2">No Projects Yet</h4>
+                <p className="text-muted mb-4">Start your first project to begin building</p>
+                <button className="btn btn-primary">Create Project</button>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {projects.map((project) => (
+                  <div key={project.id} className="p-4 border border-gray-700 rounded-lg">
+                    <div className="flex justify-between items-start mb-2">
+                      <h4 className="font-bold">{project.name}</h4>
+                      <span className={`badge ${
+                        project.status === 'COMPLETED' ? 'badge-success' : 
+                        project.status === 'IN_PROGRESS' ? 'badge-info' : 'badge-warning'
+                      }`}>
+                        {project.status}
+                      </span>
+                    </div>
+                    <p className="text-sm text-muted mb-3">{project.description}</p>
+                    <div className="flex justify-between items-center">
+                      <div className="flex-1 mr-4">
+                        <div className="w-full bg-gray-700 rounded-full h-2">
+                          <div 
+                            className="bg-green-500 h-2 rounded-full" 
+                            style={{ width: `${project.progress}%` }}
+                          ></div>
+                        </div>
+                        <p className="text-xs text-muted mt-1">{project.progress}% complete</p>
+                      </div>
+                      <p className="text-xs text-muted">Created: {new Date(project.createdAt).toLocaleDateString()}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'legal' && (
+        <div className="card">
+          <div className="card-header">
+            <h3 className="text-xl font-bold">Legal Documents</h3>
+          </div>
+          <div className="p-6">
+            {venture.legalDocuments && venture.legalDocuments.length > 0 ? (
+              <div className="space-y-4">
+                {venture.legalDocuments.map((doc) => (
+                  <div key={doc.id} className="flex items-center justify-between p-4 border border-gray-700 rounded-lg">
+                    <div>
+                      <h4 className="font-bold">{doc.name}</h4>
+                      <p className="text-sm text-muted">{doc.type}</p>
+                    </div>
+                    <div className="text-right">
+                      <span className={`badge ${
+                        doc.status === 'EFFECTIVE' ? 'badge-success' : 
+                        doc.status === 'PENDING' ? 'badge-warning' : 'badge-secondary'
+                      }`}>
+                        {doc.status}
+                      </span>
+                      <p className="text-xs text-muted mt-1">
+                        {new Date(doc.createdAt).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <div className="text-4xl mb-4">⚖️</div>
+                <h4 className="text-lg font-bold mb-2">No Legal Documents</h4>
+                <p className="text-muted mb-4">Legal documents will appear here once generated</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'equity' && (
+        <div className="card">
+          <div className="card-header">
+            <h3 className="text-xl font-bold">Equity Management</h3>
+          </div>
+          <div className="p-6">
+            {venture.equityFramework ? (
+              <div className="space-y-6">
+                <div className="grid grid-3 gap-6">
+                  <div className="text-center p-4 border border-gray-700 rounded-lg">
+                    <div className="text-3xl font-bold text-green-400 mb-2">
+                      {venture.equityFramework.ownerPercent}%
+                    </div>
+                    <p className="text-sm text-muted">Owner Equity</p>
+                  </div>
+                  <div className="text-center p-4 border border-gray-700 rounded-lg">
+                    <div className="text-3xl font-bold text-blue-400 mb-2">
+                      {venture.equityFramework.alicePercent}%
+                    </div>
+                    <p className="text-sm text-muted">Alice Solutions</p>
+                  </div>
+                  <div className="text-center p-4 border border-gray-700 rounded-lg">
+                    <div className="text-3xl font-bold text-purple-400 mb-2">
+                      {venture.equityFramework.cepPercent}%
+                    </div>
+                    <p className="text-sm text-muted">Contributor Pool</p>
+                  </div>
+                </div>
+                <div className="text-center">
+                  <button className="btn btn-primary">Manage Equity</button>
                 </div>
               </div>
-            </div>
-          )}
+            ) : (
+              <div className="text-center py-8">
+                <div className="text-4xl mb-4">💎</div>
+                <h4 className="text-lg font-bold mb-2">No Equity Framework</h4>
+                <p className="text-muted mb-4">Equity framework will be set up during venture creation</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
-          {/* Timestamps */}
+      {activeTab === 'settings' && (
+        <div className="grid grid-2 gap-8">
           <div className="card">
             <div className="card-header">
-              <h3 className="text-xl font-bold">Timestamps</h3>
+              <h3 className="text-xl font-bold">Venture Settings</h3>
             </div>
             <div className="p-6">
-              <div className="space-y-2">
+              <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-bold mb-1">Created</label>
-                  <p className="text-muted">{new Date(venture.createdAt).toLocaleString()}</p>
+                  <label className="block text-sm font-bold mb-2">Status</label>
+                  <select 
+                    value={venture.status}
+                    onChange={(e) => handleStatusUpdate(e.target.value)}
+                    className="input w-full"
+                  >
+                    <option value="DRAFT">Draft</option>
+                    <option value="PENDING_CONTRACTS">Pending Contracts</option>
+                    <option value="ACTIVE">Active</option>
+                    <option value="SUSPENDED">Suspended</option>
+                    <option value="CLOSED">Closed</option>
+                  </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-bold mb-1">Last Updated</label>
-                  <p className="text-muted">{new Date(venture.updatedAt).toLocaleString()}</p>
+                  <label className="block text-sm font-bold mb-2">Region</label>
+                  <select 
+                    value={venture.region}
+                    onChange={(e) => setEditData(prev => ({ ...prev, region: e.target.value }))}
+                    className="input w-full"
+                  >
+                    <option value="US">United States</option>
+                    <option value="CA">Canada</option>
+                    <option value="UK">United Kingdom</option>
+                    <option value="EU">European Union</option>
+                    <option value="AU">Australia</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                <div className="flex gap-2">
+                  <button 
+                    className="btn btn-primary"
+                    onClick={handleUpdateVenture}
+                  >
+                    Save Changes
+                  </button>
+                  <button 
+                    className="btn btn-danger"
+                    onClick={handleDeleteVenture}
+                  >
+                    Delete Venture
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="card">
+            <div className="card-header">
+              <h3 className="text-xl font-bold">Danger Zone</h3>
+            </div>
+            <div className="p-6">
+              <div className="space-y-4">
+                <div>
+                  <h4 className="font-bold text-red-400 mb-2">Delete Venture</h4>
+                  <p className="text-sm text-muted mb-4">
+                    This will permanently delete the venture and all associated data. This action cannot be undone.
+                  </p>
+                  <button 
+                    className="btn btn-danger"
+                    onClick={handleDeleteVenture}
+                  >
+                    Delete Venture
+                  </button>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
-      {/* Quick Actions */}
-      <div className="card mt-8">
-        <div className="card-header">
-          <h3 className="text-xl font-bold">Quick Actions</h3>
-        </div>
-        <div className="p-6">
-          <div className="grid grid-3 gap-4">
-            <button 
-              className="btn btn-secondary w-full justify-start"
-              onClick={() => router.push('/ventures')}
-            >
-              📋 Back to Ventures
-            </button>
-            <button 
-              className="btn btn-secondary w-full justify-start"
-              onClick={() => router.push('/teams')}
-            >
-              👥 Manage Teams
-            </button>
-            <button 
-              className="btn btn-secondary w-full justify-start"
-              onClick={() => router.push('/projects')}
-            >
-              📋 Manage Projects
-            </button>
+      {/* Edit Modal */}
+      {showEditForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-gray-900 rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <h3 className="text-2xl font-bold mb-4">Edit Venture</h3>
+            <form onSubmit={(e) => { e.preventDefault(); handleUpdateVenture(); }}>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-bold mb-2">Venture Name</label>
+                  <input
+                    type="text"
+                    value={editData.name || ''}
+                    onChange={(e) => setEditData(prev => ({ ...prev, name: e.target.value }))}
+                    className="input w-full"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-bold mb-2">Purpose & Mission</label>
+                  <textarea
+                    value={editData.purpose || ''}
+                    onChange={(e) => setEditData(prev => ({ ...prev, purpose: e.target.value }))}
+                    className="input w-full"
+                    rows={3}
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-bold mb-2">Description</label>
+                  <textarea
+                    value={editData.description || ''}
+                    onChange={(e) => setEditData(prev => ({ ...prev, description: e.target.value }))}
+                    className="input w-full"
+                    rows={4}
+                  />
+                </div>
+                <div className="grid grid-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-bold mb-2">Industry</label>
+                    <select
+                      value={editData.industry || ''}
+                      onChange={(e) => setEditData(prev => ({ ...prev, industry: e.target.value }))}
+                      className="input w-full"
+                    >
+                      <option value="Technology">Technology</option>
+                      <option value="Healthcare">Healthcare</option>
+                      <option value="Finance">Finance</option>
+                      <option value="Education">Education</option>
+                      <option value="E-commerce">E-commerce</option>
+                      <option value="Manufacturing">Manufacturing</option>
+                      <option value="Services">Services</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold mb-2">Region</label>
+                    <select
+                      value={editData.region || ''}
+                      onChange={(e) => setEditData(prev => ({ ...prev, region: e.target.value }))}
+                      className="input w-full"
+                    >
+                      <option value="US">United States</option>
+                      <option value="CA">Canada</option>
+                      <option value="UK">United Kingdom</option>
+                      <option value="EU">European Union</option>
+                      <option value="AU">Australia</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div className="flex gap-2 justify-end mt-6">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => setShowEditForm(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                >
+                  Save Changes
+                </button>
+              </div>
+            </form>
           </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }

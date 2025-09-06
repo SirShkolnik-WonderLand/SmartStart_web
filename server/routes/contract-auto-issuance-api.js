@@ -137,6 +137,7 @@ router.post('/onboard/:ventureId', async(req, res) => {
                         where: {
                             ventureId,
                             type: contractType,
+                            isTemplate: false
                         }
                     });
 
@@ -318,7 +319,7 @@ router.get('/venture/:ventureId/status', async(req, res) => {
             where: { id: ventureId },
             include: {
                 legalDocuments: {
-                    where: {},
+                    where: { isTemplate: false },
                     select: {
                         id: true,
                         type: true,
