@@ -17,13 +17,13 @@ import {
   ChevronRight,
   Bell
 } from 'lucide-react'
-import { comprehensiveApiService as apiService, User } from '@/lib/api-comprehensive'
+import { comprehensiveApiService as apiService, User, AnalyticsData, Venture, Offer } from '@/lib/api-comprehensive'
 
 export default function DashboardPage() {
   const [user, setUser] = useState<User | null>(null)
-  const [analytics, setAnalytics] = useState<unknown>(null)
-  const [ventures, setVentures] = useState<unknown[]>([])
-  const [offers, setOffers] = useState<unknown[]>([])
+  const [analytics, setAnalytics] = useState<AnalyticsData | null>(null)
+  const [ventures, setVentures] = useState<Venture[]>([])
+  const [offers, setOffers] = useState<Offer[]>([])
   const [, setIsLoading] = useState(true)
 
   useEffect(() => {

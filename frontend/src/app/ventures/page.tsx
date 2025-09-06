@@ -1,12 +1,12 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { comprehensiveApiService as apiService } from '@/lib/api-comprehensive'
+import { comprehensiveApiService as apiService, AnalyticsData, Venture } from '@/lib/api-comprehensive'
 import { Briefcase, Users, Calendar, TrendingUp, Plus } from 'lucide-react'
 
 export default function VenturesPage() {
-  const [ventures, setVentures] = useState<unknown[]>([])
-  const [analytics, setAnalytics] = useState<unknown>(null)
+  const [ventures, setVentures] = useState<Venture[]>([])
+  const [analytics, setAnalytics] = useState<AnalyticsData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {

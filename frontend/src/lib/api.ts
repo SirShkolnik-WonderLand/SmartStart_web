@@ -203,10 +203,10 @@ class ApiService {
     try {
       const response = await this.fetchWithAuth<{ user: User }>('/api/auth/me')
       
-      if (response.success && response.user) {
-        localStorage.setItem('user-id', response.user.id)
-        localStorage.setItem('user-data', JSON.stringify(response.user))
-        return { success: true, data: response.user }
+      if (response.success && response.data?.user) {
+        localStorage.setItem('user-id', response.data.user.id)
+        localStorage.setItem('user-data', JSON.stringify(response.data.user))
+        return { success: true, data: response.data.user }
       } else {
         throw new Error('Invalid response from /api/auth/me')
       }
@@ -240,7 +240,7 @@ class ApiService {
   async getVentures(): Promise<ApiResponse<Venture[]>> {
     try {
       const response = await this.fetchWithAuth<Venture[]>('/api/ventures/list/all')
-      return { success: true, data: response.ventures || [] }
+      return { success: true, data: response.data || [] }
     } catch (error) {
       console.error('Error fetching ventures:', error)
       return { success: false, data: [], error: 'Failed to fetch ventures' }

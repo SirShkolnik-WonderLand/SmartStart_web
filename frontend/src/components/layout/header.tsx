@@ -12,7 +12,7 @@ import { useAuthStore } from '@/store/useAuthStore'
 export function Header() {
   const { theme, toggleTheme } = useTheme()
   const { setSidebarOpen } = useUIStore()
-  const { user, logout } = useAuthStore()
+  const { user } = useAuthStore()
   const [searchQuery, setSearchQuery] = useState('')
 
   const handleSearch = (e: React.FormEvent) => {
@@ -97,7 +97,7 @@ export function Header() {
               </div>
               <div className="hidden lg:block">
                 <p className="text-sm font-medium text-foreground">{user.name}</p>
-                <p className="text-xs text-muted-foreground">{typeof user.role === 'string' ? user.role : user.role?.name || 'User'}</p>
+                <p className="text-xs text-muted-foreground">{user.role || 'User'}</p>
               </div>
             </div>
           ) : (
@@ -111,4 +111,3 @@ export function Header() {
   )
 }
 
-export { Header }

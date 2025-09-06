@@ -339,10 +339,10 @@ class ComprehensiveApiService {
     try {
       const response = await this.fetchWithAuth<{ user: User }>('/api/auth/me')
       
-      if (response.success && response.user) {
-        localStorage.setItem('user-id', response.user.id)
-        localStorage.setItem('user-data', JSON.stringify(response.user))
-        return { success: true, data: response.user }
+      if (response.success && response.data?.user) {
+        localStorage.setItem('user-id', response.data.user.id)
+        localStorage.setItem('user-data', JSON.stringify(response.data.user))
+        return { success: true, data: response.data.user }
       } else {
         throw new Error('Invalid response from /api/auth/me')
       }
@@ -358,7 +358,7 @@ class ComprehensiveApiService {
   async getUsers(): Promise<ApiResponse<User[]>> {
     try {
       const response = await this.fetchWithAuth<{ users: User[] }>('/api/users')
-      return { success: true, data: response.users || [] }
+      return { success: true, data: response.data?.users || [] }
     } catch (error) {
       console.error('Error fetching users:', error)
       return { success: false, data: [], error: 'Failed to fetch users' }
@@ -439,7 +439,7 @@ class ComprehensiveApiService {
     try {
       const endpoint = ventureId ? `/api/v1/ventures/${ventureId}/roles` : '/api/v1/roles'
       const response = await this.fetchWithAuth<{ roles: Role[] }>(endpoint)
-      return { success: true, data: response.roles || [] }
+      return { success: true, data: response.data?.roles || [] }
     } catch (error) {
       console.error('Error fetching roles:', error)
       return { success: false, data: [], error: 'Failed to fetch roles' }
@@ -509,7 +509,7 @@ class ComprehensiveApiService {
   async getLegalPacks(): Promise<ApiResponse<LegalPack[]>> {
     try {
       const response = await this.fetchWithAuth<{ packs: LegalPack[] }>('/api/legal-pack')
-      return { success: true, data: response.packs || [] }
+      return { success: true, data: response.data?.packs || [] }
     } catch (error) {
       console.error('Error fetching legal packs:', error)
       return { success: false, data: [], error: 'Failed to fetch legal packs' }
@@ -519,7 +519,7 @@ class ComprehensiveApiService {
   async getContracts(): Promise<ApiResponse<Contract[]>> {
     try {
       const response = await this.fetchWithAuth<{ contracts: Contract[] }>('/api/v1/contracts')
-      return { success: true, data: response.contracts || [] }
+      return { success: true, data: response.data?.contracts || [] }
     } catch (error) {
       console.error('Error fetching contracts:', error)
       return { success: false, data: [], error: 'Failed to fetch contracts' }
@@ -533,7 +533,7 @@ class ComprehensiveApiService {
   async getSubscriptions(): Promise<ApiResponse<Subscription[]>> {
     try {
       const response = await this.fetchWithAuth<{ subscriptions: Subscription[] }>('/api/subscriptions')
-      return { success: true, data: response.subscriptions || [] }
+      return { success: true, data: response.data?.subscriptions || [] }
     } catch (error) {
       console.error('Error fetching subscriptions:', error)
       return { success: false, data: [], error: 'Failed to fetch subscriptions' }
@@ -543,7 +543,7 @@ class ComprehensiveApiService {
   async getInvoices(): Promise<ApiResponse<Invoice[]>> {
     try {
       const response = await this.fetchWithAuth<{ invoices: Invoice[] }>('/api/billing/invoices')
-      return { success: true, data: response.invoices || [] }
+      return { success: true, data: response.data?.invoices || [] }
     } catch (error) {
       console.error('Error fetching invoices:', error)
       return { success: false, data: [], error: 'Failed to fetch invoices' }
