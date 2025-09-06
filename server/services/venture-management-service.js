@@ -322,7 +322,6 @@ class VentureManagementService {
                     ventureProfile: true,
                     ventureITPack: true,
                     legalDocuments: {
-                        where: { isTemplate: false },
                         include: {
                             signatures: true
                         }
