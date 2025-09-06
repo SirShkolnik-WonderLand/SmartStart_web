@@ -5,7 +5,9 @@
     "main": "server/consolidated-server.js",
     "scripts": {
         "start": "node server/consolidated-server.js",
+        "start:api": "node server/consolidated-server.js",
         "dev": "node server/consolidated-server.js",
+        "build": "cd frontend && npm install && npm run build",
         "db:generate": "prisma generate",
         "db:push": "prisma db push",
         "db:migrate": "prisma migrate dev",
