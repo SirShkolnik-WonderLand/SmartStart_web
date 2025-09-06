@@ -394,8 +394,7 @@ router.get('/:ventureId/documents', async(req, res) => {
 
         const documents = await prisma.legalDocument.findMany({
             where: {
-                entityId: ventureId,
-                isTemplate: false
+                entityId: ventureId
             },
             include: {
                 signatures: {
