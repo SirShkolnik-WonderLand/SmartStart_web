@@ -178,10 +178,16 @@ const VenturesPage = () => {
                     <div>Updated: {new Date(venture.updatedAt).toLocaleDateString()}</div>
                   </div>
                   <div className="flex gap-2">
-                    <button className="btn btn-secondary btn-sm">
+                    <button 
+                      className="btn btn-secondary btn-sm"
+                      onClick={() => router.push(`/ventures/${venture.id}`)}
+                    >
                       View Details
                     </button>
-                    <button className="btn btn-primary btn-sm">
+                    <button 
+                      className="btn btn-primary btn-sm"
+                      onClick={() => router.push(`/ventures/${venture.id}`)}
+                    >
                       Manage
                     </button>
                   </div>
