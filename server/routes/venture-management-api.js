@@ -83,6 +83,20 @@ router.post('/create', async(req, res) => {
 router.get('/:ventureId', async(req, res) => {
     try {
         const { ventureId } = req.params;
+        
+        // Basic ownership validation - get user from auth header
+        const authHeader = req.headers.authorization;
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            return res.status(401).json({
+                success: false,
+                message: 'Authorization header required'
+            });
+        }
+        
+        // For now, we'll allow access but log the request
+        // TODO: Implement proper JWT validation and user extraction
+        console.log(`Venture details requested for ${ventureId} by user with token: ${authHeader.substring(7, 20)}...`);
+        
         const venture = await ventureService.getVentureWithDetails(ventureId);
 
         res.json({
@@ -120,6 +134,15 @@ router.put('/:ventureId/status', async(req, res) => {
     try {
         const { ventureId } = req.params;
         const { status } = req.body;
+        
+        // Basic auth validation
+        const authHeader = req.headers.authorization;
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            return res.status(401).json({
+                success: false,
+                message: 'Authorization header required'
+            });
+        }
 
         if (!status) {
             return res.status(400).json({
@@ -302,6 +325,15 @@ router.put('/:ventureId/profile', async(req, res) => {
     try {
         const { ventureId } = req.params;
         const profileData = req.body;
+        
+        // Basic auth validation
+        const authHeader = req.headers.authorization;
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            return res.status(401).json({
+                success: false,
+                message: 'Authorization header required'
+            });
+        }
 
         const updatedProfile = await prisma.ventureProfile.update({
             where: { ventureId },
