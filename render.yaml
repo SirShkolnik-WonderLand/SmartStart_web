@@ -1,12 +1,12 @@
 # render.yaml - SmartStart Platform Deployment Configuration
 # Following Render.com best practices for monorepo deployment
 
-services:
+databases:
   # Database Service (PostgreSQL) - Must be defined first for references
-  - type: pserv
-    name: smartstart-db
+  - name: smartstart-db
     plan: starter
 
+services:
   # Backend API Service
   - type: web
     name: smartstart-api
