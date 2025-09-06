@@ -11,7 +11,7 @@ const DashboardExplanation = ({ onClose }: DashboardExplanationProps) => {
 
   const explanationSteps = [
     {
-      title: "Welcome to Your Dashboard!",
+      title: "Dashboard Overview",
       icon: "🎉",
       content: "This is your central hub where you can manage everything about your ventures, teams, and projects.",
       features: [
