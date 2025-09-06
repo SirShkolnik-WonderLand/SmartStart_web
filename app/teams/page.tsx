@@ -52,7 +52,7 @@ const TeamsPage = () => {
 
   const loadTeams = async () => {
     try {
-      const response = await fetch('https://smartstart-api.onrender.com/api/teams/', {
+      const response = await fetch('https://smartstart-api.onrender.com/api/teams/list/all', {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('auth-token')}`,
           'Content-Type': 'application/json'
@@ -61,7 +61,7 @@ const TeamsPage = () => {
       const data = await response.json()
       
       if (data.success) {
-        setTeams(data.data || [])
+        setTeams(data.teams || [])
       }
     } catch (error) {
       console.error('Failed to load teams:', error)

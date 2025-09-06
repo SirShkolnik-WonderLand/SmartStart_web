@@ -48,7 +48,7 @@ const ProjectsPage = () => {
 
   const loadProjects = async () => {
     try {
-      const response = await fetch('https://smartstart-api.onrender.com/api/projects/', {
+      const response = await fetch('https://smartstart-api.onrender.com/api/projects/list/all', {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('auth-token')}`,
           'Content-Type': 'application/json'
@@ -57,7 +57,7 @@ const ProjectsPage = () => {
       const data = await response.json()
       
       if (data.success) {
-        setProjects(data.data || [])
+        setProjects(data.projects || [])
       }
     } catch (error) {
       console.error('Failed to load projects:', error)

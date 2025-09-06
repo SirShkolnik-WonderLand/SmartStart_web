@@ -41,7 +41,7 @@ const VenturesPage = () => {
 
   const loadVentures = async () => {
     try {
-      const response = await fetch('https://smartstart-api.onrender.com/api/ventures/', {
+      const response = await fetch('https://smartstart-api.onrender.com/api/ventures/list/all', {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('auth-token')}`,
           'Content-Type': 'application/json'
@@ -50,7 +50,7 @@ const VenturesPage = () => {
       const data = await response.json()
       
       if (data.success) {
-        setVentures(data.data || [])
+        setVentures(data.ventures || [])
       }
     } catch (error) {
       console.error('Failed to load ventures:', error)

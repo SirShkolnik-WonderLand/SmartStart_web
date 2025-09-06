@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { apiService } from '../services/api'
+import DashboardExplanation from '../components/DashboardExplanation'
 
 const MainDashboard = () => {
   const router = useRouter()
@@ -11,6 +12,7 @@ const MainDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview')
   const [subscription, setSubscription] = useState<any>(null)
   const [subscriptionLoading, setSubscriptionLoading] = useState(false)
+  const [showExplanation, setShowExplanation] = useState(false)
 
   const loadSubscriptionData = async () => {
     if (!user?.id) return
@@ -39,6 +41,12 @@ const MainDashboard = () => {
       try {
         const userData = await apiService.getCurrentUser()
         setUser(userData)
+        
+        // Check if user has seen dashboard explanation
+        const hasSeenExplanation = localStorage.getItem('dashboard-explanation-seen')
+        if (!hasSeenExplanation) {
+          setShowExplanation(true)
+        }
       } catch (error) {
         console.error('Failed to load user data:', error)
         // Redirect to login if not authenticated
@@ -571,6 +579,11 @@ const MainDashboard = () => {
           </div>
         )}
       </div>
+      
+      {/* Dashboard Explanation Modal */}
+      {showExplanation && (
+        <DashboardExplanation onClose={() => setShowExplanation(false)} />
+      )}
     </div>
   )
 }
