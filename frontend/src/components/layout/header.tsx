@@ -19,11 +19,11 @@ export function Header() {
     e.preventDefault()
     // TODO: Implement search functionality
     console.log('Search:', searchQuery)
-  }
+  // }
 
-  const handleLogout = () => {
+  // const handleLogout = () => {
     logout()
-  }
+  // }
 
   return (
     <motion.header
