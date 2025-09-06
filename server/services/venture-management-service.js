@@ -318,14 +318,7 @@ class VentureManagementService {
                             legalEntity: true
                         }
                     },
-                    equityFramework: true,
-                    ventureProfile: true,
-                    ventureITPack: true,
-                    legalDocuments: {
-                        include: {
-                            signatures: true
-                        }
-                    }
+                    equityFramework: true
                 }
             });
 
