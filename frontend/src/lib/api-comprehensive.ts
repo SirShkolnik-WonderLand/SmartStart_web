@@ -339,10 +339,13 @@ class ComprehensiveApiService {
     try {
       const response = await this.fetchWithAuth<{ user: User }>('/api/auth/me')
       
-      if (response.success && response.data?.user) {
-        localStorage.setItem('user-id', response.data.user.id)
-        localStorage.setItem('user-data', JSON.stringify(response.data.user))
-        return { success: true, data: response.data.user }
+      // Handle both response formats: { success: true, user: {...} } and { success: true, data: { user: {...} } }
+      const user = response.user || response.data?.user
+      
+      if (response.success && user) {
+        localStorage.setItem('user-id', user.id)
+        localStorage.setItem('user-data', JSON.stringify(user))
+        return { success: true, data: user }
       } else {
         throw new Error('Invalid response from /api/auth/me')
       }
