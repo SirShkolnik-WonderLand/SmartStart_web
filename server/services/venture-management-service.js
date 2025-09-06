@@ -306,10 +306,11 @@ class VentureManagementService {
                     owner: {
                         select: {
                             id: true,
-                            displayName: true,
+                            name: true,
                             email: true,
-                            kycStatus: true,
-                            trustScore: true
+                            level: true,
+                            xp: true,
+                            reputation: true
                         }
                     },
                     ventureLegalEntity: {
