@@ -12,7 +12,7 @@ import {
   Download,
   RefreshCw
 } from 'lucide-react'
-import { AnalyticsData } from '@/lib/api-comprehensive'
+import { comprehensiveApiService as apiService, AnalyticsData } from '@/lib/api-comprehensive'
 
 export default function AnalyticsPage() {
   const [data, setData] = useState<AnalyticsData | null>(null)
@@ -22,34 +22,12 @@ export default function AnalyticsPage() {
   useEffect(() => {
     const loadAnalytics = async () => {
       try {
-        // Mock data for now - replace with real API calls
-        const mockData: AnalyticsData = {
-          totalVentures: 24,
-          totalUsers: 156,
-          totalOffers: 89,
-          totalRevenue: 125000,
-          totalCompanies: 18,
-          totalTeams: 42,
-          ventureGrowth: 12.5,
-          userGrowth: 8.3,
-          offerGrowth: 15.2,
-          revenueGrowth: 22.1,
-          companyGrowth: 10.5,
-          teamGrowth: 14.2,
-          topVentures: [
-            { id: '1', name: 'Quantum AI Labs', value: 45000, growth: 18.5 },
-            { id: '2', name: 'Blockchain Solutions', value: 32000, growth: 12.3 },
-            { id: '3', name: 'GreenTech Innovations', value: 28000, growth: 8.7 },
-            { id: '4', name: 'HealthTech Platform', value: 21000, growth: 15.2 },
-          ],
-          monthlyStats: [
-            { month: 'Jan', ventures: 18, users: 120, offers: 65, revenue: 95000 },
-            { month: 'Feb', ventures: 20, users: 135, offers: 72, revenue: 108000 },
-            { month: 'Mar', ventures: 22, users: 145, offers: 78, revenue: 115000 },
-            { month: 'Apr', ventures: 24, users: 156, offers: 89, revenue: 125000 },
-          ]
+        const response = await apiService.getAnalytics()
+        if (response.success && response.data) {
+          setData(response.data)
+        } else {
+          console.error('Failed to load analytics:', response.error)
         }
-        setData(mockData)
       } catch (error) {
         console.error('Error loading analytics:', error)
       } finally {

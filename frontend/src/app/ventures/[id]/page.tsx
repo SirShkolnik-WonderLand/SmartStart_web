@@ -397,7 +397,7 @@ export default function VentureDetailPage() {
           <div className="glass rounded-xl p-6 max-w-md w-full mx-4">
             <h3 className="text-xl font-semibold text-foreground mb-4">Delete Venture</h3>
             <p className="text-foreground-body mb-6">
-              Are you sure you want to delete "{venture?.name}"? This action cannot be undone and will permanently remove all venture data.
+              Are you sure you want to delete &ldquo;{venture?.name}&rdquo;? This action cannot be undone and will permanently remove all venture data.
             </p>
             <div className="flex gap-3 justify-end">
               <button
