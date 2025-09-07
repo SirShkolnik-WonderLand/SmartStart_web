@@ -95,10 +95,19 @@ class OnboardingOrchestrator extends EventEmitter {
       ]
 
       for (const stageData of defaultStages) {
-        const stage = await prisma.journeyStage.create({
-          data: stageData
-        })
-        stages.push(stage)
+        // Check if stage already exists
+        const existingStage = await prisma.journeyStage.findFirst({
+          where: { name: stageData.name }
+        });
+        
+        if (!existingStage) {
+          const stage = await prisma.journeyStage.create({
+            data: stageData
+          })
+          stages.push(stage)
+        } else {
+          stages.push(existingStage)
+        }
       }
       
       console.log(`✅ Created ${defaultStages.length} default journey stages`)

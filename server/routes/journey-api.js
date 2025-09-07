@@ -873,17 +873,27 @@ router.post('/seed', async (req, res) => {
             }
         ];
 
-        // Create journey stages
+        // Create journey stages (check if they already exist first)
         for (const stageData of defaultStages) {
-            await prisma.journeyStage.upsert({
-                where: { name: stageData.name },
-                update: {
-                    description: stageData.description,
-                    order: stageData.order,
-                    isActive: stageData.isActive
-                },
-                create: stageData
+            const existingStage = await prisma.journeyStage.findFirst({
+                where: { name: stageData.name }
             });
+            
+            if (!existingStage) {
+                await prisma.journeyStage.create({
+                    data: stageData
+                });
+            } else {
+                // Update existing stage
+                await prisma.journeyStage.update({
+                    where: { id: existingStage.id },
+                    data: {
+                        description: stageData.description,
+                        order: stageData.order,
+                        isActive: stageData.isActive
+                    }
+                });
+            }
         }
 
         console.log(`✅ Created ${defaultStages.length} journey stages`);
