@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react'
 import { comprehensiveApiService as apiService, AnalyticsData, Venture } from '@/lib/api-comprehensive'
 import { Briefcase, Users, Calendar, TrendingUp, Plus } from 'lucide-react'
-import { VentureForm } from '@/components/venture/VentureForm'
+import MultiStepVentureForm from '@/components/venture/MultiStepVentureForm'
+import Link from 'next/link'
 
 export default function VenturesPage() {
   const [ventures, setVentures] = useState<Venture[]>([])
@@ -58,13 +59,22 @@ export default function VenturesPage() {
             Discover and manage your ventures
           </p>
         </div>
-        <button 
-          onClick={() => setShowCreateModal(true)}
-          className="wonder-button flex items-center gap-2"
-        >
-          <Plus className="w-5 h-5" />
-          Create Venture
-        </button>
+        <div className="flex gap-3">
+          <button 
+            onClick={() => setShowCreateModal(true)}
+            className="wonder-button flex items-center gap-2"
+          >
+            <Plus className="w-5 h-5" />
+            Quick Create
+          </button>
+          <Link 
+            href="/ventures/create"
+            className="wonder-button flex items-center gap-2 bg-primary/10 text-primary hover:bg-primary/20"
+          >
+            <Plus className="w-5 h-5" />
+            Full Form
+          </Link>
+        </div>
       </div>
 
       {/* Stats Grid */}
@@ -174,32 +184,32 @@ export default function VenturesPage() {
             <Briefcase className="w-16 h-16 text-foreground-muted mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-foreground mb-2">No ventures yet</h3>
             <p className="text-foreground-muted mb-6">Create your first venture to get started on your entrepreneurial journey.</p>
-            <button 
-              onClick={() => setShowCreateModal(true)}
-              className="wonder-button"
-            >
-              <Plus className="w-5 h-5 mr-2" />
-              Create Your First Venture
-            </button>
+            <div className="flex gap-3 justify-center">
+              <button 
+                onClick={() => setShowCreateModal(true)}
+                className="wonder-button"
+              >
+                <Plus className="w-5 h-5 mr-2" />
+                Quick Create
+              </button>
+              <Link 
+                href="/ventures/create"
+                className="wonder-button bg-primary/10 text-primary hover:bg-primary/20"
+              >
+                <Plus className="w-5 h-5 mr-2" />
+                Full Form
+              </Link>
+            </div>
           </div>
         )}
       </div>
 
       {/* Create Venture Modal */}
-      {showCreateModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div 
-            className="absolute inset-0 bg-black/20 backdrop-blur-sm"
-            onClick={() => setShowCreateModal(false)}
-          />
-          <div className="relative w-full max-w-4xl">
-            <VentureForm 
-              onSuccess={handleVentureCreated}
-              onCancel={() => setShowCreateModal(false)}
-            />
-          </div>
-        </div>
-      )}
+      <MultiStepVentureForm
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onSuccess={handleVentureCreated}
+      />
     </div>
   )
 }

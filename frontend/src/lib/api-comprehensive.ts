@@ -545,8 +545,12 @@ class ComprehensiveApiService {
 
   async getVentures(): Promise<ApiResponse<Venture[]>> {
     try {
-      const response = await this.fetchWithAuth<Venture[]>('/api/v1/ventures')
-      return response
+      const response = await this.fetchWithAuth<{ventures: Venture[]}>('/api/ventures/list/all')
+      return {
+        success: response.success,
+        data: response.data?.ventures || [],
+        error: response.error
+      }
     } catch (error) {
       console.error('Error fetching ventures:', error)
       return { success: false, data: [], error: 'Failed to fetch ventures' }
@@ -565,11 +569,23 @@ class ComprehensiveApiService {
 
   async createVenture(ventureData: Partial<Venture>): Promise<ApiResponse<Venture>> {
     try {
-      const response = await this.fetchWithAuth<Venture>('/api/v1/ventures', {
+      // Transform frontend data to backend format
+      const backendData = {
+        name: ventureData.name,
+        purpose: ventureData.description,
+        region: ventureData.residency || 'US',
+        ownerUserId: 'cmf1r92vo0001s8299wr0vh66' // TODO: Get from auth context
+      }
+      
+      const response = await this.fetchWithAuth<{venture: Venture}>('/api/ventures/create', {
         method: 'POST',
-        body: JSON.stringify(ventureData),
+        body: JSON.stringify(backendData),
       })
-      return response
+      return {
+        success: response.success,
+        data: response.data?.venture,
+        error: response.error
+      }
     } catch (error) {
       console.error('Error creating venture:', error)
       return { success: false, error: 'Failed to create venture' }
@@ -681,8 +697,42 @@ class ComprehensiveApiService {
 
   async getAnalytics(): Promise<ApiResponse<AnalyticsData>> {
     try {
-      const response = await this.fetchWithAuth<AnalyticsData>('/api/v1/analytics')
-      return response
+      const response = await this.fetchWithAuth<{dashboard: {ventures?: {total: number}, teams?: {totalMembers: number, totalTeams: number}}}>('/api/dashboard/')
+      return {
+        success: response.success,
+        data: response.data?.dashboard ? {
+          totalVentures: response.data.dashboard.ventures?.total || 0,
+          totalUsers: response.data.dashboard.teams?.totalMembers || 0,
+          totalOffers: 0,
+          totalRevenue: 0,
+          totalCompanies: 0,
+          totalTeams: response.data.dashboard.teams?.totalTeams || 0,
+          ventureGrowth: 0,
+          userGrowth: 0,
+          offerGrowth: 0,
+          revenueGrowth: 0,
+          companyGrowth: 0,
+          teamGrowth: 0,
+          topVentures: [],
+          monthlyStats: []
+        } : {
+          totalVentures: 0,
+          totalUsers: 0,
+          totalOffers: 0,
+          totalRevenue: 0,
+          totalCompanies: 0,
+          totalTeams: 0,
+          ventureGrowth: 0,
+          userGrowth: 0,
+          offerGrowth: 0,
+          revenueGrowth: 0,
+          companyGrowth: 0,
+          teamGrowth: 0,
+          topVentures: [],
+          monthlyStats: []
+        },
+        error: response.error
+      }
     } catch (error) {
       console.error('Error fetching analytics:', error)
       return { success: false, error: 'Failed to fetch analytics' }

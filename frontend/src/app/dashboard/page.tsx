@@ -18,7 +18,8 @@ import {
   Bell
 } from 'lucide-react'
 import { comprehensiveApiService as apiService, User, AnalyticsData, Venture, Offer } from '@/lib/api-comprehensive'
-import { VentureForm } from '@/components/venture/VentureForm'
+import MultiStepVentureForm from '@/components/venture/MultiStepVentureForm'
+import Link from 'next/link'
 
 export default function DashboardPage() {
   const [user, setUser] = useState<User | null>(null)
@@ -244,18 +245,32 @@ export default function DashboardPage() {
                 Quick Actions
               </h3>
               <div className="grid md:grid-cols-3 gap-4">
-                <button 
-                  onClick={() => setShowCreateModal(true)}
-                  className="group flex items-center gap-3 p-4 bg-primary/5 border border-primary/20 rounded-lg hover:bg-primary/10 transition-all duration-200"
-                >
-                  <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-                    <Plus className="w-5 h-5 text-primary" />
-                  </div>
-                  <div className="text-left">
-                    <div className="font-medium text-foreground">Create Venture</div>
-                    <div className="text-sm text-foreground-muted">Start a new project</div>
-                  </div>
-                </button>
+                <div className="space-y-2">
+                  <button 
+                    onClick={() => setShowCreateModal(true)}
+                    className="group flex items-center gap-3 p-4 bg-primary/5 border border-primary/20 rounded-lg hover:bg-primary/10 transition-all duration-200 w-full"
+                  >
+                    <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                      <Plus className="w-5 h-5 text-primary" />
+                    </div>
+                    <div className="text-left">
+                      <div className="font-medium text-foreground">Quick Create</div>
+                      <div className="text-sm text-foreground-muted">Start a new project</div>
+                    </div>
+                  </button>
+                  <Link 
+                    href="/ventures/create"
+                    className="group flex items-center gap-3 p-4 bg-primary/10 border border-primary/30 rounded-lg hover:bg-primary/20 transition-all duration-200 w-full"
+                  >
+                    <div className="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                      <Plus className="w-5 h-5 text-primary" />
+                    </div>
+                    <div className="text-left">
+                      <div className="font-medium text-primary">Full Form</div>
+                      <div className="text-sm text-primary/70">Detailed setup</div>
+                    </div>
+                  </Link>
+                </div>
                 
                 <button className="group flex items-center gap-3 p-4 bg-accent/5 border border-accent/20 rounded-lg hover:bg-accent/10 transition-all duration-200">
                   <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
@@ -280,20 +295,11 @@ export default function DashboardPage() {
             </div>
 
         {/* Create Venture Modal */}
-        {showCreateModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div 
-              className="absolute inset-0 bg-black/20 backdrop-blur-sm"
-              onClick={() => setShowCreateModal(false)}
-            />
-            <div className="relative w-full max-w-4xl">
-              <VentureForm 
-                onSuccess={handleVentureCreated}
-                onCancel={() => setShowCreateModal(false)}
-              />
-            </div>
-          </div>
-        )}
+        <MultiStepVentureForm
+          isOpen={showCreateModal}
+          onClose={() => setShowCreateModal(false)}
+          onSuccess={handleVentureCreated}
+        />
     </div>
   )
 }
