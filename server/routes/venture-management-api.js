@@ -33,7 +33,7 @@ router.get('/health', async(req, res) => {
 });
 
 // Create new venture
-router.post('/create', async(req, res) => {
+router.post('/create', authenticateToken, requirePermission('venture:write'), async(req, res) => {
     try {
         const ventureData = req.body;
 
@@ -81,11 +81,12 @@ router.post('/create', async(req, res) => {
 });
 
 // Get venture details
-router.get('/:ventureId', async(req, res) => {
+router.get('/:ventureId', authenticateToken, requirePermission('venture:read'), async(req, res) => {
     try {
         const { ventureId } = req.params;
+        const userId = req.user.id;
         
-        console.log(`Venture details requested for ${ventureId}`);
+        console.log(`Venture details requested for ${ventureId} by user ${userId}`);
         
         const venture = await ventureService.getVentureWithDetails(ventureId);
 
@@ -217,7 +218,7 @@ router.get('/statistics/overview', async(req, res) => {
 });
 
 // List all ventures
-router.get('/list/all', async(req, res) => {
+router.get('/list/all', authenticateToken, requirePermission('venture:read'), async(req, res) => {
     try {
         const { page = 1, limit = 10, status } = req.query;
         const offset = (page - 1) * limit;
@@ -350,12 +351,13 @@ router.put('/:ventureId/profile', async(req, res) => {
 });
 
 // Update venture details
-router.put('/:ventureId', async(req, res) => {
+router.put('/:ventureId', authenticateToken, requirePermission('venture:write'), async(req, res) => {
     try {
         const { ventureId } = req.params;
         const ventureData = req.body;
+        const userId = req.user.id;
 
-        // Validate that the venture exists
+        // Validate that the venture exists and user owns it
         const existingVenture = await prisma.venture.findUnique({
             where: { id: ventureId }
         });
@@ -364,6 +366,14 @@ router.put('/:ventureId', async(req, res) => {
             return res.status(404).json({
                 success: false,
                 message: 'Venture not found'
+            });
+        }
+
+        // Check ownership (unless user is admin)
+        if (existingVenture.ownerUserId !== userId && !req.user.permissions?.includes('venture:admin')) {
+            return res.status(403).json({
+                success: false,
+                message: 'Access denied: You can only update your own ventures'
             });
         }
 
@@ -446,11 +456,12 @@ router.put('/:ventureId', async(req, res) => {
 });
 
 // Delete venture
-router.delete('/:ventureId', async(req, res) => {
+router.delete('/:ventureId', authenticateToken, requirePermission('venture:delete'), async(req, res) => {
     try {
         const { ventureId } = req.params;
+        const userId = req.user.id;
 
-        // Validate that the venture exists
+        // Validate that the venture exists and user owns it
         const existingVenture = await prisma.venture.findUnique({
             where: { id: ventureId },
             include: {
@@ -468,6 +479,14 @@ router.delete('/:ventureId', async(req, res) => {
             return res.status(404).json({
                 success: false,
                 message: 'Venture not found'
+            });
+        }
+
+        // Check ownership (unless user is admin)
+        if (existingVenture.ownerUserId !== userId && !req.user.permissions?.includes('venture:admin')) {
+            return res.status(403).json({
+                success: false,
+                message: 'Access denied: You can only delete your own ventures'
             });
         }
 
