@@ -129,6 +129,10 @@ model User {
   // Team channel relationships
   teamChannelMemberships TeamChannelMember[] @relation("TeamChannelMember")
 
+  // Meeting relationships
+  meetingsOrganized Meeting[] @relation("MeetingOrganizer")
+  meetingAttendances MeetingAttendee[]
+
   @@index([tenantId])
   @@index([status])
   @@index([level])
@@ -1913,6 +1917,9 @@ model Venture {
   // Equity relations
   equityLedger       EquityLedger[] @relation("VentureEquityLedger")
   
+  // Meeting relations
+  meetings           Meeting[]
+  
   // Timestamps
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -2885,4 +2892,48 @@ enum MfaMethod {
   AUTHENTICATOR
   EMAIL
   SMS
+}
+
+// ===== MEETING MANAGEMENT MODELS =====
+
+model Meeting {
+  id           String   @id @default(cuid())
+  title        String
+  description  String   @default("")
+  ventureId    String
+  organizerId  String
+  scheduledFor DateTime
+  duration     Int      @default(60) // Duration in minutes
+  location     String   @default("Virtual")
+  meetingType  String   @default("GENERAL") // GENERAL, BOARD, TEAM, INVESTOR, etc.
+  status       String   @default("SCHEDULED") // SCHEDULED, IN_PROGRESS, COMPLETED, CANCELLED
+  agenda       String   @default("")
+  meetingLink  String   @default("")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  venture   Venture           @relation(fields: [ventureId], references: [id], onDelete: Cascade)
+  organizer User              @relation("MeetingOrganizer", fields: [organizerId], references: [id], onDelete: Cascade)
+  attendees MeetingAttendee[]
+
+  @@map("meetings")
+}
+
+model MeetingAttendee {
+  id         String   @id @default(cuid())
+  meetingId  String
+  userId     String
+  status     String   @default("INVITED") // INVITED, ACCEPTED, DECLINED, ATTENDED
+  invitedAt  DateTime @default(now())
+  respondedAt DateTime?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relations
+  meeting Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([meetingId, userId])
+  @@map("meeting_attendees")
 }

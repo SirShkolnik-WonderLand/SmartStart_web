@@ -23,6 +23,58 @@ router.get('/health', async(req, res) => {
     }
 });
 
+// Get user subscription status
+router.get('/status/:userId', async(req, res) => {
+    try {
+        const { userId } = req.params;
+
+        // Check if user has an active subscription
+        const subscription = await prisma.subscription.findFirst({
+            where: {
+                userId: userId,
+                status: {
+                    in: ['active', 'trialing', 'past_due']
+                }
+            },
+            include: {
+                billingPlan: true
+            },
+            orderBy: {
+                createdAt: 'desc'
+            }
+        });
+
+        if (subscription) {
+            res.json({
+                success: true,
+                data: {
+                    active: true,
+                    planName: subscription.billingPlan?.name || 'Unknown Plan',
+                    status: subscription.status,
+                    expiresAt: subscription.currentPeriodEnd?.toISOString()
+                }
+            });
+        } else {
+            res.json({
+                success: true,
+                data: {
+                    active: false,
+                    planName: null,
+                    status: 'inactive',
+                    expiresAt: null
+                }
+            });
+        }
+    } catch (error) {
+        console.error('Error fetching subscription status:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to fetch subscription status',
+            details: error.message
+        });
+    }
+});
+
 // Get all billing plans
 router.get('/plans', async(req, res) => {
     try {
