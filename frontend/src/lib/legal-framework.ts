@@ -359,9 +359,9 @@ class LegalFrameworkService {
             
             // Sign document
             const signed = await this.signDocument(stored.documentId, {
-              signerName: context.userName || 'User',
-              signerEmail: context.userEmail || '',
-              signerTitle: context.userTitle || 'User'
+              signerName: (context.userName as string) || 'User',
+              signerEmail: (context.userEmail as string) || '',
+              signerTitle: (context.userTitle as string) || 'User'
             })
             
             if (signed.success) {
