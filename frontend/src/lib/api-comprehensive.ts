@@ -569,13 +569,21 @@ class ComprehensiveApiService {
 
   async createVenture(ventureData: Partial<Venture>): Promise<ApiResponse<Venture>> {
     try {
+      // Get current user first
+      const currentUserResponse = await this.getCurrentUser()
+      if (!currentUserResponse.success || !currentUserResponse.data) {
+        return { success: false, error: 'User not authenticated' }
+      }
+
       // Transform frontend data to backend format
       const backendData = {
         name: ventureData.name,
         purpose: ventureData.description,
         region: ventureData.residency || 'US',
-        ownerUserId: 'cmf1r92vo0001s8299wr0vh66' // TODO: Get from auth context
+        ownerUserId: currentUserResponse.data.id
       }
+      
+      console.log('Creating venture with data:', backendData)
       
       const response = await this.fetchWithAuth<{venture: Venture}>('/api/ventures/create', {
         method: 'POST',

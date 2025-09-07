@@ -16,26 +16,29 @@ interface MultiStepVentureFormProps {
 const industries = [
   'Technology', 'Healthcare', 'Finance', 'Education', 'E-commerce', 'Manufacturing',
   'Real Estate', 'Entertainment', 'Food & Beverage', 'Transportation', 'Energy',
-  'Agriculture', 'Retail', 'Consulting', 'Marketing', 'Other'
+  'Agriculture', 'Retail', 'Consulting', 'Marketing', 'Other', '🤷‍♂️ I have no idea yet', '💡 Just a wild idea'
 ]
 
 const stages = [
   { value: 'idea', label: 'Idea Stage', description: 'Concept and validation' },
   { value: 'mvp', label: 'MVP Stage', description: 'Minimum viable product' },
   { value: 'growth', label: 'Growth Stage', description: 'Scaling and expansion' },
-  { value: 'scale', label: 'Scale Stage', description: 'Market leadership' }
+  { value: 'scale', label: 'Scale Stage', description: 'Market leadership' },
+  { value: 'idea', label: '🤷‍♂️ I have no clue', description: 'Just exploring possibilities' }
 ]
 
 const tiers = [
   { value: 'T1', label: 'Tier 1 - High Priority', description: 'Premium support and resources' },
   { value: 'T2', label: 'Tier 2 - Standard', description: 'Standard support and resources' },
-  { value: 'T3', label: 'Tier 3 - Basic', description: 'Basic support and resources' }
+  { value: 'T3', label: 'Tier 3 - Basic', description: 'Basic support and resources' },
+  { value: 'T1', label: '🤷‍♂️ Whatever works', description: 'I just want to get started' }
 ]
 
 const rewardTypes = [
   { value: 'equity', label: 'Equity Only', description: 'Company ownership shares' },
   { value: 'cash', label: 'Cash/Salary Only', description: 'Monetary compensation' },
-  { value: 'hybrid', label: 'Equity + Cash', description: 'Combination of both' }
+  { value: 'hybrid', label: 'Equity + Cash', description: 'Combination of both' },
+  { value: 'equity', label: '🤷‍♂️ I have no idea', description: 'We\'ll figure it out later' }
 ]
 
 const professions = [
@@ -43,7 +46,7 @@ const professions = [
   'UI/UX Designer', 'Product Manager', 'Marketing Manager', 'Sales Manager',
   'Business Analyst', 'Data Scientist', 'DevOps Engineer', 'QA Engineer',
   'Content Writer', 'Graphic Designer', 'Project Manager', 'CEO/Founder',
-  'CTO', 'CFO', 'COO', 'Legal Counsel', 'HR Manager', 'Other'
+  'CTO', 'CFO', 'COO', 'Legal Counsel', 'HR Manager', 'Other', '🤷‍♂️ I need help figuring this out', '💡 Anyone who wants to join'
 ]
 
 export default function MultiStepVentureForm({ isOpen, onClose, onSuccess, initialData }: MultiStepVentureFormProps) {

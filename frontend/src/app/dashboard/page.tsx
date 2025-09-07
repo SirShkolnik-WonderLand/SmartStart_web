@@ -18,7 +18,6 @@ import {
   Bell
 } from 'lucide-react'
 import { comprehensiveApiService as apiService, User, AnalyticsData, Venture, Offer } from '@/lib/api-comprehensive'
-import MultiStepVentureForm from '@/components/venture/MultiStepVentureForm'
 import Link from 'next/link'
 
 export default function DashboardPage() {
@@ -27,7 +26,6 @@ export default function DashboardPage() {
   const [ventures, setVentures] = useState<Venture[]>([])
   const [offers, setOffers] = useState<Offer[]>([])
   const [, setIsLoading] = useState(true)
-  const [showCreateModal, setShowCreateModal] = useState(false)
 
   useEffect(() => {
     const loadDashboardData = async () => {
@@ -66,10 +64,6 @@ export default function DashboardPage() {
     loadDashboardData()
   }, [])
 
-  const handleVentureCreated = (newVenture: Venture) => {
-    setVentures(prev => [newVenture, ...prev])
-    setShowCreateModal(false)
-  }
 
   return (
     <div className="space-y-8">
@@ -105,8 +99,8 @@ export default function DashboardPage() {
                     <CheckCircle className="w-5 h-5 text-success" />
                     <span className="text-foreground-body">Subscription Active</span>
                   </div>
-                  <button 
-                    onClick={() => setShowCreateModal(true)}
+                  <Link 
+                    href="/ventures/create"
                     className="flex items-center gap-3 w-full hover:bg-glass-surface rounded-lg p-2 transition-colors"
                   >
                     <div className="w-5 h-5 border-2 border-accent rounded-full flex items-center justify-center">
@@ -114,7 +108,7 @@ export default function DashboardPage() {
                     </div>
                     <span className="text-foreground-body">Create Your First Venture</span>
                     <ChevronRight className="w-4 h-4 text-foreground-muted ml-auto" />
-                  </button>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -245,32 +239,18 @@ export default function DashboardPage() {
                 Quick Actions
               </h3>
               <div className="grid md:grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <button 
-                    onClick={() => setShowCreateModal(true)}
-                    className="group flex items-center gap-3 p-4 bg-primary/5 border border-primary/20 rounded-lg hover:bg-primary/10 transition-all duration-200 w-full"
-                  >
-                    <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-                      <Plus className="w-5 h-5 text-primary" />
-                    </div>
-                    <div className="text-left">
-                      <div className="font-medium text-foreground">Quick Create</div>
-                      <div className="text-sm text-foreground-muted">Start a new project</div>
-                    </div>
-                  </button>
-                  <Link 
-                    href="/ventures/create"
-                    className="group flex items-center gap-3 p-4 bg-primary/10 border border-primary/30 rounded-lg hover:bg-primary/20 transition-all duration-200 w-full"
-                  >
-                    <div className="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-                      <Plus className="w-5 h-5 text-primary" />
-                    </div>
-                    <div className="text-left">
-                      <div className="font-medium text-primary">Full Form</div>
-                      <div className="text-sm text-primary/70">Detailed setup</div>
-                    </div>
-                  </Link>
-                </div>
+                <Link 
+                  href="/ventures/create"
+                  className="group flex items-center gap-3 p-4 bg-primary/5 border border-primary/20 rounded-lg hover:bg-primary/10 transition-all duration-200 w-full"
+                >
+                  <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                    <Plus className="w-5 h-5 text-primary" />
+                  </div>
+                  <div className="text-left">
+                    <div className="font-medium text-foreground">Create Venture</div>
+                    <div className="text-sm text-foreground-muted">Start a new project</div>
+                  </div>
+                </Link>
                 
                 <button className="group flex items-center gap-3 p-4 bg-accent/5 border border-accent/20 rounded-lg hover:bg-accent/10 transition-all duration-200">
                   <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
@@ -294,12 +274,6 @@ export default function DashboardPage() {
               </div>
             </div>
 
-        {/* Create Venture Modal */}
-        <MultiStepVentureForm
-          isOpen={showCreateModal}
-          onClose={() => setShowCreateModal(false)}
-          onSuccess={handleVentureCreated}
-        />
     </div>
   )
 }

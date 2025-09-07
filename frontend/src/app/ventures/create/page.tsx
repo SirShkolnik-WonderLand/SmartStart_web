@@ -9,26 +9,29 @@ import { comprehensiveApiService as apiService } from '@/lib/api-comprehensive'
 const industries = [
   'Technology', 'Healthcare', 'Finance', 'Education', 'E-commerce', 'Manufacturing',
   'Real Estate', 'Entertainment', 'Food & Beverage', 'Transportation', 'Energy',
-  'Agriculture', 'Retail', 'Consulting', 'Marketing', 'Other'
+  'Agriculture', 'Retail', 'Consulting', 'Marketing', 'Other', '🤷‍♂️ I have no idea yet', '💡 Just a wild idea'
 ]
 
 const stages = [
   { value: 'idea', label: 'Idea Stage', description: 'Concept and validation', icon: '💡' },
   { value: 'mvp', label: 'MVP Stage', description: 'Minimum viable product', icon: '🚀' },
   { value: 'growth', label: 'Growth Stage', description: 'Scaling and expansion', icon: '📈' },
-  { value: 'scale', label: 'Scale Stage', description: 'Market leadership', icon: '🏆' }
+  { value: 'scale', label: 'Scale Stage', description: 'Market leadership', icon: '🏆' },
+  { value: 'idea', label: '🤷‍♂️ I have no clue', description: 'Just exploring possibilities', icon: '🤷‍♂️' }
 ]
 
 const tiers = [
   { value: 'T1', label: 'Tier 1 - High Priority', description: 'Premium support and resources', color: 'text-yellow-600' },
   { value: 'T2', label: 'Tier 2 - Standard', description: 'Standard support and resources', color: 'text-blue-600' },
-  { value: 'T3', label: 'Tier 3 - Basic', description: 'Basic support and resources', color: 'text-green-600' }
+  { value: 'T3', label: 'Tier 3 - Basic', description: 'Basic support and resources', color: 'text-green-600' },
+  { value: 'T1', label: '🤷‍♂️ Whatever works', description: 'I just want to get started', color: 'text-purple-600' }
 ]
 
 const rewardTypes = [
   { value: 'equity', label: 'Equity Only', description: 'Company ownership shares', icon: '📊' },
   { value: 'cash', label: 'Cash/Salary Only', description: 'Monetary compensation', icon: '💰' },
-  { value: 'hybrid', label: 'Equity + Cash', description: 'Combination of both', icon: '🎯' }
+  { value: 'hybrid', label: 'Equity + Cash', description: 'Combination of both', icon: '🎯' },
+  { value: 'equity', label: '🤷‍♂️ I have no idea', description: 'We\'ll figure it out later', icon: '🤷‍♂️' }
 ]
 
 const professions = [
@@ -36,7 +39,7 @@ const professions = [
   'UI/UX Designer', 'Product Manager', 'Marketing Manager', 'Sales Manager',
   'Business Analyst', 'Data Scientist', 'DevOps Engineer', 'QA Engineer',
   'Content Writer', 'Graphic Designer', 'Project Manager', 'CEO/Founder',
-  'CTO', 'CFO', 'COO', 'Legal Counsel', 'HR Manager', 'Other'
+  'CTO', 'CFO', 'COO', 'Legal Counsel', 'HR Manager', 'Other', '🤷‍♂️ I need help figuring this out', '💡 Anyone who wants to join'
 ]
 
 export default function CreateVenturePage() {
