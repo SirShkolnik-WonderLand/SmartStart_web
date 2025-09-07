@@ -8,7 +8,7 @@
 const crypto = require('crypto');
 const fs = require('fs').promises;
 const path = require('path');
-const LegalStateMachineService = require('./legal-state-machine');
+const LegalStateMachineService = require('../state-machines/legal/LegalStateMachine');
 
 class LegalFrameworkService {
     constructor() {
@@ -551,10 +551,10 @@ DOC HASH (sha256): [TO_BE_COMPUTED]
             // Generate document content
             const documentText = await this.generateDocument(documentType, variables);
             const documentId = this.generateDocumentId();
-            
+
             // Store document
             await this.storeDocument(documentType, documentText, variables, userId);
-            
+
             // Create state machine for document
             const initialContext = {
                 documentId,
@@ -571,9 +571,9 @@ DOC HASH (sha256): [TO_BE_COMPUTED]
                     metadata: { documentType, ventureId }
                 }]
             };
-            
+
             const machine = await this.stateMachineService.createDocumentMachine(documentId, initialContext);
-            
+
             return {
                 documentId,
                 documentText,
@@ -600,19 +600,19 @@ DOC HASH (sha256): [TO_BE_COMPUTED]
                     timestamp: new Date().toISOString()
                 }
             });
-            
+
             // Process the actual signature
             const result = await this.processESignature(documentId, signerInfo);
-            
+
             // Check if all signatures are complete
             const currentState = this.stateMachineService.getDocumentState(documentId);
-            if (currentState?.context?.completedSignatures?.length >= currentState?.context?.requiredSignatures?.length) {
+            if (currentState ? .context ? .completedSignatures ? .length >= currentState ? .context ? .requiredSignatures ? .length) {
                 await this.stateMachineService.sendDocumentEvent(documentId, {
                     type: 'ALL_SIGNATURES_COMPLETE',
                     metadata: { timestamp: new Date().toISOString() }
                 });
             }
-            
+
             return result;
         } catch (error) {
             console.error('Failed to process document signing with state machine:', error);
@@ -626,7 +626,7 @@ DOC HASH (sha256): [TO_BE_COMPUTED]
     async createUserComplianceStateMachine(userId, rbacLevel = 'GUEST') {
         try {
             const requiredDocuments = this.rbacDocumentRequirements[rbacLevel] || [];
-            
+
             const initialContext = {
                 userId,
                 rbacLevel,
@@ -636,9 +636,9 @@ DOC HASH (sha256): [TO_BE_COMPUTED]
                 lastComplianceCheck: new Date().toISOString(),
                 canadianCompliance: this.validateCanadianCompliance('USER_ONBOARDING', { userId })
             };
-            
+
             const machine = await this.stateMachineService.createUserComplianceStateMachine(userId, initialContext);
-            
+
             return {
                 userId,
                 stateMachine: machine,
@@ -688,7 +688,7 @@ DOC HASH (sha256): [TO_BE_COMPUTED]
             'PCA': [{ role: 'VENTURE_PARTICIPANT', required: true }, { role: 'VENTURE_OWNER', required: true }],
             'JDA': [{ role: 'EXTERNAL_PARTNER', required: true }, { role: 'VENTURE_OWNER', required: true }]
         };
-        
+
         return signatureRequirements[documentType] || [{ role: 'USER', required: true }];
     }
 
@@ -706,7 +706,7 @@ DOC HASH (sha256): [TO_BE_COMPUTED]
             'SECURITY_TIER_3': 'TIER_3',
             'CROWN_JEWEL_IP': 'TIER_3'
         };
-        
+
         return tierMapping[documentType] || 'TIER_0';
     }
 
@@ -722,11 +722,11 @@ DOC HASH (sha256): [TO_BE_COMPUTED]
             'JDA': 365, // 1 year
             'PER_PROJECT_NDA': 90 // 3 months
         };
-        
+
         const days = expiryMapping[documentType] || 365;
         const expiryDate = new Date();
         expiryDate.setDate(expiryDate.getDate() + days);
-        
+
         return expiryDate;
     }
 

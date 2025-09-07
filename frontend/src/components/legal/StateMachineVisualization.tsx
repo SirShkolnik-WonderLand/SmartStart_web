@@ -3,15 +3,12 @@
  * Provides visual representation of legal document and user compliance state machines
  */
 
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect, useCallback } from 'react';
+import { motion } from 'framer-motion';
 
-interface StateMachineNode {
-  id: string;
-  label: string;
-  status: 'current' | 'completed' | 'pending' | 'error';
-  description?: string;
-  timestamp?: string;
+interface VisualizationData {
+  currentState: string;
+  context?: Record<string, unknown>;
 }
 
 interface StateMachineVisualizationProps {
@@ -27,15 +24,11 @@ const StateMachineVisualization: React.FC<StateMachineVisualizationProps> = ({
   title,
   className = ''
 }) => {
-  const [visualization, setVisualization] = useState<any>(null);
+  const [visualization, setVisualization] = useState<VisualizationData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadVisualization();
-  }, [type, id]);
-
-  const loadVisualization = async () => {
+  const loadVisualization = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -57,7 +50,11 @@ const StateMachineVisualization: React.FC<StateMachineVisualizationProps> = ({
     } finally {
       setLoading(false);
     }
-  };
+  }, [type, id]);
+
+  useEffect(() => {
+    loadVisualization();
+  }, [loadVisualization]);
 
   const getStateColor = (state: string) => {
     const stateColors: Record<string, string> = {
@@ -161,7 +158,7 @@ const StateMachineVisualization: React.FC<StateMachineVisualizationProps> = ({
   }
 
   const currentState = visualization.currentState;
-  const context = visualization.context || {};
+  const context = (visualization.context || {}) as Record<string, unknown>;
 
   return (
     <div className={`glass-card p-6 ${className}`}>

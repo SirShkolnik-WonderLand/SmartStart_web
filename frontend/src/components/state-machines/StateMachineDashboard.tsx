@@ -10,14 +10,14 @@ import StateMachineVisualization from '../legal/StateMachineVisualization';
 interface StateMachineOverview {
   type: string;
   count: number;
-  activeMachines: any[];
+  activeMachines: Array<{ id: string; currentState?: string; lastActivity?: string }>;
 }
 
 interface SystemHealth {
   totalActiveMachines: number;
   machinesByType: Record<string, number>;
-  oldestMachine: any;
-  newestMachine: any;
+  oldestMachine: unknown;
+  newestMachine: unknown;
 }
 
 interface StateMachineDashboardProps {
