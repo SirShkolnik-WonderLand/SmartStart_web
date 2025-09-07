@@ -41,10 +41,10 @@ export default function OnboardingPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" />
-          <p className="text-muted-foreground">Loading your onboarding journey...</p>
+      <div className="min-h-screen wonderland-bg flex items-center justify-center">
+        <div className="glass rounded-xl p-8 text-center">
+          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-primary" />
+          <p className="text-foreground-muted">Loading your onboarding journey...</p>
         </div>
       </div>
     )
@@ -52,9 +52,9 @@ export default function OnboardingPage() {
 
   if (!userId) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-muted-foreground">No user found. Redirecting to registration...</p>
+      <div className="min-h-screen wonderland-bg flex items-center justify-center">
+        <div className="glass rounded-xl p-8 text-center">
+          <p className="text-foreground-muted">No user found. Redirecting to registration...</p>
         </div>
       </div>
     )

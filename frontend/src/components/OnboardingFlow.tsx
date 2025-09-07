@@ -198,7 +198,7 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
                 type="text"
                 value={profileData.firstName}
                 onChange={(e) => setProfileData({...profileData, firstName: e.target.value})}
-                className="w-full px-3 py-2 border border-input rounded-md bg-background"
+                className="w-full px-3 py-2 border border-glass-border rounded-md bg-glass-surface text-foreground placeholder:text-foreground-muted focus:outline-none focus:ring-2 focus:ring-primary"
                 placeholder="John"
               />
             </div>
@@ -208,7 +208,7 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
                 type="text"
                 value={profileData.lastName}
                 onChange={(e) => setProfileData({...profileData, lastName: e.target.value})}
-                className="w-full px-3 py-2 border border-input rounded-md bg-background"
+                className="w-full px-3 py-2 border border-glass-border rounded-md bg-glass-surface text-foreground placeholder:text-foreground-muted focus:outline-none focus:ring-2 focus:ring-primary"
                 placeholder="Doe"
               />
             </div>
@@ -252,7 +252,7 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
                 type="text"
                 value={profileData.location}
                 onChange={(e) => setProfileData({...profileData, location: e.target.value})}
-                className="w-full px-3 py-2 border border-input rounded-md bg-background"
+                className="w-full px-3 py-2 border border-glass-border rounded-md bg-glass-surface text-foreground placeholder:text-foreground-muted focus:outline-none focus:ring-2 focus:ring-primary"
                 placeholder="San Francisco, CA"
               />
             </div>
@@ -262,7 +262,7 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
                 type="url"
                 value={profileData.website}
                 onChange={(e) => setProfileData({...profileData, website: e.target.value})}
-                className="w-full px-3 py-2 border border-input rounded-md bg-background"
+                className="w-full px-3 py-2 border border-glass-border rounded-md bg-glass-surface text-foreground placeholder:text-foreground-muted focus:outline-none focus:ring-2 focus:ring-primary"
                 placeholder="https://yourwebsite.com"
               />
             </div>
@@ -418,7 +418,7 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
                     type="text"
                     value={paymentData.cardNumber}
                     onChange={(e) => setPaymentData({...paymentData, cardNumber: e.target.value})}
-                    className="w-full px-3 py-2 border border-input rounded-md bg-background"
+                    className="w-full px-3 py-2 border border-glass-border rounded-md bg-glass-surface text-foreground placeholder:text-foreground-muted focus:outline-none focus:ring-2 focus:ring-primary"
                     placeholder="1234 5678 9012 3456"
                   />
                 </div>
@@ -428,7 +428,7 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
                     type="text"
                     value={paymentData.expiryDate}
                     onChange={(e) => setPaymentData({...paymentData, expiryDate: e.target.value})}
-                    className="w-full px-3 py-2 border border-input rounded-md bg-background"
+                    className="w-full px-3 py-2 border border-glass-border rounded-md bg-glass-surface text-foreground placeholder:text-foreground-muted focus:outline-none focus:ring-2 focus:ring-primary"
                     placeholder="MM/YY"
                   />
                 </div>
@@ -438,7 +438,7 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
                     type="text"
                     value={paymentData.cvv}
                     onChange={(e) => setPaymentData({...paymentData, cvv: e.target.value})}
-                    className="w-full px-3 py-2 border border-input rounded-md bg-background"
+                    className="w-full px-3 py-2 border border-glass-border rounded-md bg-glass-surface text-foreground placeholder:text-foreground-muted focus:outline-none focus:ring-2 focus:ring-primary"
                     placeholder="123"
                   />
                 </div>
@@ -448,7 +448,7 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
                     type="text"
                     value={paymentData.name}
                     onChange={(e) => setPaymentData({...paymentData, name: e.target.value})}
-                    className="w-full px-3 py-2 border border-input rounded-md bg-background"
+                    className="w-full px-3 py-2 border border-glass-border rounded-md bg-glass-surface text-foreground placeholder:text-foreground-muted focus:outline-none focus:ring-2 focus:ring-primary"
                     placeholder="John Doe"
                   />
                 </div>
@@ -516,10 +516,10 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" />
-          <p className="text-muted-foreground">Loading your onboarding journey...</p>
+      <div className="min-h-screen wonderland-bg flex items-center justify-center">
+        <div className="glass rounded-xl p-8 text-center">
+          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-primary" />
+          <p className="text-foreground-muted">Loading your onboarding journey...</p>
         </div>
       </div>
     )
@@ -527,10 +527,10 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
 
   if (error) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <AlertCircle className="w-8 h-8 text-destructive mx-auto mb-4" />
-          <p className="text-destructive">{error}</p>
+      <div className="min-h-screen wonderland-bg flex items-center justify-center">
+        <div className="glass rounded-xl p-8 text-center">
+          <AlertCircle className="w-8 h-8 text-error mx-auto mb-4" />
+          <p className="text-error">{error}</p>
         </div>
       </div>
     )
@@ -553,13 +553,13 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen wonderland-bg">
       <div className="max-w-4xl mx-auto p-6">
         {/* Progress Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
-            <h1 className="text-2xl font-bold">Welcome to SmartStart</h1>
-            <span className="text-sm text-muted-foreground">
+            <h1 className="text-2xl font-bold text-foreground">Welcome to SmartStart</h1>
+            <span className="text-sm text-foreground-muted">
               Step {currentStep + 1} of {steps.length}
             </span>
           </div>
@@ -571,7 +571,7 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
                 className={`flex-1 h-2 rounded-full ${
                   index <= currentStep
                     ? 'bg-primary'
-                    : 'bg-muted'
+                    : 'bg-glass-surface'
                 }`}
               />
             ))}
@@ -579,7 +579,7 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
         </div>
 
         {/* Step Content */}
-        <div className="glass-card p-8">
+        <div className="glass-lg rounded-2xl p-8">
           <div className="flex items-center space-x-4 mb-6">
             <div className="p-3 bg-primary/10 rounded-lg">
               {currentStepData.icon}
@@ -597,7 +597,7 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
             <button
               onClick={handlePrevious}
               disabled={currentStep === 0}
-              className="flex items-center space-x-2 px-4 py-2 border border-input rounded-md hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
+              className="wonder-button-secondary flex items-center space-x-2 px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <ArrowLeft className="w-4 h-4" />
               <span>Previous</span>
@@ -606,7 +606,7 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
             <button
               onClick={handleNext}
               disabled={!isStepValid()}
-              className="flex items-center space-x-2 px-6 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="wonder-button flex items-center space-x-2 px-6 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <span>{currentStep === steps.length - 1 ? 'Complete Setup' : 'Next'}</span>
               <ArrowRight className="w-4 h-4" />

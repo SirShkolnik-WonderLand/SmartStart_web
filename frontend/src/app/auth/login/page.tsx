@@ -106,7 +106,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen wonderland-bg flex items-center justify-center p-4 relative overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/10 rounded-full blur-3xl"></div>
@@ -163,7 +163,7 @@ export default function LoginPage() {
 
           {/* Right Side - Login Form */}
           <div className="w-full max-w-md mx-auto">
-            <div className="glass-card p-8 space-y-6">
+            <div className="glass-lg rounded-2xl p-8 space-y-6">
               <div className="text-center space-y-2">
                 <h3 className="text-2xl font-semibold">Sign In</h3>
                 <p className="text-muted-foreground">Access your account to continue building</p>
@@ -189,7 +189,7 @@ export default function LoginPage() {
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Enter your email"
                     required
-                    className="w-full px-4 py-3 border border-input rounded-lg bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 border border-glass-border rounded-lg bg-glass-surface text-foreground placeholder:text-foreground-muted focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                   />
                 </div>
 
@@ -206,7 +206,7 @@ export default function LoginPage() {
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="Enter your password"
                       required
-                      className="w-full px-4 py-3 pr-12 border border-input rounded-lg bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                      className="w-full px-4 py-3 pr-12 border border-glass-border rounded-lg bg-glass-surface text-foreground placeholder:text-foreground-muted focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                     />
                     <button
                       type="button"
@@ -221,7 +221,7 @@ export default function LoginPage() {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full bg-gradient-to-r from-primary to-accent text-primary-foreground py-3 px-4 rounded-lg hover:from-primary/90 hover:to-accent/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 font-medium"
+                  className="wonder-button w-full py-3 px-4 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 font-medium"
                 >
                   {isLoading ? (
                     <>
@@ -267,7 +267,7 @@ export default function LoginPage() {
                       className={`p-4 rounded-lg border-2 transition-all hover:scale-[1.02] ${
                         selectedDemo === user.id
                           ? 'border-primary bg-primary/5 shadow-lg'
-                          : 'border-border hover:border-primary/50 bg-background/50'
+                          : 'border-glass-border hover:border-primary/50 bg-glass-surface/50'
                       }`}
                     >
                       <div className="flex items-center space-x-3">
