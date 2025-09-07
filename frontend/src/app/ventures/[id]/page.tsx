@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { comprehensiveApiService as apiService, Venture, User } from '@/lib/api-comprehensive'
-import { ArrowLeft, Building2, Users, Calendar, TrendingUp, Briefcase, CheckCircle, Clock, AlertCircle, Edit3 } from 'lucide-react'
+import { ArrowLeft, Building2, Users, Calendar, TrendingUp, Briefcase, CheckCircle, Clock, AlertCircle, Edit3, Trash2 } from 'lucide-react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 
@@ -15,6 +15,8 @@ export default function VentureDetailPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isCreatingMeeting, setIsCreatingMeeting] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
   const ventureId = params.id as string
 
@@ -118,6 +120,28 @@ export default function VentureDetailPage() {
     }
   }
 
+  const handleDeleteVenture = async () => {
+    if (!venture) return
+
+    setIsDeleting(true)
+    try {
+      const response = await apiService.deleteVenture(venture.id)
+      
+      if (response.success) {
+        alert('Venture deleted successfully!')
+        router.push('/ventures')
+      } else {
+        alert(`Failed to delete venture: ${response.error}`)
+      }
+    } catch (error) {
+      console.error('Error deleting venture:', error)
+      alert('Failed to delete venture')
+    } finally {
+      setIsDeleting(false)
+      setShowDeleteConfirm(false)
+    }
+  }
+
   if (isLoading) {
     return (
       <div className="min-h-screen wonderland-bg flex items-center justify-center">
@@ -175,13 +199,22 @@ export default function VentureDetailPage() {
             <div className="flex items-center justify-between mb-4">
               <h1 className="text-4xl font-bold text-foreground">{venture.name}</h1>
               {isOwner && (
-                <Link 
-                  href={`/ventures/${venture.id}/edit`}
-                  className="wonder-button-secondary flex items-center gap-2"
-                >
-                  <Edit3 className="w-4 h-4" />
-                  Edit Venture
-                </Link>
+                <div className="flex items-center gap-3">
+                  <Link 
+                    href={`/ventures/${venture.id}/edit`}
+                    className="wonder-button-secondary flex items-center gap-2"
+                  >
+                    <Edit3 className="w-4 h-4" />
+                    Edit Venture
+                  </Link>
+                  <button
+                    onClick={() => setShowDeleteConfirm(true)}
+                    className="bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    Delete
+                  </button>
+                </div>
               )}
             </div>
             <div className="flex items-center gap-4">
@@ -357,6 +390,44 @@ export default function VentureDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="glass rounded-xl p-6 max-w-md w-full mx-4">
+            <h3 className="text-xl font-semibold text-foreground mb-4">Delete Venture</h3>
+            <p className="text-foreground-body mb-6">
+              Are you sure you want to delete "{venture?.name}"? This action cannot be undone and will permanently remove all venture data.
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                className="px-4 py-2 text-foreground-muted hover:text-foreground transition-colors"
+                disabled={isDeleting}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteVenture}
+                disabled={isDeleting}
+                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors disabled:opacity-50"
+              >
+                {isDeleting ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    Deleting...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="w-4 h-4" />
+                    Delete Venture
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

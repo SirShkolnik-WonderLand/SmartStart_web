@@ -102,7 +102,7 @@ export interface Venture {
     fundingRound?: string
     teamSize?: number
     website?: string
-    socialMedia?: any
+    socialMedia?: Record<string, string>
     createdAt: string
     updatedAt: string
   }
@@ -713,6 +713,27 @@ class ComprehensiveApiService {
     } catch (error) {
       console.error('Error updating venture:', error)
       return { success: false, error: 'Failed to update venture' }
+    }
+  }
+
+  async deleteVenture(id: string): Promise<ApiResponse<{ message: string }>> {
+    try {
+      console.log('Deleting venture:', id)
+      
+      const response = await this.fetchWithAuth<{ message: string }>(`/api/ventures/${id}`, {
+        method: 'DELETE',
+      })
+      
+      console.log('Delete API Response:', response)
+      
+      return {
+        success: response.success,
+        data: response.data,
+        error: response.error
+      }
+    } catch (error) {
+      console.error('Error deleting venture:', error)
+      return { success: false, error: 'Failed to delete venture' }
     }
   }
 

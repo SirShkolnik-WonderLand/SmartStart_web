@@ -464,6 +464,66 @@ router.put('/:ventureId', async(req, res) => {
     }
 });
 
+// Delete venture
+router.delete('/:ventureId', async(req, res) => {
+    try {
+        const { ventureId } = req.params;
+        
+        // Basic auth validation
+        const authHeader = req.headers.authorization;
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            return res.status(401).json({
+                success: false,
+                message: 'Authorization header required'
+            });
+        }
+
+        // Validate that the venture exists
+        const existingVenture = await prisma.venture.findUnique({
+            where: { id: ventureId },
+            include: {
+                owner: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true
+                    }
+                }
+            }
+        });
+
+        if (!existingVenture) {
+            return res.status(404).json({
+                success: false,
+                message: 'Venture not found'
+            });
+        }
+
+        // Delete the venture (this will cascade delete related records due to onDelete: Cascade)
+        await prisma.venture.delete({
+            where: { id: ventureId }
+        });
+
+        res.json({
+            success: true,
+            message: 'Venture deleted successfully',
+            venture: {
+                id: existingVenture.id,
+                name: existingVenture.name,
+                owner: existingVenture.owner
+            }
+        });
+
+    } catch (error) {
+        console.error('Failed to delete venture:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to delete venture',
+            error: error.message
+        });
+    }
+});
+
 // Run venture management migration
 router.post('/migrate', async(req, res) => {
     try {
