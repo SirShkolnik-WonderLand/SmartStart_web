@@ -3,6 +3,29 @@ const { PrismaClient } = require('@prisma/client');
 const router = express.Router();
 const prisma = new PrismaClient();
 
+// Get all legal packs
+router.get('/', async(req, res) => {
+    try {
+        const legalPacks = await prisma.legalPack.findMany({
+            include: {
+                documents: true
+            }
+        });
+
+        res.json({
+            success: true,
+            packs: legalPacks
+        });
+    } catch (error) {
+        console.error('Failed to fetch legal packs:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch legal packs',
+            error: error.message
+        });
+    }
+});
+
 // Health check endpoint
 router.get('/health', async(req, res) => {
     try {

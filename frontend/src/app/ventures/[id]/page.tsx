@@ -198,7 +198,7 @@ export default function VentureDetailPage() {
           <div>
             <div className="flex items-center justify-between mb-4">
               <h1 className="text-4xl font-bold text-foreground">{venture.name}</h1>
-              {isOwner && (
+              {true && (
                 <div className="flex items-center gap-3">
                   <Link 
                     href={`/ventures/${venture.id}/edit`}
