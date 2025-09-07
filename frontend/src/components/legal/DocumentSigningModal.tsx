@@ -53,12 +53,6 @@ export default function DocumentSigningModal({
   const [errors, setErrors] = useState<string[]>([])
   const [signedDocuments, setSignedDocuments] = useState<string[]>([])
 
-  useEffect(() => {
-    if (isOpen) {
-      loadDocuments()
-    }
-  }, [isOpen, action, context, loadDocuments])
-
   const loadDocuments = useCallback(async () => {
     setIsLoading(true)
     setCurrentStep('loading')
@@ -84,6 +78,12 @@ export default function DocumentSigningModal({
       setIsLoading(false)
     }
   }, [action, context])
+
+  useEffect(() => {
+    if (isOpen) {
+      loadDocuments()
+    }
+  }, [isOpen, action, context, loadDocuments])
 
   const handleSignAll = async () => {
     setCurrentStep('signing')
