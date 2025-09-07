@@ -52,7 +52,7 @@ export default function DocumentsPage() {
               status: contract.status.toLowerCase(),
               content: contract.content || 'No content available',
               createdAt: contract.signedAt || new Date().toISOString(), // Use signedAt or current date
-              updatedAt: contract.signedAt || new Date().toISOString(), // Use signedAt or current date
+              version: '1.0', // Default version for existing contracts
               packName: 'Existing Contracts'
             }))
             setDocuments(contractDocs)
