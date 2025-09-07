@@ -343,11 +343,11 @@ const subscriptionMachine = createMachine({
         },
 
         initiateSubscription: assign({
-            targetPlan: (context, event) => event.metadata ? .plan || context.targetPlan
+            targetPlan: (context, event) => event.metadata?.plan || context.targetPlan
         }),
 
         startTrial: assign({
-            currentPlan: (context, event) => event.metadata ? .trialPlan || context.currentPlan,
+            currentPlan: (context, event) => event.metadata?.trialPlan || context.currentPlan,
             nextBillingDate: (context) => {
                 const date = new Date();
                 date.setDate(date.getDate() + 14); // 14-day trial
@@ -356,11 +356,11 @@ const subscriptionMachine = createMachine({
         }),
 
         convertTrial: assign({
-            currentPlan: (context, event) => event.metadata ? .plan || context.currentPlan
+            currentPlan: (context, event) => event.metadata?.plan || context.currentPlan
         }),
 
         activateSubscription: assign({
-            currentPlan: (context, event) => event.metadata ? .plan || context.currentPlan,
+            currentPlan: (context, event) => event.metadata?.plan || context.currentPlan,
             nextBillingDate: (context) => {
                 const date = new Date();
                 date.setMonth(date.getMonth() + 1); // Next month
@@ -376,25 +376,25 @@ const subscriptionMachine = createMachine({
         },
 
         initiateUpgrade: assign({
-            targetPlan: (context, event) => event.metadata ? .plan || context.targetPlan
+            targetPlan: (context, event) => event.metadata?.plan || context.targetPlan
         }),
 
         completeUpgrade: assign({
             currentPlan: (context) => context.targetPlan,
             targetPlan: null,
-            limits: (context) => context.targetPlan ? .limits || context.limits,
-            features: (context) => context.targetPlan ? .features || context.features
+            limits: (context) => context.targetPlan?.limits || context.limits,
+            features: (context) => context.targetPlan?.features || context.features
         }),
 
         initiateDowngrade: assign({
-            targetPlan: (context, event) => event.metadata ? .plan || context.targetPlan
+            targetPlan: (context, event) => event.metadata?.plan || context.targetPlan
         }),
 
         completeDowngrade: assign({
             currentPlan: (context) => context.targetPlan,
             targetPlan: null,
-            limits: (context) => context.targetPlan ? .limits || context.limits,
-            features: (context) => context.targetPlan ? .features || context.features
+            limits: (context) => context.targetPlan?.limits || context.limits,
+            features: (context) => context.targetPlan?.features || context.features
         }),
 
         processPayment: async(context, event) => {
@@ -466,7 +466,7 @@ const subscriptionMachine = createMachine({
         },
 
         restartTrial: assign({
-            currentPlan: (context, event) => event.metadata ? .trialPlan || context.currentPlan,
+            currentPlan: (context, event) => event.metadata?.trialPlan || context.currentPlan,
             nextBillingDate: (context) => {
                 const date = new Date();
                 date.setDate(date.getDate() + 14); // 14-day trial
@@ -562,7 +562,7 @@ class SubscriptionStateMachine extends EventEmitter {
             this.emit('subscriptionChanged', {
                 userId,
                 newPlan: state.context.currentPlan,
-                oldPlan: state.history ? .context ? .currentPlan
+                oldPlan: state.history?.context?.currentPlan
             });
         }
 

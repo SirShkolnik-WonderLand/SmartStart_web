@@ -158,7 +158,7 @@ const StateMachineVisualization: React.FC<StateMachineVisualizationProps> = ({
   }
 
   const currentState = visualization.currentState;
-  const context = (visualization.context || {}) as Record<string, unknown>;
+  const context = visualization.context as Record<string, any> || {};
 
   return (
     <div className={`glass-card p-6 ${className}`}>
