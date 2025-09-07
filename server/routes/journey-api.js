@@ -39,9 +39,6 @@ router.get('/status/:userId', authenticateToken, async(req, res) => {
             });
         }
 
-        // Use orchestrator to get comprehensive journey status
-        const journeyStatus = await onboardingOrchestrator.getUserJourneyStatus(userId);
-        
         // Get detailed stage information
         const [userStates, stages] = await Promise.all([
             prisma.userJourneyState.findMany({
@@ -68,19 +65,126 @@ router.get('/status/:userId', authenticateToken, async(req, res) => {
             })
         ]);
 
-        // Get onboarding recommendations
-        const recommendations = await onboardingOrchestrator.getOnboardingRecommendations(userId);
-
-        res.json({
-            success: true,
-            data: {
-                ...journeyStatus.data,
-                userStates,
-                stages,
-                recommendations: recommendations.data.recommendations,
-                timestamp: new Date().toISOString()
+        // If no user states exist, create them
+        if (userStates.length === 0 && stages.length > 0) {
+            console.log(`Creating initial journey states for user: ${userId}`);
+            for (const stage of stages) {
+                await prisma.userJourneyState.create({
+                    data: {
+                        userId,
+                        stageId: stage.id,
+                        status: 'NOT_STARTED',
+                        metadata: {
+                            stageName: stage.name,
+                            stageOrder: stage.order,
+                            initializedAt: new Date().toISOString()
+                        }
+                    }
+                });
             }
-        });
+            
+            // Reload user states after creation
+            const newUserStates = await prisma.userJourneyState.findMany({
+                where: { userId },
+                include: {
+                    stage: {
+                        include: {
+                            gates: true
+                        }
+                    }
+                },
+                orderBy: {
+                    stage: {
+                        order: 'asc'
+                    }
+                }
+            });
+            
+            // Calculate progress
+            const totalStages = newUserStates.length;
+            const completedStages = newUserStates.filter(state => state.status === 'COMPLETED').length;
+            const percentage = totalStages > 0 ? Math.round((completedStages / totalStages) * 100) : 0;
+            
+            const currentStage = newUserStates.find(state => state.status === 'IN_PROGRESS')?.stage || null;
+            const nextStage = newUserStates.find(state => state.status === 'NOT_STARTED')?.stage || null;
+
+            res.json({
+                success: true,
+                data: {
+                    userId,
+                    currentStage,
+                    nextStage,
+                    isComplete: percentage === 100,
+                    userStates: newUserStates,
+                    stages,
+                    recommendations: [],
+                    progress: {
+                        completedStages,
+                        totalStages,
+                        percentage,
+                        stages: newUserStates.map(state => ({
+                            name: state.stage.name,
+                            status: state.status,
+                            order: state.stage.order
+                        }))
+                    },
+                    timestamp: new Date().toISOString()
+                }
+            });
+        } else {
+            // Use orchestrator to get comprehensive journey status
+            try {
+                const journeyStatus = await onboardingOrchestrator.getUserJourneyStatus(userId);
+                
+                // Get onboarding recommendations
+                const recommendations = await onboardingOrchestrator.getOnboardingRecommendations(userId);
+
+                res.json({
+                    success: true,
+                    data: {
+                        ...journeyStatus.data,
+                        userStates,
+                        stages,
+                        recommendations: recommendations.data.recommendations,
+                        timestamp: new Date().toISOString()
+                    }
+                });
+            } catch (orchestratorError) {
+                console.warn('Orchestrator failed, using fallback:', orchestratorError);
+                
+                // Fallback calculation
+                const totalStages = userStates.length;
+                const completedStages = userStates.filter(state => state.status === 'COMPLETED').length;
+                const percentage = totalStages > 0 ? Math.round((completedStages / totalStages) * 100) : 0;
+                
+                const currentStage = userStates.find(state => state.status === 'IN_PROGRESS')?.stage || null;
+                const nextStage = userStates.find(state => state.status === 'NOT_STARTED')?.stage || null;
+
+                res.json({
+                    success: true,
+                    data: {
+                        userId,
+                        currentStage,
+                        nextStage,
+                        isComplete: percentage === 100,
+                        userStates,
+                        stages,
+                        recommendations: [],
+                        progress: {
+                            completedStages,
+                            totalStages,
+                            percentage,
+                            stages: userStates.map(state => ({
+                                name: state.stage.name,
+                                status: state.status,
+                                order: state.stage.order
+                            }))
+                        },
+                        timestamp: new Date().toISOString()
+                    }
+                });
+            }
+        }
     } catch (error) {
         console.error('Journey status error:', error);
         res.status(500).json({

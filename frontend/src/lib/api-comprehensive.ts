@@ -1214,7 +1214,7 @@ class ComprehensiveApiService {
 
   async getSubscriptionPlans(): Promise<ApiResponse<SubscriptionPlan[]>> {
     try {
-      const response = await this.fetchWithAuth<{ data: SubscriptionPlan[] }>('/api/subscriptions/plans')
+      const response = await this.fetchWithAuth<{ success: boolean; data: SubscriptionPlan[] }>('/api/subscriptions/plans')
       return { success: true, data: response.data?.data || [] }
     } catch (error) {
       console.error('Error fetching subscription plans:', error)
