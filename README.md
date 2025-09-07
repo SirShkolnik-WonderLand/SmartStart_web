@@ -283,6 +283,93 @@ The database uses PostgreSQL with Prisma ORM. Key tables include:
 - **❌ File Management**: Enhanced file upload and management
 - **❌ Mobile App**: Native mobile application
 
+## 🤖 **STATE MACHINE ARCHITECTURE**
+
+### **Comprehensive State Management System**
+- **Central State Machine Manager**: Orchestrates all state machines with cross-machine coordination
+- **Multiple Specialized State Machines**: Legal, User Journey, Venture, Subscription, Team, Compliance
+- **Event-Driven Architecture**: Reactive state transitions with automatic event propagation
+- **Visual State Management**: Real-time state visualization and monitoring dashboard
+- **Audit Trail**: Complete history of all state changes and transitions
+
+### **State Machine Types**
+
+#### **1. Legal State Machine** (`/state-machines/legal/`)
+- **Document Lifecycle**: Draft → Review → Approved → Signing → Effective → Expired/Terminated
+- **Signature Workflow**: Multi-party signing with verification and completion tracking
+- **Amendment Process**: Document amendments with approval and signing workflows
+- **Breach Management**: Breach detection, investigation, and remediation workflows
+
+#### **2. User Journey State Machine** (`/state-machines/user-journey/`)
+- **Progression Tracking**: Guest → Registering → Onboarding → Member → Subscriber → Power User → Admin
+- **Milestone Management**: Automatic milestone detection and achievement tracking
+- **RBAC Transitions**: Smart role-based access control with legal compliance gating
+- **Onboarding Flow**: Guided onboarding with progress tracking and completion validation
+
+#### **3. Venture State Machine** (`/state-machines/venture/`)
+- **Venture Lifecycle**: Ideation → Team Building → Market Validation → Product Development → Launch → Growth → Scaling → Exit
+- **Team Formation**: Team building with role assignment and collaboration setup
+- **Funding Rounds**: Funding process management with investor coordination
+- **Market Validation**: Market research and validation workflow management
+
+#### **4. Subscription State Machine** (`/state-machines/subscription/`)
+- **Subscription Lifecycle**: Inactive → Trial → Subscribing → Active → Cancelled/Suspended
+- **Plan Management**: Upgrade/downgrade workflows with feature access control
+- **Payment Processing**: Payment success/failure handling with grace periods
+- **Usage Monitoring**: Usage limit tracking and enforcement
+
+#### **5. Team State Machine** (`/state-machines/team/`)
+- **Team Formation**: Team building with member onboarding and role assignment
+- **Collaboration Management**: Team dynamics, conflict resolution, and performance tracking
+- **Goal Management**: Team goal setting, tracking, and completion workflows
+- **Conflict Resolution**: Conflict detection, mediation, and resolution processes
+
+#### **6. Compliance State Machine** (`/state-machines/compliance/`)
+- **Compliance Tracking**: Non-compliant → Compliance Required → Checking → Compliant
+- **Document Management**: Required document tracking and completion validation
+- **Violation Handling**: Violation detection, escalation, and remediation workflows
+- **Audit Management**: Compliance audit initiation, execution, and completion
+
+### **Cross-Machine Coordination**
+- **Event Propagation**: State changes in one machine automatically trigger events in related machines
+- **Legal Integration**: Document signing automatically updates user compliance and journey progress
+- **Venture Coordination**: Venture creation triggers legal document generation and team formation
+- **Subscription Impact**: Subscription changes affect user journey progression and feature access
+
+### **State Machine Manager Features**
+- **Centralized Control**: Single point of management for all state machines
+- **Health Monitoring**: System health tracking with performance metrics
+- **Automatic Cleanup**: Completed state machine cleanup and resource management
+- **Comprehensive Analytics**: Cross-machine analytics and reporting
+- **Graceful Shutdown**: Proper cleanup and state persistence on system shutdown
+
+### **API Endpoints**
+- `/api/state-machines/:type/:id/create` - Create new state machine instance
+- `/api/state-machines/:type/:id/event` - Send event to state machine
+- `/api/state-machines/:type/:id/state` - Get current state
+- `/api/state-machines/:type/:id/visualization` - Get visualization data
+- `/api/state-machines/user/:userId/comprehensive` - Get comprehensive user state
+- `/api/state-machines/venture/:ventureId/comprehensive` - Get comprehensive venture state
+- `/api/state-machines/health` - Get system health and statistics
+- `/api/state-machines/analytics/overview` - Get analytics overview
+
+### **Frontend Components**
+- **StateMachineDashboard**: Comprehensive dashboard for monitoring all state machines
+- **StateMachineVisualization**: Visual representation of individual state machines
+- **Real-time Updates**: Live state change notifications and updates
+- **Interactive Controls**: Event sending and state machine management interface
+
+### **Benefits of State Machine Architecture**
+- **Guaranteed Valid Transitions**: Only allow legal state changes with validation
+- **Automatic Workflow Orchestration**: Smart progression through complex workflows
+- **Complete Audit Trail**: Full history of all state changes and events
+- **Race Condition Prevention**: Atomic state transitions with proper locking
+- **Visual Workflow Management**: Easy to understand and debug state flows
+- **Event-Driven Architecture**: Reactive to state changes with automatic coordination
+- **Canadian Compliance**: Built-in compliance state tracking and validation
+
+This state machine architecture provides a robust, scalable, and maintainable foundation for managing complex business workflows while ensuring legal compliance and providing excellent user experience.
+
 ## 🎯 **CURRENT SYSTEM STATUS**
 
 ### ✅ **PRODUCTION READY FEATURES**
@@ -294,6 +381,7 @@ The database uses PostgreSQL with Prisma ORM. Key tables include:
 - **👥 Team Management**: Team structure and collaboration features
 - **📄 Legal Foundation**: Contract management and platform legal pack
 - **🎮 Gamification**: XP, levels, badges, reputation system, leaderboards
+- **🤖 State Machine Architecture**: Comprehensive state management with 6 specialized state machines
 
 ### 🛡️ **SECURITY STATUS**
 - **✅ JWT Authentication**: Secure token-based authentication

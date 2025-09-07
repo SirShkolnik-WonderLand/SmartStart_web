@@ -184,7 +184,11 @@ app.use('/api/legal-pack', legalPackApiRoutes);
 
 // Mount Legal Framework APIs
 const legalFrameworkApiRoutes = require('./routes/legal-framework-api');
+const legalStateMachineApiRoutes = require('./routes/legal-state-machine-api');
+const stateMachineManagerApiRoutes = require('./routes/state-machine-manager-api');
 app.use('/api/legal', legalFrameworkApiRoutes);
+app.use('/api/legal/state-machine', legalStateMachineApiRoutes);
+app.use('/api/state-machines', stateMachineManagerApiRoutes);
 
 // Mount User Journey State Management APIs
 const journeyApiRoutes = require('./routes/journey-api');

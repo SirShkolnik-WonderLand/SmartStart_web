@@ -2,11 +2,13 @@
  * SmartStart Legal Framework Service
  * Implements comprehensive legal document management with Canadian compliance
  * Handles RBAC gating, signature workflows, and security tier controls
+ * Now enhanced with state machine management for smart workflow orchestration
  */
 
 const crypto = require('crypto');
 const fs = require('fs').promises;
 const path = require('path');
+const LegalStateMachineService = require('./legal-state-machine');
 
 class LegalFrameworkService {
     constructor() {
@@ -14,6 +16,9 @@ class LegalFrameworkService {
         this.templatesPath = path.join(this.documentsPath, 'templates');
         this.signedPath = path.join(this.documentsPath, 'signed');
         this.payloadsPath = path.join(this.documentsPath, 'payloads');
+
+        // Initialize state machine service
+        this.stateMachineService = new LegalStateMachineService();
 
         // Initialize paths
         this.ensureDirectories();
@@ -534,6 +539,202 @@ DOC HASH (sha256): [TO_BE_COMPUTED]
         compliance.valid = compliance.pipeda && compliance.casl && (!userData.hasHealthInfo || compliance.phipa);
 
         return compliance;
+    }
+
+    // ===== STATE MACHINE INTEGRATION METHODS =====
+
+    /**
+     * Create a document with state machine management
+     */
+    async createDocumentWithStateMachine(documentType, variables, userId, ventureId = null) {
+        try {
+            // Generate document content
+            const documentText = await this.generateDocument(documentType, variables);
+            const documentId = this.generateDocumentId();
+            
+            // Store document
+            await this.storeDocument(documentType, documentText, variables, userId);
+            
+            // Create state machine for document
+            const initialContext = {
+                documentId,
+                documentType,
+                userId,
+                ventureId,
+                requiredSignatures: this.getRequiredSignatures(documentType),
+                securityTier: this.getSecurityTierForDocument(documentType),
+                expiryDate: this.calculateExpiryDate(documentType),
+                auditTrail: [{
+                    timestamp: new Date().toISOString(),
+                    event: 'DOCUMENT_CREATED',
+                    userId,
+                    metadata: { documentType, ventureId }
+                }]
+            };
+            
+            const machine = await this.stateMachineService.createDocumentMachine(documentId, initialContext);
+            
+            return {
+                documentId,
+                documentText,
+                stateMachine: machine,
+                currentState: machine.state.value,
+                context: machine.state.context
+            };
+        } catch (error) {
+            console.error('Failed to create document with state machine:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Process document signing with state machine
+     */
+    async processDocumentSigningWithStateMachine(documentId, signerInfo) {
+        try {
+            // Send signature event to state machine
+            await this.stateMachineService.sendDocumentEvent(documentId, {
+                type: 'SIGNATURE_RECEIVED',
+                metadata: {
+                    signerInfo,
+                    timestamp: new Date().toISOString()
+                }
+            });
+            
+            // Process the actual signature
+            const result = await this.processESignature(documentId, signerInfo);
+            
+            // Check if all signatures are complete
+            const currentState = this.stateMachineService.getDocumentState(documentId);
+            if (currentState?.context?.completedSignatures?.length >= currentState?.context?.requiredSignatures?.length) {
+                await this.stateMachineService.sendDocumentEvent(documentId, {
+                    type: 'ALL_SIGNATURES_COMPLETE',
+                    metadata: { timestamp: new Date().toISOString() }
+                });
+            }
+            
+            return result;
+        } catch (error) {
+            console.error('Failed to process document signing with state machine:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Create user compliance state machine
+     */
+    async createUserComplianceStateMachine(userId, rbacLevel = 'GUEST') {
+        try {
+            const requiredDocuments = this.rbacDocumentRequirements[rbacLevel] || [];
+            
+            const initialContext = {
+                userId,
+                rbacLevel,
+                requiredDocuments,
+                completedDocuments: await this.getUserSignedDocuments(userId),
+                complianceScore: 0,
+                lastComplianceCheck: new Date().toISOString(),
+                canadianCompliance: this.validateCanadianCompliance('USER_ONBOARDING', { userId })
+            };
+            
+            const machine = await this.stateMachineService.createUserComplianceStateMachine(userId, initialContext);
+            
+            return {
+                userId,
+                stateMachine: machine,
+                currentState: machine.state.value,
+                context: machine.state.context
+            };
+        } catch (error) {
+            console.error('Failed to create user compliance state machine:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Update user compliance when document is signed
+     */
+    async updateUserComplianceOnDocumentSign(userId, documentType) {
+        try {
+            await this.stateMachineService.sendUserComplianceEvent(userId, {
+                type: 'DOCUMENT_SIGNED',
+                metadata: {
+                    documentType,
+                    timestamp: new Date().toISOString()
+                }
+            });
+        } catch (error) {
+            console.error('Failed to update user compliance:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Get state machine visualization data
+     */
+    async getStateMachineVisualization(type, id) {
+        return this.stateMachineService.getStateMachineVisualization(type, id);
+    }
+
+    /**
+     * Get required signatures for document type
+     */
+    getRequiredSignatures(documentType) {
+        // Map document types to required signers
+        const signatureRequirements = {
+            'PPA': [{ role: 'USER', required: true }],
+            'SOBA': [{ role: 'USER', required: true }, { role: 'BILLING_ADMIN', required: true }],
+            'IDEA_SUBMISSION': [{ role: 'VENTURE_OWNER', required: true }],
+            'PCA': [{ role: 'VENTURE_PARTICIPANT', required: true }, { role: 'VENTURE_OWNER', required: true }],
+            'JDA': [{ role: 'EXTERNAL_PARTNER', required: true }, { role: 'VENTURE_OWNER', required: true }]
+        };
+        
+        return signatureRequirements[documentType] || [{ role: 'USER', required: true }];
+    }
+
+    /**
+     * Get security tier for document type
+     */
+    getSecurityTierForDocument(documentType) {
+        const tierMapping = {
+            'PPA': 'TIER_0',
+            'PRIVACY_NOTICE': 'TIER_0',
+            'SOBA': 'TIER_1',
+            'IDEA_SUBMISSION': 'TIER_1',
+            'PCA': 'TIER_1',
+            'JDA': 'TIER_2',
+            'SECURITY_TIER_3': 'TIER_3',
+            'CROWN_JEWEL_IP': 'TIER_3'
+        };
+        
+        return tierMapping[documentType] || 'TIER_0';
+    }
+
+    /**
+     * Calculate expiry date for document type
+     */
+    calculateExpiryDate(documentType) {
+        const expiryMapping = {
+            'PPA': 365, // 1 year
+            'SOBA': 365, // 1 year
+            'IDEA_SUBMISSION': 90, // 3 months
+            'PCA': 180, // 6 months
+            'JDA': 365, // 1 year
+            'PER_PROJECT_NDA': 90 // 3 months
+        };
+        
+        const days = expiryMapping[documentType] || 365;
+        const expiryDate = new Date();
+        expiryDate.setDate(expiryDate.getDate() + days);
+        
+        return expiryDate;
+    }
+
+    /**
+     * Cleanup state machines
+     */
+    cleanupStateMachines() {
+        this.stateMachineService.cleanup();
     }
 }
 
