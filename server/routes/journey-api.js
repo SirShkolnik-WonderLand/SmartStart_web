@@ -828,4 +828,75 @@ router.get('/recommendations/:userId', authenticateToken, async(req, res) => {
     }
 });
 
+// ===== SEEDING ENDPOINT =====
+router.post('/seed', async (req, res) => {
+    try {
+        console.log('🌱 Seeding journey stages...');
+
+        // Create default journey stages
+        const defaultStages = [
+            {
+                name: 'Welcome',
+                description: 'Welcome to SmartStart! Complete your profile setup.',
+                order: 1,
+                isActive: true
+            },
+            {
+                name: 'Profile Setup',
+                description: 'Complete your user profile with skills and preferences.',
+                order: 2,
+                isActive: true
+            },
+            {
+                name: 'Legal Pack',
+                description: 'Review and sign the platform legal documents.',
+                order: 3,
+                isActive: true
+            },
+            {
+                name: 'First Venture',
+                description: 'Create your first venture or join an existing one.',
+                order: 4,
+                isActive: true
+            },
+            {
+                name: 'Team Building',
+                description: 'Build your team and start collaborating.',
+                order: 5,
+                isActive: true
+            }
+        ];
+
+        // Create journey stages
+        for (const stageData of defaultStages) {
+            await prisma.journeyStage.upsert({
+                where: { name: stageData.name },
+                update: {
+                    description: stageData.description,
+                    order: stageData.order,
+                    isActive: stageData.isActive
+                },
+                create: stageData
+            });
+        }
+
+        console.log(`✅ Created ${defaultStages.length} journey stages`);
+
+        res.json({
+            success: true,
+            message: 'Journey stages seeded successfully',
+            stagesCreated: defaultStages.length,
+            timestamp: new Date().toISOString()
+        });
+
+    } catch (error) {
+        console.error('Journey seeding error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Journey seeding failed',
+            error: error.message
+        });
+    }
+});
+
 module.exports = router;
