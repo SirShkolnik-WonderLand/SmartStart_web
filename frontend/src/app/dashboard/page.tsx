@@ -17,7 +17,7 @@ import {
   ChevronRight,
   Bell
 } from 'lucide-react'
-import { comprehensiveApiService as apiService, User, AnalyticsData, Venture, Offer } from '@/lib/api-comprehensive'
+import { comprehensiveApiService as apiService, User, AnalyticsData, Venture, Offer, JourneyStatus } from '@/lib/api-comprehensive'
 import Link from 'next/link'
 
 export default function DashboardPage() {
@@ -25,17 +25,7 @@ export default function DashboardPage() {
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null)
   const [ventures, setVentures] = useState<Venture[]>([])
   const [offers, setOffers] = useState<Offer[]>([])
-  const [, setJourneyStatus] = useState<{
-    completedSteps: string[]
-    currentStep: string
-    progress: number
-    stages: Array<{
-      id: string
-      name: string
-      completed: boolean
-      order: number
-    }>
-  } | null>(null)
+  const [journeyStatus, setJourneyStatus] = useState<JourneyStatus | null>(null)
   const [legalPackStatus, setLegalPackStatus] = useState<{
     signed: boolean
     signedAt?: string
