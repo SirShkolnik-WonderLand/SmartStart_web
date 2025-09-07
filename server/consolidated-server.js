@@ -184,8 +184,7 @@ const billingApiRoutes = require('./routes/billing-api');
 app.use('/api/billing', billingApiRoutes);
 
 // Mount Platform Legal Pack APIs
-const legalPackApiRoutes = require('./routes/legal-pack-api');
-app.use('/api/legal-pack', legalPackApiRoutes);
+// (Already mounted above with contracts API)
 
 // Mount Legal Framework APIs
 const legalFrameworkApiRoutes = require('./routes/legal-framework-api');
