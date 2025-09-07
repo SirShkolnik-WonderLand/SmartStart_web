@@ -120,7 +120,7 @@ export default function VenturesPage() {
       {/* Ventures Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {ventures.map((venture) => (
-          <div key={venture.id} className="glass rounded-xl p-6 cursor-pointer group hover:glass-lg transition-all duration-200">
+          <Link key={venture.id} href={`/ventures/${venture.id}`} className="glass rounded-xl p-6 cursor-pointer group hover:glass-lg transition-all duration-200 block">
             <div className="flex items-start justify-between mb-4">
               <div className="space-y-2">
                 <h3 className="text-xl font-semibold text-foreground group-hover:text-primary transition-colors">{venture.name}</h3>
@@ -157,11 +157,11 @@ export default function VenturesPage() {
             
             <div className="flex items-center justify-between pt-2">
               <span className="text-sm font-medium text-foreground-muted">{venture.industry}</span>
-              <button className="px-3 py-1 border border-glass-border rounded-md hover:bg-glass-highlight transition-colors text-sm">
-                View Details
-              </button>
+              <span className="text-sm text-primary font-medium group-hover:underline">
+                View Details →
+              </span>
             </div>
-          </div>
+          </Link>
         ))}
         
         {ventures.length === 0 && (
