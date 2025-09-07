@@ -69,21 +69,27 @@ class OnboardingOrchestrator extends EventEmitter {
           isActive: true
         },
         {
-          name: 'Legal Pack',
-          description: 'Review and sign the platform legal documents.',
+          name: 'Legal Documents',
+          description: 'Review and sign all required legal agreements (Platform Agreement, NDAs, Terms of Service).',
           order: 3,
+          isActive: true
+        },
+        {
+          name: 'Subscription Setup',
+          description: 'Choose and activate your subscription plan to unlock full platform features.',
+          order: 4,
           isActive: true
         },
         {
           name: 'First Venture',
           description: 'Create your first venture or join an existing one.',
-          order: 4,
+          order: 5,
           isActive: true
         },
         {
           name: 'Team Building',
           description: 'Build your team and start collaborating.',
-          order: 5,
+          order: 6,
           isActive: true
         }
       ]
