@@ -585,13 +585,20 @@ class ComprehensiveApiService {
       
       console.log('Creating venture with data:', backendData)
       
-      const response = await this.fetchWithAuth<{venture: Venture}>('/api/ventures/create', {
+      const response = await this.fetchWithAuth<{venture: Venture, legalEntity: {id: string, name: string, type: string}, equityFramework: {id: string, ownerPercent: number, alicePercent: number, cepPercent: number}}>('/api/ventures/create', {
         method: 'POST',
         body: JSON.stringify(backendData),
       })
+      
+      console.log('API Response:', response)
+      
+      // Handle the actual backend response format: { success: true, venture: {...} }
+      const responseData = response as ApiResponse<{venture: Venture}> & { venture?: Venture }
+      const venture = responseData.venture || response.data?.venture
+      
       return {
         success: response.success,
-        data: response.data?.venture,
+        data: venture,
         error: response.error
       }
     } catch (error) {
