@@ -209,7 +209,7 @@ export default function VentureDetailPage() {
                 About This Venture
               </h2>
               <p className="text-foreground-body leading-relaxed">
-                {venture.description || 'No description provided yet.'}
+                {venture.ventureProfile?.description || venture.description || 'No description provided yet.'}
               </p>
             </motion.div>
 
@@ -227,19 +227,19 @@ export default function VentureDetailPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm font-medium text-foreground-muted">Industry</label>
-                  <p className="text-foreground-body">{venture.industry || 'Not specified'}</p>
+                  <p className="text-foreground-body">{venture.ventureProfile?.industry || venture.industry || 'Not specified'}</p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-foreground-muted">Stage</label>
-                  <p className="text-foreground-body capitalize">{venture.stage || 'Not specified'}</p>
+                  <p className="text-foreground-body capitalize">{venture.ventureProfile?.stage || venture.stage || 'Not specified'}</p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-foreground-muted">Region</label>
-                  <p className="text-foreground-body">{venture.residency || 'Not specified'}</p>
+                  <p className="text-foreground-body">{venture.ventureProfile?.region || venture.residency || venture.region || 'Not specified'}</p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-foreground-muted">Team Size</label>
-                  <p className="text-foreground-body">{venture.teamSize || 'Not specified'}</p>
+                  <p className="text-foreground-body">{venture.ventureProfile?.teamSize || venture.teamSize || 'Not specified'}</p>
                 </div>
               </div>
             </motion.div>

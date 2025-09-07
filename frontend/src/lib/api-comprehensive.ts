@@ -93,6 +93,19 @@ export interface Venture {
     xp?: number
     reputation?: number
   }
+  ventureProfile?: {
+    id: string
+    ventureId: string
+    description?: string
+    industry?: string
+    stage?: string
+    fundingRound?: string
+    teamSize?: number
+    website?: string
+    socialMedia?: any
+    createdAt: string
+    updatedAt: string
+  }
   createdAt: string
   updatedAt: string
   status: 'PENDING_CONTRACTS' | 'ACTIVE' | 'COMPLETED' | 'active' | 'paused' | 'completed'
