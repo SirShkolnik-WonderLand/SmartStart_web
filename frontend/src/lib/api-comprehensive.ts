@@ -642,6 +642,24 @@ class ComprehensiveApiService {
   // AUTHENTICATION & USER MANAGEMENT
   // ============================================================================
 
+  async register(userData: {
+    firstName: string
+    lastName: string
+    email: string
+    password: string
+  }): Promise<ApiResponse<User & { token?: string }>> {
+    try {
+      const response = await this.fetchWithAuth<{ data: User & { token?: string } }>('/api/auth/register', {
+        method: 'POST',
+        body: JSON.stringify(userData)
+      })
+      return { success: true, data: response.data?.data || null }
+    } catch (error) {
+      console.error('Error registering user:', error)
+      return { success: false, data: null, error: 'Failed to register user' }
+    }
+  }
+
   async login(email: string, password: string): Promise<ApiResponse<{ user: User; token: string }>> {
     try {
       const response = await fetch(`${API_BASE}/api/auth/login`, {

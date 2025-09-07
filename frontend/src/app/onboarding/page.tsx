@@ -1,0 +1,69 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import OnboardingFlow from '@/components/OnboardingFlow'
+import { Loader2 } from 'lucide-react'
+
+export default function OnboardingPage() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const [isLoading, setIsLoading] = useState(true)
+  const [userId, setUserId] = useState<string | null>(null)
+
+  useEffect(() => {
+    // Get userId from URL params or localStorage
+    const urlUserId = searchParams.get('userId')
+    const storedUser = localStorage.getItem('user')
+    
+    if (urlUserId) {
+      setUserId(urlUserId)
+      setIsLoading(false)
+    } else if (storedUser) {
+      try {
+        const userData = JSON.parse(storedUser)
+        setUserId(userData.id)
+        setIsLoading(false)
+      } catch (error) {
+        console.error('Error parsing stored user data:', error)
+        router.push('/auth/register')
+      }
+    } else {
+      // No user data found, redirect to registration
+      router.push('/auth/register')
+    }
+  }, [searchParams, router])
+
+  const handleOnboardingComplete = () => {
+    // Redirect to dashboard after onboarding completion
+    router.push('/dashboard')
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" />
+          <p className="text-muted-foreground">Loading your onboarding journey...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!userId) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-muted-foreground">No user found. Redirecting to registration...</p>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <OnboardingFlow 
+      userId={userId} 
+      onComplete={handleOnboardingComplete}
+    />
+  )
+}
