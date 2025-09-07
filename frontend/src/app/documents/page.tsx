@@ -51,8 +51,8 @@ export default function DocumentsPage() {
               required: true, // Default to required for existing contracts
               status: contract.status.toLowerCase(),
               content: contract.content || 'No content available',
-              createdAt: contract.createdAt,
-              updatedAt: contract.updatedAt,
+              createdAt: contract.signedAt || new Date().toISOString(), // Use signedAt or current date
+              updatedAt: contract.signedAt || new Date().toISOString(), // Use signedAt or current date
               packName: 'Existing Contracts'
             }))
             setDocuments(contractDocs)
