@@ -7,6 +7,7 @@
 const { createMachine, interpret, assign } = require('xstate');
 const { PrismaClient } = require('@prisma/client');
 const crypto = require('crypto');
+const EventEmitter = require('events');
 
 const prisma = new PrismaClient();
 
@@ -558,8 +559,9 @@ const userComplianceMachine = createMachine({
  * Legal Framework State Machine Service
  * Main service that manages all legal state machines
  */
-class LegalStateMachineService {
+class LegalStateMachineService extends EventEmitter {
   constructor() {
+    super();
     this.documentMachines = new Map();
     this.userComplianceMachines = new Map();
     this.eventBus = new Map(); // For event coordination
@@ -651,6 +653,16 @@ class LegalStateMachineService {
   async handleDocumentStateChange(documentId, state) {
     // Emit events, update database, notify users, etc.
     console.log(`Handling document state change for ${documentId}:`, state.value);
+    
+    // Emit cross-machine events for specific states
+    if (state.value === 'effective' || state.value === 'signature_verified') {
+      this.emit('documentSigned', {
+        documentId,
+        userId: state.context?.userId,
+        documentType: state.context?.documentType,
+        state: state.value
+      });
+    }
     
     // Update audit trail in database
     try {

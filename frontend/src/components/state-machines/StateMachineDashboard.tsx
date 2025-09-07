@@ -334,7 +334,7 @@ const StateMachineDashboard: React.FC<StateMachineDashboardProps> = ({
                 </div>
               ) : (
                 <StateMachineVisualization
-                  type={selectedMachine.type}
+                  type={selectedMachine.type === 'legal' ? 'document' : 'user'}
                   id={selectedMachine.id}
                 />
               )}
