@@ -242,6 +242,16 @@ app.use('/api/migration', migrationApiRoutes);
 const databaseFixApiRoutes = require('./routes/database-fix-api');
 app.use('/api/database-fix', databaseFixApiRoutes);
 
+// Mount Legal Documents API
+try {
+    console.log('🚀 Mounting Legal Documents API...');
+    const legalDocumentsApiRoutes = require('./routes/legal-documents-api');
+    app.use('/api/legal-documents', legalDocumentsApiRoutes);
+    console.log('✅ Legal Documents API mounted successfully');
+} catch (error) {
+    console.error('❌ Failed to mount Legal Documents API:', error.message);
+}
+
 console.log('✅ User Journey APIs mounted successfully');
 console.log('✅ Role-Based Business Systems mounted successfully');
 console.log('✅ Subscription & Billing APIs mounted successfully');
