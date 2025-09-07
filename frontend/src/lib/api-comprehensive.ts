@@ -227,12 +227,11 @@ export interface LegalPack {
   id: string
   name: string
   description: string
-  documents: LegalDocument[]
+  category: string
+  priority: string
   required: boolean
-  status: 'pending' | 'signed' | 'expired'
-  signedAt?: string
-  version: string
-  jurisdiction: string
+  status: string
+  documents: LegalDocument[]
 }
 
 export interface LegalDocument {
@@ -1021,7 +1020,8 @@ class ComprehensiveApiService {
   async getLegalPacks(): Promise<ApiResponse<LegalPack[]>> {
     try {
       const response = await this.fetchWithAuth<{ data: LegalPack[] }>('/api/legal-pack')
-      return { success: true, data: response.data?.data || [] as LegalPack[] }
+      // The API returns { success: true, data: [...] } so we need to access response.data directly
+      return { success: true, data: response.data || [] as LegalPack[] }
     } catch (error) {
       console.error('Error fetching legal packs:', error)
       return { success: false, data: [] as LegalPack[], error: 'Failed to fetch legal packs' }
