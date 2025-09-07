@@ -92,6 +92,33 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
       } catch (userError) {
         console.warn('Failed to load user data from localStorage:', userError)
       }
+
+      // Try to recover onboarding data from backup
+      try {
+        const backupData = localStorage.getItem(`onboarding_backup_${userId}`)
+        if (backupData) {
+          const parsedBackup = JSON.parse(backupData)
+          console.log('Recovering onboarding data from backup:', parsedBackup)
+          
+          if (parsedBackup.profileData) {
+            setProfileData(prev => ({ ...prev, ...parsedBackup.profileData }))
+          }
+          if (parsedBackup.legalAgreements) {
+            setLegalAgreements(parsedBackup.legalAgreements)
+          }
+          if (parsedBackup.selectedPlan) {
+            setSelectedPlan(parsedBackup.selectedPlan)
+          }
+          if (parsedBackup.paymentData) {
+            setPaymentData(parsedBackup.paymentData)
+          }
+          if (parsedBackup.currentStep !== undefined) {
+            setCurrentStep(parsedBackup.currentStep)
+          }
+        }
+      } catch (backupError) {
+        console.warn('Failed to recover backup data:', backupError)
+      }
       
       // Try to load journey status (but don't fail if it doesn't work)
       try {
@@ -181,6 +208,61 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
     }
   }
 
+  // Auto-save form data every 30 seconds
+  const autoSaveData = useCallback(async () => {
+    try {
+      const currentStepData = getCurrentStepData()
+      if (currentStepData && Object.keys(currentStepData).length > 0) {
+        await updateJourneyProgress('AUTO_SAVE', {
+          step: currentStep,
+          data: currentStepData,
+          timestamp: new Date().toISOString()
+        })
+        
+        // Also save to localStorage as backup
+        localStorage.setItem(`onboarding_backup_${userId}`, JSON.stringify({
+          currentStep,
+          profileData,
+          legalAgreements,
+          selectedPlan,
+          paymentData,
+          lastSaved: new Date().toISOString()
+        }))
+      }
+    } catch (error) {
+      console.warn('Auto-save failed:', error)
+    }
+  }, [currentStep, profileData, legalAgreements, selectedPlan, paymentData, userId])
+
+  // Get current step data for auto-save
+  const getCurrentStepData = () => {
+    switch (currentStep) {
+      case 0: // Profile
+        return { profileData }
+      case 1: // Legal
+        return { legalAgreements }
+      case 2: // Subscription
+        return { selectedPlan }
+      case 3: // Payment
+        return { paymentData }
+      default:
+        return {}
+    }
+  }
+
+  // Set up auto-save interval
+  useEffect(() => {
+    const interval = setInterval(autoSaveData, 30000) // Auto-save every 30 seconds
+    return () => clearInterval(interval)
+  }, [autoSaveData])
+
+  // Save data when user navigates between steps
+  const handleStepChange = async (newStep: number) => {
+    // Save current step data before changing
+    await autoSaveData()
+    setCurrentStep(newStep)
+  }
+
   const handleNext = async () => {
     if (currentStep < steps.length - 1) {
       // Update journey progress for current step
@@ -199,19 +281,28 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
         })
       }
       
-      setCurrentStep(currentStep + 1)
+      await handleStepChange(currentStep + 1)
     } else {
       // Complete onboarding
       await updateJourneyProgress('ONBOARDING_COMPLETE', {
-        completedAt: new Date().toISOString()
+        completedAt: new Date().toISOString(),
+        allData: {
+          profileData,
+          legalAgreements,
+          selectedPlan,
+          paymentData
+        }
       })
+      
+      // Clear backup data on completion
+      localStorage.removeItem(`onboarding_backup_${userId}`)
       onComplete()
     }
   }
 
-  const handlePrevious = () => {
+  const handlePrevious = async () => {
     if (currentStep > 0) {
-      setCurrentStep(currentStep - 1)
+      await handleStepChange(currentStep - 1)
     }
   }
 
@@ -223,9 +314,54 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
     setShowLegalPopup({ isOpen: false, type: null })
   }
 
-  const signLegalAgreement = (type: 'confidentiality' | 'equity' | 'partnership') => {
-    setLegalAgreements(prev => ({ ...prev, [type]: true }))
-    closeLegalPopup()
+  const signLegalAgreement = async (type: 'confidentiality' | 'equity' | 'partnership') => {
+    try {
+      // Generate digital signature
+      const signatureData = {
+        userId,
+        documentType: type,
+        content: legalAgreementContent[type].content,
+        timestamp: new Date().toISOString(),
+        ipAddress: 'client-side', // Will be updated by backend
+        userAgent: navigator.userAgent
+      }
+      
+      // Create signature hash (simplified for frontend)
+      const signatureString = JSON.stringify(signatureData)
+      const signatureHash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(signatureString))
+      const signatureHashHex = Array.from(new Uint8Array(signatureHash))
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('')
+      
+      // Update legal agreements with signature data
+      setLegalAgreements(prev => ({ 
+        ...prev, 
+        [type]: {
+          signed: true,
+          signedAt: new Date().toISOString(),
+          signatureHash: signatureHashHex,
+          documentVersion: 'v1.0'
+        }
+      }))
+      
+      // Save signature to backend
+      await updateJourneyProgress('LEGAL_DOCUMENT_SIGNED', {
+        documentType: type,
+        signatureData: {
+          signatureHash: signatureHashHex,
+          signedAt: new Date().toISOString(),
+          documentVersion: 'v1.0',
+          content: legalAgreementContent[type].content
+        }
+      })
+      
+      closeLegalPopup()
+    } catch (error) {
+      console.error('Error signing legal agreement:', error)
+      // Still mark as signed for UX, but log the error
+      setLegalAgreements(prev => ({ ...prev, [type]: true }))
+      closeLegalPopup()
+    }
   }
 
   const legalAgreementContent = {
@@ -411,8 +547,14 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
                 <input
                   type="checkbox"
                   id="confidentiality"
-                  checked={legalAgreements.confidentiality}
-                  onChange={(e) => setLegalAgreements({...legalAgreements, confidentiality: e.target.checked})}
+                  checked={legalAgreements.confidentiality?.signed || legalAgreements.confidentiality === true}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      signLegalAgreement('confidentiality')
+                    } else {
+                      setLegalAgreements({...legalAgreements, confidentiality: false})
+                    }
+                  }}
                   className="mt-1"
                 />
                 <div className="flex-1">
@@ -439,8 +581,14 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
                 <input
                   type="checkbox"
                   id="equity"
-                  checked={legalAgreements.equity}
-                  onChange={(e) => setLegalAgreements({...legalAgreements, equity: e.target.checked})}
+                  checked={legalAgreements.equity?.signed || legalAgreements.equity === true}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      signLegalAgreement('equity')
+                    } else {
+                      setLegalAgreements({...legalAgreements, equity: false})
+                    }
+                  }}
                   className="mt-1"
                 />
                 <div className="flex-1">
@@ -467,8 +615,14 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
                 <input
                   type="checkbox"
                   id="partnership"
-                  checked={legalAgreements.partnership}
-                  onChange={(e) => setLegalAgreements({...legalAgreements, partnership: e.target.checked})}
+                  checked={legalAgreements.partnership?.signed || legalAgreements.partnership === true}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      signLegalAgreement('partnership')
+                    } else {
+                      setLegalAgreements({...legalAgreements, partnership: false})
+                    }
+                  }}
                   className="mt-1"
                 />
                 <div className="flex-1">

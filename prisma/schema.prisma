@@ -57,6 +57,7 @@ model User {
 
   // user journey
   journeyStates      UserJourneyState[]
+  onboardingAuditLogs OnboardingAuditLog[]
 
   // KYC and MFA
   kycVerifications   KycVerification[]
@@ -2733,6 +2734,25 @@ model UserJourneyState {
   @@index([stageId])
   @@index([status])
   @@map("UserJourneyState")
+}
+
+// Comprehensive audit trail for onboarding actions
+model OnboardingAuditLog {
+  id        String   @id @default(cuid())
+  userId    String
+  action    String   // Action performed (e.g., 'PROFILE_UPDATED', 'LEGAL_SIGNED', 'SUBSCRIPTION_SELECTED')
+  data      Json?    // Action data and context
+  ipAddress String?  // IP address of user
+  userAgent String?  // Browser/device information
+  timestamp DateTime @default(now())
+  
+  // Relations
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([action])
+  @@index([timestamp])
+  @@map("OnboardingAuditLog")
 }
 
 model JourneyStage {

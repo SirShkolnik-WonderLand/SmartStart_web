@@ -833,6 +833,106 @@ router.post('/progress/:userId', authenticateToken, async(req, res) => {
             });
         }
 
+        // Log all actions for audit trail
+        await prisma.onboardingAuditLog.create({
+            data: {
+                userId,
+                action,
+                data: JSON.stringify(data),
+                ipAddress: req.ip,
+                userAgent: req.headers['user-agent'],
+                timestamp: new Date()
+            }
+        });
+
+        // Handle special actions with enhanced data persistence
+        if (action === 'AUTO_SAVE') {
+            // Auto-save form data to UserJourneyState metadata
+            const currentStage = await prisma.userJourneyState.findFirst({
+                where: { 
+                    userId,
+                    status: 'IN_PROGRESS'
+                }
+            });
+
+            if (currentStage) {
+                await prisma.userJourneyState.update({
+                    where: { id: currentStage.id },
+                    data: {
+                        metadata: {
+                            ...currentStage.metadata,
+                            ...data,
+                            lastAutoSave: new Date().toISOString()
+                        },
+                        updatedAt: new Date()
+                    }
+                });
+            }
+
+            return res.json({
+                success: true,
+                message: 'Data auto-saved successfully',
+                timestamp: new Date().toISOString()
+            });
+        }
+
+        if (action === 'LEGAL_DOCUMENT_SIGNED') {
+            // Handle digital signature storage
+            const { documentType, signatureData } = data;
+            
+            // Create or update PlatformLegalPack
+            await prisma.platformLegalPack.upsert({
+                where: { userId },
+                update: {
+                    status: 'SIGNED',
+                    signedAt: new Date(),
+                    updatedAt: new Date()
+                },
+                create: {
+                    userId,
+                    status: 'SIGNED',
+                    signedAt: new Date()
+                }
+            });
+
+            // Store signature details in journey metadata
+            const currentStage = await prisma.userJourneyState.findFirst({
+                where: { 
+                    userId,
+                    status: 'IN_PROGRESS'
+                }
+            });
+
+            if (currentStage) {
+                await prisma.userJourneyState.update({
+                    where: { id: currentStage.id },
+                    data: {
+                        metadata: {
+                            ...currentStage.metadata,
+                            legalSignatures: {
+                                ...currentStage.metadata?.legalSignatures,
+                                [documentType]: {
+                                    ...signatureData,
+                                    ipAddress: req.ip,
+                                    userAgent: req.headers['user-agent'],
+                                    signedAt: new Date().toISOString()
+                                }
+                            }
+                        },
+                        updatedAt: new Date()
+                    }
+                });
+            }
+
+            return res.json({
+                success: true,
+                message: 'Legal document signed and stored successfully',
+                signatureHash: signatureData.signatureHash,
+                timestamp: new Date().toISOString()
+            });
+        }
+
+        // Handle other actions with the orchestrator
         const result = await onboardingOrchestrator.updateJourneyProgress(userId, action, data);
         res.json(result);
     } catch (error) {
