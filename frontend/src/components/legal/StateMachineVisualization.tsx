@@ -158,7 +158,8 @@ const StateMachineVisualization: React.FC<StateMachineVisualizationProps> = ({
   }
 
   const currentState = visualization.currentState;
-  const context = visualization.context as Record<string, any> || {};
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const context = (visualization.context || {}) as Record<string, any>;
 
   return (
     <div className={`glass-card p-6 ${className}`}>
