@@ -74,26 +74,32 @@ export interface UserBadge {
 export interface Venture {
   id: string
   name: string
-  description: string
-  stage: 'idea' | 'mvp' | 'growth' | 'scale'
-  industry: string
-  teamSize: number
-  lookingFor: string[]
-  rewards: {
+  description?: string
+  purpose?: string
+  stage?: 'idea' | 'mvp' | 'growth' | 'scale'
+  industry?: string
+  teamSize?: number
+  lookingFor?: string[]
+  rewards?: {
     type: 'equity' | 'cash' | 'hybrid'
     amount: string
   }
-  owner: {
+  owner?: {
     id: string
     name: string
-    avatar: string
+    email: string
+    avatar?: string
+    level?: string
+    xp?: number
+    reputation?: number
   }
   createdAt: string
   updatedAt: string
-  status: 'active' | 'paused' | 'completed'
-  tags: string[]
-  tier: 'T1' | 'T2' | 'T3'
-  residency: string
+  status: 'PENDING_CONTRACTS' | 'ACTIVE' | 'COMPLETED' | 'active' | 'paused' | 'completed'
+  tags?: string[]
+  tier?: 'T1' | 'T2' | 'T3'
+  residency?: string
+  region?: string
   valuation?: number
   funding?: {
     raised: number
@@ -559,8 +565,17 @@ class ComprehensiveApiService {
 
   async getVenture(id: string): Promise<ApiResponse<Venture>> {
     try {
-      const response = await this.fetchWithAuth<Venture>(`/api/v1/ventures/${id}`)
-      return response
+      const response = await this.fetchWithAuth<{venture: Venture, owner: {id: string, name: string, email: string, level: string, xp: number, reputation: number}, equityFramework: {id: string, ventureId: string, ownerPercent: number, alicePercent: number, cepPercent: number, vestingPolicy: string, status: string, createdAt: string, updatedAt: string}, legalDocuments: {id: string, name: string, type: string, status: string}[]}>(`/api/ventures/${id}`)
+      
+      // Handle the actual backend response format: { success: true, venture: {...} }
+      const responseData = response as ApiResponse<{venture: Venture}> & { venture?: Venture }
+      const venture = responseData.venture || response.data?.venture
+      
+      return {
+        success: response.success,
+        data: venture,
+        error: response.error
+      }
     } catch (error) {
       console.error('Error fetching venture:', error)
       return { success: false, error: 'Failed to fetch venture' }

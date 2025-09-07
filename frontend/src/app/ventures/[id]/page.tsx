@@ -1,0 +1,290 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { useParams, useRouter } from 'next/navigation'
+import { comprehensiveApiService as apiService, Venture } from '@/lib/api-comprehensive'
+import { ArrowLeft, Building2, Users, Calendar, TrendingUp, Briefcase, CheckCircle, Clock, AlertCircle } from 'lucide-react'
+import Link from 'next/link'
+import { motion } from 'framer-motion'
+
+export default function VentureDetailPage() {
+  const params = useParams()
+  const router = useRouter()
+  const [venture, setVenture] = useState<Venture | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const ventureId = params.id as string
+
+  useEffect(() => {
+    const loadVenture = async () => {
+      try {
+        setIsLoading(true)
+        const response = await apiService.getVenture(ventureId)
+        
+        if (response.success && response.data) {
+          setVenture(response.data)
+        } else {
+          setError(response.error || 'Failed to load venture')
+        }
+      } catch (err) {
+        setError('Failed to load venture')
+        console.error('Error loading venture:', err)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    if (ventureId) {
+      loadVenture()
+    }
+  }, [ventureId])
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'PENDING_CONTRACTS':
+        return <Clock className="w-5 h-5 text-yellow-500" />
+      case 'ACTIVE':
+        return <CheckCircle className="w-5 h-5 text-green-500" />
+      case 'COMPLETED':
+        return <CheckCircle className="w-5 h-5 text-blue-500" />
+      default:
+        return <AlertCircle className="w-5 h-5 text-gray-500" />
+    }
+  }
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'PENDING_CONTRACTS':
+        return 'bg-yellow-500/10 text-yellow-600 border-yellow-500/20'
+      case 'ACTIVE':
+        return 'bg-green-500/10 text-green-600 border-green-500/20'
+      case 'COMPLETED':
+        return 'bg-blue-500/10 text-blue-600 border-blue-500/20'
+      default:
+        return 'bg-gray-500/10 text-gray-600 border-gray-500/20'
+    }
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen wonderland-bg flex items-center justify-center">
+        <div className="glass rounded-xl p-8 text-center">
+          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-foreground-muted">Loading venture...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error || !venture) {
+    return (
+      <div className="min-h-screen wonderland-bg flex items-center justify-center">
+        <div className="glass rounded-xl p-8 text-center max-w-md">
+          <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-foreground mb-2">Venture Not Found</h2>
+          <p className="text-foreground-muted mb-6">{error || 'The venture you\'re looking for doesn\'t exist.'}</p>
+          <div className="flex gap-3 justify-center">
+            <button 
+              onClick={() => router.back()}
+              className="wonder-button-secondary"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Go Back
+            </button>
+            <Link href="/ventures" className="wonder-button">
+              <Briefcase className="w-4 h-4 mr-2" />
+              All Ventures
+            </Link>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="min-h-screen wonderland-bg">
+      <div className="container mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="flex items-center gap-4 mb-8">
+          <button 
+            onClick={() => router.back()}
+            className="wonder-button-secondary flex items-center gap-2"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back
+          </button>
+          <div className="flex-1">
+            <h1 className="text-4xl font-bold text-foreground mb-2">{venture.name}</h1>
+            <div className="flex items-center gap-4">
+              <span className={`px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(venture.status)}`}>
+                {getStatusIcon(venture.status)}
+                <span className="ml-2">{venture.status.replace('_', ' ')}</span>
+              </span>
+              <span className="text-foreground-muted">Created {new Date(venture.createdAt).toLocaleDateString()}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Main Content */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left Column - Main Info */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Description */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="glass rounded-xl p-6"
+            >
+              <h2 className="text-xl font-semibold text-foreground mb-4 flex items-center gap-2">
+                <Building2 className="w-5 h-5 text-primary" />
+                About This Venture
+              </h2>
+              <p className="text-foreground-body leading-relaxed">
+                {venture.description || 'No description provided yet.'}
+              </p>
+            </motion.div>
+
+            {/* Venture Details */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="glass rounded-xl p-6"
+            >
+              <h2 className="text-xl font-semibold text-foreground mb-4 flex items-center gap-2">
+                <TrendingUp className="w-5 h-5 text-accent" />
+                Venture Details
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-foreground-muted">Industry</label>
+                  <p className="text-foreground-body">{venture.industry || 'Not specified'}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-foreground-muted">Stage</label>
+                  <p className="text-foreground-body capitalize">{venture.stage || 'Not specified'}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-foreground-muted">Region</label>
+                  <p className="text-foreground-body">{venture.residency || 'Not specified'}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-foreground-muted">Team Size</label>
+                  <p className="text-foreground-body">{venture.teamSize || 'Not specified'}</p>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Team & Roles */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="glass rounded-xl p-6"
+            >
+              <h2 className="text-xl font-semibold text-foreground mb-4 flex items-center gap-2">
+                <Users className="w-5 h-5 text-highlight" />
+                Team & Roles
+              </h2>
+              <div className="space-y-3">
+                {venture.lookingFor && venture.lookingFor.length > 0 ? (
+                  venture.lookingFor.map((role, index) => (
+                    <div key={index} className="flex items-center justify-between p-3 bg-glass-surface rounded-lg">
+                      <div>
+                        <p className="font-medium text-foreground">{role}</p>
+                        <p className="text-sm text-foreground-muted">Looking for this role</p>
+                      </div>
+                      <span className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full">
+                        Open
+                      </span>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-foreground-muted">No specific roles defined yet.</p>
+                )}
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Right Column - Sidebar */}
+          <div className="space-y-6">
+            {/* Owner Info */}
+            <motion.div 
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="glass rounded-xl p-6"
+            >
+              <h3 className="text-lg font-semibold text-foreground mb-4">Venture Owner</h3>
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                  <Users className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <p className="font-medium text-foreground">
+                    {venture.owner?.name || 'Unknown Owner'}
+                  </p>
+                  <p className="text-sm text-foreground-muted">
+                    {venture.owner?.email || 'No email provided'}
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Quick Actions */}
+            <motion.div 
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.1 }}
+              className="glass rounded-xl p-6"
+            >
+              <h3 className="text-lg font-semibold text-foreground mb-4">Quick Actions</h3>
+              <div className="space-y-3">
+                <button className="w-full wonder-button-secondary text-left">
+                  <Users className="w-4 h-4 mr-2" />
+                  Invite Team Members
+                </button>
+                <button className="w-full wonder-button-secondary text-left">
+                  <Calendar className="w-4 h-4 mr-2" />
+                  Schedule Meeting
+                </button>
+                <button className="w-full wonder-button-secondary text-left">
+                  <TrendingUp className="w-4 h-4 mr-2" />
+                  View Analytics
+                </button>
+              </div>
+            </motion.div>
+
+            {/* Venture Stats */}
+            <motion.div 
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2 }}
+              className="glass rounded-xl p-6"
+            >
+              <h3 className="text-lg font-semibold text-foreground mb-4">Venture Stats</h3>
+              <div className="space-y-3">
+                <div className="flex justify-between">
+                  <span className="text-foreground-muted">Status</span>
+                  <span className="text-foreground-body font-medium">{venture.status}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-foreground-muted">Created</span>
+                  <span className="text-foreground-body font-medium">
+                    {new Date(venture.createdAt).toLocaleDateString()}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-foreground-muted">Last Updated</span>
+                  <span className="text-foreground-body font-medium">
+                    {new Date(venture.updatedAt).toLocaleDateString()}
+                  </span>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
