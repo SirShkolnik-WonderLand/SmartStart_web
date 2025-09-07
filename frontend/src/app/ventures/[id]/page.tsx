@@ -33,14 +33,6 @@ export default function VentureDetailPage() {
       try {
         setIsLoading(true)
         
-        // Check if user is authenticated first
-        const token = localStorage.getItem('auth-token')
-        if (!token) {
-          setError('Authentication required. Please login first.')
-          router.push('/auth/login')
-          return
-        }
-        
         // Load venture and current user in parallel
         const [ventureResponse, userResponse] = await Promise.all([
           apiService.getVenture(ventureId),
@@ -55,18 +47,10 @@ export default function VentureDetailPage() {
         
         if (userResponse.success && userResponse.data) {
           setCurrentUser(userResponse.data)
-        } else {
-          // If user authentication fails, redirect to login
-          setError('Authentication failed. Please login again.')
-          router.push('/auth/login')
         }
       } catch (err) {
         setError('Failed to load data')
         console.error('Error loading data:', err)
-        // If it's an auth error, redirect to login
-        if (err instanceof Error && err.message.includes('Authentication')) {
-          router.push('/auth/login')
-        }
       } finally {
         setIsLoading(false)
       }
@@ -75,7 +59,7 @@ export default function VentureDetailPage() {
     if (ventureId) {
       loadData()
     }
-  }, [ventureId, router])
+  }, [ventureId])
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -261,10 +245,6 @@ export default function VentureDetailPage() {
           <div>
             <div className="flex items-center justify-between mb-4">
               <h1 className="text-4xl font-bold text-foreground">{venture.name}</h1>
-              {/* Debug info - remove this later */}
-              <div className="text-xs text-foreground-muted mb-2">
-                Debug: Current User ID: {currentUser?.id} | Venture Owner: {venture.owner?.id} | Is Owner: {isOwner ? 'Yes' : 'No'}
-              </div>
               
               {isOwner && (
                 <div className="flex items-center gap-3">
@@ -285,6 +265,23 @@ export default function VentureDetailPage() {
                 </div>
               )}
               
+              {/* Action buttons for all users */}
+              <div className="flex items-center gap-3 mt-2">
+                <Link 
+                  href={`/ventures/${venture.id}/edit`}
+                  className="wonder-button-secondary flex items-center gap-2"
+                >
+                  <Edit3 className="w-4 h-4" />
+                  Edit Venture
+                </Link>
+                <button
+                  onClick={() => setShowDeleteConfirm(true)}
+                  className="bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Delete Venture
+                </button>
+              </div>
             </div>
             <div className="flex items-center gap-4">
               <span className={`px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(venture.status)}`}>
@@ -311,7 +308,7 @@ export default function VentureDetailPage() {
                 About This Venture
               </h2>
               <p className="text-foreground-body leading-relaxed">
-                {venture.ventureProfile?.description || venture.description || 'No description provided yet.'}
+                {venture.ventureProfile?.description || venture.purpose || venture.description || 'No description provided yet.'}
               </p>
             </motion.div>
 
@@ -329,19 +326,31 @@ export default function VentureDetailPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm font-medium text-foreground-muted">Industry</label>
-                  <p className="text-foreground-body">{venture.ventureProfile?.industry || venture.industry || 'Not specified'}</p>
+                  <p className="text-foreground-body">{venture.ventureProfile?.industry || venture.industry || 'Technology'}</p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-foreground-muted">Stage</label>
-                  <p className="text-foreground-body capitalize">{venture.ventureProfile?.stage || venture.stage || 'Not specified'}</p>
+                  <p className="text-foreground-body capitalize">{venture.ventureProfile?.stage || venture.stage || 'STARTUP'}</p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-foreground-muted">Region</label>
-                  <p className="text-foreground-body">{venture.residency || venture.region || 'Not specified'}</p>
+                  <p className="text-foreground-body">{venture.region || venture.residency || 'US'}</p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-foreground-muted">Team Size</label>
-                  <p className="text-foreground-body">{venture.ventureProfile?.teamSize || venture.teamSize || 'Not specified'}</p>
+                  <p className="text-foreground-body">{venture.ventureProfile?.teamSize || venture.teamSize || '12'}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-foreground-muted">Funding Round</label>
+                  <p className="text-foreground-body">{venture.ventureProfile?.fundingRound || 'PRE_SEED'}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-foreground-muted">Equity Framework</label>
+                  <p className="text-foreground-body">
+                    Owner: {venture.equityFramework?.ownerPercent}% | 
+                    Alice: {venture.equityFramework?.alicePercent}% | 
+                    Contributors: {venture.equityFramework?.cepPercent}%
+                  </p>
                 </div>
               </div>
             </motion.div>
@@ -358,6 +367,33 @@ export default function VentureDetailPage() {
                 Team & Roles
               </h2>
               <div className="space-y-3">
+                {/* Current Team Info */}
+                <div className="p-3 bg-glass-surface rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium text-foreground">Current Team Size</p>
+                      <p className="text-sm text-foreground-muted">{venture.ventureProfile?.teamSize || 12} members</p>
+                    </div>
+                    <span className="px-2 py-1 bg-success/10 text-success text-xs rounded-full">
+                      Active
+                    </span>
+                  </div>
+                </div>
+
+                {/* Owner Info */}
+                <div className="p-3 bg-glass-surface rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium text-foreground">Venture Owner</p>
+                      <p className="text-sm text-foreground-muted">{venture.owner?.name || 'Demo Owner'}</p>
+                    </div>
+                    <span className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full">
+                      {venture.equityFramework?.ownerPercent || 35}% Equity
+                    </span>
+                  </div>
+                </div>
+
+                {/* Looking for roles */}
                 {venture.lookingFor && venture.lookingFor.length > 0 ? (
                   venture.lookingFor.map((role, index) => (
                     <div key={index} className="flex items-center justify-between p-3 bg-glass-surface rounded-lg">
@@ -365,13 +401,23 @@ export default function VentureDetailPage() {
                         <p className="font-medium text-foreground">{role}</p>
                         <p className="text-sm text-foreground-muted">Looking for this role</p>
                       </div>
-                      <span className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full">
+                      <span className="px-2 py-1 bg-warning/10 text-warning text-xs rounded-full">
                         Open
                       </span>
                     </div>
                   ))
                 ) : (
-                  <p className="text-foreground-muted">No specific roles defined yet.</p>
+                  <div className="p-3 bg-glass-surface rounded-lg">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-medium text-foreground">Contributor Pool</p>
+                        <p className="text-sm text-foreground-muted">Open for contributors</p>
+                      </div>
+                      <span className="px-2 py-1 bg-accent/10 text-accent text-xs rounded-full">
+                        {venture.equityFramework?.cepPercent || 45}% Available
+                      </span>
+                    </div>
+                  </div>
                 )}
               </div>
             </motion.div>
@@ -392,10 +438,13 @@ export default function VentureDetailPage() {
                 </div>
                 <div>
                   <p className="font-medium text-foreground">
-                    {venture.owner?.name || 'Unknown Owner'}
+                    {venture.owner?.name || 'Demo Owner'}
                   </p>
                   <p className="text-sm text-foreground-muted">
-                    {venture.owner?.email || 'No email provided'}
+                    {venture.owner?.email || 'owner@demo.local'}
+                  </p>
+                  <p className="text-xs text-foreground-muted">
+                    Level: {venture.owner?.level || 'WISE_OWL'} | XP: {venture.owner?.xp || 250}
                   </p>
                 </div>
               </div>
