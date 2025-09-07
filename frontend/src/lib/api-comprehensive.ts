@@ -653,10 +653,10 @@ class ComprehensiveApiService {
         method: 'POST',
         body: JSON.stringify(userData)
       })
-      return { success: true, data: response.data?.data || null }
+      return { success: true, data: response.data?.data || undefined }
     } catch (error) {
       console.error('Error registering user:', error)
-      return { success: false, data: null, error: 'Failed to register user' }
+      return { success: false, data: undefined, error: 'Failed to register user' }
     }
   }
 
