@@ -33,7 +33,7 @@ router.get('/health', async(req, res) => {
 });
 
 // Create new venture
-router.post('/create', async(req, res) => {
+router.post('/create', authenticateToken, async(req, res) => {
     try {
         const ventureData = req.body;
 
@@ -81,7 +81,7 @@ router.post('/create', async(req, res) => {
 });
 
 // Get venture details
-router.get('/:ventureId', async(req, res) => {
+router.get('/:ventureId', authenticateToken, async(req, res) => {
     try {
         const { ventureId } = req.params;
         
@@ -217,7 +217,7 @@ router.get('/statistics/overview', async(req, res) => {
 });
 
 // List all ventures
-router.get('/list/all', async(req, res) => {
+router.get('/list/all', authenticateToken, async(req, res) => {
     try {
         const { page = 1, limit = 10, status } = req.query;
         const offset = (page - 1) * limit;
@@ -350,7 +350,7 @@ router.put('/:ventureId/profile', async(req, res) => {
 });
 
 // Update venture details
-router.put('/:ventureId', async(req, res) => {
+router.put('/:ventureId', authenticateToken, async(req, res) => {
     try {
         const { ventureId } = req.params;
         const ventureData = req.body;
@@ -446,7 +446,7 @@ router.put('/:ventureId', async(req, res) => {
 });
 
 // Delete venture
-router.delete('/:ventureId', async(req, res) => {
+router.delete('/:ventureId', authenticateToken, async(req, res) => {
     try {
         const { ventureId } = req.params;
 
