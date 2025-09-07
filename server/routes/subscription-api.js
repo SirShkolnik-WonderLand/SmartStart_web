@@ -37,7 +37,7 @@ router.get('/status/:userId', async(req, res) => {
                 }
             },
             include: {
-                plan: true
+                billingPlan: true
             },
             orderBy: {
                 createdAt: 'desc'

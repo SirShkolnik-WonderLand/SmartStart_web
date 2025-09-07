@@ -38,6 +38,12 @@ export default function LoginPage() {
     }
   }
 
+  const handleClearCache = () => {
+    localStorage.clear()
+    setError('')
+    alert('Cache cleared! Please login again.')
+  }
+
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md">
@@ -119,10 +125,17 @@ export default function LoginPage() {
               <p className="text-xs text-muted-foreground">
                 Test credentials:
               </p>
-              <div className="text-xs space-y-1">
-                <p><strong>Test User:</strong> test@example.com / password123</p>
-                <p className="text-muted-foreground">Real user with real ventures in database</p>
-              </div>
+        <div className="text-xs space-y-1">
+          <p><strong>Test User:</strong> test@example.com / password123</p>
+          <p className="text-muted-foreground">Real user with real ventures in database</p>
+          <button
+            type="button"
+            onClick={handleClearCache}
+            className="text-xs text-red-500 hover:text-red-700 underline"
+          >
+            Clear Cache (if having issues)
+          </button>
+        </div>
             </div>
           </div>
         </div>
