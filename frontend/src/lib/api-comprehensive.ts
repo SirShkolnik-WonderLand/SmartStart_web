@@ -234,6 +234,164 @@ export interface LegalPack {
   documents: LegalDocument[]
 }
 
+// ============================================================================
+// JOURNEY & ONBOARDING INTERFACES
+// ============================================================================
+
+export interface JourneyStage {
+  id: string
+  name: string
+  description: string
+  order: number
+  isActive: boolean
+  createdAt: string
+  updatedAt: string
+  gates: JourneyGate[]
+}
+
+export interface JourneyGate {
+  id: string
+  stageId: string
+  name: string
+  description: string
+  gateType: 'VERIFICATION' | 'LEGAL_PACK' | 'PROFILE' | 'SUBSCRIPTION' | 'PAYMENT' | 'DOCUMENT' | 'LAUNCH' | 'VENTURE' | 'TEAM' | 'PROJECT'
+  isRequired: boolean
+  isActive: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+export interface UserJourneyState {
+  id: string
+  userId: string
+  stageId: string
+  status: 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED' | 'BLOCKED' | 'SKIPPED'
+  startedAt?: string
+  completedAt?: string
+  metadata?: Record<string, unknown>
+  createdAt: string
+  updatedAt: string
+  stage: JourneyStage
+}
+
+export interface JourneyProgress {
+  totalStages: number
+  completedStages: number
+  percentage: number
+  stages: Array<{
+    name: string
+    status: string
+    order: number
+  }>
+}
+
+export interface JourneyStatus {
+  userId: string
+  progress: JourneyProgress
+  currentStage: JourneyStage | null
+  nextStage: JourneyStage | null
+  isComplete: boolean
+  userStates: UserJourneyState[]
+  stages: JourneyStage[]
+  recommendations: OnboardingRecommendation[]
+  timestamp: string
+}
+
+export interface JourneyInitialization {
+  message: string
+  currentStage: string
+  progress: number
+}
+
+export interface JourneyProgressUpdate {
+  message: string
+  progress: JourneyProgress
+  action: string
+}
+
+export interface OnboardingRecommendation {
+  type: string
+  title: string
+  description: string
+  action: string
+  priority: 'low' | 'medium' | 'high'
+}
+
+export interface OnboardingRecommendations {
+  recommendations: OnboardingRecommendation[]
+  currentProgress: JourneyProgress
+}
+
+// ============================================================================
+// SUBSCRIPTION & BILLING INTERFACES
+// ============================================================================
+
+export interface SubscriptionPlan {
+  id: string
+  name: string
+  description: string
+  price: number
+  currency: string
+  interval: 'MONTHLY' | 'QUARTERLY' | 'YEARLY' | 'LIFETIME'
+  features: string[]
+  isActive: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+export interface UserSubscription {
+  id: string
+  userId: string
+  planId: string
+  status: 'ACTIVE' | 'INACTIVE' | 'CANCELLED' | 'EXPIRED' | 'SUSPENDED'
+  startDate: string
+  endDate?: string
+  autoRenew: boolean
+  createdAt: string
+  updatedAt: string
+  plan: SubscriptionPlan
+  invoices: Invoice[]
+}
+
+export interface Invoice {
+  id: string
+  userId: string
+  subscriptionId?: string
+  amount: number
+  currency: string
+  status: 'DRAFT' | 'PENDING' | 'PAID' | 'OVERDUE' | 'CANCELLED' | 'REFUNDED'
+  dueDate: string
+  paidDate?: string
+  createdAt: string
+  updatedAt: string
+  subscription?: UserSubscription
+  payments: Payment[]
+}
+
+export interface Payment {
+  id: string
+  userId: string
+  invoiceId: string
+  amount: number
+  currency: string
+  method: 'CREDIT_CARD' | 'BANK_TRANSFER' | 'PAYPAL' | 'CRYPTO'
+  status: 'PENDING' | 'COMPLETED' | 'FAILED' | 'REFUNDED'
+  transactionId?: string
+  metadata?: Record<string, unknown>
+  createdAt: string
+  updatedAt: string
+}
+
+export interface SubscriptionCreation {
+  subscription: UserSubscription
+  invoice: Invoice
+  payment: Payment
+}
+
+export interface SubscriptionCancellation {
+  subscription: UserSubscription
+}
+
 export interface LegalDocument {
   id: string
   title: string
@@ -282,21 +440,6 @@ export interface Subscription {
   features: string[]
 }
 
-export interface Invoice {
-  id: string
-  userId: string
-  subscriptionId: string
-  amount: number
-  currency: string
-  status: 'pending' | 'paid' | 'overdue' | 'cancelled'
-  dueDate: string
-  paidAt?: string
-  items: Array<{
-    description: string
-    amount: number
-    quantity: number
-  }>
-}
 
 // ============================================================================
 // ANALYTICS & REPORTING (30+ endpoints)
@@ -864,40 +1007,6 @@ class ComprehensiveApiService {
   // JOURNEY & ONBOARDING
   // ============================================================================
 
-  async getJourneyStatus(userId: string): Promise<ApiResponse<{
-    completedSteps: string[]
-    currentStep: string
-    progress: number
-    stages: Array<{
-      id: string
-      name: string
-      completed: boolean
-      order: number
-    }>
-  }>> {
-    try {
-      const response = await this.fetchWithAuth<{
-        completedSteps: string[]
-        currentStep: string
-        progress: number
-        stages: Array<{
-          id: string
-          name: string
-          completed: boolean
-          order: number
-        }>
-      }>(`/api/journey/status/${userId}`)
-      
-      return {
-        success: response.success,
-        data: response.data,
-        error: response.error
-      }
-    } catch (error) {
-      console.error('Error fetching journey status:', error)
-      return { success: false, error: 'Failed to fetch journey status' }
-    }
-  }
 
   async getLegalPackStatus(userId: string): Promise<ApiResponse<{
     signed: boolean
@@ -1017,48 +1126,48 @@ class ComprehensiveApiService {
   // JOURNEY & ONBOARDING
   // ============================================================================
 
-  async getJourneyStatus(userId: string): Promise<ApiResponse<any>> {
+  async getJourneyStatus(userId: string): Promise<ApiResponse<JourneyStatus>> {
     try {
-      const response = await this.fetchWithAuth<any>(`/api/journey/status/${userId}`)
-      return { success: true, data: response.data }
+      const response = await this.fetchWithAuth<{ data: JourneyStatus }>(`/api/journey/status/${userId}`)
+      return { success: true, data: response.data?.data || undefined }
     } catch (error) {
       console.error('Error fetching journey status:', error)
-      return { success: false, data: null, error: 'Failed to fetch journey status' }
+      return { success: false, data: undefined, error: 'Failed to fetch journey status' }
     }
   }
 
-  async initializeJourney(userId: string): Promise<ApiResponse<any>> {
+  async initializeJourney(userId: string): Promise<ApiResponse<JourneyInitialization>> {
     try {
-      const response = await this.fetchWithAuth<any>(`/api/journey/initialize/${userId}`, {
+      const response = await this.fetchWithAuth<{ data: JourneyInitialization }>(`/api/journey/initialize/${userId}`, {
         method: 'POST'
       })
-      return { success: true, data: response.data }
+      return { success: true, data: response.data?.data || undefined }
     } catch (error) {
       console.error('Error initializing journey:', error)
-      return { success: false, data: null, error: 'Failed to initialize journey' }
+      return { success: false, data: undefined, error: 'Failed to initialize journey' }
     }
   }
 
-  async updateJourneyProgress(userId: string, action: string, data: any = {}): Promise<ApiResponse<any>> {
+  async updateJourneyProgress(userId: string, action: string, data: Record<string, unknown> = {}): Promise<ApiResponse<JourneyProgressUpdate>> {
     try {
-      const response = await this.fetchWithAuth<any>(`/api/journey/progress/${userId}`, {
+      const response = await this.fetchWithAuth<{ data: JourneyProgressUpdate }>(`/api/journey/progress/${userId}`, {
         method: 'POST',
         body: JSON.stringify({ action, data })
       })
-      return { success: true, data: response.data }
+      return { success: true, data: response.data?.data || undefined }
     } catch (error) {
       console.error('Error updating journey progress:', error)
-      return { success: false, data: null, error: 'Failed to update journey progress' }
+      return { success: false, data: undefined, error: 'Failed to update journey progress' }
     }
   }
 
-  async getOnboardingRecommendations(userId: string): Promise<ApiResponse<any>> {
+  async getOnboardingRecommendations(userId: string): Promise<ApiResponse<OnboardingRecommendations>> {
     try {
-      const response = await this.fetchWithAuth<any>(`/api/journey/recommendations/${userId}`)
-      return { success: true, data: response.data }
+      const response = await this.fetchWithAuth<{ data: OnboardingRecommendations }>(`/api/journey/recommendations/${userId}`)
+      return { success: true, data: response.data?.data || undefined }
     } catch (error) {
       console.error('Error fetching onboarding recommendations:', error)
-      return { success: false, data: null, error: 'Failed to fetch onboarding recommendations' }
+      return { success: false, data: undefined, error: 'Failed to fetch onboarding recommendations' }
     }
   }
 
@@ -1066,48 +1175,48 @@ class ComprehensiveApiService {
   // SUBSCRIPTIONS & BILLING
   // ============================================================================
 
-  async getSubscriptionPlans(): Promise<ApiResponse<any[]>> {
+  async getSubscriptionPlans(): Promise<ApiResponse<SubscriptionPlan[]>> {
     try {
-      const response = await this.fetchWithAuth<{ data: any[] }>('/api/subscription/plans')
-      return { success: true, data: response.data || [] }
+      const response = await this.fetchWithAuth<{ data: SubscriptionPlan[] }>('/api/subscriptions/plans')
+      return { success: true, data: response.data?.data || [] }
     } catch (error) {
       console.error('Error fetching subscription plans:', error)
       return { success: false, data: [], error: 'Failed to fetch subscription plans' }
     }
   }
 
-  async getUserSubscriptions(userId: string): Promise<ApiResponse<any[]>> {
+  async getUserSubscriptions(userId: string): Promise<ApiResponse<UserSubscription[]>> {
     try {
-      const response = await this.fetchWithAuth<{ data: any[] }>(`/api/subscription/user/${userId}`)
-      return { success: true, data: response.data || [] }
+      const response = await this.fetchWithAuth<{ data: UserSubscription[] }>(`/api/subscriptions/user/${userId}`)
+      return { success: true, data: response.data?.data || [] }
     } catch (error) {
       console.error('Error fetching user subscriptions:', error)
       return { success: false, data: [], error: 'Failed to fetch user subscriptions' }
     }
   }
 
-  async createSubscription(planId: string, paymentMethod: string, paymentData: any = {}): Promise<ApiResponse<any>> {
+  async createSubscription(planId: string, paymentMethod: string, paymentData: Record<string, unknown> = {}): Promise<ApiResponse<SubscriptionCreation>> {
     try {
-      const response = await this.fetchWithAuth<any>('/api/subscription/subscribe', {
+      const response = await this.fetchWithAuth<{ data: SubscriptionCreation }>('/api/subscriptions/subscribe', {
         method: 'POST',
         body: JSON.stringify({ planId, paymentMethod, paymentData })
       })
-      return { success: true, data: response.data }
+      return { success: true, data: response.data?.data || undefined }
     } catch (error) {
       console.error('Error creating subscription:', error)
-      return { success: false, data: null, error: 'Failed to create subscription' }
+      return { success: false, data: undefined, error: 'Failed to create subscription' }
     }
   }
 
-  async cancelSubscription(subscriptionId: string): Promise<ApiResponse<any>> {
+  async cancelSubscription(subscriptionId: string): Promise<ApiResponse<SubscriptionCancellation>> {
     try {
-      const response = await this.fetchWithAuth<any>(`/api/subscription/cancel/${subscriptionId}`, {
+      const response = await this.fetchWithAuth<{ data: SubscriptionCancellation }>(`/api/subscriptions/cancel/${subscriptionId}`, {
         method: 'POST'
       })
-      return { success: true, data: response.data }
+      return { success: true, data: response.data?.data || undefined }
     } catch (error) {
       console.error('Error cancelling subscription:', error)
-      return { success: false, data: null, error: 'Failed to cancel subscription' }
+      return { success: false, data: undefined, error: 'Failed to cancel subscription' }
     }
   }
 
