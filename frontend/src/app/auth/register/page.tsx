@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { comprehensiveApiService as apiService } from '@/lib/api-comprehensive'
-import { Loader2, AlertCircle, CheckCircle } from 'lucide-react'
+import { Loader2, AlertCircle, CheckCircle, Sparkles } from 'lucide-react'
 
 export default function RegisterPage() {
   const router = useRouter()
