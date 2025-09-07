@@ -319,6 +319,8 @@ class VentureManagementService {
                         }
                     },
                     equityFramework: true,
+                    ventureProfile: true,
+                    ventureITPack: true,
                     legalDocuments: {
                         include: {
                             signatures: true

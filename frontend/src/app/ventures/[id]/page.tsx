@@ -33,6 +33,14 @@ export default function VentureDetailPage() {
       try {
         setIsLoading(true)
         
+        // Check if user is authenticated first
+        const token = localStorage.getItem('auth-token')
+        if (!token) {
+          setError('Authentication required. Please login first.')
+          router.push('/auth/login')
+          return
+        }
+        
         // Load venture and current user in parallel
         const [ventureResponse, userResponse] = await Promise.all([
           apiService.getVenture(ventureId),
@@ -47,10 +55,18 @@ export default function VentureDetailPage() {
         
         if (userResponse.success && userResponse.data) {
           setCurrentUser(userResponse.data)
+        } else {
+          // If user authentication fails, redirect to login
+          setError('Authentication failed. Please login again.')
+          router.push('/auth/login')
         }
       } catch (err) {
         setError('Failed to load data')
         console.error('Error loading data:', err)
+        // If it's an auth error, redirect to login
+        if (err instanceof Error && err.message.includes('Authentication')) {
+          router.push('/auth/login')
+        }
       } finally {
         setIsLoading(false)
       }
@@ -59,7 +75,7 @@ export default function VentureDetailPage() {
     if (ventureId) {
       loadData()
     }
-  }, [ventureId])
+  }, [ventureId, router])
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -269,23 +285,6 @@ export default function VentureDetailPage() {
                 </div>
               )}
               
-              {/* Always show buttons for testing - remove this later */}
-              <div className="flex items-center gap-3 mt-2">
-                <Link 
-                  href={`/ventures/${venture.id}/edit`}
-                  className="wonder-button-secondary flex items-center gap-2"
-                >
-                  <Edit3 className="w-4 h-4" />
-                  Edit Venture (Always Visible)
-                </Link>
-                <button
-                  onClick={() => setShowDeleteConfirm(true)}
-                  className="bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
-                >
-                  <Trash2 className="w-4 h-4" />
-                  Delete (Always Visible)
-                </button>
-              </div>
             </div>
             <div className="flex items-center gap-4">
               <span className={`px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(venture.status)}`}>
