@@ -606,7 +606,13 @@ DOC HASH (sha256): [TO_BE_COMPUTED]
 
             // Check if all signatures are complete
             const currentState = this.stateMachineService.getDocumentState(documentId);
-            if (currentState ? .context ? .completedSignatures ? .length >= currentState ? .context ? .requiredSignatures ? .length) {
+            const completedCount = currentState && currentState.context && Array.isArray(currentState.context.completedSignatures)
+                ? currentState.context.completedSignatures.length
+                : 0;
+            const requiredCount = currentState && currentState.context && Array.isArray(currentState.context.requiredSignatures)
+                ? currentState.context.requiredSignatures.length
+                : 0;
+            if (requiredCount > 0 && completedCount >= requiredCount) {
                 await this.stateMachineService.sendDocumentEvent(documentId, {
                     type: 'ALL_SIGNATURES_COMPLETE',
                     metadata: { timestamp: new Date().toISOString() }
