@@ -370,7 +370,7 @@ router.put('/:ventureId', authenticateToken, requirePermission('venture:write'),
         }
 
         // Check ownership (unless user is admin)
-        if (existingVenture.ownerUserId !== userId && !req.user.permissions ? .includes('venture:admin')) {
+        if (existingVenture.ownerUserId !== userId && !req.user.permissions?.includes('venture:admin')) {
             return res.status(403).json({
                 success: false,
                 message: 'Access denied: You can only update your own ventures'
@@ -483,7 +483,7 @@ router.delete('/:ventureId', authenticateToken, requirePermission('venture:delet
         }
 
         // Check ownership (unless user is admin)
-        if (existingVenture.ownerUserId !== userId && !req.user.permissions ? .includes('venture:admin')) {
+        if (existingVenture.ownerUserId !== userId && !req.user.permissions?.includes('venture:admin')) {
             return res.status(403).json({
                 success: false,
                 message: 'Access denied: You can only delete your own ventures'
