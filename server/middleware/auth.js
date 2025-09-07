@@ -29,7 +29,6 @@ function authenticateToken(req, res, next) {
                 xp: true,
                 reputation: true,
                 status: true,
-                permissions: true,
                 lastActive: true
             }
         }).then(async user => {
@@ -65,7 +64,7 @@ function authenticateToken(req, res, next) {
             // Add user to request object
             req.user = {
                 ...user,
-                permissions: user.permissions || []
+                permissions: [] // User model doesn't have permissions field, use empty array
             };
             next();
         }).catch(error => {
