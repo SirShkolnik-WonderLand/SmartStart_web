@@ -182,6 +182,10 @@ app.use('/api/billing', billingApiRoutes);
 const legalPackApiRoutes = require('./routes/legal-pack-api');
 app.use('/api/legal-pack', legalPackApiRoutes);
 
+// Mount Legal Framework APIs
+const legalFrameworkApiRoutes = require('./routes/legal-framework-api');
+app.use('/api/legal', legalFrameworkApiRoutes);
+
 // Mount User Journey State Management APIs
 const journeyApiRoutes = require('./routes/journey-api');
 app.use('/api/journey', journeyApiRoutes);

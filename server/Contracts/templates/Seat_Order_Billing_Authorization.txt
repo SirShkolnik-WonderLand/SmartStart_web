@@ -1,0 +1,116 @@
+SEAT ORDER & BILLING AUTHORIZATION (SOBA)
+
+This Seat Order and Billing Authorization ("SOBA") authorizes the provisioning of seats and establishes billing terms for the SmartStart platform.
+
+PARTIES:
+- Subscriber: {{subscriberName}}
+- Domain: {{projectDomain}}
+- Seats: {{seatsCount}}
+- Effective Date: {{effectiveDate}}
+- Billing Email: {{billingEmail}}
+
+1. SEAT PROVISIONING
+1.1 Seat Details
+- Number of Seats: {{seatsCount}}
+- Base Fee per Seat: $100.00 CAD per month
+- Domain: {{projectDomain}}
+- Activation Date: {{effectiveDate}}
+
+1.2 Seat Roster
+{{#each seats}}
+Seat {{@index}}: {{full_name}} ({{work_email}})
+- Role: {{role}}
+- Intune Ready: {{intune_ready}}
+- Start Date: {{start_date}}
+{{/each}}
+
+2. BILLING TERMS
+2.1 Pricing Structure
+- Base Seat Fee: $100.00 CAD per seat per month
+- Subtotal: ${{seats_subtotal_cents/100}} CAD
+- First Cycle Total: ${{first_cycle_total_cents/100}} CAD
+- Next Cycles Total: ${{next_cycles_total_cents/100}} CAD
+
+2.2 Proration
+{{#if proration_choice}}
+- Proration Applied: Yes
+- Prorated Amount: ${{first_cycle_total_cents/100}} CAD
+{{else}}
+- Proration Applied: No
+{{/if}}
+
+2.3 Tax Information
+- Tax Rate: {{tax_rate*100}}%
+- Total with Tax: ${{totals_with_tax/100}} CAD
+
+3. PAYMENT TERMS
+3.1 Payment Method
+- Payment Token: {{payment_token_ref}}
+- Billing Address: {{billing_address}}
+- Billing Email: {{billing_email}}
+
+3.2 Billing Cycle
+- Monthly billing cycle
+- Auto-renewal enabled
+- Non-refundable for current cycle (B2B)
+
+4. SECURITY REQUIREMENTS
+4.1 Mandatory Security Controls
+- MFA required for all seats
+- Intune device enrollment required
+- Microsoft Defender required
+- Device encryption mandatory
+
+4.2 Compliance
+- Accept security baseline requirements
+- Accept PTSA/PPA/NDA/DPA terms
+- Accept non-refundable billing terms
+
+5. SEAT MANAGEMENT
+5.1 Seat Modifications
+- Add/remove seats with 30 days notice
+- Proration for mid-cycle changes
+- Updated SOBA required for changes
+
+5.2 Seat Responsibilities
+- Each seat holder must sign security acknowledgment
+- Individual compliance with platform terms
+- No credential sharing between seats
+
+6. TERMINATION
+6.1 Termination Rights
+- Either party may terminate with 30 days notice
+- Immediate termination for security breaches
+- Data export available upon termination
+
+6.2 Effect of Termination
+- Seat access ceases on termination date
+- Final billing for partial month
+- Data retention per privacy policy
+
+7. LIABILITY
+7.1 Service Availability
+- Platform provided "as is"
+- No warranty of uninterrupted service
+- Limitation of damages to monthly fees
+
+7.2 Indemnification
+- Subscriber indemnifies Company for seat holder actions
+- Compliance with applicable laws
+- Security incident response cooperation
+
+8. GOVERNING LAW
+This SOBA is governed by the laws of Ontario, Canada. Any disputes shall be resolved in the courts of Toronto, Ontario.
+
+9. ENTIRE AGREEMENT
+This SOBA, together with the PTSA, PPA, and related agreements, constitutes the entire agreement between the parties.
+
+By signing below, both parties acknowledge their understanding and agreement to these terms.
+
+Subscriber Signature: _________________________ Date: _________
+
+Company Representative: _________________ Date: _________
+
+---
+This document is electronically signed and legally binding under Ontario's Electronic Commerce Act.
+DOC HASH (sha256): [TO_BE_COMPUTED]

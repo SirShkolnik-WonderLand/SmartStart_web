@@ -3,9 +3,11 @@
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { comprehensiveApiService as apiService, Venture, User } from '@/lib/api-comprehensive'
-import { ArrowLeft, Building2, Users, Calendar, TrendingUp, Briefcase, CheckCircle, Clock, AlertCircle, Edit3, Trash2 } from 'lucide-react'
+import { ArrowLeft, Building2, Users, Calendar, TrendingUp, Briefcase, CheckCircle, Clock, AlertCircle, Edit3, Trash2, FileText } from 'lucide-react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
+import { useActionPermission } from '@/hooks/useLegalFramework'
+import DocumentSigningModal from '@/components/legal/DocumentSigningModal'
 
 export default function VentureDetailPage() {
   const params = useParams()
@@ -17,8 +19,14 @@ export default function VentureDetailPage() {
   const [isCreatingMeeting, setIsCreatingMeeting] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [showSigningModal, setShowSigningModal] = useState(false)
+  const [pendingAction, setPendingAction] = useState<string | null>(null)
 
   const ventureId = params.id as string
+
+  // Legal framework integration
+  const editPermission = useActionPermission('CREATE_VENTURE', { ventureId })
+  const deletePermission = useActionPermission('CREATE_VENTURE', { ventureId })
 
   useEffect(() => {
     const loadData = async () => {
@@ -142,6 +150,45 @@ export default function VentureDetailPage() {
     }
   }
 
+  const handleEditVenture = () => {
+    if (editPermission.canPerformAction('CREATE_VENTURE', { ventureId })) {
+      router.push(`/ventures/${ventureId}/edit`)
+    } else {
+      setPendingAction('CREATE_VENTURE')
+      setShowSigningModal(true)
+    }
+  }
+
+  const handleDeleteVentureClick = () => {
+    if (deletePermission.canPerformAction('CREATE_VENTURE', { ventureId })) {
+      setShowDeleteConfirm(true)
+    } else {
+      setPendingAction('CREATE_VENTURE')
+      setShowSigningModal(true)
+    }
+  }
+
+  const handleSigningSuccess = (signedDocuments: string[]) => {
+    console.log('Documents signed successfully:', signedDocuments)
+    setShowSigningModal(false)
+    setPendingAction(null)
+    
+    // Retry the original action
+    if (pendingAction === 'CREATE_VENTURE') {
+      // Check if it was edit or delete based on context
+      if (window.location.pathname.includes('/edit')) {
+        router.push(`/ventures/${ventureId}/edit`)
+      } else {
+        setShowDeleteConfirm(true)
+      }
+    }
+  }
+
+  const handleSigningError = (errors: string[]) => {
+    console.error('Document signing errors:', errors)
+    alert('Failed to sign required documents. Please try again.')
+  }
+
   if (isLoading) {
     return (
       <div className="min-h-screen wonderland-bg flex items-center justify-center">
@@ -205,15 +252,15 @@ export default function VentureDetailPage() {
               
               {isOwner && (
                 <div className="flex items-center gap-3">
-                  <Link 
-                    href={`/ventures/${venture.id}/edit`}
+                  <button
+                    onClick={handleEditVenture}
                     className="wonder-button-secondary flex items-center gap-2"
                   >
                     <Edit3 className="w-4 h-4" />
                     Edit Venture
-                  </Link>
+                  </button>
                   <button
-                    onClick={() => setShowDeleteConfirm(true)}
+                    onClick={handleDeleteVentureClick}
                     className="bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -451,6 +498,19 @@ export default function VentureDetailPage() {
           </div>
         </div>
       )}
+
+      {/* Document Signing Modal */}
+      <DocumentSigningModal
+        isOpen={showSigningModal}
+        onClose={() => {
+          setShowSigningModal(false)
+          setPendingAction(null)
+        }}
+        action={pendingAction || ''}
+        context={{ ventureId, ventureName: venture?.name }}
+        onSuccess={handleSigningSuccess}
+        onError={handleSigningError}
+      />
     </div>
   )
 }
