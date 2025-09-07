@@ -49,7 +49,7 @@ export default function DocumentsPage() {
               type: contract.type,
               description: `${contract.type} - ${contract.status}`,
               required: true, // Default to required for existing contracts
-              status: contract.status.toLowerCase(),
+              status: contract.status === 'draft' ? 'pending' : contract.status as 'pending' | 'signed' | 'expired',
               content: contract.content || 'No content available',
               createdAt: contract.signedAt || new Date().toISOString(), // Use signedAt or current date
               version: '1.0', // Default version for existing contracts
