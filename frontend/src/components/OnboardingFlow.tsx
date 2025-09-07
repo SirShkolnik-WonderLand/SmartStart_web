@@ -109,13 +109,17 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
             name: 'All Features Pack',
             description: 'Complete access to all SmartStart features',
             price: 29,
+            currency: 'USD',
             interval: 'MONTHLY',
             features: [
               'Unlimited ventures',
               'Team collaboration',
               'Advanced analytics',
               'Priority support'
-            ]
+            ],
+            isActive: true,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
           }
         ])
         setSelectedPlan('all-features')
