@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { comprehensiveApiService as apiService, Venture, User } from '@/lib/api-comprehensive'
-import { ArrowLeft, Building2, Users, Calendar, TrendingUp, Briefcase, CheckCircle, Clock, AlertCircle, Edit3, Trash2, FileText } from 'lucide-react'
+import { ArrowLeft, Building2, Users, Calendar, TrendingUp, Briefcase, CheckCircle, Clock, AlertCircle, Edit3, Trash2 } from 'lucide-react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { useActionPermission } from '@/hooks/useLegalFramework'

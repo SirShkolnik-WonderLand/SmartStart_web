@@ -8,7 +8,7 @@ import { legalFrameworkService, ActionPermission, DocumentCompliance } from '@/l
 
 interface UseLegalFrameworkOptions {
   action?: string
-  context?: Record<string, any>
+  context?: Record<string, unknown>
   autoCheck?: boolean
 }
 
@@ -20,9 +20,9 @@ interface UseLegalFrameworkReturn {
   compliance: DocumentCompliance | null
   
   // Actions
-  checkPermission: (action: string, context?: Record<string, any>) => Promise<ActionPermission>
+  checkPermission: (action: string, context?: Record<string, unknown>) => Promise<ActionPermission>
   checkCompliance: (userId: string, rbacLevel: string) => Promise<DocumentCompliance>
-  canPerformAction: (action: string, context?: Record<string, any>) => boolean
+  canPerformAction: (action: string, context?: Record<string, unknown>) => boolean
   
   // Utilities
   getRequiredDocuments: (action: string) => string[]
@@ -38,7 +38,7 @@ export function useLegalFramework(options: UseLegalFrameworkOptions = {}): UseLe
   const [permission, setPermission] = useState<ActionPermission | null>(null)
   const [compliance, setCompliance] = useState<DocumentCompliance | null>(null)
 
-  const checkPermission = useCallback(async (actionToCheck: string, contextToCheck?: Record<string, any>): Promise<ActionPermission> => {
+  const checkPermission = useCallback(async (actionToCheck: string, contextToCheck?: Record<string, unknown>): Promise<ActionPermission> => {
     setIsLoading(true)
     setError(null)
     
@@ -72,7 +72,7 @@ export function useLegalFramework(options: UseLegalFrameworkOptions = {}): UseLe
     }
   }, [])
 
-  const canPerformAction = useCallback((actionToCheck: string, contextToCheck?: Record<string, any>): boolean => {
+  const canPerformAction = useCallback((actionToCheck: string, contextToCheck?: Record<string, unknown>): boolean => {
     if (!permission || permission.requiredDocuments.length === 0) {
       return false
     }
@@ -135,7 +135,7 @@ export function useLegalFramework(options: UseLegalFrameworkOptions = {}): UseLe
 /**
  * Hook for checking specific action permissions
  */
-export function useActionPermission(action: string, context?: Record<string, any>) {
+export function useActionPermission(action: string, context?: Record<string, unknown>) {
   return useLegalFramework({ action, context, autoCheck: true })
 }
 
@@ -189,7 +189,7 @@ export function useDocumentSigning() {
   const [error, setError] = useState<string | null>(null)
   const [signedDocuments, setSignedDocuments] = useState<string[]>([])
 
-  const signDocuments = useCallback(async (action: string, context?: Record<string, any>) => {
+  const signDocuments = useCallback(async (action: string, context?: Record<string, unknown>) => {
     setIsSigning(true)
     setError(null)
     setSignedDocuments([])
@@ -227,7 +227,13 @@ export function useDocumentSigning() {
 export function useSecurityTier(tier: string) {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [requirements, setRequirements] = useState<any>(null)
+  const [requirements, setRequirements] = useState<{
+    tier: string
+    name: string
+    description: string
+    documents: string[]
+    securityControls: string[]
+  } | null>(null)
 
   const loadRequirements = useCallback(async () => {
     setIsLoading(true)

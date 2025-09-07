@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { FileText, CheckCircle, AlertCircle, Loader2, X, Eye, Download } from 'lucide-react'
+import { FileText, CheckCircle, AlertCircle, Loader2, X, Download } from 'lucide-react'
 import { legalFrameworkService, SignatureInfo } from '@/lib/legal-framework'
 
 interface DocumentSigningModalProps {
@@ -22,6 +22,18 @@ interface DocumentToSign {
   documentId?: string
 }
 
+interface ActionDocumentsResponse {
+  action: string
+  requiredDocuments: string[]
+  documents: Array<{
+    documentType: string
+    document: string
+    status: string
+    error?: string
+  }>
+  rbacLevel: string
+}
+
 export default function DocumentSigningModal({
   isOpen,
   onClose,
@@ -31,7 +43,7 @@ export default function DocumentSigningModal({
   onError
 }: DocumentSigningModalProps) {
   const [documents, setDocuments] = useState<DocumentToSign[]>([])
-  const [isLoading, setIsLoading] = useState(false)
+  const [, setIsLoading] = useState(false)
   const [currentStep, setCurrentStep] = useState<'loading' | 'review' | 'signing' | 'complete'>('loading')
   const [signatureInfo, setSignatureInfo] = useState<SignatureInfo>({
     signerName: '',
@@ -45,17 +57,17 @@ export default function DocumentSigningModal({
     if (isOpen) {
       loadDocuments()
     }
-  }, [isOpen, action, context])
+  }, [isOpen, action, context, loadDocuments])
 
-  const loadDocuments = async () => {
+  const loadDocuments = useCallback(async () => {
     setIsLoading(true)
     setCurrentStep('loading')
     setErrors([])
     
     try {
-      const result = await legalFrameworkService.generateActionDocuments(action, context)
+      const result: ActionDocumentsResponse = await legalFrameworkService.generateActionDocuments(action, context)
       
-      const docs: DocumentToSign[] = result.documents.map((doc: any) => ({
+      const docs: DocumentToSign[] = result.documents.map((doc) => ({
         documentType: doc.documentType,
         document: doc.document,
         status: doc.status === 'GENERATED' ? 'GENERATED' : 'ERROR',
@@ -71,7 +83,7 @@ export default function DocumentSigningModal({
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [action, context])
 
   const handleSignAll = async () => {
     setCurrentStep('signing')
@@ -275,7 +287,7 @@ export default function DocumentSigningModal({
 
                 {/* Documents List */}
                 <div className="space-y-3">
-                  {documents.map((doc, index) => (
+                  {documents.map((doc) => (
                     <div
                       key={doc.documentType}
                       className={`border rounded-lg p-4 ${getStatusColor(doc.status)}`}

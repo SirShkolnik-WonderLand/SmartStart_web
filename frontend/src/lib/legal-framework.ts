@@ -98,7 +98,7 @@ class LegalFrameworkService {
   /**
    * Get required documents for action
    */
-  async getRequiredDocuments(action: string, context: Record<string, any> = {}): Promise<{
+  async getRequiredDocuments(action: string, context: Record<string, unknown> = {}): Promise<{
     action: string
     requiredDocuments: string[]
     rbacLevel: string
@@ -113,13 +113,28 @@ class LegalFrameworkService {
   /**
    * Generate document from template
    */
-  async generateDocument(templateType: string, variables: Record<string, any> = {}): Promise<{
+  async generateDocument(templateType: string, variables: Record<string, unknown> = {}): Promise<{
     templateType: string
     document: string
-    variables: Record<string, any>
-    compliance: any
+    variables: Record<string, unknown>
+    compliance: {
+      pipeda: boolean
+      phipa: boolean
+      casl: boolean
+      valid: boolean
+    }
   }> {
-    const response = await this.makeRequest<{ success: boolean; data: any }>(
+    const response = await this.makeRequest<{ success: boolean; data: {
+      templateType: string
+      document: string
+      variables: Record<string, unknown>
+      compliance: {
+        pipeda: boolean
+        phipa: boolean
+        casl: boolean
+        valid: boolean
+      }
+    } }>(
       '/generate-document',
       {
         method: 'POST',
@@ -132,13 +147,18 @@ class LegalFrameworkService {
   /**
    * Store document and get signing info
    */
-  async storeDocument(templateType: string, document: string, variables: Record<string, any> = {}): Promise<{
+  async storeDocument(templateType: string, document: string, variables: Record<string, unknown> = {}): Promise<{
     documentId: string
     hash: string
     status: string
     filePath: string
   }> {
-    const response = await this.makeRequest<{ success: boolean; data: any }>(
+    const response = await this.makeRequest<{ success: boolean; data: {
+      documentId: string
+      hash: string
+      status: string
+      filePath: string
+    } }>(
       '/store-document',
       {
         method: 'POST',
@@ -155,9 +175,34 @@ class LegalFrameworkService {
     success: boolean
     documentId: string
     status: string
-    signatureEvidence: any
+    signatureEvidence: {
+      documentId: string
+      signerName: string
+      signerTitle?: string
+      signerEmail: string
+      ip?: string
+      userAgent?: string
+      timestamp: string
+      otpCodeLast4?: string
+      docHash: string
+    }
   }> {
-    const response = await this.makeRequest<{ success: boolean; data: any }>(
+    const response = await this.makeRequest<{ success: boolean; data: {
+      success: boolean
+      documentId: string
+      status: string
+      signatureEvidence: {
+        documentId: string
+        signerName: string
+        signerTitle?: string
+        signerEmail: string
+        ip?: string
+        userAgent?: string
+        timestamp: string
+        otpCodeLast4?: string
+        docHash: string
+      }
+    } }>(
       '/sign-document',
       {
         method: 'POST',
@@ -175,7 +220,11 @@ class LegalFrameworkService {
     status: string
     message: string
   }> {
-    const response = await this.makeRequest<{ success: boolean; data: any }>(
+    const response = await this.makeRequest<{ success: boolean; data: {
+      documentId: string
+      status: string
+      message: string
+    } }>(
       `/document-status/${documentId}`
     )
     return response.data
@@ -204,7 +253,7 @@ class LegalFrameworkService {
   /**
    * Generate multiple documents for user action
    */
-  async generateActionDocuments(action: string, context: Record<string, any> = {}): Promise<{
+  async generateActionDocuments(action: string, context: Record<string, unknown> = {}): Promise<{
     action: string
     requiredDocuments: string[]
     documents: Array<{
@@ -215,7 +264,17 @@ class LegalFrameworkService {
     }>
     rbacLevel: string
   }> {
-    const response = await this.makeRequest<{ success: boolean; data: any }>(
+    const response = await this.makeRequest<{ success: boolean; data: {
+      action: string
+      requiredDocuments: string[]
+      documents: Array<{
+        documentType: string
+        document: string
+        status: string
+        error?: string
+      }>
+      rbacLevel: string
+    } }>(
       '/generate-action-documents',
       {
         method: 'POST',
@@ -233,7 +292,11 @@ class LegalFrameworkService {
     documents: LegalDocument[]
     message: string
   }> {
-    const response = await this.makeRequest<{ success: boolean; data: any }>(
+    const response = await this.makeRequest<{ success: boolean; data: {
+      userId: string
+      documents: LegalDocument[]
+      message: string
+    } }>(
       `/user-documents/${userId}`
     )
     return response.data
@@ -242,7 +305,7 @@ class LegalFrameworkService {
   /**
    * Check if user needs to sign documents for action
    */
-  async checkActionRequirements(action: string, context: Record<string, any> = {}): Promise<{
+  async checkActionRequirements(action: string, context: Record<string, unknown> = {}): Promise<{
     needsSigning: boolean
     requiredDocuments: string[]
     missingDocuments: string[]
@@ -271,7 +334,7 @@ class LegalFrameworkService {
   /**
    * Complete document signing workflow
    */
-  async completeSigningWorkflow(action: string, context: Record<string, any> = {}): Promise<{
+  async completeSigningWorkflow(action: string, context: Record<string, unknown> = {}): Promise<{
     success: boolean
     signedDocuments: string[]
     errors: string[]
