@@ -224,4 +224,28 @@ router.get('/status/:userId', authenticateToken, async (req, res) => {
     }
 });
 
+// Test endpoint to verify the fix
+router.get('/test-fix', authenticateToken, async (req, res) => {
+    try {
+        const user = await prisma.user.findUnique({
+            where: { id: req.user.id }
+        });
+        
+        res.json({
+            success: true,
+            message: 'Fix is working!',
+            user: {
+                id: user.id,
+                email: user.email,
+                role: user.role
+            }
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
 module.exports = router;
