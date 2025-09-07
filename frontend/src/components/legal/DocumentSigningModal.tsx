@@ -9,7 +9,7 @@ interface DocumentSigningModalProps {
   isOpen: boolean
   onClose: () => void
   action: string
-  context?: Record<string, any>
+  context?: Record<string, unknown>
   onSuccess?: (signedDocuments: string[]) => void
   onError?: (errors: string[]) => void
 }

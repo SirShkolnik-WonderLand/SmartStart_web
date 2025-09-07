@@ -14,7 +14,7 @@ export interface LegalDocument {
   hash: string
   createdAt: string
   signedAt?: string
-  variables: Record<string, any>
+  variables: Record<string, unknown>
   filePath?: string
 }
 
@@ -84,7 +84,7 @@ class LegalFrameworkService {
   /**
    * Check if user can perform specific action
    */
-  async canPerformAction(action: string, context: Record<string, any> = {}): Promise<ActionPermission> {
+  async canPerformAction(action: string, context: Record<string, unknown> = {}): Promise<ActionPermission> {
     const response = await this.makeRequest<{ success: boolean; data: ActionPermission }>(
       '/can-perform-action',
       {
@@ -104,7 +104,11 @@ class LegalFrameworkService {
     rbacLevel: string
   }> {
     const contextParam = context ? `?context=${encodeURIComponent(JSON.stringify(context))}` : ''
-    const response = await this.makeRequest<{ success: boolean; data: any }>(
+    const response = await this.makeRequest<{ success: boolean; data: {
+      action: string
+      requiredDocuments: string[]
+      rbacLevel: string
+    } }>(
       `/required-documents/${action}${contextParam}`
     )
     return response.data
