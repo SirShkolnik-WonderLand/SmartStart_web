@@ -106,6 +106,17 @@ export interface Venture {
     createdAt: string
     updatedAt: string
   }
+  equityFramework?: {
+    id: string
+    ventureId: string
+    ownerPercent: number
+    alicePercent: number
+    cepPercent: number
+    vestingPolicy: string
+    status: string
+    createdAt: string
+    updatedAt: string
+  }
   createdAt: string
   updatedAt: string
   status: 'PENDING_CONTRACTS' | 'ACTIVE' | 'COMPLETED' | 'active' | 'paused' | 'completed'
