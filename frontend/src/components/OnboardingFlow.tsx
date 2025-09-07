@@ -150,7 +150,7 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
       title: 'Complete Your Profile',
       description: 'Tell us about yourself and your expertise',
       icon: <User className="w-6 h-6" />,
-      isCompleted: journeyStatus?.progress.completedStages >= 2,
+      isCompleted: (journeyStatus?.progress?.completedStages ?? 0) >= 2,
       isRequired: true,
       component: (
         <div className="space-y-6">
@@ -238,7 +238,7 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
       title: 'Legal Agreements',
       description: 'Review and sign required legal documents',
       icon: <FileText className="w-6 h-6" />,
-      isCompleted: journeyStatus?.progress.completedStages >= 3,
+      isCompleted: (journeyStatus?.progress?.completedStages ?? 0) >= 3,
       isRequired: true,
       component: (
         <div className="space-y-6">
@@ -329,7 +329,7 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
       title: 'Choose Your Plan',
       description: 'Select a subscription plan to unlock all features',
       icon: <CreditCard className="w-6 h-6" />,
-      isCompleted: journeyStatus?.progress.completedStages >= 4,
+      isCompleted: (journeyStatus?.progress?.completedStages ?? 0) >= 4,
       isRequired: true,
       component: (
         <div className="space-y-6">
@@ -426,7 +426,7 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
       title: 'Platform Orientation',
       description: 'Learn about SmartStart features and capabilities',
       icon: <GraduationCap className="w-6 h-6" />,
-      isCompleted: journeyStatus?.progress.completedStages >= 5,
+      isCompleted: (journeyStatus?.progress?.completedStages ?? 0) >= 5,
       isRequired: false,
       component: (
         <div className="space-y-6">
