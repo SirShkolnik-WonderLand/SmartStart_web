@@ -1,4 +1,4 @@
-import { comprehensiveApiService } from './api-comprehensive';
+// import { comprehensiveApiService } from './api-comprehensive';
 
 export interface LegalDocument {
     id: string;
@@ -48,7 +48,7 @@ export interface DocumentAuditLog {
     document_id: string;
     user_id: string;
     action: string;
-    details: any;
+    details: Record<string, unknown>;
     ip_address: string;
     user_agent: string;
     created_at: string;
@@ -73,7 +73,7 @@ export interface SignatureVerification {
     signature_hash: string;
     signed_at: string;
     signer: string;
-    verification_details: any;
+    verification_details: Record<string, unknown>;
 }
 
 class LegalDocumentsApiService {
@@ -163,7 +163,7 @@ class LegalDocumentsApiService {
             return await response.json();
         } catch (error) {
             console.error('Error getting document:', error);
-            return { success: false, data: null as any };
+            return { success: false, data: null as LegalDocument };
         }
     }
 
@@ -174,7 +174,7 @@ class LegalDocumentsApiService {
             method?: string;
             location?: string;
             mfa_verified?: boolean;
-            [key: string]: any;
+            [key: string]: unknown;
         }
     ): Promise<{ success: boolean; data: DocumentSignature }> {
         try {
@@ -194,7 +194,7 @@ class LegalDocumentsApiService {
             return await response.json();
         } catch (error) {
             console.error('Error signing document:', error);
-            return { success: false, data: null as any };
+            return { success: false, data: null as LegalDocument };
         }
     }
 
@@ -216,7 +216,7 @@ class LegalDocumentsApiService {
             return await response.json();
         } catch (error) {
             console.error('Error getting user document status:', error);
-            return { success: false, data: null as any };
+            return { success: false, data: null as LegalDocument };
         }
     }
 
@@ -242,7 +242,7 @@ class LegalDocumentsApiService {
             return await response.json();
         } catch (error) {
             console.error('Error verifying document signature:', error);
-            return { success: false, data: null as any };
+            return { success: false, data: null as LegalDocument };
         }
     }
 
@@ -309,7 +309,7 @@ class LegalDocumentsApiService {
             return await response.json();
         } catch (error) {
             console.error('Error generating compliance report:', error);
-            return { success: false, data: null as any };
+            return { success: false, data: null as LegalDocument };
         }
     }
 
@@ -362,7 +362,7 @@ class LegalDocumentsApiService {
             return await response.json();
         } catch (error) {
             console.error('Error generating document from template:', error);
-            return { success: false, data: null as any };
+            return { success: false, data: null as LegalDocument };
         }
     }
 

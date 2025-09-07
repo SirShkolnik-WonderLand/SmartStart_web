@@ -4,11 +4,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { 
     FileText, 
     Download, 
-    Upload, 
     Search, 
-    Filter,
     Calendar,
-    User,
     CheckCircle,
     Clock,
     AlertCircle,
@@ -20,32 +17,16 @@ import {
     Shield,
     Lock,
     Unlock,
-    FileCheck,
-    FileX,
     Users,
-    Settings,
     BarChart3,
-    History,
-    Download as DownloadIcon,
-    Upload as UploadIcon,
-    RefreshCw,
-    ChevronRight,
-    ChevronDown,
-    Star,
-    AlertTriangle,
     Info,
-    CheckSquare,
-    Square,
     PenTool,
-    Signature,
     FileSignature,
     ClipboardList,
-    Target,
     TrendingUp,
-    Award,
-    Zap
+    RefreshCw
 } from 'lucide-react';
-import { legalDocumentsApiService, LegalDocument, DocumentStatus, DocumentSignature } from '@/lib/legal-documents-api';
+import { legalDocumentsApiService, LegalDocument, DocumentStatus } from '@/lib/legal-documents-api';
 
 interface LegalDocumentManagerProps {
     className?: string;
@@ -175,14 +156,6 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
         );
     };
 
-    // Handle select all
-    const handleSelectAll = () => {
-        if (selectedDocuments.length === filteredDocuments.length) {
-            setSelectedDocuments([]);
-        } else {
-            setSelectedDocuments(filteredDocuments.map(doc => doc.id));
-        }
-    };
 
     // Get document status icon
     const getDocumentStatusIcon = (document: LegalDocument) => {
