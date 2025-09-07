@@ -104,6 +104,9 @@ app.use('/api/gamification', gamificationApiRoutes);
 const contractsApiRoutes = require('./routes/contracts-api');
 app.use('/api/contracts', contractsApiRoutes);
 
+const legalPackApiRoutes = require('./routes/legal-pack-api');
+app.use('/api/legal-pack', legalPackApiRoutes);
+
 const advancedContractsApiRoutes = require('./routes/advanced-contracts-api');
 app.use('/api/advanced-contracts', advancedContractsApiRoutes);
 

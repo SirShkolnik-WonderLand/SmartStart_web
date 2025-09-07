@@ -1019,8 +1019,8 @@ class ComprehensiveApiService {
 
   async getLegalPacks(): Promise<ApiResponse<LegalPack[]>> {
     try {
-      const response = await this.fetchWithAuth<{ packs: LegalPack[] }>('/api/legal-pack')
-      return { success: true, data: response.data?.packs || [] }
+      const response = await this.fetchWithAuth<{ data: LegalPack[] }>('/api/legal-pack')
+      return { success: true, data: response.data || [] }
     } catch (error) {
       console.error('Error fetching legal packs:', error)
       return { success: false, data: [], error: 'Failed to fetch legal packs' }
@@ -1029,7 +1029,7 @@ class ComprehensiveApiService {
 
   async getContracts(): Promise<ApiResponse<Contract[]>> {
     try {
-      const response = await this.fetchWithAuth<{ contracts: Contract[] }>('/api/v1/contracts')
+      const response = await this.fetchWithAuth<{ contracts: Contract[] }>('/api/contracts')
       return { success: true, data: response.data?.contracts || [] }
     } catch (error) {
       console.error('Error fetching contracts:', error)

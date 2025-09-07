@@ -31,13 +31,32 @@ export default function DocumentsPage() {
   useEffect(() => {
     const loadDocuments = async () => {
       try {
-        const response = await apiService.getLegalPacks()
-        if (response.success && response.data) {
+        // Try to load legal packs first
+        const packsResponse = await apiService.getLegalPacks()
+        if (packsResponse.success && packsResponse.data) {
           // Flatten documents from all packs
-          const allDocs = response.data.flatMap(pack => 
+          const allDocs = packsResponse.data.flatMap(pack => 
             pack.documents.map(doc => ({ ...doc, packName: pack.name }))
           )
           setDocuments(allDocs)
+        } else {
+          // Fallback to contracts if legal packs fail
+          const contractsResponse = await apiService.getContracts()
+          if (contractsResponse.success && contractsResponse.data) {
+            const contractDocs = contractsResponse.data.map(contract => ({
+              id: contract.id,
+              title: contract.title,
+              type: contract.type,
+              description: `Version ${contract.version} - ${contract.status}`,
+              required: contract.complianceRequired,
+              status: contract.status.toLowerCase(),
+              content: contract.content || 'No content available',
+              createdAt: contract.createdAt,
+              updatedAt: contract.updatedAt,
+              packName: 'Existing Contracts'
+            }))
+            setDocuments(contractDocs)
+          }
         }
       } catch (error) {
         console.error('Error loading documents:', error)
