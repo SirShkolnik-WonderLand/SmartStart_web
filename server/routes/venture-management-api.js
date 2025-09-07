@@ -1,7 +1,7 @@
 const express = require('express');
 const { PrismaClient } = require('@prisma/client');
 const VentureManagementService = require('../services/venture-management-service');
-const { authenticateToken, requirePermission } = require('../middleware/auth');
+const { authenticateToken, requirePermission } = require('../middleware/unified-auth');
 
 const router = express.Router();
 const prisma = new PrismaClient();
