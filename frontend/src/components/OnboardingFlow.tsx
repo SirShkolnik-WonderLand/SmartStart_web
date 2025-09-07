@@ -79,9 +79,14 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
         // Set default journey status
         setJourneyStatus({
           userId,
-          currentStage: 'ONBOARDING',
-          progress: { completedStages: 0, totalStages: 4 },
-          stages: []
+          currentStage: null,
+          nextStage: null,
+          isComplete: false,
+          userStates: [],
+          stages: [],
+          recommendations: [],
+          progress: { completedStages: 0, totalStages: 4, percentage: 0, stages: [] },
+          timestamp: new Date().toISOString()
         })
       }
 
