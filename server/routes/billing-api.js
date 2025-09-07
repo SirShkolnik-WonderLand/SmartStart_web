@@ -23,6 +23,29 @@ router.get('/health', async(req, res) => {
     }
 });
 
+// Get all billing plans
+router.get('/plans', async(req, res) => {
+    try {
+        const plans = await prisma.billingPlan.findMany({
+            orderBy: {
+                price: 'asc'
+            }
+        });
+
+        res.json({
+            success: true,
+            data: plans
+        });
+    } catch (error) {
+        console.error('Failed to fetch billing plans:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch billing plans',
+            error: error.message
+        });
+    }
+});
+
 // Get user's invoices
 router.get('/invoices/user/:userId', async(req, res) => {
     try {

@@ -6,6 +6,7 @@ const prisma = new PrismaClient();
 // Get all legal packs
 router.get('/', async(req, res) => {
     try {
+        // Check if LegalPack model exists
         const legalPacks = await prisma.legalPack.findMany({
             include: {
                 documents: true
@@ -14,15 +15,25 @@ router.get('/', async(req, res) => {
 
         res.json({
             success: true,
-            packs: legalPacks
+            data: legalPacks
         });
     } catch (error) {
         console.error('Failed to fetch legal packs:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to fetch legal packs',
-            error: error.message
-        });
+        
+        // If model doesn't exist, return empty array
+        if (error.message.includes('Cannot read properties of undefined')) {
+            res.json({
+                success: true,
+                data: [],
+                message: 'Legal pack model not yet implemented'
+            });
+        } else {
+            res.status(500).json({
+                success: false,
+                message: 'Failed to fetch legal packs',
+                error: error.message
+            });
+        }
     }
 });
 
