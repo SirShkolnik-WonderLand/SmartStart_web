@@ -64,10 +64,6 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
     partnership: false
   })
 
-  useEffect(() => {
-    loadInitialData()
-  }, [userId, loadInitialData])
-
   const loadInitialData = useCallback(async () => {
     try {
       setIsLoading(true)
@@ -94,6 +90,10 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
       setIsLoading(false)
     }
   }, [userId])
+
+  useEffect(() => {
+    loadInitialData()
+  }, [loadInitialData])
 
   const updateJourneyProgress = async (action: string, data: Record<string, unknown> = {}) => {
     try {

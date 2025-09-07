@@ -17,7 +17,7 @@ import {
   ChevronRight,
   Bell
 } from 'lucide-react'
-import { comprehensiveApiService as apiService, User, AnalyticsData, Venture, Offer, JourneyStatus } from '@/lib/api-comprehensive'
+import { comprehensiveApiService as apiService, User, AnalyticsData, Venture, Offer } from '@/lib/api-comprehensive'
 import Link from 'next/link'
 
 export default function DashboardPage() {
