@@ -475,6 +475,7 @@ class ComprehensiveApiService {
     
     const response = await fetch(`${API_BASE}${endpoint}`, {
       ...options,
+      credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
         ...(token && { 'Authorization': `Bearer ${token}` }),
