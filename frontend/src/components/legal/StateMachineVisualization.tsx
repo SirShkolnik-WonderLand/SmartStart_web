@@ -225,7 +225,7 @@ const StateMachineVisualization: React.FC<StateMachineVisualizationProps> = ({
                 <div className="py-2 border-b border-gray-700">
                   <span className="text-gray-300 block mb-2">Required Signatures:</span>
                   <div className="flex flex-wrap gap-2">
-                    {context.requiredSignatures.map((sig: any, index: number) => (
+                    {context.requiredSignatures.map((sig: { role: string }, index: number) => (
                       <span
                         key={index}
                         className="px-2 py-1 bg-accent/20 text-accent rounded text-sm"
@@ -241,7 +241,7 @@ const StateMachineVisualization: React.FC<StateMachineVisualizationProps> = ({
                 <div className="py-2 border-b border-gray-700">
                   <span className="text-gray-300 block mb-2">Completed Signatures:</span>
                   <div className="flex flex-wrap gap-2">
-                    {context.completedSignatures.map((sig: any, index: number) => (
+                    {context.completedSignatures.map((sig: { role?: string }, index: number) => (
                       <span
                         key={index}
                         className="px-2 py-1 bg-success/20 text-success rounded text-sm"
@@ -338,7 +338,7 @@ const StateMachineVisualization: React.FC<StateMachineVisualizationProps> = ({
         <div className="mt-6">
           <h4 className="text-lg font-semibold text-primary mb-3">Audit Trail</h4>
           <div className="space-y-2 max-h-40 overflow-y-auto">
-            {context.auditTrail.slice(-5).map((entry: any, index: number) => (
+            {context.auditTrail.slice(-5).map((entry: { timestamp: string; event: string; userId?: string }, index: number) => (
               <div key={index} className="flex items-center space-x-3 p-2 bg-gray-800/50 rounded">
                 <span className="text-xs text-gray-400">
                   {new Date(entry.timestamp).toLocaleTimeString()}
