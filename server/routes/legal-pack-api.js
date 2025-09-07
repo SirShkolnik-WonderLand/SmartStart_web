@@ -16,7 +16,7 @@ const prisma = new PrismaClient();
 router.get('/', authenticateToken, async (req, res) => {
     try {
         const userId = req.user.id;
-        const userRole = req.user.role?.name;
+        const userRole = req.user.role;
         
         // Get user's ventures and their requirements
         const userVentures = await prisma.project.findMany({
@@ -97,7 +97,7 @@ router.get('/status/:userId', authenticateToken, async (req, res) => {
         console.log('Legal pack status request:', { userId, currentUserId });
         
         // Check if user can access this status (own status or admin)
-        if (userId !== currentUserId && req.user.role?.name !== 'ADMIN') {
+        if (userId !== currentUserId && req.user.role !== 'ADMIN') {
             return res.status(403).json({
                 success: false,
                 message: 'Access denied'
@@ -106,8 +106,7 @@ router.get('/status/:userId', authenticateToken, async (req, res) => {
 
         // Get user's legal packs
         const user = await prisma.user.findUnique({
-            where: { id: userId },
-            include: { role: true }
+            where: { id: userId }
         });
 
         if (!user) {
@@ -117,7 +116,7 @@ router.get('/status/:userId', authenticateToken, async (req, res) => {
             });
         }
 
-        console.log('User found:', { id: user.id, email: user.email, role: user.role?.name });
+        console.log('User found:', { id: user.id, email: user.email, role: user.role });
 
         // Get user's ventures with proper error handling
         let userVentures = [];
@@ -175,7 +174,7 @@ router.get('/status/:userId', authenticateToken, async (req, res) => {
         // Create legal packs with proper error handling
         let legalPacks = [];
         try {
-            legalPacks = await createLegalPacksForUser(userId, user.role?.name, userVentures, allDocuments);
+            legalPacks = await createLegalPacksForUser(userId, user.role, userVentures, allDocuments);
             console.log('Legal packs created:', legalPacks.length);
         } catch (packError) {
             console.error('Error creating legal packs:', packError);
