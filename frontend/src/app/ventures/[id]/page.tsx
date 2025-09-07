@@ -268,7 +268,7 @@ export default function VentureDetailPage() {
                 </div>
                 <div>
                   <label className="text-sm font-medium text-foreground-muted">Region</label>
-                  <p className="text-foreground-body">{venture.ventureProfile?.region || venture.residency || venture.region || 'Not specified'}</p>
+                  <p className="text-foreground-body">{venture.residency || venture.region || 'Not specified'}</p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-foreground-muted">Team Size</label>
