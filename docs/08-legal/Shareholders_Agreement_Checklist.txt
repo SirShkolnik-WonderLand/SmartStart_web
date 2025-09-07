@@ -1,0 +1,27 @@
+EQUITY & VESTING AGREEMENT (Template)
+Version: 1.0
+PARTIES; PURPOSE
+Between [Company/NewCo] and [Contributor/Founder] to grant equity subject to vesting and repurchase.
+GRANT
+Type (choose): ☐ Common ☐ Options ☐ RSUs
+Total Granted: ________ (shares or %). Grant Date: ________.
+VESTING
+Schedule (pick or customize):
+• Standard: 4-year vesting, 1-year cliff, monthly thereafter.
+• Accelerated: 3-year vesting, 6-month cliff.
+Acceleration on change-of-control: ☐ none ☐ single-trigger (%) ☐ double-trigger (%).
+Unvested equity forfeits on termination; vested subject to ROFR.
+IP ASSIGNMENT & CONFIDENTIALITY
+Contributor assigns to Company all IP created within scope of engagement; confidentiality per NDA/JDA/PCA survives.
+REPURCHASE / FORFEITURE
+Company may repurchase unvested equity at the lower of cost or FMV upon termination (with legal limits). Misconduct may cause forfeiture (define).
+TAXES
+Contributor is responsible for personal taxes; Company may withhold as required. Elections (e.g., 83(b) US) are Contributor’s responsibility.
+TRANSFERS; ROFR
+Transfers require Company approval; Company holds Right of First Refusal on proposed transfers.
+MISCELLANEOUS
+Governing law per incorporation jurisdiction (default Ontario); E-sign valid.
+SIGNATURES
+Company: __________ Name/Title: ______ Date: ____
+Contributor: _______ Name: ______ Date: ____
+— END EQUITY/VESTING —

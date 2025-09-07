@@ -1,0 +1,171 @@
+Here’s a full, sign-ready refactor you can drop in as:
+
+`/documentation/contracts/Marketplace_Terms_(Providers_and_Listings).txt`
+
+---
+
+MARKETPLACE TERMS (Providers & Listings)
+AliceSolutions Ventures Inc. — Hub Marketplace
+Version: 1.0 • Governing Law: Ontario, Canada
+
+**Read first.** These Terms govern **Providers** who list services, tools, licenses, and expertise in the Hub marketplace, and **Customers** who purchase them. They sit **on top of** the Platform Participation Agreement (PPA) and reference the DPA, PCA/JDA, MSA/SOW, and other Hub policies. When AliceSolutions itself provides a listing, AliceSolutions is the “Provider” for that listing.
+
+---
+
+## 1) Definitions
+
+* **Provider**: A Member (individual or entity) approved to publish marketplace listings and fulfill orders.
+* **Customer**: A Member who purchases a listing.
+* **Listing**: The page(s) describing the service/tool, with price, scope, SLA, deliverables, and refund/credit terms.
+* **Order**: A Customer’s purchase of a Listing, including any add-ons.
+* **Work**/**Deliverables**: Outputs created under an Order or SOW.
+* **Designated Systems**: The Hub tool stack and approved integrations (M365/Entra SSO+MFA, Intune+Defender, GitHub Org, CI/CD, Secrets Manager, Render.com, backups, DLP).
+* **Marketplace Fees**: Commissions, listing fees, payment processing fees, or other charges disclosed in the Hub Pricing page.
+
+**Order of precedence (same subject matter):** Per-Listing SOW/MSA → these Marketplace Terms → PPA → DPA/DSA (for data terms) → other Hub policies.
+
+---
+
+## 2) Scope & Eligibility
+
+2.1 **Scope.** The marketplace facilitates introductions and commerce between Providers and Customers. AliceSolutions is not a party to Orders **unless** AliceSolutions is the Provider.
+2.2 **Eligibility.** Providers must pass **KYC/identity verification**, hold valid business registrations (where required), be **tax-compliant**, and accept applicable **DPA/DSA** and security requirements. AliceSolutions may approve or deny Providers or Listings at its discretion.
+2.3 **Sanctions & Compliance.** Providers and Customers represent they are not prohibited persons and will comply with export control, anti-bribery, and sanctions laws.
+
+---
+
+## 3) Listings: Content, Accuracy, & Versioning
+
+3.1 **Required elements.** Each Listing must include: scope, prerequisites, **clear deliverables**, acceptance criteria, SLA/response times, timeline windows, pricing & unit(s), refund/credit policy, Warranty window (if any), and any dependencies on Customer inputs.
+3.2 **Accuracy & updates.** Providers must keep Listings accurate and versioned. Material changes apply **prospectively** and do not affect existing Orders unless the Customer agrees in writing (Hub click-accept or SOW change order).
+3.3 **Prohibited Listings.** No illegal, unsafe, or policy-violating offers; no resale of third-party rights without authorization; no Listings that require data handling the DPA forbids without pre-approval.
+
+---
+
+## 4) Ordering, Contracts & Change Control
+
+4.1 **Instant Orders vs. SOW.** Simple Listings may be bought “as described.” Complex work requires an **MSA/SOW** that references the Listing.
+4.2 **Change control.** Changes to scope, price, or schedule require a **written change order** (CO) accepted in the Hub.
+4.3 **Acceptance.** Customer will accept/reject each deliverable within the **Review Window** stated in the Listing/SOW (default **5 business days**) with reasons tied to acceptance criteria. Silence ⇒ deemed accepted.
+
+---
+
+## 5) Fees, Commissions, Payouts & Taxes
+
+5.1 **Marketplace Fees.** AliceSolutions may charge commissions and/or listing fees as published in the **Hub Pricing** page. We may adjust fees with notice (future Orders only).
+5.2 **Payouts to Providers.** Unless a SOW specifies otherwise, payouts occur **net of** Marketplace Fees, taxes withheld (if any), **chargebacks**, refunds/credits, and **fraud/risk holds**. Standard payout timing is **within 7–14 business days** after Customer payment and/or milestone acceptance.
+5.3 **Reserves & Clawbacks.** We may hold a reasonable **reserve** for new Providers, high-risk categories, or disputed Orders. If a chargeback/refund later occurs, we may **claw back** amounts from future payouts or require repayment.
+5.4 **Currency & Taxes.** Prices are shown in **CAD** unless stated otherwise. Applicable taxes (GST/HST/QST) are added at checkout. Providers are responsible for their own income, sales, and indirect taxes and for issuing tax invoices when required.
+
+---
+
+## 6) Performance, SLAs & Support
+
+6.1 **SLA Ownership.** Provider is **first-line support** for its Listing. Response/resolve targets must be stated (e.g., P1 within 4 hours, P2 within 1 business day).
+6.2 **Failure to perform.** If Provider cannot meet commitments, it must promptly notify Customer and propose a remedy (re-perform, partial refund, or credit). Repeated failure may trigger removal (§10).
+
+---
+
+## 7) Independence & Non-Circumvention
+
+7.1 **Independent contractor.** Providers are independent of AliceSolutions and Customers; no employment, partnership, or agency is created by these Terms.
+7.2 **Non-circumvention.** During an active Order and for **6 months** thereafter, Provider and Customer will not knowingly circumvent the marketplace for equivalent scope to avoid Marketplace Fees, unless (a) a separate enterprise agreement with AliceSolutions covers it, or (b) AliceSolutions provides written consent.
+
+---
+
+## 8) Data, Confidentiality & Security
+
+8.1 **Confidentiality.** Provider and Customer are bound by the **Mutual NDA (Internal)** and any relevant **Per-Project NDA Addendum (security-tiered)** before exchanging non-public materials.
+8.2 **DPA/DSA.**
+
+* If Provider **processes Customer Personal Information**, the **DPA** (Controller→Processor) applies.
+* If participants share PI **controller-to-controller**, a **Data Sharing Agreement (DSA)** is required.
+  8.3 **Security & Tools.** Work must occur only in **Designated Systems**; device compliance (Intune + Defender) and SSO+MFA are required for non-public data. No secrets in repos/logs; use the Secrets Manager.
+  8.4 **Records.** Providers will keep reasonable records of fulfillment and security compliance for audit and dispute resolution.
+
+---
+
+## 9) IP & Licenses
+
+9.1 **Deliverables IP.** IP outcomes follow the **Listing** and, if present, the **MSA/SOW**:
+
+* **Assignment on payment** (common for bespoke work); or
+* **License to use** (common for reusable templates/tools).
+  9.2 **Background IP.** Each party retains its background IP and grants the other only the scope listed in the Listing/SOW to use background components embedded in the Deliverables.
+  9.3 **OSS Hygiene.** Providers warrant compliance with open-source licenses; no copyleft code (e.g., AGPL) in distributed builds without prior written approval and proper notices.
+  9.4 **No malware / clean rights.** Providers warrant Deliverables are malware-free and that they have rights to all materials supplied.
+
+---
+
+## 10) Ratings, Ranking & Removal
+
+10.1 **Ratings/Reviews.** AliceSolutions may publish ratings and qualitative feedback. By listing, Providers consent to fair publication of marketplace ratings.
+10.2 **Ranking.** Search ranking may use performance, quality signals, dispute history, and fit to Customer needs.
+10.3 **Removal / Suspension.** We may remove or suspend a Listing or Provider for low performance, policy violations, IP claims, fraud risk, or legal risk.
+
+---
+
+## 11) Disputes, Refunds, Credits
+
+11.1 **Dispute ladder.** (1) Provider↔Customer resolution; (2) escalate in-Hub; (3) AliceSolutions **may** mediate (discretionary).
+11.2 **Refunds/Credits.** Listing/SOW governs. If unresolved and risk of harm exists, AliceSolutions may issue credits, pause payouts, or reverse charges, acting reasonably and proportionately.
+11.3 **Chargebacks.** If a chargeback occurs, Provider will cooperate in evidence submission; AliceSolutions may offset future payouts.
+
+---
+
+## 12) Termination
+
+12.1 **By AliceSolutions.** We may suspend or terminate Provider access or Listings for breach, risk, legal requirement, or repeated poor performance.
+12.2 **Effect.** Surviving obligations: confidentiality, IP terms for accepted Deliverables, data protection, dispute cooperation, and outstanding fees or clawbacks.
+12.3 **Customer Orders.** Termination of a Listing does not by itself cancel active, accepted Orders; those continue under the applicable Listing/SOW unless the parties agree otherwise or we determine risk requires cancellation.
+
+---
+
+## 13) Warranties; Indemnities; Limits
+
+13.1 **Provider warranties.** Rights to perform; conformance to Listing/SOW; no malware; compliance with laws and licenses.
+13.2 **Indemnity.** Provider will indemnify Customer and AliceSolutions for third-party claims arising from (a) Provider’s Deliverables infringing IP or violating law, or (b) Provider’s breach of these Terms, excluding combinations not supplied by Provider.
+13.3 **Limitations.** To the maximum extent permitted by law: no party is liable for indirect or consequential damages. AliceSolutions’ aggregate liability related to marketplace facilitation is capped at the higher of **CAD \$5,000** or **Marketplace Fees paid by the Provider in the prior 6 months**, except for willful misconduct or obligations that cannot be limited by law.
+
+---
+
+## 14) Privacy, Notices & E-Sign
+
+14.1 **Privacy.** Personal information is handled per the **Privacy Notice** and **DPA/DSA** as applicable.
+14.2 **Notices.** Official notices may be delivered via the Hub or email to registered contacts.
+14.3 **E-Sign.** Electronic signatures/records are valid per the **ESignature Consent**.
+
+---
+
+## 15) Miscellaneous
+
+15.1 **No assignment** by Providers without consent, except to a successor that assumes obligations.
+15.2 **Severability.** If any provision is unenforceable, the remainder remains in effect.
+15.3 **Changes.** We may update these Terms with notice in the Hub; changes apply to future Listings/Orders.
+15.4 **Governing law & venue.** **Ontario, Canada**; courts of **Toronto, Ontario**.
+
+---
+
+### Schedule A — Required Listing Template (Provider must complete)
+
+* **Title & Summary**
+* **Prerequisites/Dependencies (Designated Systems, accesses, data)**
+* **Scope** (what’s included) / **Out of Scope** (explicit)
+* **Deliverables** (artifacts) & **Acceptance Criteria/Tests**
+* **Timeline & SLA** (response/resolve targets; business hours/time zone)
+* **Warranty Window** (e.g., 30 days defect fix)
+* **Pricing** (unit price, milestones, caps)
+* **Refunds/Credits** (conditions & process)
+* **Security Tier & Data Handling** (T1/T2/T3; DPA/DSA need; residency)
+* **IP Outcome** (Assignment on payment **or** License to use; Background IP list)
+* **Change Control** (when CO required)
+* **Support channel** (Hub ticket/Teams/email)
+* **Provider Contact** (name, email)
+
+### Schedule B — Payout & Reserve Rules (summary)
+
+* **Standard Payout:** T+7 to T+14 **business days** post-acceptance or per SOW.
+* **Reserve Triggers:** new Provider, high average dispute rate, high-risk categories.
+* **Chargebacks:** offset against future payouts; Provider supplies evidence within **5 business days**.
+
+— END MARKETPLACE TERMS —

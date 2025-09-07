@@ -1,0 +1,220 @@
+
+STANDARDIZED TOOLING & HOSTING COMPLIANCE ADDENDUM (STHCA)
+AliceSolutions Ventures Inc. — Hub & Ventures
+Version: 1.0 • Governing Law (baseline): Ontario, Canada
+
+**Purpose.** This Addendum defines the **standard tool stack**, **tiered security controls**, and **hosting/compliance rules** that apply whenever Members access **non-public Hub/venture resources**. It is incorporated by reference into the **Platform Participation Agreement (PPA)**, **PTSA/PUOHA**, **Security Tooling Acknowledgment (STA)**, **MSA/SOW**, and—where applicable—the **DPA/DSA**, **PCA/JDA**.
+
+**Order of precedence (same subject matter):** **Change Order → SOW/MSA → PUOHA → this STHCA → PTSA → DPA/DSA (for data terms) → PCA/JDA (for IP in joint builds) → PPA → Hub Policies.**
+
+---
+
+## 1) Scope & Applicability
+
+1.1 This STHCA applies to all **Projects/Ventures** using the Hub’s non-public infrastructure, repositories, data, or environments.
+1.2 It binds all Participants, Providers, contractors, and Idea Owners once they (a) hold an active **PTSA** seat and (b) accept the **STA**.
+
+---
+
+## 2) Key Definitions
+
+* **Designated Systems** — The approved stack: **Microsoft 365** (Entra ID SSO+MFA; Exchange/Teams/SharePoint/OneDrive), **Intune & Defender** (endpoint), **GitHub Organization (SSO)**, approved **CI/CD runners**, **Designated Secrets Manager**, **Render.com** hosting, approved **observability** and **backup** providers.
+* **Data Tiers** — **T1 (Internal)**, **T2 (Confidential)**, **T3 (Restricted/Crown-Jewel)**. The **highest tier touched** by any data governs handling for the **entire workflow**.
+* **Compliant Device** — Intune-enrolled, Defender EDR healthy, disk-encrypted, patched device meeting baseline policies.
+* **Production Data** — Any data from live users/systems, or data deemed sensitive by Owner; includes tokens/keys.
+* **Sub-processor** — Third party engaged to process data on behalf of AliceSolutions or a Project.
+
+---
+
+## 3) Standardized Tool Stack (must use)
+
+Participants must use **only** the following for Hub work; **shadow IT** is prohibited.
+
+1. **Identity & Email:** M365 under Hub domain; **Entra ID SSO + MFA**; Conditional Access.
+2. **Endpoint:** **Intune** compliance; **Defender EDR**; full-disk encryption; screen lock; auto-patch.
+3. **Source & CI/CD:** **GitHub Org (SSO)**; protected branches; required reviews; secret scanning; approved runners; signed commits/artifacts where required.
+4. **Secrets:** **Designated Secrets Manager**; **no secrets** in code, tickets, chat, or logs.
+5. **Hosting:** **Render.com** services provisioned via the Hub; config via env/secret injection—**no hard-coded secrets**.
+6. **Storage & Collaboration:** **SharePoint/OneDrive/Teams** in Hub tenant; **no personal drives/emails**.
+7. **Observability:** Approved logs/metrics/traces provider connected through Hub; tamper-evident retention per tier.
+8. **Backups/DR:** Hub-managed M365/repo/DB backups; quarterly restore tests.
+
+---
+
+## 4) Tiered Control Matrix (minimums)
+
+| Control Area             | **T1 – Internal**                 | **T2 – Confidential**                              | **T3 – Restricted/Crown-Jewel**                                                                 |
+| ------------------------ | --------------------------------- | -------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| **Identity & Access**    | Entra SSO+MFA; RBAC groups        | + Conditional Access by device/compliant state     | + JIT/PIM elevation; session limits; step-up MFA for admin                                      |
+| **Device Posture**       | Intune enrolled; Defender healthy | + OS patch ≤ **3** days; firmware where feasible   | + Admin access only from managed jump/privileged profiles                                       |
+| **Data Handling**        | DLP advisory banners              | **Print/Export by approval only**; named groups    | **No print/export** unless CISO-approved with compensating controls                             |
+| **Repos & CI/CD**        | Branch protection; code review    | + SAST/dep scan; SBOM on release                   | + Signed commits & artifacts; environment approvals; no self-hosted runners without CISO waiver |
+| **Secrets**              | Manager; rotation ≤ **90d**       | Rotation ≤ **30d**                                 | Rotation **14–30d** or on signal; HSM/KMS if supported                                          |
+| **Logging & Monitoring** | Centralized logs; **90d hot**     | **≥12 months hot**; alerting on Id/Repo/CI/Runtime | **≥12 months hot + archive**; enhanced anomaly rules                                            |
+| **Backups/DR**           | Daily; RPO ≤ 24h; RTO ≤ 24–48h    | RPO ≤ 12h; RTO ≤ 24h                               | RPO ≤ 4h; RTO ≤ 8–12h; quarterly restore tests **required**                                     |
+| **Residency**            | Canada (default)                  | Canada + approved regions w/ DPA                   | Residency pinned; cross-border by SCC/UK addendum; CISO sign-off                                |
+| **Access Reviews**       | ≤ **90d**                         | ≤ **60d**                                          | ≤ **30d**                                                                                       |
+| **Vuln/Patch SLAs**      | High ≤ **7d**                     | High ≤ **3d**                                      | High ≤ **24–72h** (risk-based)                                                                  |
+| **Incident Response**    | IRP engaged; notify stakeholders  | + Notify Controller per **DPA** ≤ **24h**          | + Runbook for regulator/DSAR support; comms war-room                                            |
+| **OSS Hygiene**          | Allow-list; notices               | + Copyleft review & approval                       | **No AGPL**/strong copyleft in distributed builds unless CISO/legal approved                    |
+
+> **Note:** These are **minimums**. Projects may adopt stricter controls.
+
+---
+
+## 5) Provisioning & Lifecycle (Joiner/Mover/Leaver)
+
+5.1 **Joiner:** Identity verification → accept **PPA/STA/ESign/DPA (if needed)** → M365 account → MFA → Intune enrollment/Defender healthy → GitHub SSO and team mapping → Secrets namespaces created → environment access granted.
+5.2 **Mover:** Update groups/roles same day; remove no-longer-needed access; rotate exposed secrets.
+5.3 **Leaver:** Disable accounts within **4 hours** (immediate for cause); revoke tokens; remove from groups; rotate secrets; collect **Exit Attestation**; schedule data export (if permitted) and deletion per retention schedule.
+
+---
+
+## 6) Data Classification & Handling
+
+6.1 **Classify** data at intake; select tier (**T1/T2/T3**) and residency in the project record.
+6.2 **Label** documents and repos accordingly (metadata/tags).
+6.3 **Minimize PI/PHI**; avoid special categories unless pre-approved; if PI/PHI is present, the **DPA/PHIPA schedule** applies.
+6.4 **Production data** in lower environments requires masking/synthetic data unless exception approved.
+6.5 **No exfiltration** to personal accounts or unapproved tools; DLP monitors are active.
+
+---
+
+## 7) Sub-processors & External Services
+
+7.1 Only Sub-processors on the **Register** may be used; updates follow the notice process.
+7.2 New vendors require security/privacy due diligence, residency review, and contract clauses (confidentiality, breach notice, SSCs/UK addendum if needed).
+7.3 GitHub/Render/Microsoft services are baseline; additional cloud resources must be provisioned through the Hub with spend caps.
+
+---
+
+## 8) CI/CD, Releases & Secrets
+
+8.1 **CI gates:** lint, unit/integration tests (coverage target per SOW), SAST/dep scan clean, SBOM attached, artifact signing (T3).
+8.2 **Releases:** environment approvals; change tickets; canary/rollback plan; observability hooks.
+8.3 **Secrets:** stored only in **Secrets Manager**; rotate per tier or on signal; prohibit plaintext in code/tickets/chat/logs.
+8.4 **Keys:** KMS/HSM where supported; key custodianship documented; compromise playbook maintained.
+
+---
+
+## 9) Evidence, Reviews & Audits
+
+9.1 **Evidence pack** (per project): access reviews, exception log, SBOMs, pipeline policies, restore test records, vulnerability backlog with SLAs, incident drill outcomes.
+9.2 **Internal reviews:** quarterly for T2; monthly for T3 (lightweight check-ins allowed).
+9.3 **Audits:** Customer or AliceSolutions may perform reasonable audits per **DPA/MSA** terms; multi-tenant safety respected.
+9.4 **Pen tests:** at least annually for externally exposed T2/T3 services (or after material changes); summaries shared on request.
+
+---
+
+## 10) Exceptions & Waivers
+
+10.1 **Process:** Submit an **Exception Request** stating need, scope, tier, duration (≤ **30 days**), and compensating controls.
+10.2 **Approval:** CISO (or delegate) + Project Owner; logged in **Exception Register**; auto-reminders at 7/3/1 days before expiry.
+10.3 **Revocation:** Exceptions can be revoked for new risk signals or incident.
+
+---
+
+## 11) Non-Compliance & Enforcement
+
+11.1 **Gating:** Non-compliance with STA/STHCA or unpaid PTSA may **block access** to non-public resources.
+11.2 **Remediation:** Findings are tracked with owners/dates; repeated or willful breaches may result in suspension, removal from projects, and contract remedies.
+11.3 **Cost recovery:** Where permitted by contract, costs to investigate/remediate willful breaches may be **charged back**.
+
+---
+
+## 12) Amendments & Updates
+
+AliceSolutions may update this STHCA to reflect security or operational improvements. Material reductions in protection require notice and, where applicable, Customer consent. Latest version is posted in the Hub.
+
+---
+
+## 13) Term; Survival
+
+This STHCA remains in effect while the Member uses non-public resources. Sections **4–11** survive offboarding as needed (e.g., evidence, audit, liability, confidentiality through related agreements).
+
+---
+
+## 14) Signatures (e-sign permitted)
+
+**Participant / Entity**
+Legal Name: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_  Role: \_\_\_\_\_\_\_\_\_\_\_\_\_\_
+Authorized Signatory: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ Title: \_\_\_\_\_\_\_\_\_\_\_\_
+Email: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_  Date: \_\_\_\_\_\_\_\_\_\_
+Signature: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+
+**AliceSolutions Ventures Inc.**
+Authorized Signatory: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ Title: \_\_\_\_\_\_\_\_\_\_\_\_
+Email: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_  Date: \_\_\_\_\_\_\_\_\_\_
+Signature: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+
+— END STHCA —
+
+\===================== SCHEDULES =====================
+
+### Schedule A — Tool Stack Bill of Materials (reference set)
+
+* **Identity/Email:** Microsoft 365 (Entra ID SSO+MFA), Conditional Access
+* **Endpoint:** Intune MDM; Defender for Endpoint
+* **Source/CI:** GitHub Org (SSO), branch protection, required reviews, secret scanning; approved runners
+* **Secrets:** Designated Secrets Manager (namespaces per project/env)
+* **Hosting:** Render.com (dev/stage; prod on approval)
+* **Observability:** Approved logs/metrics/traces provider
+* **Backups:** M365, repos, DBs per Data Retention Schedule
+* **Collab:** Teams/SharePoint/OneDrive (Hub tenant only)
+
+### Schedule B — Control Matrix (detailed, fill where “\_\_\_”)
+
+Add any project-specific overrides (e.g., **p95 latency**, **error rate**, **coverage %**, **rotation days**).
+
+### Schedule C — Provisioning Checklist
+
+\[ ] M365 account created; SSO enforced; MFA registered
+\[ ] Intune enrollment/Defender healthy; disk encryption verified
+\[ ] GitHub SSO; team memberships; branch protection
+\[ ] CI pipelines with SAST/dep scan; SBOM generation
+\[ ] Secrets namespaces created; no plaintext secrets
+\[ ] Render services bootstrapped; spend cap set
+\[ ] Observability connected; alert routing; runbooks linked
+\[ ] Backups enabled; restore test scheduled
+\[ ] Data tier & residency recorded; DPA/DSA attached if needed
+
+### Schedule D — Exit/Offboarding Checklist
+
+\[ ] Disable accounts/tokens; remove groups; revoke API keys
+\[ ] Rotate secrets; review shared creds
+\[ ] Export permitted data (if requested) and deliver securely
+\[ ] Delete local caches; device selective wipe (BYOD)
+\[ ] Exit Attestation signed; retention clocks set
+
+### Schedule E — Secrets & Key Management (quick standard)
+
+* Create per-project **namespaces**; least-privilege access.
+* **Rotation:** T1 90d; T2 30d; T3 14–30d or on signal.
+* **No sharing** secrets via chat/email/tickets.
+* **Break-glass** secrets vaulted; access logged; post-use rotation mandatory.
+
+### Schedule F — Logging & Monitoring (summary)
+
+* Aggregate identity, repo/CI, runtime, DB/storage logs; **T2/T3 ≥12 months hot**; **T1 ≥90 days hot**.
+* Enable alerting for: admin elevation, failed MFA, token anomalies, branch/rule bypass, high error rates, DLP events.
+* Quarterly restore tests of logs/archives.
+
+### Schedule G — Data Retention & DR (summary)
+
+* **Backups:** Daily (DB/M365/repos); verify restores quarterly.
+* **Retention:** T1 30–60d; T2 90d; T3 180d+ (or per contract/regulation).
+* **RPO/RTO:** per matrix in §4.
+
+### Schedule H — Change Request Template (CR-###)
+
+Title • Description • Risk • Impact (scope/cost/schedule) • Rollback plan • Approvals (Owner/Lead/CISO as needed)
+
+### Schedule I — Exception Request Template
+
+Need • Scope • Tier • Duration (≤30d) • Compensating controls • Approvals (CISO + Owner)
+
+### Schedule J — Residency & Environment Map
+
+Project → Envs (dev/stage/prod) → Region(s) → Sub-processors → DPA/SCC references
+
+— END OF FILE —

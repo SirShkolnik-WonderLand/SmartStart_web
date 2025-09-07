@@ -1,0 +1,102 @@
+
+STATEMENT OF WORK (SOW)
+Under: Master Services Agreement (MSA)
+Version: 1.0 • Governing Law: Ontario, Canada
+
+**SOW ID:** \_\_\_\_\_\_\_\_\_\_
+**Project Name / ID:** \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+**Effective Date:** \_\_\_\_\_\_\_\_\_\_ • **Term:** \_\_\_\_\_\_\_\_\_\_
+
+## 1) Parties & Project
+
+**Customer (legal name):** \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+**Customer PM (name/title/email):** \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+**Provider (AliceSolutions Ventures Inc. or named Provider):** \_\_\_\_\_\_\_\_\_\_
+**Provider PM (name/title/email):** \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+
+## 2) Scope & Deliverables
+
+**Objectives:**
+• \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+• \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+
+**Deliverables (with acceptance criteria/tests):**
+
+1. ---
+
+   • Criteria/Tests: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+2. ---
+
+   • Criteria/Tests: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+
+**Out of Scope:**
+• \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+• \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+
+## 3) Timeline & Milestones
+
+| Milestone | Target Date | Evidence of Completion                       | Fee (CAD) |
+| --------- | ----------- | -------------------------------------------- | --------- |
+| M1        | \_\_\_\_    | \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ | $\_\_\_\_ |
+| M2        | \_\_\_\_    | \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ | $\_\_\_\_ |
+| (add)     | \_\_\_\_    | \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ | $\_\_\_\_ |
+
+## 4) Roles & Dependencies
+
+**Customer responsibilities (access, data, SMEs):**
+• \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+• \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+
+**Provider team (roles):**
+• Tech Lead \_\_\_\_% • Backend \_\_\_\_% • Frontend \_\_\_\_% • DevOps \_\_\_\_% • PM \_\_\_\_%
+(or list named roles): \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+
+**Assumptions/Dependencies:**
+• \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+• \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+
+## 5) Fees & Payment
+
+**Model (select one):** ☐ Fixed Price  ☐ T\&M (rate card)  ☐ Hybrid
+**Total / Caps (if any):** CAD $\_\_\_\_\_\_\_\_\_\_
+**Invoicing schedule:** ☐ Milestone on acceptance ☐ Monthly in arrears ☐ Other: \_\_\_\_\_\_
+**Expenses:** **Pre-approved only**, at cost, with receipts.
+**Payment terms:** Net \_\_\_ days.
+
+## 6) Change Control
+
+All changes to scope, schedule, or fees require a **written Change Order** stating impacts on price/timeline and updated acceptance criteria.
+
+## 7) IP & License (choose one)
+
+☐ **Assignment on payment.** Upon acceptance and full payment, Foreground IP in Deliverables is assigned to **\[Customer / Project Owner / NewCo]**. Provider retains Background IP and grants a non-exclusive license for any embedded Background components **as used in** the Deliverables.
+☐ **License to use Deliverables; Provider retains Background IP.** Provider retains ownership of Deliverables and grants a **perpetual, worldwide, royalty-free** license (with necessary sublicense rights) to use, copy, modify, and create derivative works for **Customer’s business**.
+**Background IP (if any) included & license scope:** \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+
+## 8) Privacy & Security
+
+**DPA** applies if PI/PHI is processed.
+**Security tier:** **T\_\_** (T1/T2/T3).
+**Residency:** ☐ Canada (default) ☐ Other: \_\_\_\_\_\_\_\_\_\_
+**Sub-processors (or “See Sub-processor Register”):** \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+**Controls (summary):** Entra SSO+MFA; Intune+Defender devices; encryption at rest/in transit; Secrets Manager; logging/monitoring; backups/DR.
+
+## 9) Acceptance
+
+Customer will **accept or reject** each Deliverable within **5 business days** of submission with reasons tied to criteria; silence = **deemed accepted**. Provider will remedy validated defects within a commercially reasonable time.
+
+## 10) Order of Precedence (same subject matter)
+
+**Change Order → this SOW → MSA → DPA (data) → PCA/JDA (if joint build IP) → PPA → Hub Policies.**
+
+## 11) Signatures (e-sign permitted)
+
+**Customer**
+Name/Title: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_  Date: \_\_\_\_\_\_\_\_\_\_
+Signature: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+
+**Provider (AliceSolutions Ventures Inc. or named Provider)**
+Name/Title: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_  Date: \_\_\_\_\_\_\_\_\_\_
+Signature: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+
+— END SOW —
