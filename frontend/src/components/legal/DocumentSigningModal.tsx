@@ -153,8 +153,8 @@ export default function DocumentSigningModal({
     }
   }
 
-  const handleDownloadDocument = (document: string, documentType: string) => {
-    const blob = new Blob([document], { type: 'text/plain' })
+  const handleDownloadDocument = (documentContent: string, documentType: string) => {
+    const blob = new Blob([documentContent], { type: 'text/plain' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
