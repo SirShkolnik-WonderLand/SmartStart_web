@@ -26,6 +26,7 @@ export default function DashboardPage() {
   const [ventures, setVentures] = useState<Venture[]>([])
   const [offers, setOffers] = useState<Offer[]>([])
   const [journeyStatus, setJourneyStatus] = useState<JourneyStatus | null>(null)
+  // Note: journeyStatus is used in the useEffect below
   const [legalPackStatus, setLegalPackStatus] = useState<{
     signed: boolean
     signedAt?: string

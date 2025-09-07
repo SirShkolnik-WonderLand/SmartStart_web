@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { comprehensiveApiService as apiService, JourneyStatus, SubscriptionPlan } from '@/lib/api-comprehensive'
 import { 
   CheckCircle, 
@@ -66,9 +66,9 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
 
   useEffect(() => {
     loadInitialData()
-  }, [userId])
+  }, [userId, loadInitialData])
 
-  const loadInitialData = async () => {
+  const loadInitialData = useCallback(async () => {
     try {
       setIsLoading(true)
       
@@ -93,9 +93,9 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [userId])
 
-  const updateJourneyProgress = async (action: string, data: any = {}) => {
+  const updateJourneyProgress = async (action: string, data: Record<string, unknown> = {}) => {
     try {
       const response = await apiService.updateJourneyProgress(userId, action, data)
       if (response.success) {
@@ -433,7 +433,7 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
           <div className="text-center mb-6">
             <Zap className="w-12 h-12 text-primary mx-auto mb-4" />
             <h3 className="text-lg font-semibold mb-2">Welcome to SmartStart!</h3>
-            <p className="text-muted-foreground">Let's explore what you can do on the platform</p>
+            <p className="text-muted-foreground">Let&apos;s explore what you can do on the platform</p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
@@ -469,7 +469,7 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
           <div className="bg-primary/10 rounded-lg p-4">
             <h4 className="font-semibold mb-2">Ready to get started?</h4>
             <p className="text-sm text-muted-foreground">
-              You're all set! Click "Complete Setup" to access your dashboard and start building amazing ventures.
+              You&apos;re all set! Click &quot;Complete Setup&quot; to access your dashboard and start building amazing ventures.
             </p>
           </div>
         </div>
