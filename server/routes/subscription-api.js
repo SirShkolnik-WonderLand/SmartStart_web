@@ -49,7 +49,7 @@ router.get('/status/:userId', async(req, res) => {
                 success: true,
                 data: {
                     active: true,
-                    planName: subscription.billingPlan?.name || 'Unknown Plan',
+                    planName: subscription.plan?.name || 'Unknown Plan',
                     status: subscription.status,
                     expiresAt: subscription.currentPeriodEnd?.toISOString()
                 }
