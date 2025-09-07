@@ -19,17 +19,17 @@ export interface ThemeConfig {
 export const themes: Record<Theme, ThemeConfig> = {
   wonderlight: {
     name: 'wonderlight',
-    displayName: 'Wonderlight',
-    description: 'Soft parchment to pearl gradient with whimsical intelligence',
+    displayName: 'Alice\'s Garden',
+    description: 'Magical garden with enchanted purples, mystical blues, and golden accents',
     colors: {
-      primary: '#3B82F6',
-      secondary: '#6B39D1',
-      accent: '#E879F9',
-      highlight: '#F59E0B',
-      background: '#FFF8F0',
-      surface: '#F6F8FB',
-      text: '#0F172A',
-      muted: '#64748B'
+      primary: '#8B5CF6', // Enchanted purple
+      secondary: '#3B82F6', // Mystical blue
+      accent: '#EC4899', // Magical pink
+      highlight: '#F59E0B', // Golden hour
+      background: '#F8FAFF', // Soft magical white
+      surface: '#F1F5FF', // Light lavender mist
+      text: '#1E1B4B', // Deep indigo
+      muted: '#6B7280' // Soft gray
     }
   },
   midnight: {
