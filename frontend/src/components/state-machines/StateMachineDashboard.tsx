@@ -327,7 +327,7 @@ const StateMachineDashboard: React.FC<StateMachineDashboardProps> = ({
                         </span>
                       </div>
                       <div className="text-sm text-gray-400">
-                        Last Activity: {new Date(machine.lastActivity).toLocaleString()}
+                        Last Activity: {machine.lastActivity ? new Date(machine.lastActivity).toLocaleString() : 'Never'}
                       </div>
                     </div>
                   ))}
