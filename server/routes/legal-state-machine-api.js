@@ -5,7 +5,7 @@
 
 const express = require('express');
 const router = express.Router();
-const LegalStateMachineService = require('../services/legal-state-machine');
+const LegalStateMachineService = require('../state-machines/legal/LegalStateMachine');
 const { authenticateToken, requireRole } = require('../middleware/auth');
 
 // Initialize state machine service
