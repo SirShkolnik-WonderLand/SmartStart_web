@@ -137,6 +137,35 @@ function requireRoleLevel(requiredLevel) {
 }
 
 /**
+ * Role-based authorization middleware
+ * @param {string[]} requiredRoles - Array of required role names
+ */
+function requireRole(requiredRoles) {
+    return (req, res, next) => {
+        if (!req.user) {
+            return res.status(401).json({
+                success: false,
+                message: 'Authentication required',
+                code: 'AUTH_REQUIRED'
+            });
+        }
+
+        const userRole = req.user.role?.name;
+        if (!userRole || !requiredRoles.includes(userRole)) {
+            return res.status(403).json({
+                success: false,
+                message: 'Insufficient role',
+                code: 'INSUFFICIENT_ROLE',
+                required: requiredRoles,
+                userRole: userRole
+            });
+        }
+
+        next();
+    };
+}
+
+/**
  * Resource ownership middleware
  * Checks if user owns the resource or has admin permissions
  * @param {string} resourceIdParam - Parameter name containing resource ID
@@ -215,6 +244,7 @@ module.exports = {
     optionalAuth,
     requirePermission,
     requireRoleLevel,
+    requireRole,
     requireOwnershipOrAdmin,
     rateLimit
 };
