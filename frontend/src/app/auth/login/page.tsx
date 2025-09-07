@@ -17,6 +17,11 @@ export default function LoginPage() {
     setError('')
 
     try {
+      // Clear any old localStorage data before login
+      localStorage.removeItem('user-id')
+      localStorage.removeItem('user-data')
+      localStorage.removeItem('auth-token')
+      
       const response = await apiService.login(email, password)
       
       if (response.success) {
