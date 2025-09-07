@@ -79,7 +79,7 @@ export default function VentureDetailPage() {
     }
   }
 
-  const isOwner = currentUser && venture && currentUser.id === venture.ownerUserId
+  const isOwner = currentUser && venture && currentUser.id === venture.owner?.id
 
   const handleScheduleMeeting = async () => {
     if (!venture || !currentUser) return
@@ -200,7 +200,7 @@ export default function VentureDetailPage() {
               <h1 className="text-4xl font-bold text-foreground">{venture.name}</h1>
               {/* Debug info - remove this later */}
               <div className="text-xs text-foreground-muted mb-2">
-                Debug: Current User ID: {currentUser?.id} | Venture Owner: {venture.ownerUserId} | Is Owner: {isOwner ? 'Yes' : 'No'}
+                Debug: Current User ID: {currentUser?.id} | Venture Owner: {venture.owner?.id} | Is Owner: {isOwner ? 'Yes' : 'No'}
               </div>
               
               {isOwner && (
