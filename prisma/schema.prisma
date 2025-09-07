@@ -2732,6 +2732,7 @@ model UserJourneyState {
   @@index([userId])
   @@index([stageId])
   @@index([status])
+  @@map("UserJourneyState")
 }
 
 model JourneyStage {
@@ -2749,6 +2750,7 @@ model JourneyStage {
 
   @@index([order])
   @@index([isActive])
+  @@map("JourneyStage")
 }
 
 model JourneyGate {
@@ -2768,6 +2770,7 @@ model JourneyGate {
   @@index([stageId])
   @@index([gateType])
   @@index([isActive])
+  @@map("JourneyGate")
 }
 
 // User Journey Enums
@@ -2938,84 +2941,3 @@ model MeetingAttendee {
   @@map("meeting_attendees")
 }
 
-// ============================================================================
-// JOURNEY & ONBOARDING MODELS
-// ============================================================================
-
-model JourneyStage {
-  id          String   @id @default(cuid())
-  name        String   @unique
-  description String
-  order       Int      @unique
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Relations
-  gates        JourneyGate[]
-  userStates   UserJourneyState[]
-
-  @@map("JourneyStage")
-}
-
-model JourneyGate {
-  id          String   @id @default(cuid())
-  stageId     String
-  name        String
-  description String
-  gateType    GateType
-  isRequired  Boolean  @default(true)
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Relations
-  stage      JourneyStage      @relation(fields: [stageId], references: [id], onDelete: Cascade)
-  userStates UserJourneyState[]
-
-  @@map("JourneyGate")
-}
-
-model UserJourneyState {
-  id        String            @id @default(cuid())
-  userId    String
-  stageId   String
-  status    JourneyStatus     @default(NOT_STARTED)
-  startedAt DateTime?
-  completedAt DateTime?
-  metadata  Json?
-  createdAt DateTime          @default(now())
-  updatedAt DateTime          @updatedAt
-
-  // Relations
-  user  User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  stage JourneyStage @relation(fields: [stageId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, stageId])
-  @@map("UserJourneyState")
-}
-
-// ============================================================================
-// ENUMS FOR JOURNEY MODELS
-// ============================================================================
-
-enum GateType {
-  VERIFICATION
-  LEGAL_PACK
-  PROFILE
-  SUBSCRIPTION
-  PAYMENT
-  DOCUMENT
-  LAUNCH
-  VENTURE
-  TEAM
-  PROJECT
-}
-
-enum JourneyStatus {
-  NOT_STARTED
-  IN_PROGRESS
-  COMPLETED
-  BLOCKED
-  SKIPPED
-}
