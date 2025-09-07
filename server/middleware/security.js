@@ -27,7 +27,7 @@ function setupSecurity(app) {
         fontSrc: ["'self'"],
         styleSrc: ["'self'"],
         scriptSrc: ["'self'"],
-        connectSrc: ["'self'"],
+        connectSrc: ["'self'", "https://smartstart-frontend.onrender.com", "https://smartstart-platform.onrender.com"],
       },
     },
     hsts: {
