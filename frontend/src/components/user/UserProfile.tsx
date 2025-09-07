@@ -407,7 +407,7 @@ export function UserProfile({ userId, isEditable = false, onEdit }: UserProfileP
             <div className="flex justify-between items-center">
               <span className="text-foreground-muted">Role</span>
               <span className="text-foreground">
-                {user.role?.name || 'User'}
+                {typeof user.role === 'string' ? user.role : user.role?.name || 'User'}
               </span>
             </div>
             <div className="flex justify-between items-center">

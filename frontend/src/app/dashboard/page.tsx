@@ -18,6 +18,7 @@ import {
   Bell
 } from 'lucide-react'
 import { comprehensiveApiService as apiService, User, AnalyticsData, Venture, Offer } from '@/lib/api-comprehensive'
+import { VentureForm } from '@/components/venture/VentureForm'
 
 export default function DashboardPage() {
   const [user, setUser] = useState<User | null>(null)
@@ -25,6 +26,7 @@ export default function DashboardPage() {
   const [ventures, setVentures] = useState<Venture[]>([])
   const [offers, setOffers] = useState<Offer[]>([])
   const [, setIsLoading] = useState(true)
+  const [showCreateModal, setShowCreateModal] = useState(false)
 
   useEffect(() => {
     const loadDashboardData = async () => {
@@ -63,6 +65,11 @@ export default function DashboardPage() {
     loadDashboardData()
   }, [])
 
+  const handleVentureCreated = (newVenture: Venture) => {
+    setVentures(prev => [newVenture, ...prev])
+    setShowCreateModal(false)
+  }
+
   return (
     <div className="space-y-8">
             {/* Welcome Section */}
@@ -97,13 +104,16 @@ export default function DashboardPage() {
                     <CheckCircle className="w-5 h-5 text-success" />
                     <span className="text-foreground-body">Subscription Active</span>
                   </div>
-                  <div className="flex items-center gap-3">
+                  <button 
+                    onClick={() => setShowCreateModal(true)}
+                    className="flex items-center gap-3 w-full hover:bg-glass-surface rounded-lg p-2 transition-colors"
+                  >
                     <div className="w-5 h-5 border-2 border-accent rounded-full flex items-center justify-center">
                       <div className="w-2 h-2 bg-accent rounded-full"></div>
                     </div>
                     <span className="text-foreground-body">Create Your First Venture</span>
                     <ChevronRight className="w-4 h-4 text-foreground-muted ml-auto" />
-                  </div>
+                  </button>
                 </div>
               </div>
             </div>
@@ -234,7 +244,10 @@ export default function DashboardPage() {
                 Quick Actions
               </h3>
               <div className="grid md:grid-cols-3 gap-4">
-                <button className="group flex items-center gap-3 p-4 bg-primary/5 border border-primary/20 rounded-lg hover:bg-primary/10 transition-all duration-200">
+                <button 
+                  onClick={() => setShowCreateModal(true)}
+                  className="group flex items-center gap-3 p-4 bg-primary/5 border border-primary/20 rounded-lg hover:bg-primary/10 transition-all duration-200"
+                >
                   <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
                     <Plus className="w-5 h-5 text-primary" />
                   </div>
@@ -265,6 +278,22 @@ export default function DashboardPage() {
                 </button>
               </div>
             </div>
+
+        {/* Create Venture Modal */}
+        {showCreateModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div 
+              className="absolute inset-0 bg-black/20 backdrop-blur-sm"
+              onClick={() => setShowCreateModal(false)}
+            />
+            <div className="relative w-full max-w-4xl">
+              <VentureForm 
+                onSuccess={handleVentureCreated}
+                onCancel={() => setShowCreateModal(false)}
+              />
+            </div>
+          </div>
+        )}
     </div>
   )
 }

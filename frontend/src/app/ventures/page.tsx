@@ -3,11 +3,13 @@
 import { useEffect, useState } from 'react'
 import { comprehensiveApiService as apiService, AnalyticsData, Venture } from '@/lib/api-comprehensive'
 import { Briefcase, Users, Calendar, TrendingUp, Plus } from 'lucide-react'
+import { VentureForm } from '@/components/venture/VentureForm'
 
 export default function VenturesPage() {
   const [ventures, setVentures] = useState<Venture[]>([])
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [showCreateModal, setShowCreateModal] = useState(false)
 
   useEffect(() => {
     const loadVenturesData = async () => {
@@ -31,6 +33,11 @@ export default function VenturesPage() {
     loadVenturesData()
   }, [])
 
+  const handleVentureCreated = (newVenture: Venture) => {
+    setVentures(prev => [newVenture, ...prev])
+    setShowCreateModal(false)
+  }
+
   if (isLoading) {
     return (
       <div className="min-h-screen wonderland-bg flex items-center justify-center">
@@ -51,7 +58,10 @@ export default function VenturesPage() {
             Discover and manage your ventures
           </p>
         </div>
-        <button className="wonder-button flex items-center gap-2">
+        <button 
+          onClick={() => setShowCreateModal(true)}
+          className="wonder-button flex items-center gap-2"
+        >
           <Plus className="w-5 h-5" />
           Create Venture
         </button>
@@ -164,13 +174,32 @@ export default function VenturesPage() {
             <Briefcase className="w-16 h-16 text-foreground-muted mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-foreground mb-2">No ventures yet</h3>
             <p className="text-foreground-muted mb-6">Create your first venture to get started on your entrepreneurial journey.</p>
-            <button className="wonder-button">
+            <button 
+              onClick={() => setShowCreateModal(true)}
+              className="wonder-button"
+            >
               <Plus className="w-5 h-5 mr-2" />
               Create Your First Venture
             </button>
           </div>
         )}
       </div>
+
+      {/* Create Venture Modal */}
+      {showCreateModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div 
+            className="absolute inset-0 bg-black/20 backdrop-blur-sm"
+            onClick={() => setShowCreateModal(false)}
+          />
+          <div className="relative w-full max-w-4xl">
+            <VentureForm 
+              onSuccess={handleVentureCreated}
+              onCancel={() => setShowCreateModal(false)}
+            />
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -3,12 +3,14 @@
 import { useEffect, useState } from 'react'
 import { comprehensiveApiService as apiService, Team, AnalyticsData } from '@/lib/api-comprehensive'
 import { Users, Target, TrendingUp, Plus, Search, Calendar, Award } from 'lucide-react'
+import { TeamForm } from '@/components/team/TeamForm'
 
 export default function TeamsPage() {
   const [teams, setTeams] = useState<Team[]>([])
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
+  const [showCreateModal, setShowCreateModal] = useState(false)
 
   useEffect(() => {
     const loadTeamsData = async () => {
@@ -31,6 +33,11 @@ export default function TeamsPage() {
 
     loadTeamsData()
   }, [])
+
+  const handleTeamCreated = (newTeam: Team) => {
+    setTeams(prev => [newTeam, ...prev])
+    setShowCreateModal(false)
+  }
 
   if (isLoading) {
     return (
@@ -62,7 +69,10 @@ export default function TeamsPage() {
             Collaborate and manage your teams effectively
           </p>
         </div>
-        <button className="wonder-button flex items-center gap-2">
+        <button 
+          onClick={() => setShowCreateModal(true)}
+          className="wonder-button flex items-center gap-2"
+        >
           <Plus className="w-5 h-5" />
           Create Team
         </button>
@@ -235,13 +245,32 @@ export default function TeamsPage() {
                 : 'Create your first team to start collaborating and achieving goals together.'
               }
             </p>
-            <button className="wonder-button">
+            <button 
+              onClick={() => setShowCreateModal(true)}
+              className="wonder-button"
+            >
               <Plus className="w-5 h-5 mr-2" />
               Create Your First Team
             </button>
           </div>
         )}
       </div>
+
+      {/* Create Team Modal */}
+      {showCreateModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div 
+            className="absolute inset-0 bg-black/20 backdrop-blur-sm"
+            onClick={() => setShowCreateModal(false)}
+          />
+          <div className="relative w-full max-w-4xl">
+            <TeamForm 
+              onSuccess={handleTeamCreated}
+              onCancel={() => setShowCreateModal(false)}
+            />
+          </div>
+        </div>
+      )}
     </div>
   )
 }

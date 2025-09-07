@@ -1,8 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import { ThemeProvider } from '@/components/theme-provider'
-import { MainLayout } from '@/components/layout/main-layout'
+import PersistentLayout from '@/components/layout/persistent-layout'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -19,11 +18,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        <ThemeProvider>
-          <MainLayout>
-            {children}
-          </MainLayout>
-        </ThemeProvider>
+        <PersistentLayout>
+          {children}
+        </PersistentLayout>
       </body>
     </html>
   )

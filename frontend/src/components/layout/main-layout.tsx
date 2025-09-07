@@ -1,14 +1,12 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { useRouter, usePathname } from 'next/navigation'
+import { useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Header } from './header'
 import { Sidebar } from './sidebar'
 import { useTheme } from '@/components/theme-provider'
 import { useAuthStore } from '@/store/useAuthStore'
 import { useUIStore } from '@/store/useUIStore'
-import { comprehensiveApiService as apiService } from '@/lib/api-comprehensive'
 
 interface MainLayoutProps {
   children: React.ReactNode
@@ -16,15 +14,8 @@ interface MainLayoutProps {
 
 export function MainLayout({ children }: MainLayoutProps) {
   const { theme } = useTheme()
-  const { isAuthenticated, updateUser } = useAuthStore()
+  const { isAuthenticated } = useAuthStore()
   const { setGlobalLoading } = useUIStore()
-  const [isLoading, setIsLoading] = useState(true)
-  const router = useRouter()
-  const pathname = usePathname()
-
-  // Pages that don't need authentication
-  const authPages = ['/auth/login', '/auth/register']
-  const isAuthPage = authPages.includes(pathname)
 
   useEffect(() => {
     // Apply theme to document
@@ -32,59 +23,9 @@ export function MainLayout({ children }: MainLayoutProps) {
   }, [theme])
 
   useEffect(() => {
-    if (isAuthPage) {
-      setIsLoading(false)
-      return
-    }
-
-    const checkAuth = async () => {
-      try {
-        const token = localStorage.getItem('auth-token')
-        if (!token) {
-          router.push('/auth/login')
-          return
-        }
-
-        const response = await apiService.getCurrentUser()
-        if (response.success && response.data) {
-          updateUser(response.data)
-        } else {
-          // Clear invalid token and redirect
-          localStorage.removeItem('auth-token')
-          localStorage.removeItem('user-id')
-          localStorage.removeItem('user-data')
-          router.push('/auth/login')
-        }
-      } catch (error) {
-        console.error('Auth check failed:', error)
-        // Clear invalid token and redirect
-        localStorage.removeItem('auth-token')
-        localStorage.removeItem('user-id')
-        localStorage.removeItem('user-data')
-        router.push('/auth/login')
-      } finally {
-        setIsLoading(false)
-        setGlobalLoading(false)
-      }
-    }
-
-    checkAuth()
-  }, [router, isAuthPage, updateUser, setGlobalLoading])
-
-  if (isAuthPage) {
-    return <>{children}</>
-  }
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen wonderland-bg flex items-center justify-center">
-        <div className="glass rounded-xl p-8 text-center">
-          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-foreground-muted">Loading your dashboard...</p>
-        </div>
-      </div>
-    )
-  }
+    // Initialize loading state
+    setGlobalLoading(false)
+  }, [setGlobalLoading])
 
   return (
     <div className="min-h-screen bg-background">

@@ -545,14 +545,8 @@ class ComprehensiveApiService {
 
   async getVentures(): Promise<ApiResponse<Venture[]>> {
     try {
-      const response = await this.fetchWithAuth<{ventures: Venture[], pagination: {page: number, limit: number, total: number, pages: number}}>('/api/ventures/list/all')
-      if (response.success && response.data) {
-        return {
-          success: true,
-          data: response.data.ventures
-        }
-      }
-      return { success: false, data: [], error: 'Failed to fetch ventures' }
+      const response = await this.fetchWithAuth<Venture[]>('/api/v1/ventures')
+      return response
     } catch (error) {
       console.error('Error fetching ventures:', error)
       return { success: false, data: [], error: 'Failed to fetch ventures' }
@@ -561,7 +555,7 @@ class ComprehensiveApiService {
 
   async getVenture(id: string): Promise<ApiResponse<Venture>> {
     try {
-      const response = await this.fetchWithAuth<Venture>(`/api/ventures/${id}`)
+      const response = await this.fetchWithAuth<Venture>(`/api/v1/ventures/${id}`)
       return response
     } catch (error) {
       console.error('Error fetching venture:', error)
@@ -571,7 +565,7 @@ class ComprehensiveApiService {
 
   async createVenture(ventureData: Partial<Venture>): Promise<ApiResponse<Venture>> {
     try {
-      const response = await this.fetchWithAuth<Venture>('/api/ventures/create', {
+      const response = await this.fetchWithAuth<Venture>('/api/v1/ventures', {
         method: 'POST',
         body: JSON.stringify(ventureData),
       })
@@ -687,32 +681,8 @@ class ComprehensiveApiService {
 
   async getAnalytics(): Promise<ApiResponse<AnalyticsData>> {
     try {
-      const response = await this.fetchWithAuth<{statistics: {totalVentures: number, activeVentures: number, pendingContracts: number, activeContracts: number, completionRate: string}}>('/api/ventures/statistics/overview')
-      if (response.success && response.data) {
-        // Transform the statistics to match AnalyticsData interface
-        const stats = response.data.statistics
-        const analyticsData: AnalyticsData = {
-          totalVentures: stats.totalVentures || 0,
-          totalUsers: 0, // This would need a separate endpoint
-          totalOffers: 0, // This would need a separate endpoint
-          totalRevenue: 0, // This would need a separate endpoint
-          totalCompanies: 0, // This would need a separate endpoint
-          totalTeams: 0, // This would need a separate endpoint
-          ventureGrowth: 0, // This would need historical data
-          userGrowth: 0, // This would need historical data
-          offerGrowth: 0, // This would need historical data
-          revenueGrowth: 0, // This would need historical data
-          companyGrowth: 0, // This would need historical data
-          teamGrowth: 0, // This would need historical data
-          topVentures: [], // This would need a separate endpoint
-          monthlyStats: [] // This would need a separate endpoint
-        }
-        return {
-          success: true,
-          data: analyticsData
-        }
-      }
-      return { success: false, error: 'Failed to fetch analytics' }
+      const response = await this.fetchWithAuth<AnalyticsData>('/api/v1/analytics')
+      return response
     } catch (error) {
       console.error('Error fetching analytics:', error)
       return { success: false, error: 'Failed to fetch analytics' }

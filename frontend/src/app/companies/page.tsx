@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { comprehensiveApiService as apiService, Company, AnalyticsData } from '@/lib/api-comprehensive'
 import { Building, Users, Calendar, TrendingUp, Plus, Search, Filter, Globe, MapPin } from 'lucide-react'
+import { CompanyForm } from '@/components/company/CompanyForm'
 
 export default function CompaniesPage() {
   const [companies, setCompanies] = useState<Company[]>([])
@@ -10,6 +11,7 @@ export default function CompaniesPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [filterIndustry, setFilterIndustry] = useState('all')
+  const [showCreateModal, setShowCreateModal] = useState(false)
 
   useEffect(() => {
     const loadCompaniesData = async () => {
@@ -32,6 +34,11 @@ export default function CompaniesPage() {
 
     loadCompaniesData()
   }, [])
+
+  const handleCompanyCreated = (newCompany: Company) => {
+    setCompanies(prev => [newCompany, ...prev])
+    setShowCreateModal(false)
+  }
 
   if (isLoading) {
     return (
@@ -63,7 +70,10 @@ export default function CompaniesPage() {
             Discover and manage companies in the ecosystem
           </p>
         </div>
-        <button className="wonder-button flex items-center gap-2">
+        <button 
+          onClick={() => setShowCreateModal(true)}
+          className="wonder-button flex items-center gap-2"
+        >
           <Plus className="w-5 h-5" />
           Add Company
         </button>
@@ -228,13 +238,32 @@ export default function CompaniesPage() {
                 : 'Add your first company to get started building the ecosystem.'
               }
             </p>
-            <button className="wonder-button">
+            <button 
+              onClick={() => setShowCreateModal(true)}
+              className="wonder-button"
+            >
               <Plus className="w-5 h-5 mr-2" />
               Add Your First Company
             </button>
           </div>
         )}
       </div>
+
+      {/* Create Company Modal */}
+      {showCreateModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div 
+            className="absolute inset-0 bg-black/20 backdrop-blur-sm"
+            onClick={() => setShowCreateModal(false)}
+          />
+          <div className="relative w-full max-w-4xl">
+            <CompanyForm 
+              onSuccess={handleCompanyCreated}
+              onCancel={() => setShowCreateModal(false)}
+            />
+          </div>
+        </div>
+      )}
     </div>
   )
 }
