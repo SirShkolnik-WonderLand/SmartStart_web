@@ -51,15 +51,15 @@ export default function EditVenturePage() {
           // Populate form with existing data
           setFormData({
             name: ventureData.name || '',
-            description: ventureData.description || '',
-            industry: ventureData.industry || '',
-            stage: (ventureData.stage || 'idea') as 'idea' | 'mvp' | 'growth' | 'scale',
-            teamSize: ventureData.teamSize || 0,
+            description: ventureData.ventureProfile?.description || ventureData.description || '',
+            industry: ventureData.ventureProfile?.industry || ventureData.industry || '',
+            stage: (ventureData.ventureProfile?.stage || ventureData.stage || 'idea') as 'idea' | 'mvp' | 'growth' | 'scale',
+            teamSize: ventureData.ventureProfile?.teamSize || ventureData.teamSize || 0,
             lookingFor: ventureData.lookingFor || [],
             rewardsType: (ventureData.rewards?.type || 'equity') as 'equity' | 'cash' | 'hybrid',
             rewardsAmount: ventureData.rewards?.amount || '',
             tags: ventureData.tags || [],
-            residency: ventureData.residency || 'US'
+            residency: ventureData.ventureProfile?.region || ventureData.residency || ventureData.region || 'US'
           })
         } else {
           setError(ventureResponse.error || 'Failed to load venture')
