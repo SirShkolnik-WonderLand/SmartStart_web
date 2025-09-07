@@ -47,26 +47,28 @@ export default function RegisterPage() {
         password: formData.password
       })
 
-      if (registerResponse.success && registerResponse.data) {
-        // Initialize user journey
-        const journeyResponse = await apiService.initializeJourney(registerResponse.data.id)
-        
-        if (journeyResponse.success) {
-          setSuccess(true)
-          
-          // Store user data and redirect to onboarding
-          localStorage.setItem('user', JSON.stringify(registerResponse.data))
-          localStorage.setItem('token', registerResponse.data.token || '')
-          
-          setTimeout(() => {
-            router.push(`/onboarding?userId=${registerResponse.data.id}`)
-          }, 2000)
-        } else {
-          setError('Account created but failed to initialize journey. Please try logging in.')
-        }
-      } else {
-        setError(registerResponse.error || 'Failed to create account')
-      }
+              if (registerResponse.success && registerResponse.data) {
+                // Initialize user journey
+                const journeyResponse = await apiService.initializeJourney(registerResponse.data.id)
+                
+                if (journeyResponse.success) {
+                  setSuccess(true)
+                  
+                  // Store user data and redirect to onboarding
+                  localStorage.setItem('user', JSON.stringify(registerResponse.data))
+                  localStorage.setItem('token', registerResponse.data.token || '')
+                  
+                  setTimeout(() => {
+                    if (registerResponse.data) {
+                      router.push(`/onboarding?userId=${registerResponse.data.id}`)
+                    }
+                  }, 2000)
+                } else {
+                  setError('Account created but failed to initialize journey. Please try logging in.')
+                }
+              } else {
+                setError(registerResponse.error || 'Failed to create account')
+              }
     } catch (err) {
       console.error('Registration error:', err)
       setError('An unexpected error occurred. Please try again.')

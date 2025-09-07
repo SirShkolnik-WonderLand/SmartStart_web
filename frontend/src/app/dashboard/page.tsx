@@ -25,8 +25,6 @@ export default function DashboardPage() {
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null)
   const [ventures, setVentures] = useState<Venture[]>([])
   const [offers, setOffers] = useState<Offer[]>([])
-  const [journeyStatus, setJourneyStatus] = useState<JourneyStatus | null>(null)
-  // Note: journeyStatus is used in the useEffect below
   const [legalPackStatus, setLegalPackStatus] = useState<{
     signed: boolean
     signedAt?: string
@@ -76,10 +74,11 @@ export default function DashboardPage() {
         if (userResponse.success && userResponse.data) {
           const userId = userResponse.data.id
           
-          // Load journey status
+          // Load journey status (for future use)
           const journeyResponse = await apiService.getJourneyStatus(userId)
           if (journeyResponse.success && journeyResponse.data) {
-            setJourneyStatus(journeyResponse.data)
+            // Journey status loaded successfully
+            console.log('Journey status loaded:', journeyResponse.data)
           }
 
           // Load legal pack status
