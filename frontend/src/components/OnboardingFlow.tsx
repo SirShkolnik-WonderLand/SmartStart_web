@@ -192,7 +192,7 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
     loadInitialData()
   }, [loadInitialData])
 
-  const updateJourneyProgress = async (action: string, data: Record<string, unknown> = {}) => {
+  const updateJourneyProgress = useCallback(async (action: string, data: Record<string, unknown> = {}) => {
     try {
       const response = await apiService.updateJourneyProgress(userId, action, data)
       if (response.success) {
@@ -210,7 +210,7 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
       console.warn('Error updating journey progress (continuing anyway):', err)
       // Don't fail the onboarding flow if journey updates fail
     }
-  }
+  }, [userId])
 
   // Get current step data for auto-save
   const getCurrentStepData = useCallback(() => {
@@ -552,7 +552,7 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
                 <input
                   type="checkbox"
                   id="confidentiality"
-                  checked={legalAgreements.confidentiality?.signed || legalAgreements.confidentiality === true}
+                  checked={typeof legalAgreements.confidentiality === 'object' ? legalAgreements.confidentiality.signed : legalAgreements.confidentiality === true}
                   onChange={(e) => {
                     if (e.target.checked) {
                       signLegalAgreement('confidentiality')
@@ -586,7 +586,7 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
                 <input
                   type="checkbox"
                   id="equity"
-                  checked={legalAgreements.equity?.signed || legalAgreements.equity === true}
+                  checked={typeof legalAgreements.equity === 'object' ? legalAgreements.equity.signed : legalAgreements.equity === true}
                   onChange={(e) => {
                     if (e.target.checked) {
                       signLegalAgreement('equity')
@@ -620,7 +620,7 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
                 <input
                   type="checkbox"
                   id="partnership"
-                  checked={legalAgreements.partnership?.signed || legalAgreements.partnership === true}
+                  checked={typeof legalAgreements.partnership === 'object' ? legalAgreements.partnership.signed : legalAgreements.partnership === true}
                   onChange={(e) => {
                     if (e.target.checked) {
                       signLegalAgreement('partnership')
