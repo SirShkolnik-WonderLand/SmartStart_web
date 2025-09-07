@@ -8,11 +8,9 @@ import {
   EyeOff, 
   Mail, 
   Lock, 
-  Zap, 
   Users, 
   Shield, 
   Rocket,
-  Star,
   Crown,
   Sparkles,
   ArrowRight,
@@ -142,7 +140,7 @@ export default function LoginPage() {
                 </h2>
                 <p className="text-lg text-muted-foreground max-w-md mx-auto lg:mx-0">
                   Build, collaborate, and scale your startup with our comprehensive platform. 
-                  From legal documents to team management, we've got you covered.
+                  From legal documents to team management, we&apos;ve got you covered.
                 </p>
               </div>
 
