@@ -59,7 +59,7 @@ export default function EditVenturePage() {
             rewardsType: (ventureData.rewards?.type || 'equity') as 'equity' | 'cash' | 'hybrid',
             rewardsAmount: ventureData.rewards?.amount || '',
             tags: ventureData.tags || [],
-            residency: ventureData.ventureProfile?.region || ventureData.residency || ventureData.region || 'US'
+            residency: ventureData.residency || ventureData.region || 'US'
           })
         } else {
           setError(ventureResponse.error || 'Failed to load venture')
