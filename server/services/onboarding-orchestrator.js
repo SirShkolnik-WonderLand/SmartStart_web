@@ -5,9 +5,6 @@
  */
 
 const { PrismaClient } = require('@prisma/client')
-const { interpret } = require('xstate')
-const userJourneyMachine = require('../state-machines/user-journey/UserJourneyStateMachine')
-const legalStateMachine = require('../state-machines/legal/LegalStateMachine')
 const EventEmitter = require('events')
 
 const prisma = new PrismaClient()
@@ -26,26 +23,7 @@ class OnboardingOrchestrator extends EventEmitter {
     try {
       console.log(`🚀 Initializing journey for user: ${userId}`)
 
-      // Create user journey state machine service
-      const userJourneyService = interpret(userJourneyMachine.withContext({
-        userId,
-        currentRbacLevel: 'GUEST',
-        targetRbacLevel: 'MEMBER',
-        journeyStage: 'ONBOARDING',
-        onboardingProgress: 0,
-        journeyStartDate: new Date(),
-        milestones: [],
-        completedMilestones: [],
-        achievements: [],
-        auditTrail: []
-      }))
-
-      this.userJourneyServices.set(userId, userJourneyService)
-
-      // Start the service
-      userJourneyService.start()
-
-      // Create initial journey states for all stages
+      // Create initial journey states for all stages (simplified approach)
       await this.createInitialJourneyStates(userId)
 
       // Emit journey started event
