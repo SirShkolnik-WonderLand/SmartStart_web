@@ -33,11 +33,11 @@ router.get('/status/:userId', async(req, res) => {
             where: {
                 userId: userId,
                 status: {
-                    in: ['active', 'trialing', 'past_due']
+                    in: ['ACTIVE']
                 }
             },
             include: {
-                billingPlan: true
+                plan: true
             },
             orderBy: {
                 createdAt: 'desc'
