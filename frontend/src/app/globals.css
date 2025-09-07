@@ -91,12 +91,7 @@ body {
 /* Wonderland Background */
 
 .wonderland-bg {
-    background: linear-gradient(135deg, 
-        rgb(var(--background)) 0%, 
-        rgba(241, 245, 255, 0.8) 25%,
-        rgba(139, 92, 246, 0.05) 50%,
-        rgba(236, 72, 153, 0.05) 75%,
-        rgb(var(--background)) 100%);
+    background: linear-gradient(135deg, rgb(var(--background)) 0%, rgba(241, 245, 255, 0.8) 25%, rgba(139, 92, 246, 0.05) 50%, rgba(236, 72, 153, 0.05) 75%, rgb(var(--background)) 100%);
     min-height: 100vh;
     position: relative;
 }
@@ -108,10 +103,7 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: 
-        radial-gradient(circle at 20% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(236, 72, 153, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 40% 40%, rgba(245, 158, 11, 0.05) 0%, transparent 50%);
+    background: radial-gradient(circle at 20% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(236, 72, 153, 0.1) 0%, transparent 50%), radial-gradient(circle at 40% 40%, rgba(245, 158, 11, 0.05) 0%, transparent 50%);
     pointer-events: none;
     z-index: -1;
 }
@@ -135,9 +127,7 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, 
-        rgba(139, 92, 246, 0.02) 0%, 
-        rgba(236, 72, 153, 0.02) 100%);
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.02) 0%, rgba(236, 72, 153, 0.02) 100%);
     border-radius: inherit;
     pointer-events: none;
 }
@@ -158,9 +148,7 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, 
-        rgba(139, 92, 246, 0.03) 0%, 
-        rgba(236, 72, 153, 0.03) 100%);
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.03) 0%, rgba(236, 72, 153, 0.03) 100%);
     border-radius: inherit;
     pointer-events: none;
 }
@@ -183,10 +171,7 @@ body {
 /* Wonder Button */
 
 .wonder-button {
-    background: linear-gradient(135deg, 
-        rgb(var(--primary)) 0%, 
-        rgb(var(--accent)) 50%,
-        rgb(var(--highlight)) 100%);
+    background: linear-gradient(135deg, rgb(var(--primary)) 0%, rgb(var(--accent)) 50%, rgb(var(--highlight)) 100%);
     color: white;
     border: none;
     padding: 0.75rem 1.5rem;
@@ -205,10 +190,7 @@ body {
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, 
-        transparent, 
-        rgba(255, 255, 255, 0.2), 
-        transparent);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
     transition: left 0.5s ease;
 }
 
@@ -242,9 +224,7 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, 
-        rgba(139, 92, 246, 0.05) 0%, 
-        rgba(236, 72, 153, 0.05) 100%);
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.05) 0%, rgba(236, 72, 153, 0.05) 100%);
     opacity: 0;
     transition: opacity 0.3s ease;
 }

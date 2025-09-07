@@ -359,6 +359,111 @@ router.put('/:ventureId/profile', async(req, res) => {
     }
 });
 
+// Update venture details
+router.put('/:ventureId', async(req, res) => {
+    try {
+        const { ventureId } = req.params;
+        const ventureData = req.body;
+        
+        // Basic auth validation
+        const authHeader = req.headers.authorization;
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            return res.status(401).json({
+                success: false,
+                message: 'Authorization header required'
+            });
+        }
+
+        // Validate that the venture exists
+        const existingVenture = await prisma.venture.findUnique({
+            where: { id: ventureId }
+        });
+
+        if (!existingVenture) {
+            return res.status(404).json({
+                success: false,
+                message: 'Venture not found'
+            });
+        }
+
+        // Update the venture with the provided data
+        const updatedVenture = await prisma.venture.update({
+            where: { id: ventureId },
+            data: {
+                name: ventureData.name || existingVenture.name,
+                purpose: ventureData.purpose || existingVenture.purpose,
+                region: ventureData.region || existingVenture.region,
+                updatedAt: new Date()
+            },
+            include: {
+                owner: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true
+                    }
+                }
+            }
+        });
+
+        // If there's a venture profile, update it too
+        if (ventureData.industry || ventureData.stage || ventureData.teamSize || 
+            ventureData.lookingFor || ventureData.rewards || ventureData.tags) {
+            
+            try {
+                await prisma.ventureProfile.upsert({
+                    where: { ventureId },
+                    update: {
+                        industry: ventureData.industry,
+                        stage: ventureData.stage,
+                        teamSize: ventureData.teamSize,
+                        lookingFor: ventureData.lookingFor,
+                        rewards: ventureData.rewards,
+                        tags: ventureData.tags,
+                        updatedAt: new Date()
+                    },
+                    create: {
+                        ventureId,
+                        industry: ventureData.industry,
+                        stage: ventureData.stage,
+                        teamSize: ventureData.teamSize,
+                        lookingFor: ventureData.lookingFor,
+                        rewards: ventureData.rewards,
+                        tags: ventureData.tags,
+                        createdAt: new Date(),
+                        updatedAt: new Date()
+                    }
+                });
+            } catch (profileError) {
+                console.log('Venture profile update failed (non-critical):', profileError.message);
+            }
+        }
+
+        res.json({
+            success: true,
+            message: 'Venture updated successfully',
+            venture: {
+                id: updatedVenture.id,
+                name: updatedVenture.name,
+                purpose: updatedVenture.purpose,
+                region: updatedVenture.region,
+                status: updatedVenture.status,
+                createdAt: updatedVenture.createdAt,
+                updatedAt: updatedVenture.updatedAt,
+                ownerUserId: updatedVenture.ownerUserId
+            }
+        });
+
+    } catch (error) {
+        console.error('Failed to update venture:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to update venture',
+            error: error.message
+        });
+    }
+});
+
 // Run venture management migration
 router.post('/migrate', async(req, res) => {
     try {

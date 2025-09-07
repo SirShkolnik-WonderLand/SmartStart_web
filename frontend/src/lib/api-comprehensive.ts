@@ -145,6 +145,43 @@ export interface Offer {
   venture?: Venture
 }
 
+export interface Meeting {
+  id: string
+  title: string
+  description: string
+  ventureId: string
+  organizerId: string
+  scheduledFor: string
+  duration: number
+  location: string
+  meetingType: string
+  status: string
+  agenda: string
+  meetingLink: string
+  createdAt: string
+  updatedAt: string
+  organizer?: {
+    id: string
+    name: string
+    email: string
+  }
+  venture?: {
+    id: string
+    name: string
+  }
+  attendees?: Array<{
+    id: string
+    userId: string
+    status: string
+    invitedAt: string
+    user: {
+      id: string
+      name: string
+      email: string
+    }
+  }>
+}
+
 export interface Contribution {
   id: string
   userId: string
@@ -624,6 +661,157 @@ class ComprehensiveApiService {
     } catch (error) {
       console.error('Error creating venture:', error)
       return { success: false, error: 'Failed to create venture' }
+    }
+  }
+
+  async updateVenture(id: string, ventureData: Partial<Venture>): Promise<ApiResponse<Venture>> {
+    try {
+      // Transform frontend data to backend format
+      const backendData = {
+        name: ventureData.name,
+        purpose: ventureData.description,
+        region: ventureData.residency || 'US',
+        industry: ventureData.industry,
+        stage: ventureData.stage,
+        teamSize: ventureData.teamSize,
+        lookingFor: ventureData.lookingFor,
+        rewards: ventureData.rewards,
+        tags: ventureData.tags
+      }
+      
+      console.log('Updating venture with data:', backendData)
+      
+      const response = await this.fetchWithAuth<{venture: Venture}>(`/api/ventures/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(backendData),
+      })
+      
+      console.log('Update API Response:', response)
+      
+      // Handle the actual backend response format: { success: true, venture: {...} }
+      const responseData = response as ApiResponse<{venture: Venture}> & { venture?: Venture }
+      const venture = responseData.venture || response.data?.venture
+      
+      return {
+        success: response.success,
+        data: venture,
+        error: response.error
+      }
+    } catch (error) {
+      console.error('Error updating venture:', error)
+      return { success: false, error: 'Failed to update venture' }
+    }
+  }
+
+  // ============================================================================
+  // MEETINGS & SCHEDULING
+  // ============================================================================
+
+  async createMeeting(meetingData: {
+    title: string
+    description?: string
+    ventureId: string
+    organizerId: string
+    scheduledFor: string
+    duration?: number
+    location?: string
+    meetingType?: string
+    agenda?: string
+    meetingLink?: string
+    attendees?: string[]
+  }): Promise<ApiResponse<Meeting>> {
+    try {
+      const response = await this.fetchWithAuth<{meeting: Meeting}>('/api/meetings/create', {
+        method: 'POST',
+        body: JSON.stringify(meetingData),
+      })
+      
+      return {
+        success: response.success,
+        data: response.data?.meeting,
+        error: response.error
+      }
+    } catch (error) {
+      console.error('Error creating meeting:', error)
+      return { success: false, error: 'Failed to create meeting' }
+    }
+  }
+
+  async getVentureMeetings(ventureId: string): Promise<ApiResponse<Meeting[]>> {
+    try {
+      const response = await this.fetchWithAuth<{meetings: Meeting[]}>(`/api/meetings/venture/${ventureId}`)
+      return {
+        success: response.success,
+        data: response.data?.meetings || [],
+        error: response.error
+      }
+    } catch (error) {
+      console.error('Error fetching venture meetings:', error)
+      return { success: false, data: [], error: 'Failed to fetch meetings' }
+    }
+  }
+
+  async getUserMeetings(userId: string): Promise<ApiResponse<Meeting[]>> {
+    try {
+      const response = await this.fetchWithAuth<{meetings: Meeting[]}>(`/api/meetings/user/${userId}`)
+      return {
+        success: response.success,
+        data: response.data?.meetings || [],
+        error: response.error
+      }
+    } catch (error) {
+      console.error('Error fetching user meetings:', error)
+      return { success: false, data: [], error: 'Failed to fetch meetings' }
+    }
+  }
+
+  async getMeeting(meetingId: string): Promise<ApiResponse<Meeting>> {
+    try {
+      const response = await this.fetchWithAuth<{meeting: Meeting}>(`/api/meetings/${meetingId}`)
+      return {
+        success: response.success,
+        data: response.data?.meeting,
+        error: response.error
+      }
+    } catch (error) {
+      console.error('Error fetching meeting:', error)
+      return { success: false, error: 'Failed to fetch meeting' }
+    }
+  }
+
+  async updateMeeting(meetingId: string, meetingData: Partial<Meeting>): Promise<ApiResponse<Meeting>> {
+    try {
+      const response = await this.fetchWithAuth<{meeting: Meeting}>(`/api/meetings/${meetingId}`, {
+        method: 'PUT',
+        body: JSON.stringify(meetingData),
+      })
+      
+      return {
+        success: response.success,
+        data: response.data?.meeting,
+        error: response.error
+      }
+    } catch (error) {
+      console.error('Error updating meeting:', error)
+      return { success: false, error: 'Failed to update meeting' }
+    }
+  }
+
+  async addMeetingAttendee(meetingId: string, userId: string): Promise<ApiResponse<{id: string, userId: string, status: string, invitedAt: string}>> {
+    try {
+      const response = await this.fetchWithAuth<{attendee: {id: string, userId: string, status: string, invitedAt: string}}>(`/api/meetings/${meetingId}/attendees`, {
+        method: 'POST',
+        body: JSON.stringify({ userId }),
+      })
+      
+      return {
+        success: response.success,
+        data: response.data?.attendee,
+        error: response.error
+      }
+    } catch (error) {
+      console.error('Error adding meeting attendee:', error)
+      return { success: false, error: 'Failed to add attendee' }
     }
   }
 

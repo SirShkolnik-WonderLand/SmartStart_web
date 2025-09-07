@@ -84,6 +84,9 @@ app.use('/api/users', userManagementApiRoutes);
 const ventureManagementApiRoutes = require('./routes/venture-management-api');
 app.use('/api/ventures', ventureManagementApiRoutes);
 
+const meetingsApiRoutes = require('./routes/meetings-api');
+app.use('/api/meetings', meetingsApiRoutes);
+
 const companyManagementApiRoutes = require('./routes/company-management-api');
 app.use('/api/companies', companyManagementApiRoutes);
 

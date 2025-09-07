@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { comprehensiveApiService as apiService, Venture } from '@/lib/api-comprehensive'
-import { ArrowLeft, Building2, Users, Calendar, TrendingUp, Briefcase, CheckCircle, Clock, AlertCircle } from 'lucide-react'
+import { comprehensiveApiService as apiService, Venture, User } from '@/lib/api-comprehensive'
+import { ArrowLeft, Building2, Users, Calendar, TrendingUp, Briefcase, CheckCircle, Clock, AlertCircle, Edit3 } from 'lucide-react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 
@@ -11,32 +11,43 @@ export default function VentureDetailPage() {
   const params = useParams()
   const router = useRouter()
   const [venture, setVenture] = useState<Venture | null>(null)
+  const [currentUser, setCurrentUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [isCreatingMeeting, setIsCreatingMeeting] = useState(false)
 
   const ventureId = params.id as string
 
   useEffect(() => {
-    const loadVenture = async () => {
+    const loadData = async () => {
       try {
         setIsLoading(true)
-        const response = await apiService.getVenture(ventureId)
         
-        if (response.success && response.data) {
-          setVenture(response.data)
+        // Load venture and current user in parallel
+        const [ventureResponse, userResponse] = await Promise.all([
+          apiService.getVenture(ventureId),
+          apiService.getCurrentUser()
+        ])
+        
+        if (ventureResponse.success && ventureResponse.data) {
+          setVenture(ventureResponse.data)
         } else {
-          setError(response.error || 'Failed to load venture')
+          setError(ventureResponse.error || 'Failed to load venture')
+        }
+        
+        if (userResponse.success && userResponse.data) {
+          setCurrentUser(userResponse.data)
         }
       } catch (err) {
-        setError('Failed to load venture')
-        console.error('Error loading venture:', err)
+        setError('Failed to load data')
+        console.error('Error loading data:', err)
       } finally {
         setIsLoading(false)
       }
     }
 
     if (ventureId) {
-      loadVenture()
+      loadData()
     }
   }, [ventureId])
 
@@ -63,6 +74,47 @@ export default function VentureDetailPage() {
         return 'bg-blue-500/10 text-blue-600 border-blue-500/20'
       default:
         return 'bg-gray-500/10 text-gray-600 border-gray-500/20'
+    }
+  }
+
+  const isOwner = currentUser && venture && currentUser.id === venture.owner?.id
+
+  const handleScheduleMeeting = async () => {
+    if (!venture || !currentUser) return
+
+    try {
+      setIsCreatingMeeting(true)
+      
+      // Create a default meeting for next week
+      const nextWeek = new Date()
+      nextWeek.setDate(nextWeek.getDate() + 7)
+      nextWeek.setHours(14, 0, 0, 0) // 2 PM
+
+      const meetingData = {
+        title: `${venture.name} Team Meeting`,
+        description: `Team meeting for ${venture.name}`,
+        ventureId: venture.id,
+        organizerId: currentUser.id,
+        scheduledFor: nextWeek.toISOString(),
+        duration: 60,
+        location: 'Virtual',
+        meetingType: 'TEAM_MEETING',
+        agenda: 'Discuss venture progress and next steps',
+        meetingLink: `https://meet.google.com/${Math.random().toString(36).substring(2, 15)}`
+      }
+
+      const response = await apiService.createMeeting(meetingData)
+      
+      if (response.success) {
+        alert('Meeting scheduled successfully!')
+      } else {
+        alert('Failed to schedule meeting: ' + response.error)
+      }
+    } catch (error) {
+      console.error('Error creating meeting:', error)
+      alert('Failed to schedule meeting')
+    } finally {
+      setIsCreatingMeeting(false)
     }
   }
 
@@ -106,16 +158,32 @@ export default function VentureDetailPage() {
     <div className="min-h-screen wonderland-bg">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
-        <div className="flex items-center gap-4 mb-8">
-          <button 
-            onClick={() => router.back()}
-            className="wonder-button-secondary flex items-center gap-2"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back
-          </button>
-          <div className="flex-1">
-            <h1 className="text-4xl font-bold text-foreground mb-2">{venture.name}</h1>
+        <div className="mb-8">
+          {/* Back Button - Above everything */}
+          <div className="mb-4">
+            <button 
+              onClick={() => router.back()}
+              className="wonder-button-secondary flex items-center gap-2"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back
+            </button>
+          </div>
+          
+          {/* Project Title and Status */}
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <h1 className="text-4xl font-bold text-foreground">{venture.name}</h1>
+              {isOwner && (
+                <Link 
+                  href={`/ventures/${venture.id}/edit`}
+                  className="wonder-button-secondary flex items-center gap-2"
+                >
+                  <Edit3 className="w-4 h-4" />
+                  Edit Venture
+                </Link>
+              )}
+            </div>
             <div className="flex items-center gap-4">
               <span className={`px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(venture.status)}`}>
                 {getStatusIcon(venture.status)}
@@ -244,9 +312,13 @@ export default function VentureDetailPage() {
                   <Users className="w-4 h-4 mr-2" />
                   Invite Team Members
                 </button>
-                <button className="w-full wonder-button-secondary text-left">
+                <button 
+                  onClick={handleScheduleMeeting}
+                  disabled={isCreatingMeeting}
+                  className="w-full wonder-button-secondary text-left"
+                >
                   <Calendar className="w-4 h-4 mr-2" />
-                  Schedule Meeting
+                  {isCreatingMeeting ? 'Scheduling...' : 'Schedule Meeting'}
                 </button>
                 <button className="w-full wonder-button-secondary text-left">
                   <TrendingUp className="w-4 h-4 mr-2" />
