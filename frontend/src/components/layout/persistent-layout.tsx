@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
+import Link from 'next/link'
 import { 
   Crown, 
   Search,
@@ -175,7 +176,7 @@ export default function PersistentLayout({ children }: PersistentLayoutProps) {
         <aside className={`${sidebarOpen ? 'w-64' : 'w-16'} transition-all duration-300 bg-glass-surface border-r border-border/50 min-h-screen sticky top-16 z-40`}>
           <div className="p-6">
             <nav className="space-y-2">
-              <a 
+              <Link 
                 href="/dashboard" 
                 className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
                   pathname === '/dashboard' 
@@ -185,8 +186,8 @@ export default function PersistentLayout({ children }: PersistentLayoutProps) {
               >
                 <Home className="w-5 h-5" />
                 {sidebarOpen && <span>Dashboard</span>}
-              </a>
-              <a 
+              </Link>
+              <Link 
                 href="/ventures" 
                 className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
                   pathname === '/ventures' 
@@ -196,8 +197,8 @@ export default function PersistentLayout({ children }: PersistentLayoutProps) {
               >
                 <Briefcase className="w-5 h-5" />
                 {sidebarOpen && <span>My Ventures</span>}
-              </a>
-              <a 
+              </Link>
+              <Link 
                 href="/opportunities" 
                 className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
                   pathname === '/opportunities' 
@@ -207,8 +208,8 @@ export default function PersistentLayout({ children }: PersistentLayoutProps) {
               >
                 <Target className="w-5 h-5" />
                 {sidebarOpen && <span>Opportunities</span>}
-              </a>
-              <a 
+              </Link>
+              <Link 
                 href="/approvals" 
                 className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
                   pathname === '/approvals' 
@@ -219,8 +220,8 @@ export default function PersistentLayout({ children }: PersistentLayoutProps) {
                 <UserCheck className="w-5 h-5" />
                 {sidebarOpen && <span>Approvals</span>}
                 {sidebarOpen && <span className="ml-auto bg-accent text-accent-foreground text-xs px-2 py-1 rounded-full">3</span>}
-              </a>
-              <a 
+              </Link>
+              <Link 
                 href="/documents" 
                 className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
                   pathname === '/documents' 
@@ -230,8 +231,8 @@ export default function PersistentLayout({ children }: PersistentLayoutProps) {
               >
                 <FileText className="w-5 h-5" />
                 {sidebarOpen && <span>Documents</span>}
-              </a>
-              <a 
+              </Link>
+              <Link 
                 href="/analytics" 
                 className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
                   pathname === '/analytics' 
@@ -241,7 +242,7 @@ export default function PersistentLayout({ children }: PersistentLayoutProps) {
               >
                 <BarChart3 className="w-5 h-5" />
                 {sidebarOpen && <span>Analytics</span>}
-              </a>
+              </Link>
             </nav>
           </div>
         </aside>
