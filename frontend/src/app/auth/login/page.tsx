@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { apiService } from '@/lib/api'
+import { comprehensiveApiService as apiService } from '@/lib/api-comprehensive'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -115,9 +115,8 @@ export default function LoginPage() {
                 Test credentials:
               </p>
               <div className="text-xs space-y-1">
-                <p><strong>Admin:</strong> admin@smartstart.com / admin123</p>
-                <p><strong>User:</strong> user@smartstart.com / user123</p>
-                <p><strong>Brian:</strong> brian@smartstart.com / brian123</p>
+                <p><strong>Test User:</strong> test@example.com / password123</p>
+                <p className="text-muted-foreground">Real user with real ventures in database</p>
               </div>
             </div>
           </div>

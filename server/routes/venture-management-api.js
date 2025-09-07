@@ -85,9 +85,9 @@ router.get('/:ventureId', authenticateToken, requirePermission('venture:read'), 
     try {
         const { ventureId } = req.params;
         const userId = req.user.id;
-        
+
         console.log(`Venture details requested for ${ventureId} by user ${userId}`);
-        
+
         const venture = await ventureService.getVentureWithDetails(ventureId);
 
         res.json({
@@ -125,7 +125,7 @@ router.put('/:ventureId/status', async(req, res) => {
     try {
         const { ventureId } = req.params;
         const { status } = req.body;
-        
+
         // Basic auth validation
         const authHeader = req.headers.authorization;
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -316,7 +316,7 @@ router.put('/:ventureId/profile', async(req, res) => {
     try {
         const { ventureId } = req.params;
         const profileData = req.body;
-        
+
         // Basic auth validation
         const authHeader = req.headers.authorization;
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -370,7 +370,7 @@ router.put('/:ventureId', authenticateToken, requirePermission('venture:write'),
         }
 
         // Check ownership (unless user is admin)
-        if (existingVenture.ownerUserId !== userId && !req.user.permissions?.includes('venture:admin')) {
+        if (existingVenture.ownerUserId !== userId && !req.user.permissions ? .includes('venture:admin')) {
             return res.status(403).json({
                 success: false,
                 message: 'Access denied: You can only update your own ventures'
@@ -398,9 +398,9 @@ router.put('/:ventureId', authenticateToken, requirePermission('venture:write'),
         });
 
         // If there's a venture profile, update it too
-        if (ventureData.industry || ventureData.stage || ventureData.teamSize || 
+        if (ventureData.industry || ventureData.stage || ventureData.teamSize ||
             ventureData.lookingFor || ventureData.rewards || ventureData.tags) {
-            
+
             try {
                 await prisma.ventureProfile.upsert({
                     where: { ventureId },
@@ -483,7 +483,7 @@ router.delete('/:ventureId', authenticateToken, requirePermission('venture:delet
         }
 
         // Check ownership (unless user is admin)
-        if (existingVenture.ownerUserId !== userId && !req.user.permissions?.includes('venture:admin')) {
+        if (existingVenture.ownerUserId !== userId && !req.user.permissions ? .includes('venture:admin')) {
             return res.status(403).json({
                 success: false,
                 message: 'Access denied: You can only delete your own ventures'
