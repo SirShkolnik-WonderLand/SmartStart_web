@@ -469,8 +469,8 @@ const ventureMachine = createMachine({
             teamMembers: (context, event) => [
                 ...context.teamMembers,
                 {
-                    userId: event.metadata ? .userId,
-                    role: event.metadata ? .role,
+                    userId: event.metadata?.userId,
+                    role: event.metadata?.role,
                     joinedAt: new Date().toISOString()
                 }
             ]
@@ -491,8 +491,8 @@ const ventureMachine = createMachine({
             marketValidation: {
                 validated: true,
                 validatedAt: new Date().toISOString(),
-                marketSize: (context, event) => event.metadata ? .marketSize,
-                targetAudience: (context, event) => event.metadata ? .targetAudience
+                marketSize: (context, event) => event.metadata?.marketSize,
+                targetAudience: (context, event) => event.metadata?.targetAudience
             },
             milestones: (context) => [...context.milestones, 'MARKET_VALIDATED'],
             completedMilestones: (context) => [...context.completedMilestones, 'MARKET_VALIDATED']
@@ -502,7 +502,7 @@ const ventureMachine = createMachine({
             productDevelopment: {
                 mvpComplete: true,
                 completedAt: new Date().toISOString(),
-                features: (context, event) => event.metadata ? .features || []
+                features: (context, event) => event.metadata?.features || []
             },
             milestones: (context) => [...context.milestones, 'MVP_COMPLETE'],
             completedMilestones: (context) => [...context.completedMilestones, 'MVP_COMPLETE']
@@ -514,7 +514,7 @@ const ventureMachine = createMachine({
         }),
 
         achieveRevenueMilestone: assign({
-            revenue: (context, event) => event.metadata ? .revenue || context.revenue,
+            revenue: (context, event) => event.metadata?.revenue || context.revenue,
             milestones: (context) => [...context.milestones, 'REVENUE_MILESTONE'],
             completedMilestones: (context) => [...context.completedMilestones, 'REVENUE_MILESTONE']
         }),
