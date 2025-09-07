@@ -56,30 +56,30 @@ export default function VentureDetailPage() {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'PENDING_CONTRACTS':
-        return <Clock className="w-5 h-5 text-yellow-500" />
+        return <Clock className="w-5 h-5 text-warning" />
       case 'ACTIVE':
-        return <CheckCircle className="w-5 h-5 text-green-500" />
+        return <CheckCircle className="w-5 h-5 text-success" />
       case 'COMPLETED':
-        return <CheckCircle className="w-5 h-5 text-blue-500" />
+        return <CheckCircle className="w-5 h-5 text-info" />
       default:
-        return <AlertCircle className="w-5 h-5 text-gray-500" />
+        return <AlertCircle className="w-5 h-5 text-foreground-muted" />
     }
   }
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'PENDING_CONTRACTS':
-        return 'bg-yellow-500/10 text-yellow-600 border-yellow-500/20'
+        return 'bg-warning/10 text-warning border-warning/20'
       case 'ACTIVE':
-        return 'bg-green-500/10 text-green-600 border-green-500/20'
+        return 'bg-success/10 text-success border-success/20'
       case 'COMPLETED':
-        return 'bg-blue-500/10 text-blue-600 border-blue-500/20'
+        return 'bg-info/10 text-info border-info/20'
       default:
-        return 'bg-gray-500/10 text-gray-600 border-gray-500/20'
+        return 'bg-foreground-muted/10 text-foreground-muted border-foreground-muted/20'
     }
   }
 
-  const isOwner = currentUser && venture && currentUser.id === venture.owner?.id
+  const isOwner = currentUser && venture && currentUser.id === venture.ownerUserId
 
   const handleScheduleMeeting = async () => {
     if (!venture || !currentUser) return
@@ -187,10 +187,10 @@ export default function VentureDetailPage() {
           <div className="mb-4">
             <button 
               onClick={() => router.back()}
-              className="wonder-button-secondary flex items-center gap-2"
+              className="glass-button flex items-center gap-2 px-4 py-2 rounded-lg text-foreground hover:text-primary transition-all duration-300 hover:scale-105"
             >
               <ArrowLeft className="w-4 h-4" />
-              Back
+              <span className="font-medium">Back to Wonderland</span>
             </button>
           </div>
           
@@ -198,6 +198,11 @@ export default function VentureDetailPage() {
           <div>
             <div className="flex items-center justify-between mb-4">
               <h1 className="text-4xl font-bold text-foreground">{venture.name}</h1>
+              {/* Debug info - remove this later */}
+              <div className="text-xs text-foreground-muted mb-2">
+                Debug: Current User ID: {currentUser?.id} | Venture Owner: {venture.ownerUserId} | Is Owner: {isOwner ? 'Yes' : 'No'}
+              </div>
+              
               {isOwner && (
                 <div className="flex items-center gap-3">
                   <Link 
@@ -216,6 +221,24 @@ export default function VentureDetailPage() {
                   </button>
                 </div>
               )}
+              
+              {/* Always show buttons for testing - remove this later */}
+              <div className="flex items-center gap-3 mt-2">
+                <Link 
+                  href={`/ventures/${venture.id}/edit`}
+                  className="wonder-button-secondary flex items-center gap-2"
+                >
+                  <Edit3 className="w-4 h-4" />
+                  Edit Venture (Always Visible)
+                </Link>
+                <button
+                  onClick={() => setShowDeleteConfirm(true)}
+                  className="bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Delete (Always Visible)
+                </button>
+              </div>
             </div>
             <div className="flex items-center gap-4">
               <span className={`px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(venture.status)}`}>
