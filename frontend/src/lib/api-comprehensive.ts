@@ -552,9 +552,14 @@ class ComprehensiveApiService {
   async getVentures(): Promise<ApiResponse<Venture[]>> {
     try {
       const response = await this.fetchWithAuth<{ventures: Venture[]}>('/api/ventures/list/all')
+      
+      // Handle the actual backend response format: { success: true, ventures: [...] }
+      const responseData = response as ApiResponse<{ventures: Venture[]}> & { ventures?: Venture[] }
+      const ventures = responseData.ventures || response.data?.ventures || []
+      
       return {
         success: response.success,
-        data: response.data?.ventures || [],
+        data: ventures,
         error: response.error
       }
     } catch (error) {
@@ -652,8 +657,13 @@ class ComprehensiveApiService {
 
   async getOffers(): Promise<ApiResponse<Offer[]>> {
     try {
-      const response = await this.fetchWithAuth<Offer[]>('/api/v1/offers')
-      return response
+      // Use contracts endpoint instead of non-existent offers endpoint
+      const response = await this.fetchWithAuth<{contracts: Offer[]}>('/api/contracts')
+      return {
+        success: response.success,
+        data: response.data?.contracts || [],
+        error: response.error
+      }
     } catch (error) {
       console.error('Error fetching offers:', error)
       return { success: false, data: [], error: 'Failed to fetch offers' }
