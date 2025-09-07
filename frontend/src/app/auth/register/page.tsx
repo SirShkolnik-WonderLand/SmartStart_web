@@ -88,12 +88,29 @@ export default function RegisterPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <div className="w-full max-w-md text-center">
-          <div className="glass-card p-8">
+      <div className="min-h-screen wonderland-bg flex items-center justify-center relative overflow-hidden p-4">
+        {/* Background Elements */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-20 right-20 w-32 h-32 opacity-6">
+            <div className="w-full h-full rounded-full bg-gradient-radial from-primary/20 to-transparent" />
+          </div>
+          <div className="absolute bottom-20 left-20 w-24 h-24 opacity-6">
+            <div className="w-full h-full rounded-full border-2 border-accent/30" />
+            <div className="absolute top-1/2 left-1/2 w-1 h-8 bg-accent/30 transform -translate-x-1/2 -translate-y-1/2" />
+          </div>
+          <div className="absolute inset-0 opacity-1">
+            <div className="w-full h-full" style={{
+              backgroundImage: `radial-gradient(circle at 1px 1px, rgba(59, 130, 246, 0.1) 1px, transparent 0)`,
+              backgroundSize: '20px 20px'
+            }} />
+          </div>
+        </div>
+
+        <div className="relative z-10 w-full max-w-md text-center">
+          <div className="glass-lg rounded-2xl p-8">
             <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
             <h1 className="text-2xl font-bold mb-2">Account Created!</h1>
-            <p className="text-muted-foreground mb-4">
+            <p className="text-foreground-body mb-4">
               Welcome to SmartStart! Redirecting you to complete your profile...
             </p>
             <div className="flex items-center justify-center space-x-2">
@@ -107,25 +124,52 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen wonderland-bg flex items-center justify-center relative overflow-hidden p-4">
+      {/* Background Elements */}
+      <div className="absolute inset-0 pointer-events-none">
+        {/* Keyhole glow - top right */}
+        <div className="absolute top-20 right-20 w-32 h-32 opacity-6">
+          <div className="w-full h-full rounded-full bg-gradient-radial from-primary/20 to-transparent" />
+        </div>
+        
+        {/* Pocket watch outline - bottom left */}
+        <div className="absolute bottom-20 left-20 w-24 h-24 opacity-6">
+          <div className="w-full h-full rounded-full border-2 border-accent/30" />
+          <div className="absolute top-1/2 left-1/2 w-1 h-8 bg-accent/30 transform -translate-x-1/2 -translate-y-1/2" />
+        </div>
+        
+        {/* Subtle checker pattern */}
+        <div className="absolute inset-0 opacity-1">
+          <div className="w-full h-full" style={{
+            backgroundImage: `radial-gradient(circle at 1px 1px, rgba(59, 130, 246, 0.1) 1px, transparent 0)`,
+            backgroundSize: '20px 20px'
+          }} />
+        </div>
+      </div>
+
+      <div className="relative z-10 w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="h-16 w-16 rounded-2xl bg-gradient-to-r from-primary to-accent flex items-center justify-center shadow-lg mx-auto mb-4">
-            <div className="h-8 w-8 text-white">🔑</div>
+          <div className="flex items-center justify-center mb-6">
+            <div className="relative">
+              <div className="h-16 w-16 rounded-2xl bg-gradient-to-r from-primary to-accent flex items-center justify-center shadow-lg">
+                <div className="h-8 w-8 text-white">🔑</div>
+              </div>
+              <Sparkles className="w-6 h-6 text-highlight absolute -top-2 -right-2 animate-key-glint" />
+            </div>
           </div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-2">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-2">
             Join Wonderland
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-foreground-body">
             Create your account and start your journey
           </p>
         </div>
 
-        <div className="glass-card p-8">
+        <div className="glass-lg rounded-2xl p-8">
           <div className="space-y-6">
             <div className="text-center">
               <h2 className="text-2xl font-semibold mb-2">Create Account</h2>
-              <p className="text-muted-foreground">Fill in your details to get started</p>
+              <p className="text-foreground-body">Fill in your details to get started</p>
             </div>
             
             {error && (
