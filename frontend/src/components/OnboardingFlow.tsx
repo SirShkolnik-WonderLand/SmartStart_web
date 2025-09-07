@@ -68,20 +68,52 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
     try {
       setIsLoading(true)
       
-      // Load journey status
-      const journeyResponse = await apiService.getJourneyStatus(userId)
-      if (journeyResponse.success && journeyResponse.data) {
-        setJourneyStatus(journeyResponse.data)
+      // Try to load journey status (but don't fail if it doesn't work)
+      try {
+        const journeyResponse = await apiService.getJourneyStatus(userId)
+        if (journeyResponse.success && journeyResponse.data) {
+          setJourneyStatus(journeyResponse.data)
+        }
+      } catch (journeyError) {
+        console.warn('Failed to load journey status, continuing with onboarding:', journeyError)
+        // Set default journey status
+        setJourneyStatus({
+          userId,
+          currentStage: 'ONBOARDING',
+          progress: { completedStages: 0, totalStages: 4 },
+          stages: []
+        })
       }
 
       // Load subscription plans
-      const plansResponse = await apiService.getSubscriptionPlans()
-      if (plansResponse.success && plansResponse.data) {
-        setSubscriptionPlans(plansResponse.data)
-        // Auto-select the first plan (All Features Pack)
-        if (plansResponse.data.length > 0) {
-          setSelectedPlan(plansResponse.data[0].id)
+      try {
+        const plansResponse = await apiService.getSubscriptionPlans()
+        if (plansResponse.success && plansResponse.data) {
+          setSubscriptionPlans(plansResponse.data)
+          // Auto-select the first plan (All Features Pack)
+          if (plansResponse.data.length > 0) {
+            setSelectedPlan(plansResponse.data[0].id)
+          }
         }
+      } catch (plansError) {
+        console.warn('Failed to load subscription plans:', plansError)
+        // Set default plans
+        setSubscriptionPlans([
+          {
+            id: 'all-features',
+            name: 'All Features Pack',
+            description: 'Complete access to all SmartStart features',
+            price: 29,
+            interval: 'MONTHLY',
+            features: [
+              'Unlimited ventures',
+              'Team collaboration',
+              'Advanced analytics',
+              'Priority support'
+            ]
+          }
+        ])
+        setSelectedPlan('all-features')
       }
     } catch (err) {
       setError('Failed to load onboarding data')
@@ -100,13 +132,18 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
       const response = await apiService.updateJourneyProgress(userId, action, data)
       if (response.success) {
         // Reload journey status
-        const journeyResponse = await apiService.getJourneyStatus(userId)
-        if (journeyResponse.success && journeyResponse.data) {
-          setJourneyStatus(journeyResponse.data)
+        try {
+          const journeyResponse = await apiService.getJourneyStatus(userId)
+          if (journeyResponse.success && journeyResponse.data) {
+            setJourneyStatus(journeyResponse.data)
+          }
+        } catch (journeyError) {
+          console.warn('Failed to reload journey status after update:', journeyError)
         }
       }
     } catch (err) {
-      console.error('Error updating journey progress:', err)
+      console.warn('Error updating journey progress (continuing anyway):', err)
+      // Don't fail the onboarding flow if journey updates fail
     }
   }
 

@@ -57,24 +57,26 @@ export default function RegisterPage() {
       console.log('Registration response:', registerResponse)
 
               if (registerResponse.success && registerResponse.data) {
-                // Initialize user journey
-                const journeyResponse = await apiService.initializeJourney(registerResponse.data.id)
+                // Store user data first
+                localStorage.setItem('user', JSON.stringify(registerResponse.data))
+                localStorage.setItem('token', registerResponse.data.token || '')
                 
-                if (journeyResponse.success) {
-                  setSuccess(true)
-                  
-                  // Store user data and redirect to onboarding
-                  localStorage.setItem('user', JSON.stringify(registerResponse.data))
-                  localStorage.setItem('token', registerResponse.data.token || '')
-                  
-                  setTimeout(() => {
-                    if (registerResponse.data) {
-                      router.push(`/onboarding?userId=${registerResponse.data.id}`)
-                    }
-                  }, 2000)
-                } else {
-                  setError('Account created but failed to initialize journey. Please try logging in.')
+                // Try to initialize user journey (but don't fail if it doesn't work)
+                try {
+                  const journeyResponse = await apiService.initializeJourney(registerResponse.data.id)
+                  console.log('Journey initialization response:', journeyResponse)
+                } catch (journeyError) {
+                  console.warn('Journey initialization failed, but continuing with onboarding:', journeyError)
                 }
+                
+                setSuccess(true)
+                
+                // Always redirect to onboarding after successful registration
+                setTimeout(() => {
+                  if (registerResponse.data) {
+                    router.push(`/onboarding?userId=${registerResponse.data.id}`)
+                  }
+                }, 2000)
               } else {
                 setError(registerResponse.error || 'Failed to create account')
               }
