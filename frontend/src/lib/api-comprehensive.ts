@@ -668,7 +668,10 @@ class ComprehensiveApiService {
         }
       }
 
-      // The backend returns { success: true, user, sessionId }, so we need to extract the user data
+      // The backend returns { success: true, user, sessionId, token }, so we need to extract the user data
+      if (result.token) {
+        localStorage.setItem('auth-token', result.token)
+      }
       return { success: true, data: result.user || undefined }
     } catch (error) {
       console.error('Error registering user:', error)

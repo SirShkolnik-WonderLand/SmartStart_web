@@ -51,7 +51,8 @@ router.post('/register', authRateLimit, async (req, res) => {
       success: true,
       message: 'Registration successful',
       user: result.user,
-      sessionId: result.sessionId
+      sessionId: result.sessionId,
+      token: result.token
     });
 
   } catch (error) {
