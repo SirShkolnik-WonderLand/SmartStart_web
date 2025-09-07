@@ -41,6 +41,25 @@ export default function DashboardPage() {
     status?: string
     expiresAt?: string
   } | null>(null)
+  const [journeyStatus, setJourneyStatus] = useState<{
+    userStates: Array<{
+      id: string
+      status: string
+      stage: {
+        id: string
+        name: string
+        description: string
+        order: number
+      }
+      startedAt?: string
+      completedAt?: string
+    }>
+    progress: {
+      completedStages: number
+      totalStages: number
+      percentage: number
+    }
+  } | null>(null)
   const [, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -74,11 +93,10 @@ export default function DashboardPage() {
         if (userResponse.success && userResponse.data) {
           const userId = userResponse.data.id
           
-          // Load journey status (for future use)
+          // Load journey status
           const journeyResponse = await apiService.getJourneyStatus(userId)
           if (journeyResponse.success && journeyResponse.data) {
-            // Journey status loaded successfully
-            console.log('Journey status loaded:', journeyResponse.data)
+            setJourneyStatus(journeyResponse.data)
           }
 
           // Load legal pack status
@@ -125,59 +143,102 @@ export default function DashboardPage() {
                 <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
                   <Clock className="w-5 h-5 text-accent" />
                   Your Journey Progress
+                  {journeyStatus?.progress && (
+                    <span className="text-sm text-foreground-muted ml-auto">
+                      {journeyStatus.progress.completedStages}/{journeyStatus.progress.totalStages} completed ({journeyStatus.progress.percentage}%)
+                    </span>
+                  )}
                 </h3>
                 <div className="space-y-3">
-                  {/* Account Setup - Always complete if user exists */}
-                  <div className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-success" />
-                    <span className="text-foreground-body">Account Setup Complete</span>
-                  </div>
-                  
-                  {/* Legal Pack Status */}
-                  <div className="flex items-center gap-3">
-                    {legalPackStatus?.signed ? (
-                      <CheckCircle className="w-5 h-5 text-success" />
-                    ) : (
-                      <div className="w-5 h-5 border-2 border-accent rounded-full flex items-center justify-center">
-                        <div className="w-2 h-2 bg-accent rounded-full"></div>
-                      </div>
-                    )}
-                    <span className="text-foreground-body">
-                      {legalPackStatus?.signed ? 'Legal Pack Signed' : 'Legal Pack Pending'}
-                    </span>
-                  </div>
-                  
-                  {/* Subscription Status */}
-                  <div className="flex items-center gap-3">
-                    {subscriptionStatus?.active ? (
-                      <CheckCircle className="w-5 h-5 text-success" />
-                    ) : (
-                      <div className="w-5 h-5 border-2 border-accent rounded-full flex items-center justify-center">
-                        <div className="w-2 h-2 bg-accent rounded-full"></div>
-                      </div>
-                    )}
-                    <span className="text-foreground-body">
-                      {subscriptionStatus?.active ? 'Subscription Active' : 'Subscription Pending'}
-                    </span>
-                  </div>
-                  
-                  {/* Create Venture - Check if user has ventures */}
-                  {ventures.length === 0 ? (
-                    <Link 
-                      href="/ventures/create"
-                      className="flex items-center gap-3 w-full hover:bg-glass-surface rounded-lg p-2 transition-colors"
-                    >
-                      <div className="w-5 h-5 border-2 border-accent rounded-full flex items-center justify-center">
-                        <div className="w-2 h-2 bg-accent rounded-full"></div>
-                      </div>
-                      <span className="text-foreground-body">Create Your First Venture</span>
-                      <ChevronRight className="w-4 h-4 text-foreground-muted ml-auto" />
-                    </Link>
+                  {/* Show actual journey stages */}
+                  {journeyStatus?.userStates ? (
+                    journeyStatus.userStates
+                      .sort((a, b) => a.stage.order - b.stage.order)
+                      .map((userState) => (
+                        <div key={userState.id} className="flex items-center gap-3">
+                          {userState.status === 'COMPLETED' ? (
+                            <CheckCircle className="w-5 h-5 text-success" />
+                          ) : userState.status === 'IN_PROGRESS' ? (
+                            <div className="w-5 h-5 border-2 border-accent rounded-full flex items-center justify-center">
+                              <div className="w-2 h-2 bg-accent rounded-full animate-pulse"></div>
+                            </div>
+                          ) : (
+                            <div className="w-5 h-5 border-2 border-foreground-muted rounded-full flex items-center justify-center">
+                              <div className="w-2 h-2 bg-foreground-muted rounded-full"></div>
+                            </div>
+                          )}
+                          <div className="flex-1">
+                            <span className={`text-foreground-body ${userState.status === 'COMPLETED' ? 'line-through' : ''}`}>
+                              {userState.stage.name}
+                            </span>
+                            {userState.completedAt && (
+                              <div className="text-xs text-foreground-muted">
+                                Completed: {new Date(userState.completedAt).toLocaleDateString()}
+                              </div>
+                            )}
+                          </div>
+                          {userState.status === 'NOT_STARTED' && (
+                            <Link 
+                              href="/onboarding"
+                              className="text-xs text-accent hover:text-accent-hover transition-colors"
+                            >
+                              Start →
+                            </Link>
+                          )}
+                        </div>
+                      ))
                   ) : (
-                    <div className="flex items-center gap-3">
-                      <CheckCircle className="w-5 h-5 text-success" />
-                      <span className="text-foreground-body">First Venture Created</span>
-                    </div>
+                    // Fallback to old display if journey status not available
+                    <>
+                      <div className="flex items-center gap-3">
+                        <CheckCircle className="w-5 h-5 text-success" />
+                        <span className="text-foreground-body">Account Setup Complete</span>
+                      </div>
+                      
+                      <div className="flex items-center gap-3">
+                        {legalPackStatus?.signed ? (
+                          <CheckCircle className="w-5 h-5 text-success" />
+                        ) : (
+                          <div className="w-5 h-5 border-2 border-accent rounded-full flex items-center justify-center">
+                            <div className="w-2 h-2 bg-accent rounded-full"></div>
+                          </div>
+                        )}
+                        <span className="text-foreground-body">
+                          {legalPackStatus?.signed ? 'Legal Pack Signed' : 'Legal Pack Pending'}
+                        </span>
+                      </div>
+                      
+                      <div className="flex items-center gap-3">
+                        {subscriptionStatus?.active ? (
+                          <CheckCircle className="w-5 h-5 text-success" />
+                        ) : (
+                          <div className="w-5 h-5 border-2 border-accent rounded-full flex items-center justify-center">
+                            <div className="w-2 h-2 bg-accent rounded-full"></div>
+                          </div>
+                        )}
+                        <span className="text-foreground-body">
+                          {subscriptionStatus?.active ? 'Subscription Active' : 'Subscription Pending'}
+                        </span>
+                      </div>
+                      
+                      {ventures.length === 0 ? (
+                        <Link 
+                          href="/ventures/create"
+                          className="flex items-center gap-3 w-full hover:bg-glass-surface rounded-lg p-2 transition-colors"
+                        >
+                          <div className="w-5 h-5 border-2 border-accent rounded-full flex items-center justify-center">
+                            <div className="w-2 h-2 bg-accent rounded-full"></div>
+                          </div>
+                          <span className="text-foreground-body">Create Your First Venture</span>
+                          <ChevronRight className="w-4 h-4 text-foreground-muted ml-auto" />
+                        </Link>
+                      ) : (
+                        <div className="flex items-center gap-3">
+                          <CheckCircle className="w-5 h-5 text-success" />
+                          <span className="text-foreground-body">First Venture Created</span>
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
               </div>

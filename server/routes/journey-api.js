@@ -932,6 +932,62 @@ router.post('/progress/:userId', authenticateToken, async(req, res) => {
             });
         }
 
+        // Handle step completion actions
+        if (action === 'PROFILE_COMPLETED' || action === 'LEGAL_PACK_SIGNED' || action === 'SUBSCRIPTION_ACTIVATED' || action === 'ORIENTATION_COMPLETED') {
+            // Mark the corresponding journey stage as completed
+            const stageMapping = {
+                'PROFILE_COMPLETED': 'Profile Setup',
+                'LEGAL_PACK_SIGNED': 'Legal Agreements', 
+                'SUBSCRIPTION_ACTIVATED': 'Subscription Plan',
+                'ORIENTATION_COMPLETED': 'Venture Setup'
+            };
+            
+            const stageName = stageMapping[action];
+            if (stageName) {
+                const stage = await prisma.journeyStage.findFirst({
+                    where: { name: stageName }
+                });
+                
+                if (stage) {
+                    await prisma.userJourneyState.upsert({
+                        where: {
+                            userId_stageId: {
+                                userId,
+                                stageId: stage.id
+                            }
+                        },
+                        update: {
+                            status: 'COMPLETED',
+                            completedAt: new Date(),
+                            metadata: {
+                                ...data,
+                                completedAt: new Date().toISOString(),
+                                action: action
+                            }
+                        },
+                        create: {
+                            userId,
+                            stageId: stage.id,
+                            status: 'COMPLETED',
+                            completedAt: new Date(),
+                            metadata: {
+                                ...data,
+                                completedAt: new Date().toISOString(),
+                                action: action
+                            }
+                        }
+                    });
+                }
+            }
+            
+            return res.json({
+                success: true,
+                message: `Step ${stageName} completed successfully`,
+                action: action,
+                timestamp: new Date().toISOString()
+            });
+        }
+
         // Handle other actions with the orchestrator
         const result = await onboardingOrchestrator.updateJourneyProgress(userId, action, data);
         res.json(result);

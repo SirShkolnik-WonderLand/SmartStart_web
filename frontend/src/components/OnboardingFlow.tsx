@@ -59,7 +59,11 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
     name: ''
   })
 
-  const [legalAgreements, setLegalAgreements] = useState({
+  const [legalAgreements, setLegalAgreements] = useState<{
+    confidentiality: boolean | { signed: boolean; signedAt: string; signatureHash: string; documentVersion: string }
+    equity: boolean | { signed: boolean; signedAt: string; signatureHash: string; documentVersion: string }
+    partnership: boolean | { signed: boolean; signedAt: string; signatureHash: string; documentVersion: string }
+  }>({
     confidentiality: false,
     equity: false,
     partnership: false
@@ -208,6 +212,22 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
     }
   }
 
+  // Get current step data for auto-save
+  const getCurrentStepData = useCallback(() => {
+    switch (currentStep) {
+      case 0: // Profile
+        return { profileData }
+      case 1: // Legal
+        return { legalAgreements }
+      case 2: // Subscription
+        return { selectedPlan }
+      case 3: // Payment
+        return { paymentData }
+      default:
+        return {}
+    }
+  }, [currentStep, profileData, legalAgreements, selectedPlan, paymentData])
+
   // Auto-save form data every 30 seconds
   const autoSaveData = useCallback(async () => {
     try {
@@ -232,23 +252,8 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
     } catch (error) {
       console.warn('Auto-save failed:', error)
     }
-  }, [currentStep, profileData, legalAgreements, selectedPlan, paymentData, userId])
+  }, [currentStep, profileData, legalAgreements, selectedPlan, paymentData, userId, getCurrentStepData, updateJourneyProgress])
 
-  // Get current step data for auto-save
-  const getCurrentStepData = () => {
-    switch (currentStep) {
-      case 0: // Profile
-        return { profileData }
-      case 1: // Legal
-        return { legalAgreements }
-      case 2: // Subscription
-        return { selectedPlan }
-      case 3: // Payment
-        return { paymentData }
-      default:
-        return {}
-    }
-  }
 
   // Set up auto-save interval
   useEffect(() => {
