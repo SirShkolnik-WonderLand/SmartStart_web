@@ -6,6 +6,7 @@ import { comprehensiveApiService as apiService, Venture, User } from '@/lib/api-
 import { ArrowLeft, Building2, Users, TrendingUp, Briefcase, CheckCircle, AlertCircle, Save } from 'lucide-react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
+import { useActionPermission } from '@/hooks/useLegalFramework'
 
 export default function EditVenturePage() {
   const params = useParams()
@@ -18,6 +19,9 @@ export default function EditVenturePage() {
   const [success, setSuccess] = useState<string | null>(null)
 
   const ventureId = params.id as string
+
+  // Legal framework integration
+  const editPermission = useActionPermission('EDIT_VENTURE', { ventureId })
 
   // Form state
   const [formData, setFormData] = useState({
@@ -82,6 +86,9 @@ export default function EditVenturePage() {
   }, [ventureId])
 
   const isOwner = currentUser && venture && currentUser.id === venture.owner?.id
+  const isAuthenticated = !!currentUser
+  const isVentureLoaded = !!venture
+  const canEdit = editPermission.canPerformAction('EDIT_VENTURE', { ventureId }) || isOwner
 
   const handleInputChange = (field: string, value: string | number) => {
     setFormData(prev => ({
@@ -178,7 +185,8 @@ export default function EditVenturePage() {
     )
   }
 
-  if (!isOwner) {
+  // Show access denied only if user is authenticated, venture is loaded, but user cannot edit
+  if (isAuthenticated && isVentureLoaded && !canEdit) {
     return (
       <div className="min-h-screen wonderland-bg flex items-center justify-center">
         <div className="glass rounded-xl p-8 text-center max-w-md">

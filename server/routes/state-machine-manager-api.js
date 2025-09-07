@@ -7,7 +7,7 @@
 const express = require('express');
 const router = express.Router();
 const StateMachineManager = require('../state-machines/StateMachineManager');
-const { authenticateToken, requireRole } = require('../middleware/auth');
+const { authenticateToken, requireRole } = require('../middleware/unified-auth');
 
 // Initialize state machine manager
 const stateMachineManager = new StateMachineManager();

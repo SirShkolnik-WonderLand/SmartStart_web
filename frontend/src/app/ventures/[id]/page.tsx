@@ -88,6 +88,8 @@ export default function VentureDetailPage() {
   }
 
   const isOwner = currentUser && venture && currentUser.id === venture.owner?.id
+  const isAuthenticated = !!currentUser
+  const isVentureLoaded = !!venture
 
   const handleScheduleMeeting = async () => {
     if (!venture || !currentUser) return
