@@ -118,7 +118,7 @@ async function createLegalPacksForUser(userId, userRole, userVentures, allDocume
     }
 
     // 3. VENTURE PARTICIPANT PACK
-    if (userVentures.some(v => v.teamMembers.some(tm => tm.userId === userId))) {
+    if (userVentures.some(v => v.members.some(tm => tm.userId === userId))) {
         const ventureParticipantPack = {
             id: 'venture-participant',
             name: 'Venture Participant Pack',
@@ -131,7 +131,7 @@ async function createLegalPacksForUser(userId, userRole, userVentures, allDocume
         };
 
         // Add participant documents for each venture
-        for (const venture of userVentures.filter(v => v.teamMembers.some(tm => tm.userId === userId))) {
+        for (const venture of userVentures.filter(v => v.members.some(tm => tm.userId === userId))) {
             ventureParticipantPack.documents.push({
                 id: `pca-${venture.id}`,
                 title: `Participant Collaboration Agreement - ${venture.name}`,

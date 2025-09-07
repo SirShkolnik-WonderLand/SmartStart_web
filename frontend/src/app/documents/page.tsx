@@ -47,8 +47,8 @@ export default function DocumentsPage() {
               id: contract.id,
               title: contract.title,
               type: contract.type,
-              description: `Version ${contract.version} - ${contract.status}`,
-              required: contract.complianceRequired,
+              description: `${contract.type} - ${contract.status}`,
+              required: true, // Default to required for existing contracts
               status: contract.status.toLowerCase(),
               content: contract.content || 'No content available',
               createdAt: contract.createdAt,
