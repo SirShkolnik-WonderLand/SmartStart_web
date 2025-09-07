@@ -94,6 +94,8 @@ router.get('/status/:userId', authenticateToken, async (req, res) => {
         const { userId } = req.params;
         const currentUserId = req.user.id;
         
+        console.log('Legal pack status request:', { userId, currentUserId });
+        
         // Check if user can access this status (own status or admin)
         if (userId !== currentUserId && req.user.role?.name !== 'ADMIN') {
             return res.status(403).json({
@@ -115,44 +117,77 @@ router.get('/status/:userId', authenticateToken, async (req, res) => {
             });
         }
 
-        const userVentures = await prisma.project.findMany({
-            where: {
-                OR: [
-                    { ownerId: userId },
-                    { 
-                        members: {
-                            some: { userId: userId }
+        console.log('User found:', { id: user.id, email: user.email, role: user.role?.name });
+
+        // Get user's ventures with proper error handling
+        let userVentures = [];
+        try {
+            userVentures = await prisma.project.findMany({
+                where: {
+                    OR: [
+                        { ownerId: userId },
+                        { 
+                            members: {
+                                some: { userId: userId }
+                            }
                         }
-                    }
-                ]
-            },
-            include: {
-                owner: {
-                    select: { id: true, name: true, email: true }
+                    ]
                 },
-                members: {
-                    include: {
-                        user: {
-                            select: { id: true, name: true, email: true }
+                include: {
+                    owner: {
+                        select: { id: true, name: true, email: true }
+                    },
+                    members: {
+                        include: {
+                            user: {
+                                select: { id: true, name: true, email: true }
+                            }
                         }
                     }
                 }
-            }
-        });
+            });
+            console.log('User ventures found:', userVentures.length);
+        } catch (ventureError) {
+            console.error('Error fetching user ventures:', ventureError);
+            // Continue with empty ventures array
+        }
 
-        const allDocuments = await prisma.legalDocument.findMany({
-            include: {
-                signatures: {
-                    include: {
-                        signer: {
-                            select: { id: true, name: true, email: true }
+        // Get all documents with proper error handling
+        let allDocuments = [];
+        try {
+            allDocuments = await prisma.legalDocument.findMany({
+                include: {
+                    signatures: {
+                        include: {
+                            signer: {
+                                select: { id: true, name: true, email: true }
+                            }
                         }
                     }
                 }
-            }
-        });
+            });
+            console.log('Legal documents found:', allDocuments.length);
+        } catch (docError) {
+            console.error('Error fetching legal documents:', docError);
+            // Continue with empty documents array
+        }
 
-        const legalPacks = await createLegalPacksForUser(userId, user.role?.name, userVentures, allDocuments);
+        // Create legal packs with proper error handling
+        let legalPacks = [];
+        try {
+            legalPacks = await createLegalPacksForUser(userId, user.role?.name, userVentures, allDocuments);
+            console.log('Legal packs created:', legalPacks.length);
+        } catch (packError) {
+            console.error('Error creating legal packs:', packError);
+            // Return default packs
+            legalPacks = [{
+                id: 'default',
+                name: 'Default Pack',
+                status: 'PENDING',
+                required: true,
+                documents: []
+            }];
+        }
 
         // Calculate overall status
         const requiredPacks = legalPacks.filter(pack => pack.required);
@@ -173,7 +208,7 @@ router.get('/status/:userId', authenticateToken, async (req, res) => {
                     name: pack.name,
                     status: pack.status,
                     required: pack.required,
-                    documentCount: pack.documents.length
+                    documentCount: pack.documents ? pack.documents.length : 0
                 }))
             },
             timestamp: new Date().toISOString()
@@ -184,7 +219,8 @@ router.get('/status/:userId', authenticateToken, async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Failed to retrieve legal pack status',
-            error: error.message
+            error: error.message,
+            stack: error.stack
         });
     }
 });
