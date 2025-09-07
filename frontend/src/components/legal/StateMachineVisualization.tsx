@@ -35,7 +35,7 @@ const StateMachineVisualization: React.FC<StateMachineVisualizationProps> = ({
 
       const response = await fetch(`/api/legal/state-machine/${type}/${id}/visualization`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('auth-token')}`
         }
       });
 

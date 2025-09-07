@@ -52,7 +52,7 @@ export interface SignatureInfo {
 
 class LegalFrameworkService {
   private async makeRequest<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-    const token = localStorage.getItem('token')
+    const token = localStorage.getItem('auth-token')
     
     const response = await fetch(`${API_BASE}/api/legal${endpoint}`, {
       ...options,

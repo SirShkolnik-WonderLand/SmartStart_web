@@ -46,7 +46,7 @@ const StateMachineDashboard: React.FC<StateMachineDashboardProps> = ({
       // Load system health
       const healthResponse = await fetch('/api/state-machines/health', {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('auth-token')}`
         }
       });
 
@@ -63,7 +63,7 @@ const StateMachineDashboard: React.FC<StateMachineDashboardProps> = ({
         try {
           const response = await fetch(`/api/state-machines/${type}/active`, {
             headers: {
-              'Authorization': `Bearer ${localStorage.getItem('token')}`
+              'Authorization': `Bearer ${localStorage.getItem('auth-token')}`
             }
           });
 
