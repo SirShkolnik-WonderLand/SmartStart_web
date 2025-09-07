@@ -1014,6 +1014,104 @@ class ComprehensiveApiService {
   }
 
   // ============================================================================
+  // JOURNEY & ONBOARDING
+  // ============================================================================
+
+  async getJourneyStatus(userId: string): Promise<ApiResponse<any>> {
+    try {
+      const response = await this.fetchWithAuth<any>(`/api/journey/status/${userId}`)
+      return { success: true, data: response.data }
+    } catch (error) {
+      console.error('Error fetching journey status:', error)
+      return { success: false, data: null, error: 'Failed to fetch journey status' }
+    }
+  }
+
+  async initializeJourney(userId: string): Promise<ApiResponse<any>> {
+    try {
+      const response = await this.fetchWithAuth<any>(`/api/journey/initialize/${userId}`, {
+        method: 'POST'
+      })
+      return { success: true, data: response.data }
+    } catch (error) {
+      console.error('Error initializing journey:', error)
+      return { success: false, data: null, error: 'Failed to initialize journey' }
+    }
+  }
+
+  async updateJourneyProgress(userId: string, action: string, data: any = {}): Promise<ApiResponse<any>> {
+    try {
+      const response = await this.fetchWithAuth<any>(`/api/journey/progress/${userId}`, {
+        method: 'POST',
+        body: JSON.stringify({ action, data })
+      })
+      return { success: true, data: response.data }
+    } catch (error) {
+      console.error('Error updating journey progress:', error)
+      return { success: false, data: null, error: 'Failed to update journey progress' }
+    }
+  }
+
+  async getOnboardingRecommendations(userId: string): Promise<ApiResponse<any>> {
+    try {
+      const response = await this.fetchWithAuth<any>(`/api/journey/recommendations/${userId}`)
+      return { success: true, data: response.data }
+    } catch (error) {
+      console.error('Error fetching onboarding recommendations:', error)
+      return { success: false, data: null, error: 'Failed to fetch onboarding recommendations' }
+    }
+  }
+
+  // ============================================================================
+  // SUBSCRIPTIONS & BILLING
+  // ============================================================================
+
+  async getSubscriptionPlans(): Promise<ApiResponse<any[]>> {
+    try {
+      const response = await this.fetchWithAuth<{ data: any[] }>('/api/subscription/plans')
+      return { success: true, data: response.data || [] }
+    } catch (error) {
+      console.error('Error fetching subscription plans:', error)
+      return { success: false, data: [], error: 'Failed to fetch subscription plans' }
+    }
+  }
+
+  async getUserSubscriptions(userId: string): Promise<ApiResponse<any[]>> {
+    try {
+      const response = await this.fetchWithAuth<{ data: any[] }>(`/api/subscription/user/${userId}`)
+      return { success: true, data: response.data || [] }
+    } catch (error) {
+      console.error('Error fetching user subscriptions:', error)
+      return { success: false, data: [], error: 'Failed to fetch user subscriptions' }
+    }
+  }
+
+  async createSubscription(planId: string, paymentMethod: string, paymentData: any = {}): Promise<ApiResponse<any>> {
+    try {
+      const response = await this.fetchWithAuth<any>('/api/subscription/subscribe', {
+        method: 'POST',
+        body: JSON.stringify({ planId, paymentMethod, paymentData })
+      })
+      return { success: true, data: response.data }
+    } catch (error) {
+      console.error('Error creating subscription:', error)
+      return { success: false, data: null, error: 'Failed to create subscription' }
+    }
+  }
+
+  async cancelSubscription(subscriptionId: string): Promise<ApiResponse<any>> {
+    try {
+      const response = await this.fetchWithAuth<any>(`/api/subscription/cancel/${subscriptionId}`, {
+        method: 'POST'
+      })
+      return { success: true, data: response.data }
+    } catch (error) {
+      console.error('Error cancelling subscription:', error)
+      return { success: false, data: null, error: 'Failed to cancel subscription' }
+    }
+  }
+
+  // ============================================================================
   // LEGAL & CONTRACTS
   // ============================================================================
 

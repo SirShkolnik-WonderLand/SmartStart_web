@@ -2,6 +2,8 @@ const express = require('express');
 const { PrismaClient } = require('@prisma/client');
 const router = express.Router();
 const prisma = new PrismaClient();
+const onboardingOrchestrator = require('../services/onboarding-orchestrator');
+const { authenticateToken } = require('../middleware/auth');
 
 // Health check endpoint
 router.get('/health', async(req, res) => {
@@ -23,11 +25,24 @@ router.get('/health', async(req, res) => {
     }
 });
 
-// Get user's journey status
-router.get('/status/:userId', async(req, res) => {
+// Get user's journey status (enhanced with orchestrator)
+router.get('/status/:userId', authenticateToken, async(req, res) => {
     try {
         const { userId } = req.params;
+        const currentUserId = req.user.id;
 
+        // Check if user can access this status (own status or admin)
+        if (userId !== currentUserId && req.user.role !== 'ADMIN') {
+            return res.status(403).json({
+                success: false,
+                message: 'Access denied'
+            });
+        }
+
+        // Use orchestrator to get comprehensive journey status
+        const journeyStatus = await onboardingOrchestrator.getUserJourneyStatus(userId);
+        
+        // Get detailed stage information
         const [userStates, stages] = await Promise.all([
             prisma.userJourneyState.findMany({
                 where: { userId },
@@ -53,29 +68,21 @@ router.get('/status/:userId', async(req, res) => {
             })
         ]);
 
-        // Calculate progress
-        const totalStages = stages.length;
-        const completedStages = userStates.filter(state => state.status === 'COMPLETED').length;
-        const currentStage = userStates.find(state => state.status === 'IN_PROGRESS')?.stage;
-        const nextStage = stages.find(stage =>
-            !userStates.find(state => state.stageId === stage.id && state.status === 'COMPLETED')
-        );
+        // Get onboarding recommendations
+        const recommendations = await onboardingOrchestrator.getOnboardingRecommendations(userId);
 
         res.json({
             success: true,
             data: {
+                ...journeyStatus.data,
                 userStates,
                 stages,
-                progress: {
-                    totalStages,
-                    completedStages,
-                    percentage: Math.round((completedStages / totalStages) * 100),
-                    currentStage,
-                    nextStage
-                }
+                recommendations: recommendations.data.recommendations,
+                timestamp: new Date().toISOString()
             }
         });
     } catch (error) {
+        console.error('Journey status error:', error);
         res.status(500).json({
             success: false,
             error: 'Failed to fetch journey status',
@@ -667,6 +674,155 @@ router.get('/states', async(req, res) => {
         res.status(500).json({
             success: false,
             error: 'Failed to fetch journey states',
+            details: error.message
+        });
+    }
+});
+
+// ===== ONBOARDING ORCHESTRATOR ENDPOINTS =====
+
+// Initialize user journey
+router.post('/initialize/:userId', authenticateToken, async(req, res) => {
+    try {
+        const { userId } = req.params;
+        const currentUserId = req.user.id;
+
+        // Check if user can initialize this journey (own journey or admin)
+        if (userId !== currentUserId && req.user.role !== 'ADMIN') {
+            return res.status(403).json({
+                success: false,
+                message: 'Access denied'
+            });
+        }
+
+        const result = await onboardingOrchestrator.initializeUserJourney(userId);
+        res.json(result);
+    } catch (error) {
+        console.error('Journey initialization error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to initialize user journey',
+            details: error.message
+        });
+    }
+});
+
+// Update journey progress
+router.post('/progress/:userId', authenticateToken, async(req, res) => {
+    try {
+        const { userId } = req.params;
+        const { action, data } = req.body;
+        const currentUserId = req.user.id;
+
+        // Check if user can update this journey (own journey or admin)
+        if (userId !== currentUserId && req.user.role !== 'ADMIN') {
+            return res.status(403).json({
+                success: false,
+                message: 'Access denied'
+            });
+        }
+
+        if (!action) {
+            return res.status(400).json({
+                success: false,
+                error: 'Action is required'
+            });
+        }
+
+        const result = await onboardingOrchestrator.updateJourneyProgress(userId, action, data);
+        res.json(result);
+    } catch (error) {
+        console.error('Journey progress update error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to update journey progress',
+            details: error.message
+        });
+    }
+});
+
+// Handle legal document signing
+router.post('/legal-signing/:userId', authenticateToken, async(req, res) => {
+    try {
+        const { userId } = req.params;
+        const { documentId, signatureData } = req.body;
+        const currentUserId = req.user.id;
+
+        // Check if user can update this journey (own journey or admin)
+        if (userId !== currentUserId && req.user.role !== 'ADMIN') {
+            return res.status(403).json({
+                success: false,
+                message: 'Access denied'
+            });
+        }
+
+        if (!documentId) {
+            return res.status(400).json({
+                success: false,
+                error: 'Document ID is required'
+            });
+        }
+
+        const result = await onboardingOrchestrator.handleLegalDocumentSigning(userId, documentId, signatureData);
+        res.json(result);
+    } catch (error) {
+        console.error('Legal document signing error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to process legal document signing',
+            details: error.message
+        });
+    }
+});
+
+// Handle subscription activation
+router.post('/subscription/:userId', authenticateToken, async(req, res) => {
+    try {
+        const { userId } = req.params;
+        const subscriptionData = req.body;
+        const currentUserId = req.user.id;
+
+        // Check if user can update this journey (own journey or admin)
+        if (userId !== currentUserId && req.user.role !== 'ADMIN') {
+            return res.status(403).json({
+                success: false,
+                message: 'Access denied'
+            });
+        }
+
+        const result = await onboardingOrchestrator.handleSubscriptionActivation(userId, subscriptionData);
+        res.json(result);
+    } catch (error) {
+        console.error('Subscription activation error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to process subscription activation',
+            details: error.message
+        });
+    }
+});
+
+// Get onboarding recommendations
+router.get('/recommendations/:userId', authenticateToken, async(req, res) => {
+    try {
+        const { userId } = req.params;
+        const currentUserId = req.user.id;
+
+        // Check if user can access this journey (own journey or admin)
+        if (userId !== currentUserId && req.user.role !== 'ADMIN') {
+            return res.status(403).json({
+                success: false,
+                message: 'Access denied'
+            });
+        }
+
+        const result = await onboardingOrchestrator.getOnboardingRecommendations(userId);
+        res.json(result);
+    } catch (error) {
+        console.error('Onboarding recommendations error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to get onboarding recommendations',
             details: error.message
         });
     }

@@ -2,6 +2,8 @@ const express = require('express');
 const { PrismaClient } = require('@prisma/client');
 const router = express.Router();
 const prisma = new PrismaClient();
+const { authenticateToken } = require('../middleware/auth');
+const onboardingOrchestrator = require('../services/onboarding-orchestrator');
 
 // Health check endpoint
 router.get('/health', async(req, res) => {
@@ -23,59 +25,9 @@ router.get('/health', async(req, res) => {
     }
 });
 
-// Get user subscription status
-router.get('/status/:userId', async(req, res) => {
-    try {
-        const { userId } = req.params;
+// ===== SUBSCRIPTION PLANS =====
 
-        // Check if user has an active subscription
-        const subscription = await prisma.subscription.findFirst({
-            where: {
-                userId: userId,
-                status: {
-                    in: ['ACTIVE']
-                }
-            },
-            include: {
-                plan: true
-            },
-            orderBy: {
-                createdAt: 'desc'
-            }
-        });
-
-        if (subscription) {
-            res.json({
-                success: true,
-                data: {
-                    active: true,
-                    planName: subscription.plan?.name || 'Unknown Plan',
-                    status: subscription.status,
-                    expiresAt: subscription.currentPeriodEnd?.toISOString()
-                }
-            });
-        } else {
-            res.json({
-                success: true,
-                data: {
-                    active: false,
-                    planName: null,
-                    status: 'inactive',
-                    expiresAt: null
-                }
-            });
-        }
-    } catch (error) {
-        console.error('Error fetching subscription status:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to fetch subscription status',
-            details: error.message
-        });
-    }
-});
-
-// Get all billing plans
+// Get all available subscription plans
 router.get('/plans', async(req, res) => {
     try {
         const plans = await prisma.billingPlan.findMany({
@@ -86,58 +38,65 @@ router.get('/plans', async(req, res) => {
         res.json({
             success: true,
             data: plans,
-            count: plans.length
+            count: plans.length,
+            timestamp: new Date().toISOString()
         });
     } catch (error) {
+        console.error('Error fetching subscription plans:', error);
         res.status(500).json({
             success: false,
-            error: 'Failed to fetch billing plans',
+            error: 'Failed to fetch subscription plans',
             details: error.message
         });
     }
 });
 
-// Create a new billing plan (admin only)
-router.post('/plans', async(req, res) => {
+// Get specific subscription plan
+router.get('/plans/:planId', async(req, res) => {
     try {
-        const { name, description, price, currency, interval, features } = req.body;
+        const { planId } = req.params;
+        
+        const plan = await prisma.billingPlan.findUnique({
+            where: { id: planId }
+        });
 
-        if (!name || !price || !interval) {
-            return res.status(400).json({
+        if (!plan) {
+            return res.status(404).json({
                 success: false,
-                error: 'Missing required fields: name, price, interval'
+                error: 'Subscription plan not found'
             });
         }
 
-        const plan = await prisma.billingPlan.create({
-            data: {
-                name,
-                description,
-                price: parseFloat(price),
-                currency: currency || 'USD',
-                interval,
-                features: features || []
-            }
-        });
-
-        res.status(201).json({
+        res.json({
             success: true,
             data: plan,
-            message: 'Billing plan created successfully'
+            timestamp: new Date().toISOString()
         });
     } catch (error) {
+        console.error('Error fetching subscription plan:', error);
         res.status(500).json({
             success: false,
-            error: 'Failed to create billing plan',
+            error: 'Failed to fetch subscription plan',
             details: error.message
         });
     }
 });
 
+// ===== USER SUBSCRIPTIONS =====
+
 // Get user's subscriptions
-router.get('/user/:userId', async(req, res) => {
+router.get('/user/:userId', authenticateToken, async(req, res) => {
     try {
         const { userId } = req.params;
+        const currentUserId = req.user.id;
+
+        // Check if user can access this data (own data or admin)
+        if (userId !== currentUserId && req.user.role !== 'ADMIN') {
+            return res.status(403).json({
+                success: false,
+                message: 'Access denied'
+            });
+        }
 
         const subscriptions = await prisma.subscription.findMany({
             where: { userId },
@@ -154,9 +113,11 @@ router.get('/user/:userId', async(req, res) => {
         res.json({
             success: true,
             data: subscriptions,
-            count: subscriptions.length
+            count: subscriptions.length,
+            timestamp: new Date().toISOString()
         });
     } catch (error) {
+        console.error('Error fetching user subscriptions:', error);
         res.status(500).json({
             success: false,
             error: 'Failed to fetch user subscriptions',
@@ -165,15 +126,28 @@ router.get('/user/:userId', async(req, res) => {
     }
 });
 
-// Create a new subscription
-router.post('/create', async(req, res) => {
+// Create new subscription
+router.post('/subscribe', authenticateToken, async(req, res) => {
     try {
-        const { userId, planId, autoRenew = true } = req.body;
+        const userId = req.user.id;
+        const { planId, paymentMethod, paymentData } = req.body;
 
-        if (!userId || !planId) {
+        if (!planId) {
             return res.status(400).json({
                 success: false,
-                error: 'Missing required fields: userId, planId'
+                error: 'Plan ID is required'
+            });
+        }
+
+        // Get the plan
+        const plan = await prisma.billingPlan.findUnique({
+            where: { id: planId }
+        });
+
+        if (!plan) {
+            return res.status(404).json({
+                success: false,
+                error: 'Subscription plan not found'
             });
         }
 
@@ -185,52 +159,22 @@ router.post('/create', async(req, res) => {
             }
         });
 
-        // If user has an existing subscription, cancel it first (plan change)
         if (existingSubscription) {
-            await prisma.subscription.update({
-                where: { id: existingSubscription.id },
-                data: {
-                    status: 'CANCELLED',
-                    autoRenew: false
-                }
-            });
-        }
-
-        // Get the plan details
-        const plan = await prisma.billingPlan.findUnique({
-            where: { id: planId }
-        });
-
-        if (!plan) {
-            return res.status(404).json({
+            return res.status(400).json({
                 success: false,
-                error: 'Billing plan not found'
+                error: 'User already has an active subscription',
+                data: existingSubscription
             });
         }
 
-        // Calculate end date based on interval
-        let endDate = new Date();
-        switch (plan.interval) {
-            case 'MONTHLY':
-                endDate.setMonth(endDate.getMonth() + 1);
-                break;
-            case 'QUARTERLY':
-                endDate.setMonth(endDate.getMonth() + 3);
-                break;
-            case 'YEARLY':
-                endDate.setFullYear(endDate.getFullYear() + 1);
-                break;
-            case 'LIFETIME':
-                endDate = null; // Lifetime subscription
-                break;
-        }
-
+        // Create subscription
         const subscription = await prisma.subscription.create({
             data: {
                 userId,
                 planId,
-                autoRenew,
-                endDate
+                status: 'ACTIVE',
+                startDate: new Date(),
+                autoRenew: true
             },
             include: {
                 plan: true
@@ -244,19 +188,49 @@ router.post('/create', async(req, res) => {
                 subscriptionId: subscription.id,
                 amount: plan.price,
                 currency: plan.currency,
-                dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days from now
+                status: 'PAID', // Assuming payment is processed
+                dueDate: new Date(),
+                paidDate: new Date()
             }
+        });
+
+        // Create payment record
+        const payment = await prisma.payment.create({
+            data: {
+                userId,
+                invoiceId: invoice.id,
+                amount: plan.price,
+                currency: plan.currency,
+                method: paymentMethod || 'CREDIT_CARD',
+                status: 'COMPLETED',
+                transactionId: `txn_${Date.now()}`,
+                metadata: paymentData || {}
+            }
+        });
+
+        // Update journey progress
+        await onboardingOrchestrator.handleSubscriptionActivation(userId, {
+            subscriptionId: subscription.id,
+            planId: plan.id,
+            planName: plan.name,
+            amount: plan.price,
+            currency: plan.currency,
+            paymentId: payment.id
         });
 
         res.status(201).json({
             success: true,
+            message: 'Subscription created successfully',
             data: {
                 subscription,
-                invoice
+                invoice,
+                payment
             },
-            message: existingSubscription ? 'Subscription plan changed successfully' : 'Subscription created successfully'
+            timestamp: new Date().toISOString()
         });
+
     } catch (error) {
+        console.error('Error creating subscription:', error);
         res.status(500).json({
             success: false,
             error: 'Failed to create subscription',
@@ -265,56 +239,16 @@ router.post('/create', async(req, res) => {
     }
 });
 
-// Cancel a subscription
-router.patch('/:subscriptionId/cancel', async(req, res) => {
+// Cancel subscription
+router.post('/cancel/:subscriptionId', authenticateToken, async(req, res) => {
     try {
         const { subscriptionId } = req.params;
+        const userId = req.user.id;
 
-        const subscription = await prisma.subscription.update({
-            where: { id: subscriptionId },
-            data: {
-                status: 'CANCELLED',
-                autoRenew: false
-            },
-            include: {
-                plan: true
-            }
-        });
-
-        res.json({
-            success: true,
-            data: subscription,
-            message: 'Subscription cancelled successfully'
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            error: 'Failed to cancel subscription',
-            details: error.message
-        });
-    }
-});
-
-// Get subscription details
-router.get('/:subscriptionId', async(req, res) => {
-    try {
-        const { subscriptionId } = req.params;
-
+        // Get subscription
         const subscription = await prisma.subscription.findUnique({
             where: { id: subscriptionId },
-            include: {
-                plan: true,
-                user: {
-                    select: {
-                        id: true,
-                        email: true,
-                        name: true
-                    }
-                },
-                invoices: {
-                    orderBy: { createdAt: 'desc' }
-                }
-            }
+            include: { plan: true }
         });
 
         if (!subscription) {
@@ -324,61 +258,179 @@ router.get('/:subscriptionId', async(req, res) => {
             });
         }
 
+        // Check if user owns this subscription
+        if (subscription.userId !== userId && req.user.role !== 'ADMIN') {
+            return res.status(403).json({
+                success: false,
+                message: 'Access denied'
+            });
+        }
+
+        // Cancel subscription
+        const updatedSubscription = await prisma.subscription.update({
+            where: { id: subscriptionId },
+            data: {
+                status: 'CANCELLED',
+                endDate: new Date(),
+                autoRenew: false
+            },
+            include: { plan: true }
+        });
+
         res.json({
             success: true,
-            data: subscription
+            message: 'Subscription cancelled successfully',
+            data: updatedSubscription,
+            timestamp: new Date().toISOString()
         });
+
     } catch (error) {
+        console.error('Error cancelling subscription:', error);
         res.status(500).json({
             success: false,
-            error: 'Failed to fetch subscription',
+            error: 'Failed to cancel subscription',
             details: error.message
         });
     }
 });
 
-// Get all subscriptions (admin)
-router.get('/', async(req, res) => {
+// ===== INVOICES & PAYMENTS =====
+
+// Get user's invoices
+router.get('/invoices/:userId', authenticateToken, async(req, res) => {
     try {
-        const { status, page = 1, limit = 20 } = req.query;
-        const skip = (parseInt(page) - 1) * parseInt(limit);
+        const { userId } = req.params;
+        const currentUserId = req.user.id;
 
-        const where = status ? { status } : {};
+        // Check if user can access this data (own data or admin)
+        if (userId !== currentUserId && req.user.role !== 'ADMIN') {
+            return res.status(403).json({
+                success: false,
+                message: 'Access denied'
+            });
+        }
 
-        const [subscriptions, total] = await Promise.all([
-            prisma.subscription.findMany({
-                where,
-                include: {
-                    plan: true,
-                    user: {
-                        select: {
-                            id: true,
-                            email: true,
-                            name: true
+        const invoices = await prisma.invoice.findMany({
+            where: { userId },
+            include: {
+                subscription: {
+                    include: { plan: true }
+                },
+                payments: true
+            },
+            orderBy: { createdAt: 'desc' }
+        });
+
+        res.json({
+            success: true,
+            data: invoices,
+            count: invoices.length,
+            timestamp: new Date().toISOString()
+        });
+    } catch (error) {
+        console.error('Error fetching user invoices:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to fetch user invoices',
+            details: error.message
+        });
+    }
+});
+
+// Get user's payments
+router.get('/payments/:userId', authenticateToken, async(req, res) => {
+    try {
+        const { userId } = req.params;
+        const currentUserId = req.user.id;
+
+        // Check if user can access this data (own data or admin)
+        if (userId !== currentUserId && req.user.role !== 'ADMIN') {
+            return res.status(403).json({
+                success: false,
+                message: 'Access denied'
+            });
+        }
+
+        const payments = await prisma.payment.findMany({
+            where: { userId },
+            include: {
+                invoice: {
+                    include: {
+                        subscription: {
+                            include: { plan: true }
                         }
                     }
-                },
-                orderBy: { createdAt: 'desc' },
-                skip,
-                take: parseInt(limit)
+                }
+            },
+            orderBy: { createdAt: 'desc' }
+        });
+
+        res.json({
+            success: true,
+            data: payments,
+            count: payments.length,
+            timestamp: new Date().toISOString()
+        });
+    } catch (error) {
+        console.error('Error fetching user payments:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to fetch user payments',
+            details: error.message
+        });
+    }
+});
+
+// ===== SUBSCRIPTION ANALYTICS =====
+
+// Get subscription statistics
+router.get('/analytics', authenticateToken, async(req, res) => {
+    try {
+        // Only admins can access analytics
+        if (req.user.role !== 'ADMIN') {
+            return res.status(403).json({
+                success: false,
+                message: 'Access denied - Admin role required'
+            });
+        }
+
+        const [
+            totalSubscriptions,
+            activeSubscriptions,
+            totalRevenue,
+            planStats
+        ] = await Promise.all([
+            prisma.subscription.count(),
+            prisma.subscription.count({ where: { status: 'ACTIVE' } }),
+            prisma.payment.aggregate({
+                where: { status: 'COMPLETED' },
+                _sum: { amount: true }
             }),
-            prisma.subscription.count({ where })
+            prisma.subscription.groupBy({
+                by: ['planId'],
+                where: { status: 'ACTIVE' },
+                _count: { planId: true },
+                include: {
+                    plan: true
+                }
+            })
         ]);
 
         res.json({
             success: true,
-            data: subscriptions,
-            pagination: {
-                page: parseInt(page),
-                limit: parseInt(limit),
-                total,
-                pages: Math.ceil(total / parseInt(limit))
+            data: {
+                totalSubscriptions,
+                activeSubscriptions,
+                totalRevenue: totalRevenue._sum.amount || 0,
+                planStats,
+                timestamp: new Date().toISOString()
             }
         });
     } catch (error) {
+        console.error('Error fetching subscription analytics:', error);
         res.status(500).json({
             success: false,
-            error: 'Failed to fetch subscriptions',
+            error: 'Failed to fetch subscription analytics',
             details: error.message
         });
     }

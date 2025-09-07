@@ -3,6 +3,7 @@ const router = express.Router();
 const { PrismaClient } = require('@prisma/client');
 const { authenticateToken, requirePermission } = require('../middleware/unified-auth');
 const { createLegalPacksForUser } = require('./legal-pack-helpers');
+const onboardingOrchestrator = require('../services/onboarding-orchestrator');
 
 const prisma = new PrismaClient();
 
@@ -192,6 +193,20 @@ router.get('/status/:userId', authenticateToken, async (req, res) => {
         const requiredPacks = legalPacks.filter(pack => pack.required);
         const completedPacks = requiredPacks.filter(pack => pack.status === 'COMPLETED');
         const overallStatus = completedPacks.length === requiredPacks.length ? 'COMPLETED' : 'PENDING';
+
+        // Update journey progress if legal pack is complete
+        if (overallStatus === 'COMPLETED') {
+            try {
+                await onboardingOrchestrator.updateJourneyProgress(userId, 'LEGAL_PACK_COMPLETE', {
+                    totalPacks: legalPacks.length,
+                    completedPacks: completedPacks.length,
+                    completedAt: new Date().toISOString()
+                });
+            } catch (orchestratorError) {
+                console.error('Error updating journey progress:', orchestratorError);
+                // Don't fail the request if orchestrator fails
+            }
+        }
 
         res.json({
             success: true,
