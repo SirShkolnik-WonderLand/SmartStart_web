@@ -17,7 +17,7 @@ function authenticateToken(req, res, next) {
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
-        
+
         // Get user from database and validate session
         prisma.user.findUnique({
             where: { id: decoded.userId },
@@ -83,7 +83,7 @@ function authenticateToken(req, res, next) {
                 message: 'Token expired'
             });
         }
-        
+
         if (error.name === 'JsonWebTokenError') {
             return res.status(401).json({
                 success: false,
@@ -111,7 +111,7 @@ function optionalAuth(req, res, next) {
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
-        
+
         prisma.user.findUnique({
             where: { id: decoded.userId },
             select: {
@@ -177,7 +177,7 @@ function requireAnyPermission(permissions) {
             });
         }
 
-        const hasPermission = permissions.some(permission => 
+        const hasPermission = permissions.some(permission =>
             req.user.permissions.includes(permission)
         );
 
@@ -202,7 +202,7 @@ function requireAllPermissions(permissions) {
             });
         }
 
-        const hasAllPermissions = permissions.every(permission => 
+        const hasAllPermissions = permissions.every(permission =>
             req.user.permissions.includes(permission)
         );
 
@@ -228,7 +228,7 @@ function requireOwnership(resourceType, idField = 'userId') {
         }
 
         const resourceId = req.params[idField] || req.body[idField];
-        
+
         if (resourceId !== req.user.id) {
             return res.status(403).json({
                 success: false,
@@ -259,6 +259,36 @@ function requireAdmin(req, res, next) {
     next();
 }
 
+// Check if user has any of the specified roles
+function requireRole(roles) {
+    return (req, res, next) => {
+        if (!req.user) {
+            return res.status(401).json({
+                success: false,
+                message: 'Authentication required'
+            });
+        }
+
+        // Check if user has any of the required roles
+        const hasRole = roles.some(role => {
+            // Check if user has the role in their permissions
+            return req.user.permissions.includes(role.toLowerCase()) ||
+                req.user.permissions.includes(role) ||
+                req.user.permissions.includes('admin') || // Admin has all roles
+                req.user.permissions.includes('super_admin'); // Super admin has all roles
+        });
+
+        if (!hasRole) {
+            return res.status(403).json({
+                success: false,
+                message: `Access denied. Required roles: ${roles.join(', ')}`
+            });
+        }
+
+        next();
+    };
+}
+
 module.exports = {
     authenticateToken,
     optionalAuth,
@@ -266,5 +296,6 @@ module.exports = {
     requireAnyPermission,
     requireAllPermissions,
     requireOwnership,
-    requireAdmin
+    requireAdmin,
+    requireRole
 };
