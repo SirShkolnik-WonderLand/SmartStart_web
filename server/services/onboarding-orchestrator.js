@@ -68,10 +68,57 @@ class OnboardingOrchestrator extends EventEmitter {
    * Create initial journey states for all stages
    */
   async createInitialJourneyStates(userId) {
-    const stages = await prisma.journeyStage.findMany({
+    let stages = await prisma.journeyStage.findMany({
       where: { isActive: true },
       orderBy: { order: 'asc' }
     })
+
+    // If no stages exist, create default ones
+    if (stages.length === 0) {
+      console.log('⚠️ No journey stages found, creating default stages...')
+      
+      const defaultStages = [
+        {
+          name: 'Welcome',
+          description: 'Welcome to SmartStart! Complete your profile setup.',
+          order: 1,
+          isActive: true
+        },
+        {
+          name: 'Profile Setup',
+          description: 'Complete your user profile with skills and preferences.',
+          order: 2,
+          isActive: true
+        },
+        {
+          name: 'Legal Pack',
+          description: 'Review and sign the platform legal documents.',
+          order: 3,
+          isActive: true
+        },
+        {
+          name: 'First Venture',
+          description: 'Create your first venture or join an existing one.',
+          order: 4,
+          isActive: true
+        },
+        {
+          name: 'Team Building',
+          description: 'Build your team and start collaborating.',
+          order: 5,
+          isActive: true
+        }
+      ]
+
+      for (const stageData of defaultStages) {
+        const stage = await prisma.journeyStage.create({
+          data: stageData
+        })
+        stages.push(stage)
+      }
+      
+      console.log(`✅ Created ${defaultStages.length} default journey stages`)
+    }
 
     for (const stage of stages) {
       await prisma.userJourneyState.upsert({
