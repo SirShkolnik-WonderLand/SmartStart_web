@@ -253,7 +253,7 @@ class LegalDocumentsApiService {
         endDate?: string,
         page: number = 1,
         limit: number = 50
-    ): Promise<{ success: boolean; data: DocumentAuditLog[]; pagination: any }> {
+    ): Promise<{ success: boolean; data: DocumentAuditLog[]; pagination: Record<string, unknown> }> {
         try {
             const params = new URLSearchParams({
                 page: page.toString(),
