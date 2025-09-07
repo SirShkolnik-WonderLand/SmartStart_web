@@ -39,6 +39,13 @@ export default function RegisterPage() {
     }
 
     try {
+      console.log('Attempting registration with:', {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        password: '***'
+      })
+      
       // Create user account
       const registerResponse = await apiService.register({
         firstName: formData.firstName,
@@ -46,6 +53,8 @@ export default function RegisterPage() {
         email: formData.email,
         password: formData.password
       })
+      
+      console.log('Registration response:', registerResponse)
 
               if (registerResponse.success && registerResponse.data) {
                 // Initialize user journey
@@ -71,7 +80,7 @@ export default function RegisterPage() {
               }
     } catch (err) {
       console.error('Registration error:', err)
-      setError('An unexpected error occurred. Please try again.')
+      setError(`Registration failed: ${err instanceof Error ? err.message : 'Unknown error'}`)
     } finally {
       setIsLoading(false)
     }
