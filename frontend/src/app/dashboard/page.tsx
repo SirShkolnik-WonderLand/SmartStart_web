@@ -25,6 +25,33 @@ export default function DashboardPage() {
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null)
   const [ventures, setVentures] = useState<Venture[]>([])
   const [offers, setOffers] = useState<Offer[]>([])
+  const [, setJourneyStatus] = useState<{
+    completedSteps: string[]
+    currentStep: string
+    progress: number
+    stages: Array<{
+      id: string
+      name: string
+      completed: boolean
+      order: number
+    }>
+  } | null>(null)
+  const [legalPackStatus, setLegalPackStatus] = useState<{
+    signed: boolean
+    signedAt?: string
+    documents: Array<{
+      id: string
+      name: string
+      status: string
+      signedAt?: string
+    }>
+  } | null>(null)
+  const [subscriptionStatus, setSubscriptionStatus] = useState<{
+    active: boolean
+    planName?: string
+    status?: string
+    expiresAt?: string
+  } | null>(null)
   const [, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -53,7 +80,30 @@ export default function DashboardPage() {
         if (offersResponse.success && offersResponse.data) {
           setOffers(offersResponse.data)
         }
-        
+
+        // Load journey progress data if user is available
+        if (userResponse.success && userResponse.data) {
+          const userId = userResponse.data.id
+          
+          // Load journey status
+          const journeyResponse = await apiService.getJourneyStatus(userId)
+          if (journeyResponse.success && journeyResponse.data) {
+            setJourneyStatus(journeyResponse.data)
+          }
+
+          // Load legal pack status
+          const legalPackResponse = await apiService.getLegalPackStatus(userId)
+          if (legalPackResponse.success && legalPackResponse.data) {
+            setLegalPackStatus(legalPackResponse.data)
+          }
+
+          // Load subscription status
+          const subscriptionResponse = await apiService.getSubscriptionStatus(userId)
+          if (subscriptionResponse.success && subscriptionResponse.data) {
+            setSubscriptionStatus(subscriptionResponse.data)
+          }
+        }
+
       } catch (error) {
         console.error('Error loading dashboard data:', error)
       } finally {
@@ -87,28 +137,58 @@ export default function DashboardPage() {
                   Your Journey Progress
                 </h3>
                 <div className="space-y-3">
+                  {/* Account Setup - Always complete if user exists */}
                   <div className="flex items-center gap-3">
                     <CheckCircle className="w-5 h-5 text-success" />
                     <span className="text-foreground-body">Account Setup Complete</span>
                   </div>
+                  
+                  {/* Legal Pack Status */}
                   <div className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-success" />
-                    <span className="text-foreground-body">Legal Pack Signed</span>
+                    {legalPackStatus?.signed ? (
+                      <CheckCircle className="w-5 h-5 text-success" />
+                    ) : (
+                      <div className="w-5 h-5 border-2 border-accent rounded-full flex items-center justify-center">
+                        <div className="w-2 h-2 bg-accent rounded-full"></div>
+                      </div>
+                    )}
+                    <span className="text-foreground-body">
+                      {legalPackStatus?.signed ? 'Legal Pack Signed' : 'Legal Pack Pending'}
+                    </span>
                   </div>
+                  
+                  {/* Subscription Status */}
                   <div className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-success" />
-                    <span className="text-foreground-body">Subscription Active</span>
+                    {subscriptionStatus?.active ? (
+                      <CheckCircle className="w-5 h-5 text-success" />
+                    ) : (
+                      <div className="w-5 h-5 border-2 border-accent rounded-full flex items-center justify-center">
+                        <div className="w-2 h-2 bg-accent rounded-full"></div>
+                      </div>
+                    )}
+                    <span className="text-foreground-body">
+                      {subscriptionStatus?.active ? 'Subscription Active' : 'Subscription Pending'}
+                    </span>
                   </div>
-                  <Link 
-                    href="/ventures/create"
-                    className="flex items-center gap-3 w-full hover:bg-glass-surface rounded-lg p-2 transition-colors"
-                  >
-                    <div className="w-5 h-5 border-2 border-accent rounded-full flex items-center justify-center">
-                      <div className="w-2 h-2 bg-accent rounded-full"></div>
+                  
+                  {/* Create Venture - Check if user has ventures */}
+                  {ventures.length === 0 ? (
+                    <Link 
+                      href="/ventures/create"
+                      className="flex items-center gap-3 w-full hover:bg-glass-surface rounded-lg p-2 transition-colors"
+                    >
+                      <div className="w-5 h-5 border-2 border-accent rounded-full flex items-center justify-center">
+                        <div className="w-2 h-2 bg-accent rounded-full"></div>
+                      </div>
+                      <span className="text-foreground-body">Create Your First Venture</span>
+                      <ChevronRight className="w-4 h-4 text-foreground-muted ml-auto" />
+                    </Link>
+                  ) : (
+                    <div className="flex items-center gap-3">
+                      <CheckCircle className="w-5 h-5 text-success" />
+                      <span className="text-foreground-body">First Venture Created</span>
                     </div>
-                    <span className="text-foreground-body">Create Your First Venture</span>
-                    <ChevronRight className="w-4 h-4 text-foreground-muted ml-auto" />
-                  </Link>
+                  )}
                 </div>
               </div>
             </div>

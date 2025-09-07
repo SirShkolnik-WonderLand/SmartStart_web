@@ -816,6 +816,103 @@ class ComprehensiveApiService {
   }
 
   // ============================================================================
+  // JOURNEY & ONBOARDING
+  // ============================================================================
+
+  async getJourneyStatus(userId: string): Promise<ApiResponse<{
+    completedSteps: string[]
+    currentStep: string
+    progress: number
+    stages: Array<{
+      id: string
+      name: string
+      completed: boolean
+      order: number
+    }>
+  }>> {
+    try {
+      const response = await this.fetchWithAuth<{
+        completedSteps: string[]
+        currentStep: string
+        progress: number
+        stages: Array<{
+          id: string
+          name: string
+          completed: boolean
+          order: number
+        }>
+      }>(`/api/journey/status/${userId}`)
+      
+      return {
+        success: response.success,
+        data: response.data,
+        error: response.error
+      }
+    } catch (error) {
+      console.error('Error fetching journey status:', error)
+      return { success: false, error: 'Failed to fetch journey status' }
+    }
+  }
+
+  async getLegalPackStatus(userId: string): Promise<ApiResponse<{
+    signed: boolean
+    signedAt?: string
+    documents: Array<{
+      id: string
+      name: string
+      status: string
+      signedAt?: string
+    }>
+  }>> {
+    try {
+      const response = await this.fetchWithAuth<{
+        signed: boolean
+        signedAt?: string
+        documents: Array<{
+          id: string
+          name: string
+          status: string
+          signedAt?: string
+        }>
+      }>(`/api/legal-pack/status/${userId}`)
+      
+      return {
+        success: response.success,
+        data: response.data,
+        error: response.error
+      }
+    } catch (error) {
+      console.error('Error fetching legal pack status:', error)
+      return { success: false, error: 'Failed to fetch legal pack status' }
+    }
+  }
+
+  async getSubscriptionStatus(userId: string): Promise<ApiResponse<{
+    active: boolean
+    planName?: string
+    status?: string
+    expiresAt?: string
+  }>> {
+    try {
+      const response = await this.fetchWithAuth<{
+        active: boolean
+        planName?: string
+        status?: string
+        expiresAt?: string
+      }>(`/api/subscriptions/status/${userId}`)
+      
+      return {
+        success: response.success,
+        data: response.data,
+        error: response.error
+      }
+    } catch (error) {
+      console.error('Error fetching subscription status:', error)
+      return { success: false, error: 'Failed to fetch subscription status' }
+    }
+  }
+
+  // ============================================================================
   // ROLES & OFFERS
   // ============================================================================
 
