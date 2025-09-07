@@ -284,6 +284,7 @@ router.post('/register', async(req, res) => {
                 lastName,
                 companyId
             },
+            sessionId: `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
             timestamp: new Date().toISOString()
         });
     } catch (error) {
