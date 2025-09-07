@@ -649,12 +649,27 @@ class ComprehensiveApiService {
     password: string
   }): Promise<ApiResponse<User & { token?: string }>> {
     try {
-      const response = await this.fetchWithAuth<{ user: User; sessionId: string }>('/api/auth/register', {
+      const response = await fetch(`${API_BASE}/api/auth/register`, {
         method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify(userData)
       })
+
+      const result = await response.json()
+      
+      if (!response.ok) {
+        return {
+          success: false,
+          data: undefined,
+          error: result.message || 'Registration failed'
+        }
+      }
+
       // The backend returns { success: true, user, sessionId }, so we need to extract the user data
-      return { success: true, data: response.data?.user || undefined }
+      return { success: true, data: result.user || undefined }
     } catch (error) {
       console.error('Error registering user:', error)
       return { success: false, data: undefined, error: 'Failed to register user' }
