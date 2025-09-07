@@ -654,7 +654,7 @@ class ComprehensiveApiService {
         body: JSON.stringify(userData)
       })
       // The backend returns { success: true, user, sessionId }, so we need to extract the user data
-      return { success: true, data: response.user || undefined }
+      return { success: true, data: response.data?.user || undefined }
     } catch (error) {
       console.error('Error registering user:', error)
       return { success: false, data: undefined, error: 'Failed to register user' }
