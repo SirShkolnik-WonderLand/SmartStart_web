@@ -14,7 +14,8 @@ import {
   AlertCircle,
   Star,
   Shield,
-  Zap
+  Zap,
+  X
 } from 'lucide-react'
 
 interface OnboardingStep {
@@ -39,7 +40,7 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  // Form states
+  // Form states - Initialize with user data from registration
   const [profileData, setProfileData] = useState({
     firstName: '',
     lastName: '',
@@ -64,9 +65,33 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
     partnership: false
   })
 
+  const [showLegalPopup, setShowLegalPopup] = useState<{
+    isOpen: boolean
+    type: 'confidentiality' | 'equity' | 'partnership' | null
+  }>({
+    isOpen: false,
+    type: null
+  })
+
   const loadInitialData = useCallback(async () => {
     try {
       setIsLoading(true)
+      
+      // Load user data from localStorage to pre-fill profile
+      try {
+        const storedUser = localStorage.getItem('user')
+        if (storedUser) {
+          const userData = JSON.parse(storedUser)
+          setProfileData(prev => ({
+            ...prev,
+            firstName: userData.firstName || '',
+            lastName: userData.lastName || '',
+            // Keep other fields empty for user to fill
+          }))
+        }
+      } catch (userError) {
+        console.warn('Failed to load user data from localStorage:', userError)
+      }
       
       // Try to load journey status (but don't fail if it doesn't work)
       try {
@@ -190,6 +215,92 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
     }
   }
 
+  const openLegalPopup = (type: 'confidentiality' | 'equity' | 'partnership') => {
+    setShowLegalPopup({ isOpen: true, type })
+  }
+
+  const closeLegalPopup = () => {
+    setShowLegalPopup({ isOpen: false, type: null })
+  }
+
+  const signLegalAgreement = (type: 'confidentiality' | 'equity' | 'partnership') => {
+    setLegalAgreements(prev => ({ ...prev, [type]: true }))
+    closeLegalPopup()
+  }
+
+  const legalAgreementContent = {
+    confidentiality: {
+      title: "Confidentiality Agreement",
+      content: `
+        CONFIDENTIALITY AND NON-DISCLOSURE AGREEMENT
+        
+        This Confidentiality Agreement ("Agreement") is entered into between SmartStart Platform ("Company") and the user ("Participant") for the purpose of protecting confidential and proprietary information shared during collaboration on the SmartStart platform.
+        
+        DEFINITIONS:
+        "Confidential Information" means all non-public, proprietary, or confidential information disclosed by Company or other participants, including but not limited to business plans, technical data, customer lists, financial information, and any other information marked as confidential.
+        
+        OBLIGATIONS:
+        1. Participant agrees to hold all Confidential Information in strict confidence
+        2. Participant will not disclose Confidential Information to any third party without written consent
+        3. Participant will use Confidential Information solely for the purpose of collaboration on the SmartStart platform
+        4. Participant will take reasonable precautions to protect Confidential Information
+        
+        TERM: This Agreement shall remain in effect for a period of 5 years from the date of execution.
+        
+        By signing this agreement, you acknowledge that you have read, understood, and agree to be bound by these terms.
+      `
+    },
+    equity: {
+      title: "Equity Agreement",
+      content: `
+        EQUITY DISTRIBUTION AND OWNERSHIP AGREEMENT
+        
+        This Equity Agreement ("Agreement") governs the distribution and ownership of equity in ventures created through the SmartStart platform.
+        
+        EQUITY PRINCIPLES:
+        1. Equity distribution shall be based on contribution, effort, and value added to the venture
+        2. All equity allocations must be documented and agreed upon by all participants
+        3. Equity vesting schedules may apply as determined by venture participants
+        4. Intellectual property contributions shall be considered in equity calculations
+        
+        OWNERSHIP RIGHTS:
+        - Participants retain ownership of their individual contributions
+        - Joint intellectual property shall be owned according to contribution percentages
+        - Exit strategies and buyout provisions shall be established upfront
+        
+        DISPUTE RESOLUTION:
+        Any disputes regarding equity distribution shall be resolved through the SmartStart dispute resolution process.
+        
+        By signing this agreement, you agree to these equity distribution principles and commit to fair and transparent equity allocation.
+      `
+    },
+    partnership: {
+      title: "Partnership Agreement",
+      content: `
+        COLLABORATIVE PARTNERSHIP AGREEMENT
+        
+        This Partnership Agreement ("Agreement") establishes the terms for collaborative partnerships formed through the SmartStart platform.
+        
+        PARTNERSHIP STRUCTURE:
+        1. Partnerships are formed voluntarily between participants
+        2. Each partnership shall define roles, responsibilities, and decision-making processes
+        3. Communication protocols and meeting schedules shall be established
+        4. Conflict resolution procedures shall be agreed upon
+        
+        RESPONSIBILITIES:
+        - All partners commit to active participation and contribution
+        - Regular progress updates and transparent communication
+        - Respect for diverse perspectives and collaborative decision-making
+        - Adherence to platform guidelines and legal requirements
+        
+        TERMINATION:
+        Partnerships may be dissolved by mutual agreement or through the platform's dispute resolution process.
+        
+        By signing this agreement, you commit to collaborative partnership principles and agree to work constructively with your partners.
+      `
+    }
+  }
+
   const steps: OnboardingStep[] = [
     {
       id: 'profile',
@@ -295,7 +406,7 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
           </div>
 
           <div className="space-y-4">
-            <div className="border border-border rounded-lg p-4">
+            <div className="border border-glass-border rounded-lg p-4">
               <div className="flex items-start space-x-3">
                 <input
                   type="checkbox"
@@ -305,17 +416,25 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
                   className="mt-1"
                 />
                 <div className="flex-1">
-                  <label htmlFor="confidentiality" className="font-medium cursor-pointer">
-                    Confidentiality Agreement
-                  </label>
-                  <p className="text-sm text-muted-foreground mt-1">
+                  <div className="flex items-center space-x-2">
+                    <label htmlFor="confidentiality" className="font-medium cursor-pointer">
+                      Confidentiality Agreement
+                    </label>
+                    <button
+                      onClick={() => openLegalPopup('confidentiality')}
+                      className="text-primary hover:underline text-sm"
+                    >
+                      Read Full Agreement
+                    </button>
+                  </div>
+                  <p className="text-sm text-foreground-muted mt-1">
                     Protects sensitive information shared during collaboration
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="border border-border rounded-lg p-4">
+            <div className="border border-glass-border rounded-lg p-4">
               <div className="flex items-start space-x-3">
                 <input
                   type="checkbox"
@@ -325,17 +444,25 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
                   className="mt-1"
                 />
                 <div className="flex-1">
-                  <label htmlFor="equity" className="font-medium cursor-pointer">
-                    Equity Agreement
-                  </label>
-                  <p className="text-sm text-muted-foreground mt-1">
+                  <div className="flex items-center space-x-2">
+                    <label htmlFor="equity" className="font-medium cursor-pointer">
+                      Equity Agreement
+                    </label>
+                    <button
+                      onClick={() => openLegalPopup('equity')}
+                      className="text-primary hover:underline text-sm"
+                    >
+                      Read Full Agreement
+                    </button>
+                  </div>
+                  <p className="text-sm text-foreground-muted mt-1">
                     Defines ownership and equity distribution in ventures
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="border border-border rounded-lg p-4">
+            <div className="border border-glass-border rounded-lg p-4">
               <div className="flex items-start space-x-3">
                 <input
                   type="checkbox"
@@ -345,10 +472,18 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
                   className="mt-1"
                 />
                 <div className="flex-1">
-                  <label htmlFor="partnership" className="font-medium cursor-pointer">
-                    Partnership Agreement
-                  </label>
-                  <p className="text-sm text-muted-foreground mt-1">
+                  <div className="flex items-center space-x-2">
+                    <label htmlFor="partnership" className="font-medium cursor-pointer">
+                      Partnership Agreement
+                    </label>
+                    <button
+                      onClick={() => openLegalPopup('partnership')}
+                      className="text-primary hover:underline text-sm"
+                    >
+                      Read Full Agreement
+                    </button>
+                  </div>
+                  <p className="text-sm text-foreground-muted mt-1">
                     Establishes terms for collaborative partnerships
                   </p>
                 </div>
@@ -623,6 +758,46 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
           </div>
         </div>
       </div>
+
+      {/* Legal Agreement Popup Modal */}
+      {showLegalPopup.isOpen && showLegalPopup.type && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="glass-lg rounded-2xl p-8 max-w-4xl max-h-[80vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-2xl font-bold text-foreground">
+                {legalAgreementContent[showLegalPopup.type].title}
+              </h3>
+              <button
+                onClick={closeLegalPopup}
+                className="text-foreground-muted hover:text-foreground transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            
+            <div className="prose prose-sm max-w-none mb-6">
+              <pre className="whitespace-pre-wrap text-foreground-body font-mono text-sm leading-relaxed">
+                {legalAgreementContent[showLegalPopup.type].content}
+              </pre>
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <button
+                onClick={closeLegalPopup}
+                className="wonder-button-secondary px-6 py-2"
+              >
+                Close
+              </button>
+              <button
+                onClick={() => signLegalAgreement(showLegalPopup.type!)}
+                className="wonder-button px-6 py-2"
+              >
+                I Agree & Sign
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

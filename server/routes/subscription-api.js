@@ -436,4 +436,104 @@ router.get('/analytics', authenticateToken, async(req, res) => {
     }
 });
 
+// ===== SEEDING ENDPOINT =====
+router.post('/seed', async (req, res) => {
+    try {
+        console.log('🌱 Seeding subscription plans...');
+
+        // Create default subscription plans
+        const defaultPlans = [
+            {
+                name: 'Starter Pack',
+                description: 'Perfect for individuals getting started with SmartStart',
+                price: 9.99,
+                currency: 'USD',
+                interval: 'MONTHLY',
+                features: [
+                    'Create up to 2 ventures',
+                    'Basic team collaboration',
+                    'Standard support',
+                    'Core platform features'
+                ],
+                isActive: true
+            },
+            {
+                name: 'All Features Pack',
+                description: 'Complete access to all SmartStart features',
+                price: 29.99,
+                currency: 'USD',
+                interval: 'MONTHLY',
+                features: [
+                    'Unlimited ventures',
+                    'Advanced team collaboration',
+                    'Priority support',
+                    'Advanced analytics',
+                    'Custom integrations',
+                    'Legal document automation'
+                ],
+                isActive: true
+            },
+            {
+                name: 'Enterprise Pack',
+                description: 'For large teams and organizations',
+                price: 99.99,
+                currency: 'USD',
+                interval: 'MONTHLY',
+                features: [
+                    'Everything in All Features Pack',
+                    'Dedicated account manager',
+                    'Custom legal agreements',
+                    'Advanced security features',
+                    'API access',
+                    'White-label options'
+                ],
+                isActive: true
+            }
+        ];
+
+        // Create subscription plans (check if they already exist first)
+        for (const planData of defaultPlans) {
+            const existingPlan = await prisma.billingPlan.findFirst({
+                where: { name: planData.name }
+            });
+            
+            if (!existingPlan) {
+                await prisma.billingPlan.create({
+                    data: planData
+                });
+            } else {
+                // Update existing plan
+                await prisma.billingPlan.update({
+                    where: { id: existingPlan.id },
+                    data: {
+                        description: planData.description,
+                        price: planData.price,
+                        currency: planData.currency,
+                        interval: planData.interval,
+                        features: planData.features,
+                        isActive: planData.isActive
+                    }
+                });
+            }
+        }
+
+        console.log(`✅ Created ${defaultPlans.length} subscription plans`);
+
+        res.json({
+            success: true,
+            message: 'Subscription plans seeded successfully',
+            plansCreated: defaultPlans.length,
+            timestamp: new Date().toISOString()
+        });
+
+    } catch (error) {
+        console.error('Subscription seeding error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Subscription seeding failed',
+            error: error.message
+        });
+    }
+});
+
 module.exports = router;
