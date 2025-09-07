@@ -7,7 +7,11 @@ export interface User {
   name: string
   firstName?: string
   lastName?: string
-  role?: string
+  role?: {
+    id: string
+    name: string
+    level: number
+  }
   level?: string
   status?: string
   xp?: number

@@ -11,7 +11,10 @@ import {
   Settings,
   ChevronLeft,
   Key,
-  Clock
+  Clock,
+  Building,
+  Users,
+  Trophy
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -20,8 +23,11 @@ import { useUIStore } from '@/store/useUIStore'
 const navigation = [
   { name: 'Home', href: '/', icon: Home, current: true },
   { name: 'Ventures', href: '/ventures', icon: Building2, current: false },
+  { name: 'Companies', href: '/companies', icon: Building, current: false },
+  { name: 'Teams', href: '/teams', icon: Users, current: false },
   { name: 'Opportunities', href: '/opportunities', icon: Search, current: false },
   { name: 'Documents', href: '/documents', icon: FileText, current: false },
+  { name: 'Leaderboard', href: '/leaderboard', icon: Trophy, current: false },
   { name: 'Approvals', href: '/approvals', icon: CheckCircle, current: false },
   { name: 'Settings', href: '/settings', icon: Settings, current: false },
 ]

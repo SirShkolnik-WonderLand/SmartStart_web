@@ -97,7 +97,7 @@ export function Header() {
               </div>
               <div className="hidden lg:block">
                 <p className="text-sm font-medium text-foreground">{user.name}</p>
-                <p className="text-xs text-muted-foreground">{user.role || 'User'}</p>
+                <p className="text-xs text-muted-foreground">{user.role?.name || 'User'}</p>
               </div>
             </div>
           ) : (

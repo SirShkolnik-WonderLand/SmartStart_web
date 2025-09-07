@@ -241,10 +241,14 @@ export interface AnalyticsData {
   totalUsers: number
   totalOffers: number
   totalRevenue: number
+  totalCompanies: number
+  totalTeams: number
   ventureGrowth: number
   userGrowth: number
   offerGrowth: number
   revenueGrowth: number
+  companyGrowth: number
+  teamGrowth: number
   topVentures: Array<{
     id: string
     name: string
@@ -270,6 +274,125 @@ export interface UserMetrics {
   portfolioValue: number
   activeProjects: number
   completedProjects: number
+}
+
+// ============================================================================
+// COMPANY MANAGEMENT INTERFACES
+// ============================================================================
+
+export interface Company {
+  id: string
+  name: string
+  description: string
+  industry: string
+  size: string
+  stage: string
+  status: string
+  visibility: string
+  foundedDate: string
+  website?: string
+  logo?: string
+  headquarters?: string
+  tags: string[]
+  metrics: CompanyMetric[]
+  documents: CompanyDocument[]
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CompanyMetric {
+  id: string
+  companyId: string
+  metricType: string
+  value: number
+  unit: string
+  period: string
+  createdAt: string
+}
+
+export interface CompanyDocument {
+  id: string
+  companyId: string
+  title: string
+  type: string
+  url: string
+  uploadedAt: string
+}
+
+// ============================================================================
+// TEAM MANAGEMENT INTERFACES
+// ============================================================================
+
+export interface Team {
+  id: string
+  name: string
+  description: string
+  companyId?: string
+  ventureId?: string
+  leaderId: string
+  members: TeamMember[]
+  goals: TeamGoal[]
+  metrics: TeamMetric[]
+  createdAt: string
+  updatedAt: string
+}
+
+export interface TeamMember {
+  id: string
+  teamId: string
+  userId: string
+  role: string
+  permissions: string[]
+  joinedAt: string
+  user: User
+}
+
+export interface TeamGoal {
+  id: string
+  teamId: string
+  title: string
+  description: string
+  target: number
+  current: number
+  unit: string
+  deadline: string
+  status: 'active' | 'completed' | 'paused'
+  createdAt: string
+}
+
+export interface TeamMetric {
+  id: string
+  teamId: string
+  metricType: string
+  value: number
+  period: string
+  createdAt: string
+}
+
+// ============================================================================
+// GAMIFICATION INTERFACES
+// ============================================================================
+
+export interface Badge {
+  id: string
+  name: string
+  description: string
+  icon: string
+  category: string
+  rarity: 'common' | 'rare' | 'epic' | 'legendary'
+  requirements: string[]
+  xpReward: number
+  createdAt: string
+}
+
+export interface LeaderboardEntry {
+  userId: string
+  name: string
+  xp: number
+  level: number
+  rank: number
+  badges: number
+  avatar?: string
 }
 
 // ============================================================================
@@ -370,6 +493,29 @@ class ComprehensiveApiService {
     }
   }
 
+  async getUser(userId: string): Promise<ApiResponse<User>> {
+    try {
+      const response = await this.fetchWithAuth<User>(`/api/users/${userId}`)
+      return response
+    } catch (error) {
+      console.error('Error fetching user:', error)
+      return { success: false, error: 'Failed to fetch user' }
+    }
+  }
+
+  async updateUser(userId: string, userData: Partial<User>): Promise<ApiResponse<User>> {
+    try {
+      const response = await this.fetchWithAuth<User>(`/api/users/${userId}`, {
+        method: 'PUT',
+        body: JSON.stringify(userData)
+      })
+      return response
+    } catch (error) {
+      console.error('Error updating user:', error)
+      return { success: false, error: 'Failed to update user' }
+    }
+  }
+
   async getUserProfile(userId: string): Promise<ApiResponse<UserProfile>> {
     try {
       const response = await this.fetchWithAuth<UserProfile>(`/api/v1/profiles/${userId}`)
@@ -380,33 +526,27 @@ class ComprehensiveApiService {
     }
   }
 
+  async updateUserProfile(userId: string, profileData: Partial<UserProfile>): Promise<ApiResponse<UserProfile>> {
+    try {
+      const response = await this.fetchWithAuth<UserProfile>(`/api/v1/profiles/${userId}`, {
+        method: 'PUT',
+        body: JSON.stringify(profileData)
+      })
+      return response
+    } catch (error) {
+      console.error('Error updating user profile:', error)
+      return { success: false, error: 'Failed to update user profile' }
+    }
+  }
+
   // ============================================================================
   // VENTURE MANAGEMENT
   // ============================================================================
 
   async getVentures(): Promise<ApiResponse<Venture[]>> {
     try {
-      // For now, return mock data since ventures endpoint structure is different
-      const mockVentures: Venture[] = [
-        {
-          id: '1',
-          name: 'Quantum AI Labs',
-          description: 'Revolutionary AI solutions for enterprise',
-          stage: 'mvp',
-          industry: 'AI/ML',
-          teamSize: 5,
-          lookingFor: ['Frontend Developer', 'AI Engineer'],
-          rewards: { type: 'equity', amount: '5%' },
-          owner: { id: '1', name: 'Admin User', avatar: '' },
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          status: 'active',
-          tags: ['AI', 'Machine Learning', 'Enterprise'],
-          tier: 'T1',
-          residency: 'CA'
-        }
-      ]
-      return { success: true, data: mockVentures }
+      const response = await this.fetchWithAuth<Venture[]>('/api/v1/ventures')
+      return response
     } catch (error) {
       console.error('Error fetching ventures:', error)
       return { success: false, data: [], error: 'Failed to fetch ventures' }
@@ -451,43 +591,23 @@ class ComprehensiveApiService {
     }
   }
 
+  async createRole(roleData: Partial<Role>): Promise<ApiResponse<Role>> {
+    try {
+      const response = await this.fetchWithAuth<Role>('/api/v1/roles', {
+        method: 'POST',
+        body: JSON.stringify(roleData)
+      })
+      return response
+    } catch (error) {
+      console.error('Error creating role:', error)
+      return { success: false, error: 'Failed to create role' }
+    }
+  }
+
   async getOffers(): Promise<ApiResponse<Offer[]>> {
     try {
-      // For now, return mock data since offers endpoint structure is different
-      const mockOffers: Offer[] = [
-        {
-          id: '1',
-          roleId: '1',
-          userId: '1',
-          status: 'offered',
-          notes: 'I have 5 years of experience in React and Node.js',
-          portfolioLink: 'https://github.com/user',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          user: {
-            id: '1',
-            email: 'brian@smartstart.com',
-            name: 'Brian Johnson',
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-          },
-          role: {
-            id: '1',
-            ventureId: '1',
-            title: 'Frontend Developer',
-            description: 'Build amazing user interfaces',
-            skills: ['React', 'TypeScript', 'Tailwind'],
-            commitment: 'Part-time',
-            openings: 2,
-            visibility: true,
-            ndaRequired: true,
-            compensation: { type: 'equity', amount: '2%' },
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-          }
-        }
-      ]
-      return { success: true, data: mockOffers }
+      const response = await this.fetchWithAuth<Offer[]>('/api/v1/offers')
+      return response
     } catch (error) {
       console.error('Error fetching offers:', error)
       return { success: false, data: [], error: 'Failed to fetch offers' }
@@ -561,20 +681,8 @@ class ComprehensiveApiService {
 
   async getAnalytics(): Promise<ApiResponse<AnalyticsData>> {
     try {
-      // For now, return mock data since analytics endpoint doesn't exist yet
-      const mockData: AnalyticsData = {
-        totalVentures: 0,
-        totalUsers: 5,
-        totalOffers: 0,
-        totalRevenue: 0,
-        ventureGrowth: 0,
-        userGrowth: 0,
-        offerGrowth: 0,
-        revenueGrowth: 0,
-        topVentures: [],
-        monthlyStats: []
-      }
-      return { success: true, data: mockData }
+      const response = await this.fetchWithAuth<AnalyticsData>('/api/v1/analytics')
+      return response
     } catch (error) {
       console.error('Error fetching analytics:', error)
       return { success: false, error: 'Failed to fetch analytics' }
@@ -619,6 +727,152 @@ class ComprehensiveApiService {
     } catch (error) {
       console.error('Logout error:', error)
       return { success: false, error: 'Logout failed' }
+    }
+  }
+
+  // ============================================================================
+  // COMPANY MANAGEMENT (17 endpoints)
+  // ============================================================================
+
+  async getCompanies(): Promise<ApiResponse<Company[]>> {
+    try {
+      const response = await this.fetchWithAuth<{ companies: Company[] }>('/api/companies')
+      return { success: true, data: response.data?.companies || [] }
+    } catch (error) {
+      console.error('Error getting companies:', error)
+      throw error
+    }
+  }
+
+  async getCompany(id: string): Promise<ApiResponse<Company>> {
+    try {
+      const response = await this.fetchWithAuth<{ company: Company }>(`/api/companies/${id}`)
+      return { success: true, data: response.data?.company }
+    } catch (error) {
+      console.error('Error getting company:', error)
+      throw error
+    }
+  }
+
+  async createCompany(companyData: Partial<Company>): Promise<ApiResponse<Company>> {
+    try {
+      const response = await this.fetchWithAuth<{ company: Company }>('/api/companies/create', {
+        method: 'POST',
+        body: JSON.stringify(companyData)
+      })
+      return { success: true, data: response.data?.company }
+    } catch (error) {
+      console.error('Error creating company:', error)
+      throw error
+    }
+  }
+
+  async updateCompany(id: string, companyData: Partial<Company>): Promise<ApiResponse<Company>> {
+    try {
+      const response = await this.fetchWithAuth<{ company: Company }>(`/api/companies/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(companyData)
+      })
+      return { success: true, data: response.data?.company }
+    } catch (error) {
+      console.error('Error updating company:', error)
+      throw error
+    }
+  }
+
+  async deleteCompany(id: string): Promise<ApiResponse> {
+    try {
+      const response = await this.fetchWithAuth(`/api/companies/${id}`, {
+        method: 'DELETE'
+      })
+      return response
+    } catch (error) {
+      console.error('Error deleting company:', error)
+      throw error
+    }
+  }
+
+  // ============================================================================
+  // TEAM MANAGEMENT (15 endpoints)
+  // ============================================================================
+
+  async getTeams(): Promise<ApiResponse<Team[]>> {
+    try {
+      const response = await this.fetchWithAuth<{ teams: Team[] }>('/api/teams')
+      return { success: true, data: response.data?.teams || [] }
+    } catch (error) {
+      console.error('Error getting teams:', error)
+      throw error
+    }
+  }
+
+  async getTeam(id: string): Promise<ApiResponse<Team>> {
+    try {
+      const response = await this.fetchWithAuth<{ team: Team }>(`/api/teams/${id}`)
+      return { success: true, data: response.data?.team }
+    } catch (error) {
+      console.error('Error getting team:', error)
+      throw error
+    }
+  }
+
+  async createTeam(teamData: Partial<Team>): Promise<ApiResponse<Team>> {
+    try {
+      const response = await this.fetchWithAuth<{ team: Team }>('/api/teams/create', {
+        method: 'POST',
+        body: JSON.stringify(teamData)
+      })
+      return { success: true, data: response.data?.team }
+    } catch (error) {
+      console.error('Error creating team:', error)
+      throw error
+    }
+  }
+
+  // ============================================================================
+  // GAMIFICATION (20+ endpoints)
+  // ============================================================================
+
+  async getUserXP(userId: string): Promise<ApiResponse<{ xp: number; level: number; nextLevelXP: number }>> {
+    try {
+      const response = await this.fetchWithAuth<{ xp: number; level: number; nextLevelXP: number }>(`/api/gamification/xp/${userId}`)
+      return { success: true, data: response.data }
+    } catch (error) {
+      console.error('Error getting user XP:', error)
+      throw error
+    }
+  }
+
+  async addXP(userId: string, amount: number, reason: string): Promise<ApiResponse<{ xp: number; level: number }>> {
+    try {
+      const response = await this.fetchWithAuth<{ xp: number; level: number }>('/api/gamification/xp/add', {
+        method: 'POST',
+        body: JSON.stringify({ userId, amount, reason })
+      })
+      return { success: true, data: response.data }
+    } catch (error) {
+      console.error('Error adding XP:', error)
+      throw error
+    }
+  }
+
+  async getUserBadges(userId: string): Promise<ApiResponse<Badge[]>> {
+    try {
+      const response = await this.fetchWithAuth<{ badges: Badge[] }>(`/api/gamification/badges/${userId}`)
+      return { success: true, data: response.data?.badges || [] }
+    } catch (error) {
+      console.error('Error getting user badges:', error)
+      throw error
+    }
+  }
+
+  async getLeaderboard(): Promise<ApiResponse<LeaderboardEntry[]>> {
+    try {
+      const response = await this.fetchWithAuth<{ leaderboard: LeaderboardEntry[] }>('/api/gamification/leaderboard')
+      return { success: true, data: response.data?.leaderboard || [] }
+    } catch (error) {
+      console.error('Error getting leaderboard:', error)
+      throw error
     }
   }
 }
