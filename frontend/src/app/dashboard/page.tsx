@@ -279,7 +279,7 @@ export default function DashboardPage() {
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50 flex items-center justify-center">
         <div className="bg-white/80 backdrop-blur-sm rounded-xl p-8 text-center shadow-lg border border-purple-100">
           <div className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading your magical dashboard...</p>
+          <p className="text-muted">Loading your magical dashboard...</p>
         </div>
       </div>
     )
@@ -349,8 +349,8 @@ export default function DashboardPage() {
                         <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
                       </div>
                     ) : (
-                      <div className="w-5 h-5 border-2 border-gray-300 rounded-full flex items-center justify-center">
-                        <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
+                      <div className="w-5 h-5 border-2 border-muted rounded-full flex items-center justify-center">
+                        <div className="w-2 h-2 bg-muted rounded-full"></div>
                       </div>
                     )}
                     <div className="flex-1">
@@ -415,13 +415,13 @@ export default function DashboardPage() {
                     <div className="w-5 h-5 border-2 border-purple-500 rounded-full flex items-center justify-center">
                       <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
                     </div>
-                    <span className="text-gray-700">Create Your First Venture</span>
-                    <ChevronRight className="w-4 h-4 text-gray-400 ml-auto" />
+                    <span>Create Your First Venture</span>
+                    <ChevronRight className="w-4 h-4 text-muted ml-auto" />
                   </Link>
                 ) : (
                   <div className="flex items-center gap-3">
                     <CheckCircle className="w-5 h-5 text-green-600" />
-                    <span className="text-gray-700">First Venture Created</span>
+                    <span>First Venture Created</span>
                   </div>
                 )}
               </>
@@ -522,17 +522,17 @@ export default function DashboardPage() {
                 <div key={venture.id} className="flex items-center gap-3 p-3 bg-purple-50 rounded-lg">
                   <Briefcase className="w-5 h-5 text-purple-600" />
                   <div className="flex-1">
-                    <div className="text-sm font-medium text-gray-900">{venture.name}</div>
-                    <div className="text-xs text-gray-600">Stage: {venture.stage || 'Planning'}</div>
+                    <div className="text-sm font-medium">{venture.name}</div>
+                    <div className="text-xs text-muted">Stage: {venture.stage || 'Planning'}</div>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-gray-400" />
+                  <ChevronRight className="w-4 h-4 text-muted" />
                 </div>
               ))
             ) : (
               <div className="text-center py-8">
-                <Briefcase className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                <p className="text-gray-500 text-sm">No recent activity</p>
-                <p className="text-gray-400 text-xs">Create your first venture to get started!</p>
+                <Briefcase className="w-12 h-12 text-muted mx-auto mb-3" />
+                <p className="text-muted text-sm">No recent activity</p>
+                <p className="text-muted text-xs">Create your first venture to get started!</p>
               </div>
             )}
           </div>
@@ -542,12 +542,12 @@ export default function DashboardPage() {
       {/* Fun Bottom Section */}
       <div className="bg-gradient-to-r from-purple-100 via-pink-100 to-yellow-100 rounded-xl p-6 border border-purple-200">
         <div className="text-center">
-          <h3 className="text-xl font-bold text-gray-900 mb-2 flex items-center justify-center gap-2">
+          <h3 className="text-xl font-bold mb-2 flex items-center justify-center gap-2">
             <PartyPopper className="w-6 h-6 text-pink-600" />
             Ready for Your Next Adventure?
             <PartyPopper className="w-6 h-6 text-pink-600" />
           </h3>
-          <p className="text-gray-600 mb-4">
+          <p className="text-muted mb-4">
             Explore new opportunities, connect with amazing people, and build something incredible together!
           </p>
           <div className="flex flex-wrap justify-center gap-3">
