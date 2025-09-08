@@ -274,15 +274,27 @@ router.post('/register', async(req, res) => {
 
         console.log(`User ${email} registered successfully`);
 
+        // Generate JWT token for immediate authentication
+        const token = jwt.sign(
+            { 
+                userId: userId, 
+                email: email.toLowerCase(),
+                role: role || 'FOUNDER'
+            },
+            process.env.JWT_SECRET || 'fallback-secret',
+            { expiresIn: '24h' }
+        );
+
         res.json({
             success: true,
             message: 'User registered successfully. Please check your email to verify your account.',
-            user: {
+            data: {
                 id: userId,
                 email: email.toLowerCase(),
                 firstName,
                 lastName,
-                companyId
+                companyId,
+                token: token
             },
             sessionId: `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
             timestamp: new Date().toISOString()
