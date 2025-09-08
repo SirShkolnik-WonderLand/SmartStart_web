@@ -100,9 +100,13 @@ export interface SignatureVerification {
 }
 
 class LegalDocumentsApiService {
-    private baseUrl = process.env.NODE_ENV === 'production' 
+    private signingBaseUrl = process.env.NODE_ENV === 'production'
         ? 'https://smartstart-api.onrender.com/api/legal-signing'
         : '/api/legal-signing';
+
+    private documentsBaseUrl = process.env.NODE_ENV === 'production'
+        ? 'https://smartstart-api.onrender.com/api/legal-documents'
+        : '/api/legal-documents';
 
     // Get available documents for user
     async getAvailableDocuments(): Promise<{ success: boolean; data: LegalDocument[] }> {
@@ -112,7 +116,7 @@ class LegalDocumentsApiService {
                 throw new Error('No authentication token found');
             }
 
-            const response = await fetch(`${this.baseUrl}/documents`, {
+            const response = await fetch(`${this.documentsBaseUrl}/documents`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -141,7 +145,7 @@ class LegalDocumentsApiService {
     // Start signing session for a set of documents
     async startSigningSession(documentIds: string[]): Promise<{ success: boolean; data: { sessionId: string } | null }> {
         try {
-            const response = await fetch(`${this.baseUrl}/session/start`, {
+            const response = await fetch(`${this.signingBaseUrl}/session/start`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('auth-token')}`,
@@ -166,7 +170,7 @@ class LegalDocumentsApiService {
     // Sign within a session
     async signInSession(sessionId: string, documentId: string, signatureData: Record<string, unknown>): Promise<{ success: boolean }> {
         try {
-            const response = await fetch(`${this.baseUrl}/session/${sessionId}/sign`, {
+            const response = await fetch(`${this.signingBaseUrl}/session/${sessionId}/sign`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('auth-token')}`,
@@ -196,7 +200,7 @@ class LegalDocumentsApiService {
                 throw new Error('No authentication token found');
             }
 
-            const response = await fetch(`${this.baseUrl}/documents/required`, {
+            const response = await fetch(`${this.documentsBaseUrl}/documents/required`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -225,7 +229,7 @@ class LegalDocumentsApiService {
     // Get pending documents for next level
     async getPendingDocuments(): Promise<{ success: boolean; data: LegalDocument[] }> {
         try {
-            const response = await fetch(`${this.baseUrl}/documents/pending`, {
+            const response = await fetch(`${this.documentsBaseUrl}/documents/pending`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('auth-token')}`,
@@ -247,7 +251,7 @@ class LegalDocumentsApiService {
     // Get specific document
     async getDocument(documentId: string): Promise<{ success: boolean; data: LegalDocument }> {
         try {
-            const response = await fetch(`${this.baseUrl}/documents/${documentId}`, {
+            const response = await fetch(`${this.documentsBaseUrl}/documents/${documentId}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('auth-token')}`,
@@ -277,7 +281,7 @@ class LegalDocumentsApiService {
         }
     ): Promise<{ success: boolean; data: DocumentSignature }> {
         try {
-            const response = await fetch(`${this.baseUrl}/documents/${documentId}/sign`, {
+            const response = await fetch(`${this.documentsBaseUrl}/documents/${documentId}/sign`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('auth-token')}`,
@@ -314,7 +318,7 @@ class LegalDocumentsApiService {
                 throw new Error('User ID not found in token');
             }
 
-            const response = await fetch(`${this.baseUrl}/status/${userId}`, {
+            const response = await fetch(`${this.signingBaseUrl}/status/${userId}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -339,7 +343,7 @@ class LegalDocumentsApiService {
         signatureHash: string
     ): Promise<{ success: boolean; data: SignatureVerification }> {
         try {
-            const response = await fetch(`${this.baseUrl}/documents/verify`, {
+            const response = await fetch(`${this.documentsBaseUrl}/documents/verify`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('auth-token')}`,
@@ -377,7 +381,7 @@ class LegalDocumentsApiService {
             if (startDate) params.append('startDate', startDate);
             if (endDate) params.append('endDate', endDate);
 
-            const response = await fetch(`${this.baseUrl}/audit?${params}`, {
+            const response = await fetch(`${this.documentsBaseUrl}/audit?${params}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('auth-token')}`,
@@ -407,7 +411,7 @@ class LegalDocumentsApiService {
                 endDate
             });
 
-            const response = await fetch(`${this.baseUrl}/compliance/report?${params}`, {
+            const response = await fetch(`${this.documentsBaseUrl}/compliance/report?${params}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('auth-token')}`,
@@ -429,7 +433,7 @@ class LegalDocumentsApiService {
     // Get document templates
     async getDocumentTemplates(): Promise<{ success: boolean; data: LegalDocument[] }> {
         try {
-            const response = await fetch(`${this.baseUrl}/templates`, {
+            const response = await fetch(`${this.documentsBaseUrl}/templates`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('auth-token')}`,
@@ -459,7 +463,7 @@ class LegalDocumentsApiService {
         }
     ): Promise<{ success: boolean; data: LegalDocument }> {
         try {
-            const response = await fetch(`${this.baseUrl}/templates/${templateId}/generate`, {
+            const response = await fetch(`${this.documentsBaseUrl}/templates/${templateId}/generate`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('auth-token')}`,
@@ -482,7 +486,7 @@ class LegalDocumentsApiService {
     // Download document
     async downloadDocument(documentId: string): Promise<Blob | null> {
         try {
-            const response = await fetch(`${this.baseUrl}/documents/${documentId}/download`, {
+            const response = await fetch(`${this.documentsBaseUrl}/documents/${documentId}/download`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('auth-token')}`
@@ -503,7 +507,7 @@ class LegalDocumentsApiService {
     // Health check
     async healthCheck(): Promise<{ success: boolean; message: string }> {
         try {
-            const response = await fetch(`${this.baseUrl}/health`, {
+            const response = await fetch(`${this.signingBaseUrl}/health`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'

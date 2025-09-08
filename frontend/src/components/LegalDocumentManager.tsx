@@ -26,7 +26,7 @@ import {
   SortAsc,
   SortDesc
 } from 'lucide-react'
-import { legalDocumentsApiService, LegalDocument, DocumentStatus } from '@/lib/legal-documents-api'
+import { legalDocumentsApiService, LegalDocument, DocumentStatus, DocumentAuditLog, ComplianceReport } from '@/lib/legal-documents-api'
 
 type EvidenceDetails = {
   signer?: string
@@ -58,6 +58,11 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
   const [evidenceDoc, setEvidenceDoc] = useState<LegalDocument | null>(null)
   const [evidence, setEvidence] = useState<EvidenceDetails | null>(null)
   const [isVerifying, setIsVerifying] = useState(false)
+  const [auditLogs, setAuditLogs] = useState<DocumentAuditLog[] | null>(null)
+  const [auditLoading, setAuditLoading] = useState(false)
+  const [auditPage, setAuditPage] = useState(1)
+  const [complianceData, setComplianceData] = useState<ComplianceReport | null>(null)
+  const [complianceLoading, setComplianceLoading] = useState(false)
 
   // Load documents and status
   useEffect(() => {
@@ -194,6 +199,22 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
       signatureHash: doc.signatureHash,
     }
     setEvidence(ev)
+
+    // Attempt to fetch audit logs (optional)
+    try {
+      setAuditLoading(true)
+      setAuditLogs(null)
+      const res = await legalDocumentsApiService.getDocumentAuditLog(doc.id, undefined, undefined, 1, 10)
+      if (res.success) {
+        setAuditLogs(res.data)
+      } else {
+        setAuditLogs([])
+      }
+    } catch (e) {
+      setAuditLogs([])
+    } finally {
+      setAuditLoading(false)
+    }
   }
 
   const verifySignature = async () => {
@@ -208,6 +229,33 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
       setEvidence(prev => ({ ...(prev || {}), verified: false }))
     } finally {
       setIsVerifying(false)
+    }
+  }
+
+  const loadAuditPage = async (page: number) => {
+    if (!evidenceDoc) return
+    try {
+      setAuditLoading(true)
+      setAuditPage(page)
+      const res = await legalDocumentsApiService.getDocumentAuditLog(evidenceDoc.id, undefined, undefined, page, 10)
+      if (res.success) setAuditLogs(res.data)
+    } finally {
+      setAuditLoading(false)
+    }
+  }
+
+  const openComplianceReport = async () => {
+    setShowComplianceReport(true)
+    try {
+      setComplianceLoading(true)
+      // Default to last 30 days
+      const end = new Date()
+      const start = new Date()
+      start.setDate(end.getDate() - 30)
+      const res = await legalDocumentsApiService.generateComplianceReport(start.toISOString(), end.toISOString())
+      if (res.success) setComplianceData(res.data)
+    } finally {
+      setComplianceLoading(false)
     }
   }
 
@@ -404,7 +452,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
           </div>
           <div className="flex items-center space-x-3">
             <button
-              onClick={() => setShowComplianceReport(!showComplianceReport)}
+              onClick={openComplianceReport}
               className="wonderland-button-ghost px-4 py-2 rounded-lg transition-all duration-200 shadow-sm flex items-center gap-2"
             >
               <BarChart3 className="w-4 h-4" />
@@ -817,24 +865,32 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
               <div className="space-y-4">
                 <div className="bg-purple-50/50 rounded-lg p-4 border border-purple-100">
                   <h3 className="font-semibold text-gray-900 mb-2">Document Compliance Status</h3>
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <span className="text-gray-600">Total Documents:</span>
-                      <span className="ml-2 font-semibold text-gray-900">{documentStatus?.documents?.length || 0}</span>
+                  {complianceLoading && (
+                    <div className="text-sm text-gray-600">Loading report…</div>
+                  )}
+                  {!complianceLoading && complianceData && (
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <span className="text-gray-600">Total Documents:</span>
+                        <span className="ml-2 font-semibold text-gray-900">{complianceData.total_documents}</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-600">Signed:</span>
+                        <span className="ml-2 font-semibold text-green-600">{complianceData.signed_documents}</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-600">Compliance %:</span>
+                        <span className="ml-2 font-semibold text-gray-900">{complianceData.compliance_percentage}%</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-600">Missing Signatures:</span>
+                        <span className="ml-2 font-semibold text-amber-600">{complianceData.missing_signatures?.length || 0}</span>
+                      </div>
                     </div>
-                    <div>
-                      <span className="text-gray-600">Signed:</span>
-                      <span className="ml-2 font-semibold text-green-600">{documentStatus?.documents?.filter(doc => doc.status === 'signed').length || 0}</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-600">Required:</span>
-                      <span className="ml-2 font-semibold text-amber-600">{documentStatus?.documents?.filter(doc => doc.status === 'required').length || 0}</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-600">Pending:</span>
-                      <span className="ml-2 font-semibold text-blue-600">{documentStatus?.documents?.filter(doc => doc.status === 'pending').length || 0}</span>
-                    </div>
-                  </div>
+                  )}
+                  {!complianceLoading && !complianceData && (
+                    <div className="text-sm text-gray-600">Report unavailable.</div>
+                  )}
                 </div>
                 <div className="flex justify-end space-x-3">
                   <button
@@ -888,6 +944,28 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
                 {evidenceDoc?.content?.includes('DOC HASH') && (
                   <div className="text-xs text-gray-500">Note: Full document hash and evidence are stored server-side per policy.</div>
                 )}
+                <div className="mt-4">
+                  <div className="text-gray-900 font-medium mb-2">Audit Trail</div>
+                  {auditLoading && <div className="text-xs text-gray-600">Loading audit…</div>}
+                  {!auditLoading && auditLogs && auditLogs.length === 0 && (
+                    <div className="text-xs text-gray-600">No audit entries.</div>
+                  )}
+                  {!auditLoading && auditLogs && auditLogs.length > 0 && (
+                    <div className="space-y-2 max-h-40 overflow-y-auto">
+                      {auditLogs.map((entry, idx) => (
+                        <div key={idx} className="flex items-center space-x-3 p-2 bg-gray-100 rounded">
+                          <span className="text-xs text-gray-500">{new Date(entry.created_at).toLocaleString()}</span>
+                          <span className="text-xs text-gray-800">{entry.action}</span>
+                          <span className="text-[10px] text-gray-500 truncate">{entry.ip_address} · {entry.user_agent?.slice(0, 24)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <div className="flex justify-end gap-2 mt-2">
+                    <button onClick={() => loadAuditPage(Math.max(1, auditPage - 1))} className="px-2 py-1 text-xs bg-white border border-gray-300 rounded disabled:opacity-50" disabled={auditPage <= 1 || auditLoading}>Prev</button>
+                    <button onClick={() => loadAuditPage(auditPage + 1)} className="px-2 py-1 text-xs bg-white border border-gray-300 rounded disabled:opacity-50" disabled={auditLoading}>Next</button>
+                  </div>
+                </div>
                 <div className="flex justify-between items-center">
                   <div className="text-xs text-gray-600">
                     {evidence?.verified === true && <span className="text-green-600">Hash verified ✓</span>}
