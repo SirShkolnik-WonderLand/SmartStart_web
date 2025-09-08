@@ -39,6 +39,38 @@ router.get('/status/:userId', authenticateToken, async(req, res) => {
             });
         }
 
+        // Auto-complete Account Creation for existing users
+        const accountCreationStage = await prisma.journeyStage.findFirst({
+            where: { name: 'Account Creation' }
+        });
+        
+        if (accountCreationStage) {
+            const accountCreationState = await prisma.userJourneyState.findFirst({
+                where: { 
+                    userId, 
+                    stageId: accountCreationStage.id,
+                    status: 'NOT_STARTED'
+                }
+            });
+            
+            if (accountCreationState) {
+                // Mark Account Creation as completed for existing users
+                await prisma.userJourneyState.update({
+                    where: { id: accountCreationState.id },
+                    data: {
+                        status: 'COMPLETED',
+                        completedAt: new Date(),
+                        metadata: {
+                            ...accountCreationState.metadata,
+                            autoCompleted: true,
+                            reason: 'User already has account and is logged in',
+                            completedAt: new Date().toISOString()
+                        }
+                    }
+                });
+            }
+        }
+
         // Get detailed stage information
         const [userStates, stages] = await Promise.all([
             prisma.userJourneyState.findMany({

@@ -181,6 +181,7 @@ class OnboardingOrchestrator extends EventEmitter {
    */
   async updateSpecificJourneyStage(userId, action, data) {
     const actionStageMap = {
+      'ACCOUNT_CREATION_COMPLETE': 'Account Creation',
       'PROFILE_COMPLETE': 'Profile Setup',
       'LEGAL_DOCUMENTS_SIGNED': 'Platform Legal Pack',
       'SUBSCRIPTION_ACTIVE': 'Subscription Selection',
