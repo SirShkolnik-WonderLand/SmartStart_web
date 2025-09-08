@@ -88,7 +88,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
                            type.toLowerCase().includes(searchTerm.toLowerCase())
       
       if (filter === 'all') return matchesSearch
-      if (filter === 'required') return matchesSearch && (doc.status === 'required' || doc.required === true)
+      if (filter === 'required') return matchesSearch && doc.status === 'required'
       if (filter === 'signed') return matchesSearch && doc.isSigned
       if (filter === 'pending') return matchesSearch && doc.status === 'pending'
       if (filter === 'templates') return matchesSearch && doc.status === 'template'
@@ -160,7 +160,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
 
   const getDocumentStatusText = (doc: LegalDocument) => {
     if (doc.isSigned) return 'Signed'
-    if (doc.status === 'required' || doc.required === true) return 'Required'
+    if (doc.status === 'required') return 'Required'
     if (doc.status === 'pending') return 'Pending'
     if (doc.status === 'template') return 'Template'
     return 'Optional'
@@ -168,7 +168,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
 
   const getDocumentStatusColor = (doc: LegalDocument) => {
     if (doc.isSigned) return 'text-green-600 bg-green-50'
-    if (doc.status === 'required' || doc.required === true) return 'text-amber-600 bg-amber-50'
+    if (doc.status === 'required') return 'text-amber-600 bg-amber-50'
     if (doc.status === 'pending') return 'text-blue-600 bg-blue-50'
     if (doc.status === 'template') return 'text-gray-600 bg-gray-50'
     return 'text-gray-600 bg-gray-50'
@@ -292,7 +292,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
               </div>
               <TrendingUp className="w-5 h-5 text-green-500" />
             </div>
-            <div className="text-2xl font-bold mb-1">{documentStatus?.documents?.filter(doc => doc.status === 'required' || doc.required === true).length || 0}</div>
+            <div className="text-2xl font-bold mb-1">{documentStatus?.documents?.filter(doc => doc.status === 'required').length || 0}</div>
             <div className="text-sm text-muted">Required</div>
             <div className="text-xs text-amber-600 mt-1">Must sign to proceed</div>
           </div>
@@ -640,7 +640,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
                     </div>
                     <div>
                       <span className="text-gray-600">Required:</span>
-                      <span className="ml-2 font-semibold text-amber-600">{documentStatus?.documents?.filter(doc => doc.status === 'required' || doc.required === true).length || 0}</span>
+                      <span className="ml-2 font-semibold text-amber-600">{documentStatus?.documents?.filter(doc => doc.status === 'required').length || 0}</span>
                     </div>
                     <div>
                       <span className="text-gray-600">Pending:</span>

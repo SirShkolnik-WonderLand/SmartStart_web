@@ -5,20 +5,7 @@ import {
   User, 
   Shield, 
   Settings as SettingsIcon, 
-  Bell, 
-  Lock, 
-  Key, 
-  Palette,
-  Save,
-  RefreshCw,
-  CheckCircle,
-  AlertCircle,
-  Info,
-  Users,
-  Crown,
-  Eye,
-  EyeOff,
-  Activity
+  Lock
 } from 'lucide-react'
 
 export default function SettingsPage() {
