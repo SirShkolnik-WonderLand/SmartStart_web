@@ -964,14 +964,14 @@ router.post('/progress/:userId', authenticateToken, async(req, res) => {
             });
         }
 
-        // Handle step completion actions
+        // Handle step completion actions (including trial activation)
         if (action === 'PROFILE_COMPLETED' || action === 'LEGAL_PACK_SIGNED' || action === 'SUBSCRIPTION_ACTIVATED' || action === 'ORIENTATION_COMPLETED') {
             // Mark the corresponding journey stage as completed
             const stageMapping = {
                 'PROFILE_COMPLETED': 'Profile Setup',
                 'LEGAL_PACK_SIGNED': 'Legal Agreements', 
-                'SUBSCRIPTION_ACTIVATED': 'Subscription Plan',
-                'ORIENTATION_COMPLETED': 'Venture Setup'
+                'SUBSCRIPTION_ACTIVATED': 'Subscription Selection',
+                'ORIENTATION_COMPLETED': 'Platform Orientation'
             };
             
             const stageName = stageMapping[action];
@@ -1021,8 +1021,36 @@ router.post('/progress/:userId', authenticateToken, async(req, res) => {
         }
 
         // Handle other actions with the orchestrator
-        const result = await onboardingOrchestrator.updateJourneyProgress(userId, action, data);
-        res.json(result);
+        // Fallback: directly mark mapped stages completed if orchestrator not initialized
+        try {
+            const result = await onboardingOrchestrator.updateJourneyProgress(userId, action, data);
+            return res.json(result);
+        } catch (e) {
+            // Soft-handle and map minimal actions
+            const fallbackMap = {
+                'PROFILE_COMPLETED': 'Profile Setup',
+                'LEGAL_PACK_SIGNED': 'Platform Legal Pack',
+                'SUBSCRIPTION_ACTIVATED': 'Subscription Selection',
+                'ORIENTATION_COMPLETED': 'Platform Orientation'
+            };
+            const stageName = fallbackMap[action];
+            if (stageName) {
+                const stage = await prisma.journeyStage.findFirst({ where: { name: stageName } });
+                if (stage) {
+                    await prisma.userJourneyState.upsert({
+                        where: { userId_stageId: { userId, stageId: stage.id } },
+                        update: { status: 'COMPLETED', completedAt: new Date(), metadata: { ...data, action } },
+                        create: { userId, stageId: stage.id, status: 'COMPLETED', completedAt: new Date(), metadata: { ...data, action } }
+                    });
+                    const userStates = await prisma.userJourneyState.findMany({ where: { userId }, include: { stage: true } });
+                    const totalStages = userStates.length;
+                    const completedStages = userStates.filter(s => s.status === 'COMPLETED').length;
+                    const percentage = totalStages ? Math.round(completedStages / totalStages * 100) : 0;
+                    return res.json({ success: true, message: 'Progress updated (fallback)', action, progress: { totalStages, completedStages, percentage } });
+                }
+            }
+            throw e;
+        }
     } catch (error) {
         console.error('Journey progress update error:', error);
         res.status(500).json({

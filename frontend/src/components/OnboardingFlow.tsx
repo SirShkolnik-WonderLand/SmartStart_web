@@ -264,7 +264,7 @@ export default function OnboardingFlow({ userId, onComplete, initialStep }: Onbo
       case 1: // Legal
         return { legalAgreements }
       case 2: // Subscription
-        return { selectedPlan }
+        return { selectedPlan, trial: true }
       case 3: // Payment
         return { paymentData }
       default:
@@ -762,7 +762,7 @@ export default function OnboardingFlow({ userId, onComplete, initialStep }: Onbo
               key={plan.id}
               className={`border-2 rounded-lg p-6 cursor-pointer transition-all ${
                 selectedPlan === plan.id
-                  ? 'border-primary bg-primary/5'
+                  ? 'border-primary bg-primary/10 shadow-[0_0_0_3px_rgba(139,92,246,0.25)]'
                   : 'border-border hover:border-primary/50'
               }`}
               onClick={() => setSelectedPlan(plan.id)}
@@ -833,6 +833,9 @@ export default function OnboardingFlow({ userId, onComplete, initialStep }: Onbo
                     placeholder="John Doe"
                   />
                 </div>
+              </div>
+              <div className="mt-4 bg-green-900/10 text-green-300 border border-green-700/40 rounded-md p-3 text-sm">
+                30-day free trial active. No charge today; payment will be requested after the trial.
               </div>
             </div>
           )}
