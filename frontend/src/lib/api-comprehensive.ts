@@ -1057,7 +1057,7 @@ class ComprehensiveApiService {
         endDate?: string
       }> }>(`/api/subscriptions/user/${userId}`)
       
-      if (response.data && response.data.length > 0) {
+      if (response.data && Array.isArray(response.data) && response.data.length > 0) {
         const subscription = response.data[0]
         return {
           success: true,
