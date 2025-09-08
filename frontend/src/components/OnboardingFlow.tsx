@@ -343,6 +343,10 @@ export default function OnboardingFlow({ userId, onComplete, initialStep }: Onbo
       } else {
         // Complete onboarding
         console.log('Completing onboarding flow')
+        // Mark orientation completed explicitly before finalizing
+        await updateJourneyProgress('ORIENTATION_COMPLETED', {
+          completedAt: new Date().toISOString()
+        })
         await updateJourneyProgress('ONBOARDING_COMPLETE', {
           completedAt: new Date().toISOString(),
           allData: {

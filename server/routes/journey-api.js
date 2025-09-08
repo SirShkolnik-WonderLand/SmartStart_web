@@ -171,6 +171,20 @@ router.get('/status/:userId', authenticateToken, async(req, res) => {
                 // Get onboarding recommendations
                 const recommendations = await onboardingOrchestrator.getOnboardingRecommendations(userId);
 
+                // Auto-complete Profile Setup if user profile has basic fields
+                try {
+                    const user = await prisma.user.findUnique({ where: { id: userId } })
+                    const profileState = userStates.find(s => s.stage?.name === 'Profile Setup')
+                    if (user && (user.name || user.firstName || user.lastName) && profileState && profileState.status !== 'COMPLETED') {
+                        await prisma.userJourneyState.update({
+                            where: { id: profileState.id },
+                            data: { status: 'COMPLETED', completedAt: new Date(), metadata: { autoCompleted: true } }
+                        })
+                    }
+                } catch (e) {
+                    console.warn('Profile auto-complete check failed:', e?.message)
+                }
+
                 res.json({
                     success: true,
                     data: {
@@ -943,7 +957,7 @@ router.post('/progress/:userId', authenticateToken, async(req, res) => {
                             ...currentStage.metadata,
                             legalSignatures: {
                                 ...(currentStage.metadata && currentStage.metadata.legalSignatures ? currentStage.metadata.legalSignatures : {}),
-                                [documentType] : {
+                                [documentType]: {
                                     ...signatureData,
                                     ipAddress: req.ip,
                                     userAgent: req.headers['user-agent'],
