@@ -17,7 +17,7 @@ interface ThemeProviderState {
 }
 
 const initialState: ThemeProviderState = {
-  theme: 'wonderlight',
+  theme: 'midnight',
   setTheme: () => null,
   toggleTheme: () => null,
 }
