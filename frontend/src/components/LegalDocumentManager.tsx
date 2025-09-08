@@ -18,7 +18,9 @@ import {
   Shield,
   Users,
   Award,
-  Calendar
+  Calendar,
+  TrendingUp,
+  ChevronRight
 } from 'lucide-react'
 import { legalDocumentsApiService, LegalDocument, DocumentStatus } from '@/lib/legal-documents-api'
 
@@ -142,10 +144,10 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
 
   if (isLoading) {
     return (
-      <div className={`glass rounded-xl p-8 ${className}`}>
-        <div className="flex items-center justify-center">
-          <RefreshCw className="w-8 h-8 animate-spin text-accent" />
-          <span className="ml-2 text-lg text-foreground">Loading documents...</span>
+      <div className="min-h-screen wonderland-bg flex items-center justify-center">
+        <div className="glass rounded-xl p-8 text-center">
+          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-foreground-muted">Loading documents...</p>
         </div>
       </div>
     )
@@ -153,192 +155,265 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
 
   if (error) {
     return (
-      <div className={`glass rounded-xl p-8 ${className}`}>
-        <div className="flex items-center justify-center text-center">
-          <AlertCircle className="w-8 h-8 text-warning mb-4" />
-          <div>
-            <h3 className="text-lg font-semibold text-foreground mb-2">Error Loading Documents</h3>
-            <p className="text-muted mb-4">{error}</p>
-            <button 
-              onClick={() => window.location.reload()}
-              className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/80 transition-colors"
-            >
-              Try Again
-            </button>
-          </div>
+      <div className="min-h-screen wonderland-bg flex items-center justify-center">
+        <div className="glass rounded-xl p-8 text-center">
+          <AlertCircle className="w-8 h-8 text-warning mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-foreground mb-2">Error Loading Documents</h3>
+          <p className="text-muted mb-4">{error}</p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="wonder-button"
+          >
+            Try Again
+          </button>
         </div>
       </div>
     )
   }
 
   return (
-    <div className={`space-y-6 ${className}`}>
-      {/* Header Section */}
-      <div className="glass rounded-xl p-6">
-        <div className="flex items-center justify-between mb-6">
+    <div className={`min-h-screen wonderland-bg ${className}`}>
+      <div className="space-y-8">
+        {/* Header Section */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-foreground mb-2">Legal Document Manager</h1>
-            <p className="text-muted">Manage, sign, and track all your legal documents with full RBAC compliance</p>
+            <h1 className="text-4xl font-bold text-foreground">Legal Documents</h1>
+            <p className="text-xl text-foreground-muted">
+              Manage, sign, and track all your legal documents with full RBAC compliance
+            </p>
           </div>
           <div className="flex items-center space-x-3">
             <button
               onClick={() => setShowComplianceReport(!showComplianceReport)}
-              className="flex items-center px-4 py-2 bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition-colors border border-primary/20"
+              className="wonder-button-secondary flex items-center gap-2"
             >
-              <BarChart3 className="w-4 h-4 mr-2" />
+              <BarChart3 className="w-4 h-4" />
               Compliance Report
             </button>
             <button
               onClick={() => window.location.reload()}
-              className="flex items-center px-4 py-2 bg-accent/10 text-accent rounded-lg hover:bg-accent/20 transition-colors border border-accent/20"
+              className="wonder-button-secondary flex items-center gap-2"
             >
-              <RefreshCw className="w-4 h-4 mr-2" />
+              <RefreshCw className="w-4 h-4" />
               Refresh
             </button>
           </div>
         </div>
 
         {/* Document Status Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div className="glass-surface rounded-lg p-4 hover:glass-lg transition-all duration-200 group">
-            <div className="flex items-center justify-between mb-2">
-              <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-                <FileText className="w-5 h-5 text-primary" />
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="glass rounded-xl p-6 hover:glass-lg transition-all duration-200 group">
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                <FileText className="w-6 h-6 text-primary" />
               </div>
-              <span className="text-2xl font-bold text-foreground">{documentStatus?.summary.total_documents || 0}</span>
+              <TrendingUp className="w-5 h-5 text-success" />
             </div>
-            <div className="text-sm text-muted">All Documents</div>
+            <div className="text-2xl font-bold text-foreground mb-1">{documentStatus?.summary.total_documents || 0}</div>
+            <div className="text-sm text-foreground-muted">All Documents</div>
+            <div className="text-xs text-success mt-1">Available to all users</div>
           </div>
 
-          <div className="glass-surface rounded-lg p-4 hover:glass-lg transition-all duration-200 group">
-            <div className="flex items-center justify-between mb-2">
-              <div className="w-10 h-10 bg-warning/10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-                <AlertCircle className="w-5 h-5 text-warning" />
+          <div className="glass rounded-xl p-6 hover:glass-lg transition-all duration-200 group">
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-12 h-12 bg-warning/10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                <AlertCircle className="w-6 h-6 text-warning" />
               </div>
-              <span className="text-2xl font-bold text-foreground">{documentStatus?.summary.required_documents || 0}</span>
+              <TrendingUp className="w-5 h-5 text-success" />
             </div>
-            <div className="text-sm text-muted">Required</div>
+            <div className="text-2xl font-bold text-foreground mb-1">{documentStatus?.summary.required_documents || 0}</div>
+            <div className="text-sm text-foreground-muted">Required</div>
+            <div className="text-xs text-warning mt-1">Must sign to proceed</div>
           </div>
 
-          <div className="glass-surface rounded-lg p-4 hover:glass-lg transition-all duration-200 group">
-            <div className="flex items-center justify-between mb-2">
-              <div className="w-10 h-10 bg-success/10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-                <CheckCircle className="w-5 h-5 text-success" />
+          <div className="glass rounded-xl p-6 hover:glass-lg transition-all duration-200 group">
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-12 h-12 bg-success/10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                <CheckCircle className="w-6 h-6 text-success" />
               </div>
-              <span className="text-2xl font-bold text-foreground">{documentStatus?.summary.signed_documents || 0}</span>
+              <TrendingUp className="w-5 h-5 text-success" />
             </div>
-            <div className="text-sm text-muted">Signed</div>
+            <div className="text-2xl font-bold text-foreground mb-1">{documentStatus?.summary.signed_documents || 0}</div>
+            <div className="text-sm text-foreground-muted">Signed</div>
+            <div className="text-xs text-success mt-1">Completed</div>
           </div>
 
-          <div className="glass-surface rounded-lg p-4 hover:glass-lg transition-all duration-200 group">
-            <div className="flex items-center justify-between mb-2">
-              <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-                <Clock className="w-5 h-5 text-accent" />
+          <div className="glass rounded-xl p-6 hover:glass-lg transition-all duration-200 group">
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                <Clock className="w-6 h-6 text-accent" />
               </div>
-              <span className="text-2xl font-bold text-foreground">{documentStatus?.summary.pending_documents || 0}</span>
+              <TrendingUp className="w-5 h-5 text-success" />
             </div>
-            <div className="text-sm text-muted">Pending</div>
+            <div className="text-2xl font-bold text-foreground mb-1">{documentStatus?.summary.pending_documents || 0}</div>
+            <div className="text-sm text-foreground-muted">Pending</div>
+            <div className="text-xs text-accent mt-1">Next level access</div>
           </div>
         </div>
 
         {/* Filters and Search */}
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-          <div className="flex flex-wrap items-center gap-2">
-            {['all', 'required', 'signed', 'pending', 'templates'].map((filterOption) => (
-              <button
-                key={filterOption}
-                onClick={() => setFilter(filterOption as 'all' | 'required' | 'signed' | 'pending' | 'templates')}
-                className={`px-4 py-2 rounded-lg transition-colors ${
-                  filter === filterOption
-                    ? 'bg-primary text-white'
-                    : 'bg-glass-surface text-foreground hover:bg-glass-lg'
-                }`}
-              >
-                {filterOption.charAt(0).toUpperCase() + filterOption.slice(1)}
-              </button>
-            ))}
-          </div>
-
-          <div className="flex items-center space-x-3">
-            <div className="relative">
-              <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-muted" />
-              <input
-                type="text"
-                placeholder="Search documents..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-4 py-2 bg-glass-surface border border-glass-border rounded-lg text-foreground placeholder-muted focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-              />
+        <div className="glass rounded-xl p-6">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div className="flex flex-wrap items-center gap-2">
+              {['all', 'required', 'signed', 'pending', 'templates'].map((filterOption) => (
+                <button
+                  key={filterOption}
+                  onClick={() => setFilter(filterOption as 'all' | 'required' | 'signed' | 'pending' | 'templates')}
+                  className={`px-4 py-2 rounded-lg transition-colors ${
+                    filter === filterOption
+                      ? 'wonder-button'
+                      : 'wonder-button-secondary'
+                  }`}
+                >
+                  {filterOption.charAt(0).toUpperCase() + filterOption.slice(1)}
+                </button>
+              ))}
             </div>
 
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={() => setViewMode('grid')}
-                className={`p-2 rounded-lg transition-colors ${
-                  viewMode === 'grid' ? 'bg-primary text-white' : 'bg-glass-surface text-foreground hover:bg-glass-lg'
-                }`}
-              >
-                <Grid3X3 className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => setViewMode('list')}
-                className={`p-2 rounded-lg transition-colors ${
-                  viewMode === 'list' ? 'bg-primary text-white' : 'bg-glass-surface text-foreground hover:bg-glass-lg'
-                }`}
-              >
-                <List className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+            <div className="flex items-center space-x-3">
+              <div className="relative">
+                <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-muted" />
+                <input
+                  type="text"
+                  placeholder="Search documents..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 pr-4 py-2 bg-glass-surface border border-glass-border rounded-lg text-foreground placeholder-muted focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                />
+              </div>
 
-      {/* Selected Documents Actions */}
-      {selectedDocuments.length > 0 && (
-        <div className="glass rounded-xl p-4">
-          <div className="flex items-center justify-between">
-            <span className="text-foreground">
-              {selectedDocuments.length} document{selectedDocuments.length !== 1 ? 's' : ''} selected
-            </span>
-            <div className="flex items-center space-x-2">
-              <button className="flex items-center px-3 py-1 bg-primary text-white rounded-lg hover:bg-primary/80 transition-colors">
-                <Download className="w-4 h-4 mr-1" />
-                Download
-              </button>
-              <button className="flex items-center px-3 py-1 bg-success text-white rounded-lg hover:bg-success/80 transition-colors">
-                <Users className="w-4 h-4 mr-1" />
-                Share
-              </button>
-              <button className="flex items-center px-3 py-1 bg-warning text-white rounded-lg hover:bg-warning/80 transition-colors">
-                <AlertCircle className="w-4 h-4 mr-1" />
-                Archive
-              </button>
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => setViewMode('grid')}
+                  className={`p-2 rounded-lg transition-colors ${
+                    viewMode === 'grid' ? 'wonder-button' : 'wonder-button-secondary'
+                  }`}
+                >
+                  <Grid3X3 className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setViewMode('list')}
+                  className={`p-2 rounded-lg transition-colors ${
+                    viewMode === 'list' ? 'wonder-button' : 'wonder-button-secondary'
+                  }`}
+                >
+                  <List className="w-4 h-4" />
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      )}
 
-      {/* Documents Grid/List */}
-      {filteredDocuments.length > 0 ? (
-        <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'space-y-4'}>
-          {filteredDocuments.map((document) => (
-            <div
-              key={document.id}
-              className={`glass rounded-xl p-6 hover:glass-lg transition-all duration-200 group ${
-                viewMode === 'list' ? 'flex items-center space-x-4' : ''
-              }`}
-            >
-              {viewMode === 'grid' ? (
-                <>
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center space-x-3">
-                      <input
-                        type="checkbox"
-                        checked={selectedDocuments.includes(document.id)}
-                        onChange={() => handleDocumentSelect(document.id)}
-                        className="w-4 h-4 text-primary bg-glass-surface border-glass-border rounded focus:ring-primary"
-                      />
-                      {getDocumentStatusIcon(document)}
+        {/* Selected Documents Actions */}
+        {selectedDocuments.length > 0 && (
+          <div className="glass rounded-xl p-4">
+            <div className="flex items-center justify-between">
+              <span className="text-foreground">
+                {selectedDocuments.length} document{selectedDocuments.length !== 1 ? 's' : ''} selected
+              </span>
+              <div className="flex items-center space-x-2">
+                <button className="wonder-button-secondary flex items-center gap-2">
+                  <Download className="w-4 h-4" />
+                  Download
+                </button>
+                <button className="wonder-button-secondary flex items-center gap-2">
+                  <Users className="w-4 h-4" />
+                  Share
+                </button>
+                <button className="wonder-button-secondary flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4" />
+                  Archive
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Documents Grid/List */}
+        {filteredDocuments.length > 0 ? (
+          <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'space-y-4'}>
+            {filteredDocuments.map((document) => (
+              <div
+                key={document.id}
+                className={`glass rounded-xl p-6 hover:glass-lg transition-all duration-200 group ${
+                  viewMode === 'list' ? 'flex items-center space-x-4' : ''
+                }`}
+              >
+                {viewMode === 'grid' ? (
+                  <>
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-center space-x-3">
+                        <input
+                          type="checkbox"
+                          checked={selectedDocuments.includes(document.id)}
+                          onChange={() => handleDocumentSelect(document.id)}
+                          className="w-4 h-4 text-primary bg-glass-surface border-glass-border rounded focus:ring-primary"
+                        />
+                        {getDocumentStatusIcon(document)}
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <button className="p-2 bg-glass-surface rounded-lg hover:bg-glass-lg transition-colors">
+                          <Download className="w-4 h-4 text-muted" />
+                        </button>
+                        <button className="p-2 bg-glass-surface rounded-lg hover:bg-glass-lg transition-colors">
+                          <Eye className="w-4 h-4 text-muted" />
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="mb-4">
+                      <h3 className="text-lg font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
+                        {document.title}
+                      </h3>
+                      <div className="flex items-center space-x-2 mb-2">
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${getDocumentTypeColor(document.type).replace('text-', 'bg-')}/10`}>
+                          {getDocumentTypeIcon(document.type)}
+                        </div>
+                        <span className={`text-sm ${getDocumentTypeColor(document.type)}`}>
+                          {document.type.replace(/_/g, ' ')}
+                        </span>
+                      </div>
+                      <div className="flex items-center space-x-4 text-sm text-muted">
+                        <span>Version {document.version}</span>
+                        <span>•</span>
+                        <span className={getDocumentStatusColor(document)}>
+                          {document.isSigned ? 'Signed' : document.status === 'required' ? 'Required' : document.status === 'pending' ? 'Pending' : 'Optional'}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2 text-sm text-muted">
+                        <Calendar className="w-4 h-4" />
+                        <span>Updated {new Date(document.updatedAt).toLocaleDateString()}</span>
+                      </div>
+                      {document.status === 'required' && !document.isSigned && (
+                        <button className="wonder-button">
+                          Sign Document
+                        </button>
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <input
+                      type="checkbox"
+                      checked={selectedDocuments.includes(document.id)}
+                      onChange={() => handleDocumentSelect(document.id)}
+                      className="w-4 h-4 text-primary bg-glass-surface border-glass-border rounded focus:ring-primary"
+                    />
+                    {getDocumentStatusIcon(document)}
+                    <div className="flex-1">
+                      <h3 className="text-lg font-semibold text-foreground mb-1">{document.title}</h3>
+                      <div className="flex items-center space-x-4 text-sm text-muted">
+                        <span>{document.type.replace(/_/g, ' ')}</span>
+                        <span>•</span>
+                        <span>Version {document.version}</span>
+                        <span>•</span>
+                        <span className={getDocumentStatusColor(document)}>
+                          {document.isSigned ? 'Signed' : document.status === 'required' ? 'Required' : document.status === 'pending' ? 'Pending' : 'Optional'}
+                        </span>
+                      </div>
                     </div>
                     <div className="flex items-center space-x-2">
                       <button className="p-2 bg-glass-surface rounded-lg hover:bg-glass-lg transition-colors">
@@ -347,145 +422,82 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
                       <button className="p-2 bg-glass-surface rounded-lg hover:bg-glass-lg transition-colors">
                         <Eye className="w-4 h-4 text-muted" />
                       </button>
+                      {document.status === 'required' && !document.isSigned && (
+                        <button className="wonder-button">
+                          Sign
+                        </button>
+                      )}
                     </div>
-                  </div>
-
-                  <div className="mb-4">
-                    <h3 className="text-lg font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
-                      {document.title}
-                    </h3>
-                    <div className="flex items-center space-x-2 mb-2">
-                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${getDocumentTypeColor(document.type).replace('text-', 'bg-').replace('text-', 'bg-')}/10`}>
-                        {getDocumentTypeIcon(document.type)}
-                      </div>
-                      <span className={`text-sm ${getDocumentTypeColor(document.type)}`}>
-                        {document.type.replace(/_/g, ' ')}
-                      </span>
-                    </div>
-                    <div className="flex items-center space-x-4 text-sm text-muted">
-                      <span>Version {document.version}</span>
-                      <span>•</span>
-                      <span className={getDocumentStatusColor(document)}>
-                        {document.isSigned ? 'Signed' : document.status === 'required' ? 'Required' : document.status === 'pending' ? 'Pending' : 'Optional'}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2 text-sm text-muted">
-                      <Calendar className="w-4 h-4" />
-                      <span>Updated {new Date(document.updatedAt).toLocaleDateString()}</span>
-                    </div>
-                    {document.status === 'required' && !document.isSigned && (
-                      <button className="px-4 py-2 bg-success text-white rounded-lg hover:bg-success/80 transition-colors">
-                        Sign Document
-                      </button>
-                    )}
-                  </div>
-                </>
-              ) : (
-                <>
-                  <input
-                    type="checkbox"
-                    checked={selectedDocuments.includes(document.id)}
-                    onChange={() => handleDocumentSelect(document.id)}
-                    className="w-4 h-4 text-primary bg-glass-surface border-glass-border rounded focus:ring-primary"
-                  />
-                  {getDocumentStatusIcon(document)}
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-foreground mb-1">{document.title}</h3>
-                    <div className="flex items-center space-x-4 text-sm text-muted">
-                      <span>{document.type.replace(/_/g, ' ')}</span>
-                      <span>•</span>
-                      <span>Version {document.version}</span>
-                      <span>•</span>
-                      <span className={getDocumentStatusColor(document)}>
-                        {document.isSigned ? 'Signed' : document.status === 'required' ? 'Required' : document.status === 'pending' ? 'Pending' : 'Optional'}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <button className="p-2 bg-glass-surface rounded-lg hover:bg-glass-lg transition-colors">
-                      <Download className="w-4 h-4 text-muted" />
-                    </button>
-                    <button className="p-2 bg-glass-surface rounded-lg hover:bg-glass-lg transition-colors">
-                      <Eye className="w-4 h-4 text-muted" />
-                    </button>
-                    {document.status === 'required' && !document.isSigned && (
-                      <button className="px-4 py-2 bg-success text-white rounded-lg hover:bg-success/80 transition-colors">
-                        Sign
-                      </button>
-                    )}
-                  </div>
-                </>
-              )}
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="glass rounded-xl p-12 text-center">
-          <FileText className="w-16 h-16 text-muted mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-foreground mb-2">No documents found</h3>
-          <p className="text-muted mb-6">
-            {searchTerm ? 'Try adjusting your search terms' : 'No documents match the current filter'}
-          </p>
-          <button className="flex items-center px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/80 transition-colors mx-auto">
-            <Plus className="w-5 h-5 mr-2" />
-            Upload Document
-          </button>
-        </div>
-      )}
-
-      {/* Compliance Report Modal */}
-      {showComplianceReport && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="glass rounded-xl p-6 max-w-2xl w-full mx-4">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold text-foreground">Compliance Report</h2>
-              <button
-                onClick={() => setShowComplianceReport(false)}
-                className="p-2 hover:bg-glass-surface rounded-lg transition-colors"
-              >
-                ×
-              </button>
-            </div>
-            <div className="space-y-4">
-              <div className="glass-surface rounded-lg p-4">
-                <h3 className="font-semibold text-foreground mb-2">Document Compliance Status</h3>
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <span className="text-muted">Total Documents:</span>
-                    <span className="ml-2 font-semibold text-foreground">{documentStatus?.summary.total_documents || 0}</span>
-                  </div>
-                  <div>
-                    <span className="text-muted">Signed:</span>
-                    <span className="ml-2 font-semibold text-success">{documentStatus?.summary.signed_documents || 0}</span>
-                  </div>
-                  <div>
-                    <span className="text-muted">Required:</span>
-                    <span className="ml-2 font-semibold text-warning">{documentStatus?.summary.required_documents || 0}</span>
-                  </div>
-                  <div>
-                    <span className="text-muted">Pending:</span>
-                    <span className="ml-2 font-semibold text-accent">{documentStatus?.summary.pending_documents || 0}</span>
-                  </div>
-                </div>
+                  </>
+                )}
               </div>
-              <div className="flex justify-end space-x-3">
+            ))}
+          </div>
+        ) : (
+          <div className="glass rounded-xl p-12 text-center">
+            <FileText className="w-16 h-16 text-muted mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-foreground mb-2">No documents found</h3>
+            <p className="text-muted mb-6">
+              {searchTerm ? 'Try adjusting your search terms' : 'No documents match the current filter'}
+            </p>
+            <button className="wonder-button flex items-center gap-2 mx-auto">
+              <Plus className="w-5 h-5" />
+              Upload Document
+            </button>
+          </div>
+        )}
+
+        {/* Compliance Report Modal */}
+        {showComplianceReport && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="glass rounded-xl p-6 max-w-2xl w-full mx-4">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-foreground">Compliance Report</h2>
                 <button
                   onClick={() => setShowComplianceReport(false)}
-                  className="px-4 py-2 bg-glass-surface text-foreground rounded-lg hover:bg-glass-lg transition-colors"
+                  className="p-2 hover:bg-glass-surface rounded-lg transition-colors"
                 >
-                  Close
+                  ×
                 </button>
-                <button className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/80 transition-colors">
-                  Export Report
-                </button>
+              </div>
+              <div className="space-y-4">
+                <div className="glass-surface rounded-lg p-4">
+                  <h3 className="font-semibold text-foreground mb-2">Document Compliance Status</h3>
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <span className="text-muted">Total Documents:</span>
+                      <span className="ml-2 font-semibold text-foreground">{documentStatus?.summary.total_documents || 0}</span>
+                    </div>
+                    <div>
+                      <span className="text-muted">Signed:</span>
+                      <span className="ml-2 font-semibold text-success">{documentStatus?.summary.signed_documents || 0}</span>
+                    </div>
+                    <div>
+                      <span className="text-muted">Required:</span>
+                      <span className="ml-2 font-semibold text-warning">{documentStatus?.summary.required_documents || 0}</span>
+                    </div>
+                    <div>
+                      <span className="text-muted">Pending:</span>
+                      <span className="ml-2 font-semibold text-accent">{documentStatus?.summary.pending_documents || 0}</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex justify-end space-x-3">
+                  <button
+                    onClick={() => setShowComplianceReport(false)}
+                    className="wonder-button-secondary"
+                  >
+                    Close
+                  </button>
+                  <button className="wonder-button">
+                    Export Report
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   )
 }
