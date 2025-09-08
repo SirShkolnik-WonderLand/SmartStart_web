@@ -63,6 +63,10 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
   const [auditPage, setAuditPage] = useState(1)
   const [complianceData, setComplianceData] = useState<ComplianceReport | null>(null)
   const [complianceLoading, setComplianceLoading] = useState(false)
+  const [requiredDocuments, setRequiredDocuments] = useState<LegalDocument[]>([])
+  const [pendingDocuments, setPendingDocuments] = useState<LegalDocument[]>([])
+  const [requiredLoading, setRequiredLoading] = useState(false)
+  const [pendingLoading, setPendingLoading] = useState(false)
 
   // Load documents and status
   useEffect(() => {
@@ -73,6 +77,9 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
           legalDocumentsApiService.getAvailableDocuments(),
           legalDocumentsApiService.getUserDocumentStatus()
         ])
+
+        // Load required and pending documents for better guidance
+        loadRequiredAndPending()
 
         // Merge available docs with per-user status so signed items appear
         if (documentsResponse.success && statusResponse.success && documentsResponse.data && statusResponse.data) {
@@ -256,6 +263,26 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
       if (res.success) setComplianceData(res.data)
     } finally {
       setComplianceLoading(false)
+    }
+  }
+
+  const loadRequiredAndPending = async () => {
+    try {
+      setRequiredLoading(true)
+      setPendingLoading(true)
+      
+      const [requiredRes, pendingRes] = await Promise.all([
+        legalDocumentsApiService.getRequiredDocuments(),
+        legalDocumentsApiService.getPendingDocuments()
+      ])
+      
+      if (requiredRes.success) setRequiredDocuments(requiredRes.data)
+      if (pendingRes.success) setPendingDocuments(pendingRes.data)
+    } catch (err) {
+      console.error('Error loading required/pending documents:', err)
+    } finally {
+      setRequiredLoading(false)
+      setPendingLoading(false)
     }
   }
 
@@ -518,6 +545,112 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
             <div className="text-xs text-blue-600 mt-1">Next level access</div>
           </div>
         </div>
+
+        {/* Required Documents Section */}
+        {requiredDocuments.length > 0 && (
+          <div className="wonderland-card glass-surface p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
+                  <AlertCircle className="w-5 h-5 text-amber-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">Required Documents</h3>
+                  <p className="text-sm text-gray-600">These documents must be signed to proceed</p>
+                </div>
+              </div>
+              {requiredLoading && (
+                <div className="w-4 h-4 border-2 border-amber-500 border-t-transparent rounded-full animate-spin"></div>
+              )}
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {requiredDocuments.map((doc) => (
+                <div key={doc.id} className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                  <div className="flex items-start justify-between mb-2">
+                    <div className="flex items-center space-x-2">
+                      {getDocumentStatusIcon(doc)}
+                      <span className="text-sm font-medium text-gray-900">{doc.title}</span>
+                    </div>
+                    <span className="text-xs bg-amber-200 text-amber-800 px-2 py-1 rounded-full">
+                      Required
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-600 mb-3">
+                    {(doc.type || '').replace(/_/g, ' ')} • Version {doc.version}
+                  </p>
+                  <div className="flex items-center space-x-2">
+                    <button
+                      onClick={() => signDocument(doc)}
+                      disabled={isActing}
+                      className="bg-amber-600 text-white px-3 py-1 rounded text-xs hover:bg-amber-700 transition-colors disabled:opacity-50"
+                    >
+                      {isActing ? 'Signing...' : 'Sign Now'}
+                    </button>
+                    <button
+                      onClick={() => downloadDoc(doc)}
+                      className="text-amber-600 hover:text-amber-700 text-xs"
+                    >
+                      Download
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Pending Documents Section */}
+        {pendingDocuments.length > 0 && (
+          <div className="wonderland-card glass-surface p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <Clock className="w-5 h-5 text-blue-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">Next Level Access</h3>
+                  <p className="text-sm text-gray-600">These documents will be required for advanced features</p>
+                </div>
+              </div>
+              {pendingLoading && (
+                <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+              )}
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {pendingDocuments.map((doc) => (
+                <div key={doc.id} className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <div className="flex items-start justify-between mb-2">
+                    <div className="flex items-center space-x-2">
+                      {getDocumentStatusIcon(doc)}
+                      <span className="text-sm font-medium text-gray-900">{doc.title}</span>
+                    </div>
+                    <span className="text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded-full">
+                      Pending
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-600 mb-3">
+                    {(doc.type || '').replace(/_/g, ' ')} • Version {doc.version}
+                  </p>
+                  <div className="flex items-center space-x-2">
+                    <button
+                      onClick={() => signDocument(doc)}
+                      disabled={isActing}
+                      className="bg-blue-600 text-white px-3 py-1 rounded text-xs hover:bg-blue-700 transition-colors disabled:opacity-50"
+                    >
+                      {isActing ? 'Signing...' : 'Sign Early'}
+                    </button>
+                    <button
+                      onClick={() => downloadDoc(doc)}
+                      className="text-blue-600 hover:text-blue-700 text-xs"
+                    >
+                      Download
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Filters and Search */}
         <div className="wonderland-card glass-surface p-6">
