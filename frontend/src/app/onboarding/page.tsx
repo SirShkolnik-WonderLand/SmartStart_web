@@ -1,11 +1,11 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import OnboardingFlow from '@/components/OnboardingFlow'
 import { Loader2 } from 'lucide-react'
 
-export default function OnboardingPage() {
+function OnboardingPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [isLoading, setIsLoading] = useState(true)
@@ -92,5 +92,20 @@ export default function OnboardingPage() {
       onComplete={handleOnboardingComplete}
       initialStep={initialStep}
     />
+  )
+}
+
+export default function OnboardingPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen wonderland-bg flex items-center justify-center">
+        <div className="glass rounded-xl p-8 text-center">
+          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-primary" />
+          <p className="text-foreground-muted">Loading your onboarding journey...</p>
+        </div>
+      </div>
+    }>
+      <OnboardingPageContent />
+    </Suspense>
   )
 }
