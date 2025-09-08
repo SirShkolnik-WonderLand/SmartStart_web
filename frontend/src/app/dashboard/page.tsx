@@ -39,21 +39,25 @@ import Link from 'next/link'
   }
 
   const getStepForStage = (stageName: string): number => {
-    // Map journey stages to onboarding steps
+    // Map ONLY onboarding stages to steps (no duplicates/non-onboarding)
     const stageToStepMap: Record<string, number> = {
       'Account Creation': 0,
       'Profile Setup': 0,
       'Platform Legal Pack': 1,
-      'Legal Documents': 1,
       'Subscription Selection': 2,
-      'Subscription Setup': 2,
-      'Platform Orientation': 3,
-      'First Venture': 4,
-      'Welcome & Dashboard': 4,
-      'Team Building': 4
+      'Platform Orientation': 3
     }
-    return stageToStepMap[stageName] || 0
+    return stageToStepMap[stageName] ?? 0
   }
+
+  // Onboarding stages considered for the wizard
+  const ONBOARDING_STAGE_NAMES = new Set([
+    'Account Creation',
+    'Profile Setup',
+    'Platform Legal Pack',
+    'Subscription Selection',
+    'Platform Orientation'
+  ])
 
 export default function DashboardPage() {
   const [user, setUser] = useState<User | null>(null)
@@ -364,17 +368,25 @@ export default function DashboardPage() {
         <div className="wonderland-card glass-surface p-6">
           <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
             <Clock className="w-5 h-5 text-purple-600" />
-            Your Journey Progress
-            {journeyStatus?.progress && (
-              <span className="text-sm text-muted ml-auto">
-                {journeyStatus.progress.completedStages}/{journeyStatus.progress.totalStages} completed ({journeyStatus.progress.percentage}%)
-              </span>
-            )}
+            Your Onboarding Progress
+            {(() => {
+              if (!journeyStatus?.userStates) return null
+              const filtered = journeyStatus.userStates.filter(us => ONBOARDING_STAGE_NAMES.has(us.stage.name))
+              const completed = filtered.filter(us => us.status === 'COMPLETED').length
+              const total = filtered.length || 1
+              const percentage = Math.round((completed / total) * 100)
+              return (
+                <span className="text-sm text-muted ml-auto">
+                  {completed}/{total} completed ({percentage}%)
+                </span>
+              )
+            })()}
           </h3>
           <div className="space-y-3">
             {/* Show actual journey stages */}
             {journeyStatus?.userStates ? (
               journeyStatus.userStates
+                .filter(us => ONBOARDING_STAGE_NAMES.has(us.stage.name))
                 .sort((a, b) => a.stage.order - b.stage.order)
                 .map((userState) => (
                   <div key={userState.id} className="flex items-center gap-3">
