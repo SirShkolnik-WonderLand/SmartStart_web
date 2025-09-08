@@ -75,7 +75,7 @@ export default function RegisterPage() {
                 // Always redirect to onboarding after successful registration
                 setTimeout(() => {
                   if (registerResponse.data) {
-                    router.push(`/onboarding?userId=${registerResponse.data.id}`)
+                    router.push(`/onboarding?step=0`)
                   }
                 }, 2000)
               } else {
