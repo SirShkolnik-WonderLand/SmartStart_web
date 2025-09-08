@@ -79,21 +79,20 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
         const matchesFilter = (() => {
             switch (filter) {
                 case 'required':
-                    return doc.is_required;
+                    return doc.requiresSignature;
                 case 'signed':
-                    return documentStatus?.signed_documents && documentStatus.signed_documents > 0; // This would need to be more specific
+                    return documentStatus?.summary.signed_documents && documentStatus.summary.signed_documents > 0;
                 case 'pending':
-                    return !doc.is_required || (documentStatus?.pending_documents && documentStatus.pending_documents > 0);
+                    return doc.requiresSignature && !doc.isSigned;
                 case 'templates':
-                    return doc.is_template;
+                    return doc.type.includes('TEMPLATE') || doc.title.includes('Template');
                 default:
                     return true;
             }
         })();
 
-        const matchesSearch = doc.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            doc.legal_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            doc.category.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesSearch = doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            doc.type.toLowerCase().includes(searchTerm.toLowerCase());
 
         return matchesFilter && matchesSearch;
     });
@@ -159,26 +158,27 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
 
     // Get document status icon
     const getDocumentStatusIcon = (document: LegalDocument) => {
-        if (document.is_template) {
-            return <File className="w-5 h-5 text-blue-500" />;
+        if (document.type.includes('TEMPLATE') || document.title.includes('Template')) {
+            return <File className="w-5 h-5 text-highlight" />;
         }
         
-        // This would need to be more sophisticated in a real implementation
-        if (document.is_required) {
-            return <AlertCircle className="w-5 h-5 text-orange-500" />;
+        if (document.requiresSignature) {
+            return document.isSigned ? 
+                <CheckCircle className="w-5 h-5 text-success" /> : 
+                <AlertCircle className="w-5 h-5 text-warning" />;
         }
         
-        return <CheckCircle className="w-5 h-5 text-green-500" />;
+        return <FileText className="w-5 h-5 text-muted" />;
     };
 
     // Get document status text
     const getDocumentStatusText = (document: LegalDocument) => {
-        if (document.is_template) {
+        if (document.type.includes('TEMPLATE') || document.title.includes('Template')) {
             return 'Template';
         }
         
-        if (document.is_required) {
-            return 'Required';
+        if (document.requiresSignature) {
+            return document.isSigned ? 'Signed' : 'Required';
         }
         
         return 'Optional';
@@ -186,15 +186,17 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
 
     // Get document status color
     const getDocumentStatusColor = (document: LegalDocument) => {
-        if (document.is_template) {
-            return 'text-blue-600 bg-blue-100';
+        if (document.type.includes('TEMPLATE') || document.title.includes('Template')) {
+            return 'text-highlight bg-highlight/10';
         }
         
-        if (document.is_required) {
-            return 'text-orange-600 bg-orange-100';
+        if (document.requiresSignature) {
+            return document.isSigned ? 
+                'text-success bg-success/10' : 
+                'text-warning bg-warning/10';
         }
         
-        return 'text-green-600 bg-green-100';
+        return 'text-muted bg-muted/10';
     };
 
     // Get RBAC level icon
@@ -258,40 +260,40 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
                     <div className="glass-surface p-4 rounded-lg">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm text-gray-400">Total Documents</p>
-                                <p className="text-2xl font-bold text-white">{documentStatus.total_documents}</p>
+                                <p className="text-sm text-muted">Total Documents</p>
+                                <p className="text-2xl font-bold text-white">{documentStatus.summary.total_documents}</p>
                             </div>
-                            <FileText className="w-8 h-8 text-blue-500" />
+                            <FileText className="w-8 h-8 text-highlight" />
                         </div>
                     </div>
                     
                     <div className="glass-surface p-4 rounded-lg">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm text-gray-400">Required</p>
-                                <p className="text-2xl font-bold text-white">{documentStatus.required_documents}</p>
+                                <p className="text-sm text-muted">Required</p>
+                                <p className="text-2xl font-bold text-white">{documentStatus.summary.required_documents}</p>
                             </div>
-                            <AlertCircle className="w-8 h-8 text-orange-500" />
+                            <AlertCircle className="w-8 h-8 text-warning" />
                         </div>
                     </div>
                     
                     <div className="glass-surface p-4 rounded-lg">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm text-gray-400">Signed</p>
-                                <p className="text-2xl font-bold text-white">{documentStatus.signed_documents}</p>
+                                <p className="text-sm text-muted">Signed</p>
+                                <p className="text-2xl font-bold text-white">{documentStatus.summary.signed_documents}</p>
                             </div>
-                            <CheckCircle className="w-8 h-8 text-green-500" />
+                            <CheckCircle className="w-8 h-8 text-success" />
                         </div>
                     </div>
                     
                     <div className="glass-surface p-4 rounded-lg">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm text-gray-400">Completion</p>
-                                <p className="text-2xl font-bold text-white">{documentStatus.completion_percentage}%</p>
+                                <p className="text-sm text-muted">Pending</p>
+                                <p className="text-2xl font-bold text-white">{documentStatus.summary.pending_documents}</p>
                             </div>
-                            <TrendingUp className="w-8 h-8 text-purple-500" />
+                            <Clock className="w-8 h-8 text-accent" />
                         </div>
                     </div>
                 </div>
@@ -377,18 +379,17 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
             {viewMode === 'grid' ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {filteredDocuments.map((document) => (
-                        <div key={document.id} className="glass-surface p-6 rounded-lg hover:bg-gray-800/50 transition-colors">
+                        <div key={document.id} className="glass-surface p-6 rounded-lg hover:bg-glass-surface transition-colors">
                             <div className="flex items-start justify-between mb-4">
                                 <div className="flex items-center space-x-3">
                                     {getDocumentStatusIcon(document)}
                                     <div>
-                                        <h3 className="text-lg font-semibold text-white">{document.name}</h3>
-                                        <p className="text-sm text-gray-400">{document.legal_name}</p>
+                                        <h3 className="text-lg font-semibold text-white">{document.title}</h3>
+                                        <p className="text-sm text-muted">{document.type}</p>
                                     </div>
                                 </div>
                                 
                                 <div className="flex items-center space-x-2">
-                                    {getRBACLevelIcon(document.rbac_level)}
                                     <span className={`px-2 py-1 text-xs rounded-full ${getDocumentStatusColor(document)}`}>
                                         {getDocumentStatusText(document)}
                                     </span>
@@ -396,37 +397,37 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
                             </div>
                             
                             <div className="space-y-2 mb-4">
-                                <div className="flex items-center text-sm text-gray-400">
+                                <div className="flex items-center text-sm text-muted">
                                     <Calendar className="w-4 h-4 mr-2" />
                                     Version {document.version}
                                 </div>
-                                <div className="flex items-center text-sm text-gray-400">
+                                <div className="flex items-center text-sm text-muted">
                                     <File className="w-4 h-4 mr-2" />
-                                    {document.category}
+                                    {document.type}
                                 </div>
                             </div>
                             
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center space-x-2">
                                     <button
-                                        onClick={() => handleDownloadDocument(document.id, document.name)}
-                                        className="p-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
+                                        onClick={() => handleDownloadDocument(document.id, document.title)}
+                                        className="p-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg transition-colors"
                                     >
                                         <Download className="w-4 h-4" />
                                     </button>
                                     <button
                                         onClick={() => setExpandedDocument(expandedDocument === document.id ? null : document.id)}
-                                        className="p-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
+                                        className="p-2 bg-accent/10 hover:bg-accent/20 text-accent rounded-lg transition-colors"
                                     >
                                         <Eye className="w-4 h-4" />
                                     </button>
                                 </div>
                                 
-                                {document.is_required && !document.is_template && (
+                                {document.requiresSignature && !document.isSigned && (
                                     <button
                                         onClick={() => handleSignDocument(document.id)}
                                         disabled={signingDocument === document.id}
-                                        className="flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-600 text-white rounded-lg transition-colors"
+                                        className="flex items-center px-4 py-2 bg-success/10 hover:bg-success/20 disabled:bg-muted/10 text-success rounded-lg transition-colors"
                                     >
                                         {signingDocument === document.id ? (
                                             <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
