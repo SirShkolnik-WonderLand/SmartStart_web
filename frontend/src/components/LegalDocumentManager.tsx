@@ -55,11 +55,16 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
           legalDocumentsApiService.getUserDocumentStatus()
         ])
 
-        if (documentsResponse.success) {
+        if (documentsResponse.success && documentsResponse.data) {
           setDocuments(documentsResponse.data)
+        } else {
+          console.warn('Failed to load documents:', documentsResponse)
         }
-        if (statusResponse.success) {
+        
+        if (statusResponse.success && statusResponse.data) {
           setDocumentStatus(statusResponse.data)
+        } else {
+          console.warn('Failed to load document status:', statusResponse)
         }
       } catch (err) {
         console.error('Error loading documents:', err)
@@ -487,7 +492,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
                             {getDocumentTypeIcon(document.type)}
                           </div>
                           <span className="text-sm text-gray-900">
-                            {document.type.replace(/_/g, ' ')}
+                            {(document.type || '').replace(/_/g, ' ')}
                           </span>
                         </div>
                       </td>
@@ -565,7 +570,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
                       {getDocumentTypeIcon(document.type)}
                     </div>
                     <span className="text-sm text-gray-600">
-                      {document.type.replace(/_/g, ' ')}
+                      {(document.type || '').replace(/_/g, ' ')}
                     </span>
                   </div>
                   <div className="flex items-center space-x-4 text-sm text-gray-500">

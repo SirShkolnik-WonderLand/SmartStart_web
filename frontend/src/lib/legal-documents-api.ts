@@ -220,16 +220,24 @@ class LegalDocumentsApiService {
     // Get user document status
     async getUserDocumentStatus(): Promise<{ success: boolean; data: DocumentStatus }> {
         try {
-            // Get user ID from localStorage or JWT token
-            const userId = localStorage.getItem('user-id');
+            // Get user ID from JWT token to ensure consistency
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error('No authentication token found');
+            }
+
+            // Decode JWT token to get user ID
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            const userId = payload.userId;
+            
             if (!userId) {
-                throw new Error('User ID not found');
+                throw new Error('User ID not found in token');
             }
 
             const response = await fetch(`${this.baseUrl}/status/${userId}`, {
                 method: 'GET',
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 }
             });
