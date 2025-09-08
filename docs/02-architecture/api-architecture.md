@@ -49,8 +49,9 @@ POST   /api/users/create        # Create user
 GET    /api/users/:id           # Get user details
 PUT    /api/users/:id           # Update user
 DELETE /api/users/:id           # Delete user
-GET    /api/users/:id/profile   # User profile
-GET    /api/users/:id/analytics # User analytics
+GET    /api/user-profile/profile/:id   # User profile (WORKING)
+PUT    /api/user-profile/profile/:id   # Update user profile (WORKING)
+GET    /api/user-gamification/profile/:id # User gamification metrics (WORKING)
 ```
 
 #### **Venture Management**
@@ -96,12 +97,32 @@ GET    /api/gamification/reputation/:userId # User reputation
 
 #### **Legal & Contracts**
 ```
-GET    /api/contracts/                      # List contracts
+GET    /api/contracts/                      # List contracts (WORKING)
 POST   /api/contracts/create                # Create contract
 GET    /api/contracts/:id                   # Get contract
 POST   /api/contracts/:id/sign              # Sign contract
+PATCH  /api/contracts/:id                   # Update contract status (WORKING)
 GET    /api/legal-pack/templates            # Legal templates
 POST   /api/legal-pack/sign                 # Sign legal pack
+GET    /api/legal-signing/documents         # Legal documents (WORKING)
+```
+
+#### **RBAC & Roles**
+```
+GET    /api/rbac/roles                      # List roles (WORKING)
+POST   /api/rbac/roles                      # Create role (WORKING)
+GET    /api/rbac/ventures/:id/roles         # Venture roles (WORKING)
+```
+
+#### **Meetings**
+```
+GET    /api/meetings/health                 # Health check (WORKING)
+POST   /api/meetings/create                 # Create meeting (WORKING)
+GET    /api/meetings/venture/:id            # Venture meetings (WORKING)
+GET    /api/meetings/user/:id               # User meetings (WORKING)
+GET    /api/meetings/:id                    # Get meeting (WORKING)
+PUT    /api/meetings/:id                    # Update meeting (WORKING)
+POST   /api/meetings/:id/attendees          # Add attendee (WORKING)
 ```
 
 ## 🔐 Authentication & Authorization
@@ -405,6 +426,37 @@ const errorHandler = (err, req, res, next) => {
 - **Database Scaling**: Read replicas and sharding
 - **Caching Strategy**: Multi-level caching
 - **CDN Integration**: Static asset delivery
+
+## 🔧 **ACTUAL IMPLEMENTATION STATUS**
+
+### **✅ WORKING ENDPOINTS (Tested & Verified)**
+- **Authentication**: `/api/auth/*` - All endpoints working
+- **User Management**: `/api/users/*` - Basic CRUD working
+- **User Profiles**: `/api/user-profile/profile/*` - Working
+- **User Gamification**: `/api/user-gamification/profile/*` - Working
+- **Venture Management**: `/api/ventures/*` - All endpoints working
+- **Company Management**: `/api/companies/*` - All endpoints working
+- **Team Management**: `/api/teams/*` - All endpoints working
+- **Journey System**: `/api/journey/*` - All endpoints working
+- **Legal Documents**: `/api/legal-signing/*` - Working
+- **Contracts**: `/api/contracts/*` - Working
+- **RBAC**: `/api/rbac/*` - Working
+- **Meetings**: `/api/meetings/*` - Working
+- **Subscriptions**: `/api/subscriptions/*` - Working
+
+### **⚠️ ENDPOINTS THAT DON'T EXIST**
+- `/api/v1/profiles/*` - Use `/api/user-profile/profile/*` instead
+- `/api/v1/roles/*` - Use `/api/rbac/roles/*` instead
+- `/api/v1/offers/*` - Use `/api/contracts/*` instead
+- `/api/v1/users/*` - Use `/api/user-gamification/profile/*` instead
+
+### **🔧 FRONTEND API SERVICE FIXES APPLIED**
+- Fixed `getUserProfile()` to use `/api/user-profile/profile/`
+- Fixed `updateUserProfile()` to use `/api/user-profile/profile/`
+- Fixed `getRoles()` to use `/api/rbac/roles`
+- Fixed `createRole()` to use `/api/rbac/roles`
+- Fixed `updateOfferStatus()` to use `/api/contracts/`
+- Fixed `getUserMetrics()` to use `/api/user-gamification/profile/`
 
 ---
 
