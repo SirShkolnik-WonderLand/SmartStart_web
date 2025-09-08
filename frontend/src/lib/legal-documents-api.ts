@@ -2,45 +2,57 @@
 
 export interface LegalDocument {
     id: string;
-    name: string;
-    legal_name: string;
+    title: string;
+    type: string;
+    content: string;
     version: string;
-    category: string;
-    rbac_level: string;
-    template_path: string;
-    is_required: boolean;
-    is_template: boolean;
-    content?: string;
-    created_at: string;
-    updated_at?: string;
-    generated_from?: string;
-    generated_at?: string;
+    status: string;
+    effectiveDate?: string;
+    expiryDate?: string;
+    requiresSignature: boolean;
+    signatureDeadline?: string;
+    complianceRequired: boolean;
+    createdBy: string;
+    createdAt: string;
+    updatedAt: string;
+    entityId?: string;
+    projectId?: string;
+    ventureId?: string;
 }
 
 export interface DocumentSignature {
     id: string;
-    document_id: string;
-    user_id: string;
-    signature_hash: string;
-    signature_method: string;
-    signed_at: string;
-    ip_address: string;
-    user_agent: string;
-    location?: string;
-    mfa_verified: boolean;
-    document_version: string;
-    created_at: string;
+    documentId: string;
+    signerId: string;
+    signatureHash: string;
+    signedAt: string;
+    ipAddress?: string;
+    userAgent?: string;
+    termsAccepted: boolean;
+    privacyAccepted: boolean;
+    identityVerified: boolean;
 }
 
 export interface DocumentStatus {
-    total_documents: number;
-    required_documents: number;
-    signed_documents: number;
-    pending_documents: number;
-    completion_percentage: number;
-    next_level_requirements: string[];
-    compliance_status: 'compliant' | 'non_compliant' | 'pending';
-    last_updated: string;
+    user_id: string;
+    role: string;
+    summary: {
+        total_documents: number;
+        required_documents: number;
+        signed_documents: number;
+        pending_documents: number;
+        expired_documents: number;
+    };
+    documents: Array<{
+        document_id: string;
+        title: string;
+        type: string;
+        status: string;
+        signed_at?: string;
+        requires_signature: boolean;
+        document_version: string;
+        signature_hash?: string;
+    }>;
 }
 
 export interface DocumentAuditLog {
@@ -77,7 +89,9 @@ export interface SignatureVerification {
 }
 
 class LegalDocumentsApiService {
-    private baseUrl = '/api/legal-documents';
+    private baseUrl = process.env.NODE_ENV === 'production' 
+        ? 'https://smartstart-api.onrender.com/api/legal-documents'
+        : '/api/legal-documents';
 
     // Get available documents for user
     async getAvailableDocuments(): Promise<{ success: boolean; data: LegalDocument[] }> {

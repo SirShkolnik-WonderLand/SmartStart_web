@@ -20,35 +20,41 @@ class LegalDocumentService {
                 throw new Error('User not found');
             }
 
-            // Map role to RBAC level
-            const rbacLevel = this.mapRoleToRbacLevel(user.role);
+            // Note: RBAC filtering can be added here if needed
 
             const documents = await this.prisma.legalDocument.findMany({
                 where: {
-                    is_active: true,
-                    rbac_level: {
-                        lte: rbacLevel
+                    status: {
+                        not: 'TERMINATED'
                     }
                 },
                 orderBy: [
-                    { category: 'asc' },
-                    { name: 'asc' }
+                    { type: 'asc' },
+                    { title: 'asc' }
                 ]
             });
 
-            // Get user's document status
-            const userStatuses = await this.prisma.userDocumentStatus.findMany({
-                where: { user_id: userId }
+            // Get user's signatures for these documents
+            const signatures = await this.prisma.legalDocumentSignature.findMany({
+                where: { 
+                    signerId: userId,
+                    documentId: {
+                        in: documents.map(doc => doc.id)
+                    }
+                }
             });
 
-            const statusMap = new Map();
-            userStatuses.forEach(status => {
-                statusMap.set(status.document_id, status);
+            const signatureMap = new Map();
+            signatures.forEach(sig => {
+                signatureMap.set(sig.documentId, sig);
             });
 
+            // Add signature information to documents
             return documents.map(doc => ({
                 ...doc,
-                userStatus: statusMap.get(doc.id) || { status: 'not_required' }
+                isSigned: signatureMap.has(doc.id),
+                signedAt: signatureMap.get(doc.id)?.signedAt,
+                signatureHash: signatureMap.get(doc.id)?.signatureHash
             }));
         } catch (error) {
             console.error('Error getting available documents:', error);
@@ -199,29 +205,30 @@ class LegalDocumentService {
                 throw new Error('User not found');
             }
 
-            const rbacLevel = this.mapRoleToRbacLevel(user.role);
             const documents = await this.getAvailableDocuments(userId);
 
             const summary = {
                 total_documents: documents.length,
-                signed_documents: documents.filter(doc => doc.userStatus?.status === 'signed').length,
-                required_documents: documents.filter(doc => doc.is_required).length,
-                pending_documents: documents.filter(doc => doc.userStatus?.status === 'required').length,
-                expired_documents: documents.filter(doc => doc.userStatus?.status === 'expired').length
+                signed_documents: documents.filter(doc => doc.isSigned).length,
+                required_documents: documents.filter(doc => doc.requiresSignature).length,
+                pending_documents: documents.filter(doc => doc.requiresSignature && !doc.isSigned).length,
+                expired_documents: 0 // Can be calculated based on expiryDate if needed
             };
 
             return {
                 user_id: userId,
-                rbac_level: rbacLevel,
+                role: user.role,
+                summary: summary,
                 documents: documents.map(doc => ({
                     document_id: doc.id,
-                    status: doc.userStatus?.status || 'not_required',
-                    signed_at: doc.userStatus?.signed_at,
-                    expires_at: doc.userStatus?.expires_at,
-                    document_version: doc.userStatus?.document_version || doc.version,
-                    signature_hash: doc.userStatus?.signature_hash
-                })),
-                summary
+                    title: doc.title,
+                    type: doc.type,
+                    status: doc.isSigned ? 'signed' : (doc.requiresSignature ? 'pending' : 'not_required'),
+                    signed_at: doc.signedAt,
+                    requires_signature: doc.requiresSignature,
+                    document_version: doc.version,
+                    signature_hash: doc.signatureHash
+                }))
             };
         } catch (error) {
             console.error('Error getting user document status:', error);
