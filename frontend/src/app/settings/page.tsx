@@ -28,11 +28,11 @@ interface UserProfile {
   firstName?: string
   lastName?: string
   name: string
-  level: number
-  xp: number
-  reputation: number
-  status: string
-  lastActive: string
+  level?: string
+  xp?: number
+  reputation?: number
+  status?: string
+  lastActive?: string
   profile?: {
     bio?: string
     avatar?: string
@@ -611,11 +611,11 @@ export default function SettingsPage() {
                       <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white p-6 rounded-lg">
                         <div className="flex items-center justify-between">
                           <div>
-                            <h4 className="text-xl font-bold">Level {user.level} User</h4>
+                            <h4 className="text-xl font-bold">Level {user.level || 'Unknown'} User</h4>
                             <p className="text-purple-100">Standard access permissions</p>
                           </div>
                           <div className="text-right">
-                            <div className="text-2xl font-bold">{user.xp} XP</div>
+                            <div className="text-2xl font-bold">{user.xp || 0} XP</div>
                             <div className="text-purple-100">Experience Points</div>
                           </div>
                         </div>
