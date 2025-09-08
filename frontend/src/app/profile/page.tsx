@@ -59,7 +59,15 @@ export default function ProfilePage() {
       
       const response = await apiService.updateUserProfile(user.id, editData)
       if (response.success && response.data) {
-        setUser(response.data)
+        // Convert UserProfile to ExtendedUser by merging with existing user data
+        const updatedUser: ExtendedUser = {
+          ...user,
+          firstName: editData.firstName,
+          lastName: editData.lastName,
+          name: `${editData.firstName} ${editData.lastName}`,
+          bio: editData.bio
+        }
+        setUser(updatedUser)
         setIsEditing(false)
       }
     } catch (error) {
