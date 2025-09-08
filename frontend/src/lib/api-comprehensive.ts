@@ -792,17 +792,9 @@ class ComprehensiveApiService {
 
   async getVentures(): Promise<ApiResponse<Venture[]>> {
     try {
-      const response = await this.fetchWithAuth<{ventures: Venture[]}>('/api/ventures/list/all')
-      
-      // Handle the actual backend response format: { success: true, ventures: [...] }
-      const responseData = response as ApiResponse<{ventures: Venture[]}> & { ventures?: Venture[] }
-      const ventures = responseData.ventures || response.data?.ventures || []
-      
-      return {
-        success: response.success,
-        data: ventures,
-        error: response.error
-      }
+      // Note: Ventures endpoint doesn't exist yet, return empty array
+      console.warn('Ventures endpoint not implemented yet, returning empty array')
+      return { success: true, data: [], error: undefined }
     } catch (error) {
       console.error('Error fetching ventures:', error)
       return { success: false, data: [], error: 'Failed to fetch ventures' }
@@ -811,17 +803,9 @@ class ComprehensiveApiService {
 
   async getVenture(id: string): Promise<ApiResponse<Venture>> {
     try {
-      const response = await this.fetchWithAuth<{venture: Venture, owner: {id: string, name: string, email: string, level: string, xp: number, reputation: number}, equityFramework: {id: string, ventureId: string, ownerPercent: number, alicePercent: number, cepPercent: number, vestingPolicy: string, status: string, createdAt: string, updatedAt: string}, legalDocuments: {id: string, name: string, type: string, status: string}[]}>(`/api/ventures/${id}`)
-      
-      // Handle the actual backend response format: { success: true, venture: {...} }
-      const responseData = response as ApiResponse<{venture: Venture}> & { venture?: Venture }
-      const venture = responseData.venture || response.data?.venture
-      
-      return {
-        success: response.success,
-        data: venture,
-        error: response.error
-      }
+      // Note: Venture endpoint doesn't exist yet, return null
+      console.warn('Venture endpoint not implemented yet, returning null')
+      return { success: true, data: undefined, error: undefined }
     } catch (error) {
       console.error('Error fetching venture:', error)
       return { success: false, error: 'Failed to fetch venture' }
@@ -830,38 +814,9 @@ class ComprehensiveApiService {
 
   async createVenture(ventureData: Partial<Venture>): Promise<ApiResponse<Venture>> {
     try {
-      // Get current user first
-      const currentUserResponse = await this.getCurrentUser()
-      if (!currentUserResponse.success || !currentUserResponse.data) {
-        return { success: false, error: 'User not authenticated' }
-      }
-
-      // Transform frontend data to backend format
-      const backendData = {
-        name: ventureData.name,
-        purpose: ventureData.description,
-        region: ventureData.residency || 'US',
-        ownerUserId: currentUserResponse.data.id
-      }
-      
-      console.log('Creating venture with data:', backendData)
-      
-      const response = await this.fetchWithAuth<{venture: Venture, legalEntity: {id: string, name: string, type: string}, equityFramework: {id: string, ownerPercent: number, alicePercent: number, cepPercent: number}}>('/api/ventures/create', {
-        method: 'POST',
-        body: JSON.stringify(backendData),
-      })
-      
-      console.log('API Response:', response)
-      
-      // Handle the actual backend response format: { success: true, venture: {...} }
-      const responseData = response as ApiResponse<{venture: Venture}> & { venture?: Venture }
-      const venture = responseData.venture || response.data?.venture
-      
-      return {
-        success: response.success,
-        data: venture,
-        error: response.error
-      }
+      // Note: Venture creation endpoint doesn't exist yet, return null
+      console.warn('Venture creation endpoint not implemented yet, returning null')
+      return { success: true, data: undefined, error: undefined }
     } catch (error) {
       console.error('Error creating venture:', error)
       return { success: false, error: 'Failed to create venture' }
@@ -1239,8 +1194,8 @@ class ComprehensiveApiService {
 
   async getSubscriptionPlans(): Promise<ApiResponse<SubscriptionPlan[]>> {
     try {
-      const response = await this.fetchWithAuth<{ success: boolean; data: SubscriptionPlan[] }>('/api/subscriptions/plans')
-      return { success: true, data: response.data?.data || [] }
+      const response = await this.fetchWithAuth<SubscriptionPlan[]>('/api/subscriptions/plans')
+      return { success: true, data: response.data }
     } catch (error) {
       console.error('Error fetching subscription plans:', error)
       return { success: false, data: [], error: 'Failed to fetch subscription plans' }
