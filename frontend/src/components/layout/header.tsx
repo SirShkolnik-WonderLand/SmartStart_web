@@ -75,7 +75,7 @@ export function Header() {
           </Button>
           
           <Button variant="ghost" size="icon" onClick={toggleTheme}>
-            {theme === 'wonderlight' ? (
+            {theme === 'light' ? (
               <Moon className="h-4 w-4" />
             ) : (
               <Sun className="h-4 w-4" />
