@@ -137,8 +137,8 @@ router.get('/status/:userId', authenticateToken, async(req, res) => {
             const completedStages = newUserStates.filter(state => state.status === 'COMPLETED').length;
             const percentage = totalStages > 0 ? Math.round((completedStages / totalStages) * 100) : 0;
 
-            const currentStage = newUserStates.find(state => state.status === 'IN_PROGRESS') ? .stage || null;
-            const nextStage = newUserStates.find(state => state.status === 'NOT_STARTED') ? .stage || null;
+            const currentStage = (newUserStates.find(state => state.status === 'IN_PROGRESS') || {}).stage || null;
+            const nextStage = (newUserStates.find(state => state.status === 'NOT_STARTED') || {}).stage || null;
 
             res.json({
                 success: true,
@@ -189,8 +189,8 @@ router.get('/status/:userId', authenticateToken, async(req, res) => {
                 const completedStages = userStates.filter(state => state.status === 'COMPLETED').length;
                 const percentage = totalStages > 0 ? Math.round((completedStages / totalStages) * 100) : 0;
 
-                const currentStage = userStates.find(state => state.status === 'IN_PROGRESS') ? .stage || null;
-                const nextStage = userStates.find(state => state.status === 'NOT_STARTED') ? .stage || null;
+                const currentStage = (userStates.find(state => state.status === 'IN_PROGRESS') || {}).stage || null;
+                const nextStage = (userStates.find(state => state.status === 'NOT_STARTED') || {}).stage || null;
 
                 res.json({
                     success: true,
@@ -440,7 +440,7 @@ router.get('/gates/:userId', async(req, res) => {
                                 const user = await prisma.user.findUnique({
                                     where: { id: userId }
                                 });
-                                isPassed = !!user ? .email; // Basic email verification
+                                isPassed = !!(user && user.email); // Basic email verification
                                 details = user ? { email: user.email } : null;
                                 break;
 
@@ -448,7 +448,7 @@ router.get('/gates/:userId', async(req, res) => {
                                 const userProfile = await prisma.user.findUnique({
                                     where: { id: userId }
                                 });
-                                isPassed = !!(userProfile ? .name && userProfile ? .firstName && userProfile ? .lastName);
+                                isPassed = !!(userProfile && userProfile.name && userProfile.firstName && userProfile.lastName);
                                 details = userProfile ? {
                                     name: userProfile.name,
                                     firstName: userProfile.firstName,
@@ -942,7 +942,7 @@ router.post('/progress/:userId', authenticateToken, async(req, res) => {
                         metadata: {
                             ...currentStage.metadata,
                             legalSignatures: {
-                                ...currentStage.metadata ? .legalSignatures,
+                                ...(currentStage.metadata && currentStage.metadata.legalSignatures ? currentStage.metadata.legalSignatures : {}),
                                 [documentType] : {
                                     ...signatureData,
                                     ipAddress: req.ip,
