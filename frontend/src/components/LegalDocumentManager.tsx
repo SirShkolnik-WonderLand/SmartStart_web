@@ -81,9 +81,9 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
                 case 'required':
                     return doc.is_required;
                 case 'signed':
-                    return documentStatus?.signed_documents > 0; // This would need to be more specific
+                    return documentStatus?.signed_documents && documentStatus.signed_documents > 0; // This would need to be more specific
                 case 'pending':
-                    return !doc.is_required || documentStatus?.pending_documents > 0;
+                    return !doc.is_required || (documentStatus?.pending_documents && documentStatus.pending_documents > 0);
                 case 'templates':
                     return doc.is_template;
                 default:
