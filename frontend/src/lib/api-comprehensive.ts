@@ -1195,10 +1195,10 @@ class ComprehensiveApiService {
 
   async initializeJourney(userId: string): Promise<ApiResponse<JourneyInitialization>> {
     try {
-      const response = await this.fetchWithAuth<{ data: JourneyInitialization }>(`/api/journey/initialize/${userId}`, {
+      const response = await this.fetchWithAuth<JourneyInitialization>(`/api/journey/initialize/${userId}`, {
         method: 'POST'
       })
-      return { success: true, data: response.data?.data || undefined }
+      return { success: true, data: response.data }
     } catch (error) {
       console.error('Error initializing journey:', error)
       return { success: false, data: undefined, error: 'Failed to initialize journey' }
