@@ -322,6 +322,16 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
     }
   }
 
+  const goToPipeline = (doc: LegalDocument) => {
+    const meta: any = (doc as any)?.metadata || {}
+    const p: string | undefined = meta.pipeline || (meta.relatedPipelines?.[0])
+    const title = (doc.title || '').toLowerCase()
+    const inferred = p || (title.includes('billing') || title.includes('subscription') ? 'Billing' : title.includes('venture') || title.includes('project') ? 'Venture Start' : 'Onboarding')
+    if (inferred === 'Billing') window.location.href = '/analytics' // placeholder billing view
+    else if (inferred === 'Venture Start') window.location.href = '/ventures/create'
+    else window.location.href = '/onboarding'
+  }
+
   const getDocumentTypeColor = (type: string) => {
     switch (type) {
       case 'PARTNERSHIP_AGREEMENT':
@@ -652,9 +662,13 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
                               if (document.title?.toLowerCase().includes('subscription') || document.title?.toLowerCase().includes('billing')) pipelines.push('Billing')
                               if (document.title?.toLowerCase().includes('project') || document.title?.toLowerCase().includes('venture')) pipelines.push('Venture Start')
                               return Array.from(new Set(pipelines)).slice(0, 3).map((p) => (
-                                <span key={p} className="px-2 py-0.5 rounded-md bg-gray-100 border border-gray-200 text-gray-700">
+                                <button
+                                  key={p}
+                                  onClick={() => goToPipeline(document)}
+                                  className="px-2 py-0.5 rounded-md bg-gray-100 border border-gray-200 text-gray-700 hover:bg-gray-200"
+                                >
                                   {p}
-                                </span>
+                                </button>
                               ))
                             })()}
                           </div>
@@ -674,7 +688,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
                           >
                             <Download className="w-4 h-4" />
                           </button>
-                          <button className="p-2 text-gray-400 hover:text-purple-600 hover:bg-purple-100 rounded-lg transition-all duration-200">
+                          <button onClick={() => goToPipeline(document)} className="p-2 text-gray-400 hover:text-purple-600 hover:bg-purple-100 rounded-lg transition-all duration-200">
                             <Edit className="w-4 h-4" />
                           </button>
                           {document.status === 'required' && !document.isSigned && (
