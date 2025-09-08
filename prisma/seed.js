@@ -187,6 +187,108 @@ async function main() {
     })
   }
 
+  // Create journey stages
+  const journeyStages = [
+    { 
+      name: 'registration', 
+      description: 'Create your account and verify email',
+      order: 1,
+      isActive: true
+    },
+    { 
+      name: 'profile_setup', 
+      description: 'Complete your profile information',
+      order: 2,
+      isActive: true
+    },
+    { 
+      name: 'legal_agreements', 
+      description: 'Review and sign required legal documents',
+      order: 3,
+      isActive: true
+    },
+    { 
+      name: 'subscription_plan', 
+      description: 'Select your subscription plan',
+      order: 4,
+      isActive: true
+    },
+    { 
+      name: 'platform_orientation', 
+      description: 'Learn about platform features',
+      order: 5,
+      isActive: true
+    }
+  ]
+
+  for (const stage of journeyStages) {
+    // Check if stage exists by name
+    const existingStage = await prisma.journeyStage.findFirst({
+      where: { name: stage.name }
+    })
+    
+    if (existingStage) {
+      await prisma.journeyStage.update({
+        where: { id: existingStage.id },
+        data: { 
+          description: stage.description, 
+          order: stage.order,
+          isActive: stage.isActive
+        }
+      })
+    } else {
+      await prisma.journeyStage.create({
+        data: stage
+      })
+    }
+  }
+
+  // Create billing plans
+  const billingPlans = [
+    {
+      name: 'PRO_PLAN',
+      description: 'Full access to all platform features',
+      price: 100.00,
+      currency: 'CAD',
+      interval: 'MONTHLY',
+      features: [
+        'Unlimited ventures',
+        'Full platform access',
+        'Team collaboration tools',
+        'Advanced analytics',
+        'Priority support',
+        'Legal document management',
+        'API access'
+      ],
+      isActive: true
+    }
+  ]
+
+  for (const plan of billingPlans) {
+    // Check if plan exists by name
+    const existingPlan = await prisma.billingPlan.findFirst({
+      where: { name: plan.name }
+    })
+    
+    if (existingPlan) {
+      await prisma.billingPlan.update({
+        where: { id: existingPlan.id },
+        data: {
+          description: plan.description,
+          price: plan.price,
+          currency: plan.currency,
+          interval: plan.interval,
+          features: plan.features,
+          isActive: plan.isActive
+        }
+      })
+    } else {
+      await prisma.billingPlan.create({
+        data: plan
+      })
+    }
+  }
+
   // Create enhanced users with proper accounts
   const users = [
     {

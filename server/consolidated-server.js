@@ -226,6 +226,10 @@ app.use('/api/kyc', kycApiRoutes);
 const mfaApiRoutes = require('./routes/mfa-api');
 app.use('/api/mfa', mfaApiRoutes);
 
+// Mount Email Verification APIs
+const emailVerificationApiRoutes = require('./routes/email-verification-api');
+app.use('/api/email-verification', emailVerificationApiRoutes);
+
 // Debug API for troubleshooting
 const debugApiRoutes = require('./routes/debug-api');
 app.use('/api/debug', debugApiRoutes);
