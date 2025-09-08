@@ -241,10 +241,8 @@ export default function DashboardPage() {
               console.warn('Legal pack status failed:', err)
               return { success: false, data: null }
             }),
-            apiService.getSubscriptionStatus(userId).catch(err => {
-              console.warn('Subscription status failed:', err)
-              return { success: false, data: null }
-            })
+            // Note: Subscription status endpoint not implemented yet
+            Promise.resolve({ success: false, data: null })
           ]
 
           const [journeyResponse, legalPackResponse, subscriptionResponse] = await Promise.allSettled(
@@ -297,10 +295,10 @@ export default function DashboardPage() {
       <div className="wonderland-card glass-surface p-8">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">
+            <h2 className="text-3xl font-bold mb-2">
               Welcome back, {user?.name || 'Alice'}! 👋
             </h2>
-            <p className="text-gray-600 mb-3">Ready to continue your journey through Wonderland?</p>
+            <p className="text-muted mb-3">Ready to continue your journey through Wonderland?</p>
             <div className="flex items-center gap-2">
               <motivational.icon className={`w-5 h-5 ${motivational.color}`} />
               <span className={`font-medium ${motivational.color}`}>{motivational.message}</span>
@@ -308,7 +306,7 @@ export default function DashboardPage() {
           </div>
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-            <span className="text-sm text-gray-600">Online</span>
+            <span className="text-sm text-muted">Online</span>
           </div>
         </div>
         
@@ -319,7 +317,7 @@ export default function DashboardPage() {
               <div key={index} className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-4 border border-purple-100">
                 <div className="flex items-center gap-3">
                   <fact.icon className={`w-5 h-5 ${fact.color}`} />
-                  <span className="text-sm font-medium text-gray-700">{fact.text}</span>
+                  <span className="text-sm font-medium">{fact.text}</span>
                 </div>
               </div>
             ))}
@@ -328,11 +326,11 @@ export default function DashboardPage() {
         
         {/* Journey Progress */}
         <div className="wonderland-card glass-surface p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
             <Clock className="w-5 h-5 text-purple-600" />
             Your Journey Progress
             {journeyStatus?.progress && (
-              <span className="text-sm text-gray-600 ml-auto">
+              <span className="text-sm text-muted ml-auto">
                 {journeyStatus.progress.completedStages}/{journeyStatus.progress.totalStages} completed ({journeyStatus.progress.percentage}%)
               </span>
             )}
@@ -356,11 +354,11 @@ export default function DashboardPage() {
                       </div>
                     )}
                     <div className="flex-1">
-                      <span className={`text-gray-700 ${userState.status === 'COMPLETED' ? 'line-through' : ''}`}>
+                      <span className={`${userState.status === 'COMPLETED' ? 'line-through' : ''}`}>
                         {userState.stage.name}
                       </span>
                       {userState.completedAt && (
-                        <div className="text-xs text-gray-500">
+                        <div className="text-xs text-muted">
                           Completed: {new Date(userState.completedAt).toLocaleDateString()}
                         </div>
                       )}
@@ -380,7 +378,7 @@ export default function DashboardPage() {
               <>
                 <div className="flex items-center gap-3">
                   <CheckCircle className="w-5 h-5 text-green-600" />
-                  <span className="text-gray-700">Account Setup Complete</span>
+                  <span>Account Setup Complete</span>
                 </div>
                 
                 <div className="flex items-center gap-3">
@@ -391,7 +389,7 @@ export default function DashboardPage() {
                       <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
                     </div>
                   )}
-                  <span className="text-gray-700">
+                  <span>
                     {legalPackStatus?.signed ? 'Legal Pack Signed' : 'Legal Pack Pending'}
                   </span>
                 </div>
@@ -404,7 +402,7 @@ export default function DashboardPage() {
                       <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
                     </div>
                   )}
-                  <span className="text-gray-700">
+                  <span>
                     {subscriptionStatus?.active ? 'Subscription Active' : 'Subscription Pending'}
                   </span>
                 </div>
@@ -441,8 +439,8 @@ export default function DashboardPage() {
             </div>
             <TrendingUp className="w-5 h-5 text-green-500" />
           </div>
-          <div className="text-2xl font-bold text-gray-900 mb-1">{analytics?.totalVentures || ventures.length}</div>
-          <div className="text-sm text-gray-600">Active Ventures</div>
+          <div className="text-2xl font-bold mb-1">{analytics?.totalVentures || ventures.length}</div>
+          <div className="text-sm text-muted">Active Ventures</div>
           <div className="text-xs text-green-600 mt-1">+{analytics?.ventureGrowth || 0}%</div>
         </div>
 
@@ -453,8 +451,8 @@ export default function DashboardPage() {
             </div>
             <TrendingUp className="w-5 h-5 text-green-500" />
           </div>
-          <div className="text-2xl font-bold text-gray-900 mb-1">{analytics?.totalUsers || 0}</div>
-          <div className="text-sm text-gray-600">Team Members</div>
+          <div className="text-2xl font-bold mb-1">{analytics?.totalUsers || 0}</div>
+          <div className="text-sm text-muted">Team Members</div>
           <div className="text-xs text-green-600 mt-1">+{analytics?.userGrowth || 0}%</div>
         </div>
 
@@ -465,8 +463,8 @@ export default function DashboardPage() {
             </div>
             <TrendingUp className="w-5 h-5 text-green-500" />
           </div>
-          <div className="text-2xl font-bold text-gray-900 mb-1">{analytics?.totalOffers || offers.length}</div>
-          <div className="text-sm text-gray-600">Open Roles</div>
+          <div className="text-2xl font-bold mb-1">{analytics?.totalOffers || offers.length}</div>
+          <div className="text-sm text-muted">Open Roles</div>
           <div className="text-xs text-green-600 mt-1">+{analytics?.offerGrowth || 0}%</div>
         </div>
 
@@ -477,10 +475,10 @@ export default function DashboardPage() {
             </div>
             <Star className="w-5 h-5 text-yellow-500" />
           </div>
-          <div className="text-2xl font-bold text-gray-900 mb-1">
+          <div className="text-2xl font-bold mb-1">
             {user?.xp || 0}
           </div>
-          <div className="text-sm text-gray-600">XP Points</div>
+          <div className="text-sm text-muted">XP Points</div>
           <div className="text-xs text-yellow-600 mt-1">
             Level: {user?.level || 'Unknown'}
           </div>
@@ -490,7 +488,7 @@ export default function DashboardPage() {
       {/* Activity Suggestions */}
       <div className="grid md:grid-cols-2 gap-6">
         <div className="wonderland-card glass-surface p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
             <Lightbulb className="w-5 h-5 text-yellow-500" />
             Quick Actions
           </h3>
@@ -514,7 +512,7 @@ export default function DashboardPage() {
         </div>
 
         <div className="wonderland-card glass-surface p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
             <Bell className="w-5 h-5 text-blue-500" />
             Recent Activity
           </h3>

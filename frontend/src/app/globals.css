@@ -289,6 +289,19 @@ body {
   font-feature-settings: "rlig" 1, "calt" 1;
 }
 
+/* Ensure proper text contrast */
+h1, h2, h3, h4, h5, h6 {
+  color: rgb(var(--foreground));
+}
+
+p, span, div {
+  color: rgb(var(--foreground-body));
+}
+
+.text-muted {
+  color: rgb(var(--foreground-muted));
+}
+
 /* Focus States */
 *:focus {
   outline: none !important;

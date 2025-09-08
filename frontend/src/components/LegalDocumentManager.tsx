@@ -239,8 +239,8 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-4xl font-bold text-gray-900">Legal Documents</h1>
-            <p className="text-xl text-gray-600">
+            <h1 className="text-4xl font-bold">Legal Documents</h1>
+            <p className="text-xl text-muted">
               Manage, sign, and track all your legal documents with full RBAC compliance
             </p>
           </div>
@@ -271,8 +271,8 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
               </div>
               <TrendingUp className="w-5 h-5 text-green-500" />
             </div>
-            <div className="text-2xl font-bold text-gray-900 mb-1">{documentStatus?.summary.total_documents || 0}</div>
-            <div className="text-sm text-gray-600">All Documents</div>
+            <div className="text-2xl font-bold mb-1">{documentStatus?.summary.total_documents || 0}</div>
+            <div className="text-sm text-muted">All Documents</div>
             <div className="text-xs text-green-600 mt-1">Available to all users</div>
           </div>
 
@@ -283,8 +283,8 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
               </div>
               <TrendingUp className="w-5 h-5 text-green-500" />
             </div>
-            <div className="text-2xl font-bold text-gray-900 mb-1">{documentStatus?.summary.required_documents || 0}</div>
-            <div className="text-sm text-gray-600">Required</div>
+            <div className="text-2xl font-bold mb-1">{documentStatus?.summary.required_documents || 0}</div>
+            <div className="text-sm text-muted">Required</div>
             <div className="text-xs text-amber-600 mt-1">Must sign to proceed</div>
           </div>
 
@@ -295,8 +295,8 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
               </div>
               <TrendingUp className="w-5 h-5 text-green-500" />
             </div>
-            <div className="text-2xl font-bold text-gray-900 mb-1">{documentStatus?.summary.signed_documents || 0}</div>
-            <div className="text-sm text-gray-600">Signed</div>
+            <div className="text-2xl font-bold mb-1">{documentStatus?.summary.signed_documents || 0}</div>
+            <div className="text-sm text-muted">Signed</div>
             <div className="text-xs text-green-600 mt-1">Completed</div>
           </div>
 
@@ -307,8 +307,8 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
               </div>
               <TrendingUp className="w-5 h-5 text-green-500" />
             </div>
-            <div className="text-2xl font-bold text-gray-900 mb-1">{documentStatus?.summary.pending_documents || 0}</div>
-            <div className="text-sm text-gray-600">Pending</div>
+            <div className="text-2xl font-bold mb-1">{documentStatus?.summary.pending_documents || 0}</div>
+            <div className="text-sm text-muted">Pending</div>
             <div className="text-xs text-blue-600 mt-1">Next level access</div>
           </div>
         </div>
