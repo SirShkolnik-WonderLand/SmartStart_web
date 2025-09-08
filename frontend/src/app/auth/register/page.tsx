@@ -57,14 +57,15 @@ export default function RegisterPage() {
       console.log('Registration response:', registerResponse)
 
               if (registerResponse.success && registerResponse.data) {
-                // Store user data first
+                // Store user data first. Token is already set by apiService.register()
+                // Do NOT overwrite it with undefined from data
                 localStorage.setItem('user', JSON.stringify(registerResponse.data))
-                localStorage.setItem('auth-token', registerResponse.data.token || '')
-                
+
                 // Try to initialize user journey (but don't fail if it doesn't work)
-                // Pass token directly to avoid localStorage timing issues
+                // Use the token already stored by apiService.register
                 try {
-                  const journeyResponse = await apiService.initializeJourney(registerResponse.data.id, registerResponse.data.token)
+                  const token = localStorage.getItem('auth-token') || undefined
+                  const journeyResponse = await apiService.initializeJourney(registerResponse.data.id, token)
                   console.log('Journey initialization response:', journeyResponse)
                 } catch (journeyError) {
                   console.warn('Journey initialization failed, but continuing with onboarding:', journeyError)
@@ -75,7 +76,7 @@ export default function RegisterPage() {
                 // Always redirect to onboarding after successful registration
                 setTimeout(() => {
                   if (registerResponse.data) {
-                    router.push(`/onboarding?step=0`)
+                    router.push(`/onboarding?userId=${registerResponse.data.id}`)
                   }
                 }, 2000)
               } else {

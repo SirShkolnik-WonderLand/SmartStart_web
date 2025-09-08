@@ -688,13 +688,17 @@ class ComprehensiveApiService {
       })
 
       const data = await response.json()
-      
-      if (data.success && data.user && data.token) {
+
+      if (data.success && data.user) {
+        // Prefer top-level token, but also check nested token
+        const token: string | undefined = data.token || data.user.token
+        if (token) {
+          localStorage.setItem('auth-token', token)
+        }
         localStorage.setItem('user-id', data.user.id)
         localStorage.setItem('user-data', JSON.stringify(data.user))
-        localStorage.setItem('auth-token', data.token)
       }
-      
+
       return data
     } catch (error) {
       console.error('Login error:', error)
