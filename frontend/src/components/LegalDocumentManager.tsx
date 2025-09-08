@@ -375,7 +375,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
               </div>
               <TrendingUp className="w-5 h-5 text-green-500" />
             </div>
-            <div className="text-2xl font-bold mb-1">{documentStatus?.documents?.length || 0}</div>
+            <div className="text-2xl font-bold mb-1">{documents.length}</div>
             <div className="text-sm text-muted">All Documents</div>
             <div className="text-xs text-green-600 mt-1">Available to all users</div>
           </div>
@@ -387,7 +387,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
               </div>
               <TrendingUp className="w-5 h-5 text-green-500" />
             </div>
-            <div className="text-2xl font-bold mb-1">{documentStatus?.documents?.filter(doc => doc.status === 'required').length || 0}</div>
+            <div className="text-2xl font-bold mb-1">{documents.filter(d => d.status === 'required' || d.requiresSignature).length}</div>
             <div className="text-sm text-muted">Required</div>
             <div className="text-xs text-amber-600 mt-1">Must sign to proceed</div>
           </div>
@@ -399,7 +399,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
               </div>
               <TrendingUp className="w-5 h-5 text-green-500" />
             </div>
-            <div className="text-2xl font-bold mb-1">{documentStatus?.documents?.filter(doc => doc.status === 'signed').length || 0}</div>
+            <div className="text-2xl font-bold mb-1">{documents.filter(d => d.isSigned || d.status === 'signed').length}</div>
             <div className="text-sm text-muted">Signed</div>
             <div className="text-xs text-green-600 mt-1">Completed</div>
           </div>
@@ -411,7 +411,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
               </div>
               <TrendingUp className="w-5 h-5 text-green-500" />
             </div>
-            <div className="text-2xl font-bold mb-1">{documentStatus?.documents?.filter(doc => doc.status === 'pending').length || 0}</div>
+            <div className="text-2xl font-bold mb-1">{documents.filter(d => d.status === 'pending').length}</div>
             <div className="text-sm text-muted">Pending</div>
             <div className="text-xs text-blue-600 mt-1">Next level access</div>
           </div>
