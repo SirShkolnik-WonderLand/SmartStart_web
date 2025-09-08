@@ -464,7 +464,7 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
       title: 'Complete Your Profile',
       description: 'Tell us about yourself and your expertise',
       icon: <User className="w-6 h-6" />,
-      isCompleted: (journeyStatus?.progress?.completedStages ?? 0) >= 2,
+      isCompleted: journeyStatus?.progress?.stages?.some(stage => stage.name === 'Profile Setup' && stage.status === 'COMPLETED') ?? false,
       isRequired: true,
       component: (
         <div className="space-y-6">
@@ -552,7 +552,7 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
       title: 'Legal Agreements',
       description: 'Review and sign required legal documents',
       icon: <FileText className="w-6 h-6" />,
-      isCompleted: (journeyStatus?.progress?.completedStages ?? 0) >= 3,
+      isCompleted: journeyStatus?.progress?.stages?.some(stage => stage.name === 'Platform Legal Pack' && stage.status === 'COMPLETED') ?? false,
       isRequired: true,
       component: (
         <div className="space-y-6">
@@ -685,7 +685,7 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
       title: 'Choose Your Plan',
       description: 'Select a subscription plan to unlock all features',
       icon: <CreditCard className="w-6 h-6" />,
-      isCompleted: (journeyStatus?.progress?.completedStages ?? 0) >= 4,
+      isCompleted: journeyStatus?.progress?.stages?.some(stage => stage.name === 'Subscription Selection' && stage.status === 'COMPLETED') ?? false,
       isRequired: true,
       component: (
         <div className="space-y-6">
@@ -782,7 +782,7 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
       title: 'Platform Orientation',
       description: 'Learn about SmartStart features and capabilities',
       icon: <GraduationCap className="w-6 h-6" />,
-      isCompleted: (journeyStatus?.progress?.completedStages ?? 0) >= 5,
+      isCompleted: journeyStatus?.progress?.stages?.some(stage => stage.name === 'Platform Orientation' && stage.status === 'COMPLETED') ?? false,
       isRequired: false,
       component: (
         <div className="space-y-6">
