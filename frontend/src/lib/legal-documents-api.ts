@@ -18,8 +18,14 @@ export interface LegalDocument {
     entityId?: string;
     projectId?: string;
     ventureId?: string;
-    // Properties added by service layer
+    // Additional properties for API compatibility
+    required?: boolean;
+    lastUpdated?: string;
     isSigned?: boolean;
+    name?: string;
+    description?: string;
+    order?: number;
+    // Properties added by service layer
     signedAt?: string;
     signatureHash?: string;
     generatedFrom?: string;
