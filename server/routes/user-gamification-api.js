@@ -64,7 +64,7 @@ router.get('/dashboard/:userId', authenticateToken, async(req, res) => {
         // Get available badges
         const availableBadges = await prisma.badge.findMany({
             where: {
-                id: { notIn: badges.map(b => b.badgeId) }
+                id: { notIn: (badges || []).map(b => b.badgeId) }
             },
             orderBy: { createdAt: 'asc' }
         });
