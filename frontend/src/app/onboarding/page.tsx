@@ -11,11 +11,29 @@ export default function OnboardingPage() {
   const [userId, setUserId] = useState<string | null>(null)
 
   useEffect(() => {
-    // Get userId from authenticated user (JWT token) or localStorage
-    const storedUser = localStorage.getItem('user')
+    // Get userId from JWT token (primary) or localStorage (fallback)
     const token = localStorage.getItem('auth-token')
+    const storedUser = localStorage.getItem('user')
     
-    if (token && storedUser) {
+    if (token) {
+      try {
+        // Extract user ID from JWT token (primary method)
+        const payload = token.split('.')[1]
+        const decoded = JSON.parse(atob(payload))
+        const userIdFromToken = decoded.userId || decoded.id
+        
+        if (userIdFromToken) {
+          setUserId(userIdFromToken)
+          setIsLoading(false)
+          return
+        }
+      } catch (tokenError) {
+        console.warn('Error decoding JWT token:', tokenError)
+      }
+    }
+    
+    // Fallback to localStorage user data
+    if (storedUser) {
       try {
         const userData = JSON.parse(storedUser)
         setUserId(userData.id)
