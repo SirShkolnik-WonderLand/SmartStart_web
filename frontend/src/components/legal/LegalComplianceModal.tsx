@@ -32,7 +32,11 @@ export default function LegalComplianceModal({
   onSuccess
 }: LegalComplianceModalProps) {
   const [documents, setDocuments] = useState<LegalDocument[]>([])
-  const [signingSession, setSigningSession] = useState<any>(null)
+  const [signingSession, setSigningSession] = useState<{
+    sessionId: string
+    documentIds: string[]
+    expiresAt: string
+  } | null>(null)
   const [currentStep, setCurrentStep] = useState<'loading' | 'review' | 'signing' | 'complete'>('loading')
   const [signatureInfo, setSignatureInfo] = useState<SignatureInfo>({
     signerName: '',
