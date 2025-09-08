@@ -234,7 +234,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
   }
 
   return (
-    <div className={`min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50 ${className}`}>
+    <div className={`min-h-screen wonderland-bg ${className}`}>
       <div className="space-y-8 p-6">
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -247,14 +247,14 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
           <div className="flex items-center space-x-3">
             <button
               onClick={() => setShowComplianceReport(!showComplianceReport)}
-              className="bg-white/80 backdrop-blur-sm border border-purple-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-purple-50 transition-all duration-200 shadow-sm flex items-center gap-2"
+              className="wonderland-button-ghost px-4 py-2 rounded-lg transition-all duration-200 shadow-sm flex items-center gap-2"
             >
               <BarChart3 className="w-4 h-4" />
               Compliance Report
             </button>
             <button
               onClick={() => window.location.reload()}
-              className="bg-white/80 backdrop-blur-sm border border-purple-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-purple-50 transition-all duration-200 shadow-sm flex items-center gap-2"
+              className="wonderland-button-ghost px-4 py-2 rounded-lg transition-all duration-200 shadow-sm flex items-center gap-2"
             >
               <RefreshCw className="w-4 h-4" />
               Refresh
@@ -264,7 +264,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
 
         {/* Document Status Overview */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 hover:shadow-lg transition-all duration-200 group border border-purple-100">
+          <div className="wonderland-card glass-surface p-6 hover:shadow-lg transition-all duration-200 group">
             <div className="flex items-center justify-between mb-4">
               <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
                 <FileText className="w-6 h-6 text-purple-600" />
@@ -276,7 +276,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
             <div className="text-xs text-green-600 mt-1">Available to all users</div>
           </div>
 
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 hover:shadow-lg transition-all duration-200 group border border-purple-100">
+          <div className="wonderland-card glass-surface p-6 hover:shadow-lg transition-all duration-200 group">
             <div className="flex items-center justify-between mb-4">
               <div className="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
                 <AlertCircle className="w-6 h-6 text-amber-600" />
@@ -288,7 +288,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
             <div className="text-xs text-amber-600 mt-1">Must sign to proceed</div>
           </div>
 
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 hover:shadow-lg transition-all duration-200 group border border-purple-100">
+          <div className="wonderland-card glass-surface p-6 hover:shadow-lg transition-all duration-200 group">
             <div className="flex items-center justify-between mb-4">
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
                 <CheckCircle className="w-6 h-6 text-green-600" />
@@ -300,7 +300,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
             <div className="text-xs text-green-600 mt-1">Completed</div>
           </div>
 
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 hover:shadow-lg transition-all duration-200 group border border-purple-100">
+          <div className="wonderland-card glass-surface p-6 hover:shadow-lg transition-all duration-200 group">
             <div className="flex items-center justify-between mb-4">
               <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
                 <Clock className="w-6 h-6 text-blue-600" />
@@ -314,7 +314,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
         </div>
 
         {/* Filters and Search */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 border border-purple-100">
+        <div className="wonderland-card glass-surface p-6">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div className="flex flex-wrap items-center gap-2">
               {['all', 'required', 'signed', 'pending', 'templates'].map((filterOption) => (
@@ -372,7 +372,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
 
         {/* Selected Documents Actions */}
         {selectedDocuments.length > 0 && (
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-purple-100">
+          <div className="wonderland-card glass-surface p-4">
             <div className="flex items-center justify-between">
               <span className="text-gray-900 font-medium">
                 {selectedDocuments.length} document{selectedDocuments.length !== 1 ? 's' : ''} selected
@@ -397,7 +397,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
 
         {/* Documents Table */}
         {viewMode === 'table' && filteredAndSortedDocuments.length > 0 && (
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl border border-purple-100 overflow-hidden">
+          <div className="wonderland-card glass-surface overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-purple-50/50 border-b border-purple-100">
@@ -530,7 +530,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
             {filteredAndSortedDocuments.map((document) => (
               <div
                 key={document.id}
-                className="bg-white/80 backdrop-blur-sm rounded-xl p-6 hover:shadow-lg transition-all duration-200 group border border-purple-100"
+                className="wonderland-card glass-surface p-6 hover:shadow-lg transition-all duration-200 group"
               >
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center space-x-3">
@@ -591,7 +591,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
 
         {/* Empty State */}
         {filteredAndSortedDocuments.length === 0 && (
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl p-12 text-center border border-purple-100">
+          <div className="wonderland-card glass-surface p-12 text-center">
             <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-gray-900 mb-2">No documents found</h3>
             <p className="text-gray-600 mb-6">

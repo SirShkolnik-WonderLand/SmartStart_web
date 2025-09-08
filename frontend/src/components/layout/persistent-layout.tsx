@@ -173,7 +173,7 @@ export default function PersistentLayout({ children }: PersistentLayoutProps) {
 
       <div className="flex">
         {/* Sidebar */}
-        <aside className={`${sidebarOpen ? 'w-64' : 'w-16'} transition-all duration-300 bg-glass-surface border-r border-border/50 min-h-screen sticky top-16 z-40`}>
+        <aside className={`${sidebarOpen ? 'w-64' : 'w-16'} transition-all duration-300 wonderland-sidebar glass-surface min-h-screen sticky top-16 z-40`}>
           <div className="p-6">
             <nav className="space-y-2">
               <Link 
@@ -248,7 +248,7 @@ export default function PersistentLayout({ children }: PersistentLayoutProps) {
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-6 wonderland-bg min-h-screen">
           {children}
         </main>
       </div>

@@ -1,481 +1,431 @@
 @import "tailwindcss";
 
-/* Wonderland Theme System */
+/* Wonderland Unified Theme System */
 
 :root {
-    /* Alice's Garden Theme (Default) */
-    --background: 248 250 255;
-    /* #F8FAFF - Soft magical white */
-    --foreground: 30 27 75;
-    /* #1E1B4B - Deep indigo */
-    --foreground-body: 55 48 163;
-    /* #3730A3 - Rich indigo */
-    --foreground-muted: 107 114 128;
-    /* #6B7280 - Soft gray */
-    /* Glass Surfaces */
-    --glass-surface: rgba(241, 245, 255, 0.85);
-    --glass-border: rgba(139, 92, 246, 0.15);
-    --glass-highlight: rgba(139, 92, 246, 0.08);
-    --glass-shadow: 0 8px 25px rgba(139, 92, 246, 0.12);
-    --glass-shadow-lg: 0 12px 35px rgba(139, 92, 246, 0.18);
-    /* Wonderland Brand Colors */
-    --primary: 139 92 246;
-    /* #8B5CF6 - Enchanted purple */
-    --primary-foreground: 255 255 255;
-    --accent: 236 72 153;
-    /* #EC4899 - Magical pink */
-    --accent-foreground: 255 255 255;
-    --highlight: 245 158 11;
-    /* #F59E0B - Golden hour */
-    --highlight-foreground: 255 255 255;
-    /* Interactive States */
-    --hover: rgba(139, 92, 246, 0.08);
-    --active: rgba(139, 92, 246, 0.15);
-    --focus: 139 92 246;
-    /* Borders & Dividers */
-    --border: rgba(139, 92, 246, 0.2);
-    --border-light: rgba(139, 92, 246, 0.1);
-    /* Status Colors */
-    --success: 34 197 94;
-    --warning: 245 158 11;
-    --error: 239 68 68;
-    --info: 139 92 246;
-    /* Border Radius */
-    --radius: 12px;
+  /* Alice's Garden Theme (Default Light) */
+  --background: 248 250 255;
+  --foreground: 30 27 75;
+  --foreground-body: 55 48 163;
+  --foreground-muted: 107 114 128;
+  
+  /* Glass Surfaces */
+  --glass-surface: rgba(241, 245, 255, 0.85);
+  --glass-border: rgba(139, 92, 246, 0.15);
+  --glass-highlight: rgba(139, 92, 246, 0.08);
+  --glass-shadow: 0 8px 25px rgba(139, 92, 246, 0.12);
+  --glass-shadow-lg: 0 12px 35px rgba(139, 92, 246, 0.18);
+  
+  /* Wonderland Brand Colors */
+  --primary: 139 92 246;
+  --primary-foreground: 255 255 255;
+  --secondary: 59 130 246;
+  --secondary-foreground: 255 255 255;
+  --accent: 236 72 153;
+  --accent-foreground: 255 255 255;
+  --highlight: 245 158 11;
+  --highlight-foreground: 255 255 255;
+  
+  /* Interactive States */
+  --hover: rgba(139, 92, 246, 0.08);
+  --active: rgba(139, 92, 246, 0.15);
+  --focus: 139 92 246;
+  
+  /* Borders & Dividers */
+  --border: rgba(139, 92, 246, 0.2);
+  --border-light: rgba(139, 92, 246, 0.1);
+  
+  /* Status Colors */
+  --success: 34 197 94;
+  --warning: 245 158 11;
+  --error: 239 68 68;
+  --info: 139 92 246;
+  
+  /* Border Radius */
+  --radius: 12px;
+  
+  /* Header & Navigation */
+  --header-bg: 248 250 255;
+  --header-border: rgba(139, 92, 246, 0.2);
+  --sidebar-bg: 241 245 255;
+  --sidebar-border: rgba(139, 92, 246, 0.15);
+  
+  /* Cards & Surfaces */
+  --card-bg: 255 255 255;
+  --card-border: rgba(139, 92, 246, 0.1);
+  --card-shadow: 0 4px 15px rgba(139, 92, 246, 0.08);
+  
+  /* Buttons */
+  --btn-primary-bg: 139 92 246;
+  --btn-primary-hover: 124 58 237;
+  --btn-secondary-bg: 59 130 246;
+  --btn-secondary-hover: 37 99 235;
+  --btn-accent-bg: 236 72 153;
+  --btn-accent-hover: 219 39 119;
+  --btn-ghost-bg: rgba(139, 92, 246, 0.08);
+  --btn-ghost-hover: rgba(139, 92, 246, 0.15);
 }
 
-
 /* Midnight Glass Theme */
-
 [data-theme="midnight"] {
-    --background: 11 16 33;
-    /* #0B1021 */
-    --foreground: 245 247 250;
-    /* #F5F7FA */
-    --foreground-body: 209 213 225;
-    /* #D1D5E1 */
-    --foreground-muted: 152 162 184;
-    /* #98A2B8 */
-    /* Glass Surfaces */
-    --glass-surface: rgba(18, 23, 54, 0.72);
-    --glass-border: rgba(255, 255, 255, 0.1);
-    --glass-highlight: rgba(255, 255, 255, 0.05);
-    --glass-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
-    --glass-shadow-lg: 0 18px 48px rgba(0, 0, 0, 0.45);
-    /* Wonderland Brand Colors */
-    --primary: 58 123 222;
-    /* #3A7BDE */
-    --accent: 222 110 166;
-    /* #DE6EA6 */
-    --highlight: 245 158 11;
-    /* #F59E0B */
-    /* Interactive States */
-    --hover: rgba(255, 255, 255, 0.05);
-    --active: rgba(255, 255, 255, 0.1);
-    /* Borders & Dividers */
-    --border: rgba(255, 255, 255, 0.1);
-    --border-light: rgba(255, 255, 255, 0.05);
+  --background: 11 16 33;
+  --foreground: 245 247 250;
+  --foreground-body: 203 213 225;
+  --foreground-muted: 152 162 184;
+  
+  --glass-surface: rgba(18, 23, 54, 0.85);
+  --glass-border: rgba(58, 123, 222, 0.2);
+  --glass-highlight: rgba(58, 123, 222, 0.1);
+  --glass-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  --glass-shadow-lg: 0 12px 35px rgba(0, 0, 0, 0.4);
+  
+  --primary: 58 123 222;
+  --primary-foreground: 255 255 255;
+  --secondary: 107 57 209;
+  --secondary-foreground: 255 255 255;
+  --accent: 222 110 166;
+  --accent-foreground: 255 255 255;
+  --highlight: 245 158 11;
+  --highlight-foreground: 255 255 255;
+  
+  --hover: rgba(58, 123, 222, 0.15);
+  --active: rgba(58, 123, 222, 0.25);
+  --focus: 58 123 222;
+  
+  --border: rgba(58, 123, 222, 0.3);
+  --border-light: rgba(58, 123, 222, 0.15);
+  
+  --success: 34 197 94;
+  --warning: 245 158 11;
+  --error: 239 68 68;
+  --info: 58 123 222;
+  
+  --header-bg: 11 16 33;
+  --header-border: rgba(58, 123, 222, 0.3);
+  --sidebar-bg: 18 23 54;
+  --sidebar-border: rgba(58, 123, 222, 0.2);
+  
+  --card-bg: 18 23 54;
+  --card-border: rgba(58, 123, 222, 0.2);
+  --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  
+  --btn-primary-bg: 58 123 222;
+  --btn-primary-hover: 37 99 235;
+  --btn-secondary-bg: 107 57 209;
+  --btn-secondary-hover: 91 33 182;
+  --btn-accent-bg: 222 110 166;
+  --btn-accent-hover: 219 39 119;
+  --btn-ghost-bg: rgba(58, 123, 222, 0.15);
+  --btn-ghost-hover: rgba(58, 123, 222, 0.25);
 }
 
 /* Ocean Depths Theme */
-
 [data-theme="ocean"] {
-    --background: 12 24 33;
-    /* #0C1821 */
-    --foreground: 226 232 240;
-    /* #E2E8F0 */
-    --foreground-body: 203 213 225;
-    /* #CBD5E1 */
-    --foreground-muted: 148 163 184;
-    /* #94A3B8 */
-    /* Glass Surfaces */
-    --glass-surface: rgba(30, 41, 59, 0.72);
-    --glass-border: rgba(14, 165, 233, 0.15);
-    --glass-highlight: rgba(14, 165, 233, 0.08);
-    --glass-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
-    --glass-shadow-lg: 0 18px 48px rgba(0, 0, 0, 0.45);
-    /* Wonderland Brand Colors */
-    --primary: 14 165 233;
-    /* #0EA5E9 */
-    --accent: 16 185 129;
-    /* #10B981 */
-    --highlight: 245 158 11;
-    /* #F59E0B */
-    /* Interactive States */
-    --hover: rgba(14, 165, 233, 0.05);
-    --active: rgba(14, 165, 233, 0.1);
-    /* Borders & Dividers */
-    --border: rgba(14, 165, 233, 0.1);
-    --border-light: rgba(14, 165, 233, 0.05);
+  --background: 12 24 33;
+  --foreground: 226 232 240;
+  --foreground-body: 203 213 225;
+  --foreground-muted: 148 163 184;
+  
+  --glass-surface: rgba(30, 41, 59, 0.85);
+  --glass-border: rgba(14, 165, 233, 0.2);
+  --glass-highlight: rgba(14, 165, 233, 0.1);
+  --glass-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  --glass-shadow-lg: 0 12px 35px rgba(0, 0, 0, 0.4);
+  
+  --primary: 14 165 233;
+  --primary-foreground: 255 255 255;
+  --secondary: 6 182 212;
+  --secondary-foreground: 255 255 255;
+  --accent: 16 185 129;
+  --accent-foreground: 255 255 255;
+  --highlight: 245 158 11;
+  --highlight-foreground: 255 255 255;
+  
+  --hover: rgba(14, 165, 233, 0.15);
+  --active: rgba(14, 165, 233, 0.25);
+  --focus: 14 165 233;
+  
+  --border: rgba(14, 165, 233, 0.3);
+  --border-light: rgba(14, 165, 233, 0.15);
+  
+  --success: 34 197 94;
+  --warning: 245 158 11;
+  --error: 239 68 68;
+  --info: 14 165 233;
+  
+  --header-bg: 12 24 33;
+  --header-border: rgba(14, 165, 233, 0.3);
+  --sidebar-bg: 30 41 59;
+  --sidebar-border: rgba(14, 165, 233, 0.2);
+  
+  --card-bg: 30 41 59;
+  --card-border: rgba(14, 165, 233, 0.2);
+  --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  
+  --btn-primary-bg: 14 165 233;
+  --btn-primary-hover: 2 132 199;
+  --btn-secondary-bg: 6 182 212;
+  --btn-secondary-hover: 8 145 178;
+  --btn-accent-bg: 16 185 129;
+  --btn-accent-hover: 5 150 105;
+  --btn-ghost-bg: rgba(14, 165, 233, 0.15);
+  --btn-ghost-hover: rgba(14, 165, 233, 0.25);
 }
 
 /* Enchanted Forest Theme */
-
 [data-theme="forest"] {
-    --background: 15 20 25;
-    /* #0F1419 */
-    --foreground: 243 244 246;
-    /* #F3F4F6 */
-    --foreground-body: 209 213 225;
-    /* #D1D5E1 */
-    --foreground-muted: 156 163 175;
-    /* #9CA3AF */
-    /* Glass Surfaces */
-    --glass-surface: rgba(31, 41, 55, 0.72);
-    --glass-border: rgba(5, 150, 105, 0.15);
-    --glass-highlight: rgba(5, 150, 105, 0.08);
-    --glass-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
-    --glass-shadow-lg: 0 18px 48px rgba(0, 0, 0, 0.45);
-    /* Wonderland Brand Colors */
-    --primary: 5 150 105;
-    /* #059669 */
-    --accent: 217 119 6;
-    /* #D97706 */
-    --highlight: 245 158 11;
-    /* #F59E0B */
-    /* Interactive States */
-    --hover: rgba(5, 150, 105, 0.05);
-    --active: rgba(5, 150, 105, 0.1);
-    /* Borders & Dividers */
-    --border: rgba(5, 150, 105, 0.1);
-    --border-light: rgba(5, 150, 105, 0.05);
+  --background: 15 20 25;
+  --foreground: 243 244 246;
+  --foreground-body: 209 213 219;
+  --foreground-muted: 156 163 175;
+  
+  --glass-surface: rgba(31, 41, 55, 0.85);
+  --glass-border: rgba(5, 150, 105, 0.2);
+  --glass-highlight: rgba(5, 150, 105, 0.1);
+  --glass-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  --glass-shadow-lg: 0 12px 35px rgba(0, 0, 0, 0.4);
+  
+  --primary: 5 150 105;
+  --primary-foreground: 255 255 255;
+  --secondary: 13 148 136;
+  --secondary-foreground: 255 255 255;
+  --accent: 217 119 6;
+  --accent-foreground: 255 255 255;
+  --highlight: 245 158 11;
+  --highlight-foreground: 255 255 255;
+  
+  --hover: rgba(5, 150, 105, 0.15);
+  --active: rgba(5, 150, 105, 0.25);
+  --focus: 5 150 105;
+  
+  --border: rgba(5, 150, 105, 0.3);
+  --border-light: rgba(5, 150, 105, 0.15);
+  
+  --success: 34 197 94;
+  --warning: 245 158 11;
+  --error: 239 68 68;
+  --info: 5 150 105;
+  
+  --header-bg: 15 20 25;
+  --header-border: rgba(5, 150, 105, 0.3);
+  --sidebar-bg: 31 41 55;
+  --sidebar-border: rgba(5, 150, 105, 0.2);
+  
+  --card-bg: 31 41 55;
+  --card-border: rgba(5, 150, 105, 0.2);
+  --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  
+  --btn-primary-bg: 5 150 105;
+  --btn-primary-hover: 4 120 87;
+  --btn-secondary-bg: 13 148 136;
+  --btn-secondary-hover: 15 118 110;
+  --btn-accent-bg: 217 119 6;
+  --btn-accent-hover: 194 65 12;
+  --btn-ghost-bg: rgba(5, 150, 105, 0.15);
+  --btn-ghost-hover: rgba(5, 150, 105, 0.25);
 }
 
 /* Golden Sunset Theme */
-
 [data-theme="sunset"] {
-    --background: 28 25 23;
-    /* #1C1917 */
-    --foreground: 254 243 199;
-    /* #FEF3C7 */
-    --foreground-body: 251 191 36;
-    /* #FBBF24 */
-    --foreground-muted: 167 139 250;
-    /* #A78BFA */
-    /* Glass Surfaces */
-    --glass-surface: rgba(41, 37, 36, 0.72);
-    --glass-border: rgba(234, 88, 12, 0.15);
-    --glass-highlight: rgba(234, 88, 12, 0.08);
-    --glass-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
-    --glass-shadow-lg: 0 18px 48px rgba(0, 0, 0, 0.45);
-    /* Wonderland Brand Colors */
-    --primary: 234 88 12;
-    /* #EA580C */
-    --accent: 236 72 153;
-    /* #EC4899 */
-    --highlight: 245 158 11;
-    /* #F59E0B */
-    /* Interactive States */
-    --hover: rgba(234, 88, 12, 0.05);
-    --active: rgba(234, 88, 12, 0.1);
-    /* Borders & Dividers */
-    --border: rgba(234, 88, 12, 0.1);
-    --border-light: rgba(234, 88, 12, 0.05);
+  --background: 28 25 23;
+  --foreground: 254 243 199;
+  --foreground-body: 251 191 36;
+  --foreground-muted: 167 139 250;
+  
+  --glass-surface: rgba(41, 37, 36, 0.85);
+  --glass-border: rgba(234, 88, 12, 0.2);
+  --glass-highlight: rgba(234, 88, 12, 0.1);
+  --glass-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  --glass-shadow-lg: 0 12px 35px rgba(0, 0, 0, 0.4);
+  
+  --primary: 234 88 12;
+  --primary-foreground: 255 255 255;
+  --secondary: 220 38 38;
+  --secondary-foreground: 255 255 255;
+  --accent: 236 72 153;
+  --accent-foreground: 255 255 255;
+  --highlight: 245 158 11;
+  --highlight-foreground: 255 255 255;
+  
+  --hover: rgba(234, 88, 12, 0.15);
+  --active: rgba(234, 88, 12, 0.25);
+  --focus: 234 88 12;
+  
+  --border: rgba(234, 88, 12, 0.3);
+  --border-light: rgba(234, 88, 12, 0.15);
+  
+  --success: 34 197 94;
+  --warning: 245 158 11;
+  --error: 239 68 68;
+  --info: 234 88 12;
+  
+  --header-bg: 28 25 23;
+  --header-border: rgba(234, 88, 12, 0.3);
+  --sidebar-bg: 41 37 36;
+  --sidebar-border: rgba(234, 88, 12, 0.2);
+  
+  --card-bg: 41 37 36;
+  --card-border: rgba(234, 88, 12, 0.2);
+  --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  
+  --btn-primary-bg: 234 88 12;
+  --btn-primary-hover: 194 65 12;
+  --btn-secondary-bg: 220 38 38;
+  --btn-secondary-hover: 185 28 28;
+  --btn-accent-bg: 236 72 153;
+  --btn-accent-hover: 219 39 119;
+  --btn-ghost-bg: rgba(234, 88, 12, 0.15);
+  --btn-ghost-hover: rgba(234, 88, 12, 0.25);
 }
-
 
 /* Base Styles */
+* {
+  border-color: rgb(var(--border));
+}
 
 body {
-    background: rgb(var(--background));
-    color: rgb(var(--foreground));
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    transition: background-color 0.3s ease, color 0.3s ease;
+  background-color: rgb(var(--background));
+  color: rgb(var(--foreground));
+  font-feature-settings: "rlig" 1, "calt" 1;
 }
-
-
-/* Wonderland Background */
-
-.wonderland-bg {
-    background: linear-gradient(135deg, rgb(var(--background)) 0%, rgba(241, 245, 255, 0.8) 25%, rgba(139, 92, 246, 0.05) 50%, rgba(236, 72, 153, 0.05) 75%, rgb(var(--background)) 100%);
-    min-height: 100vh;
-    position: relative;
-}
-
-/* Theme-specific backgrounds */
-[data-theme="midnight"] .wonderland-bg {
-    background: linear-gradient(135deg, rgb(var(--background)) 0%, rgba(18, 23, 54, 0.8) 25%, rgba(58, 123, 222, 0.05) 50%, rgba(222, 110, 166, 0.05) 75%, rgb(var(--background)) 100%);
-}
-
-[data-theme="ocean"] .wonderland-bg {
-    background: linear-gradient(135deg, rgb(var(--background)) 0%, rgba(30, 41, 59, 0.8) 25%, rgba(14, 165, 233, 0.05) 50%, rgba(16, 185, 129, 0.05) 75%, rgb(var(--background)) 100%);
-}
-
-[data-theme="forest"] .wonderland-bg {
-    background: linear-gradient(135deg, rgb(var(--background)) 0%, rgba(31, 41, 55, 0.8) 25%, rgba(5, 150, 105, 0.05) 50%, rgba(217, 119, 6, 0.05) 75%, rgb(var(--background)) 100%);
-}
-
-[data-theme="sunset"] .wonderland-bg {
-    background: linear-gradient(135deg, rgb(var(--background)) 0%, rgba(41, 37, 36, 0.8) 25%, rgba(234, 88, 12, 0.05) 50%, rgba(236, 72, 153, 0.05) 75%, rgb(var(--background)) 100%);
-}
-
-.wonderland-bg::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: radial-gradient(circle at 20% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(236, 72, 153, 0.1) 0%, transparent 50%), radial-gradient(circle at 40% 40%, rgba(245, 158, 11, 0.05) 0%, transparent 50%);
-    pointer-events: none;
-    z-index: -1;
-}
-
-
-/* Glass Morphism Components */
-
-.glass {
-    background: var(--glass-surface);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--glass-shadow);
-    position: relative;
-}
-
-.glass::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(139, 92, 246, 0.02) 0%, rgba(236, 72, 153, 0.02) 100%);
-    border-radius: inherit;
-    pointer-events: none;
-}
-
-.glass-lg {
-    background: var(--glass-surface);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--glass-shadow-lg);
-    position: relative;
-}
-
-.glass-lg::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(139, 92, 246, 0.03) 0%, rgba(236, 72, 153, 0.03) 100%);
-    border-radius: inherit;
-    pointer-events: none;
-}
-
-.glass-button {
-    background: var(--glass-surface);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border: 1px solid var(--glass-border);
-    transition: all 0.2s ease;
-}
-
-.glass-button:hover {
-    background: var(--glass-highlight);
-    transform: translateY(-1px);
-    box-shadow: var(--glass-shadow-lg);
-}
-
-
-/* Wonder Button */
-
-.wonder-button {
-    background: linear-gradient(135deg, rgb(var(--primary)) 0%, rgb(var(--accent)) 50%, rgb(var(--highlight)) 100%);
-    color: white;
-    border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: var(--radius);
-    font-weight: 600;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
-    position: relative;
-    overflow: hidden;
-}
-
-.wonder-button::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: left 0.5s ease;
-}
-
-.wonder-button:hover::before {
-    left: 100%;
-}
-
-.wonder-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
-}
-
-.wonder-button-secondary {
-    background: var(--glass-surface);
-    color: rgb(var(--foreground));
-    border: 1px solid var(--glass-border);
-    padding: 0.75rem 1.5rem;
-    border-radius: var(--radius);
-    font-weight: 600;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    position: relative;
-    overflow: hidden;
-}
-
-.wonder-button-secondary::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(139, 92, 246, 0.05) 0%, rgba(236, 72, 153, 0.05) 100%);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.wonder-button-secondary:hover::before {
-    opacity: 1;
-}
-
-.wonder-button-secondary:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.2);
-    border-color: rgba(139, 92, 246, 0.3);
-}
-
-
-/* Text Colors */
-
-.text-foreground {
-    color: rgb(var(--foreground));
-}
-
-.text-foreground-body {
-    color: rgb(var(--foreground-body));
-}
-
-.text-foreground-muted {
-    color: rgb(var(--foreground-muted));
-}
-
-
-/* Status Colors */
-
-.text-success {
-    color: rgb(var(--success));
-}
-
-.text-warning {
-    color: rgb(var(--warning));
-}
-
-.text-error {
-    color: rgb(var(--error));
-}
-
-
-/* Background Colors */
-
-.bg-glass-surface {
-    background: var(--glass-surface);
-}
-
-.bg-glass-highlight {
-    background: var(--glass-highlight);
-}
-
-
-/* Border Colors */
-
-.border-glass-border {
-    border-color: var(--glass-border);
-}
-
 
 /* Focus States */
-
-.focus\:ring-primary:focus {
-    --tw-ring-color: rgb(var(--focus));
-}
-
-/* Remove default browser focus outlines and replace with custom ones */
 *:focus {
-    outline: none !important;
+  outline: none !important;
 }
 
 *:focus-visible {
-    outline: 2px solid rgb(var(--primary));
-    outline-offset: 2px;
+  outline: 2px solid rgb(var(--focus));
+  outline-offset: 2px;
 }
 
-/* Remove blue focus rings from inputs and buttons */
 input:focus,
 button:focus,
 select:focus,
 textarea:focus {
-    outline: none !important;
-    box-shadow: 0 0 0 2px rgb(var(--primary) / 0.2) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgb(var(--focus) / 0.2) !important;
 }
 
-/* Remove blue selection color */
 ::selection {
-    background-color: rgb(var(--primary) / 0.2);
-    color: rgb(var(--foreground));
+  background-color: rgb(var(--focus) / 0.2);
+  color: rgb(var(--foreground));
 }
 
 ::-moz-selection {
-    background-color: rgb(var(--primary) / 0.2);
-    color: rgb(var(--foreground));
+  background-color: rgb(var(--focus) / 0.2);
+  color: rgb(var(--foreground));
 }
 
-
-/* Animations */
-
-@keyframes shimmer {
-    0% {
-        transform: translateX(-100%);
-    }
-    100% {
-        transform: translateX(100%);
-    }
+/* Unified Component Styles */
+.wonderland-header {
+  background-color: rgb(var(--header-bg));
+  border-bottom: 1px solid rgb(var(--header-border));
 }
 
-@keyframes glow {
-    0%,
-    100% {
-        opacity: 0.6;
-    }
-    50% {
-        opacity: 1;
-    }
+.wonderland-sidebar {
+  background-color: rgb(var(--sidebar-bg));
+  border-right: 1px solid rgb(var(--sidebar-border));
 }
 
-@keyframes door-open {
-    0% {
-        transform: scaleX(0);
-    }
-    100% {
-        transform: scaleX(1);
-    }
+.wonderland-card {
+  background-color: rgb(var(--card-bg));
+  border: 1px solid rgb(var(--card-border));
+  box-shadow: var(--card-shadow);
+  border-radius: var(--radius);
 }
 
-@keyframes key-glint {
-    0% {
-        transform: scale(1) rotate(0deg);
-    }
-    50% {
-        transform: scale(1.1) rotate(180deg);
-    }
-    100% {
-        transform: scale(1) rotate(360deg);
-    }
+.wonderland-button-primary {
+  background-color: rgb(var(--btn-primary-bg));
+  color: rgb(var(--primary-foreground));
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.wonderland-button-primary:hover {
+  background-color: rgb(var(--btn-primary-hover));
+}
+
+.wonderland-button-secondary {
+  background-color: rgb(var(--btn-secondary-bg));
+  color: rgb(var(--secondary-foreground));
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.wonderland-button-secondary:hover {
+  background-color: rgb(var(--btn-secondary-hover));
+}
+
+.wonderland-button-accent {
+  background-color: rgb(var(--btn-accent-bg));
+  color: rgb(var(--accent-foreground));
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.wonderland-button-accent:hover {
+  background-color: rgb(var(--btn-accent-hover));
+}
+
+.wonderland-button-ghost {
+  background-color: rgb(var(--btn-ghost-bg));
+  color: rgb(var(--foreground));
+  border: 1px solid rgb(var(--border-light));
+  transition: all 0.2s ease;
+}
+
+.wonderland-button-ghost:hover {
+  background-color: rgb(var(--btn-ghost-hover));
+}
+
+/* Glassmorphism Effects */
+.glass-surface {
+  background: var(--glass-surface);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+.glass-surface-lg {
+  background: var(--glass-surface);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow-lg);
+}
+
+/* Wonderland Background Gradients */
+.wonderland-bg {
+  background: linear-gradient(135deg, 
+    rgb(var(--background)) 0%, 
+    rgb(var(--background) / 0.8) 50%, 
+    rgb(var(--primary) / 0.1) 100%);
+}
+
+.wonderland-bg-midnight {
+  background: linear-gradient(135deg, 
+    rgb(var(--background)) 0%, 
+    rgb(var(--background) / 0.9) 50%, 
+    rgb(var(--primary) / 0.15) 100%);
+}
+
+.wonderland-bg-ocean {
+  background: linear-gradient(135deg, 
+    rgb(var(--background)) 0%, 
+    rgb(var(--background) / 0.9) 50%, 
+    rgb(var(--primary) / 0.15) 100%);
+}
+
+.wonderland-bg-forest {
+  background: linear-gradient(135deg, 
+    rgb(var(--background)) 0%, 
+    rgb(var(--background) / 0.9) 50%, 
+    rgb(var(--primary) / 0.15) 100%);
+}
+
+.wonderland-bg-sunset {
+  background: linear-gradient(135deg, 
+    rgb(var(--background)) 0%, 
+    rgb(var(--background) / 0.9) 50%, 
+    rgb(var(--primary) / 0.15) 100%);
 }

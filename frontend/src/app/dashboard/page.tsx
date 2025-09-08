@@ -294,7 +294,7 @@ export default function DashboardPage() {
   return (
     <div className="space-y-8">
       {/* Welcome Section with Fun Elements */}
-      <div className="bg-white/80 backdrop-blur-sm rounded-xl p-8 border border-purple-100">
+      <div className="wonderland-card glass-surface p-8">
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="text-3xl font-bold text-gray-900 mb-2">
@@ -327,7 +327,7 @@ export default function DashboardPage() {
         )}
         
         {/* Journey Progress */}
-        <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-6 border border-purple-100">
+        <div className="wonderland-card glass-surface p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
             <Clock className="w-5 h-5 text-purple-600" />
             Your Journey Progress
@@ -434,7 +434,7 @@ export default function DashboardPage() {
 
       {/* Stats Grid */}
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 hover:shadow-lg transition-all duration-200 group border border-purple-100">
+        <div className="wonderland-card glass-surface p-6 hover:shadow-lg transition-all duration-200 group">
           <div className="flex items-center justify-between mb-4">
             <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
               <Briefcase className="w-6 h-6 text-purple-600" />
@@ -446,7 +446,7 @@ export default function DashboardPage() {
           <div className="text-xs text-green-600 mt-1">+{analytics?.ventureGrowth || 0}%</div>
         </div>
 
-        <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 hover:shadow-lg transition-all duration-200 group border border-purple-100">
+        <div className="wonderland-card glass-surface p-6 hover:shadow-lg transition-all duration-200 group">
           <div className="flex items-center justify-between mb-4">
             <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
               <Users className="w-6 h-6 text-blue-600" />
@@ -458,7 +458,7 @@ export default function DashboardPage() {
           <div className="text-xs text-green-600 mt-1">+{analytics?.userGrowth || 0}%</div>
         </div>
 
-        <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 hover:shadow-lg transition-all duration-200 group border border-purple-100">
+        <div className="wonderland-card glass-surface p-6 hover:shadow-lg transition-all duration-200 group">
           <div className="flex items-center justify-between mb-4">
             <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
               <Target className="w-6 h-6 text-yellow-600" />
@@ -470,7 +470,7 @@ export default function DashboardPage() {
           <div className="text-xs text-green-600 mt-1">+{analytics?.offerGrowth || 0}%</div>
         </div>
 
-        <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 hover:shadow-lg transition-all duration-200 group border border-purple-100">
+        <div className="wonderland-card glass-surface p-6 hover:shadow-lg transition-all duration-200 group">
           <div className="flex items-center justify-between mb-4">
             <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
               <Award className="w-6 h-6 text-green-600" />
@@ -489,7 +489,7 @@ export default function DashboardPage() {
 
       {/* Activity Suggestions */}
       <div className="grid md:grid-cols-2 gap-6">
-        <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 border border-purple-100">
+        <div className="wonderland-card glass-surface p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
             <Lightbulb className="w-5 h-5 text-yellow-500" />
             Quick Actions
@@ -513,7 +513,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 border border-purple-100">
+        <div className="wonderland-card glass-surface p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
             <Bell className="w-5 h-5 text-blue-500" />
             Recent Activity
