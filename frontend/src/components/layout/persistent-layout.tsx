@@ -34,8 +34,8 @@ export default function PersistentLayout({ children }: PersistentLayoutProps) {
   const router = useRouter()
   const pathname = usePathname()
 
-  // Pages that don't need the persistent layout
-  const authPages = ['/auth/login', '/auth/register']
+  // Pages that don't need the persistent layout or authentication checks
+  const authPages = ['/auth/login', '/auth/register', '/onboarding']
   const isAuthPage = authPages.includes(pathname)
 
   useEffect(() => {
