@@ -24,19 +24,36 @@ import { comprehensiveApiService as apiService, User, AnalyticsData, Venture, Of
 import Link from 'next/link'
 
 // Utility function to extract user ID from JWT token
-const getUserIdFromToken = (): string | null => {
-  try {
-    const token = localStorage.getItem('auth-token')
-    if (!token) return null
-    
-    const payload = token.split('.')[1]
-    const decoded = JSON.parse(atob(payload))
-    return decoded.userId || null
-  } catch (error) {
-    console.error('Error decoding JWT token:', error)
-    return null
+  const getUserIdFromToken = (): string | null => {
+    try {
+      const token = localStorage.getItem('auth-token')
+      if (!token) return null
+      
+      const payload = token.split('.')[1]
+      const decoded = JSON.parse(atob(payload))
+      return decoded.userId || null
+    } catch (error) {
+      console.error('Error decoding JWT token:', error)
+      return null
+    }
   }
-}
+
+  const getStepForStage = (stageName: string): number => {
+    // Map journey stages to onboarding steps
+    const stageToStepMap: Record<string, number> = {
+      'Account Creation': 0,
+      'Profile Setup': 0,
+      'Platform Legal Pack': 1,
+      'Legal Documents': 1,
+      'Subscription Selection': 2,
+      'Subscription Setup': 2,
+      'Platform Orientation': 3,
+      'First Venture': 4,
+      'Welcome & Dashboard': 4,
+      'Team Building': 4
+    }
+    return stageToStepMap[stageName] || 0
+  }
 
 export default function DashboardPage() {
   const [user, setUser] = useState<User | null>(null)
@@ -384,7 +401,7 @@ export default function DashboardPage() {
                     </div>
                     {userState.status === 'NOT_STARTED' && (
                       <Link 
-                        href="/onboarding"
+                        href={`/onboarding?step=${getStepForStage(userState.name)}`}
                         className="text-xs text-purple-600 hover:text-purple-700 transition-colors font-medium"
                       >
                         Start →

@@ -32,9 +32,10 @@ interface OnboardingStep {
 interface OnboardingFlowProps {
   userId: string
   onComplete: () => void
+  initialStep?: number | null
 }
 
-export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowProps) {
+export default function OnboardingFlow({ userId, onComplete, initialStep }: OnboardingFlowProps) {
   const [currentStep, setCurrentStep] = useState(0)
   const [journeyStatus, setJourneyStatus] = useState<JourneyStatus | null>(null)
   const [subscriptionPlans, setSubscriptionPlans] = useState<SubscriptionPlan[]>([])
@@ -145,6 +146,27 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
         const journeyResponse = await apiService.getJourneyStatus(userId)
         if (journeyResponse.success && journeyResponse.data) {
           setJourneyStatus(journeyResponse.data)
+          
+          // Determine the correct starting step based on journey progress or initialStep prop
+          const completedStages = journeyResponse.data.progress.stages.filter(stage => stage.status === 'COMPLETED')
+          const completedStageNames = completedStages.map(stage => stage.name)
+          
+          // Use initialStep from URL if provided, otherwise determine from journey progress
+          let startingStep = 0
+          if (initialStep !== null && initialStep !== undefined) {
+            startingStep = initialStep
+            console.log(`Starting onboarding at step ${startingStep} from URL parameter`)
+          } else {
+            // Map journey stages to onboarding steps
+            if (completedStageNames.includes('Account Creation') && completedStageNames.includes('Profile Setup')) {
+              startingStep = 1 // Start at Legal step
+            } else if (completedStageNames.includes('Account Creation')) {
+              startingStep = 0 // Start at Profile step
+            }
+            console.log(`Starting onboarding at step ${startingStep} based on completed stages:`, completedStageNames)
+          }
+          
+          setCurrentStep(startingStep)
         }
       } catch (journeyError) {
         console.warn('Failed to load journey status, continuing with onboarding:', journeyError)
@@ -160,6 +182,12 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
           progress: { completedStages: 0, totalStages: 4, percentage: 0, stages: [] },
           timestamp: new Date().toISOString()
         })
+        
+        // Use initialStep if provided, even if journey status failed
+        if (initialStep !== null && initialStep !== undefined) {
+          setCurrentStep(initialStep)
+          console.log(`Starting onboarding at step ${initialStep} from URL parameter (journey status failed)`)
+        }
       }
 
       // Load subscription plans
@@ -248,25 +276,29 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
   const autoSaveData = useCallback(async () => {
     try {
       const currentStepData = getCurrentStepData()
+      console.log('Auto-saving data for step', currentStep, ':', currentStepData)
+      
+      // Always save to localStorage as backup (even if API fails)
+      localStorage.setItem(`onboarding_backup_${userId}`, JSON.stringify({
+        currentStep,
+        profileData,
+        legalAgreements,
+        selectedPlan,
+        paymentData,
+        lastSaved: new Date().toISOString()
+      }))
+      
+      // Try to save to API if we have meaningful data
       if (currentStepData && Object.keys(currentStepData).length > 0) {
         await updateJourneyProgress('AUTO_SAVE', {
           step: currentStep,
           data: currentStepData,
           timestamp: new Date().toISOString()
         })
-        
-        // Also save to localStorage as backup
-        localStorage.setItem(`onboarding_backup_${userId}`, JSON.stringify({
-          currentStep,
-          profileData,
-          legalAgreements,
-          selectedPlan,
-          paymentData,
-          lastSaved: new Date().toISOString()
-        }))
+        console.log('Auto-save successful for step', currentStep)
       }
     } catch (error) {
-      console.warn('Auto-save failed:', error)
+      console.warn('Auto-save failed (but localStorage backup saved):', error)
     }
   }, [currentStep, profileData, legalAgreements, selectedPlan, paymentData, userId, getCurrentStepData, updateJourneyProgress])
 
@@ -285,39 +317,54 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
   }
 
   const handleNext = async () => {
-    if (currentStep < steps.length - 1) {
-      // Update journey progress for current step
-      const stepActions = [
-        'ACCOUNT_CREATION_COMPLETE',
-        'PROFILE_COMPLETE', 
-        'LEGAL_DOCUMENTS_SIGNED',
-        'SUBSCRIPTION_ACTIVE',
-        'DASHBOARD_ACCESSED'
-      ]
+    try {
+      // Save current step data first
+      await autoSaveData()
       
-      if (stepActions[currentStep]) {
-        await updateJourneyProgress(stepActions[currentStep], {
-          step: currentStep,
-          completedAt: new Date().toISOString()
-        })
-      }
-      
-      await handleStepChange(currentStep + 1)
-    } else {
-      // Complete onboarding
-      await updateJourneyProgress('ONBOARDING_COMPLETE', {
-        completedAt: new Date().toISOString(),
-        allData: {
-          profileData,
-          legalAgreements,
-          selectedPlan,
-          paymentData
+      if (currentStep < steps.length - 1) {
+        // Update journey progress for current step
+        const stepActions = [
+          'PROFILE_COMPLETE', 
+          'LEGAL_DOCUMENTS_SIGNED',
+          'SUBSCRIPTION_ACTIVE',
+          'DASHBOARD_ACCESSED'
+        ]
+        
+        if (stepActions[currentStep]) {
+          console.log(`Updating journey progress for step ${currentStep}: ${stepActions[currentStep]}`)
+          await updateJourneyProgress(stepActions[currentStep], {
+            step: currentStep,
+            completedAt: new Date().toISOString(),
+            data: getCurrentStepData()
+          })
         }
-      })
-      
-      // Clear backup data on completion
-      localStorage.removeItem(`onboarding_backup_${userId}`)
-      onComplete()
+        
+        await handleStepChange(currentStep + 1)
+      } else {
+        // Complete onboarding
+        console.log('Completing onboarding flow')
+        await updateJourneyProgress('ONBOARDING_COMPLETE', {
+          completedAt: new Date().toISOString(),
+          allData: {
+            profileData,
+            legalAgreements,
+            selectedPlan,
+            paymentData
+          }
+        })
+        
+        // Clear backup data on completion
+        localStorage.removeItem(`onboarding_backup_${userId}`)
+        onComplete()
+      }
+    } catch (error) {
+      console.error('Error in handleNext:', error)
+      // Still proceed to next step even if journey update fails
+      if (currentStep < steps.length - 1) {
+        await handleStepChange(currentStep + 1)
+      } else {
+        onComplete()
+      }
     }
   }
 
@@ -912,7 +959,7 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
           {currentStepData.component}
 
           {/* Navigation */}
-          <div className="flex justify-between mt-8">
+          <div className="flex justify-between items-center mt-8">
             <button
               onClick={handlePrevious}
               disabled={currentStep === 0}
@@ -922,14 +969,23 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
               <span>Previous</span>
             </button>
 
-            <button
-              onClick={handleNext}
-              disabled={!isStepValid()}
-              className="wonder-button flex items-center space-x-2 px-6 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <span>{currentStep === steps.length - 1 ? 'Complete Setup' : 'Next'}</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
+            <div className="flex items-center space-x-3">
+              <button
+                onClick={autoSaveData}
+                className="text-sm text-foreground-muted hover:text-foreground transition-colors px-3 py-1 border border-glass-border rounded-md hover:bg-glass-surface"
+              >
+                Save Progress
+              </button>
+              
+              <button
+                onClick={handleNext}
+                disabled={!isStepValid()}
+                className="wonder-button flex items-center space-x-2 px-6 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <span>{currentStep === steps.length - 1 ? 'Complete Setup' : 'Next'}</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         </div>
       </div>

@@ -1,16 +1,28 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import OnboardingFlow from '@/components/OnboardingFlow'
 import { Loader2 } from 'lucide-react'
 
 export default function OnboardingPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [isLoading, setIsLoading] = useState(true)
   const [userId, setUserId] = useState<string | null>(null)
+  const [initialStep, setInitialStep] = useState<number | null>(null)
 
   useEffect(() => {
+    // Get step parameter from URL
+    const stepParam = searchParams.get('step')
+    if (stepParam) {
+      const step = parseInt(stepParam, 10)
+      if (!isNaN(step) && step >= 0 && step <= 4) {
+        setInitialStep(step)
+        console.log('Starting onboarding at step from URL:', step)
+      }
+    }
+
     // Get userId from JWT token (primary) or localStorage (fallback)
     const token = localStorage.getItem('auth-token')
     const storedUser = localStorage.getItem('user')
@@ -46,7 +58,7 @@ export default function OnboardingPage() {
       // No user data found, redirect to registration
       router.push('/auth/register')
     }
-  }, [router])
+  }, [router, searchParams])
 
   const handleOnboardingComplete = () => {
     // Redirect to dashboard after onboarding completion
@@ -78,6 +90,7 @@ export default function OnboardingPage() {
     <OnboardingFlow 
       userId={userId} 
       onComplete={handleOnboardingComplete}
+      initialStep={initialStep}
     />
   )
 }
