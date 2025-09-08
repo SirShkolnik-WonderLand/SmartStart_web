@@ -13,7 +13,7 @@ export default function OnboardingPage() {
   useEffect(() => {
     // Get userId from authenticated user (JWT token) or localStorage
     const storedUser = localStorage.getItem('user')
-    const token = localStorage.getItem('token')
+    const token = localStorage.getItem('auth-token')
     
     if (token && storedUser) {
       try {

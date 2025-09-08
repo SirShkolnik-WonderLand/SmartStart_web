@@ -52,7 +52,7 @@ export default function LegalComplianceModal({
 
   const loadDocuments = async () => {
     try {
-      const token = localStorage.getItem('token')
+      const token = localStorage.getItem('auth-token')
       const response = await fetch('/api/legal-signing/documents', {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -76,7 +76,7 @@ export default function LegalComplianceModal({
 
   const startSigningSession = async () => {
     try {
-      const token = localStorage.getItem('token')
+      const token = localStorage.getItem('auth-token')
       const response = await fetch('/api/legal-signing/session/start', {
         method: 'POST',
         headers: {
@@ -103,7 +103,7 @@ export default function LegalComplianceModal({
 
   const signDocument = async (documentId: string, sessionId: string) => {
     try {
-      const token = localStorage.getItem('token')
+      const token = localStorage.getItem('auth-token')
       const response = await fetch(`/api/legal-signing/session/${sessionId}/sign`, {
         method: 'POST',
         headers: {
@@ -168,7 +168,7 @@ export default function LegalComplianceModal({
 
   const viewDocument = async (documentId: string) => {
     try {
-      const token = localStorage.getItem('token')
+      const token = localStorage.getItem('auth-token')
       const response = await fetch(`/api/legal-signing/documents/${documentId}`, {
         headers: {
           'Authorization': `Bearer ${token}`

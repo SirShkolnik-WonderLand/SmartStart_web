@@ -59,7 +59,7 @@ export default function RegisterPage() {
               if (registerResponse.success && registerResponse.data) {
                 // Store user data first
                 localStorage.setItem('user', JSON.stringify(registerResponse.data))
-                localStorage.setItem('token', registerResponse.data.token || '')
+                localStorage.setItem('auth-token', registerResponse.data.token || '')
                 
                 // Try to initialize user journey (but don't fail if it doesn't work)
                 try {
