@@ -88,7 +88,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
                            type.toLowerCase().includes(searchTerm.toLowerCase())
       
       if (filter === 'all') return matchesSearch
-      if (filter === 'required') return matchesSearch && doc.status === 'required'
+      if (filter === 'required') return matchesSearch && (doc.status === 'required' || doc.required === true)
       if (filter === 'signed') return matchesSearch && doc.isSigned
       if (filter === 'pending') return matchesSearch && doc.status === 'pending'
       if (filter === 'templates') return matchesSearch && doc.status === 'template'
@@ -112,8 +112,8 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
           bValue = b.isSigned ? 'signed' : (b.status || '')
           break
         case 'updatedAt':
-          aValue = new Date(a.updatedAt || 0).getTime()
-          bValue = new Date(b.updatedAt || 0).getTime()
+          aValue = new Date(a.lastUpdated || a.updatedAt || 0).getTime()
+          bValue = new Date(b.lastUpdated || b.updatedAt || 0).getTime()
           break
         default:
           return 0
@@ -160,7 +160,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
 
   const getDocumentStatusText = (doc: LegalDocument) => {
     if (doc.isSigned) return 'Signed'
-    if (doc.status === 'required') return 'Required'
+    if (doc.status === 'required' || doc.required === true) return 'Required'
     if (doc.status === 'pending') return 'Pending'
     if (doc.status === 'template') return 'Template'
     return 'Optional'
@@ -168,7 +168,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
 
   const getDocumentStatusColor = (doc: LegalDocument) => {
     if (doc.isSigned) return 'text-green-600 bg-green-50'
-    if (doc.status === 'required') return 'text-amber-600 bg-amber-50'
+    if (doc.status === 'required' || doc.required === true) return 'text-amber-600 bg-amber-50'
     if (doc.status === 'pending') return 'text-blue-600 bg-blue-50'
     if (doc.status === 'template') return 'text-gray-600 bg-gray-50'
     return 'text-gray-600 bg-gray-50'
@@ -292,7 +292,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
               </div>
               <TrendingUp className="w-5 h-5 text-green-500" />
             </div>
-            <div className="text-2xl font-bold mb-1">{documentStatus?.documents?.filter(doc => doc.status === 'required').length || 0}</div>
+            <div className="text-2xl font-bold mb-1">{documentStatus?.documents?.filter(doc => doc.status === 'required' || doc.required === true).length || 0}</div>
             <div className="text-sm text-muted">Required</div>
             <div className="text-xs text-amber-600 mt-1">Must sign to proceed</div>
           </div>
@@ -504,7 +504,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
                       <td className="px-6 py-4">
                         <div className="flex items-center space-x-2 text-sm text-gray-500">
                           <Calendar className="w-4 h-4" />
-                          <span>{new Date(document.updatedAt).toLocaleDateString()}</span>
+                          <span>{new Date(document.lastUpdated || document.updatedAt || 0).toLocaleDateString()}</span>
                         </div>
                       </td>
                       <td className="px-6 py-4">
@@ -585,7 +585,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2 text-sm text-gray-500">
                     <Calendar className="w-4 h-4" />
-                    <span>Updated {new Date(document.updatedAt).toLocaleDateString()}</span>
+                    <span>Updated {new Date(document.lastUpdated || document.updatedAt || 0).toLocaleDateString()}</span>
                   </div>
                   {document.status === 'required' && !document.isSigned && (
                     <button className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-lg text-sm hover:from-purple-600 hover:to-pink-600 transition-all duration-200">
@@ -640,7 +640,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
                     </div>
                     <div>
                       <span className="text-gray-600">Required:</span>
-                      <span className="ml-2 font-semibold text-amber-600">{documentStatus?.documents?.filter(doc => doc.status === 'required').length || 0}</span>
+                      <span className="ml-2 font-semibold text-amber-600">{documentStatus?.documents?.filter(doc => doc.status === 'required' || doc.required === true).length || 0}</span>
                     </div>
                     <div>
                       <span className="text-gray-600">Pending:</span>
