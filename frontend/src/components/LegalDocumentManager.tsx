@@ -318,7 +318,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
                 
                 <div className="flex items-center space-x-4">
                     <div className="relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted w-4 h-4" />
                         <input
                             type="text"
                             placeholder="Search documents..."
@@ -441,18 +441,18 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
                             {expandedDocument === document.id && (
                                 <div className="mt-4 pt-4 border-t border-gray-700">
                                     <div className="space-y-2">
-                                        <div className="flex items-center text-sm text-gray-400">
+                                        <div className="flex items-center text-sm text-muted">
                                             <Info className="w-4 h-4 mr-2" />
-                                            Created: {new Date(document.created_at).toLocaleDateString()}
+                                            Created: {new Date(document.createdAt).toLocaleDateString()}
                                         </div>
-                                        {document.updated_at && (
-                                            <div className="flex items-center text-sm text-gray-400">
+                                        {document.updatedAt && (
+                                            <div className="flex items-center text-sm text-muted">
                                                 <Clock className="w-4 h-4 mr-2" />
-                                                Updated: {new Date(document.updated_at).toLocaleDateString()}
+                                                Updated: {new Date(document.updatedAt).toLocaleDateString()}
                                             </div>
                                         )}
-                                        {document.generated_from && (
-                                            <div className="flex items-center text-sm text-gray-400">
+                                        {document.generatedFrom && (
+                                            <div className="flex items-center text-sm text-muted">
                                                 <FileSignature className="w-4 h-4 mr-2" />
                                                 Generated from template
                                             </div>
@@ -479,14 +479,14 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
                                     {getDocumentStatusIcon(document)}
                                     
                                     <div>
-                                        <h3 className="text-lg font-semibold text-white">{document.name}</h3>
-                                        <p className="text-sm text-gray-400">{document.legal_name}</p>
+                                        <h3 className="text-lg font-semibold text-white">{document.title}</h3>
+                                        <p className="text-sm text-muted">{document.type}</p>
                                     </div>
                                 </div>
                                 
                                 <div className="flex items-center space-x-4">
                                     <div className="flex items-center space-x-2">
-                                        {getRBACLevelIcon(document.rbac_level)}
+                                        {/* RBAC level removed for now */}
                                         <span className={`px-2 py-1 text-xs rounded-full ${getDocumentStatusColor(document)}`}>
                                             {getDocumentStatusText(document)}
                                         </span>
@@ -494,7 +494,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
                                     
                                     <div className="flex items-center space-x-2">
                                         <button
-                                            onClick={() => handleDownloadDocument(document.id, document.name)}
+                                            onClick={() => handleDownloadDocument(document.id, document.title)}
                                             className="p-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
                                         >
                                             <Download className="w-4 h-4" />
@@ -505,7 +505,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
                                         >
                                             <Eye className="w-4 h-4" />
                                         </button>
-                                        {document.is_required && !document.is_template && (
+                                        {document.requiresSignature && !document.isSigned && (
                                             <button
                                                 onClick={() => handleSignDocument(document.id)}
                                                 disabled={signingDocument === document.id}
@@ -527,37 +527,37 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
                                 <div className="mt-4 pt-4 border-t border-gray-700">
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                         <div className="space-y-2">
-                                            <div className="flex items-center text-sm text-gray-400">
+                                            <div className="flex items-center text-sm text-muted">
                                                 <Calendar className="w-4 h-4 mr-2" />
                                                 Version {document.version}
                                             </div>
-                                            <div className="flex items-center text-sm text-gray-400">
+                                            <div className="flex items-center text-sm text-muted">
                                                 <File className="w-4 h-4 mr-2" />
-                                                {document.category}
+                                                {document.type}
                                             </div>
                                         </div>
                                         <div className="space-y-2">
-                                            <div className="flex items-center text-sm text-gray-400">
+                                            <div className="flex items-center text-sm text-muted">
                                                 <Info className="w-4 h-4 mr-2" />
-                                                Created: {new Date(document.created_at).toLocaleDateString()}
+                                                Created: {new Date(document.createdAt).toLocaleDateString()}
                                             </div>
-                                            {document.updated_at && (
-                                                <div className="flex items-center text-sm text-gray-400">
+                                            {document.updatedAt && (
+                                                <div className="flex items-center text-sm text-muted">
                                                     <Clock className="w-4 h-4 mr-2" />
-                                                    Updated: {new Date(document.updated_at).toLocaleDateString()}
+                                                    Updated: {new Date(document.updatedAt).toLocaleDateString()}
                                                 </div>
                                             )}
                                         </div>
                                         <div className="space-y-2">
-                                            {document.generated_from && (
-                                                <div className="flex items-center text-sm text-gray-400">
+                                            {document.generatedFrom && (
+                                                <div className="flex items-center text-sm text-muted">
                                                     <FileSignature className="w-4 h-4 mr-2" />
                                                     Generated from template
                                                 </div>
                                             )}
-                                            <div className="flex items-center text-sm text-gray-400">
+                                            <div className="flex items-center text-sm text-muted">
                                                 <Shield className="w-4 h-4 mr-2" />
-                                                {document.rbac_level} Access
+                                                {document.requiresSignature ? 'Signature Required' : 'Optional'}
                                             </div>
                                         </div>
                                     </div>
@@ -573,7 +573,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
                 <div className="text-center py-12">
                     <FileText className="w-16 h-16 text-gray-500 mx-auto mb-4" />
                     <h3 className="text-xl font-semibold text-white mb-2">No documents found</h3>
-                    <p className="text-gray-400 mb-6">
+                    <p className="text-muted mb-6">
                         {searchTerm ? 'Try adjusting your search terms' : 'No documents match the current filter'}
                     </p>
                     <button className="flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors mx-auto">

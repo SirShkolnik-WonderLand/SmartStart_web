@@ -22,6 +22,7 @@ export interface LegalDocument {
     isSigned?: boolean;
     signedAt?: string;
     signatureHash?: string;
+    generatedFrom?: string;
 }
 
 export interface DocumentSignature {
