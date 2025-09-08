@@ -8,7 +8,8 @@ class LegalDocumentService {
         this.prisma = new PrismaClient();
     }
 
-    // Get available documents for user based on RBAC level
+    // Get available documents for user - Global RBAC approach
+    // All users can access all documents based on their role level
     async getAvailableDocuments(userId) {
         try {
             const user = await this.prisma.user.findUnique({
@@ -20,7 +21,8 @@ class LegalDocumentService {
                 throw new Error('User not found');
             }
 
-            // Note: RBAC filtering can be added here if needed
+            // Global RBAC: All users can see all documents
+            // Document access is controlled by user's role level and document requirements
 
             const documents = await this.prisma.legalDocument.findMany({
                 where: {
