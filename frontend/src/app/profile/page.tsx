@@ -16,8 +16,13 @@ import {
 } from 'lucide-react'
 import { comprehensiveApiService as apiService, User as UserType } from '@/lib/api-comprehensive'
 
+// Extend User type to include bio property
+interface ExtendedUser extends UserType {
+  bio?: string
+}
+
 export default function ProfilePage() {
-  const [user, setUser] = useState<UserType | null>(null)
+  const [user, setUser] = useState<ExtendedUser | null>(null)
   const [isEditing, setIsEditing] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [editData, setEditData] = useState({
@@ -35,7 +40,7 @@ export default function ProfilePage() {
           setEditData({
             firstName: response.data.firstName || '',
             lastName: response.data.lastName || '',
-            bio: (response.data as any).bio || ''
+            bio: (response.data as ExtendedUser).bio || ''
           })
         }
       } catch (error) {
@@ -67,7 +72,7 @@ export default function ProfilePage() {
       setEditData({
         firstName: user.firstName || '',
         lastName: user.lastName || '',
-        bio: (user as any).bio || ''
+        bio: user.bio || ''
       })
     }
     setIsEditing(false)
@@ -229,7 +234,7 @@ export default function ProfilePage() {
                 placeholder="Tell us about yourself..."
               />
             ) : (
-              <p className="text-foreground-body">{(user as any).bio || 'No bio provided'}</p>
+              <p className="text-foreground-body">{user.bio || 'No bio provided'}</p>
             )}
           </div>
         </div>
