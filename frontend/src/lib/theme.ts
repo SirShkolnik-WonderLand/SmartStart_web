@@ -1,4 +1,4 @@
-export type Theme = 'wonderlight' | 'midnight'
+export type Theme = 'light' | 'midnight'
 
 export interface ThemeConfig {
   name: Theme
@@ -17,8 +17,8 @@ export interface ThemeConfig {
 }
 
 export const themes: Record<Theme, ThemeConfig> = {
-  wonderlight: {
-    name: 'wonderlight',
+  light: {
+    name: 'light',
     displayName: 'Alice\'s Garden',
     description: 'Magical garden with enchanted purples, mystical blues, and golden accents',
     colors: {
@@ -49,11 +49,15 @@ export const themes: Record<Theme, ThemeConfig> = {
   }
 }
 
-export const defaultTheme: Theme = 'wonderlight'
+export const defaultTheme: Theme = 'light'
 
 export function applyTheme(theme: Theme) {
   const root = document.documentElement
-  root.setAttribute('data-theme', theme)
+  if (theme === 'midnight') {
+    root.setAttribute('data-theme', 'midnight')
+  } else {
+    root.removeAttribute('data-theme')
+  }
   localStorage.setItem('wonderland-theme', theme)
 }
 
@@ -64,7 +68,7 @@ export function getStoredTheme(): Theme {
 }
 
 export function toggleTheme(currentTheme: Theme): Theme {
-  const newTheme = currentTheme === 'wonderlight' ? 'midnight' : 'wonderlight'
+  const newTheme = currentTheme === 'light' ? 'midnight' : 'light'
   applyTheme(newTheme)
   return newTheme
 }

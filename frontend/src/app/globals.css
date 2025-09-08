@@ -96,6 +96,11 @@ body {
     position: relative;
 }
 
+/* Midnight theme background */
+[data-theme="midnight"] .wonderland-bg {
+    background: linear-gradient(135deg, rgb(var(--background)) 0%, rgba(18, 23, 54, 0.8) 25%, rgba(58, 123, 222, 0.05) 50%, rgba(222, 110, 166, 0.05) 75%, rgb(var(--background)) 100%);
+}
+
 .wonderland-bg::before {
     content: '';
     position: fixed;
@@ -292,6 +297,36 @@ body {
 
 .focus\:ring-primary:focus {
     --tw-ring-color: rgb(var(--focus));
+}
+
+/* Remove default browser focus outlines and replace with custom ones */
+*:focus {
+    outline: none !important;
+}
+
+*:focus-visible {
+    outline: 2px solid rgb(var(--primary));
+    outline-offset: 2px;
+}
+
+/* Remove blue focus rings from inputs and buttons */
+input:focus,
+button:focus,
+select:focus,
+textarea:focus {
+    outline: none !important;
+    box-shadow: 0 0 0 2px rgb(var(--primary) / 0.2) !important;
+}
+
+/* Remove blue selection color */
+::selection {
+    background-color: rgb(var(--primary) / 0.2);
+    color: rgb(var(--foreground));
+}
+
+::-moz-selection {
+    background-color: rgb(var(--primary) / 0.2);
+    color: rgb(var(--foreground));
 }
 
 
