@@ -138,6 +138,56 @@ class LegalDocumentsApiService {
         }
     }
 
+    // Start signing session for a set of documents
+    async startSigningSession(documentIds: string[]): Promise<{ success: boolean; data: { sessionId: string } | null }> {
+        try {
+            const response = await fetch(`${this.baseUrl}/session/start`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('auth-token')}`,
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify({ documentIds })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const json = await response.json();
+            return { success: true, data: { sessionId: json.data?.sessionId } };
+        } catch (error) {
+            console.error('Error starting signing session:', error);
+            return { success: false, data: null };
+        }
+    }
+
+    // Sign within a session
+    async signInSession(sessionId: string, documentId: string, signatureData: Record<string, unknown>): Promise<{ success: boolean }> {
+        try {
+            const response = await fetch(`${this.baseUrl}/session/${sessionId}/sign`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('auth-token')}`,
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify({ documentId, signatureData })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            await response.json();
+            return { success: true };
+        } catch (error) {
+            console.error('Error signing in session:', error);
+            return { success: false };
+        }
+    }
+
     // Get required documents for current level
     async getRequiredDocuments(): Promise<{ success: boolean; data: LegalDocument[] }> {
         try {

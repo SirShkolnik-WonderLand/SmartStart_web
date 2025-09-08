@@ -412,7 +412,22 @@ export default function OnboardingFlow({ userId, onComplete, initialStep }: Onbo
         }
       }))
       
-      // Save signature to backend
+      // Call legal-signing API: fetch docs, start session, and sign
+      const docs = await legalDocumentsApiService.getAvailableDocuments()
+      const matching = docs.success ? docs.data.find(d => d.title?.toLowerCase().includes(type) || d.name?.toLowerCase().includes(type)) : undefined
+      if (matching) {
+        const session = await legalDocumentsApiService.startSigningSession([matching.id])
+        if (session.success && session.data?.sessionId) {
+          await legalDocumentsApiService.signInSession(session.data.sessionId, matching.id, {
+            signatureHash: signatureHashHex,
+            signedAt: new Date().toISOString(),
+            documentVersion: 'v1.0',
+            content: legalAgreementContent[type].content
+          })
+        }
+      }
+
+      // Also notify journey orchestrator
       await updateJourneyProgress('LEGAL_DOCUMENT_SIGNED', {
         documentType: type,
         signatureData: {
@@ -992,7 +1007,7 @@ export default function OnboardingFlow({ userId, onComplete, initialStep }: Onbo
 
       {/* Legal Agreement Popup Modal */}
       {showLegalPopup.isOpen && showLegalPopup.type && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
           <div className="glass-lg rounded-2xl p-8 max-w-4xl max-h-[80vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-2xl font-bold text-foreground">
