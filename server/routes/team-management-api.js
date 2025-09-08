@@ -66,7 +66,7 @@ router.post('/create', async (req, res) => {
                 "createdAt", "updatedAt"
             ) VALUES (
                 ${teamId}, ${name}, ${companyId}, ${parentTeamId}, ${purpose}, ${description},
-                ${size}, ${leadId}, ${status}, ${isPublic}, ${JSON.stringify(settings)}::jsonb,
+                ${parseInt(size)}, ${leadId}, ${status}::"TeamStatus", ${isPublic}, ${JSON.stringify(settings)}::jsonb,
                 NOW(), NOW()
             )
         `;
