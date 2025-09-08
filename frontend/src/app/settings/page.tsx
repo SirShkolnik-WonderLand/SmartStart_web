@@ -8,8 +8,6 @@ import {
   Bell, 
   Lock, 
   Key, 
-  Database, 
-  Globe, 
   Palette,
   Save,
   RefreshCw,
@@ -20,16 +18,9 @@ import {
   Crown,
   Eye,
   EyeOff,
-  Mail,
-  Phone,
-  MapPin,
-  Calendar,
-  Activity,
-  BarChart3,
-  FileText,
-  Zap
+  Activity
 } from 'lucide-react'
-import { apiService } from '@/lib/api-comprehensive'
+import { comprehensiveApiService } from '@/lib/api-comprehensive'
 
 interface UserProfile {
   id: string
@@ -140,7 +131,7 @@ export default function SettingsPage() {
 
   const loadUserData = async () => {
     try {
-      const response = await apiService.getCurrentUser()
+      const response = await comprehensiveApiService.getCurrentUser()
       if (response.success && response.data) {
         setUser(response.data)
       }
@@ -205,7 +196,7 @@ export default function SettingsPage() {
     
     setIsSaving(true)
     try {
-      const response = await apiService.updateUserProfile(user.id, {
+      const response = await comprehensiveApiService.updateUserProfile(user.id, {
         firstName: user.firstName,
         lastName: user.lastName,
         bio: user.profile?.bio || ''
@@ -292,7 +283,7 @@ export default function SettingsPage() {
                   return (
                     <button
                       key={tab.id}
-                      onClick={() => setActiveTab(tab.id as any)}
+                      onClick={() => setActiveTab(tab.id as 'profile' | 'system' | 'rbac' | 'security')}
                       className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
                         activeTab === tab.id
                           ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg'
@@ -492,7 +483,7 @@ export default function SettingsPage() {
                             ...systemSettings,
                             privacy: {
                               ...systemSettings.privacy,
-                              profileVisibility: e.target.value as any
+                              profileVisibility: e.target.value as 'public' | 'private' | 'friends'
                             }
                           })}
                           className="w-full px-4 py-3 bg-glass-surface border border-glass-border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
@@ -551,7 +542,7 @@ export default function SettingsPage() {
                             ...systemSettings,
                             appearance: {
                               ...systemSettings.appearance,
-                              theme: e.target.value as any
+                              theme: e.target.value as 'light' | 'dark' | 'auto'
                             }
                           })}
                           className="w-full px-4 py-3 bg-glass-surface border border-glass-border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
