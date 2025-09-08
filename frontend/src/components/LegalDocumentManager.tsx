@@ -46,7 +46,8 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
   const [isActing, setIsActing] = useState(false)
   const [evidenceDoc, setEvidenceDoc] = useState<LegalDocument | null>(null)
-  const [evidence, setEvidence] = useState<{ signer?: string; signedAt?: string; signatureHash?: string } | null>(null)
+  const [evidence, setEvidence] = useState<{ signer?: string; signedAt?: string; signatureHash?: string; ip?: string; userAgent?: string; mfa?: boolean; verified?: boolean } | null>(null)
+  const [isVerifying, setIsVerifying] = useState(false)
 
   // Load documents and status
   useEffect(() => {
@@ -172,11 +173,37 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
 
   const openEvidence = async (doc: LegalDocument) => {
     setEvidenceDoc(doc)
-    setEvidence({
+    // Prefill with known fields
+    let ev: any = {
       signer: (documentStatus?.user_id) || undefined,
       signedAt: doc.signedAt,
       signatureHash: doc.signatureHash,
-    })
+    }
+    // Try to pull latest audit log for more details
+    try {
+      const audit = await legalDocumentsApiService.getDocumentAuditLog(doc.id, undefined, undefined, 1, 1)
+      if (audit.success && Array.isArray(audit.data) && audit.data.length > 0) {
+        const a = audit.data[0]
+        ev.ip = a.ip_address
+        ev.userAgent = a.user_agent
+      }
+    } catch {}
+    setEvidence(ev)
+  }
+
+  const verifySignature = async () => {
+    if (!evidenceDoc || !evidence?.signatureHash) return
+    try {
+      setIsVerifying(true)
+      const res = await legalDocumentsApiService.verifyDocumentSignature(evidenceDoc.id, evidence.signatureHash)
+      if (res.success && res.data) {
+        setEvidence(prev => ({ ...(prev || {}), verified: res.data.is_valid }))
+      }
+    } catch {
+      setEvidence(prev => ({ ...(prev || {}), verified: false }))
+    } finally {
+      setIsVerifying(false)
+    }
   }
 
   // Filter and sort documents
@@ -608,9 +635,29 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
                         </span>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="flex items-center space-x-2 text-sm text-gray-500">
-                          <Calendar className="w-4 h-4" />
-                          <span>{new Date(document.lastUpdated || document.updatedAt || 0).toLocaleDateString()}</span>
+                        <div className="flex items-center gap-4 text-sm text-gray-600">
+                          <div className="flex items-center space-x-2">
+                            <Calendar className="w-4 h-4" />
+                            <span>{new Date(document.lastUpdated || document.updatedAt || 0).toLocaleDateString()}</span>
+                          </div>
+                          {/* Pipeline badges (from metadata or type) */}
+                          <div className="flex flex-wrap gap-2">
+                            {(() => {
+                              const pipelines: string[] = []
+                              const meta = (document as any)?.metadata || {}
+                              if (meta.pipeline) pipelines.push(meta.pipeline)
+                              if (meta.relatedPipelines && Array.isArray(meta.relatedPipelines)) pipelines.push(...meta.relatedPipelines)
+                              // Fallback heuristics
+                              if (document.type?.includes('LEGAL') || document.title?.toLowerCase().includes('nda')) pipelines.push('Onboarding')
+                              if (document.title?.toLowerCase().includes('subscription') || document.title?.toLowerCase().includes('billing')) pipelines.push('Billing')
+                              if (document.title?.toLowerCase().includes('project') || document.title?.toLowerCase().includes('venture')) pipelines.push('Venture Start')
+                              return Array.from(new Set(pipelines)).slice(0, 3).map((p) => (
+                                <span key={p} className="px-2 py-0.5 rounded-md bg-gray-100 border border-gray-200 text-gray-700">
+                                  {p}
+                                </span>
+                              ))
+                            })()}
+                          </div>
                         </div>
                       </td>
                       <td className="px-6 py-4">
@@ -820,7 +867,18 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
                 {evidenceDoc?.content?.includes('DOC HASH') && (
                   <div className="text-xs text-gray-500">Note: Full document hash and evidence are stored server-side per policy.</div>
                 )}
-                <div className="flex justify-end">
+                <div className="flex justify-between items-center">
+                  <div className="text-xs text-gray-600">
+                    {evidence?.verified === true && <span className="text-green-600">Hash verified ✓</span>}
+                    {evidence?.verified === false && <span className="text-red-600">Hash mismatch</span>}
+                  </div>
+                  <button
+                    onClick={verifySignature}
+                    className="bg-white border border-purple-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-purple-50 transition-all duration-200 mr-2 disabled:opacity-50"
+                    disabled={isVerifying}
+                  >
+                    {isVerifying ? 'Verifying…' : 'Verify hash'}
+                  </button>
                   <button
                     onClick={() => { setEvidenceDoc(null); setEvidence(null); }}
                     className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-200"
