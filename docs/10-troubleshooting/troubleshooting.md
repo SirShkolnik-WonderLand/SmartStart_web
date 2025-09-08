@@ -488,6 +488,24 @@ time curl https://your-api.onrender.com/api/health
 # Wait 15+ minutes, then test
 ```
 
+### 5. Legal Endpoints Testing
+```bash
+# Test all legal endpoints with automated script
+./docs/10-troubleshooting/legal-endpoints-curl-checks.sh
+
+# Test with custom URL and auth token
+./docs/10-troubleshooting/legal-endpoints-curl-checks.sh https://smartstart-api.onrender.com "your-jwt-token"
+
+# Manual testing of specific endpoints
+curl -X GET "https://smartstart-api.onrender.com/api/legal-signing/health"
+curl -X GET "https://smartstart-api.onrender.com/api/legal-documents/documents" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
+
+**See also:**
+- [Legal Endpoints Testing Guide](legal-endpoints-testing.md) - Comprehensive testing procedures
+- [Legal Endpoints Curl Checks Script](legal-endpoints-curl-checks.sh) - Automated testing script
+
 ## 🔧 Fixes by Issue Type
 
 ### Build Issues
