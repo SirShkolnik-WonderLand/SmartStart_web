@@ -174,7 +174,7 @@ router.get('/status/:userId', authenticateToken, async(req, res) => {
                 // Auto-complete Profile Setup if user profile has basic fields
                 try {
                     const user = await prisma.user.findUnique({ where: { id: userId } })
-                    const profileState = userStates.find(s => s.stage?.name === 'Profile Setup')
+                    const profileState = userStates.find(s => s.stage ? .name === 'Profile Setup')
                     if (user && (user.name || user.firstName || user.lastName) && profileState && profileState.status !== 'COMPLETED') {
                         await prisma.userJourneyState.update({
                             where: { id: profileState.id },
@@ -182,7 +182,7 @@ router.get('/status/:userId', authenticateToken, async(req, res) => {
                         })
                     }
                 } catch (e) {
-                    console.warn('Profile auto-complete check failed:', e?.message)
+                    console.warn('Profile auto-complete check failed:', e ? .message)
                 }
 
                 res.json({
@@ -983,7 +983,7 @@ router.post('/progress/:userId', authenticateToken, async(req, res) => {
             // Mark the corresponding journey stage as completed
             const stageMapping = {
                 'PROFILE_COMPLETED': 'Profile Setup',
-                'LEGAL_PACK_SIGNED': 'Legal Agreements',
+                'LEGAL_PACK_SIGNED': 'Platform Legal Pack',
                 'SUBSCRIPTION_ACTIVATED': 'Subscription Selection',
                 'ORIENTATION_COMPLETED': 'Platform Orientation'
             };
