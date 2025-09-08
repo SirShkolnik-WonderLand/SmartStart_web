@@ -43,16 +43,16 @@ router.get('/status/:userId', authenticateToken, async(req, res) => {
         const accountCreationStage = await prisma.journeyStage.findFirst({
             where: { name: 'Account Creation' }
         });
-        
+
         if (accountCreationStage) {
             const accountCreationState = await prisma.userJourneyState.findFirst({
-                where: { 
-                    userId, 
+                where: {
+                    userId,
                     stageId: accountCreationStage.id,
                     status: 'NOT_STARTED'
                 }
             });
-            
+
             if (accountCreationState) {
                 // Mark Account Creation as completed for existing users
                 await prisma.userJourneyState.update({
@@ -114,7 +114,7 @@ router.get('/status/:userId', authenticateToken, async(req, res) => {
                     }
                 });
             }
-            
+
             // Reload user states after creation
             const newUserStates = await prisma.userJourneyState.findMany({
                 where: { userId },
@@ -131,14 +131,14 @@ router.get('/status/:userId', authenticateToken, async(req, res) => {
                     }
                 }
             });
-            
+
             // Calculate progress
             const totalStages = newUserStates.length;
             const completedStages = newUserStates.filter(state => state.status === 'COMPLETED').length;
             const percentage = totalStages > 0 ? Math.round((completedStages / totalStages) * 100) : 0;
-            
-            const currentStage = newUserStates.find(state => state.status === 'IN_PROGRESS')?.stage || null;
-            const nextStage = newUserStates.find(state => state.status === 'NOT_STARTED')?.stage || null;
+
+            const currentStage = newUserStates.find(state => state.status === 'IN_PROGRESS') ? .stage || null;
+            const nextStage = newUserStates.find(state => state.status === 'NOT_STARTED') ? .stage || null;
 
             res.json({
                 success: true,
@@ -167,7 +167,7 @@ router.get('/status/:userId', authenticateToken, async(req, res) => {
             // Use orchestrator to get comprehensive journey status
             try {
                 const journeyStatus = await onboardingOrchestrator.getUserJourneyStatus(userId);
-                
+
                 // Get onboarding recommendations
                 const recommendations = await onboardingOrchestrator.getOnboardingRecommendations(userId);
 
@@ -183,14 +183,14 @@ router.get('/status/:userId', authenticateToken, async(req, res) => {
                 });
             } catch (orchestratorError) {
                 console.warn('Orchestrator failed, using fallback:', orchestratorError);
-                
+
                 // Fallback calculation
                 const totalStages = userStates.length;
                 const completedStages = userStates.filter(state => state.status === 'COMPLETED').length;
                 const percentage = totalStages > 0 ? Math.round((completedStages / totalStages) * 100) : 0;
-                
-                const currentStage = userStates.find(state => state.status === 'IN_PROGRESS')?.stage || null;
-                const nextStage = userStates.find(state => state.status === 'NOT_STARTED')?.stage || null;
+
+                const currentStage = userStates.find(state => state.status === 'IN_PROGRESS') ? .stage || null;
+                const nextStage = userStates.find(state => state.status === 'NOT_STARTED') ? .stage || null;
 
                 res.json({
                     success: true,
@@ -440,7 +440,7 @@ router.get('/gates/:userId', async(req, res) => {
                                 const user = await prisma.user.findUnique({
                                     where: { id: userId }
                                 });
-                                isPassed = !!user?.email; // Basic email verification
+                                isPassed = !!user ? .email; // Basic email verification
                                 details = user ? { email: user.email } : null;
                                 break;
 
@@ -448,7 +448,7 @@ router.get('/gates/:userId', async(req, res) => {
                                 const userProfile = await prisma.user.findUnique({
                                     where: { id: userId }
                                 });
-                                isPassed = !!(userProfile?.name && userProfile?.firstName && userProfile?.lastName);
+                                isPassed = !!(userProfile ? .name && userProfile ? .firstName && userProfile ? .lastName);
                                 details = userProfile ? {
                                     name: userProfile.name,
                                     firstName: userProfile.firstName,
@@ -471,94 +471,94 @@ router.get('/gates/:userId', async(req, res) => {
                                 details = { completedStages, totalStages };
                                 break;
 
-                                        case 'VENTURE':
-                // Check if user has created or joined a venture
-                const userVentures = await prisma.venture.count({
-                    where: {
-                        OR: [
-                            { ownerId: userId },
-                            {
-                                members: {
-                                    some: { userId: userId }
-                                }
-                            }
-                        ]
-                    }
-                });
-                isPassed = userVentures > 0;
-                details = { ventureCount: userVentures };
-                break;
-
-            case 'TEAM':
-                // Check if user has created or joined a team
-                const userTeams = await prisma.team.count({
-                    where: {
-                        OR: [
-                            { ownerId: userId },
-                            {
-                                members: {
-                                    some: { userId: userId }
-                                }
-                            }
-                        ]
-                    }
-                });
-                isPassed = userTeams > 0;
-                details = { teamCount: userTeams };
-                break;
-
-            case 'PROJECT':
-                // Check if user has created or joined a project
-                const userProjects = await prisma.project.count({
-                    where: {
-                        OR: [
-                            { ownerId: userId },
-                            {
-                                members: {
-                                    some: { userId: userId }
-                                }
-                            }
-                        ]
-                    }
-                });
-                isPassed = userProjects > 0;
-                details = { projectCount: userProjects };
-                break;
-
-            case 'LEGAL_ENTITY':
-                // Check if user has at least one company or is part of a company
-                const userCompanies = await prisma.company.count({
-                    where: {
-                        OR: [
-                            { ownerId: userId },
-                            {
-                                team: {
-                                    some: {
-                                        members: {
-                                            some: { userId: userId }
-                                        }
+                            case 'VENTURE':
+                                // Check if user has created or joined a venture
+                                const userVentures = await prisma.venture.count({
+                                    where: {
+                                        OR: [
+                                            { ownerId: userId },
+                                            {
+                                                members: {
+                                                    some: { userId: userId }
+                                                }
+                                            }
+                                        ]
                                     }
-                                }
-                            }
-                        ]
-                    }
-                });
-                isPassed = userCompanies > 0;
-                details = { companyCount: userCompanies };
-                break;
+                                });
+                                isPassed = userVentures > 0;
+                                details = { ventureCount: userVentures };
+                                break;
 
-            case 'EQUITY':
-                // Check if user has equity in any project/venture
-                // Assuming a Contribution or Portfolio table tracks equity assignments
-                const equityContributions = await prisma.contribution.count({
-                    where: {
-                        userId: userId,
-                        equityPercentage: { gt: 0 }
-                    }
-                }).catch(() => 0);
-                isPassed = (equityContributions || 0) > 0;
-                details = { equityAssignments: equityContributions || 0 };
-                break;
+                            case 'TEAM':
+                                // Check if user has created or joined a team
+                                const userTeams = await prisma.team.count({
+                                    where: {
+                                        OR: [
+                                            { ownerId: userId },
+                                            {
+                                                members: {
+                                                    some: { userId: userId }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                });
+                                isPassed = userTeams > 0;
+                                details = { teamCount: userTeams };
+                                break;
+
+                            case 'PROJECT':
+                                // Check if user has created or joined a project
+                                const userProjects = await prisma.project.count({
+                                    where: {
+                                        OR: [
+                                            { ownerId: userId },
+                                            {
+                                                members: {
+                                                    some: { userId: userId }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                });
+                                isPassed = userProjects > 0;
+                                details = { projectCount: userProjects };
+                                break;
+
+                            case 'LEGAL_ENTITY':
+                                // Check if user has at least one company or is part of a company
+                                const userCompanies = await prisma.company.count({
+                                    where: {
+                                        OR: [
+                                            { ownerId: userId },
+                                            {
+                                                team: {
+                                                    some: {
+                                                        members: {
+                                                            some: { userId: userId }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                });
+                                isPassed = userCompanies > 0;
+                                details = { companyCount: userCompanies };
+                                break;
+
+                            case 'EQUITY':
+                                // Check if user has equity in any project/venture
+                                // Assuming a Contribution or Portfolio table tracks equity assignments
+                                const equityContributions = await prisma.contribution.count({
+                                    where: {
+                                        userId: userId,
+                                        equityPercentage: { gt: 0 }
+                                    }
+                                }).catch(() => 0);
+                                isPassed = (equityContributions || 0) > 0;
+                                details = { equityAssignments: equityContributions || 0 };
+                                break;
 
                             default:
                                 isPassed = false;
@@ -703,7 +703,7 @@ router.post('/gates', async(req, res) => {
 });
 
 // Get journey state for a specific user (frontend relies on this endpoint)
-router.get('/state/:userId', async (req, res) => {
+router.get('/state/:userId', async(req, res) => {
     try {
         const { userId } = req.params;
 
@@ -733,16 +733,16 @@ router.get('/state/:userId', async (req, res) => {
             });
         }
 
-        const freshStates = userStates.length === 0
-            ? await prisma.userJourneyState.findMany({ where: { userId } })
-            : userStates;
+        const freshStates = userStates.length === 0 ?
+            await prisma.userJourneyState.findMany({ where: { userId } }) :
+            userStates;
 
         const totalStages = stages.length;
         const completedStages = freshStates.filter(s => s.status === 'COMPLETED').length;
         const currentStageObj = freshStates.find(s => s.status === 'IN_PROGRESS');
-        const currentStageIndex = currentStageObj
-            ? stages.findIndex(s => s.id === currentStageObj.stageId)
-            : Math.min(completedStages, Math.max(0, totalStages - 1));
+        const currentStageIndex = currentStageObj ?
+            stages.findIndex(s => s.id === currentStageObj.stageId) :
+            Math.min(completedStages, Math.max(0, totalStages - 1));
         const progress = totalStages > 0 ? Math.round((completedStages / totalStages) * 100) : 0;
 
         return res.json({
@@ -881,7 +881,7 @@ router.post('/progress/:userId', authenticateToken, async(req, res) => {
         if (action === 'AUTO_SAVE') {
             // Auto-save form data to UserJourneyState metadata
             const currentStage = await prisma.userJourneyState.findFirst({
-                where: { 
+                where: {
                     userId,
                     status: 'IN_PROGRESS'
                 }
@@ -911,7 +911,7 @@ router.post('/progress/:userId', authenticateToken, async(req, res) => {
         if (action === 'LEGAL_DOCUMENT_SIGNED') {
             // Handle digital signature storage
             const { documentType, signatureData } = data;
-            
+
             // Create or update PlatformLegalPack
             await prisma.platformLegalPack.upsert({
                 where: { userId },
@@ -929,7 +929,7 @@ router.post('/progress/:userId', authenticateToken, async(req, res) => {
 
             // Store signature details in journey metadata
             const currentStage = await prisma.userJourneyState.findFirst({
-                where: { 
+                where: {
                     userId,
                     status: 'IN_PROGRESS'
                 }
@@ -942,8 +942,8 @@ router.post('/progress/:userId', authenticateToken, async(req, res) => {
                         metadata: {
                             ...currentStage.metadata,
                             legalSignatures: {
-                                ...currentStage.metadata?.legalSignatures,
-                                [documentType]: {
+                                ...currentStage.metadata ? .legalSignatures,
+                                [documentType] : {
                                     ...signatureData,
                                     ipAddress: req.ip,
                                     userAgent: req.headers['user-agent'],
@@ -969,17 +969,17 @@ router.post('/progress/:userId', authenticateToken, async(req, res) => {
             // Mark the corresponding journey stage as completed
             const stageMapping = {
                 'PROFILE_COMPLETED': 'Profile Setup',
-                'LEGAL_PACK_SIGNED': 'Legal Agreements', 
+                'LEGAL_PACK_SIGNED': 'Legal Agreements',
                 'SUBSCRIPTION_ACTIVATED': 'Subscription Selection',
                 'ORIENTATION_COMPLETED': 'Platform Orientation'
             };
-            
+
             const stageName = stageMapping[action];
             if (stageName) {
                 const stage = await prisma.journeyStage.findFirst({
                     where: { name: stageName }
                 });
-                
+
                 if (stage) {
                     await prisma.userJourneyState.upsert({
                         where: {
@@ -1011,7 +1011,7 @@ router.post('/progress/:userId', authenticateToken, async(req, res) => {
                     });
                 }
             }
-            
+
             return res.json({
                 success: true,
                 message: `Step ${stageName} completed successfully`,
@@ -1031,7 +1031,8 @@ router.post('/progress/:userId', authenticateToken, async(req, res) => {
                 'PROFILE_COMPLETED': 'Profile Setup',
                 'LEGAL_PACK_SIGNED': 'Platform Legal Pack',
                 'SUBSCRIPTION_ACTIVATED': 'Subscription Selection',
-                'ORIENTATION_COMPLETED': 'Platform Orientation'
+                'ORIENTATION_COMPLETED': 'Platform Orientation',
+                'ONBOARDING_COMPLETE': 'Welcome & Dashboard'
             };
             const stageName = fallbackMap[action];
             if (stageName) {
@@ -1039,8 +1040,8 @@ router.post('/progress/:userId', authenticateToken, async(req, res) => {
                 if (stage) {
                     await prisma.userJourneyState.upsert({
                         where: { userId_stageId: { userId, stageId: stage.id } },
-                        update: { status: 'COMPLETED', completedAt: new Date(), metadata: { ...data, action } },
-                        create: { userId, stageId: stage.id, status: 'COMPLETED', completedAt: new Date(), metadata: { ...data, action } }
+                        update: { status: 'COMPLETED', completedAt: new Date(), metadata: {...data, action } },
+                        create: { userId, stageId: stage.id, status: 'COMPLETED', completedAt: new Date(), metadata: {...data, action } }
                     });
                     const userStates = await prisma.userJourneyState.findMany({ where: { userId }, include: { stage: true } });
                     const totalStages = userStates.length;
@@ -1149,13 +1150,12 @@ router.get('/recommendations/:userId', authenticateToken, async(req, res) => {
 });
 
 // ===== SEEDING ENDPOINT =====
-router.post('/seed', async (req, res) => {
+router.post('/seed', async(req, res) => {
     try {
         console.log('🌱 Seeding journey stages...');
 
         // Create default journey stages
-        const defaultStages = [
-            {
+        const defaultStages = [{
                 name: 'Welcome',
                 description: 'Welcome to SmartStart! Complete your profile setup.',
                 order: 1,
@@ -1198,7 +1198,7 @@ router.post('/seed', async (req, res) => {
             const existingStage = await prisma.journeyStage.findFirst({
                 where: { name: stageData.name }
             });
-            
+
             if (!existingStage) {
                 await prisma.journeyStage.create({
                     data: stageData

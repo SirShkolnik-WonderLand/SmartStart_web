@@ -1000,7 +1000,7 @@ export default function OnboardingFlow({ userId, onComplete, initialStep }: Onbo
                 disabled={!isStepValid()}
                 className="wonder-button flex items-center space-x-2 px-6 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <span>{currentStep === steps.length - 1 ? 'Complete Setup' : 'Next'}</span>
+                <span>{currentStep === steps.length - 1 ? 'Complete Initial Setup' : 'Next'}</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>
