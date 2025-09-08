@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { comprehensiveApiService as apiService, JourneyStatus, SubscriptionPlan } from '@/lib/api-comprehensive'
+import { legalDocumentsApiService } from '@/lib/legal-documents-api'
 import { 
   CheckCircle, 
   User, 
@@ -95,6 +96,21 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
         }
       } catch (userError) {
         console.warn('Failed to load user data from localStorage:', userError)
+      }
+
+      // Load legal documents
+      try {
+        const legalDocsResponse = await legalDocumentsApiService.getAvailableDocuments()
+        if (legalDocsResponse.success && legalDocsResponse.data.length > 0) {
+          // Set legal agreements as available (not signed yet)
+          setLegalAgreements({
+            confidentiality: false,
+            equity: false,
+            partnership: false
+          })
+        }
+      } catch (legalError) {
+        console.warn('Failed to load legal documents:', legalError)
       }
 
       // Try to recover onboarding data from backup
@@ -345,7 +361,7 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
           signed: true,
           signedAt: new Date().toISOString(),
           signatureHash: signatureHashHex,
-          documentVersion: 'v1.0'
+          documentVersion: '2.0'
         }
       }))
       
