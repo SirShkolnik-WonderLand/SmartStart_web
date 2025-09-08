@@ -12,14 +12,11 @@ export default function OnboardingPage() {
   const [userId, setUserId] = useState<string | null>(null)
 
   useEffect(() => {
-    // Get userId from URL params or localStorage
-    const urlUserId = searchParams.get('userId')
+    // Get userId from authenticated user (JWT token) or localStorage
     const storedUser = localStorage.getItem('user')
+    const token = localStorage.getItem('token')
     
-    if (urlUserId) {
-      setUserId(urlUserId)
-      setIsLoading(false)
-    } else if (storedUser) {
+    if (token && storedUser) {
       try {
         const userData = JSON.parse(storedUser)
         setUserId(userData.id)
@@ -32,7 +29,7 @@ export default function OnboardingPage() {
       // No user data found, redirect to registration
       router.push('/auth/register')
     }
-  }, [searchParams, router])
+  }, [router])
 
   const handleOnboardingComplete = () => {
     // Redirect to dashboard after onboarding completion
