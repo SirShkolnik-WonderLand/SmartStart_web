@@ -1193,12 +1193,33 @@ class ComprehensiveApiService {
     }
   }
 
-  async initializeJourney(userId: string): Promise<ApiResponse<JourneyInitialization>> {
+  async initializeJourney(userId: string, token?: string): Promise<ApiResponse<JourneyInitialization>> {
     try {
-      const response = await this.fetchWithAuth<JourneyInitialization>(`/api/journey/initialize/${userId}`, {
-        method: 'POST'
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json'
+      }
+      
+      // Use provided token or get from localStorage
+      const authToken = token || localStorage.getItem('auth-token')
+      if (authToken) {
+        headers['Authorization'] = `Bearer ${authToken}`
+      }
+      
+      const response = await fetch(`${API_BASE}/api/journey/initialize/${userId}`, {
+        method: 'POST',
+        headers,
+        credentials: 'include'
       })
-      return { success: true, data: response.data }
+      
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Authentication failed')
+        }
+        throw new Error(`API Error: ${response.status} ${response.statusText}`)
+      }
+      
+      const data = await response.json()
+      return { success: true, data: data }
     } catch (error) {
       console.error('Error initializing journey:', error)
       return { success: false, data: undefined, error: 'Failed to initialize journey' }

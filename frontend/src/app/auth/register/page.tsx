@@ -62,8 +62,9 @@ export default function RegisterPage() {
                 localStorage.setItem('auth-token', registerResponse.data.token || '')
                 
                 // Try to initialize user journey (but don't fail if it doesn't work)
+                // Pass token directly to avoid localStorage timing issues
                 try {
-                  const journeyResponse = await apiService.initializeJourney(registerResponse.data.id)
+                  const journeyResponse = await apiService.initializeJourney(registerResponse.data.id, registerResponse.data.token)
                   console.log('Journey initialization response:', journeyResponse)
                 } catch (journeyError) {
                   console.warn('Journey initialization failed, but continuing with onboarding:', journeyError)
