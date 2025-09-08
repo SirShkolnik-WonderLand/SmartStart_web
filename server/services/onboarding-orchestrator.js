@@ -184,12 +184,19 @@ class OnboardingOrchestrator extends EventEmitter {
       'ACCOUNT_CREATION_COMPLETE': 'Account Creation',
       'PROFILE_COMPLETE': 'Profile Setup',
       'LEGAL_DOCUMENTS_SIGNED': 'Platform Legal Pack',
+      'LEGAL_DOCUMENT_SIGNED': 'Platform Legal Pack',
       'SUBSCRIPTION_ACTIVE': 'Subscription Selection',
-      'DASHBOARD_ACCESSED': 'Welcome & Dashboard'
+      'DASHBOARD_ACCESSED': 'Welcome & Dashboard',
+      'ONBOARDING_COMPLETE': 'Welcome & Dashboard',
+      'AUTO_SAVE': null // Auto-save doesn't map to a specific stage
     }
 
     const stageName = actionStageMap[action]
-    if (!stageName) return
+    if (!stageName) {
+      // Handle actions that don't map to specific stages (like AUTO_SAVE)
+      console.log(`Action ${action} doesn't map to a specific stage, skipping stage update`)
+      return
+    }
 
     const stage = await prisma.journeyStage.findFirst({
       where: { name: stageName }

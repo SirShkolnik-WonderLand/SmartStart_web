@@ -288,11 +288,11 @@ export default function OnboardingFlow({ userId, onComplete }: OnboardingFlowPro
     if (currentStep < steps.length - 1) {
       // Update journey progress for current step
       const stepActions = [
-        'ACCOUNT_CREATED',
-        'PROFILE_COMPLETED', 
-        'LEGAL_PACK_SIGNED',
-        'SUBSCRIPTION_ACTIVATED',
-        'ORIENTATION_COMPLETED'
+        'ACCOUNT_CREATION_COMPLETE',
+        'PROFILE_COMPLETE', 
+        'LEGAL_DOCUMENTS_SIGNED',
+        'SUBSCRIPTION_ACTIVE',
+        'DASHBOARD_ACCESSED'
       ]
       
       if (stepActions[currentStep]) {
