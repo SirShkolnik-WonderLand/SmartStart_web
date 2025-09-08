@@ -104,7 +104,7 @@ class LegalDocumentsApiService {
             const response = await fetch(`${this.baseUrl}/documents`, {
                 method: 'GET',
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Authorization': `Bearer ${localStorage.getItem('auth-token')}`,
                     'Content-Type': 'application/json'
                 }
             });
@@ -126,7 +126,7 @@ class LegalDocumentsApiService {
             const response = await fetch(`${this.baseUrl}/documents/required`, {
                 method: 'GET',
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Authorization': `Bearer ${localStorage.getItem('auth-token')}`,
                     'Content-Type': 'application/json'
                 }
             });
@@ -148,7 +148,7 @@ class LegalDocumentsApiService {
             const response = await fetch(`${this.baseUrl}/documents/pending`, {
                 method: 'GET',
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Authorization': `Bearer ${localStorage.getItem('auth-token')}`,
                     'Content-Type': 'application/json'
                 }
             });
@@ -170,7 +170,7 @@ class LegalDocumentsApiService {
             const response = await fetch(`${this.baseUrl}/documents/${documentId}`, {
                 method: 'GET',
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Authorization': `Bearer ${localStorage.getItem('auth-token')}`,
                     'Content-Type': 'application/json'
                 }
             });
@@ -200,7 +200,7 @@ class LegalDocumentsApiService {
             const response = await fetch(`${this.baseUrl}/documents/${documentId}/sign`, {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Authorization': `Bearer ${localStorage.getItem('auth-token')}`,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(signatureData)
@@ -221,7 +221,7 @@ class LegalDocumentsApiService {
     async getUserDocumentStatus(): Promise<{ success: boolean; data: DocumentStatus }> {
         try {
             // Get user ID from JWT token to ensure consistency
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem('auth-token');
             if (!token) {
                 throw new Error('No authentication token found');
             }
@@ -262,7 +262,7 @@ class LegalDocumentsApiService {
             const response = await fetch(`${this.baseUrl}/documents/verify`, {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Authorization': `Bearer ${localStorage.getItem('auth-token')}`,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ documentId, signatureHash })
@@ -300,7 +300,7 @@ class LegalDocumentsApiService {
             const response = await fetch(`${this.baseUrl}/audit?${params}`, {
                 method: 'GET',
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Authorization': `Bearer ${localStorage.getItem('auth-token')}`,
                     'Content-Type': 'application/json'
                 }
             });
@@ -330,7 +330,7 @@ class LegalDocumentsApiService {
             const response = await fetch(`${this.baseUrl}/compliance/report?${params}`, {
                 method: 'GET',
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Authorization': `Bearer ${localStorage.getItem('auth-token')}`,
                     'Content-Type': 'application/json'
                 }
             });
@@ -352,7 +352,7 @@ class LegalDocumentsApiService {
             const response = await fetch(`${this.baseUrl}/templates`, {
                 method: 'GET',
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Authorization': `Bearer ${localStorage.getItem('auth-token')}`,
                     'Content-Type': 'application/json'
                 }
             });
@@ -382,7 +382,7 @@ class LegalDocumentsApiService {
             const response = await fetch(`${this.baseUrl}/templates/${templateId}/generate`, {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Authorization': `Bearer ${localStorage.getItem('auth-token')}`,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(templateData)
