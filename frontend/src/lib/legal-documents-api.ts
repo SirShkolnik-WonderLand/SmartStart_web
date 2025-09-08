@@ -107,19 +107,31 @@ class LegalDocumentsApiService {
     // Get available documents for user
     async getAvailableDocuments(): Promise<{ success: boolean; data: LegalDocument[] }> {
         try {
+            const token = localStorage.getItem('auth-token');
+            if (!token) {
+                throw new Error('No authentication token found');
+            }
+
             const response = await fetch(`${this.baseUrl}/documents`, {
                 method: 'GET',
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('auth-token')}`,
+                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
-                }
+                },
+                credentials: 'include'
             });
 
             if (!response.ok) {
+                if (response.status === 401) {
+                    localStorage.removeItem('auth-token');
+                    localStorage.removeItem('user');
+                    throw new Error('Authentication failed');
+                }
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            return await response.json();
+            const data = await response.json();
+            return { success: true, data: data.data || [] };
         } catch (error) {
             console.error('Error getting available documents:', error);
             return { success: false, data: [] };
@@ -129,19 +141,31 @@ class LegalDocumentsApiService {
     // Get required documents for current level
     async getRequiredDocuments(): Promise<{ success: boolean; data: LegalDocument[] }> {
         try {
+            const token = localStorage.getItem('auth-token');
+            if (!token) {
+                throw new Error('No authentication token found');
+            }
+
             const response = await fetch(`${this.baseUrl}/documents/required`, {
                 method: 'GET',
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('auth-token')}`,
+                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
-                }
+                },
+                credentials: 'include'
             });
 
             if (!response.ok) {
+                if (response.status === 401) {
+                    localStorage.removeItem('auth-token');
+                    localStorage.removeItem('user');
+                    throw new Error('Authentication failed');
+                }
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            return await response.json();
+            const data = await response.json();
+            return { success: true, data: data.data || [] };
         } catch (error) {
             console.error('Error getting required documents:', error);
             return { success: false, data: [] };
