@@ -1,437 +1,258 @@
-const { PrismaClient } = require('@prisma/client');
 const crypto = require('crypto');
 const fs = require('fs').promises;
 const path = require('path');
 
 class LegalDocumentService {
-    constructor() {
-        this.prisma = new PrismaClient();
-    }
+  constructor() {
+    this.documents = new Map(); // In production, use database
+    this.signatures = new Map(); // In production, use database
+    this.loadLegalDocuments();
+  }
 
-    // Get available documents for user - Global RBAC approach
-    // All users can access all documents based on their role level
-    async getAvailableDocuments(userId) {
-        try {
-            const user = await this.prisma.user.findUnique({
-                where: { id: userId },
-                select: { role: true }
-            });
-
-            if (!user) {
-                throw new Error('User not found');
-            }
-
-            // Global RBAC: All users can see all documents
-            // Document access is controlled by user's role level and document requirements
-
-            const documents = await this.prisma.legalDocument.findMany({
-                where: {
-                    status: {
-                        not: 'TERMINATED'
-                    }
-                },
-                orderBy: [
-                    { type: 'asc' },
-                    { title: 'asc' }
-                ]
-            });
-
-            // Get user's signatures for these documents
-            const signatures = await this.prisma.legalDocumentSignature.findMany({
-                where: { 
-                    signerId: userId,
-                    documentId: {
-                        in: documents.map(doc => doc.id)
-                    }
-                }
-            });
-
-            const signatureMap = new Map();
-            signatures.forEach(sig => {
-                signatureMap.set(sig.documentId, sig);
-            });
-
-            // Add signature information to documents
-            return documents.map(doc => ({
-                ...doc,
-                isSigned: signatureMap.has(doc.id),
-                signedAt: signatureMap.get(doc.id)?.signedAt,
-                signatureHash: signatureMap.get(doc.id)?.signatureHash
-            }));
-        } catch (error) {
-            console.error('Error getting available documents:', error);
-            throw error;
+  /**
+   * Load legal documents from the docs folder
+   */
+  async loadLegalDocuments() {
+    try {
+      const legalDocsPath = path.join(__dirname, '../../docs/08-legal');
+      const corePlatformPath = path.join(legalDocsPath, '01-core-platform');
+      
+      // Load core platform documents
+      const documents = [
+        {
+          id: 'PPA',
+          name: 'Platform Participation Agreement',
+          file: 'platform-participation-agreement.md',
+          required: true,
+          order: 1,
+          description: 'Core platform terms and conditions'
+        },
+        {
+          id: 'ESCA',
+          name: 'Electronic Signature & Consent Agreement',
+          file: 'electronic-signature-consent.md',
+          required: true,
+          order: 2,
+          description: 'Legal recognition of e-signatures'
+        },
+        {
+          id: 'PNA',
+          name: 'Privacy Notice & Acknowledgment',
+          file: 'privacy-notice-acknowledgment.md',
+          required: true,
+          order: 3,
+          description: 'Canadian privacy compliance (PIPEDA/CASL)'
+        },
+        {
+          id: 'MNDA',
+          name: 'Mutual Non-Disclosure Agreement',
+          file: 'mutual-non-disclosure-agreement.md',
+          required: true,
+          order: 4,
+          description: 'Confidentiality and non-exfiltration'
         }
-    }
+      ];
 
-    // Get required documents for current level
-    async getRequiredDocuments(userId) {
+      for (const doc of documents) {
         try {
-            const documents = await this.getAvailableDocuments(userId);
-            return documents.filter(doc => 
-                doc.is_required && 
-                (!doc.userStatus || doc.userStatus.status === 'required')
-            );
+          const filePath = path.join(corePlatformPath, doc.file);
+          const content = await fs.readFile(filePath, 'utf8');
+          
+          this.documents.set(doc.id, {
+            ...doc,
+            content: content,
+            version: '2.0',
+            lastUpdated: new Date().toISOString()
+          });
         } catch (error) {
-            console.error('Error getting required documents:', error);
-            throw error;
+          console.warn(`Could not load legal document ${doc.id}:`, error.message);
         }
+      }
+      
+      console.log(`✅ Loaded ${this.documents.size} legal documents`);
+    } catch (error) {
+      console.error('Error loading legal documents:', error);
     }
+  }
 
-    // Get pending documents for next level
-    async getPendingDocuments(userId) {
-        try {
-            const user = await this.prisma.user.findUnique({
-                where: { id: userId },
-                select: { role: true }
-            });
+  /**
+   * Get all available legal documents
+   */
+  getDocuments() {
+    return Array.from(this.documents.values()).sort((a, b) => a.order - b.order);
+  }
 
-            if (!user) {
-                throw new Error('User not found');
-            }
+  /**
+   * Get a specific legal document
+   */
+  getDocument(documentId) {
+    return this.documents.get(documentId);
+  }
 
-            const currentLevel = this.mapRoleToRbacLevel(user.role);
-            const nextLevel = this.getNextRbacLevel(currentLevel);
+  /**
+   * Generate a signing session
+   */
+  generateSigningSession(userId, documentIds = []) {
+    const sessionId = crypto.randomBytes(32).toString('hex');
+    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+    
+    const session = {
+      sessionId,
+      userId,
+      documentIds: documentIds.length > 0 ? documentIds : ['PPA', 'ESCA', 'PNA', 'MNDA'],
+      status: 'PENDING',
+      signatures: {},
+      createdAt: new Date(),
+      expiresAt
+    };
+    
+    this.signatures.set(sessionId, session);
+    return session;
+  }
 
-            if (!nextLevel) {
-                return [];
-            }
+  /**
+   * Sign a document
+   */
+  signDocument(sessionId, documentId, signatureData) {
+    const session = this.signatures.get(sessionId);
+    
+    if (!session) {
+      return { success: false, error: 'Invalid session' };
+    }
+    
+    if (new Date() > session.expiresAt) {
+      return { success: false, error: 'Session expired' };
+    }
+    
+    if (!session.documentIds.includes(documentId)) {
+      return { success: false, error: 'Document not in session' };
+    }
+    
+    const document = this.documents.get(documentId);
+    if (!document) {
+      return { success: false, error: 'Document not found' };
+    }
+    
+    // Create signature record
+    const signature = {
+      documentId,
+      documentName: document.name,
+      userId: session.userId,
+      signedAt: new Date(),
+      signatureData: {
+        ...signatureData,
+        ipAddress: signatureData.ipAddress || 'unknown',
+        userAgent: signatureData.userAgent || 'unknown'
+      },
+      documentHash: this.generateDocumentHash(document.content),
+      version: document.version
+    };
+    
+    session.signatures[documentId] = signature;
+    
+    // Check if all documents are signed
+    const allSigned = session.documentIds.every(id => session.signatures[id]);
+    if (allSigned) {
+      session.status = 'COMPLETED';
+    }
+    
+    return { success: true, signature, allSigned };
+  }
 
-            const nextLevelDocuments = await this.prisma.legalDocument.findMany({
-                where: {
-                    rbac_level: nextLevel,
-                    is_active: true
-                }
-            });
+  /**
+   * Get signing session status
+   */
+  getSigningSession(sessionId) {
+    return this.signatures.get(sessionId);
+  }
 
-            return nextLevelDocuments;
-        } catch (error) {
-            console.error('Error getting pending documents:', error);
-            throw error;
+  /**
+   * Get user's signed documents
+   */
+  getUserSignatures(userId) {
+    const userSignatures = [];
+    
+    for (const [sessionId, session] of this.signatures.entries()) {
+      if (session.userId === userId) {
+        for (const [documentId, signature] of Object.entries(session.signatures)) {
+          userSignatures.push({
+            sessionId,
+            documentId,
+            documentName: signature.documentName,
+            signedAt: signature.signedAt,
+            version: signature.version
+          });
         }
+      }
     }
+    
+    return userSignatures;
+  }
 
-    // Get specific document
-    async getDocument(documentId) {
-        try {
-            const document = await this.prisma.legalDocument.findUnique({
-                where: { id: documentId }
-            });
+  /**
+   * Check if user has signed all required documents
+   */
+  hasSignedAllRequired(userId) {
+    const userSignatures = this.getUserSignatures(userId);
+    const requiredDocs = ['PPA', 'ESCA', 'PNA', 'MNDA'];
+    
+    return requiredDocs.every(docId => 
+      userSignatures.some(sig => sig.documentId === docId)
+    );
+  }
 
-            if (!document) {
-                throw new Error('Document not found');
-            }
+  /**
+   * Generate document hash for integrity verification
+   */
+  generateDocumentHash(content) {
+    return crypto.createHash('sha256').update(content).digest('hex');
+  }
 
-            return document;
-        } catch (error) {
-            console.error('Error getting document:', error);
-            throw error;
-        }
+  /**
+   * Verify document signature
+   */
+  verifySignature(sessionId, documentId) {
+    const session = this.signatures.get(sessionId);
+    if (!session || !session.signatures[documentId]) {
+      return { valid: false, error: 'Signature not found' };
     }
-
-    // Sign a document
-    async signDocument(userId, documentId, signatureData) {
-        try {
-            const document = await this.prisma.legalDocument.findUnique({
-                where: { id: documentId }
-            });
-
-            if (!document) {
-                throw new Error('Document not found');
-            }
-
-            // Generate document hash
-            const documentContent = document.content || await this.getDocumentContent(document.template_path);
-            const documentHash = this.generateDocumentHash(documentContent);
-
-            // Create signature record
-            const signature = await this.prisma.documentSignature.create({
-                data: {
-                    user_id: userId,
-                    document_id: documentId,
-                    document_version: document.version,
-                    signature_method: signatureData.method || 'click',
-                    signature_data: signatureData,
-                    document_hash: documentHash,
-                    timestamp: new Date(),
-                    ip_address: signatureData.ip_address,
-                    user_agent: signatureData.user_agent,
-                    location_data: signatureData.location,
-                    mfa_verified: signatureData.mfa_verified || false
-                }
-            });
-
-            // Update user document status
-            await this.prisma.userDocumentStatus.upsert({
-                where: {
-                    unique_user_document: {
-                        user_id: userId,
-                        document_id: documentId
-                    }
-                },
-                update: {
-                    status: 'signed',
-                    signed_at: new Date(),
-                    signature_hash: documentHash,
-                    signature_evidence: signatureData
-                },
-                create: {
-                    user_id: userId,
-                    document_id: documentId,
-                    status: 'signed',
-                    signed_at: new Date(),
-                    signature_hash: documentHash,
-                    signature_evidence: signatureData
-                }
-            });
-
-            // Log audit trail
-            await this.logDocumentAction(userId, documentId, 'sign', signatureData);
-
-            return signature;
-        } catch (error) {
-            console.error('Error signing document:', error);
-            throw error;
-        }
+    
+    const signature = session.signatures[documentId];
+    const document = this.documents.get(documentId);
+    
+    if (!document) {
+      return { valid: false, error: 'Document not found' };
     }
-
-    // Get user document status
-    async getUserDocumentStatus(userId) {
-        try {
-            const user = await this.prisma.user.findUnique({
-                where: { id: userId },
-                select: { role: true }
-            });
-
-            if (!user) {
-                throw new Error('User not found');
-            }
-
-            const documents = await this.getAvailableDocuments(userId);
-
-            const summary = {
-                total_documents: documents.length,
-                signed_documents: documents.filter(doc => doc.isSigned).length,
-                required_documents: documents.filter(doc => doc.requiresSignature).length,
-                pending_documents: documents.filter(doc => doc.requiresSignature && !doc.isSigned).length,
-                expired_documents: 0 // Can be calculated based on expiryDate if needed
-            };
-
-            return {
-                user_id: userId,
-                role: user.role,
-                summary: summary,
-                documents: documents.map(doc => ({
-                    document_id: doc.id,
-                    title: doc.title,
-                    type: doc.type,
-                    status: doc.isSigned ? 'signed' : (doc.requiresSignature ? 'pending' : 'not_required'),
-                    signed_at: doc.signedAt,
-                    requires_signature: doc.requiresSignature,
-                    document_version: doc.version,
-                    signature_hash: doc.signatureHash
-                }))
-            };
-        } catch (error) {
-            console.error('Error getting user document status:', error);
-            throw error;
-        }
+    
+    const currentHash = this.generateDocumentHash(document.content);
+    const signatureHash = signature.documentHash;
+    
+    if (currentHash !== signatureHash) {
+      return { valid: false, error: 'Document has been modified since signing' };
     }
+    
+    return { valid: true, signature };
+  }
 
-    // Verify document signature
-    async verifyDocumentSignature(documentId, signatureHash) {
-        try {
-            const signature = await this.prisma.documentSignature.findFirst({
-                where: {
-                    document_id: documentId,
-                    document_hash: signatureHash
-                },
-                orderBy: { timestamp: 'desc' }
-            });
-
-            if (!signature) {
-                return {
-                    is_valid: false,
-                    message: 'Signature not found'
-                };
-            }
-
-            const document = await this.prisma.legalDocument.findUnique({
-                where: { id: documentId }
-            });
-
-            if (!document) {
-                return {
-                    is_valid: false,
-                    message: 'Document not found'
-                };
-            }
-
-            // Verify hash
-            const documentContent = document.content || await this.getDocumentContent(document.template_path);
-            const expectedHash = this.generateDocumentHash(documentContent);
-            const isValid = signature.document_hash === expectedHash;
-
-            return {
-                is_valid: isValid,
-                verified_at: new Date().toISOString(),
-                document_version: signature.document_version,
-                signature_details: {
-                    signed_at: signature.timestamp,
-                    signature_method: signature.signature_method,
-                    mfa_verified: signature.mfa_verified
-                }
-            };
-        } catch (error) {
-            console.error('Error verifying document signature:', error);
-            throw error;
-        }
+  /**
+   * Clean up expired sessions
+   */
+  cleanupExpiredSessions() {
+    const now = new Date();
+    for (const [sessionId, session] of this.signatures.entries()) {
+      if (now > session.expiresAt) {
+        this.signatures.delete(sessionId);
+      }
     }
-
-    // Generate document hash
-    generateDocumentHash(content) {
-        const canonicalized = this.canonicalizeDocument(content);
-        return crypto.createHash('sha256').update(canonicalized).digest('hex');
-    }
-
-    // Canonicalize document for consistent hashing
-    canonicalizeDocument(content) {
-        return content
-            .replace(/\r\n/g, '\n')  // Normalize line endings
-            .replace(/\r/g, '\n')    // Normalize line endings
-            .split('\n')
-            .map(line => line.trimEnd())  // Trim trailing spaces
-            .join('\n')
-            .replace(/\n\s*\n\s*\n/g, '\n\n')  // Collapse multiple blank lines
-            .replace(/[^\x20-\x7E\n]/g, '');   // Remove non-printable characters
-    }
-
-    // Get document content from file
-    async getDocumentContent(templatePath) {
-        try {
-            if (!templatePath) {
-                return '';
-            }
-            return await fs.readFile(templatePath, 'utf8');
-        } catch (error) {
-            console.error('Error reading document template:', error);
-            return '';
-        }
-    }
-
-    // Log document action for audit trail
-    async logDocumentAction(userId, documentId, action, metadata) {
-        try {
-            await this.prisma.documentAuditLog.create({
-                data: {
-                    user_id: userId,
-                    document_id: documentId,
-                    action: action,
-                    timestamp: new Date(),
-                    ip_address: metadata.ip_address,
-                    user_agent: metadata.user_agent,
-                    metadata: metadata
-                }
-            });
-        } catch (error) {
-            console.error('Error logging document action:', error);
-        }
-    }
-
-    // Map role to RBAC level
-    mapRoleToRbacLevel(role) {
-        const roleMap = {
-            'GUEST': 'GUEST',
-            'MEMBER': 'MEMBER',
-            'SUBSCRIBER': 'SUBSCRIBER',
-            'SEAT_HOLDER': 'SEAT_HOLDER',
-            'VENTURE_OWNER': 'VENTURE_OWNER',
-            'VENTURE_PARTICIPANT': 'VENTURE_PARTICIPANT',
-            'CONFIDENTIAL_ACCESS': 'CONFIDENTIAL_ACCESS',
-            'RESTRICTED_ACCESS': 'RESTRICTED_ACCESS',
-            'HIGHLY_RESTRICTED_ACCESS': 'HIGHLY_RESTRICTED_ACCESS',
-            'BILLING_ADMIN': 'BILLING_ADMIN',
-            'SECURITY_ADMIN': 'SECURITY_ADMIN',
-            'LEGAL_ADMIN': 'LEGAL_ADMIN'
-        };
-        return roleMap[role] || 'GUEST';
-    }
-
-    // Get next RBAC level
-    getNextRbacLevel(currentLevel) {
-        const levels = ['GUEST', 'MEMBER', 'SUBSCRIBER', 'SEAT_HOLDER', 'VENTURE_OWNER', 'VENTURE_PARTICIPANT', 'CONFIDENTIAL_ACCESS', 'RESTRICTED_ACCESS', 'HIGHLY_RESTRICTED_ACCESS', 'BILLING_ADMIN', 'SECURITY_ADMIN', 'LEGAL_ADMIN'];
-        const currentIndex = levels.indexOf(currentLevel);
-        return currentIndex < levels.length - 1 ? levels[currentIndex + 1] : null;
-    }
-
-    // Get document audit log
-    async getDocumentAuditLog(userId, documentId, startDate, endDate, page = 1, limit = 50) {
-        try {
-            const where = {
-                user_id: userId
-            };
-
-            if (documentId) {
-                where.document_id = documentId;
-            }
-
-            if (startDate && endDate) {
-                where.timestamp = {
-                    gte: new Date(startDate),
-                    lte: new Date(endDate)
-                };
-            }
-
-            const [logs, total] = await Promise.all([
-                this.prisma.documentAuditLog.findMany({
-                    where,
-                    orderBy: { timestamp: 'desc' },
-                    skip: (page - 1) * limit,
-                    take: limit
-                }),
-                this.prisma.documentAuditLog.count({ where })
-            ]);
-
-            return {
-                logs,
-                pagination: {
-                    page,
-                    limit,
-                    total,
-                    pages: Math.ceil(total / limit)
-                }
-            };
-        } catch (error) {
-            console.error('Error getting document audit log:', error);
-            throw error;
-        }
-    }
-
-    // Generate compliance report
-    async generateComplianceReport(userId, startDate, endDate) {
-        try {
-            const userStatus = await this.getUserDocumentStatus(userId);
-            const auditLogs = await this.getDocumentAuditLog(userId, null, startDate, endDate, 1, 1000);
-
-            return {
-                report_id: `report-${Date.now()}`,
-                user_id: userId,
-                period: {
-                    start_date: startDate,
-                    end_date: endDate
-                },
-                generated_at: new Date().toISOString(),
-                summary: userStatus.summary,
-                details: {
-                    document_signings: auditLogs.logs.filter(log => log.action === 'sign'),
-                    access_logs: auditLogs.logs.filter(log => log.action === 'view')
-                }
-            };
-        } catch (error) {
-            console.error('Error generating compliance report:', error);
-            throw error;
-        }
-    }
+  }
 }
 
-module.exports = LegalDocumentService;
+// Singleton instance
+const legalDocumentService = new LegalDocumentService();
+
+// Clean up expired sessions every hour
+setInterval(() => {
+  legalDocumentService.cleanupExpiredSessions();
+}, 60 * 60 * 1000);
+
+module.exports = legalDocumentService;

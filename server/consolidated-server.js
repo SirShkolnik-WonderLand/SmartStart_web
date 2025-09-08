@@ -230,6 +230,10 @@ app.use('/api/mfa', mfaApiRoutes);
 const emailVerificationApiRoutes = require('./routes/email-verification-api');
 app.use('/api/email-verification', emailVerificationApiRoutes);
 
+// Mount Legal Document Signing APIs
+const legalSigningApiRoutes = require('./routes/legal-signing-api');
+app.use('/api/legal-signing', legalSigningApiRoutes);
+
 // Debug API for troubleshooting
 const debugApiRoutes = require('./routes/debug-api');
 app.use('/api/debug', debugApiRoutes);
