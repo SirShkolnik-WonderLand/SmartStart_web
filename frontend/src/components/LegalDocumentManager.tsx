@@ -10,7 +10,6 @@ import {
   AlertCircle, 
   FileCheck,
   Search,
-  Filter,
   Grid3X3,
   List,
   Plus,
@@ -18,19 +17,10 @@ import {
   BarChart3,
   Shield,
   Users,
-  Briefcase,
-  Target,
   Award,
-  Zap,
-  Star,
-  ChevronRight,
-  Calendar,
-  User,
-  Building,
-  Lock,
-  Unlock
+  Calendar
 } from 'lucide-react'
-import { legalDocumentsApi, LegalDocument, DocumentStatus } from '@/lib/legal-documents-api'
+import { legalDocumentsApiService, LegalDocument, DocumentStatus } from '@/lib/legal-documents-api'
 
 interface LegalDocumentManagerProps {
   className?: string
@@ -53,8 +43,8 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
       try {
         setIsLoading(true)
         const [documentsResponse, statusResponse] = await Promise.all([
-          legalDocumentsApi.getAvailableDocuments(),
-          legalDocumentsApi.getUserDocumentStatus()
+          legalDocumentsApiService.getAvailableDocuments(),
+          legalDocumentsApiService.getUserDocumentStatus()
         ])
 
         if (documentsResponse.success) {
@@ -257,7 +247,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
             {['all', 'required', 'signed', 'pending', 'templates'].map((filterOption) => (
               <button
                 key={filterOption}
-                onClick={() => setFilter(filterOption as any)}
+                onClick={() => setFilter(filterOption as 'all' | 'required' | 'signed' | 'pending' | 'templates')}
                 className={`px-4 py-2 rounded-lg transition-colors ${
                   filter === filterOption
                     ? 'bg-primary text-white'
