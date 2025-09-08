@@ -28,6 +28,16 @@ import {
 } from 'lucide-react'
 import { legalDocumentsApiService, LegalDocument, DocumentStatus } from '@/lib/legal-documents-api'
 
+type EvidenceDetails = {
+  signer?: string
+  signedAt?: string
+  signatureHash?: string
+  ip?: string
+  userAgent?: string
+  mfa?: boolean
+  verified?: boolean
+}
+
 interface LegalDocumentManagerProps {
   className?: string
 }
@@ -46,7 +56,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
   const [isActing, setIsActing] = useState(false)
   const [evidenceDoc, setEvidenceDoc] = useState<LegalDocument | null>(null)
-  const [evidence, setEvidence] = useState<{ signer?: string; signedAt?: string; signatureHash?: string; ip?: string; userAgent?: string; mfa?: boolean; verified?: boolean } | null>(null)
+  const [evidence, setEvidence] = useState<EvidenceDetails | null>(null)
   const [isVerifying, setIsVerifying] = useState(false)
 
   // Load documents and status
@@ -174,7 +184,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
   const openEvidence = async (doc: LegalDocument) => {
     setEvidenceDoc(doc)
     // Prefill with known fields
-    let ev: any = {
+    const ev: EvidenceDetails = {
       signer: (documentStatus?.user_id) || undefined,
       signedAt: doc.signedAt,
       signatureHash: doc.signatureHash,
@@ -323,7 +333,8 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
   }
 
   const goToPipeline = (doc: LegalDocument) => {
-    const meta: any = (doc as any)?.metadata || {}
+    type Meta = { pipeline?: string; relatedPipelines?: string[] }
+    const meta = (doc as unknown as { metadata?: Meta }).metadata ?? {}
     const p: string | undefined = meta.pipeline || (meta.relatedPipelines?.[0])
     const title = (doc.title || '').toLowerCase()
     const inferred = p || (title.includes('billing') || title.includes('subscription') ? 'Billing' : title.includes('venture') || title.includes('project') ? 'Venture Start' : 'Onboarding')
