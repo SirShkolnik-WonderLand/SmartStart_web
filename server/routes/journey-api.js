@@ -174,7 +174,7 @@ router.get('/status/:userId', authenticateToken, async(req, res) => {
                 // Auto-complete Profile Setup if user profile has basic fields
                 try {
                     const user = await prisma.user.findUnique({ where: { id: userId } })
-                    const profileState = userStates.find(s => s.stage ? .name === 'Profile Setup')
+                    const profileState = userStates.find(s => (s.stage && s.stage.name) === 'Profile Setup')
                     if (user && (user.name || user.firstName || user.lastName) && profileState && profileState.status !== 'COMPLETED') {
                         await prisma.userJourneyState.update({
                             where: { id: profileState.id },
@@ -182,7 +182,7 @@ router.get('/status/:userId', authenticateToken, async(req, res) => {
                         })
                     }
                 } catch (e) {
-                    console.warn('Profile auto-complete check failed:', e ? .message)
+                    console.warn('Profile auto-complete check failed:', e && e.message)
                 }
 
                 res.json({
