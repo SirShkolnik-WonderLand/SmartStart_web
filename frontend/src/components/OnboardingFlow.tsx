@@ -230,7 +230,7 @@ export default function OnboardingFlow({ userId, onComplete, initialStep }: Onbo
     } finally {
       setIsLoading(false)
     }
-  }, [userId])
+  }, [userId, initialStep])
 
   useEffect(() => {
     loadInitialData()

@@ -401,7 +401,7 @@ export default function DashboardPage() {
                     </div>
                     {userState.status === 'NOT_STARTED' && (
                       <Link 
-                        href={`/onboarding?step=${getStepForStage(userState.name)}`}
+                        href={`/onboarding?step=${getStepForStage(userState.stage.name)}`}
                         className="text-xs text-purple-600 hover:text-purple-700 transition-colors font-medium"
                       >
                         Start →
