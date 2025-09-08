@@ -44,6 +44,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
   const [showComplianceReport, setShowComplianceReport] = useState(false)
   const [sortField, setSortField] = useState<'title' | 'type' | 'status' | 'updatedAt'>('title')
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
+  const [isActing, setIsActing] = useState(false)
 
   // Load documents and status
   useEffect(() => {
@@ -77,6 +78,52 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
     loadData()
   }, [])
 
+  // Sign a single document
+  const signDocument = async (doc: LegalDocument) => {
+    try {
+      setIsActing(true)
+      // Start a session and sign immediately (simple flow)
+      const session = await legalDocumentsApiService.startSigningSession([doc.id])
+      if (session.success && session.data?.sessionId) {
+        await legalDocumentsApiService.signInSession(session.data.sessionId, doc.id, {
+          method: 'CLICK_SIGN',
+          location: 'documents_page',
+          mfa_verified: false
+        })
+      }
+      // Refresh documents and status
+      const [documentsResponse, statusResponse] = await Promise.all([
+        legalDocumentsApiService.getAvailableDocuments(),
+        legalDocumentsApiService.getUserDocumentStatus()
+      ])
+      if (documentsResponse.success) setDocuments(documentsResponse.data)
+      if (statusResponse.success) setDocumentStatus(statusResponse.data)
+    } catch (err) {
+      console.error('Signing failed:', err)
+      alert('Signing failed. Please try again.')
+    } finally {
+      setIsActing(false)
+    }
+  }
+
+  const downloadDoc = async (doc: LegalDocument) => {
+    try {
+      const blob = await legalDocumentsApiService.downloadDocument(doc.id)
+      if (!blob) return
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `${(doc.title || 'document')}.pdf`
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+      window.URL.revokeObjectURL(url)
+    } catch (e) {
+      console.error('Download failed:', e)
+      alert('Download failed. Please try again.')
+    }
+  }
+
   // Filter and sort documents
   const filteredAndSortedDocuments = documents
     .filter(doc => {
@@ -88,10 +135,14 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
                            type.toLowerCase().includes(searchTerm.toLowerCase())
       
       if (filter === 'all') return matchesSearch
-      if (filter === 'required') return matchesSearch && doc.status === 'required'
-      if (filter === 'signed') return matchesSearch && doc.isSigned
-      if (filter === 'pending') return matchesSearch && doc.status === 'pending'
-      if (filter === 'templates') return matchesSearch && doc.status === 'template'
+      const isRequired = doc.status === 'required' || (doc.requiresSignature === true)
+      const isSigned = !!doc.isSigned || doc.status === 'signed'
+      const isPending = doc.status === 'pending'
+      const isTemplate = doc.status === 'template'
+      if (filter === 'required') return matchesSearch && isRequired
+      if (filter === 'signed') return matchesSearch && isSigned
+      if (filter === 'pending') return matchesSearch && isPending
+      if (filter === 'templates') return matchesSearch && isTemplate
       
       return matchesSearch
     })
@@ -108,8 +159,8 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
           bValue = (b.type || '').toLowerCase()
           break
         case 'status':
-          aValue = a.isSigned ? 'signed' : (a.status || '')
-          bValue = b.isSigned ? 'signed' : (b.status || '')
+          aValue = (a.isSigned || a.status === 'signed') ? 'signed' : (a.status || '')
+          bValue = (b.isSigned || b.status === 'signed') ? 'signed' : (b.status || '')
           break
         case 'updatedAt':
           aValue = new Date(a.lastUpdated || a.updatedAt || 0).getTime()
@@ -509,18 +560,28 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center space-x-2">
-                          <button className="p-2 text-gray-400 hover:text-purple-600 hover:bg-purple-100 rounded-lg transition-all duration-200">
+                          <button
+                            onClick={() => alert('Preview coming soon')}
+                            className="p-2 text-gray-400 hover:text-purple-600 hover:bg-purple-100 rounded-lg transition-all duration-200"
+                          >
                             <Eye className="w-4 h-4" />
                           </button>
-                          <button className="p-2 text-gray-400 hover:text-purple-600 hover:bg-purple-100 rounded-lg transition-all duration-200">
+                          <button
+                            onClick={() => downloadDoc(document)}
+                            className="p-2 text-gray-400 hover:text-purple-600 hover:bg-purple-100 rounded-lg transition-all duration-200"
+                          >
                             <Download className="w-4 h-4" />
                           </button>
                           <button className="p-2 text-gray-400 hover:text-purple-600 hover:bg-purple-100 rounded-lg transition-all duration-200">
                             <Edit className="w-4 h-4" />
                           </button>
                           {document.status === 'required' && !document.isSigned && (
-                            <button className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1 rounded-lg text-sm hover:from-purple-600 hover:to-pink-600 transition-all duration-200">
-                              Sign
+                            <button
+                              disabled={isActing}
+                              onClick={() => signDocument(document)}
+                              className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1 rounded-lg text-sm hover:from-purple-600 hover:to-pink-600 transition-all duration-200 disabled:opacity-50"
+                            >
+                              {isActing ? 'Signing...' : 'Sign'}
                             </button>
                           )}
                         </div>
@@ -588,8 +649,12 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
                     <span>Updated {new Date(document.lastUpdated || document.updatedAt || 0).toLocaleDateString()}</span>
                   </div>
                   {document.status === 'required' && !document.isSigned && (
-                    <button className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-lg text-sm hover:from-purple-600 hover:to-pink-600 transition-all duration-200">
-                      Sign Document
+                    <button
+                      disabled={isActing}
+                      onClick={() => signDocument(document)}
+                      className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-lg text-sm hover:from-purple-600 hover:to-pink-600 transition-all duration-200 disabled:opacity-50"
+                    >
+                      {isActing ? 'Signing...' : 'Sign Document'}
                     </button>
                   )}
                 </div>
