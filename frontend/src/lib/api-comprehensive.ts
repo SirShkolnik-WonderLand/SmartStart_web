@@ -1122,30 +1122,6 @@ class ComprehensiveApiService {
     }
   }
 
-  async getSubscriptionStatus(userId: string): Promise<ApiResponse<{
-    active: boolean
-    planName?: string
-    status?: string
-    expiresAt?: string
-  }>> {
-    try {
-      const response = await this.fetchWithAuth<{
-        active: boolean
-        planName?: string
-        status?: string
-        expiresAt?: string
-      }>(`/api/subscriptions/status/${userId}`)
-      
-      return {
-        success: response.success,
-        data: response.data,
-        error: response.error
-      }
-    } catch (error) {
-      console.error('Error fetching subscription status:', error)
-      return { success: false, error: 'Failed to fetch subscription status' }
-    }
-  }
 
   // ============================================================================
   // ROLES & OFFERS

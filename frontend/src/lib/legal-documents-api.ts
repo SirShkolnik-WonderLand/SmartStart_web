@@ -220,7 +220,13 @@ class LegalDocumentsApiService {
     // Get user document status
     async getUserDocumentStatus(): Promise<{ success: boolean; data: DocumentStatus }> {
         try {
-            const response = await fetch(`${this.baseUrl}/status`, {
+            // Get user ID from localStorage or JWT token
+            const userId = localStorage.getItem('user-id');
+            if (!userId) {
+                throw new Error('User ID not found');
+            }
+
+            const response = await fetch(`${this.baseUrl}/status/${userId}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,

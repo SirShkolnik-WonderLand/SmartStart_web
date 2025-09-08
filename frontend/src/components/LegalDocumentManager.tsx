@@ -75,8 +75,12 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
   // Filter and sort documents
   const filteredAndSortedDocuments = documents
     .filter(doc => {
-      const matchesSearch = doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           doc.type.toLowerCase().includes(searchTerm.toLowerCase())
+      // Add null checks to prevent undefined errors
+      const title = doc.title || ''
+      const type = doc.type || ''
+      
+      const matchesSearch = title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           type.toLowerCase().includes(searchTerm.toLowerCase())
       
       if (filter === 'all') return matchesSearch
       if (filter === 'required') return matchesSearch && doc.status === 'required'
@@ -91,20 +95,20 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
       
       switch (sortField) {
         case 'title':
-          aValue = a.title.toLowerCase()
-          bValue = b.title.toLowerCase()
+          aValue = (a.title || '').toLowerCase()
+          bValue = (b.title || '').toLowerCase()
           break
         case 'type':
-          aValue = a.type.toLowerCase()
-          bValue = b.type.toLowerCase()
+          aValue = (a.type || '').toLowerCase()
+          bValue = (b.type || '').toLowerCase()
           break
         case 'status':
-          aValue = a.isSigned ? 'signed' : a.status
-          bValue = b.isSigned ? 'signed' : b.status
+          aValue = a.isSigned ? 'signed' : (a.status || '')
+          bValue = b.isSigned ? 'signed' : (b.status || '')
           break
         case 'updatedAt':
-          aValue = new Date(a.updatedAt).getTime()
-          bValue = new Date(b.updatedAt).getTime()
+          aValue = new Date(a.updatedAt || 0).getTime()
+          bValue = new Date(b.updatedAt || 0).getTime()
           break
         default:
           return 0
