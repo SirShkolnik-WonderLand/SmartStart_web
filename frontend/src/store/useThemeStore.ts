@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { Theme, themes, defaultTheme, applyTheme } from '@/lib/theme'
+import { Theme, themes, defaultTheme, applyTheme, toggleTheme } from '@/lib/theme'
 
 interface ThemeState {
   theme: Theme
@@ -21,8 +21,7 @@ export const useThemeStore = create<ThemeState>()(
       
       toggleTheme: () => {
         const currentTheme = get().theme
-        const newTheme = currentTheme === 'light' ? 'midnight' : 'light'
-        applyTheme(newTheme)
+        const newTheme = toggleTheme(currentTheme)
         set({ theme: newTheme })
       },
       

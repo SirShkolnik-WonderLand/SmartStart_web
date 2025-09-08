@@ -77,6 +77,102 @@
     --border-light: rgba(255, 255, 255, 0.05);
 }
 
+/* Ocean Depths Theme */
+
+[data-theme="ocean"] {
+    --background: 12 24 33;
+    /* #0C1821 */
+    --foreground: 226 232 240;
+    /* #E2E8F0 */
+    --foreground-body: 203 213 225;
+    /* #CBD5E1 */
+    --foreground-muted: 148 163 184;
+    /* #94A3B8 */
+    /* Glass Surfaces */
+    --glass-surface: rgba(30, 41, 59, 0.72);
+    --glass-border: rgba(14, 165, 233, 0.15);
+    --glass-highlight: rgba(14, 165, 233, 0.08);
+    --glass-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+    --glass-shadow-lg: 0 18px 48px rgba(0, 0, 0, 0.45);
+    /* Wonderland Brand Colors */
+    --primary: 14 165 233;
+    /* #0EA5E9 */
+    --accent: 16 185 129;
+    /* #10B981 */
+    --highlight: 245 158 11;
+    /* #F59E0B */
+    /* Interactive States */
+    --hover: rgba(14, 165, 233, 0.05);
+    --active: rgba(14, 165, 233, 0.1);
+    /* Borders & Dividers */
+    --border: rgba(14, 165, 233, 0.1);
+    --border-light: rgba(14, 165, 233, 0.05);
+}
+
+/* Enchanted Forest Theme */
+
+[data-theme="forest"] {
+    --background: 15 20 25;
+    /* #0F1419 */
+    --foreground: 243 244 246;
+    /* #F3F4F6 */
+    --foreground-body: 209 213 225;
+    /* #D1D5E1 */
+    --foreground-muted: 156 163 175;
+    /* #9CA3AF */
+    /* Glass Surfaces */
+    --glass-surface: rgba(31, 41, 55, 0.72);
+    --glass-border: rgba(5, 150, 105, 0.15);
+    --glass-highlight: rgba(5, 150, 105, 0.08);
+    --glass-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+    --glass-shadow-lg: 0 18px 48px rgba(0, 0, 0, 0.45);
+    /* Wonderland Brand Colors */
+    --primary: 5 150 105;
+    /* #059669 */
+    --accent: 217 119 6;
+    /* #D97706 */
+    --highlight: 245 158 11;
+    /* #F59E0B */
+    /* Interactive States */
+    --hover: rgba(5, 150, 105, 0.05);
+    --active: rgba(5, 150, 105, 0.1);
+    /* Borders & Dividers */
+    --border: rgba(5, 150, 105, 0.1);
+    --border-light: rgba(5, 150, 105, 0.05);
+}
+
+/* Golden Sunset Theme */
+
+[data-theme="sunset"] {
+    --background: 28 25 23;
+    /* #1C1917 */
+    --foreground: 254 243 199;
+    /* #FEF3C7 */
+    --foreground-body: 251 191 36;
+    /* #FBBF24 */
+    --foreground-muted: 167 139 250;
+    /* #A78BFA */
+    /* Glass Surfaces */
+    --glass-surface: rgba(41, 37, 36, 0.72);
+    --glass-border: rgba(234, 88, 12, 0.15);
+    --glass-highlight: rgba(234, 88, 12, 0.08);
+    --glass-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+    --glass-shadow-lg: 0 18px 48px rgba(0, 0, 0, 0.45);
+    /* Wonderland Brand Colors */
+    --primary: 234 88 12;
+    /* #EA580C */
+    --accent: 236 72 153;
+    /* #EC4899 */
+    --highlight: 245 158 11;
+    /* #F59E0B */
+    /* Interactive States */
+    --hover: rgba(234, 88, 12, 0.05);
+    --active: rgba(234, 88, 12, 0.1);
+    /* Borders & Dividers */
+    --border: rgba(234, 88, 12, 0.1);
+    --border-light: rgba(234, 88, 12, 0.05);
+}
+
 
 /* Base Styles */
 
@@ -96,9 +192,21 @@ body {
     position: relative;
 }
 
-/* Midnight theme background */
+/* Theme-specific backgrounds */
 [data-theme="midnight"] .wonderland-bg {
     background: linear-gradient(135deg, rgb(var(--background)) 0%, rgba(18, 23, 54, 0.8) 25%, rgba(58, 123, 222, 0.05) 50%, rgba(222, 110, 166, 0.05) 75%, rgb(var(--background)) 100%);
+}
+
+[data-theme="ocean"] .wonderland-bg {
+    background: linear-gradient(135deg, rgb(var(--background)) 0%, rgba(30, 41, 59, 0.8) 25%, rgba(14, 165, 233, 0.05) 50%, rgba(16, 185, 129, 0.05) 75%, rgb(var(--background)) 100%);
+}
+
+[data-theme="forest"] .wonderland-bg {
+    background: linear-gradient(135deg, rgb(var(--background)) 0%, rgba(31, 41, 55, 0.8) 25%, rgba(5, 150, 105, 0.05) 50%, rgba(217, 119, 6, 0.05) 75%, rgb(var(--background)) 100%);
+}
+
+[data-theme="sunset"] .wonderland-bg {
+    background: linear-gradient(135deg, rgb(var(--background)) 0%, rgba(41, 37, 36, 0.8) 25%, rgba(234, 88, 12, 0.05) 50%, rgba(236, 72, 153, 0.05) 75%, rgb(var(--background)) 100%);
 }
 
 .wonderland-bg::before {

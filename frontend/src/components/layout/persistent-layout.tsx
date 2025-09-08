@@ -150,12 +150,12 @@ export default function PersistentLayout({ children }: PersistentLayoutProps) {
               <button 
                 onClick={toggleTheme}
                 className="p-2 hover:bg-glass-surface rounded-lg transition-colors"
-                title={`Switch to ${theme === 'light' ? 'dark' : 'light'} theme`}
+                title={`Current: ${theme} - Click to cycle themes`}
               >
                 {theme === 'light' ? (
-                  <Moon className="w-5 h-5 text-foreground-muted" />
-                ) : (
                   <Sun className="w-5 h-5 text-foreground-muted" />
+                ) : (
+                  <Moon className="w-5 h-5 text-foreground-muted" />
                 )}
               </button>
               

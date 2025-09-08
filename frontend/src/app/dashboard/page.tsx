@@ -190,53 +190,92 @@ export default function DashboardPage() {
   useEffect(() => {
     const loadDashboardData = async () => {
       try {
-        // Load user data
+        // Set a timeout to prevent infinite loading
+        const timeoutId = setTimeout(() => {
+          console.warn('Dashboard loading timeout - showing with default data')
+          setIsLoading(false)
+        }, 10000) // 10 second timeout
+
+        // Load user data first (most important)
         const userResponse = await apiService.getCurrentUser()
         if (userResponse.success && userResponse.data) {
           setUser(userResponse.data)
         }
 
-        // Load analytics data
-        const analyticsResponse = await apiService.getAnalytics()
-        if (analyticsResponse.success && analyticsResponse.data) {
-          setAnalytics(analyticsResponse.data)
+        // Load other data in parallel with timeout protection
+        const dataPromises = [
+          apiService.getAnalytics().catch(err => {
+            console.warn('Analytics failed:', err)
+            return { success: false, data: null }
+          }),
+          apiService.getVentures().catch(err => {
+            console.warn('Ventures failed:', err)
+            return { success: false, data: [] }
+          }),
+          apiService.getOffers().catch(err => {
+            console.warn('Offers failed:', err)
+            return { success: false, data: [] }
+          })
+        ]
+
+        // Wait for all data with timeout
+        const [analyticsResponse, venturesResponse, offersResponse] = await Promise.allSettled(
+          dataPromises.map(promise => Promise.race([
+            promise,
+            new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000))
+          ]))
+        )
+
+        // Process results
+        if (analyticsResponse.status === 'fulfilled' && analyticsResponse.value && (analyticsResponse.value as any).success) {
+          setAnalytics((analyticsResponse.value as any).data)
+        }
+        if (venturesResponse.status === 'fulfilled' && venturesResponse.value && (venturesResponse.value as any).success) {
+          setVentures((venturesResponse.value as any).data)
+        }
+        if (offersResponse.status === 'fulfilled' && offersResponse.value && (offersResponse.value as any).success) {
+          setOffers((offersResponse.value as any).data)
         }
 
-        // Load ventures data
-        const venturesResponse = await apiService.getVentures()
-        if (venturesResponse.success && venturesResponse.data) {
-          setVentures(venturesResponse.data)
-        }
-
-        // Load offers data
-        const offersResponse = await apiService.getOffers()
-        if (offersResponse.success && offersResponse.data) {
-          setOffers(offersResponse.data)
-        }
-
-        // Load journey progress data if user is available
+        // Load user-specific data if user is available
         if (userResponse.success && userResponse.data) {
           const userId = userResponse.data.id
           
-          // Load journey status
-          const journeyResponse = await apiService.getJourneyStatus(userId)
-          if (journeyResponse.success && journeyResponse.data) {
-            setJourneyStatus(journeyResponse.data)
-          }
+          // Load additional user data in parallel
+          const userDataPromises = [
+            apiService.getJourneyStatus(userId).catch(err => {
+              console.warn('Journey status failed:', err)
+              return { success: false, data: null }
+            }),
+            apiService.getLegalPackStatus(userId).catch(err => {
+              console.warn('Legal pack status failed:', err)
+              return { success: false, data: null }
+            }),
+            apiService.getSubscriptionStatus(userId).catch(err => {
+              console.warn('Subscription status failed:', err)
+              return { success: false, data: null }
+            })
+          ]
 
-          // Load legal pack status
-          const legalPackResponse = await apiService.getLegalPackStatus(userId)
-          if (legalPackResponse.success && legalPackResponse.data) {
-            setLegalPackStatus(legalPackResponse.data)
-          }
+          const [journeyResponse, legalPackResponse, subscriptionResponse] = await Promise.allSettled(
+            userDataPromises.map(promise => Promise.race([
+              promise,
+              new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 3000))
+            ]))
+          )
 
-          // Load subscription status
-          const subscriptionResponse = await apiService.getSubscriptionStatus(userId)
-          if (subscriptionResponse.success && subscriptionResponse.data) {
-            setSubscriptionStatus(subscriptionResponse.data)
+          if (journeyResponse.status === 'fulfilled' && journeyResponse.value && (journeyResponse.value as any).success) {
+            setJourneyStatus((journeyResponse.value as any).data)
+          }
+          if (legalPackResponse.status === 'fulfilled' && legalPackResponse.value && (legalPackResponse.value as any).success) {
+            setLegalPackStatus((legalPackResponse.value as any).data)
+          }
+          if (subscriptionResponse.status === 'fulfilled' && subscriptionResponse.value && (subscriptionResponse.value as any).success) {
+            setSubscriptionStatus((subscriptionResponse.value as any).data)
           }
         }
 
+        clearTimeout(timeoutId)
       } catch (error) {
         console.error('Error loading dashboard data:', error)
       } finally {
