@@ -6,6 +6,26 @@ const { authenticateToken } = require('../middleware/auth');
 const router = express.Router();
 const prisma = new PrismaClient();
 
+// Health check endpoint
+router.get('/health', async (req, res) => {
+  try {
+    await prisma.$queryRaw `SELECT 1`;
+    res.json({
+      status: 'healthy',
+      service: 'legal-signing-api',
+      timestamp: new Date().toISOString(),
+      database: 'connected'
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'unhealthy',
+      service: 'legal-signing-api',
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
 /**
  * Get all available legal documents
  */
