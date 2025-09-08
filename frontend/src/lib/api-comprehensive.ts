@@ -1225,8 +1225,8 @@ class ComprehensiveApiService {
 
   async getOnboardingRecommendations(userId: string): Promise<ApiResponse<OnboardingRecommendations>> {
     try {
-      const response = await this.fetchWithAuth<{ data: OnboardingRecommendations }>(`/api/journey/recommendations/${userId}`)
-      return { success: true, data: response.data?.data || undefined }
+      const response = await this.fetchWithAuth<OnboardingRecommendations>(`/api/journey/recommendations/${userId}`)
+      return { success: true, data: response.data }
     } catch (error) {
       console.error('Error fetching onboarding recommendations:', error)
       return { success: false, data: undefined, error: 'Failed to fetch onboarding recommendations' }
@@ -1249,8 +1249,8 @@ class ComprehensiveApiService {
 
   async getUserSubscriptions(userId: string): Promise<ApiResponse<UserSubscription[]>> {
     try {
-      const response = await this.fetchWithAuth<{ data: UserSubscription[] }>(`/api/subscriptions/user/${userId}`)
-      return { success: true, data: response.data?.data || [] }
+      const response = await this.fetchWithAuth<UserSubscription[]>(`/api/subscriptions/user/${userId}`)
+      return { success: true, data: response.data }
     } catch (error) {
       console.error('Error fetching user subscriptions:', error)
       return { success: false, data: [], error: 'Failed to fetch user subscriptions' }
@@ -1259,11 +1259,11 @@ class ComprehensiveApiService {
 
   async createSubscription(planId: string, paymentMethod: string, paymentData: Record<string, unknown> = {}): Promise<ApiResponse<SubscriptionCreation>> {
     try {
-      const response = await this.fetchWithAuth<{ data: SubscriptionCreation }>('/api/subscriptions/subscribe', {
+      const response = await this.fetchWithAuth<SubscriptionCreation>('/api/subscriptions/subscribe', {
         method: 'POST',
         body: JSON.stringify({ planId, paymentMethod, paymentData })
       })
-      return { success: true, data: response.data?.data || undefined }
+      return { success: true, data: response.data }
     } catch (error) {
       console.error('Error creating subscription:', error)
       return { success: false, data: undefined, error: 'Failed to create subscription' }
@@ -1272,10 +1272,10 @@ class ComprehensiveApiService {
 
   async cancelSubscription(subscriptionId: string): Promise<ApiResponse<SubscriptionCancellation>> {
     try {
-      const response = await this.fetchWithAuth<{ data: SubscriptionCancellation }>(`/api/subscriptions/cancel/${subscriptionId}`, {
+      const response = await this.fetchWithAuth<SubscriptionCancellation>(`/api/subscriptions/cancel/${subscriptionId}`, {
         method: 'POST'
       })
-      return { success: true, data: response.data?.data || undefined }
+      return { success: true, data: response.data }
     } catch (error) {
       console.error('Error cancelling subscription:', error)
       return { success: false, data: undefined, error: 'Failed to cancel subscription' }
@@ -1288,9 +1288,8 @@ class ComprehensiveApiService {
 
   async getLegalPacks(): Promise<ApiResponse<LegalPack[]>> {
     try {
-      const response = await this.fetchWithAuth<{ data: LegalPack[] }>('/api/legal-pack')
-      // The API returns { success: true, data: [...] } so we need to access response.data.data
-      return { success: true, data: response.data?.data || [] as LegalPack[] }
+      const response = await this.fetchWithAuth<LegalPack[]>('/api/legal-pack')
+      return { success: true, data: response.data }
     } catch (error) {
       console.error('Error fetching legal packs:', error)
       return { success: false, data: [] as LegalPack[], error: 'Failed to fetch legal packs' }
