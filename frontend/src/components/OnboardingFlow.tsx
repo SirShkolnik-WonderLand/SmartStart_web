@@ -324,10 +324,10 @@ export default function OnboardingFlow({ userId, onComplete, initialStep }: Onbo
       if (currentStep < steps.length - 1) {
         // Update journey progress for current step
         const stepActions = [
-          'PROFILE_COMPLETE', 
-          'LEGAL_DOCUMENTS_SIGNED',
-          'SUBSCRIPTION_ACTIVE',
-          'DASHBOARD_ACCESSED'
+          'PROFILE_COMPLETED',
+          'LEGAL_PACK_SIGNED',
+          'SUBSCRIPTION_ACTIVATED',
+          'ORIENTATION_COMPLETED'
         ]
         
         if (stepActions[currentStep]) {
@@ -1007,7 +1007,7 @@ export default function OnboardingFlow({ userId, onComplete, initialStep }: Onbo
 
       {/* Legal Agreement Popup Modal */}
       {showLegalPopup.isOpen && showLegalPopup.type && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/85 flex items-center justify-center z-50 p-4">
           <div className="glass-lg rounded-2xl p-8 max-w-4xl max-h-[80vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-2xl font-bold text-foreground">
