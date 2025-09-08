@@ -978,6 +978,36 @@ router.post('/progress/:userId', authenticateToken, async(req, res) => {
             });
         }
 
+        // Complete the entire Platform Legal Pack stage explicitly
+        if (action === 'LEGAL_PACK_SIGNED') {
+            // Mark Platform Legal Pack stage as COMPLETED
+            const stage = await prisma.journeyStage.findFirst({ where: { name: 'Platform Legal Pack' } });
+            if (stage) {
+                await prisma.userJourneyState.upsert({
+                    where: { userId_stageId: { userId, stageId: stage.id } },
+                    update: {
+                        status: 'COMPLETED',
+                        completedAt: new Date(),
+                        metadata: { ...(data || {}), completedAt: new Date().toISOString(), action }
+                    },
+                    create: {
+                        userId,
+                        stageId: stage.id,
+                        status: 'COMPLETED',
+                        completedAt: new Date(),
+                        metadata: { ...(data || {}), completedAt: new Date().toISOString(), action }
+                    }
+                });
+            }
+
+            return res.json({
+                success: true,
+                message: 'Platform Legal Pack completed successfully',
+                action,
+                timestamp: new Date().toISOString()
+            });
+        }
+
         // Handle step completion actions (including trial activation)
         if (action === 'PROFILE_COMPLETED' || action === 'LEGAL_PACK_SIGNED' || action === 'SUBSCRIPTION_ACTIVATED' || action === 'ORIENTATION_COMPLETED') {
             // Mark the corresponding journey stage as completed
