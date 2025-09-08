@@ -53,7 +53,7 @@ The SmartStart Platform frontend is built with Next.js 14 and implements a **com
 
 #### 6. API Service Layer
 - **Comprehensive API Service**: `lib/api-comprehensive.ts` - Complete API communication
-- **Legal Documents API**: `lib/legal-documents-api.ts` - Legal document management
+- **Legal Documents API**: `lib/legal-documents-api.ts` - Legal document management (split between signing and documents endpoints)
 - **Type Definitions**: TypeScript interfaces for all data models
 - **Error Handling**: Graceful fallbacks and error management
 - **Authentication**: JWT token management with fetchWithAuth
@@ -254,7 +254,7 @@ text-gray-500                 /* Muted text */
 
 ### **🔧 API SERVICES IMPLEMENTED**
 - **Comprehensive API**: `lib/api-comprehensive.ts` - Working with 150+ endpoints
-- **Legal Documents API**: `lib/legal-documents-api.ts` - Working with authentication fixes
+- **Legal Documents API**: `lib/legal-documents-api.ts` - Working with split endpoints (signing vs documents)
 - **Legal Framework**: `lib/legal-framework.ts` - Working with legal framework
 - **API Service**: `lib/api.ts` - Working with basic API functions
 

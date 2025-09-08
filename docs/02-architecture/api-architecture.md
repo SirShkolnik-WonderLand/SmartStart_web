@@ -97,14 +97,37 @@ GET    /api/gamification/reputation/:userId # User reputation
 
 #### **Legal & Contracts**
 ```
+# Contract Management
 GET    /api/contracts/                      # List contracts (WORKING)
 POST   /api/contracts/create                # Create contract
 GET    /api/contracts/:id                   # Get contract
 POST   /api/contracts/:id/sign              # Sign contract
 PATCH  /api/contracts/:id                   # Update contract status (WORKING)
-GET    /api/legal-pack/templates            # Legal templates
-POST   /api/legal-pack/sign                 # Sign legal pack
-GET    /api/legal-signing/documents         # Legal documents (WORKING)
+
+# Legal Document Signing (Session-based)
+GET    /api/legal-signing/health            # Health check (WORKING)
+GET    /api/legal-signing/documents         # Available documents (WORKING)
+GET    /api/legal-signing/documents/:id     # Get document content (WORKING)
+POST   /api/legal-signing/session/start     # Start signing session (WORKING)
+POST   /api/legal-signing/session/:id/sign  # Sign in session (WORKING)
+GET    /api/legal-signing/session/:id       # Session status (WORKING)
+GET    /api/legal-signing/user/signatures   # User signatures (WORKING)
+GET    /api/legal-signing/user/compliance   # User compliance (WORKING)
+POST   /api/legal-signing/verify            # Verify signature (WORKING)
+GET    /api/legal-signing/status/:userId    # User status (WORKING)
+
+# Legal Document Management (CRUD & Audit)
+GET    /api/legal-documents/documents       # List documents (WORKING)
+GET    /api/legal-documents/documents/:id   # Get document (WORKING)
+GET    /api/legal-documents/documents/required # Required documents (WORKING)
+GET    /api/legal-documents/documents/pending  # Pending documents (WORKING)
+POST   /api/legal-documents/documents/:id/sign # Sign document (WORKING)
+POST   /api/legal-documents/documents/verify   # Verify signature (WORKING)
+GET    /api/legal-documents/audit           # Audit trail (WORKING)
+GET    /api/legal-documents/compliance/report # Compliance report (WORKING)
+GET    /api/legal-documents/templates       # Document templates (WORKING)
+POST   /api/legal-documents/templates/:id/generate # Generate from template (WORKING)
+GET    /api/legal-documents/documents/:id/download # Download document (WORKING)
 ```
 
 #### **RBAC & Roles**
@@ -438,7 +461,8 @@ const errorHandler = (err, req, res, next) => {
 - **Company Management**: `/api/companies/*` - All endpoints working
 - **Team Management**: `/api/teams/*` - All endpoints working
 - **Journey System**: `/api/journey/*` - All endpoints working
-- **Legal Documents**: `/api/legal-signing/*` - Working
+- **Legal Document Signing**: `/api/legal-signing/*` - Working
+- **Legal Document Management**: `/api/legal-documents/*` - Working
 - **Contracts**: `/api/contracts/*` - Working
 - **RBAC**: `/api/rbac/*` - Working
 - **Meetings**: `/api/meetings/*` - Working
@@ -491,7 +515,7 @@ const errorHandler = (err, req, res, next) => {
 1. **Account Creation** → `/api/auth/register` ✅
 2. **Profile Setup** → `/api/user-profile/profile/*` ✅
 3. **Platform Legal Pack** → `/api/legal-signing/*` ✅
-4. **Legal Documents** → `/api/legal-signing/*` ✅
+4. **Legal Documents** → `/api/legal-documents/*` ✅
 5. **Subscription Selection** → `/api/subscriptions/*` ✅
 6. **Platform Orientation** → `/api/journey/recommendations/*` ✅
 7. **First Venture** → `/api/ventures/*` ✅
