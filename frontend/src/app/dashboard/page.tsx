@@ -23,6 +23,21 @@ import {
 import { comprehensiveApiService as apiService, User, AnalyticsData, Venture, Offer } from '@/lib/api-comprehensive'
 import Link from 'next/link'
 
+// Utility function to extract user ID from JWT token
+const getUserIdFromToken = (): string | null => {
+  try {
+    const token = localStorage.getItem('auth-token')
+    if (!token) return null
+    
+    const payload = token.split('.')[1]
+    const decoded = JSON.parse(atob(payload))
+    return decoded.userId || null
+  } catch (error) {
+    console.error('Error decoding JWT token:', error)
+    return null
+  }
+}
+
 export default function DashboardPage() {
   const [user, setUser] = useState<User | null>(null)
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null)
@@ -228,8 +243,10 @@ export default function DashboardPage() {
         }
 
         // Load user-specific data if user is available
+        // Use user ID from JWT token to ensure consistency, fallback to user response
+        const userIdFromToken = getUserIdFromToken()
         if (userResponse.success && userResponse.data) {
-          const userId = userResponse.data.id
+          const userId = userIdFromToken || userResponse.data.id
           
           // Load additional user data in parallel
           const userDataPromises = [
