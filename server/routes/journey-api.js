@@ -988,14 +988,14 @@ router.post('/progress/:userId', authenticateToken, async(req, res) => {
                     update: {
                         status: 'COMPLETED',
                         completedAt: new Date(),
-                        metadata: { ...(data || {}), completedAt: new Date().toISOString(), action }
+                        metadata: {...(data || {}), completedAt: new Date().toISOString(), action }
                     },
                     create: {
                         userId,
                         stageId: stage.id,
                         status: 'COMPLETED',
                         completedAt: new Date(),
-                        metadata: { ...(data || {}), completedAt: new Date().toISOString(), action }
+                        metadata: {...(data || {}), completedAt: new Date().toISOString(), action }
                     }
                 });
             }
