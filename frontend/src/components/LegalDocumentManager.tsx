@@ -20,12 +20,9 @@ import {
   Award,
   Calendar,
   TrendingUp,
-  ChevronRight,
-  ExternalLink,
   Edit,
   Trash2,
   Share2,
-  Filter,
   SortAsc,
   SortDesc
 } from 'lucide-react'

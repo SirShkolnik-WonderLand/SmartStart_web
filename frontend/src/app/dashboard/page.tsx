@@ -4,11 +4,8 @@ import { useEffect, useState } from 'react'
 import { 
   Users, 
   Clock, 
-  Zap, 
   TrendingUp, 
   CheckCircle, 
-  AlertCircle,
-  Plus,
   Briefcase,
   Target,
   FileText,
@@ -20,14 +17,7 @@ import {
   Rocket,
   Trophy,
   Heart,
-  Coffee,
-  Gamepad2,
-  Music,
-  Palette,
-  Camera,
-  BookOpen,
   Lightbulb,
-  Gift,
   PartyPopper
 } from 'lucide-react'
 import { comprehensiveApiService as apiService, User, AnalyticsData, Venture, Offer } from '@/lib/api-comprehensive'
@@ -227,14 +217,14 @@ export default function DashboardPage() {
         )
 
         // Process results
-        if (analyticsResponse.status === 'fulfilled' && analyticsResponse.value && (analyticsResponse.value as any).success) {
-          setAnalytics((analyticsResponse.value as any).data)
+        if (analyticsResponse.status === 'fulfilled' && analyticsResponse.value && (analyticsResponse.value as { success: boolean }).success) {
+          setAnalytics((analyticsResponse.value as { success: boolean; data: AnalyticsData }).data)
         }
-        if (venturesResponse.status === 'fulfilled' && venturesResponse.value && (venturesResponse.value as any).success) {
-          setVentures((venturesResponse.value as any).data)
+        if (venturesResponse.status === 'fulfilled' && venturesResponse.value && (venturesResponse.value as { success: boolean }).success) {
+          setVentures((venturesResponse.value as { success: boolean; data: Venture[] }).data)
         }
-        if (offersResponse.status === 'fulfilled' && offersResponse.value && (offersResponse.value as any).success) {
-          setOffers((offersResponse.value as any).data)
+        if (offersResponse.status === 'fulfilled' && offersResponse.value && (offersResponse.value as { success: boolean }).success) {
+          setOffers((offersResponse.value as { success: boolean; data: Offer[] }).data)
         }
 
         // Load user-specific data if user is available
@@ -264,14 +254,14 @@ export default function DashboardPage() {
             ]))
           )
 
-          if (journeyResponse.status === 'fulfilled' && journeyResponse.value && (journeyResponse.value as any).success) {
-            setJourneyStatus((journeyResponse.value as any).data)
+          if (journeyResponse.status === 'fulfilled' && journeyResponse.value && (journeyResponse.value as { success: boolean }).success) {
+            setJourneyStatus((journeyResponse.value as { success: boolean; data: typeof journeyStatus }).data)
           }
-          if (legalPackResponse.status === 'fulfilled' && legalPackResponse.value && (legalPackResponse.value as any).success) {
-            setLegalPackStatus((legalPackResponse.value as any).data)
+          if (legalPackResponse.status === 'fulfilled' && legalPackResponse.value && (legalPackResponse.value as { success: boolean }).success) {
+            setLegalPackStatus((legalPackResponse.value as { success: boolean; data: typeof legalPackStatus }).data)
           }
-          if (subscriptionResponse.status === 'fulfilled' && subscriptionResponse.value && (subscriptionResponse.value as any).success) {
-            setSubscriptionStatus((subscriptionResponse.value as any).data)
+          if (subscriptionResponse.status === 'fulfilled' && subscriptionResponse.value && (subscriptionResponse.value as { success: boolean }).success) {
+            setSubscriptionStatus((subscriptionResponse.value as { success: boolean; data: typeof subscriptionStatus }).data)
           }
         }
 
