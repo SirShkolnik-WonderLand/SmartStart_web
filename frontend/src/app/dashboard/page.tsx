@@ -15,7 +15,20 @@ import {
   Star,
   Award,
   ChevronRight,
-  Bell
+  Bell,
+  Sparkles,
+  Rocket,
+  Trophy,
+  Heart,
+  Coffee,
+  Gamepad2,
+  Music,
+  Palette,
+  Camera,
+  BookOpen,
+  Lightbulb,
+  Gift,
+  PartyPopper
 } from 'lucide-react'
 import { comprehensiveApiService as apiService, User, AnalyticsData, Venture, Offer } from '@/lib/api-comprehensive'
 import Link from 'next/link'
@@ -60,7 +73,119 @@ export default function DashboardPage() {
       percentage: number
     }
   } | null>(null)
-  const [, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(true)
+
+  // Fun motivational messages based on user progress
+  const getMotivationalMessage = () => {
+    const completedStages = journeyStatus?.progress.completedStages || 0
+    const totalStages = journeyStatus?.progress.totalStages || 4
+    
+    if (completedStages === 0) {
+      return { message: "Ready to start your magical journey? ✨", icon: Sparkles, color: "text-purple-600" }
+    } else if (completedStages === 1) {
+      return { message: "Great start! You're on your way! 🚀", icon: Rocket, color: "text-blue-600" }
+    } else if (completedStages === 2) {
+      return { message: "Halfway there! Keep the momentum going! 💪", icon: Trophy, color: "text-green-600" }
+    } else if (completedStages === 3) {
+      return { message: "Almost there! You're doing amazing! 🌟", icon: Star, color: "text-yellow-600" }
+    } else if (completedStages === totalStages) {
+      return { message: "Congratulations! You've completed your journey! 🎉", icon: PartyPopper, color: "text-pink-600" }
+    }
+    return { message: "Keep going! Every step counts! 💫", icon: Heart, color: "text-red-500" }
+  }
+
+  // Fun activity suggestions based on user data
+  const getActivitySuggestions = () => {
+    const suggestions = []
+    
+    if (ventures.length === 0) {
+      suggestions.push({
+        title: "Create Your First Venture",
+        description: "Start your entrepreneurial journey!",
+        icon: Rocket,
+        color: "bg-gradient-to-r from-purple-500 to-pink-500",
+        href: "/ventures/create"
+      })
+    }
+    
+    if (offers.length === 0) {
+      suggestions.push({
+        title: "Post Your First Role",
+        description: "Find amazing contributors for your projects",
+        icon: Users,
+        color: "bg-gradient-to-r from-blue-500 to-cyan-500",
+        href: "/offers/create"
+      })
+    }
+    
+    if (!legalPackStatus?.signed) {
+      suggestions.push({
+        title: "Complete Legal Pack",
+        description: "Sign your documents to unlock full access",
+        icon: FileText,
+        color: "bg-gradient-to-r from-green-500 to-emerald-500",
+        href: "/documents"
+      })
+    }
+    
+    // Add some fun activities
+    suggestions.push({
+      title: "Explore Opportunities",
+      description: "Discover exciting projects to contribute to",
+      icon: Lightbulb,
+      color: "bg-gradient-to-r from-yellow-500 to-orange-500",
+      href: "/opportunities"
+    })
+    
+    suggestions.push({
+      title: "Check Analytics",
+      description: "See how your ventures are performing",
+      icon: TrendingUp,
+      color: "bg-gradient-to-r from-indigo-500 to-purple-500",
+      href: "/analytics"
+    })
+    
+    return suggestions.slice(0, 4) // Show max 4 suggestions
+  }
+
+  // Fun facts about the user's progress
+  const getFunFacts = () => {
+    const facts = []
+    
+    if (ventures.length > 0) {
+      facts.push({
+        icon: Briefcase,
+        text: `You've created ${ventures.length} venture${ventures.length !== 1 ? 's' : ''}!`,
+        color: "text-purple-600"
+      })
+    }
+    
+    if (user?.xp && user.xp > 0) {
+      facts.push({
+        icon: Award,
+        text: `You've earned ${user.xp} XP points!`,
+        color: "text-yellow-600"
+      })
+    }
+    
+    if (legalPackStatus?.signed) {
+      facts.push({
+        icon: CheckCircle,
+        text: "You're legally compliant! 🎉",
+        color: "text-green-600"
+      })
+    }
+    
+    if (subscriptionStatus?.active) {
+      facts.push({
+        icon: Star,
+        text: `You're on the ${subscriptionStatus.planName || 'Pro'} plan!`,
+        color: "text-blue-600"
+      })
+    }
+    
+    return facts
+  }
 
   useEffect(() => {
     const loadDashboardData = async () => {
@@ -122,289 +247,307 @@ export default function DashboardPage() {
     loadDashboardData()
   }, [])
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50 flex items-center justify-center">
+        <div className="bg-white/80 backdrop-blur-sm rounded-xl p-8 text-center shadow-lg border border-purple-100">
+          <div className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading your magical dashboard...</p>
+        </div>
+      </div>
+    )
+  }
+
+  const motivational = getMotivationalMessage()
+  const activitySuggestions = getActivitySuggestions()
+  const funFacts = getFunFacts()
 
   return (
     <div className="space-y-8">
-            {/* Welcome Section */}
-            <div className="glass rounded-xl p-8">
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h2 className="text-3xl font-bold text-foreground mb-2">Welcome back, {user?.name || 'Alice'}! 👋</h2>
-                  <p className="text-foreground-muted">Ready to continue your journey through Wonderland?</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-success rounded-full animate-pulse"></div>
-                  <span className="text-sm text-foreground-muted">Online</span>
+      {/* Welcome Section with Fun Elements */}
+      <div className="bg-white/80 backdrop-blur-sm rounded-xl p-8 border border-purple-100">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-3xl font-bold text-gray-900 mb-2">
+              Welcome back, {user?.name || 'Alice'}! 👋
+            </h2>
+            <p className="text-gray-600 mb-3">Ready to continue your journey through Wonderland?</p>
+            <div className="flex items-center gap-2">
+              <motivational.icon className={`w-5 h-5 ${motivational.color}`} />
+              <span className={`font-medium ${motivational.color}`}>{motivational.message}</span>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+            <span className="text-sm text-gray-600">Online</span>
+          </div>
+        </div>
+        
+        {/* Fun Facts */}
+        {funFacts.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            {funFacts.map((fact, index) => (
+              <div key={index} className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-4 border border-purple-100">
+                <div className="flex items-center gap-3">
+                  <fact.icon className={`w-5 h-5 ${fact.color}`} />
+                  <span className="text-sm font-medium text-gray-700">{fact.text}</span>
                 </div>
               </div>
-              
-              {/* Journey Progress */}
-              <div className="glass rounded-lg p-6 mb-6">
-                <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-                  <Clock className="w-5 h-5 text-accent" />
-                  Your Journey Progress
-                  {journeyStatus?.progress && (
-                    <span className="text-sm text-foreground-muted ml-auto">
-                      {journeyStatus.progress.completedStages}/{journeyStatus.progress.totalStages} completed ({journeyStatus.progress.percentage}%)
-                    </span>
-                  )}
-                </h3>
-                <div className="space-y-3">
-                  {/* Show actual journey stages */}
-                  {journeyStatus?.userStates ? (
-                    journeyStatus.userStates
-                      .sort((a, b) => a.stage.order - b.stage.order)
-                      .map((userState) => (
-                        <div key={userState.id} className="flex items-center gap-3">
-                          {userState.status === 'COMPLETED' ? (
-                            <CheckCircle className="w-5 h-5 text-success" />
-                          ) : userState.status === 'IN_PROGRESS' ? (
-                            <div className="w-5 h-5 border-2 border-accent rounded-full flex items-center justify-center">
-                              <div className="w-2 h-2 bg-accent rounded-full animate-pulse"></div>
-                            </div>
-                          ) : (
-                            <div className="w-5 h-5 border-2 border-foreground-muted rounded-full flex items-center justify-center">
-                              <div className="w-2 h-2 bg-foreground-muted rounded-full"></div>
-                            </div>
-                          )}
-                          <div className="flex-1">
-                            <span className={`text-foreground-body ${userState.status === 'COMPLETED' ? 'line-through' : ''}`}>
-                              {userState.stage.name}
-                            </span>
-                            {userState.completedAt && (
-                              <div className="text-xs text-foreground-muted">
-                                Completed: {new Date(userState.completedAt).toLocaleDateString()}
-                              </div>
-                            )}
-                          </div>
-                          {userState.status === 'NOT_STARTED' && (
-                            <Link 
-                              href="/onboarding"
-                              className="text-xs text-accent hover:text-accent-hover transition-colors"
-                            >
-                              Start →
-                            </Link>
-                          )}
-                        </div>
-                      ))
-                  ) : (
-                    // Fallback to old display if journey status not available
-                    <>
-                      <div className="flex items-center gap-3">
-                        <CheckCircle className="w-5 h-5 text-success" />
-                        <span className="text-foreground-body">Account Setup Complete</span>
+            ))}
+          </div>
+        )}
+        
+        {/* Journey Progress */}
+        <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-6 border border-purple-100">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <Clock className="w-5 h-5 text-purple-600" />
+            Your Journey Progress
+            {journeyStatus?.progress && (
+              <span className="text-sm text-gray-600 ml-auto">
+                {journeyStatus.progress.completedStages}/{journeyStatus.progress.totalStages} completed ({journeyStatus.progress.percentage}%)
+              </span>
+            )}
+          </h3>
+          <div className="space-y-3">
+            {/* Show actual journey stages */}
+            {journeyStatus?.userStates ? (
+              journeyStatus.userStates
+                .sort((a, b) => a.stage.order - b.stage.order)
+                .map((userState) => (
+                  <div key={userState.id} className="flex items-center gap-3">
+                    {userState.status === 'COMPLETED' ? (
+                      <CheckCircle className="w-5 h-5 text-green-600" />
+                    ) : userState.status === 'IN_PROGRESS' ? (
+                      <div className="w-5 h-5 border-2 border-purple-500 rounded-full flex items-center justify-center">
+                        <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
                       </div>
-                      
-                      <div className="flex items-center gap-3">
-                        {legalPackStatus?.signed ? (
-                          <CheckCircle className="w-5 h-5 text-success" />
-                        ) : (
-                          <div className="w-5 h-5 border-2 border-accent rounded-full flex items-center justify-center">
-                            <div className="w-2 h-2 bg-accent rounded-full"></div>
-                          </div>
-                        )}
-                        <span className="text-foreground-body">
-                          {legalPackStatus?.signed ? 'Legal Pack Signed' : 'Legal Pack Pending'}
-                        </span>
+                    ) : (
+                      <div className="w-5 h-5 border-2 border-gray-300 rounded-full flex items-center justify-center">
+                        <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
                       </div>
-                      
-                      <div className="flex items-center gap-3">
-                        {subscriptionStatus?.active ? (
-                          <CheckCircle className="w-5 h-5 text-success" />
-                        ) : (
-                          <div className="w-5 h-5 border-2 border-accent rounded-full flex items-center justify-center">
-                            <div className="w-2 h-2 bg-accent rounded-full"></div>
-                          </div>
-                        )}
-                        <span className="text-foreground-body">
-                          {subscriptionStatus?.active ? 'Subscription Active' : 'Subscription Pending'}
-                        </span>
-                      </div>
-                      
-                      {ventures.length === 0 ? (
-                        <Link 
-                          href="/ventures/create"
-                          className="flex items-center gap-3 w-full hover:bg-glass-surface rounded-lg p-2 transition-colors"
-                        >
-                          <div className="w-5 h-5 border-2 border-accent rounded-full flex items-center justify-center">
-                            <div className="w-2 h-2 bg-accent rounded-full"></div>
-                          </div>
-                          <span className="text-foreground-body">Create Your First Venture</span>
-                          <ChevronRight className="w-4 h-4 text-foreground-muted ml-auto" />
-                        </Link>
-                      ) : (
-                        <div className="flex items-center gap-3">
-                          <CheckCircle className="w-5 h-5 text-success" />
-                          <span className="text-foreground-body">First Venture Created</span>
+                    )}
+                    <div className="flex-1">
+                      <span className={`text-gray-700 ${userState.status === 'COMPLETED' ? 'line-through' : ''}`}>
+                        {userState.stage.name}
+                      </span>
+                      {userState.completedAt && (
+                        <div className="text-xs text-gray-500">
+                          Completed: {new Date(userState.completedAt).toLocaleDateString()}
                         </div>
                       )}
-                    </>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Stats Grid */}
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="glass rounded-xl p-6 hover:glass-lg transition-all duration-200 group">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-                    <Briefcase className="w-6 h-6 text-primary" />
-                  </div>
-                  <TrendingUp className="w-5 h-5 text-success" />
-                </div>
-                <div className="text-2xl font-bold text-foreground mb-1">{analytics?.totalVentures || ventures.length}</div>
-                <div className="text-sm text-foreground-muted">Active Ventures</div>
-                <div className="text-xs text-success mt-1">+{analytics?.ventureGrowth || 0}%</div>
-              </div>
-
-              <div className="glass rounded-xl p-6 hover:glass-lg transition-all duration-200 group">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-                    <Users className="w-6 h-6 text-accent" />
-                  </div>
-                  <TrendingUp className="w-5 h-5 text-success" />
-                </div>
-                <div className="text-2xl font-bold text-foreground mb-1">{analytics?.totalUsers || 0}</div>
-                <div className="text-sm text-foreground-muted">Team Members</div>
-                <div className="text-xs text-success mt-1">+{analytics?.userGrowth || 0}%</div>
-              </div>
-
-              <div className="glass rounded-xl p-6 hover:glass-lg transition-all duration-200 group">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="w-12 h-12 bg-highlight/10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-                    <Target className="w-6 h-6 text-highlight" />
-                  </div>
-                  <TrendingUp className="w-5 h-5 text-success" />
-                </div>
-                <div className="text-2xl font-bold text-foreground mb-1">{analytics?.totalOffers || offers.length}</div>
-                <div className="text-sm text-foreground-muted">Open Roles</div>
-                <div className="text-xs text-success mt-1">+{analytics?.offerGrowth || 0}%</div>
-              </div>
-
-              <div className="glass rounded-xl p-6 hover:glass-lg transition-all duration-200 group">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="w-12 h-12 bg-success/10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-                    <Award className="w-6 h-6 text-success" />
-                  </div>
-                  <Star className="w-5 h-5 text-warning" />
-                </div>
-                <div className="text-2xl font-bold text-foreground mb-1">
-                  {user?.xp || 0}
-                </div>
-                <div className="text-sm text-foreground-muted">XP Points</div>
-                <div className="text-xs text-warning mt-1">
-                  Level: {user?.level || 'Unknown'}
-                </div>
-              </div>
-            </div>
-
-            {/* Recent Activity */}
-            <div className="grid lg:grid-cols-2 gap-8">
-              <div className="glass rounded-xl p-6">
-                <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-                  <Clock className="w-5 h-5 text-accent" />
-                  Recent Activity
-                </h3>
-                <div className="space-y-4">
-                  {ventures.slice(0, 3).map((venture) => (
-                    <div key={venture.id} className="flex items-start gap-3 p-3 hover:bg-glass-surface rounded-lg transition-colors">
-                      <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-                        <Briefcase className="w-4 h-4 text-primary" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm text-foreground-body">Venture: {venture.name}</p>
-                        <p className="text-xs text-foreground-muted">Stage: {venture.stage}</p>
-                      </div>
                     </div>
-                  ))}
-                  {ventures.length === 0 && (
-                    <div className="flex items-start gap-3 p-3 hover:bg-glass-surface rounded-lg transition-colors">
-                      <div className="w-8 h-8 bg-accent/10 rounded-full flex items-center justify-center">
-                        <Plus className="w-4 h-4 text-accent" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm text-foreground-body">No ventures yet. Create your first venture to get started!</p>
-                        <p className="text-xs text-foreground-muted">Click the &quot;Create New&quot; button above</p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="glass rounded-xl p-6">
-                <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-                  <Bell className="w-5 h-5 text-highlight" />
-                  Pending Actions
-                </h3>
-                <div className="space-y-4">
-                  {offers.slice(0, 3).map((offer) => (
-                    <div key={offer.id} className="flex items-center gap-3 p-3 bg-warning/5 border border-warning/20 rounded-lg">
-                      <AlertCircle className="w-5 h-5 text-warning" />
-                      <div className="flex-1">
-                        <p className="text-sm text-foreground-body">Review offer for {offer.role?.title || 'Unknown Role'}</p>
-                        <p className="text-xs text-foreground-muted">From: {offer.user?.name || 'Unknown User'}</p>
-                      </div>
-                      <button className="px-3 py-1 bg-warning text-warning-foreground text-xs rounded-lg hover:bg-warning/90 transition-colors">
-                        Review
-                      </button>
-                    </div>
-                  ))}
-                  {offers.length === 0 && (
-                    <div className="flex items-center gap-3 p-3 bg-accent/5 border border-accent/20 rounded-lg">
-                      <CheckCircle className="w-5 h-5 text-success" />
-                      <div className="flex-1">
-                        <p className="text-sm text-foreground-body">No pending actions</p>
-                        <p className="text-xs text-foreground-muted">All caught up!</p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Quick Actions */}
-            <div className="glass rounded-xl p-6">
-              <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-                <Zap className="w-5 h-5 text-highlight" />
-                Quick Actions
-              </h3>
-              <div className="grid md:grid-cols-3 gap-4">
-                <Link 
-                  href="/ventures/create"
-                  className="group flex items-center gap-3 p-4 bg-primary/5 border border-primary/20 rounded-lg hover:bg-primary/10 transition-all duration-200 w-full"
-                >
-                  <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-                    <Plus className="w-5 h-5 text-primary" />
+                    {userState.status === 'NOT_STARTED' && (
+                      <Link 
+                        href="/onboarding"
+                        className="text-xs text-purple-600 hover:text-purple-700 transition-colors font-medium"
+                      >
+                        Start →
+                      </Link>
+                    )}
                   </div>
-                  <div className="text-left">
-                    <div className="font-medium text-foreground">Create Venture</div>
-                    <div className="text-sm text-foreground-muted">Start a new project</div>
-                  </div>
-                </Link>
+                ))
+            ) : (
+              // Fallback to old display if journey status not available
+              <>
+                <div className="flex items-center gap-3">
+                  <CheckCircle className="w-5 h-5 text-green-600" />
+                  <span className="text-gray-700">Account Setup Complete</span>
+                </div>
                 
-                <button className="group flex items-center gap-3 p-4 bg-accent/5 border border-accent/20 rounded-lg hover:bg-accent/10 transition-all duration-200">
-                  <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-                    <Target className="w-5 h-5 text-accent" />
-                  </div>
-                  <div className="text-left">
-                    <div className="font-medium text-foreground">Post Role</div>
-                    <div className="text-sm text-foreground-muted">Find contributors</div>
-                  </div>
-                </button>
+                <div className="flex items-center gap-3">
+                  {legalPackStatus?.signed ? (
+                    <CheckCircle className="w-5 h-5 text-green-600" />
+                  ) : (
+                    <div className="w-5 h-5 border-2 border-purple-500 rounded-full flex items-center justify-center">
+                      <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                    </div>
+                  )}
+                  <span className="text-gray-700">
+                    {legalPackStatus?.signed ? 'Legal Pack Signed' : 'Legal Pack Pending'}
+                  </span>
+                </div>
                 
-                <button className="group flex items-center gap-3 p-4 bg-highlight/5 border border-highlight/20 rounded-lg hover:bg-highlight/10 transition-all duration-200">
-                  <div className="w-10 h-10 bg-highlight/10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-                    <FileText className="w-5 h-5 text-highlight" />
+                <div className="flex items-center gap-3">
+                  {subscriptionStatus?.active ? (
+                    <CheckCircle className="w-5 h-5 text-green-600" />
+                  ) : (
+                    <div className="w-5 h-5 border-2 border-purple-500 rounded-full flex items-center justify-center">
+                      <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                    </div>
+                  )}
+                  <span className="text-gray-700">
+                    {subscriptionStatus?.active ? 'Subscription Active' : 'Subscription Pending'}
+                  </span>
+                </div>
+                
+                {ventures.length === 0 ? (
+                  <Link 
+                    href="/ventures/create"
+                    className="flex items-center gap-3 w-full hover:bg-purple-50 rounded-lg p-2 transition-colors"
+                  >
+                    <div className="w-5 h-5 border-2 border-purple-500 rounded-full flex items-center justify-center">
+                      <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                    </div>
+                    <span className="text-gray-700">Create Your First Venture</span>
+                    <ChevronRight className="w-4 h-4 text-gray-400 ml-auto" />
+                  </Link>
+                ) : (
+                  <div className="flex items-center gap-3">
+                    <CheckCircle className="w-5 h-5 text-green-600" />
+                    <span className="text-gray-700">First Venture Created</span>
                   </div>
-                  <div className="text-left">
-                    <div className="font-medium text-foreground">Generate NDA</div>
-                    <div className="text-sm text-foreground-muted">Create legal docs</div>
-                  </div>
-                </button>
-              </div>
-            </div>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+      </div>
 
+      {/* Stats Grid */}
+      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 hover:shadow-lg transition-all duration-200 group border border-purple-100">
+          <div className="flex items-center justify-between mb-4">
+            <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+              <Briefcase className="w-6 h-6 text-purple-600" />
+            </div>
+            <TrendingUp className="w-5 h-5 text-green-500" />
+          </div>
+          <div className="text-2xl font-bold text-gray-900 mb-1">{analytics?.totalVentures || ventures.length}</div>
+          <div className="text-sm text-gray-600">Active Ventures</div>
+          <div className="text-xs text-green-600 mt-1">+{analytics?.ventureGrowth || 0}%</div>
+        </div>
+
+        <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 hover:shadow-lg transition-all duration-200 group border border-purple-100">
+          <div className="flex items-center justify-between mb-4">
+            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+              <Users className="w-6 h-6 text-blue-600" />
+            </div>
+            <TrendingUp className="w-5 h-5 text-green-500" />
+          </div>
+          <div className="text-2xl font-bold text-gray-900 mb-1">{analytics?.totalUsers || 0}</div>
+          <div className="text-sm text-gray-600">Team Members</div>
+          <div className="text-xs text-green-600 mt-1">+{analytics?.userGrowth || 0}%</div>
+        </div>
+
+        <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 hover:shadow-lg transition-all duration-200 group border border-purple-100">
+          <div className="flex items-center justify-between mb-4">
+            <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+              <Target className="w-6 h-6 text-yellow-600" />
+            </div>
+            <TrendingUp className="w-5 h-5 text-green-500" />
+          </div>
+          <div className="text-2xl font-bold text-gray-900 mb-1">{analytics?.totalOffers || offers.length}</div>
+          <div className="text-sm text-gray-600">Open Roles</div>
+          <div className="text-xs text-green-600 mt-1">+{analytics?.offerGrowth || 0}%</div>
+        </div>
+
+        <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 hover:shadow-lg transition-all duration-200 group border border-purple-100">
+          <div className="flex items-center justify-between mb-4">
+            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+              <Award className="w-6 h-6 text-green-600" />
+            </div>
+            <Star className="w-5 h-5 text-yellow-500" />
+          </div>
+          <div className="text-2xl font-bold text-gray-900 mb-1">
+            {user?.xp || 0}
+          </div>
+          <div className="text-sm text-gray-600">XP Points</div>
+          <div className="text-xs text-yellow-600 mt-1">
+            Level: {user?.level || 'Unknown'}
+          </div>
+        </div>
+      </div>
+
+      {/* Activity Suggestions */}
+      <div className="grid md:grid-cols-2 gap-6">
+        <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 border border-purple-100">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <Lightbulb className="w-5 h-5 text-yellow-500" />
+            Quick Actions
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {activitySuggestions.map((suggestion, index) => (
+              <Link
+                key={index}
+                href={suggestion.href}
+                className={`${suggestion.color} text-white p-4 rounded-lg hover:shadow-lg transition-all duration-200 group`}
+              >
+                <div className="flex items-center gap-3">
+                  <suggestion.icon className="w-6 h-6 group-hover:scale-110 transition-transform duration-200" />
+                  <div>
+                    <div className="font-semibold text-sm">{suggestion.title}</div>
+                    <div className="text-xs opacity-90">{suggestion.description}</div>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 border border-purple-100">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <Bell className="w-5 h-5 text-blue-500" />
+            Recent Activity
+          </h3>
+          <div className="space-y-3">
+            {ventures.length > 0 ? (
+              ventures.slice(0, 3).map((venture) => (
+                <div key={venture.id} className="flex items-center gap-3 p-3 bg-purple-50 rounded-lg">
+                  <Briefcase className="w-5 h-5 text-purple-600" />
+                  <div className="flex-1">
+                    <div className="text-sm font-medium text-gray-900">{venture.name}</div>
+                    <div className="text-xs text-gray-600">Stage: {venture.stage || 'Planning'}</div>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-gray-400" />
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-8">
+                <Briefcase className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                <p className="text-gray-500 text-sm">No recent activity</p>
+                <p className="text-gray-400 text-xs">Create your first venture to get started!</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Fun Bottom Section */}
+      <div className="bg-gradient-to-r from-purple-100 via-pink-100 to-yellow-100 rounded-xl p-6 border border-purple-200">
+        <div className="text-center">
+          <h3 className="text-xl font-bold text-gray-900 mb-2 flex items-center justify-center gap-2">
+            <PartyPopper className="w-6 h-6 text-pink-600" />
+            Ready for Your Next Adventure?
+            <PartyPopper className="w-6 h-6 text-pink-600" />
+          </h3>
+          <p className="text-gray-600 mb-4">
+            Explore new opportunities, connect with amazing people, and build something incredible together!
+          </p>
+          <div className="flex flex-wrap justify-center gap-3">
+            <Link
+              href="/ventures"
+              className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-3 rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-200 shadow-lg flex items-center gap-2"
+            >
+              <Rocket className="w-4 h-4" />
+              Explore Ventures
+            </Link>
+            <Link
+              href="/opportunities"
+              className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-6 py-3 rounded-lg hover:from-blue-600 hover:to-cyan-600 transition-all duration-200 shadow-lg flex items-center gap-2"
+            >
+              <Target className="w-4 h-4" />
+              Find Opportunities
+            </Link>
+            <Link
+              href="/analytics"
+              className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-3 rounded-lg hover:from-green-600 hover:to-emerald-600 transition-all duration-200 shadow-lg flex items-center gap-2"
+            >
+              <TrendingUp className="w-4 h-4" />
+              View Analytics
+            </Link>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
