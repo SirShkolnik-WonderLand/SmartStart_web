@@ -3,7 +3,7 @@
 import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import OnboardingFlow from '@/components/OnboardingFlow'
-import Header from '@/components/layout/header'
+import { Header } from '@/components/layout/header'
 import { Loader2 } from 'lucide-react'
 
 function OnboardingPageContent() {
