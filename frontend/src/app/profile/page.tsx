@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react'
 import { 
   User, 
   Mail, 
-  Calendar, 
   Award, 
   Star, 
   Edit3, 
@@ -36,7 +35,7 @@ export default function ProfilePage() {
           setEditData({
             firstName: response.data.firstName || '',
             lastName: response.data.lastName || '',
-            bio: response.data.bio || ''
+            bio: (response.data as any).bio || ''
           })
         }
       } catch (error) {
@@ -68,7 +67,7 @@ export default function ProfilePage() {
       setEditData({
         firstName: user.firstName || '',
         lastName: user.lastName || '',
-        bio: user.bio || ''
+        bio: (user as any).bio || ''
       })
     }
     setIsEditing(false)
@@ -230,7 +229,7 @@ export default function ProfilePage() {
                 placeholder="Tell us about yourself..."
               />
             ) : (
-              <p className="text-foreground-body">{user.bio || 'No bio provided'}</p>
+              <p className="text-foreground-body">{(user as any).bio || 'No bio provided'}</p>
             )}
           </div>
         </div>

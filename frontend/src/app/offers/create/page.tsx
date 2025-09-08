@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowLeft, FileText, Users, DollarSign, Calendar } from 'lucide-react'
+import { ArrowLeft, FileText, Users, DollarSign } from 'lucide-react'
 import Link from 'next/link'
 
 export default function CreateOfferPage() {
