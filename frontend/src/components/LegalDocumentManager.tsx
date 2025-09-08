@@ -210,7 +210,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
       } else {
         setAuditLogs([])
       }
-    } catch (e) {
+    } catch {
       setAuditLogs([])
     } finally {
       setAuditLoading(false)
