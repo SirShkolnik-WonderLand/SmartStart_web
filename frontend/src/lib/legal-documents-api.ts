@@ -194,7 +194,7 @@ class LegalDocumentsApiService {
             return await response.json();
         } catch (error) {
             console.error('Error signing document:', error);
-            return { success: false, data: null as unknown as LegalDocument };
+            return { success: false, data: null as unknown as DocumentSignature };
         }
     }
 
@@ -216,7 +216,7 @@ class LegalDocumentsApiService {
             return await response.json();
         } catch (error) {
             console.error('Error getting user document status:', error);
-            return { success: false, data: null as unknown as LegalDocument };
+            return { success: false, data: null as unknown as DocumentStatus };
         }
     }
 
@@ -242,7 +242,7 @@ class LegalDocumentsApiService {
             return await response.json();
         } catch (error) {
             console.error('Error verifying document signature:', error);
-            return { success: false, data: null as unknown as LegalDocument };
+            return { success: false, data: null as unknown as SignatureVerification };
         }
     }
 
@@ -309,7 +309,7 @@ class LegalDocumentsApiService {
             return await response.json();
         } catch (error) {
             console.error('Error generating compliance report:', error);
-            return { success: false, data: null as unknown as LegalDocument };
+            return { success: false, data: null as unknown as ComplianceReport };
         }
     }
 
