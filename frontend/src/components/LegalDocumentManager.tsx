@@ -56,16 +56,60 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
           legalDocumentsApiService.getUserDocumentStatus()
         ])
 
-        if (documentsResponse.success && documentsResponse.data) {
-          setDocuments(documentsResponse.data)
-        } else {
-          console.warn('Failed to load documents:', documentsResponse)
-        }
-        
-        if (statusResponse.success && statusResponse.data) {
+        // Merge available docs with per-user status so signed items appear
+        if (documentsResponse.success && statusResponse.success && documentsResponse.data && statusResponse.data) {
+          const available = documentsResponse.data
+          const statusDocs = statusResponse.data.documents || []
+
+          const byId: Record<string, LegalDocument> = {}
+          for (const doc of available) {
+            byId[doc.id] = { ...doc }
+          }
+
+          for (const sdoc of statusDocs) {
+            const existing = byId[sdoc.document_id]
+            if (existing) {
+              byId[sdoc.document_id] = {
+                ...existing,
+                isSigned: sdoc.status === 'signed' || existing.isSigned,
+                status: sdoc.status || existing.status,
+                signedAt: sdoc.signed_at || existing.signedAt,
+                signatureHash: sdoc.signature_hash || existing.signatureHash,
+              }
+            } else {
+              // Create a minimal entry so status-only docs surface in the grid
+              byId[sdoc.document_id] = {
+                id: sdoc.document_id,
+                title: sdoc.title || 'Document',
+                type: sdoc.type || 'LEGAL_DOCUMENT',
+                content: '',
+                version: sdoc.document_version || '1.0',
+                status: sdoc.status,
+                requiresSignature: sdoc.requires_signature,
+                complianceRequired: false,
+                createdBy: '',
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                isSigned: sdoc.status === 'signed',
+                signedAt: sdoc.signed_at,
+                signatureHash: sdoc.signature_hash,
+              }
+            }
+          }
+
+          setDocuments(Object.values(byId))
           setDocumentStatus(statusResponse.data)
         } else {
-          console.warn('Failed to load document status:', statusResponse)
+          if (documentsResponse.success && documentsResponse.data) {
+            setDocuments(documentsResponse.data)
+          } else {
+            console.warn('Failed to load documents:', documentsResponse)
+          }
+          if (statusResponse.success && statusResponse.data) {
+            setDocumentStatus(statusResponse.data)
+          } else {
+            console.warn('Failed to load document status:', statusResponse)
+          }
         }
       } catch (err) {
         console.error('Error loading documents:', err)
