@@ -62,8 +62,19 @@ function OnboardingPageContent() {
   }, [router, searchParams])
 
   const handleOnboardingComplete = () => {
-    // Redirect to dashboard after onboarding completion
-    router.push('/dashboard')
+    // Redirect to dashboard after onboarding completion (with hard fallback)
+    try {
+      router.push('/dashboard')
+      setTimeout(() => {
+        if (typeof window !== 'undefined' && !window.location.pathname.includes('/dashboard')) {
+          window.location.href = '/dashboard'
+        }
+      }, 400)
+    } catch {
+      if (typeof window !== 'undefined') {
+        window.location.href = '/dashboard'
+      }
+    }
   }
 
   if (isLoading) {
