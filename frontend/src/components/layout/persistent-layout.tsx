@@ -143,7 +143,11 @@ export default function PersistentLayout({ children }: PersistentLayoutProps) {
                 <Bell className="w-5 h-5 text-foreground-muted" />
               </button>
               
-              <button className="p-2 hover:bg-glass-surface rounded-lg transition-colors">
+              <button 
+                onClick={() => router.push('/settings')}
+                className="p-2 hover:bg-glass-surface rounded-lg transition-colors"
+                title="Settings"
+              >
                 <Settings className="w-5 h-5 text-foreground-muted" />
               </button>
               
