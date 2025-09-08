@@ -23,7 +23,6 @@ import {
     PenTool,
     FileSignature,
     ClipboardList,
-    TrendingUp,
     RefreshCw
 } from 'lucide-react';
 import { legalDocumentsApiService, LegalDocument, DocumentStatus } from '@/lib/legal-documents-api';

@@ -18,6 +18,10 @@ export interface LegalDocument {
     entityId?: string;
     projectId?: string;
     ventureId?: string;
+    // Properties added by service layer
+    isSigned?: boolean;
+    signedAt?: string;
+    signatureHash?: string;
 }
 
 export interface DocumentSignature {
