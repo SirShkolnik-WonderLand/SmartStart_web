@@ -25,8 +25,8 @@ import { comprehensiveApiService } from '@/lib/api-comprehensive'
 interface UserProfile {
   id: string
   email: string
-  firstName: string
-  lastName: string
+  firstName?: string
+  lastName?: string
   name: string
   level: number
   xp: number
@@ -197,8 +197,8 @@ export default function SettingsPage() {
     setIsSaving(true)
     try {
       const response = await comprehensiveApiService.updateUserProfile(user.id, {
-        firstName: user.firstName,
-        lastName: user.lastName,
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
         bio: user.profile?.bio || ''
       })
       
@@ -318,7 +318,7 @@ export default function SettingsPage() {
                           <label className="block text-sm font-medium text-primary mb-2">First Name</label>
                           <input
                             type="text"
-                            value={user.firstName}
+                            value={user.firstName || ''}
                             onChange={(e) => setUser({...user, firstName: e.target.value})}
                             className="w-full px-4 py-3 bg-glass-surface border border-glass-border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
                           />
@@ -327,7 +327,7 @@ export default function SettingsPage() {
                           <label className="block text-sm font-medium text-primary mb-2">Last Name</label>
                           <input
                             type="text"
-                            value={user.lastName}
+                            value={user.lastName || ''}
                             onChange={(e) => setUser({...user, lastName: e.target.value})}
                             className="w-full px-4 py-3 bg-glass-surface border border-glass-border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
                           />
