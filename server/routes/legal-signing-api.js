@@ -27,6 +27,41 @@ router.get('/health', async (req, res) => {
 });
 
 /**
+ * Get legal pack status for a user
+ */
+router.get('/status/:userId', authenticateToken, async (req, res) => {
+  try {
+    const { userId } = req.params;
+    
+    // Get all available documents
+    const documents = legalDocumentService.getDocuments();
+    
+    // For now, return mock status - in production this would check actual signatures
+    const mockStatus = {
+      signed: false,
+      signedAt: null,
+      documents: documents.map(doc => ({
+        id: doc.id,
+        name: doc.name,
+        status: 'pending',
+        signedAt: null
+      }))
+    };
+    
+    res.json({
+      success: true,
+      data: mockStatus
+    });
+  } catch (error) {
+    console.error('Error getting legal pack status:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to get legal pack status'
+    });
+  }
+});
+
+/**
  * Get all available legal documents
  */
 router.get('/documents', async (req, res) => {

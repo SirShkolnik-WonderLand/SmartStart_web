@@ -241,8 +241,10 @@ export default function DashboardPage() {
               console.warn('Legal pack status failed:', err)
               return { success: false, data: null }
             }),
-            // Note: Subscription status endpoint not implemented yet
-            Promise.resolve({ success: false, data: null })
+            apiService.getSubscriptionStatus(userId).catch(err => {
+              console.warn('Subscription status failed:', err)
+              return { success: false, data: null }
+            })
           ]
 
           const [journeyResponse, legalPackResponse, subscriptionResponse] = await Promise.allSettled(

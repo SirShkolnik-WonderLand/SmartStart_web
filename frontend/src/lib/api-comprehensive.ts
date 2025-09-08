@@ -1041,6 +1041,50 @@ class ComprehensiveApiService {
   }
 
   // ============================================================================
+  // SUBSCRIPTION STATUS
+  // ============================================================================
+
+  async getSubscriptionStatus(userId: string): Promise<ApiResponse<{
+    active: boolean
+    planName?: string
+    status?: string
+    expiresAt?: string
+  }>> {
+    try {
+      const response = await this.fetchWithAuth<{ data: Array<{
+        status: string
+        plan: { name: string }
+        endDate?: string
+      }> }>(`/api/subscriptions/user/${userId}`)
+      
+      if (response.data && response.data.length > 0) {
+        const subscription = response.data[0]
+        return {
+          success: true,
+          data: {
+            active: subscription.status === 'ACTIVE',
+            planName: subscription.plan.name,
+            status: subscription.status,
+            expiresAt: subscription.endDate
+          }
+        }
+      }
+      
+      return {
+        success: true,
+        data: {
+          active: false,
+          planName: 'No Plan',
+          status: 'INACTIVE'
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching subscription status:', error)
+      return { success: false, data: undefined, error: 'Failed to fetch subscription status' }
+    }
+  }
+
+  // ============================================================================
   // JOURNEY & ONBOARDING
   // ============================================================================
 
@@ -1065,7 +1109,7 @@ class ComprehensiveApiService {
           status: string
           signedAt?: string
         }>
-      }>(`/api/legal-pack/status/${userId}`)
+      }>(`/api/legal-signing/status/${userId}`)
       
       return {
         success: response.success,

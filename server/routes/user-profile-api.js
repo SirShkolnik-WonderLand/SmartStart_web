@@ -62,6 +62,11 @@ router.get('/profile', authenticateToken, async(req, res) => {
             });
         }
 
+        // Construct proper name from firstName and lastName
+        const fullName = user.firstName && user.lastName 
+            ? `${user.firstName} ${user.lastName}` 
+            : user.name || 'Unknown User';
+
         res.json({
             success: true,
             data: {
@@ -69,7 +74,7 @@ router.get('/profile', authenticateToken, async(req, res) => {
                 email: user.email,
                 firstName: user.firstName,
                 lastName: user.lastName,
-                name: user.name,
+                name: fullName,
                 level: user.level,
                 xp: user.xp,
                 reputation: user.reputation,
