@@ -1185,8 +1185,8 @@ class ComprehensiveApiService {
 
   async getJourneyStatus(userId: string): Promise<ApiResponse<JourneyStatus>> {
     try {
-      const response = await this.fetchWithAuth<{ data: JourneyStatus }>(`/api/journey/status/${userId}`)
-      return { success: true, data: response.data?.data || undefined }
+      const response = await this.fetchWithAuth<JourneyStatus>(`/api/journey/status/${userId}`)
+      return { success: true, data: response.data }
     } catch (error) {
       console.error('Error fetching journey status:', error)
       return { success: false, data: undefined, error: 'Failed to fetch journey status' }
@@ -1228,11 +1228,11 @@ class ComprehensiveApiService {
 
   async updateJourneyProgress(userId: string, action: string, data: Record<string, unknown> = {}): Promise<ApiResponse<JourneyProgressUpdate>> {
     try {
-      const response = await this.fetchWithAuth<{ data: JourneyProgressUpdate }>(`/api/journey/progress/${userId}`, {
+      const response = await this.fetchWithAuth<JourneyProgressUpdate>(`/api/journey/progress/${userId}`, {
         method: 'POST',
         body: JSON.stringify({ action, data })
       })
-      return { success: true, data: response.data?.data || undefined }
+      return { success: true, data: response.data }
     } catch (error) {
       console.error('Error updating journey progress:', error)
       return { success: false, data: undefined, error: 'Failed to update journey progress' }
