@@ -165,6 +165,10 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
 
   const downloadDoc = async (doc: LegalDocument) => {
     try {
+      if (!doc.id) {
+        alert('Download not available for this document.')
+        return
+      }
       const blob = await legalDocumentsApiService.downloadDocument(doc.id)
       if (!blob) return
       const url = window.URL.createObjectURL(blob)
@@ -189,15 +193,6 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
       signedAt: doc.signedAt,
       signatureHash: doc.signatureHash,
     }
-    // Try to pull latest audit log for more details
-    try {
-      const audit = await legalDocumentsApiService.getDocumentAuditLog(doc.id, undefined, undefined, 1, 1)
-      if (audit.success && Array.isArray(audit.data) && audit.data.length > 0) {
-        const a = audit.data[0]
-        ev.ip = a.ip_address
-        ev.userAgent = a.user_agent
-      }
-    } catch {}
     setEvidence(ev)
   }
 
