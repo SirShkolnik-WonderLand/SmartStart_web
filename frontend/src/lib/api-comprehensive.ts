@@ -765,7 +765,7 @@ class ComprehensiveApiService {
 
   async getUserProfile(userId: string): Promise<ApiResponse<UserProfile>> {
     try {
-      const response = await this.fetchWithAuth<UserProfile>(`/api/v1/profiles/${userId}`)
+      const response = await this.fetchWithAuth<UserProfile>(`/api/user-profile/profile/${userId}`)
       return response
     } catch (error) {
       console.error('Error fetching user profile:', error)
@@ -775,7 +775,7 @@ class ComprehensiveApiService {
 
   async updateUserProfile(userId: string, profileData: Partial<UserProfile>): Promise<ApiResponse<UserProfile>> {
     try {
-      const response = await this.fetchWithAuth<UserProfile>(`/api/v1/profiles/${userId}`, {
+      const response = await this.fetchWithAuth<UserProfile>(`/api/user-profile/profile/${userId}`, {
         method: 'PUT',
         body: JSON.stringify(profileData)
       })
@@ -1129,7 +1129,8 @@ class ComprehensiveApiService {
 
   async getRoles(ventureId?: string): Promise<ApiResponse<Role[]>> {
     try {
-      const endpoint = ventureId ? `/api/v1/ventures/${ventureId}/roles` : '/api/v1/roles'
+      // Use RBAC API instead of non-existent v1 roles endpoint
+      const endpoint = ventureId ? `/api/rbac/ventures/${ventureId}/roles` : '/api/rbac/roles'
       const response = await this.fetchWithAuth<{ roles: Role[] }>(endpoint)
       return { success: true, data: response.data?.roles || [] }
     } catch (error) {
@@ -1140,7 +1141,7 @@ class ComprehensiveApiService {
 
   async createRole(roleData: Partial<Role>): Promise<ApiResponse<Role>> {
     try {
-      const response = await this.fetchWithAuth<Role>('/api/v1/roles', {
+      const response = await this.fetchWithAuth<Role>('/api/rbac/roles', {
         method: 'POST',
         body: JSON.stringify(roleData)
       })
@@ -1168,7 +1169,7 @@ class ComprehensiveApiService {
 
   async updateOfferStatus(offerId: string, status: Offer['status']): Promise<ApiResponse<Offer>> {
     try {
-      const response = await this.fetchWithAuth<Offer>(`/api/v1/offers/${offerId}`, {
+      const response = await this.fetchWithAuth<Offer>(`/api/contracts/${offerId}`, {
         method: 'PATCH',
         body: JSON.stringify({ status }),
       })
@@ -1380,7 +1381,7 @@ class ComprehensiveApiService {
 
   async getUserMetrics(userId: string): Promise<ApiResponse<UserMetrics>> {
     try {
-      const response = await this.fetchWithAuth<UserMetrics>(`/api/v1/users/${userId}/metrics`)
+      const response = await this.fetchWithAuth<UserMetrics>(`/api/user-gamification/profile/${userId}`)
       return response
     } catch (error) {
       console.error('Error fetching user metrics:', error)
