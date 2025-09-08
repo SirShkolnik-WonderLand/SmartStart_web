@@ -216,7 +216,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
         return (
             <div className={`glass-surface p-8 ${className}`}>
                 <div className="flex items-center justify-center">
-                    <RefreshCw className="w-8 h-8 animate-spin text-blue-500" />
+                    <RefreshCw className="w-8 h-8 animate-spin text-accent" />
                     <span className="ml-2 text-lg">Loading documents...</span>
                 </div>
             </div>
@@ -237,7 +237,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
                 <div className="flex items-center space-x-4 mt-4 lg:mt-0">
                     <button
                         onClick={() => setShowComplianceReport(!showComplianceReport)}
-                        className="flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                        className="flex items-center px-4 py-2 bg-primary hover:bg-primary/80 text-white rounded-lg transition-colors"
                     >
                         <BarChart3 className="w-4 h-4 mr-2" />
                         Compliance Report
@@ -307,7 +307,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
                             onClick={() => setFilter(filterOption)}
                             className={`px-4 py-2 rounded-lg transition-colors ${
                                 filter === filterOption
-                                    ? 'bg-blue-600 text-white'
+                                    ? 'bg-primary text-white'
                                     : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                             }`}
                         >
@@ -332,7 +332,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
                         <button
                             onClick={() => setViewMode('grid')}
                             className={`p-2 rounded-lg transition-colors ${
-                                viewMode === 'grid' ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                                viewMode === 'grid' ? 'bg-primary text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                             }`}
                         >
                             <File className="w-4 h-4" />
@@ -340,7 +340,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
                         <button
                             onClick={() => setViewMode('list')}
                             className={`p-2 rounded-lg transition-colors ${
-                                viewMode === 'list' ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                                viewMode === 'list' ? 'bg-primary text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                             }`}
                         >
                             <ClipboardList className="w-4 h-4" />
@@ -357,15 +357,15 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
                             {selectedDocuments.length} document{selectedDocuments.length !== 1 ? 's' : ''} selected
                         </span>
                         <div className="flex items-center space-x-2">
-                            <button className="flex items-center px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+                            <button className="flex items-center px-3 py-1 bg-primary hover:bg-primary/80 text-white rounded-lg transition-colors">
                                 <Download className="w-4 h-4 mr-1" />
                                 Download
                             </button>
-                            <button className="flex items-center px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors">
+                            <button className="flex items-center px-3 py-1 bg-success hover:bg-success/80 text-white rounded-lg transition-colors">
                                 <Share className="w-4 h-4 mr-1" />
                                 Share
                             </button>
-                            <button className="flex items-center px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors">
+                            <button className="flex items-center px-3 py-1 bg-warning hover:bg-warning/80 text-white rounded-lg transition-colors">
                                 <Trash2 className="w-4 h-4 mr-1" />
                                 Delete
                             </button>
@@ -473,7 +473,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
                                         type="checkbox"
                                         checked={selectedDocuments.includes(document.id)}
                                         onChange={() => handleDocumentSelect(document.id)}
-                                        className="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500"
+                                        className="w-4 h-4 text-primary bg-gray-700 border-gray-600 rounded focus:ring-primary"
                                     />
                                     
                                     {getDocumentStatusIcon(document)}
@@ -576,7 +576,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
                     <p className="text-muted mb-6">
                         {searchTerm ? 'Try adjusting your search terms' : 'No documents match the current filter'}
                     </p>
-                    <button className="flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors mx-auto">
+                    <button className="flex items-center px-6 py-3 bg-primary hover:bg-primary/80 text-white rounded-lg transition-colors mx-auto">
                         <Plus className="w-5 h-5 mr-2" />
                         Upload Document
                     </button>
