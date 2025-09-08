@@ -32,11 +32,6 @@ export default function LegalComplianceModal({
   onSuccess
 }: LegalComplianceModalProps) {
   const [documents, setDocuments] = useState<LegalDocument[]>([])
-  const [signingSession, setSigningSession] = useState<{
-    sessionId: string
-    documentIds: string[]
-    expiresAt: string
-  } | null>(null)
   const [currentStep, setCurrentStep] = useState<'loading' | 'review' | 'signing' | 'complete'>('loading')
   const [signatureInfo, setSignatureInfo] = useState<SignatureInfo>({
     signerName: '',
@@ -95,7 +90,6 @@ export default function LegalComplianceModal({
       
       if (response.ok) {
         const data = await response.json()
-        setSigningSession(data.data)
         return data.data.sessionId
       } else {
         throw new Error('Failed to start signing session')
@@ -191,12 +185,12 @@ export default function LegalComplianceModal({
     }
   }
 
-  const downloadDocument = (document: LegalDocument) => {
+  const downloadDocument = (doc: LegalDocument) => {
     const blob = new Blob([documentContent], { type: 'text/plain' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `${document.name}_${new Date().toISOString().split('T')[0]}.md`
+    a.download = `${doc.name}_${new Date().toISOString().split('T')[0]}.md`
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
