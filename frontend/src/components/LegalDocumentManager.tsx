@@ -45,6 +45,8 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
   const [sortField, setSortField] = useState<'title' | 'type' | 'status' | 'updatedAt'>('title')
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
   const [isActing, setIsActing] = useState(false)
+  const [evidenceDoc, setEvidenceDoc] = useState<LegalDocument | null>(null)
+  const [evidence, setEvidence] = useState<{ signer?: string; signedAt?: string; signatureHash?: string } | null>(null)
 
   // Load documents and status
   useEffect(() => {
@@ -166,6 +168,15 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
       console.error('Download failed:', e)
       alert('Download failed. Please try again.')
     }
+  }
+
+  const openEvidence = async (doc: LegalDocument) => {
+    setEvidenceDoc(doc)
+    setEvidence({
+      signer: (documentStatus?.user_id) || undefined,
+      signedAt: doc.signedAt,
+      signatureHash: doc.signatureHash,
+    })
   }
 
   // Filter and sort documents
@@ -605,7 +616,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
                       <td className="px-6 py-4">
                         <div className="flex items-center space-x-2">
                           <button
-                            onClick={() => alert('Preview coming soon')}
+                            onClick={() => openEvidence(document)}
                             className="p-2 text-gray-400 hover:text-purple-600 hover:bg-purple-100 rounded-lg transition-all duration-200"
                           >
                             <Eye className="w-4 h-4" />
@@ -766,6 +777,55 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
                   </button>
                   <button className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-200">
                     Export Report
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Signature Evidence Modal */}
+        {evidenceDoc && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-white/95 backdrop-blur-sm rounded-xl p-6 max-w-xl w-full mx-4 border border-purple-100">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-gray-900">Signature Evidence</h2>
+                <button
+                  onClick={() => { setEvidenceDoc(null); setEvidence(null); }}
+                  className="p-2 hover:bg-purple-100 rounded-lg transition-colors text-gray-400 hover:text-gray-600"
+                >
+                  ×
+                </button>
+              </div>
+              <div className="space-y-3 text-sm">
+                <div className="bg-purple-50/50 rounded-lg p-4 border border-purple-100">
+                  <div className="font-medium text-gray-900 mb-1">{evidenceDoc.title}</div>
+                  <div className="text-gray-600">Type: {(evidenceDoc.type || '').replace(/_/g, ' ')}</div>
+                  <div className="text-gray-600">Version: {evidenceDoc.version}</div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                    <div className="text-gray-600">Signer</div>
+                    <div className="font-mono text-gray-900 break-all">{evidence?.signer || '—'}</div>
+                  </div>
+                  <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                    <div className="text-gray-600">Signed At</div>
+                    <div className="font-mono text-gray-900">{evidence?.signedAt ? new Date(evidence.signedAt).toLocaleString() : '—'}</div>
+                  </div>
+                  <div className="md:col-span-2 bg-gray-50 rounded-lg p-4 border border-gray-200">
+                    <div className="text-gray-600">Signature Hash (sha256)</div>
+                    <div className="font-mono text-xs text-gray-900 break-all">{evidence?.signatureHash || '—'}</div>
+                  </div>
+                </div>
+                {evidenceDoc?.content?.includes('DOC HASH') && (
+                  <div className="text-xs text-gray-500">Note: Full document hash and evidence are stored server-side per policy.</div>
+                )}
+                <div className="flex justify-end">
+                  <button
+                    onClick={() => { setEvidenceDoc(null); setEvidence(null); }}
+                    className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-200"
+                  >
+                    Close
                   </button>
                 </div>
               </div>
