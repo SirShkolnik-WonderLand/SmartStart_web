@@ -64,10 +64,9 @@ router.get('/dashboard/:userId', authenticateToken, async(req, res) => {
         // Get available badges
         const availableBadges = await prisma.badge.findMany({
             where: {
-                isActive: true,
                 id: { notIn: badges.map(b => b.badgeId) }
             },
-            orderBy: { requiredXP: 'asc' }
+            orderBy: { createdAt: 'asc' }
         });
 
         // Get XP history
@@ -298,8 +297,7 @@ router.get('/dashboard/:userId/achievements', authenticateToken, async(req, res)
 
         // Get all available achievements
         const allAchievements = await prisma.achievement.findMany({
-            where: { isActive: true },
-            orderBy: { requiredXP: 'asc' }
+            orderBy: { createdAt: 'asc' }
         });
 
         // Get user earned achievements
@@ -477,9 +475,7 @@ async function getSkillDevelopmentProgress(userId) {
 }
 
 async function getAchievementProgress(userId) {
-    const achievements = await prisma.achievement.findMany({
-        where: { isActive: true }
-    });
+    const achievements = await prisma.achievement.findMany();
 
     const earnedAchievements = await prisma.userAchievement.findMany({
         where: { userId }
