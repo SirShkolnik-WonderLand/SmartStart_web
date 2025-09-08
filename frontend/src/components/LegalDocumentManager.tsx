@@ -665,7 +665,8 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
                           <div className="flex flex-wrap gap-2">
                             {(() => {
                               const pipelines: string[] = []
-                              const meta = (document as any)?.metadata || {}
+                              type Meta = { pipeline?: string; relatedPipelines?: string[] }
+                              const meta = (document as unknown as { metadata?: Meta }).metadata ?? {}
                               if (meta.pipeline) pipelines.push(meta.pipeline)
                               if (meta.relatedPipelines && Array.isArray(meta.relatedPipelines)) pipelines.push(...meta.relatedPipelines)
                               // Fallback heuristics
