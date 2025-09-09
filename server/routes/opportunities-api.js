@@ -11,6 +11,35 @@ const { authenticateToken } = require('../middleware/auth');
 // ===== OPPORTUNITY MANAGEMENT ROUTES =====
 
 /**
+ * GET /api/opportunities/test
+ * Test route to verify API is working
+ */
+router.get('/test', (req, res) => {
+    res.json({
+        success: true,
+        message: 'Opportunities API is working!',
+        timestamp: new Date().toISOString()
+    });
+});
+
+/**
+ * GET /api/opportunities/public
+ * Public route to test without authentication
+ */
+router.get('/public', async (req, res) => {
+    try {
+        const result = await opportunitiesService.getOpportunities({}, 'public');
+        res.json(result);
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Error fetching opportunities',
+            error: error.message
+        });
+    }
+});
+
+/**
  * GET /api/opportunities
  * List all opportunities with filtering and pagination
  */
