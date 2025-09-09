@@ -61,6 +61,25 @@
 | **IRA** | Incident Response Agreement | `SECURITY_ADMIN` → `INCIDENT_RESPONDER` | Security incident procedures |
 | **ACA** | Audit Cooperation Agreement | `LEGAL_ADMIN` → `AUDIT_PARTICIPANT` | Compliance audit participation |
 
+### 👥 **TEAM-SPECIFIC DOCUMENTS** (Team Members)
+| Document | Legal Name | RBAC Access | Purpose |
+|----------|------------|-------------|---------|
+| **TCA** | Team Collaboration Agreement | `TEAM_MEMBER` | Basic team collaboration terms |
+| **TCOA** | Team Confidentiality Agreement | `TEAM_MEMBER` | Team-specific confidentiality |
+| **TLA** | Team Leadership Agreement | `TEAM_LEADER` | Team leadership responsibilities |
+| **TIAA** | Team IP Assignment Agreement | `TEAM_LEADER` | Team intellectual property rights |
+| **TAA** | Team Administration Agreement | `TEAM_ADMIN` | Team administrative privileges |
+| **TSA** | Team Security Acknowledgment | `TEAM_ADMIN` | Team security requirements |
+
+### 👑 **ALICE SOLUTIONS OWNER DOCUMENTS** (System Owner)
+| Document | Legal Name | RBAC Access | Purpose |
+|----------|------------|-------------|---------|
+| **ASOA** | AliceSolutions Owner Agreement | `ALICE_SOLUTIONS_OWNER` | Master ownership agreement |
+| **AMSA** | AliceSolutions Master Service Agreement | `ALICE_SOLUTIONS_OWNER` | Service provision terms |
+| **AIPA** | AliceSolutions Intellectual Property Agreement | `ALICE_SOLUTIONS_OWNER` | IP ownership and licensing |
+| **ADPA** | AliceSolutions Data Processing Agreement | `ALICE_SOLUTIONS_OWNER` | Data processing and privacy |
+| **ATOS** | AliceSolutions Terms of Service | `ALICE_SOLUTIONS_OWNER` | Platform terms and conditions |
+
 ---
 
 ## 🔄 **SIGNING PIPELINE BY USER JOURNEY**
@@ -158,17 +177,25 @@ docs/08-legal/
 | RBAC Level | Required Documents | Access Level | Document Count |
 |------------|-------------------|--------------|----------------|
 | `GUEST` | None | Public content only | 0 |
-| `MEMBER` | PPA + ESCA + PNA + MNDA + STA | Basic platform access | 5 |
-| `SUBSCRIBER` | + PTSA + SOBA | Paid features access | 7 |
-| `SEAT_HOLDER` | + Updated SOBA + Security Acknowledgment | Team collaboration | 9 |
+| `MEMBER` | PPA + ESCA + PNA + MNDA + STA | Basic platform access | 6 |
+| `SUBSCRIBER` | + PTSA + SOBA | Paid features access | 8 |
+| `SEAT_HOLDER` | + TCA (if in team) | Team collaboration | 9 |
 | `VENTURE_OWNER` | + ISEA + VOA + PPNA | Venture management | 12 |
 | `VENTURE_PARTICIPANT` | + PCA + PPNA + IAA | Team participation | 15 |
-| `CONFIDENTIAL_ACCESS` | + ST1A + PPNA | Tier 1 data access | 17 |
-| `RESTRICTED_ACCESS` | + ST2A + ESA + PPNA | Tier 2 data access | 20 |
-| `HIGHLY_RESTRICTED_ACCESS` | + ST3A + CJIA + ESA + PPNA + SCV | Tier 3 data access | 25 |
-| `BILLING_ADMIN` | + BAA + ECA + ATA | Financial management | 28 |
-| `SECURITY_ADMIN` | + SAA + IRA + ECA + LCA | Security management | 32 |
-| `LEGAL_ADMIN` | + LAA + ACPA + ECA + RCA | Legal oversight | 36 |
+| `CONFIDENTIAL_ACCESS` | + ST1A + PPNA + TCOA | Tier 1 data access | 18 |
+| `RESTRICTED_ACCESS` | + ST2A + ESA + PPNA | Tier 2 data access | 21 |
+| `HIGHLY_RESTRICTED_ACCESS` | + ST3A + CJIA + ESA + PPNA + SCV | Tier 3 data access | 26 |
+| `BILLING_ADMIN` | + BAA + ECA + ATA | Financial management | 29 |
+| `SECURITY_ADMIN` | + SAA + IRA + ECA + LCA | Security management | 33 |
+| `LEGAL_ADMIN` | + LAA + ACPA + ECA + RCA | Legal oversight | 37 |
+| `ANALYTICS_ACCESS` | + DAA | Analytics access | 39 |
+| `API_ACCESS` | + APIUA | API integration | 40 |
+| `DOCUMENT_ADMIN` | + DMA | Document management | 41 |
+| `INCIDENT_RESPONDER` | + IRA | Incident response | 42 |
+| `AUDIT_PARTICIPANT` | + ACA | Audit participation | 43 |
+| `TEAM_LEADER` | + TLA + TIAA (if team leader) | Team leadership | +2 |
+| `TEAM_ADMIN` | + TAA + TSA (if team admin) | Team administration | +2 |
+| `ALICE_SOLUTIONS_OWNER` | ALL DOCUMENTS + ASOA + AMSA + AIPA + ADPA + ATOS | Complete system access | ALL |
 
 ---
 

@@ -163,6 +163,42 @@ This document defines the Role-Based Access Control (RBAC) system for legal docu
 
 ---
 
+### 👑 **ALICE_SOLUTIONS_OWNER Level** (Complete System Access)
+**Prerequisites:** AliceSolutions founder and owner
+**New Documents Required:**
+- AliceSolutions Owner Agreement (ASOA)
+- AliceSolutions Master Service Agreement (AMSA)
+- AliceSolutions Intellectual Property Agreement (AIPA)
+- AliceSolutions Data Processing Agreement (ADPA)
+- AliceSolutions Terms of Service (ATOS)
+
+**Access:** ALL documents in the system + owner-specific agreements
+**Purpose:** Complete system ownership and control
+
+---
+
+### 👥 **TEAM-SPECIFIC LEVELS** (Team Document Requirements)
+
+#### **TEAM_MEMBER Level** (Basic Team Participation)
+**Prerequisites:** Member of any team
+**New Documents Required:**
+- Team Collaboration Agreement (TCA)
+- Team Confidentiality Agreement (TCOA)
+
+#### **TEAM_LEADER Level** (Team Leadership)
+**Prerequisites:** SEAT_HOLDER + team leadership role
+**New Documents Required:**
+- Team Leadership Agreement (TLA)
+- Team IP Assignment Agreement (TIAA)
+
+#### **TEAM_ADMIN Level** (Team Administration)
+**Prerequisites:** Team administrative privileges
+**New Documents Required:**
+- Team Administration Agreement (TAA)
+- Team Security Acknowledgment (TSA)
+
+---
+
 ## Document Access Control Implementation
 
 ### 1. **Progressive Disclosure**
@@ -370,28 +406,36 @@ CREATE TABLE "User" (
 ### ✅ **Implemented Features (September 2025)**
 
 #### **RBAC Integration**
-- **13 RBAC Levels**: Complete hierarchy from GUEST to LEGAL_ADMIN
+- **18+ RBAC Levels**: Complete hierarchy from GUEST to LEGAL_ADMIN plus AliceSolutions owner
 - **Document Requirements**: Each level has specific document requirements mapped
 - **Progressive Disclosure**: Users see only relevant documents for their level
 - **Compliance Checking**: Real-time compliance status with legal framework
+- **Team Integration**: Team-specific document requirements
+- **Owner Support**: AliceSolutions owner with complete system access
 
 #### **Database Integration**
-- **User RBAC Levels**: Stored in user table with proper defaults
-- **Document Filtering**: Documents filtered by user's current RBAC level
-- **Status Tracking**: REQUIRED/PENDING/SIGNED status for each document
+- **User RBAC Levels**: Enhanced mapping from database levels to comprehensive RBAC
+- **Document Filtering**: Documents filtered by user's current RBAC level and team membership
+- **Status Tracking**: REQUIRED/PENDING/SIGNED status for each document with team context
 - **Compliance Persistence**: All compliance data stored in PostgreSQL
+- **Team Detection**: Automatic detection of user's team memberships
+- **Owner Access**: Special handling for AliceSolutions owner role
 
 #### **Frontend Implementation**
 - **Interactive Signing**: Beautiful modal with document display and signing
-- **RBAC Filtering**: Documents automatically filtered by user level
+- **RBAC Filtering**: Documents automatically filtered by user level and team membership
 - **Progress Tracking**: Visual progress toward next RBAC level
-- **Status Indicators**: Clear REQUIRED/PENDING/SIGNED status display
+- **Status Indicators**: Clear REQUIRED/PENDING/SIGNED status display with team context
+- **Team Document Support**: Team-specific document display and management
+- **Owner Dashboard**: Complete system access for AliceSolutions owner
 
 #### **API Implementation**
-- **RBAC-Aware Endpoints**: All endpoints respect user's RBAC level
+- **RBAC-Aware Endpoints**: All endpoints respect user's RBAC level and team membership
 - **Compliance Checking**: Real-time compliance status checking
-- **Document Filtering**: Automatic filtering based on user level
+- **Document Filtering**: Automatic filtering based on user level and team membership
 - **Health Monitoring**: API health checks and database connectivity
+- **Team Support**: Team-aware document endpoints
+- **Owner Endpoints**: Special endpoints for AliceSolutions owner access
 
 ### 🔧 **Technical Implementation**
 
@@ -410,7 +454,36 @@ const rbacLevels = {
   'HIGHLY_RESTRICTED_ACCESS': 9,
   'BILLING_ADMIN': 10,
   'SECURITY_ADMIN': 11,
-  'LEGAL_ADMIN': 12
+  'LEGAL_ADMIN': 12,
+  'ANALYTICS_ACCESS': 13,
+  'API_ACCESS': 14,
+  'DOCUMENT_ADMIN': 15,
+  'INCIDENT_RESPONDER': 16,
+  'AUDIT_PARTICIPANT': 17,
+  'ALICE_SOLUTIONS_OWNER': 99 // Special owner level
+};
+
+// Database to RBAC Level Mapping
+const databaseLevelMapping = {
+  'OWLET': 'GUEST',
+  'NIGHT_WATCHER': 'MEMBER', 
+  'WISE_OWL': 'SUBSCRIBER',
+  'SKY_MASTER': 'SEAT_HOLDER',
+  'VENTURE_OWNER': 'VENTURE_OWNER',
+  'VENTURE_PARTICIPANT': 'VENTURE_PARTICIPANT',
+  'EXTERNAL_PARTNER': 'EXTERNAL_PARTNER',
+  'CONFIDENTIAL_ACCESS': 'CONFIDENTIAL_ACCESS',
+  'RESTRICTED_ACCESS': 'RESTRICTED_ACCESS',
+  'HIGHLY_RESTRICTED_ACCESS': 'HIGHLY_RESTRICTED_ACCESS',
+  'BILLING_ADMIN': 'BILLING_ADMIN',
+  'SECURITY_ADMIN': 'SECURITY_ADMIN',
+  'LEGAL_ADMIN': 'LEGAL_ADMIN',
+  'ANALYTICS_ACCESS': 'ANALYTICS_ACCESS',
+  'API_ACCESS': 'API_ACCESS',
+  'DOCUMENT_ADMIN': 'DOCUMENT_ADMIN',
+  'INCIDENT_RESPONDER': 'INCIDENT_RESPONDER',
+  'AUDIT_PARTICIPANT': 'AUDIT_PARTICIPANT',
+  'ALICE_SOLUTIONS_OWNER': 'ALICE_SOLUTIONS_OWNER'
 };
 ```
 
