@@ -3046,7 +3046,7 @@ model UmbrellaDocument {
   version           String   @default("v1.0")
   
   // Legal status
-  status            DocumentStatus @default(DRAFT)
+  status            LegalDocumentStatus @default(DRAFT)
   requiresSignature Boolean  @default(true)
   signedAt          DateTime?
   createdAt         DateTime @default(now())
@@ -3058,7 +3058,6 @@ model UmbrellaDocument {
   
   @@index([umbrellaId])
   @@index([documentType])
-  @@index([status])
 }
 
 // Umbrella document signatures
@@ -3136,12 +3135,4 @@ enum UmbrellaDocumentType {
   AMENDMENT_AGREEMENT
 }
 
-enum PaymentStatus {
-  PENDING
-  CALCULATED
-  APPROVED
-  PAID
-  FAILED
-  DISPUTED
-}
 
