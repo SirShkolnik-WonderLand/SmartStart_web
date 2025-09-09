@@ -1,7 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const legalDocumentService = require('../services/legal-document-service');
+const LegalDocumentService = require('../services/legal-document-service');
 const { authenticateToken } = require('../middleware/auth');
+
+const legalDocumentService = new LegalDocumentService();
 
 // Get available documents for user
 router.get('/documents', authenticateToken, async (req, res) => {
@@ -272,10 +274,11 @@ router.get('/documents/:id/download', authenticateToken, async (req, res) => {
         });
 
         // Set headers for file download
-        res.setHeader('Content-Type', 'text/plain');
-        res.setHeader('Content-Disposition', `attachment; filename="${document.title || 'document'}.txt"`);
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="${document.name}.pdf"`);
         
-        // Return the document content as text
+        // For now, return the document content as text
+        // In a real implementation, you would generate a PDF
         res.send(document.content || 'Document content not available');
     } catch (error) {
         console.error('Error downloading document:', error);
