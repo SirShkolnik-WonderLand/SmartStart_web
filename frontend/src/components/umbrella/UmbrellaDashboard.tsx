@@ -149,21 +149,21 @@ export default function UmbrellaDashboard() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Umbrella Network</h1>
-          <p className="text-gray-600">Manage your referral relationships and revenue sharing</p>
+          <h1 className="text-3xl font-bold text-foreground">Umbrella Network</h1>
+          <p className="text-foreground-muted">Manage your referral relationships and revenue sharing</p>
         </div>
         <div className="flex space-x-3">
           <Button 
             variant="outline"
             onClick={() => setShowCreateModal(true)}
-            className="border-purple-200 text-purple-700 hover:bg-purple-50"
+            className="glass-button"
           >
             <UserPlus className="w-4 h-4 mr-2" />
             Create Relationship
           </Button>
           <Button 
             onClick={() => setShowInviteModal(true)}
-            className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+            className="glass-button"
           >
             <Plus className="w-4 h-4 mr-2" />
             Invite User
@@ -175,45 +175,45 @@ export default function UmbrellaDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-foreground-muted">Total Revenue</CardTitle>
+            <DollarSign className="h-4 w-4 text-foreground-muted" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${totalRevenue.toFixed(2)}</div>
-            <p className="text-xs text-muted-foreground">From all relationships</p>
+            <div className="text-2xl font-bold text-foreground">${totalRevenue.toFixed(2)}</div>
+            <p className="text-xs text-foreground-muted">From all relationships</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Relationships</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-foreground-muted">Active Relationships</CardTitle>
+            <Users className="h-4 w-4 text-foreground-muted" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{activeRelationships}</div>
-            <p className="text-xs text-muted-foreground">Currently active</p>
+            <div className="text-2xl font-bold text-foreground">{activeRelationships}</div>
+            <p className="text-xs text-foreground-muted">Currently active</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending Payments</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-foreground-muted">Pending Payments</CardTitle>
+            <TrendingUp className="h-4 w-4 text-foreground-muted" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{pendingShares}</div>
-            <p className="text-xs text-muted-foreground">Awaiting payment</p>
+            <div className="text-2xl font-bold text-foreground">{pendingShares}</div>
+            <p className="text-xs text-foreground-muted">Awaiting payment</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Referrals</CardTitle>
-            <Network className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-foreground-muted">Total Referrals</CardTitle>
+            <Network className="h-4 w-4 text-foreground-muted" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{relationships.length}</div>
-            <p className="text-xs text-muted-foreground">All time</p>
+            <div className="text-2xl font-bold text-foreground">{relationships.length}</div>
+            <p className="text-xs text-foreground-muted">All time</p>
           </CardContent>
         </Card>
       </div>
@@ -243,12 +243,12 @@ export default function UmbrellaDashboard() {
                         </div>
                         <div>
                           <p className="font-medium">{relationship.referred.name}</p>
-                          <p className="text-sm text-gray-600">{relationship.referred.email}</p>
+                          <p className="text-sm text-foreground-muted">{relationship.referred.email}</p>
                         </div>
                       </div>
                       <div className="flex items-center space-x-4">
                         {getStatusBadge(relationship.status)}
-                        <span className="text-sm text-gray-600">
+                        <span className="text-sm text-foreground-muted">
                           {relationship.defaultShareRate}% share
                         </span>
                         <Button variant="ghost" size="sm">
@@ -421,7 +421,7 @@ export default function UmbrellaDashboard() {
                 Cancel
               </Button>
               <Button
-                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+                className="glass-button"
                 onClick={() => {
                   // TODO: Implement create relationship API call
                   setShowCreateModal(false);
@@ -469,7 +469,7 @@ export default function UmbrellaDashboard() {
                 Cancel
               </Button>
               <Button
-                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+                className="glass-button"
                 onClick={() => {
                   // TODO: Implement invite user API call
                   setShowInviteModal(false);
