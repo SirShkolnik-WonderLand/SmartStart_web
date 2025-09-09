@@ -132,7 +132,11 @@ router.post('/session/start', authenticateToken, async (req, res) => {
     const { userId } = req.user;
     const { documentIds } = req.body;
     
+    console.log('🚀 Starting signing session:', { userId, documentIds });
+    
     const session = legalDocumentService.generateSigningSession(userId, documentIds);
+    
+    console.log('✅ Session created:', { sessionId: session.sessionId, documentIds: session.documentIds });
     
     res.json({
       success: true,
@@ -160,6 +164,8 @@ router.post('/session/:sessionId/sign', authenticateToken, async (req, res) => {
     const { documentId, signatureData } = req.body;
     const { userId } = req.user;
     
+    console.log('🔍 Signing request:', { sessionId, documentId, userId, signatureData });
+    
     // Add user info to signature data
     const enhancedSignatureData = {
       ...signatureData,
@@ -169,7 +175,11 @@ router.post('/session/:sessionId/sign', authenticateToken, async (req, res) => {
       timestamp: new Date().toISOString()
     };
     
+    console.log('🔍 Enhanced signature data:', enhancedSignatureData);
+    
     const result = legalDocumentService.signDocumentInSession(sessionId, documentId, enhancedSignatureData);
+    
+    console.log('🔍 Signing result:', result);
     
     if (!result.success) {
       return res.status(400).json({
