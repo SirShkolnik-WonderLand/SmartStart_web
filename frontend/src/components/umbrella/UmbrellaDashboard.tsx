@@ -61,28 +61,39 @@ export default function UmbrellaDashboard() {
       setLoading(true)
       const token = localStorage.getItem('auth-token')
       
+      // Use correct API base URL
+      const API_BASE = process.env.NODE_ENV === 'production' 
+        ? 'https://smartstart-api.onrender.com' 
+        : 'http://localhost:3001'
+      
       // Load relationships
-      const relationshipsResponse = await fetch('/api/umbrella/relationships', {
+      const relationshipsResponse = await fetch(`${API_BASE}/api/umbrella/relationships`, {
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
       })
       
       if (relationshipsResponse.ok) {
         const relationshipsData = await relationshipsResponse.json()
         setRelationships(relationshipsData.data || [])
+      } else {
+        console.error('Failed to load relationships:', relationshipsResponse.status, relationshipsResponse.statusText)
       }
 
       // Load revenue shares
-      const sharesResponse = await fetch('/api/umbrella/revenue/shares', {
+      const sharesResponse = await fetch(`${API_BASE}/api/umbrella/revenue/shares`, {
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
       })
       
       if (sharesResponse.ok) {
         const sharesData = await sharesResponse.json()
         setRevenueShares(sharesData.data || [])
+      } else {
+        console.error('Failed to load revenue shares:', sharesResponse.status, sharesResponse.statusText)
       }
     } catch (error) {
       console.error('Failed to load umbrella data:', error)
