@@ -93,7 +93,7 @@ export default function UmbrellaDashboard() {
   }
 
   const getStatusBadge = (status: string) => {
-    const statusConfig = {
+    const statusConfig: Record<string, { color: string; text: string }> = {
       'PENDING_AGREEMENT': { color: 'bg-yellow-100 text-yellow-800', text: 'Pending' },
       'ACTIVE': { color: 'bg-green-100 text-green-800', text: 'Active' },
       'SUSPENDED': { color: 'bg-red-100 text-red-800', text: 'Suspended' },
@@ -105,7 +105,7 @@ export default function UmbrellaDashboard() {
   }
 
   const getPaymentStatusBadge = (status: string) => {
-    const statusConfig = {
+    const statusConfig: Record<string, { color: string; text: string }> = {
       'PENDING': { color: 'bg-yellow-100 text-yellow-800', text: 'Pending' },
       'CALCULATED': { color: 'bg-blue-100 text-blue-800', text: 'Calculated' },
       'APPROVED': { color: 'bg-purple-100 text-purple-800', text: 'Approved' },
