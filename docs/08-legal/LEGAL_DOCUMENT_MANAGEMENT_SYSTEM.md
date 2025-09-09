@@ -383,34 +383,27 @@ const documentComponents = {
 
 #### **Backend Services**
 - **Legal Document Service**: Database-backed service with PostgreSQL integration
-- **Legal Framework Service**: Comprehensive RBAC system with 18+ access levels including AliceSolutions owner
+- **Legal Framework Service**: Comprehensive RBAC system with 13 access levels
 - **Legal Signing API**: Complete signing workflow with session management
 - **RBAC Integration**: Full integration with existing legal framework requirements
-- **Team Document Support**: Team-specific document requirements and workflows
-- **Owner Role Support**: Special AliceSolutions owner role with complete access
 
 #### **Database Integration**
-- **LegalDocument Table**: 17+ documents with proper metadata and content
-- **LegalDocumentSignature Table**: Complete signatures with full audit trail
-- **User RBAC Levels**: Enhanced mapping from database levels to comprehensive RBAC
+- **LegalDocument Table**: 15 documents with proper metadata and content
+- **LegalDocumentSignature Table**: 3+ signatures with full audit trail
+- **User RBAC Levels**: Properly stored and managed in user table
 - **Compliance Tracking**: Real-time compliance status with legal framework
-- **Team Integration**: Team membership detection for team-specific documents
-- **Owner Access**: AliceSolutions owner with access to all documents
 
 #### **Frontend Components**
 - **Interactive Signing Modal**: Beautiful modal with document display and signing form
-- **RBAC Document Filtering**: Documents filtered by user's current RBAC level and team membership
-- **Document Status Management**: REQUIRED/PENDING/SIGNED status tracking with team context
+- **RBAC Document Filtering**: Documents filtered by user's current RBAC level
+- **Document Status Management**: REQUIRED/PENDING/SIGNED status tracking
 - **Compliance Dashboard**: Real-time compliance status and progress tracking
-- **Team Document Support**: Team-specific document display and management
-- **Owner Dashboard**: Complete system access for AliceSolutions owner
 
 #### **API Endpoints**
-- **Legal Documents API**: Complete CRUD operations with RBAC and team filtering
+- **Legal Documents API**: Complete CRUD operations with RBAC filtering
 - **Legal Signing API**: Session-based signing with database persistence
 - **Health Checks**: Both APIs have health monitoring endpoints
 - **Error Handling**: Comprehensive error handling and logging
-- **Team Support**: Team-aware document endpoints
 
 ### 🔧 **Technical Implementation Details**
 

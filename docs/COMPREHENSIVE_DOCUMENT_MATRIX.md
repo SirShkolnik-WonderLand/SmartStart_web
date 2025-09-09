@@ -66,26 +66,7 @@ This matrix provides a complete mapping of all legal documents, their requiremen
 | **IRA** | Incident Response Agreement | `SECURITY_ADMIN` → `INCIDENT_RESPONDER` | Security incidents | `incident_agreements` | `POST /api/legal/ira/sign` |
 | **ACA** | Audit Cooperation Agreement | `LEGAL_ADMIN` → `AUDIT_PARTICIPANT` | Compliance audits | `audit_agreements` | `POST /api/legal/aca/sign` |
 
-### 📁 **08-team-documents/** - Team-Specific Documents
-| Document | Legal Name | RBAC Access | Purpose | Database Table | API Endpoint |
-|----------|------------|-------------|---------|----------------|--------------|
-| **TCA** | Team Collaboration Agreement | `TEAM_MEMBER` | Basic team collaboration | `team_agreements` | `POST /api/legal/tca/sign` |
-| **TCOA** | Team Confidentiality Agreement | `TEAM_MEMBER` | Team confidentiality | `team_agreements` | `POST /api/legal/tcoa/sign` |
-| **TLA** | Team Leadership Agreement | `TEAM_LEADER` | Team leadership | `team_leadership_agreements` | `POST /api/legal/tla/sign` |
-| **TIAA** | Team IP Assignment Agreement | `TEAM_LEADER` | Team IP rights | `team_ip_agreements` | `POST /api/legal/tiaa/sign` |
-| **TAA** | Team Administration Agreement | `TEAM_ADMIN` | Team administration | `team_admin_agreements` | `POST /api/legal/taa/sign` |
-| **TSA** | Team Security Acknowledgment | `TEAM_ADMIN` | Team security | `team_security_agreements` | `POST /api/legal/tsa/sign` |
-
-### 📁 **09-owner-documents/** - AliceSolutions Owner Documents
-| Document | Legal Name | RBAC Access | Purpose | Database Table | API Endpoint |
-|----------|------------|-------------|---------|----------------|--------------|
-| **ASOA** | AliceSolutions Owner Agreement | `ALICE_SOLUTIONS_OWNER` | Master ownership | `owner_agreements` | `POST /api/legal/asoa/sign` |
-| **AMSA** | AliceSolutions Master Service Agreement | `ALICE_SOLUTIONS_OWNER` | Service provision | `owner_agreements` | `POST /api/legal/amsa/sign` |
-| **AIPA** | AliceSolutions IP Agreement | `ALICE_SOLUTIONS_OWNER` | IP ownership | `owner_ip_agreements` | `POST /api/legal/aipa/sign` |
-| **ADPA** | AliceSolutions Data Processing Agreement | `ALICE_SOLUTIONS_OWNER` | Data processing | `owner_data_agreements` | `POST /api/legal/adpa/sign` |
-| **ATOS** | AliceSolutions Terms of Service | `ALICE_SOLUTIONS_OWNER` | Platform terms | `owner_tos_agreements` | `POST /api/legal/atos/sign` |
-
-### 📁 **10-templates/** - Document Templates
+### 📁 **08-templates/** - Document Templates
 | Template | Purpose | Usage | Database Table | API Endpoint |
 |----------|---------|-------|----------------|--------------|
 | **Per-Project NDA Addendum** | Project-specific confidentiality | Generated per project | `project_nda_addenda` | `POST /api/legal/project-nda/sign` |
