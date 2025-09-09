@@ -50,13 +50,15 @@ router.post('/seed', async (req, res) => {
 // Get available documents for user
 router.get('/documents', authenticateToken, async (req, res) => {
     try {
+        console.log('🚀 API Route: getAvailableDocuments called for user:', req.user.id);
         const documents = await legalDocumentService.getAvailableDocuments(req.user.id);
+        console.log('📊 API Route: Service returned', documents.length, 'documents');
         res.json({
             success: true,
             data: documents
         });
     } catch (error) {
-        console.error('Error getting available documents:', error);
+        console.error('❌ API Route: Error getting available documents:', error);
         res.status(500).json({
             success: false,
             message: error.message
