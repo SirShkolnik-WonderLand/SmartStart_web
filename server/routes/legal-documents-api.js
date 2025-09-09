@@ -327,4 +327,24 @@ router.get('/debug/documents', authenticateToken, async (req, res) => {
     }
 });
 
+// Test endpoint to debug getAvailableDocuments
+router.get('/debug/available', authenticateToken, async (req, res) => {
+    try {
+        console.log('🧪 Testing getAvailableDocuments...');
+        const result = await legalDocumentService.getAvailableDocuments(req.user.id);
+        console.log('🧪 Result:', result.length, 'documents');
+        
+        res.json({ 
+            success: true, 
+            data: {
+                count: result.length,
+                documents: result
+            }
+        });
+    } catch (error) {
+        console.error('Test error:', error);
+        res.status(500).json({ success: false, message: 'Test failed', error: error.message });
+    }
+});
+
 module.exports = router;
