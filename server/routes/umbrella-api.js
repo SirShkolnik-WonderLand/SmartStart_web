@@ -6,6 +6,8 @@
 const express = require('express');
 const { authenticateToken } = require('../middleware/auth');
 const umbrellaService = require('../services/umbrella-service');
+const umbrellaLegalService = require('../services/umbrella-legal-service');
+const umbrellaRevenueService = require('../services/umbrella-revenue-service');
 const UmbrellaSecurityMiddleware = require('../middleware/umbrella-security');
 
 const router = express.Router();
@@ -249,7 +251,7 @@ router.get('/revenue/shares', authenticateToken, async (req, res) => {
     const filters = {};
     if (status) filters.status = status;
     
-    const shares = await umbrellaService.getRevenueShares(userId, filters);
+    const shares = await umbrellaRevenueService.getRevenueShares(userId, filters);
     
     res.json({
       success: true,
@@ -593,6 +595,288 @@ router.use((error, req, res, next) => {
     message: 'Internal server error',
     error: process.env.NODE_ENV === 'development' ? error.message : 'Something went wrong'
   });
+});
+
+// ===== UMBRELLA LEGAL DOCUMENTS =====
+
+/**
+ * Get umbrella documents for a relationship
+ * GET /api/umbrella/documents/:relationshipId
+ */
+router.get('/documents/:relationshipId', authenticateToken, async (req, res) => {
+  try {
+    const { relationshipId } = req.params;
+    const { userId } = req.user;
+    
+    console.log(`📄 Getting umbrella documents for relationship: ${relationshipId}`);
+    
+    // Verify user has access to this relationship
+    const relationship = await umbrellaService.getUmbrellaRelationship(relationshipId);
+    if (!relationship || (relationship.referrerId !== userId && relationship.referredId !== userId)) {
+      return res.status(403).json({
+        success: false,
+        message: 'Access denied to this relationship'
+      });
+    }
+    
+    const documents = await umbrellaLegalService.getUmbrellaDocuments(relationshipId);
+    
+    res.json({
+      success: true,
+      data: documents
+    });
+  } catch (error) {
+    console.error('Error getting umbrella documents:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to get umbrella documents',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Generate umbrella agreement
+ * POST /api/umbrella/documents/:relationshipId/agreement
+ */
+router.post('/documents/:relationshipId/agreement', authenticateToken, async (req, res) => {
+  try {
+    const { relationshipId } = req.params;
+    const { userId } = req.user;
+    const { variables = {} } = req.body;
+    
+    console.log(`📝 Generating umbrella agreement for relationship: ${relationshipId}`);
+    
+    // Verify user has access to this relationship
+    const relationship = await umbrellaService.getUmbrellaRelationship(relationshipId);
+    if (!relationship || (relationship.referrerId !== userId && relationship.referredId !== userId)) {
+      return res.status(403).json({
+        success: false,
+        message: 'Access denied to this relationship'
+      });
+    }
+    
+    const document = await umbrellaLegalService.generateUmbrellaAgreement(relationshipId, variables);
+    
+    res.json({
+      success: true,
+      data: document
+    });
+  } catch (error) {
+    console.error('Error generating umbrella agreement:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to generate umbrella agreement',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Generate revenue sharing terms
+ * POST /api/umbrella/documents/:relationshipId/revenue-terms
+ */
+router.post('/documents/:relationshipId/revenue-terms', authenticateToken, async (req, res) => {
+  try {
+    const { relationshipId } = req.params;
+    const { userId } = req.user;
+    const { variables = {} } = req.body;
+    
+    console.log(`💰 Generating revenue sharing terms for relationship: ${relationshipId}`);
+    
+    // Verify user has access to this relationship
+    const relationship = await umbrellaService.getUmbrellaRelationship(relationshipId);
+    if (!relationship || (relationship.referrerId !== userId && relationship.referredId !== userId)) {
+      return res.status(403).json({
+        success: false,
+        message: 'Access denied to this relationship'
+      });
+    }
+    
+    const document = await umbrellaLegalService.generateRevenueSharingTerms(relationshipId, variables);
+    
+    res.json({
+      success: true,
+      data: document
+    });
+  } catch (error) {
+    console.error('Error generating revenue sharing terms:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to generate revenue sharing terms',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Sign umbrella document
+ * POST /api/umbrella/documents/:documentId/sign
+ */
+router.post('/documents/:documentId/sign', authenticateToken, async (req, res) => {
+  try {
+    const { documentId } = req.params;
+    const { userId } = req.user;
+    const { signatureData } = req.body;
+    
+    console.log(`✍️ Signing umbrella document: ${documentId}`);
+    
+    const signature = await umbrellaLegalService.signUmbrellaDocument(
+      documentId, 
+      userId, 
+      {
+        ...signatureData,
+        ipAddress: req.ip,
+        userAgent: req.get('User-Agent')
+      }
+    );
+    
+    res.json({
+      success: true,
+      data: signature
+    });
+  } catch (error) {
+    console.error('Error signing umbrella document:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to sign umbrella document',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Generate termination notice
+ * POST /api/umbrella/documents/:relationshipId/termination
+ */
+router.post('/documents/:relationshipId/termination', authenticateToken, async (req, res) => {
+  try {
+    const { relationshipId } = req.params;
+    const { userId } = req.user;
+    const { reason } = req.body;
+    
+    console.log(`🚫 Generating termination notice for relationship: ${relationshipId}`);
+    
+    // Verify user has access to this relationship
+    const relationship = await umbrellaService.getUmbrellaRelationship(relationshipId);
+    if (!relationship || (relationship.referrerId !== userId && relationship.referredId !== userId)) {
+      return res.status(403).json({
+        success: false,
+        message: 'Access denied to this relationship'
+      });
+    }
+    
+    const document = await umbrellaLegalService.generateTerminationNotice(
+      relationshipId, 
+      reason, 
+      userId
+    );
+    
+    res.json({
+      success: true,
+      data: document
+    });
+  } catch (error) {
+    console.error('Error generating termination notice:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to generate termination notice',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Get revenue analytics
+ * GET /api/umbrella/revenue/analytics
+ */
+router.get('/revenue/analytics', authenticateToken, async (req, res) => {
+  try {
+    const { userId } = req.user;
+    const { period = 'monthly' } = req.query;
+    
+    console.log(`📊 Getting revenue analytics for user: ${userId}, period: ${period}`);
+    
+    const analytics = await umbrellaRevenueService.getRevenueAnalytics(userId, period);
+    
+    res.json({
+      success: true,
+      data: analytics
+    });
+  } catch (error) {
+    console.error('Error getting revenue analytics:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to get revenue analytics',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Get network analytics
+ * GET /api/umbrella/analytics/network
+ */
+router.get('/analytics/network', authenticateToken, async (req, res) => {
+  try {
+    const { userId } = req.user;
+    const { period = 'monthly' } = req.query;
+    
+    console.log(`🌐 Getting network analytics for user: ${userId}, period: ${period}`);
+    
+    const analytics = await umbrellaRevenueService.getNetworkAnalytics(userId, period);
+    
+    res.json({
+      success: true,
+      data: analytics
+    });
+  } catch (error) {
+    console.error('Error getting network analytics:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to get network analytics',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Process revenue shares for payment
+ * POST /api/umbrella/revenue/process
+ */
+router.post('/revenue/process', authenticateToken, async (req, res) => {
+  try {
+    const { userId } = req.user;
+    const { shareIds } = req.body;
+    
+    console.log(`💳 Processing revenue shares for user: ${userId}, shares: ${shareIds.join(', ')}`);
+    
+    // Verify user owns these shares
+    const shares = await umbrellaRevenueService.getRevenueShares(userId, {
+      id: { in: shareIds }
+    });
+    
+    if (shares.length !== shareIds.length) {
+      return res.status(403).json({
+        success: false,
+        message: 'Access denied to some revenue shares'
+      });
+    }
+    
+    const processedShares = await umbrellaRevenueService.processRevenueShares(shareIds);
+    
+    res.json({
+      success: true,
+      data: processedShares
+    });
+  } catch (error) {
+    console.error('Error processing revenue shares:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to process revenue shares',
+      error: error.message
+    });
+  }
 });
 
 module.exports = router;

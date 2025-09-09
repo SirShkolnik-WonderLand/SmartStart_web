@@ -51,6 +51,7 @@ export default function UmbrellaDashboard() {
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('overview')
   const [showCreateModal, setShowCreateModal] = useState(false)
+  const [showInviteModal, setShowInviteModal] = useState(false)
 
   useEffect(() => {
     loadUmbrellaData()
@@ -79,6 +80,7 @@ export default function UmbrellaDashboard() {
         setRelationships(relationshipsData.data || [])
       } else {
         console.error('Failed to load relationships:', relationshipsResponse.status, relationshipsResponse.statusText)
+        setRelationships([])
       }
 
       // Load revenue shares
@@ -94,9 +96,12 @@ export default function UmbrellaDashboard() {
         setRevenueShares(sharesData.data || [])
       } else {
         console.error('Failed to load revenue shares:', sharesResponse.status, sharesResponse.statusText)
+        setRevenueShares([])
       }
     } catch (error) {
       console.error('Failed to load umbrella data:', error)
+      setRelationships([])
+      setRevenueShares([])
     } finally {
       setLoading(false)
     }
@@ -225,30 +230,42 @@ export default function UmbrellaDashboard() {
               <CardTitle>Recent Activity</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {relationships.slice(0, 5).map((relationship) => (
-                  <div key={relationship.id} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="flex items-center space-x-4">
-                      <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-                        <Users className="w-5 h-5 text-white" />
+              {relationships.length > 0 ? (
+                <div className="space-y-4">
+                  {relationships.slice(0, 5).map((relationship) => (
+                    <div key={relationship.id} className="flex items-center justify-between p-4 border rounded-lg">
+                      <div className="flex items-center space-x-4">
+                        <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+                          <Users className="w-5 h-5 text-white" />
+                        </div>
+                        <div>
+                          <p className="font-medium">{relationship.referred.name}</p>
+                          <p className="text-sm text-gray-600">{relationship.referred.email}</p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-medium">{relationship.referred.name}</p>
-                        <p className="text-sm text-gray-600">{relationship.referred.email}</p>
+                      <div className="flex items-center space-x-4">
+                        {getStatusBadge(relationship.status)}
+                        <span className="text-sm text-gray-600">
+                          {relationship.defaultShareRate}% share
+                        </span>
+                        <Button variant="ghost" size="sm">
+                          <Eye className="w-4 h-4" />
+                        </Button>
                       </div>
                     </div>
-                    <div className="flex items-center space-x-4">
-                      {getStatusBadge(relationship.status)}
-                      <span className="text-sm text-gray-600">
-                        {relationship.defaultShareRate}% share
-                      </span>
-                      <Button variant="ghost" size="sm">
-                        <Eye className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No umbrella relationships yet</h3>
+                  <p className="text-gray-600 mb-4">Create your first umbrella relationship to start earning revenue shares</p>
+                  <Button onClick={() => setShowCreateModal(true)} className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">
+                    <UserPlus className="w-4 h-4 mr-2" />
+                    Create Relationship
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
