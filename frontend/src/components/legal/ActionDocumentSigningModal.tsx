@@ -46,7 +46,6 @@ export default function ActionDocumentSigningModal({
   const [signedDocuments, setSignedDocuments] = useState<string[]>([]);
 
   const loadDocuments = useCallback(async () => {
-    setIsLoading(true);
     setCurrentStep('loading');
     setErrors([]);
     
@@ -66,8 +65,6 @@ export default function ActionDocumentSigningModal({
       console.error('Error loading documents:', error);
       setErrors([`Failed to load documents: ${error}`]);
       setCurrentStep('review');
-    } finally {
-      setIsLoading(false);
     }
   }, [action, context]);
 
