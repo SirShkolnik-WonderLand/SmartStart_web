@@ -1,11 +1,13 @@
 const crypto = require('crypto');
 const fs = require('fs').promises;
 const path = require('path');
+const { PrismaClient } = require('@prisma/client');
 
 class LegalDocumentService {
     constructor() {
-        this.documents = new Map(); // In production, use database
-        this.signatures = new Map(); // In production, use database
+        this.prisma = new PrismaClient();
+        this.documents = new Map(); // Cache for performance
+        this.signatures = new Map(); // Cache for sessions
         this.loadLegalDocuments();
     }
 
@@ -86,26 +88,38 @@ class LegalDocumentService {
      */
     async getAvailableDocuments(userId) {
         try {
-            const documents = this.getDocuments();
-            const userSignatures = this.getUserSignatures(userId);
+            // Get documents from database
+            const documents = await this.prisma.legalDocument.findMany({
+                where: {
+                    status: { in: ['DRAFT', 'EFFECTIVE'] }
+                },
+                orderBy: { createdAt: 'asc' }
+            });
+
+            // Get user signatures from database
+            const userSignatures = await this.prisma.legalDocumentSignature.findMany({
+                where: { signerId: userId },
+                select: { documentId: true, signedAt: true }
+            });
+
             const signedDocumentIds = userSignatures.map(sig => sig.documentId);
 
             return documents.map(doc => ({
                 id: doc.id,
-                name: doc.name,
-                title: doc.name,
+                name: doc.title,
+                title: doc.title,
                 type: doc.type || 'TERMS_OF_SERVICE',
                 content: doc.content,
-                version: doc.version,
+                version: doc.version || '1.0',
                 status: signedDocumentIds.includes(doc.id) ? 'SIGNED' : 'PENDING',
-                effectiveDate: doc.lastUpdated,
-                requiresSignature: doc.required,
-                complianceRequired: doc.required,
-                createdBy: 'system',
-                createdAt: doc.lastUpdated,
-                updatedAt: doc.lastUpdated,
-                description: doc.description,
-                order: doc.order,
+                effectiveDate: doc.createdAt,
+                requiresSignature: doc.requiresSignature,
+                complianceRequired: doc.complianceRequired,
+                createdBy: doc.createdBy,
+                createdAt: doc.createdAt,
+                updatedAt: doc.updatedAt,
+                description: doc.description || '',
+                order: 1, // Default order
                 isSigned: signedDocumentIds.includes(doc.id),
                 signedAt: userSignatures.find(sig => sig.documentId === doc.id)?.signedAt
             }));
@@ -120,31 +134,42 @@ class LegalDocumentService {
      */
     async getRequiredDocuments(userId) {
         try {
-            const documents = this.getDocuments();
-            const userSignatures = this.getUserSignatures(userId);
+            // Get required documents from database
+            const documents = await this.prisma.legalDocument.findMany({
+                where: {
+                    status: { in: ['DRAFT', 'EFFECTIVE'] },
+                    requiresSignature: true
+                },
+                orderBy: { createdAt: 'asc' }
+            });
+
+            // Get user signatures from database
+            const userSignatures = await this.prisma.legalDocumentSignature.findMany({
+                where: { signerId: userId },
+                select: { documentId: true, signedAt: true }
+            });
+
             const signedDocumentIds = userSignatures.map(sig => sig.documentId);
 
-            return documents
-                .filter(doc => doc.required)
-                .map(doc => ({
-                    id: doc.id,
-                    name: doc.name,
-                    title: doc.name,
-                    type: doc.type || 'TERMS_OF_SERVICE',
-                    content: doc.content,
-                    version: doc.version,
-                    status: signedDocumentIds.includes(doc.id) ? 'SIGNED' : 'REQUIRED',
-                    effectiveDate: doc.lastUpdated,
-                    requiresSignature: true,
-                    complianceRequired: true,
-                    createdBy: 'system',
-                    createdAt: doc.lastUpdated,
-                    updatedAt: doc.lastUpdated,
-                    description: doc.description,
-                    order: doc.order,
-                    isSigned: signedDocumentIds.includes(doc.id),
-                    signedAt: userSignatures.find(sig => sig.documentId === doc.id)?.signedAt
-                }));
+            return documents.map(doc => ({
+                id: doc.id,
+                name: doc.title,
+                title: doc.title,
+                type: doc.type || 'TERMS_OF_SERVICE',
+                content: doc.content,
+                version: doc.version || '1.0',
+                status: signedDocumentIds.includes(doc.id) ? 'SIGNED' : 'REQUIRED',
+                effectiveDate: doc.createdAt,
+                requiresSignature: true,
+                complianceRequired: true,
+                createdBy: doc.createdBy,
+                createdAt: doc.createdAt,
+                updatedAt: doc.updatedAt,
+                description: doc.description || '',
+                order: 1,
+                isSigned: signedDocumentIds.includes(doc.id),
+                signedAt: userSignatures.find(sig => sig.documentId === doc.id)?.signedAt
+            }));
         } catch (error) {
             console.error('Error getting required documents:', error);
             throw error;
@@ -156,31 +181,42 @@ class LegalDocumentService {
      */
     async getPendingDocuments(userId) {
         try {
-            const documents = this.getDocuments();
-            const userSignatures = this.getUserSignatures(userId);
+            // Get non-required documents from database
+            const documents = await this.prisma.legalDocument.findMany({
+                where: {
+                    status: { in: ['DRAFT', 'EFFECTIVE'] },
+                    requiresSignature: false
+                },
+                orderBy: { createdAt: 'asc' }
+            });
+
+            // Get user signatures from database
+            const userSignatures = await this.prisma.legalDocumentSignature.findMany({
+                where: { signerId: userId },
+                select: { documentId: true, signedAt: true }
+            });
+
             const signedDocumentIds = userSignatures.map(sig => sig.documentId);
 
-            return documents
-                .filter(doc => !doc.required)
-                .map(doc => ({
-                    id: doc.id,
-                    name: doc.name,
-                    title: doc.name,
-                    type: doc.type || 'OTHER',
-                    content: doc.content,
-                    version: doc.version,
-                    status: signedDocumentIds.includes(doc.id) ? 'SIGNED' : 'PENDING',
-                    effectiveDate: doc.lastUpdated,
-                    requiresSignature: false,
-                    complianceRequired: false,
-                    createdBy: 'system',
-                    createdAt: doc.lastUpdated,
-                    updatedAt: doc.lastUpdated,
-                    description: doc.description,
-                    order: doc.order,
-                    isSigned: signedDocumentIds.includes(doc.id),
-                    signedAt: userSignatures.find(sig => sig.documentId === doc.id)?.signedAt
-                }));
+            return documents.map(doc => ({
+                id: doc.id,
+                name: doc.title,
+                title: doc.title,
+                type: doc.type || 'OTHER',
+                content: doc.content,
+                version: doc.version || '1.0',
+                status: signedDocumentIds.includes(doc.id) ? 'SIGNED' : 'PENDING',
+                effectiveDate: doc.createdAt,
+                requiresSignature: false,
+                complianceRequired: false,
+                createdBy: doc.createdBy,
+                createdAt: doc.createdAt,
+                updatedAt: doc.updatedAt,
+                description: doc.description || '',
+                order: 1,
+                isSigned: signedDocumentIds.includes(doc.id),
+                signedAt: userSignatures.find(sig => sig.documentId === doc.id)?.signedAt
+            }));
         } catch (error) {
             console.error('Error getting pending documents:', error);
             throw error;
@@ -190,8 +226,35 @@ class LegalDocumentService {
     /**
      * Get a specific legal document
      */
-    getDocument(documentId) {
-        return this.documents.get(documentId);
+    async getDocument(documentId) {
+        try {
+            const document = await this.prisma.legalDocument.findUnique({
+                where: { id: documentId }
+            });
+            
+            if (!document) {
+                return null;
+            }
+            
+            return {
+                id: document.id,
+                name: document.title,
+                title: document.title,
+                type: document.type,
+                content: document.content,
+                version: document.version || '1.0',
+                status: document.status,
+                requiresSignature: document.requiresSignature,
+                complianceRequired: document.complianceRequired,
+                createdBy: document.createdBy,
+                createdAt: document.createdAt,
+                updatedAt: document.updatedAt,
+                description: document.description || ''
+            };
+        } catch (error) {
+            console.error('Error getting document:', error);
+            throw error;
+        }
     }
 
     /**
@@ -238,26 +301,59 @@ class LegalDocumentService {
      */
     async signDocument(userId, documentId, signatureData) {
         try {
-            // Create a temporary session for this single document
-            const session = this.generateSigningSession(userId, [documentId]);
-            const result = this.signDocumentInSession(session.sessionId, documentId, signatureData);
+            // Check if document exists
+            const document = await this.prisma.legalDocument.findUnique({
+                where: { id: documentId }
+            });
             
-            if (result.success) {
-                return {
-                    id: `sig-${crypto.randomBytes(8).toString('hex')}`,
+            if (!document) {
+                throw new Error('Document not found');
+            }
+            
+            // Check if already signed
+            const existingSignature = await this.prisma.legalDocumentSignature.findFirst({
+                where: {
+                    documentId: documentId,
+                    signerId: userId
+                }
+            });
+            
+            if (existingSignature) {
+                throw new Error('Document already signed');
+            }
+            
+            // Generate signature hash
+            const signatureHash = crypto.createHash('sha256')
+                .update(document.content + userId + new Date().toISOString())
+                .digest('hex');
+            
+            // Save signature to database
+            const signature = await this.prisma.legalDocumentSignature.create({
+                data: {
                     documentId: documentId,
                     signerId: userId,
-                    signatureHash: result.signature.documentHash,
-                    signedAt: result.signature.signedAt.toISOString(),
-                    ipAddress: signatureData.ip_address,
-                    userAgent: signatureData.user_agent,
+                    signatureHash: signatureHash,
+                    signedAt: new Date(),
+                    ipAddress: signatureData.ip_address || 'unknown',
+                    userAgent: signatureData.user_agent || 'unknown',
                     termsAccepted: true,
                     privacyAccepted: true,
                     identityVerified: signatureData.mfa_verified || false
-                };
-            } else {
-                throw new Error(result.error);
-            }
+                }
+            });
+            
+            return {
+                id: signature.id,
+                documentId: documentId,
+                signerId: userId,
+                signatureHash: signatureHash,
+                signedAt: signature.signedAt.toISOString(),
+                ipAddress: signature.ipAddress,
+                userAgent: signature.userAgent,
+                termsAccepted: signature.termsAccepted,
+                privacyAccepted: signature.privacyAccepted,
+                identityVerified: signature.identityVerified
+            };
         } catch (error) {
             console.error('Error signing document:', error);
             throw error;
@@ -453,36 +549,60 @@ class LegalDocumentService {
     /**
      * Get user's signed documents
      */
-    getUserSignatures(userId) {
-        const userSignatures = [];
+    async getUserSignatures(userId) {
+        try {
+            const signatures = await this.prisma.legalDocumentSignature.findMany({
+                where: { signerId: userId },
+                include: {
+                    document: {
+                        select: { title: true, version: true }
+                    }
+                },
+                orderBy: { signedAt: 'desc' }
+            });
 
-        for (const [sessionId, session] of this.signatures.entries()) {
-            if (session.userId === userId) {
-                for (const [documentId, signature] of Object.entries(session.signatures)) {
-                    userSignatures.push({
-                        sessionId,
-                        documentId,
-                        documentName: signature.documentName,
-                        signedAt: signature.signedAt,
-                        version: signature.version
-                    });
-                }
-            }
+            return signatures.map(sig => ({
+                sessionId: null, // Not using sessions anymore
+                documentId: sig.documentId,
+                documentName: sig.document.title,
+                signedAt: sig.signedAt,
+                version: sig.document.version || '1.0',
+                signatureHash: sig.signatureHash
+            }));
+        } catch (error) {
+            console.error('Error getting user signatures:', error);
+            return [];
         }
-
-        return userSignatures;
     }
 
     /**
      * Check if user has signed all required documents
      */
-    hasSignedAllRequired(userId) {
-        const userSignatures = this.getUserSignatures(userId);
-        const requiredDocs = ['PPA', 'ESCA', 'PNA', 'MNDA'];
+    async hasSignedAllRequired(userId) {
+        try {
+            // Get all required documents
+            const requiredDocs = await this.prisma.legalDocument.findMany({
+                where: {
+                    requiresSignature: true,
+                    status: { in: ['DRAFT', 'EFFECTIVE'] }
+                },
+                select: { id: true }
+            });
 
-        return requiredDocs.every(docId =>
-            userSignatures.some(sig => sig.documentId === docId)
-        );
+            // Get user signatures
+            const userSignatures = await this.prisma.legalDocumentSignature.findMany({
+                where: { signerId: userId },
+                select: { documentId: true }
+            });
+
+            const signedDocumentIds = userSignatures.map(sig => sig.documentId);
+            const requiredDocumentIds = requiredDocs.map(doc => doc.id);
+
+            return requiredDocumentIds.every(docId => signedDocumentIds.includes(docId));
+        } catch (error) {
+            console.error('Error checking if user has signed all required documents:', error);
+            return false;
+        }
     }
 
     /**

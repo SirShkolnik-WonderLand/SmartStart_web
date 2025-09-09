@@ -170,37 +170,30 @@ router.post('/session/:sessionId/sign', authenticateToken, async (req, res) => {
     const enhancedSignatureData = {
       ...signatureData,
       userId,
-      ipAddress: req.ip || req.connection.remoteAddress,
-      userAgent: req.get('User-Agent'),
+      ip_address: req.ip || req.connection.remoteAddress,
+      user_agent: req.get('User-Agent'),
       timestamp: new Date().toISOString()
     };
     
     console.log('🔍 Enhanced signature data:', enhancedSignatureData);
     
-    const result = legalDocumentService.signDocumentInSession(sessionId, documentId, enhancedSignatureData);
+    // Use direct database signing instead of session-based
+    const signature = await legalDocumentService.signDocument(userId, documentId, enhancedSignatureData);
     
-    console.log('🔍 Signing result:', result);
-    
-    if (!result.success) {
-      return res.status(400).json({
-        success: false,
-        message: result.error
-      });
-    }
+    console.log('🔍 Signing result:', signature);
     
     res.json({
       success: true,
       data: {
-        signature: result.signature,
-        allSigned: result.allSigned,
-        message: result.allSigned ? 'All documents signed successfully!' : 'Document signed successfully'
+        signature: signature,
+        message: 'Document signed successfully'
       }
     });
   } catch (error) {
     console.error('Error signing document:', error);
-    res.status(500).json({
+    res.status(400).json({
       success: false,
-      message: 'Failed to sign document'
+      message: error.message || 'Failed to sign document'
     });
   }
 });
@@ -256,7 +249,7 @@ router.get('/user/signatures', authenticateToken, async (req, res) => {
   try {
     const { userId } = req.user;
     
-    const signatures = legalDocumentService.getUserSignatures(userId);
+    const signatures = await legalDocumentService.getUserSignatures(userId);
     
     res.json({
       success: true,
@@ -278,8 +271,8 @@ router.get('/user/compliance', authenticateToken, async (req, res) => {
   try {
     const { userId } = req.user;
     
-    const hasSignedAll = legalDocumentService.hasSignedAllRequired(userId);
-    const signatures = legalDocumentService.getUserSignatures(userId);
+    const hasSignedAll = await legalDocumentService.hasSignedAllRequired(userId);
+    const signatures = await legalDocumentService.getUserSignatures(userId);
     
     res.json({
       success: true,

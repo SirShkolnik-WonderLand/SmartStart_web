@@ -27,6 +27,7 @@ import {
   SortDesc
 } from 'lucide-react'
 import { legalDocumentsApiService, LegalDocument, DocumentStatus, DocumentAuditLog, ComplianceReport } from '@/lib/legal-documents-api'
+import DocumentSigningModal from './legal/DocumentSigningModal'
 
 type EvidenceDetails = {
   signer?: string
@@ -48,6 +49,10 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
+  const [signingModal, setSigningModal] = useState<{
+    isOpen: boolean;
+    document: LegalDocument | null;
+  }>({ isOpen: false, document: null })
   const [filter, setFilter] = useState<'all' | 'required' | 'signed' | 'pending' | 'templates'>('all')
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('table')
   const [selectedDocuments, setSelectedDocuments] = useState<string[]>([])
@@ -147,19 +152,14 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
     loadData()
   }, [])
 
-  // Sign a single document
-  const signDocument = async (doc: LegalDocument) => {
+  // Open signing modal for a document
+  const signDocument = (doc: LegalDocument) => {
+    setSigningModal({ isOpen: true, document: doc })
+  }
+
+  // Handle successful signing
+  const handleSignSuccess = async () => {
     try {
-      setIsActing(true)
-      // Start a session and sign immediately (simple flow)
-      const session = await legalDocumentsApiService.startSigningSession([doc.id])
-      if (session.success && session.data?.sessionId) {
-        await legalDocumentsApiService.signInSession(session.data.sessionId, doc.id, {
-          method: 'CLICK_SIGN',
-          location: 'documents_page',
-          mfa_verified: false
-        })
-      }
       // Refresh documents and status
       const [documentsResponse, statusResponse] = await Promise.all([
         legalDocumentsApiService.getAvailableDocuments(),
@@ -168,10 +168,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
       if (documentsResponse.success) setDocuments(documentsResponse.data)
       if (statusResponse.success) setDocumentStatus(statusResponse.data)
     } catch (err) {
-      console.error('Signing failed:', err)
-      alert('Signing failed. Please try again.')
-    } finally {
-      setIsActing(false)
+      console.error('Failed to refresh documents:', err)
     }
   }
 
@@ -1122,6 +1119,14 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
             </div>
           </div>
         )}
+
+        {/* Document Signing Modal */}
+        <DocumentSigningModal
+          isOpen={signingModal.isOpen}
+          onClose={() => setSigningModal({ isOpen: false, document: null })}
+          document={signingModal.document}
+          onSignSuccess={handleSignSuccess}
+        />
       </div>
     </div>
   )

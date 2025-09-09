@@ -1,415 +1,280 @@
-'use client'
+'use client';
 
-import { useState, useEffect, useCallback } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { FileText, CheckCircle, AlertCircle, Loader2, X, Download } from 'lucide-react'
-import { legalFrameworkService, SignatureInfo } from '@/lib/legal-framework'
+import React, { useState, useEffect } from 'react';
+import { X, Download, FileText, CheckCircle, AlertCircle } from 'lucide-react';
+import { legalDocumentsApiService, LegalDocument } from '@/lib/legal-documents-api';
 
 interface DocumentSigningModalProps {
-  isOpen: boolean
-  onClose: () => void
-  action: string
-  context?: Record<string, unknown>
-  onSuccess?: (signedDocuments: string[]) => void
-  onError?: (errors: string[]) => void
-}
-
-interface DocumentToSign {
-  documentType: string
-  document: string
-  status: 'GENERATED' | 'SIGNING' | 'SIGNED' | 'ERROR'
-  error?: string
-  documentId?: string
-}
-
-interface ActionDocumentsResponse {
-  action: string
-  requiredDocuments: string[]
-  documents: Array<{
-    documentType: string
-    document: string
-    status: string
-    error?: string
-  }>
-  rbacLevel: string
+  isOpen: boolean;
+  onClose: () => void;
+  document: LegalDocument | null;
+  onSignSuccess: () => void;
 }
 
 export default function DocumentSigningModal({
   isOpen,
   onClose,
-  action,
-  context = {},
-  onSuccess,
-  onError
+  document,
+  onSignSuccess
 }: DocumentSigningModalProps) {
-  const [documents, setDocuments] = useState<DocumentToSign[]>([])
-  const [, setIsLoading] = useState(false)
-  const [currentStep, setCurrentStep] = useState<'loading' | 'review' | 'signing' | 'complete'>('loading')
-  const [signatureInfo, setSignatureInfo] = useState<SignatureInfo>({
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSigning, setIsSigning] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+  const [signatureData, setSignatureData] = useState({
     signerName: '',
     signerEmail: '',
-    signerTitle: ''
-  })
-  const [errors, setErrors] = useState<string[]>([])
-  const [signedDocuments, setSignedDocuments] = useState<string[]>([])
-
-  const loadDocuments = useCallback(async () => {
-    setIsLoading(true)
-    setCurrentStep('loading')
-    setErrors([])
-    
-    try {
-      const result: ActionDocumentsResponse = await legalFrameworkService.generateActionDocuments(action, context)
-      
-      const docs: DocumentToSign[] = result.documents.map((doc) => ({
-        documentType: doc.documentType,
-        document: doc.document,
-        status: doc.status === 'GENERATED' ? 'GENERATED' : 'ERROR',
-        error: doc.error
-      }))
-      
-      setDocuments(docs)
-      setCurrentStep('review')
-    } catch (error) {
-      console.error('Error loading documents:', error)
-      setErrors([`Failed to load documents: ${error}`])
-      setCurrentStep('review')
-    } finally {
-      setIsLoading(false)
-    }
-  }, [action, context])
+    signerTitle: '',
+    termsAccepted: false,
+    privacyAccepted: false
+  });
 
   useEffect(() => {
-    if (isOpen) {
-      loadDocuments()
+    if (isOpen && document) {
+      setError(null);
+      setSuccess(false);
+      setSignatureData({
+        signerName: '',
+        signerEmail: '',
+        signerTitle: '',
+        termsAccepted: false,
+        privacyAccepted: false
+      });
     }
-  }, [isOpen, action, context, loadDocuments])
+  }, [isOpen, document]);
 
-  const handleSignAll = async () => {
-    setCurrentStep('signing')
-    setErrors([])
-    setSignedDocuments([])
-    
-    const newSignedDocuments: string[] = []
-    const newErrors: string[] = []
-    
-    for (const doc of documents) {
-      if (doc.status === 'GENERATED') {
-        try {
-          // Update document status to signing
-          setDocuments(prev => prev.map(d => 
-            d.documentType === doc.documentType 
-              ? { ...d, status: 'SIGNING' as const }
-              : d
-          ))
-          
-          // Store document
-          const stored = await legalFrameworkService.storeDocument(
-            doc.documentType,
-            doc.document,
-            context
-          )
-          
-          // Sign document
-          const signed = await legalFrameworkService.signDocument(
-            stored.documentId,
-            signatureInfo
-          )
-          
-          if (signed.success) {
-            newSignedDocuments.push(doc.documentType)
-            setDocuments(prev => prev.map(d => 
-              d.documentType === doc.documentType 
-                ? { ...d, status: 'SIGNED' as const, documentId: stored.documentId }
-                : d
-            ))
-          } else {
-            newErrors.push(`Failed to sign ${legalFrameworkService.getDocumentDisplayName(doc.documentType)}`)
-            setDocuments(prev => prev.map(d => 
-              d.documentType === doc.documentType 
-                ? { ...d, status: 'ERROR' as const, error: 'Signing failed' }
-                : d
-            ))
-          }
-        } catch (error) {
-          newErrors.push(`Error signing ${legalFrameworkService.getDocumentDisplayName(doc.documentType)}: ${error}`)
-          setDocuments(prev => prev.map(d => 
-            d.documentType === doc.documentType 
-              ? { ...d, status: 'ERROR' as const, error: String(error) }
-              : d
-          ))
-        }
+  const handleSign = async () => {
+    if (!document) return;
+
+    setIsSigning(true);
+    setError(null);
+
+    try {
+      // Start signing session
+      const session = await legalDocumentsApiService.startSigningSession([document.id]);
+      
+      if (!session.success || !session.data?.sessionId) {
+        throw new Error('Failed to start signing session');
       }
-    }
-    
-    setSignedDocuments(newSignedDocuments)
-    setErrors(newErrors)
-    setCurrentStep('complete')
-    
-    if (newErrors.length === 0) {
-      onSuccess?.(newSignedDocuments)
-    } else {
-      onError?.(newErrors)
-    }
-  }
 
-  const handleDownloadDocument = (documentContent: string, documentType: string) => {
-    const blob = new Blob([documentContent], { type: 'text/plain' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `${documentType}_${new Date().toISOString().split('T')[0]}.txt`
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
-  }
+      // Sign the document
+      const result = await legalDocumentsApiService.signInSession(
+        session.data.sessionId,
+        document.id,
+        {
+          method: 'CLICK_SIGN',
+          location: 'signing_modal',
+          mfa_verified: false,
+          signerName: signatureData.signerName,
+          signerEmail: signatureData.signerEmail,
+          signerTitle: signatureData.signerTitle,
+          termsAccepted: signatureData.termsAccepted,
+          privacyAccepted: signatureData.privacyAccepted
+        }
+      );
 
-  const getStatusIcon = (status: DocumentToSign['status']) => {
-    switch (status) {
-      case 'GENERATED':
-        return <FileText className="w-5 h-5 text-blue-500" />
-      case 'SIGNING':
-        return <Loader2 className="w-5 h-5 text-yellow-500 animate-spin" />
-      case 'SIGNED':
-        return <CheckCircle className="w-5 h-5 text-green-500" />
-      case 'ERROR':
-        return <AlertCircle className="w-5 h-5 text-red-500" />
+      if (result.success) {
+        setSuccess(true);
+        setTimeout(() => {
+          onSignSuccess();
+          onClose();
+        }, 2000);
+      } else {
+        throw new Error('Failed to sign document');
+      }
+    } catch (err) {
+      console.error('Signing error:', err);
+      setError(err instanceof Error ? err.message : 'Failed to sign document');
+    } finally {
+      setIsSigning(false);
     }
-  }
+  };
 
-  const getStatusColor = (status: DocumentToSign['status']) => {
-    switch (status) {
-      case 'GENERATED':
-        return 'border-blue-200 bg-blue-50'
-      case 'SIGNING':
-        return 'border-yellow-200 bg-yellow-50'
-      case 'SIGNED':
-        return 'border-green-200 bg-green-50'
-      case 'ERROR':
-        return 'border-red-200 bg-red-50'
+  const handleDownload = async () => {
+    if (!document) return;
+
+    try {
+      const blob = await legalDocumentsApiService.downloadDocument(document.id);
+      if (blob) {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${document.title || 'document'}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+      }
+    } catch (err) {
+      console.error('Download error:', err);
+      setError('Failed to download document');
     }
-  }
+  };
 
-  if (!isOpen) return null
+  if (!isOpen || !document) return null;
 
   return (
-    <AnimatePresence>
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.95 }}
-          className="glass rounded-xl p-6 max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col"
-        >
-          {/* Header */}
-          <div className="flex items-center justify-between mb-6">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex items-center space-x-3">
+            <FileText className="h-6 w-6 text-blue-600" />
             <div>
-              <h2 className="text-2xl font-bold text-foreground">
-                Legal Document Signing
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                Sign Document
               </h2>
-              <p className="text-foreground-body">
-                {legalFrameworkService.getActionDisplayName(action)}
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                {document.title}
               </p>
             </div>
-            <button
-              onClick={onClose}
-              className="p-2 hover:bg-foreground-muted/10 rounded-lg transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+          >
+            <X className="h-6 w-6" />
+          </button>
+        </div>
+
+        <div className="flex flex-col lg:flex-row h-full">
+          {/* Document Content */}
+          <div className="flex-1 p-6 overflow-y-auto">
+            <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 mb-4">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Document Type: {document.type}
+                </span>
+                <span className="text-sm text-gray-500 dark:text-gray-400">
+                  Version {document.version}
+                </span>
+              </div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                Last Updated: {new Date(document.updatedAt).toLocaleDateString()}
+              </div>
+            </div>
+
+            <div className="prose dark:prose-invert max-w-none">
+              <div className="whitespace-pre-wrap text-sm leading-relaxed">
+                {document.content}
+              </div>
+            </div>
           </div>
 
-          {/* Content */}
-          <div className="flex-1 overflow-y-auto">
-            {currentStep === 'loading' && (
-              <div className="flex items-center justify-center py-12">
-                <div className="text-center">
-                  <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto mb-4" />
-                  <p className="text-foreground-body">Loading required documents...</p>
-                </div>
-              </div>
-            )}
-
-            {currentStep === 'review' && (
-              <div className="space-y-4">
-                <div className="mb-6">
-                  <h3 className="text-lg font-semibold text-foreground mb-2">
-                    Required Documents
-                  </h3>
-                  <p className="text-foreground-body">
-                    Please review and sign the following documents to proceed with this action.
-                  </p>
-                </div>
-
-                {/* Signature Information */}
-                <div className="glass rounded-lg p-4 mb-6">
-                  <h4 className="font-semibold text-foreground mb-3">Signature Information</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-foreground-body mb-1">
-                        Full Name
-                      </label>
-                      <input
-                        type="text"
-                        value={signatureInfo.signerName}
-                        onChange={(e) => setSignatureInfo(prev => ({ ...prev, signerName: e.target.value }))}
-                        className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground"
-                        placeholder="Your full name"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-foreground-body mb-1">
-                        Email
-                      </label>
-                      <input
-                        type="email"
-                        value={signatureInfo.signerEmail}
-                        onChange={(e) => setSignatureInfo(prev => ({ ...prev, signerEmail: e.target.value }))}
-                        className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground"
-                        placeholder="your@email.com"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-foreground-body mb-1">
-                        Title (Optional)
-                      </label>
-                      <input
-                        type="text"
-                        value={signatureInfo.signerTitle || ''}
-                        onChange={(e) => setSignatureInfo(prev => ({ ...prev, signerTitle: e.target.value }))}
-                        className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground"
-                        placeholder="Your title"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Documents List */}
-                <div className="space-y-3">
-                  {documents.map((doc) => (
-                    <div
-                      key={doc.documentType}
-                      className={`border rounded-lg p-4 ${getStatusColor(doc.status)}`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          {getStatusIcon(doc.status)}
-                          <div>
-                            <h4 className="font-medium text-foreground">
-                              {legalFrameworkService.getDocumentDisplayName(doc.documentType)}
-                            </h4>
-                            {doc.error && (
-                              <p className="text-sm text-red-600">{doc.error}</p>
-                            )}
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <button
-                            onClick={() => handleDownloadDocument(doc.document, doc.documentType)}
-                            className="p-2 hover:bg-foreground-muted/10 rounded-lg transition-colors"
-                            title="Download document"
-                          >
-                            <Download className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {errors.length > 0 && (
-                  <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                    <h4 className="font-medium text-red-800 mb-2">Errors:</h4>
-                    <ul className="text-sm text-red-700 space-y-1">
-                      {errors.map((error, index) => (
-                        <li key={index}>• {error}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {currentStep === 'signing' && (
-              <div className="text-center py-12">
-                <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-foreground mb-2">
-                  Signing Documents
+          {/* Signing Panel */}
+          <div className="w-full lg:w-80 border-l border-gray-200 dark:border-gray-700 p-6">
+            {success ? (
+              <div className="text-center">
+                <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                  Document Signed Successfully!
                 </h3>
-                <p className="text-foreground-body">
-                  Please wait while we process your signatures...
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Your signature has been recorded with timestamp and legal validity.
                 </p>
               </div>
-            )}
+            ) : (
+              <>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                  Digital Signature
+                </h3>
 
-            {currentStep === 'complete' && (
-              <div className="text-center py-12">
-                {errors.length === 0 ? (
-                  <>
-                    <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold text-foreground mb-2">
-                      Documents Signed Successfully!
-                    </h3>
-                    <p className="text-foreground-body mb-4">
-                      You have successfully signed {signedDocuments.length} document(s).
-                    </p>
-                    <div className="text-sm text-foreground-muted">
-                      Signed documents: {signedDocuments.map(doc => 
-                        legalFrameworkService.getDocumentDisplayName(doc)
-                      ).join(', ')}
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Full Name *
+                    </label>
+                    <input
+                      type="text"
+                      value={signatureData.signerName}
+                      onChange={(e) => setSignatureData(prev => ({ ...prev, signerName: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                      placeholder="Enter your full name"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Email Address *
+                    </label>
+                    <input
+                      type="email"
+                      value={signatureData.signerEmail}
+                      onChange={(e) => setSignatureData(prev => ({ ...prev, signerEmail: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                      placeholder="Enter your email"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Title/Position
+                    </label>
+                    <input
+                      type="text"
+                      value={signatureData.signerTitle}
+                      onChange={(e) => setSignatureData(prev => ({ ...prev, signerTitle: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                      placeholder="Enter your title or position"
+                    />
+                  </div>
+
+                  <div className="space-y-3">
+                    <label className="flex items-start space-x-3">
+                      <input
+                        type="checkbox"
+                        checked={signatureData.termsAccepted}
+                        onChange={(e) => setSignatureData(prev => ({ ...prev, termsAccepted: e.target.checked }))}
+                        className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                      />
+                      <span className="text-sm text-gray-700 dark:text-gray-300">
+                        I have read and agree to the terms and conditions of this document
+                      </span>
+                    </label>
+
+                    <label className="flex items-start space-x-3">
+                      <input
+                        type="checkbox"
+                        checked={signatureData.privacyAccepted}
+                        onChange={(e) => setSignatureData(prev => ({ ...prev, privacyAccepted: e.target.checked }))}
+                        className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                      />
+                      <span className="text-sm text-gray-700 dark:text-gray-300">
+                        I acknowledge the privacy policy and data handling practices
+                      </span>
+                    </label>
+                  </div>
+
+                  {error && (
+                    <div className="flex items-center space-x-2 text-red-600 dark:text-red-400">
+                      <AlertCircle className="h-4 w-4" />
+                      <span className="text-sm">{error}</span>
                     </div>
-                  </>
-                ) : (
-                  <>
-                    <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold text-foreground mb-2">
-                      Signing Completed with Errors
-                    </h3>
-                    <p className="text-foreground-body mb-4">
-                      Some documents could not be signed successfully.
-                    </p>
-                    <div className="text-sm text-red-600">
-                      {errors.map((error, index) => (
-                        <div key={index}>• {error}</div>
-                      ))}
-                    </div>
-                  </>
-                )}
-              </div>
+                  )}
+
+                  <div className="space-y-3 pt-4">
+                    <button
+                      onClick={handleSign}
+                      disabled={isSigning || !signatureData.signerName || !signatureData.signerEmail || !signatureData.termsAccepted || !signatureData.privacyAccepted}
+                      className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-medium py-2 px-4 rounded-md transition-colors"
+                    >
+                      {isSigning ? 'Signing...' : 'Sign Document'}
+                    </button>
+
+                    <button
+                      onClick={handleDownload}
+                      className="w-full flex items-center justify-center space-x-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 font-medium py-2 px-4 rounded-md transition-colors"
+                    >
+                      <Download className="h-4 w-4" />
+                      <span>Download Copy</span>
+                    </button>
+                  </div>
+                </div>
+              </>
             )}
           </div>
-
-          {/* Footer */}
-          <div className="flex items-center justify-between pt-6 border-t border-border">
-            <div className="text-sm text-foreground-muted">
-              {currentStep === 'review' && documents.length > 0 && (
-                <span>
-                  {documents.filter(d => d.status === 'GENERATED').length} document(s) ready to sign
-                </span>
-              )}
-            </div>
-            <div className="flex items-center gap-3">
-              <button
-                onClick={onClose}
-                className="px-4 py-2 text-foreground-muted hover:text-foreground transition-colors"
-              >
-                {currentStep === 'complete' ? 'Close' : 'Cancel'}
-              </button>
-              {currentStep === 'review' && (
-                <button
-                  onClick={handleSignAll}
-                  disabled={!signatureInfo.signerName || !signatureInfo.signerEmail || 
-                           documents.filter(d => d.status === 'GENERATED').length === 0}
-                  className="wonder-button disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Sign All Documents
-                </button>
-              )}
-            </div>
-          </div>
-        </motion.div>
+        </div>
       </div>
-    </AnimatePresence>
-  )
+    </div>
+  );
 }
