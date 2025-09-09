@@ -155,6 +155,16 @@ try {
     console.error('❌ Failed to mount Umbrella API:', error.message);
 }
 
+// Mount Umbrella State Machine API routes
+try {
+    console.log('🚀 Mounting Umbrella State Machine API...');
+    const umbrellaStateMachineApiRoutes = require('./routes/umbrella-state-machine-api');
+    app.use('/api/umbrella/state-machine', umbrellaStateMachineApiRoutes);
+    console.log('✅ Umbrella State Machine API mounted successfully');
+} catch (error) {
+    console.error('❌ Failed to mount Umbrella State Machine API:', error.message);
+}
+
 // Old authentication routes removed - using unified-auth-api instead
 
 const invitationApiRoutes = require('./routes/invitation-api');
