@@ -6,7 +6,7 @@ class LegalDocumentService {
     constructor() {
         this.documents = new Map(); // In production, use database
         this.signatures = new Map(); // In production, use database
-        this.legalFramework = require('./legal-framework');
+        this.legalFramework = new (require('./legal-framework'))();
         this.loadLegalDocuments();
     }
 
