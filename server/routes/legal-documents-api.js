@@ -12,6 +12,41 @@ router.get('/test', (req, res) => {
     });
 });
 
+// Seed legal documents endpoint
+router.post('/seed', async (req, res) => {
+    try {
+        const { exec } = require('child_process');
+        const path = require('path');
+        
+        // Run the seed script
+        exec('node seed-legal-documents.js', { cwd: path.join(__dirname, '..') }, (error, stdout, stderr) => {
+            if (error) {
+                console.error('Seed script error:', error);
+                return res.status(500).json({
+                    success: false,
+                    message: 'Failed to run seed script',
+                    error: error.message
+                });
+            }
+            
+            console.log('Seed script output:', stdout);
+            if (stderr) console.error('Seed script stderr:', stderr);
+            
+            res.json({
+                success: true,
+                message: 'Legal documents seeded successfully',
+                output: stdout
+            });
+        });
+    } catch (error) {
+        console.error('Error running seed script:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
 // Get available documents for user
 router.get('/documents', authenticateToken, async (req, res) => {
     try {
