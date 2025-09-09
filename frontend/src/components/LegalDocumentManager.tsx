@@ -189,12 +189,12 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
     setEvidenceDoc(doc)
     // Prefill with known fields from document data
     const ev: EvidenceDetails = {
-      signer: doc.signerName || 'Unknown',
-      signedAt: doc.signedAt,
-      signatureHash: doc.signatureHash,
-      ip: doc.ipAddress,
-      userAgent: doc.userAgent,
-      verified: true // Assume verified if we have signature data
+      signer: doc.signerName || (doc.isSigned ? 'Unknown Signer' : 'Not Signed'),
+      signedAt: doc.signedAt || (doc.isSigned ? 'Unknown Date' : null),
+      signatureHash: doc.signatureHash || (doc.isSigned ? 'Hash Not Available' : null),
+      ip: doc.ipAddress || (doc.isSigned ? 'IP Not Available' : null),
+      userAgent: doc.userAgent || (doc.isSigned ? 'User Agent Not Available' : null),
+      verified: doc.isSigned && doc.signatureHash ? true : false
     }
     setEvidence(ev)
 
@@ -1050,23 +1050,60 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
                   <div className="font-medium text-gray-900 mb-1">{evidenceDoc.title}</div>
                   <div className="text-gray-600">Type: {(evidenceDoc.type || '').replace(/_/g, ' ')}</div>
                   <div className="text-gray-600">Version: {evidenceDoc.version}</div>
+                  <div className="mt-2">
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                      evidenceDoc.isSigned 
+                        ? 'bg-green-100 text-green-800' 
+                        : 'bg-yellow-100 text-yellow-800'
+                    }`}>
+                      {evidenceDoc.isSigned ? '✓ Signed' : '⚠ Not Signed'}
+                    </span>
+                  </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
                     <div className="text-gray-600">Signer</div>
-                    <div className="font-mono text-gray-900 break-all">{evidence?.signer || '—'}</div>
+                    <div className={`font-mono break-all ${
+                      evidence?.signer === 'Not Signed' 
+                        ? 'text-yellow-600' 
+                        : evidence?.signer === 'Unknown Signer'
+                        ? 'text-orange-600'
+                        : 'text-gray-900'
+                    }`}>
+                      {evidence?.signer || '—'}
+                    </div>
                   </div>
                   <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
                     <div className="text-gray-600">Signed At</div>
-                    <div className="font-mono text-gray-900">{evidence?.signedAt ? new Date(evidence.signedAt).toLocaleString() : '—'}</div>
+                    <div className={`font-mono ${
+                      evidence?.signedAt === null || evidence?.signedAt === 'Unknown Date'
+                        ? 'text-yellow-600'
+                        : 'text-gray-900'
+                    }`}>
+                      {evidence?.signedAt ? new Date(evidence.signedAt).toLocaleString() : '—'}
+                    </div>
                   </div>
                   <div className="md:col-span-2 bg-gray-50 rounded-lg p-4 border border-gray-200">
                     <div className="text-gray-600">Signature Hash (sha256)</div>
-                    <div className="font-mono text-xs text-gray-900 break-all">{evidence?.signatureHash || '—'}</div>
+                    <div className={`font-mono text-xs break-all ${
+                      evidence?.signatureHash === null || evidence?.signatureHash === 'Hash Not Available'
+                        ? 'text-yellow-600'
+                        : 'text-gray-900'
+                    }`}>
+                      {evidence?.signatureHash || '—'}
+                    </div>
                   </div>
                 </div>
                 {evidenceDoc?.content?.includes('DOC HASH') && (
                   <div className="text-xs text-gray-500">Note: Full document hash and evidence are stored server-side per policy.</div>
+                )}
+                {!evidenceDoc.isSigned && (
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                    <div className="text-sm text-yellow-800">
+                      <strong>Document Not Signed:</strong> This document has not been signed yet. 
+                      Use the "Sign Now" button to sign this document and create a complete audit trail.
+                    </div>
+                  </div>
                 )}
                 <div className="mt-4">
                   <div className="text-gray-900 font-medium mb-2">Audit Trail</div>
