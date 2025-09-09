@@ -86,6 +86,19 @@ class LegalDocumentService {
     }
 
     /**
+     * Map database user level to RBAC level for legal framework compatibility
+     */
+    mapUserLevelToRbacLevel(userLevel) {
+        const levelMapping = {
+            'OWLET': 'GUEST',
+            'NIGHT_WATCHER': 'MEMBER', 
+            'WISE_OWL': 'SUBSCRIBER',
+            'SKY_MASTER': 'SEAT_HOLDER'
+        };
+        return levelMapping[userLevel] || 'GUEST';
+    }
+
+    /**
      * Get available documents for user (API compatibility with existing legal framework)
      */
     async getAvailableDocuments(userId) {
@@ -93,10 +106,11 @@ class LegalDocumentService {
             // Get user's current RBAC level from database
             const user = await this.prisma.user.findUnique({
                 where: { id: userId },
-                select: { rbacLevel: true }
+                select: { level: true }
             });
             
-            const userLevel = user?.rbacLevel || 'GUEST';
+            const userLevel = user?.level || 'OWLET';
+            const rbacLevel = this.mapUserLevelToRbacLevel(userLevel);
             
             // Get documents from database
             const documents = await this.prisma.legalDocument.findMany({
@@ -115,12 +129,12 @@ class LegalDocumentService {
             const signedDocumentIds = userSignatures.map(sig => sig.documentId);
 
             // Filter documents based on RBAC level using existing legal framework
-            const rbacRequirements = this.legalFramework.rbacDocumentRequirements[userLevel] || [];
+            const rbacRequirements = this.legalFramework.rbacDocumentRequirements[rbacLevel] || [];
             const allRequiredDocs = [];
             
             // Get all documents for current level and below
             for (const [level, config] of Object.entries(this.legalFramework.rbacDocumentRequirements)) {
-                if (this.getLevelNumber(level) <= this.getLevelNumber(userLevel)) {
+                if (this.getLevelNumber(level) <= this.getLevelNumber(rbacLevel)) {
                     allRequiredDocs.push(...config);
                 }
             }
