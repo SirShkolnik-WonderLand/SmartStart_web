@@ -86,60 +86,42 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
         // Load required and pending documents for better guidance
         loadRequiredAndPending()
 
-        // Merge available docs with per-user status so signed items appear
-        if (documentsResponse.success && statusResponse.success && documentsResponse.data && statusResponse.data) {
+        // Use available documents as primary source, enhance with status if available
+        if (documentsResponse.success && documentsResponse.data) {
           const available = documentsResponse.data
-          const statusDocs = statusResponse.data.documents || []
+          const statusDocs = statusResponse.success && statusResponse.data ? statusResponse.data.documents || [] : []
 
-          const byId: Record<string, LegalDocument> = {}
-          for (const doc of available) {
-            byId[doc.id] = { ...doc }
+          // Create a map of status data for quick lookup
+          const statusMap: Record<string, any> = {}
+          for (const sdoc of statusDocs) {
+            statusMap[sdoc.document_id] = sdoc
           }
 
-          for (const sdoc of statusDocs) {
-            const existing = byId[sdoc.document_id]
-            if (existing) {
-              byId[sdoc.document_id] = {
-                ...existing,
-                isSigned: sdoc.status === 'signed' || existing.isSigned,
-                status: sdoc.status || existing.status,
-                signedAt: sdoc.signed_at || existing.signedAt,
-                signatureHash: sdoc.signature_hash || existing.signatureHash,
-              }
-            } else {
-              // Create a minimal entry so status-only docs surface in the grid
-              byId[sdoc.document_id] = {
-                id: sdoc.document_id,
-                title: sdoc.title || 'Document',
-                type: sdoc.type || 'LEGAL_DOCUMENT',
-                content: '',
-                version: sdoc.document_version || '1.0',
-                status: sdoc.status,
-                requiresSignature: sdoc.requires_signature,
-                complianceRequired: false,
-                createdBy: '',
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
-                isSigned: sdoc.status === 'signed',
-                signedAt: sdoc.signed_at,
-                signatureHash: sdoc.signature_hash,
+          // Enhance available documents with status information
+          const enhancedDocuments = available.map(doc => {
+            const statusData = statusMap[doc.id]
+            if (statusData) {
+              return {
+                ...doc,
+                isSigned: statusData.status === 'signed' || doc.isSigned,
+                status: statusData.status || doc.status,
+                signedAt: statusData.signed_at || doc.signedAt,
+                signatureHash: statusData.signature_hash || doc.signatureHash,
               }
             }
-          }
+            return doc
+          })
 
-          setDocuments(Object.values(byId))
+          setDocuments(enhancedDocuments)
+        } else {
+          console.warn('Failed to load documents:', documentsResponse)
+        }
+
+        // Set document status if available
+        if (statusResponse.success && statusResponse.data) {
           setDocumentStatus(statusResponse.data)
         } else {
-          if (documentsResponse.success && documentsResponse.data) {
-            setDocuments(documentsResponse.data)
-          } else {
-            console.warn('Failed to load documents:', documentsResponse)
-          }
-          if (statusResponse.success && statusResponse.data) {
-            setDocumentStatus(statusResponse.data)
-          } else {
-            console.warn('Failed to load document status:', statusResponse)
-          }
+          console.warn('Failed to load document status:', statusResponse)
         }
       } catch (err) {
         console.error('Error loading documents:', err)
