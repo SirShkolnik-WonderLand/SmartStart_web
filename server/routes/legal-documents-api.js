@@ -1,9 +1,16 @@
 const express = require('express');
 const router = express.Router();
-const LegalDocumentService = require('../services/legal-document-service');
+const legalDocumentService = require('../services/legal-document-service');
 const { authenticateToken } = require('../middleware/auth');
 
-const legalDocumentService = new LegalDocumentService();
+// Test endpoint without authentication
+router.get('/test', (req, res) => {
+    res.json({
+        success: true,
+        message: 'Legal Documents API is working',
+        timestamp: new Date().toISOString()
+    });
+});
 
 // Get available documents for user
 router.get('/documents', authenticateToken, async (req, res) => {
