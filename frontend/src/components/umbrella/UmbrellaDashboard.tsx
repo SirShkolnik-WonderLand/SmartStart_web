@@ -13,7 +13,6 @@ import {
   Plus,
   Eye,
   Settings,
-  FileText,
   BarChart3,
   UserPlus
 } from 'lucide-react'
@@ -120,7 +119,6 @@ export default function UmbrellaDashboard() {
   const totalRevenue = revenueShares.reduce((sum, share) => sum + share.shareAmount, 0)
   const activeRelationships = relationships.filter(rel => rel.status === 'ACTIVE').length
   const pendingShares = revenueShares.filter(share => share.status === 'CALCULATED').length
-  const paidShares = revenueShares.filter(share => share.status === 'PAID').length
 
   if (loading) {
     return (
