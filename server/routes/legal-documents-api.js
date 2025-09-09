@@ -295,4 +295,36 @@ router.get('/health', (req, res) => {
     });
 });
 
+// Debug endpoint to check database contents
+router.get('/debug/documents', authenticateToken, async (req, res) => {
+    try {
+        const { PrismaClient } = require('@prisma/client');
+        const prisma = new PrismaClient();
+        
+        const allDocs = await prisma.legalDocument.findMany({
+            select: { id: true, title: true, status: true, type: true }
+        });
+        
+        const user = await prisma.user.findUnique({
+            where: { id: req.user.id },
+            select: { level: true }
+        });
+        
+        await prisma.$disconnect();
+        
+        res.json({ 
+            success: true, 
+            data: {
+                totalDocuments: allDocs.length,
+                documents: allDocs,
+                userLevel: user?.level,
+                rbacLevel: legalDocumentService.mapUserLevelToRbacLevel(user?.level || 'OWLET')
+            }
+        });
+    } catch (error) {
+        console.error('Debug error:', error);
+        res.status(500).json({ success: false, message: 'Debug failed', error: error.message });
+    }
+});
+
 module.exports = router;
