@@ -196,11 +196,14 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
 
   const openEvidence = async (doc: LegalDocument) => {
     setEvidenceDoc(doc)
-    // Prefill with known fields
+    // Prefill with known fields from document data
     const ev: EvidenceDetails = {
-      signer: (documentStatus?.user_id) || undefined,
+      signer: doc.signerName || 'Unknown',
       signedAt: doc.signedAt,
       signatureHash: doc.signatureHash,
+      ip: doc.ipAddress,
+      userAgent: doc.userAgent,
+      verified: true // Assume verified if we have signature data
     }
     setEvidence(ev)
 

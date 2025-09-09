@@ -172,7 +172,13 @@ class LegalDocumentService {
                     description: doc.description || '',
                     order: 1,
                     isSigned: isSigned,
-                    signedAt: userSignatures.find(sig => sig.documentId === doc.id)?.signedAt
+                    signedAt: userSignatures.find(sig => sig.documentId === doc.id)?.signedAt,
+                    signatureHash: userSignatures.find(sig => sig.documentId === doc.id)?.signatureHash,
+                    signerName: userSignatures.find(sig => sig.documentId === doc.id)?.signerName,
+                    signerEmail: userSignatures.find(sig => sig.documentId === doc.id)?.signerEmail,
+                    signerLevel: userSignatures.find(sig => sig.documentId === doc.id)?.signerLevel,
+                    ipAddress: userSignatures.find(sig => sig.documentId === doc.id)?.ipAddress,
+                    userAgent: userSignatures.find(sig => sig.documentId === doc.id)?.userAgent
                 };
             });
         } catch (error) {
@@ -544,6 +550,9 @@ class LegalDocumentService {
                 include: {
                     document: {
                         select: { title: true, version: true }
+                    },
+                    signer: {
+                        select: { name: true, email: true, level: true }
                     }
                 },
                 orderBy: { signedAt: 'desc' }
@@ -555,7 +564,12 @@ class LegalDocumentService {
                 documentName: sig.document.title,
                 signedAt: sig.signedAt,
                 version: sig.document.version || '1.0',
-                signatureHash: sig.signatureHash
+                signatureHash: sig.signatureHash,
+                signerName: sig.signer?.name || 'Unknown',
+                signerEmail: sig.signer?.email || 'Unknown',
+                signerLevel: sig.signer?.level || 'Unknown',
+                ipAddress: sig.ipAddress,
+                userAgent: sig.userAgent
             }));
         } catch (error) {
             console.error('Error getting user signatures:', error);

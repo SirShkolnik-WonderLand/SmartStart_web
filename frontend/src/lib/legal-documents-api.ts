@@ -28,6 +28,11 @@ export interface LegalDocument {
     // Properties added by service layer
     signedAt?: string;
     signatureHash?: string;
+    signerName?: string;
+    signerEmail?: string;
+    signerLevel?: string;
+    ipAddress?: string;
+    userAgent?: string;
     generatedFrom?: string;
 }
 

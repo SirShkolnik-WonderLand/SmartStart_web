@@ -188,12 +188,15 @@ class LegalFrameworkService {
             const { PrismaClient } = require('@prisma/client');
             const prisma = new PrismaClient();
             
-            // Get user signatures from database
+            // Get user signatures from database with signer information
             const signatures = await prisma.legalDocumentSignature.findMany({
                 where: { signerId: userId },
                 include: {
                     document: {
                         select: { title: true, type: true, version: true }
+                    },
+                    signer: {
+                        select: { name: true, email: true, level: true }
                     }
                 },
                 orderBy: { signedAt: 'desc' }
@@ -206,6 +209,11 @@ class LegalFrameworkService {
                 status: 'FULLY_EXECUTED',
                 signedAt: sig.signedAt,
                 hash: sig.signatureHash,
+                signerName: sig.signer?.name || 'Unknown',
+                signerEmail: sig.signer?.email || 'Unknown',
+                signerLevel: sig.signer?.level || 'Unknown',
+                ipAddress: sig.ipAddress,
+                userAgent: sig.userAgent,
                 expiryDate: this.calculateExpiryDate(this.getDocumentTypeFromTitle(sig.document.title))
             }));
         } catch (error) {
