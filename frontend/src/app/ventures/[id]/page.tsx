@@ -17,6 +17,7 @@ import {
   Building2,
   Lightbulb,
   Globe,
+  BarChart3,
   Settings,
   Plus,
   Edit,

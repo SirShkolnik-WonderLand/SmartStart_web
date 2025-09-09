@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FileText, CheckCircle, AlertCircle, Loader2, X, Download, Eye } from 'lucide-react'
 
@@ -53,9 +53,9 @@ export default function LegalComplianceModal({
     if (isOpen) {
       loadDocuments()
     }
-  }, [isOpen])
+  }, [isOpen, loadDocuments])
 
-  const loadDocuments = async () => {
+  const loadDocuments = useCallback(async () => {
     try {
       const token = localStorage.getItem('auth-token')
       
@@ -78,7 +78,7 @@ export default function LegalComplianceModal({
       setErrors(['Failed to load legal documents'])
       setCurrentStep('review')
     }
-  }
+  }, [API_BASE])
 
   const startSigningSession = async () => {
     try {
