@@ -17,7 +17,7 @@ export default function DocumentSigningModal({
   document,
   onSignSuccess
 }: DocumentSigningModalProps) {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading] = useState(false);
   const [isSigning, setIsSigning] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);

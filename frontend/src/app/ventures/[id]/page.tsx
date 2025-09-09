@@ -7,7 +7,7 @@ import { ArrowLeft, Building2, Users, Calendar, TrendingUp, Briefcase, CheckCirc
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { useActionPermission } from '@/hooks/useLegalFramework'
-import DocumentSigningModal from '@/components/legal/DocumentSigningModal'
+import ActionDocumentSigningModal from '@/components/legal/ActionDocumentSigningModal'
 
 export default function VentureDetailPage() {
   const params = useParams()
@@ -547,8 +547,8 @@ export default function VentureDetailPage() {
         </div>
       )}
 
-      {/* Document Signing Modal */}
-      <DocumentSigningModal
+      {/* Action Document Signing Modal */}
+      <ActionDocumentSigningModal
         isOpen={showSigningModal}
         onClose={() => {
           setShowSigningModal(false)
