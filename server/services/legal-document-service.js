@@ -82,10 +82,295 @@ class LegalDocumentService {
     }
 
     /**
+     * Get available documents for user (API compatibility)
+     */
+    async getAvailableDocuments(userId) {
+        try {
+            const documents = this.getDocuments();
+            const userSignatures = this.getUserSignatures(userId);
+            const signedDocumentIds = userSignatures.map(sig => sig.documentId);
+
+            return documents.map(doc => ({
+                id: doc.id,
+                name: doc.name,
+                title: doc.name,
+                type: doc.type || 'TERMS_OF_SERVICE',
+                content: doc.content,
+                version: doc.version,
+                status: signedDocumentIds.includes(doc.id) ? 'SIGNED' : 'PENDING',
+                effectiveDate: doc.lastUpdated,
+                requiresSignature: doc.required,
+                complianceRequired: doc.required,
+                createdBy: 'system',
+                createdAt: doc.lastUpdated,
+                updatedAt: doc.lastUpdated,
+                description: doc.description,
+                order: doc.order,
+                isSigned: signedDocumentIds.includes(doc.id),
+                signedAt: userSignatures.find(sig => sig.documentId === doc.id)?.signedAt
+            }));
+        } catch (error) {
+            console.error('Error getting available documents:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Get required documents for current level (API compatibility)
+     */
+    async getRequiredDocuments(userId) {
+        try {
+            const documents = this.getDocuments();
+            const userSignatures = this.getUserSignatures(userId);
+            const signedDocumentIds = userSignatures.map(sig => sig.documentId);
+
+            return documents
+                .filter(doc => doc.required)
+                .map(doc => ({
+                    id: doc.id,
+                    name: doc.name,
+                    title: doc.name,
+                    type: doc.type || 'TERMS_OF_SERVICE',
+                    content: doc.content,
+                    version: doc.version,
+                    status: signedDocumentIds.includes(doc.id) ? 'SIGNED' : 'REQUIRED',
+                    effectiveDate: doc.lastUpdated,
+                    requiresSignature: true,
+                    complianceRequired: true,
+                    createdBy: 'system',
+                    createdAt: doc.lastUpdated,
+                    updatedAt: doc.lastUpdated,
+                    description: doc.description,
+                    order: doc.order,
+                    isSigned: signedDocumentIds.includes(doc.id),
+                    signedAt: userSignatures.find(sig => sig.documentId === doc.id)?.signedAt
+                }));
+        } catch (error) {
+            console.error('Error getting required documents:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Get pending documents for next level (API compatibility)
+     */
+    async getPendingDocuments(userId) {
+        try {
+            const documents = this.getDocuments();
+            const userSignatures = this.getUserSignatures(userId);
+            const signedDocumentIds = userSignatures.map(sig => sig.documentId);
+
+            return documents
+                .filter(doc => !doc.required)
+                .map(doc => ({
+                    id: doc.id,
+                    name: doc.name,
+                    title: doc.name,
+                    type: doc.type || 'OTHER',
+                    content: doc.content,
+                    version: doc.version,
+                    status: signedDocumentIds.includes(doc.id) ? 'SIGNED' : 'PENDING',
+                    effectiveDate: doc.lastUpdated,
+                    requiresSignature: false,
+                    complianceRequired: false,
+                    createdBy: 'system',
+                    createdAt: doc.lastUpdated,
+                    updatedAt: doc.lastUpdated,
+                    description: doc.description,
+                    order: doc.order,
+                    isSigned: signedDocumentIds.includes(doc.id),
+                    signedAt: userSignatures.find(sig => sig.documentId === doc.id)?.signedAt
+                }));
+        } catch (error) {
+            console.error('Error getting pending documents:', error);
+            throw error;
+        }
+    }
+
+    /**
      * Get a specific legal document
      */
     getDocument(documentId) {
         return this.documents.get(documentId);
+    }
+
+    /**
+     * Get user document status (API compatibility)
+     */
+    async getUserDocumentStatus(userId) {
+        try {
+            const documents = this.getDocuments();
+            const userSignatures = this.getUserSignatures(userId);
+            const signedDocumentIds = userSignatures.map(sig => sig.documentId);
+
+            const requiredDocs = documents.filter(doc => doc.required);
+            const signedRequired = requiredDocs.filter(doc => signedDocumentIds.includes(doc.id));
+
+            return {
+                user_id: userId,
+                role: 'MEMBER', // Default role
+                summary: {
+                    total_documents: documents.length,
+                    required_documents: requiredDocs.length,
+                    signed_documents: userSignatures.length,
+                    pending_documents: documents.length - userSignatures.length,
+                    expired_documents: 0
+                },
+                documents: documents.map(doc => ({
+                    document_id: doc.id,
+                    title: doc.name,
+                    type: doc.type || 'TERMS_OF_SERVICE',
+                    status: signedDocumentIds.includes(doc.id) ? 'SIGNED' : 'PENDING',
+                    signed_at: userSignatures.find(sig => sig.documentId === doc.id)?.signedAt,
+                    requires_signature: doc.required,
+                    document_version: doc.version,
+                    signature_hash: userSignatures.find(sig => sig.documentId === doc.id)?.documentHash
+                }))
+            };
+        } catch (error) {
+            console.error('Error getting user document status:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Sign a document (API compatibility)
+     */
+    async signDocument(userId, documentId, signatureData) {
+        try {
+            // Create a temporary session for this single document
+            const session = this.generateSigningSession(userId, [documentId]);
+            const result = this.signDocumentInSession(session.sessionId, documentId, signatureData);
+            
+            if (result.success) {
+                return {
+                    id: `sig-${crypto.randomBytes(8).toString('hex')}`,
+                    documentId: documentId,
+                    signerId: userId,
+                    signatureHash: result.signature.documentHash,
+                    signedAt: result.signature.signedAt.toISOString(),
+                    ipAddress: signatureData.ip_address,
+                    userAgent: signatureData.user_agent,
+                    termsAccepted: true,
+                    privacyAccepted: true,
+                    identityVerified: signatureData.mfa_verified || false
+                };
+            } else {
+                throw new Error(result.error);
+            }
+        } catch (error) {
+            console.error('Error signing document:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Verify document signature (API compatibility)
+     */
+    async verifyDocumentSignature(documentId, signatureHash) {
+        try {
+            // Find the signature in all sessions
+            for (const [sessionId, session] of this.signatures.entries()) {
+                if (session.signatures[documentId] && session.signatures[documentId].documentHash === signatureHash) {
+                    const signature = session.signatures[documentId];
+                    return {
+                        is_valid: true,
+                        document_id: documentId,
+                        signature_hash: signatureHash,
+                        signed_at: signature.signedAt.toISOString(),
+                        signer: session.userId,
+                        verification_details: {
+                            sessionId: sessionId,
+                            version: signature.version,
+                            ipAddress: signature.signatureData.ipAddress,
+                            userAgent: signature.signatureData.userAgent
+                        }
+                    };
+                }
+            }
+            
+            return {
+                is_valid: false,
+                document_id: documentId,
+                signature_hash: signatureHash,
+                signed_at: null,
+                signer: null,
+                verification_details: { error: 'Signature not found' }
+            };
+        } catch (error) {
+            console.error('Error verifying document signature:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Log document action (API compatibility)
+     */
+    async logDocumentAction(userId, documentId, action, details) {
+        try {
+            // In a real implementation, this would log to a database
+            console.log(`Document action logged: User ${userId} performed ${action} on document ${documentId}`, details);
+            return { success: true };
+        } catch (error) {
+            console.error('Error logging document action:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Get document audit log (API compatibility)
+     */
+    async getDocumentAuditLog(userId, documentId, startDate, endDate, page, limit) {
+        try {
+            // In a real implementation, this would query a database
+            const logs = [];
+            const total = 0;
+            
+            return {
+                logs: logs,
+                pagination: {
+                    page: page,
+                    limit: limit,
+                    total: total,
+                    pages: Math.ceil(total / limit)
+                }
+            };
+        } catch (error) {
+            console.error('Error getting document audit log:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Generate compliance report (API compatibility)
+     */
+    async generateComplianceReport(userId, startDate, endDate) {
+        try {
+            const documents = this.getDocuments();
+            const userSignatures = this.getUserSignatures(userId);
+            const signedDocumentIds = userSignatures.map(sig => sig.documentId);
+            
+            const requiredDocs = documents.filter(doc => doc.required);
+            const signedRequired = requiredDocs.filter(doc => signedDocumentIds.includes(doc.id));
+            
+            return {
+                period: {
+                    start_date: startDate,
+                    end_date: endDate
+                },
+                total_documents: documents.length,
+                signed_documents: userSignatures.length,
+                compliance_percentage: requiredDocs.length > 0 ? (signedRequired.length / requiredDocs.length) * 100 : 100,
+                missing_signatures: requiredDocs
+                    .filter(doc => !signedDocumentIds.includes(doc.id))
+                    .map(doc => doc.id),
+                audit_trail: [],
+                generated_at: new Date().toISOString()
+            };
+        } catch (error) {
+            console.error('Error generating compliance report:', error);
+            throw error;
+        }
     }
 
     /**
@@ -110,9 +395,9 @@ class LegalDocumentService {
     }
 
     /**
-     * Sign a document
+     * Sign a document in session
      */
-    signDocument(sessionId, documentId, signatureData) {
+    signDocumentInSession(sessionId, documentId, signatureData) {
         const session = this.signatures.get(sessionId);
 
         if (!session) {
