@@ -166,6 +166,21 @@ router.post('/session/:sessionId/sign', authenticateToken, async (req, res) => {
     
     console.log('🔍 Signing request:', { sessionId, documentId, userId, signatureData });
     
+    // Validate required fields
+    if (!documentId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Document ID is required'
+      });
+    }
+    
+    if (!signatureData) {
+      return res.status(400).json({
+        success: false,
+        message: 'Signature data is required'
+      });
+    }
+    
     // Add user info to signature data
     const enhancedSignatureData = {
       ...signatureData,
@@ -191,9 +206,10 @@ router.post('/session/:sessionId/sign', authenticateToken, async (req, res) => {
     });
   } catch (error) {
     console.error('Error signing document:', error);
-    res.status(400).json({
+    res.status(500).json({
       success: false,
-      message: error.message || 'Failed to sign document'
+      message: 'Failed to sign document',
+      error: error.message
     });
   }
 });

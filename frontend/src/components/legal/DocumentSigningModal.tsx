@@ -32,10 +32,13 @@ export default function DocumentSigningModal({
     if (isOpen && document) {
       setError(null);
       setSuccess(false);
+      
+      // Auto-populate user data from localStorage or API
+      const userData = JSON.parse(localStorage.getItem('user') || '{}');
       setSignatureData({
-        signerName: '',
-        signerEmail: '',
-        signerTitle: '',
+        signerName: userData.name || userData.firstName + ' ' + userData.lastName || '',
+        signerEmail: userData.email || '',
+        signerTitle: userData.title || userData.position || '',
         termsAccepted: false,
         privacyAccepted: false
       });
@@ -98,7 +101,7 @@ export default function DocumentSigningModal({
         const url = window.URL.createObjectURL(blob);
         const a = window.document.createElement('a');
         a.href = url;
-        a.download = `${document.title || 'document'}.pdf`;
+        a.download = `${document.title || 'document'}.txt`;
         window.document.body.appendChild(a);
         a.click();
         a.remove();
@@ -114,9 +117,9 @@ export default function DocumentSigningModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+      <div className="bg-white dark:bg-gray-900 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-600">
           <div className="flex items-center space-x-3">
             <FileText className="h-6 w-6 text-blue-600" />
             <div>
@@ -187,7 +190,7 @@ export default function DocumentSigningModal({
                       type="text"
                       value={signatureData.signerName}
                       onChange={(e) => setSignatureData(prev => ({ ...prev, signerName: e.target.value }))}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 dark:text-gray-100"
                       placeholder="Enter your full name"
                     />
                   </div>
@@ -200,7 +203,7 @@ export default function DocumentSigningModal({
                       type="email"
                       value={signatureData.signerEmail}
                       onChange={(e) => setSignatureData(prev => ({ ...prev, signerEmail: e.target.value }))}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 dark:text-gray-100"
                       placeholder="Enter your email"
                     />
                   </div>
@@ -213,7 +216,7 @@ export default function DocumentSigningModal({
                       type="text"
                       value={signatureData.signerTitle}
                       onChange={(e) => setSignatureData(prev => ({ ...prev, signerTitle: e.target.value }))}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 dark:text-gray-100"
                       placeholder="Enter your title or position"
                     />
                   </div>
@@ -262,7 +265,7 @@ export default function DocumentSigningModal({
 
                     <button
                       onClick={handleDownload}
-                      className="w-full flex items-center justify-center space-x-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 font-medium py-2 px-4 rounded-md transition-colors"
+                      className="w-full flex items-center justify-center space-x-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-medium py-2 px-4 rounded-md transition-colors"
                     >
                       <Download className="h-4 w-4" />
                       <span>Download Copy</span>

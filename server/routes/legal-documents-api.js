@@ -272,11 +272,10 @@ router.get('/documents/:id/download', authenticateToken, async (req, res) => {
         });
 
         // Set headers for file download
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `attachment; filename="${document.name}.pdf"`);
+        res.setHeader('Content-Type', 'text/plain');
+        res.setHeader('Content-Disposition', `attachment; filename="${document.title || 'document'}.txt"`);
         
-        // For now, return the document content as text
-        // In a real implementation, you would generate a PDF
+        // Return the document content as text
         res.send(document.content || 'Document content not available');
     } catch (error) {
         console.error('Error downloading document:', error);
