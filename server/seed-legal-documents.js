@@ -228,10 +228,5 @@ async function seedLegalDocuments() {
     }
 }
 
-// Export the function for API use
-module.exports = seedLegalDocuments;
-
-// Run the seeding if called directly
-if (require.main === module) {
-    seedLegalDocuments();
-}
+// Run the seeding
+seedLegalDocuments();
