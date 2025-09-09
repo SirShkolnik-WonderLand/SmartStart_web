@@ -131,12 +131,12 @@ export default function VenturesPage() {
 
   const getStatusBadge = (status: string) => {
     const config = {
-      ACTIVE: { color: 'bg-green-100 text-green-800', text: 'Active' },
-      PLANNING: { color: 'bg-yellow-100 text-yellow-800', text: 'Planning' },
-      INACTIVE: { color: 'bg-gray-100 text-gray-800', text: 'Inactive' }
+      ACTIVE: { color: 'bg-success/20 text-success border-success/30', text: 'Active' },
+      PLANNING: { color: 'bg-warning/20 text-warning border-warning/30', text: 'Planning' },
+      INACTIVE: { color: 'bg-foreground-muted/20 text-foreground-muted border-foreground-muted/30', text: 'Inactive' }
     }
     const { color, text } = config[status as keyof typeof config] || config.INACTIVE
-    return <Badge className={color}>{text}</Badge>
+    return <Badge className={`${color} border`}>{text}</Badge>
   }
 
   const formatCurrency = (amount: number) => {
@@ -195,47 +195,47 @@ export default function VenturesPage() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card className="bg-white shadow-sm border-0">
+          <Card className="glass-card">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Total Ventures</CardTitle>
+              <CardTitle className="text-sm font-medium text-foreground-muted">Total Ventures</CardTitle>
               <Briefcase className="h-4 w-4 text-gray-400" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-gray-900">{stats.totalVentures}</div>
-              <p className="text-xs text-gray-500 mt-1">All time</p>
+              <div className="text-2xl font-bold text-foreground">{stats.totalVentures}</div>
+              <p className="text-xs text-foreground-muted mt-1">All time</p>
             </CardContent>
           </Card>
 
-          <Card className="bg-white shadow-sm border-0">
+          <Card className="glass-card">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Active Teams</CardTitle>
-              <Users className="h-4 w-4 text-gray-400" />
+              <CardTitle className="text-sm font-medium text-foreground-muted">Active Teams</CardTitle>
+              <Users className="h-4 w-4 text-foreground-muted" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-gray-900">{stats.activeTeams}</div>
-              <p className="text-xs text-gray-500 mt-1">Across all ventures</p>
+              <div className="text-2xl font-bold text-foreground">{stats.activeTeams}</div>
+              <p className="text-xs text-foreground-muted mt-1">Across all ventures</p>
             </CardContent>
           </Card>
 
-          <Card className="bg-white shadow-sm border-0">
+          <Card className="glass-card">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Total Revenue</CardTitle>
+              <CardTitle className="text-sm font-medium text-foreground-muted">Total Revenue</CardTitle>
               <DollarSign className="h-4 w-4 text-gray-400" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-gray-900">{formatCurrency(stats.totalRevenue)}</div>
-              <p className="text-xs text-gray-500 mt-1">Lifetime earnings</p>
+              <div className="text-2xl font-bold text-foreground">{formatCurrency(stats.totalRevenue)}</div>
+              <p className="text-xs text-foreground-muted mt-1">Lifetime earnings</p>
             </CardContent>
           </Card>
 
-          <Card className="bg-white shadow-sm border-0">
+          <Card className="glass-card">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Avg Growth</CardTitle>
+              <CardTitle className="text-sm font-medium text-foreground-muted">Avg Growth</CardTitle>
               <TrendingUp className="h-4 w-4 text-gray-400" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-gray-900">+{stats.averageGrowth.toFixed(1)}%</div>
-              <p className="text-xs text-gray-500 mt-1">This quarter</p>
+              <div className="text-2xl font-bold text-foreground">+{stats.averageGrowth.toFixed(1)}%</div>
+              <p className="text-xs text-foreground-muted mt-1">This quarter</p>
             </CardContent>
           </Card>
         </div>
@@ -244,7 +244,7 @@ export default function VenturesPage() {
         {ventures.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {ventures.map((venture) => (
-              <Card key={venture.id} className="bg-white shadow-sm border-0 hover:shadow-lg transition-all duration-200 cursor-pointer group">
+              <Card key={venture.id} className="glass-card cursor-pointer group">
                 <CardHeader className="pb-4">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center space-x-3">
@@ -359,7 +359,7 @@ export default function VenturesPage() {
             ))}
           </div>
         ) : (
-          <Card className="bg-white shadow-sm border-0">
+          <Card className="glass-card">
             <CardContent className="flex flex-col items-center justify-center py-12">
               <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
                 <Briefcase className="w-8 h-8 text-gray-400" />

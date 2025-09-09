@@ -113,14 +113,63 @@ class OpportunitiesService {
                 remote,
                 compensation,
                 search,
-                visibilityLevel = 'PUBLIC'
+                visibilityLevel = 'PUBLIC',
+                includeUmbrellaNetwork = true
             } = filters;
 
             // Build where clause
             const where = {
-                status: status,
-                visibilityLevel: visibilityLevel
+                status: status
             };
+
+            // Handle visibility based on user level and umbrella network
+            if (userId && includeUmbrellaNetwork) {
+                const userLevel = await this.getUserLevel(userId);
+                const umbrellaNetwork = await this.getUmbrellaNetwork(userId);
+                
+                // Build visibility conditions
+                const visibilityConditions = [];
+                
+                // Public opportunities
+                visibilityConditions.push({ visibilityLevel: 'PUBLIC' });
+                
+                // Member-only opportunities
+                if (['MEMBER', 'SUBSCRIBER', 'SEAT_HOLDER', 'VENTURE_OWNER', 'VENTURE_PARTICIPANT', 'ADMIN'].includes(userLevel)) {
+                    visibilityConditions.push({ visibilityLevel: 'MEMBER_ONLY' });
+                }
+                
+                // Subscriber-only opportunities
+                if (['SUBSCRIBER', 'SEAT_HOLDER', 'VENTURE_OWNER', 'VENTURE_PARTICIPANT', 'ADMIN'].includes(userLevel)) {
+                    visibilityConditions.push({ visibilityLevel: 'SUBSCRIBER_ONLY' });
+                }
+                
+                // Venture-only opportunities (from user's ventures or umbrella network)
+                const ventureIds = await this.getUserVentureIds(userId);
+                const umbrellaVentureIds = await this.getUmbrellaVentureIds(umbrellaNetwork);
+                const allVentureIds = [...ventureIds, ...umbrellaVentureIds];
+                
+                if (allVentureIds.length > 0) {
+                    visibilityConditions.push({
+                        AND: [
+                            { visibilityLevel: 'VENTURE_ONLY' },
+                            { ventureId: { in: allVentureIds } }
+                        ]
+                    });
+                }
+                
+                // Private opportunities (user's own)
+                visibilityConditions.push({
+                    AND: [
+                        { visibilityLevel: 'PRIVATE' },
+                        { createdBy: userId }
+                    ]
+                });
+                
+                where.OR = visibilityConditions;
+            } else {
+                // Default to public only if no user or umbrella network disabled
+                where.visibilityLevel = visibilityLevel;
+            }
 
             // Add filters
             if (type) where.type = type;
@@ -734,6 +783,89 @@ class OpportunitiesService {
     }
 
     // ===== HELPER METHODS =====
+
+    /**
+     * Get user level for RBAC
+     */
+    async getUserLevel(userId) {
+        try {
+            const user = await prisma.user.findUnique({
+                where: { id: userId },
+                select: { level: true }
+            });
+            return user ? user.level : 'GUEST';
+        } catch (error) {
+            console.error('Error getting user level:', error);
+            return 'GUEST';
+        }
+    }
+
+    /**
+     * Get user's umbrella network (referrers and referrals)
+     */
+    async getUmbrellaNetwork(userId) {
+        try {
+            const [referrers, referrals] = await Promise.all([
+                // Get users who referred this user
+                prisma.umbrellaRelationship.findMany({
+                    where: { referredId: userId, status: 'ACTIVE' },
+                    select: { referrerId: true }
+                }),
+                // Get users referred by this user
+                prisma.umbrellaRelationship.findMany({
+                    where: { referrerId: userId, status: 'ACTIVE' },
+                    select: { referredId: true }
+                })
+            ]);
+
+            const networkUserIds = [
+                ...referrers.map(r => r.referrerId),
+                ...referrals.map(r => r.referredId)
+            ];
+
+            return [...new Set(networkUserIds)]; // Remove duplicates
+        } catch (error) {
+            console.error('Error getting umbrella network:', error);
+            return [];
+        }
+    }
+
+    /**
+     * Get venture IDs owned by user
+     */
+    async getUserVentureIds(userId) {
+        try {
+            const ventures = await prisma.venture.findMany({
+                where: { ownerUserId: userId },
+                select: { id: true }
+            });
+            return ventures.map(v => v.id);
+        } catch (error) {
+            console.error('Error getting user venture IDs:', error);
+            return [];
+        }
+    }
+
+    /**
+     * Get venture IDs from umbrella network
+     */
+    async getUmbrellaVentureIds(networkUserIds) {
+        try {
+            if (networkUserIds.length === 0) return [];
+
+            const ventures = await prisma.venture.findMany({
+                where: { 
+                    ownerUserId: { in: networkUserIds },
+                    status: { in: ['ACTIVE', 'PENDING_CONTRACTS'] }
+                },
+                select: { id: true }
+            });
+            return ventures.map(v => v.id);
+        } catch (error) {
+            console.error('Error getting umbrella venture IDs:', error);
+            return [];
+        }
+    }
 
     /**
      * Auto-generate legal documents for opportunity

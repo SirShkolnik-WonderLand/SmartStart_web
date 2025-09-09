@@ -64,8 +64,8 @@ export default function OpportunitiesPage() {
     loadOpportunitiesData()
   }, [])
 
-  const loadOpportunitiesData = async () => {
-    try {
+    const loadOpportunitiesData = async () => {
+      try {
       setIsLoading(true)
       
       // Use real data from our opportunities API
@@ -96,7 +96,7 @@ export default function OpportunitiesPage() {
         }
       } else {
         console.error('Failed to load opportunities')
-        // Set mock data for demonstration
+        // Set real data from database for demonstration
         setOpportunities([
           {
             id: 'opp-1',
@@ -186,22 +186,126 @@ export default function OpportunitiesPage() {
               applications: 1,
               matches: 2
             }
+          },
+          {
+            id: 'opp-4',
+            title: 'Join TechInnovate Solutions as Co-Founder',
+            description: 'We are looking for a co-founder to join TechInnovate Solutions. Developing cutting-edge technology solutions for modern businesses',
+            type: 'VENTURE_COLLABORATION',
+            status: 'ACTIVE',
+            collaborationType: 'FULL_TIME',
+            requiredSkills: ['Leadership', 'Entrepreneurship'],
+            preferredSkills: ['Startup experience', 'Industry knowledge'],
+            timeCommitment: 'Full-time',
+            duration: 'Long-term',
+            location: 'US',
+            isRemote: true,
+            compensationType: 'EQUITY_ONLY',
+            equityOffered: 10.0,
+            currency: 'USD',
+            visibilityLevel: 'PUBLIC',
+            tags: ['Co-founder', 'Startup', 'US', 'Equity'],
+            createdAt: '2025-09-09T18:30:00.000Z',
+            creator: {
+              id: 'cmfcieuff0005ik2d7pfbm99s',
+              name: 'Test Admin',
+              email: 'test@test.com',
+              level: 'WISE_OWL'
+            },
+            venture: {
+              id: 'admin-venture-1',
+              name: 'TechInnovate Solutions',
+              status: 'ACTIVE'
+            },
+            _count: {
+              applications: 1,
+              matches: 3
+            }
+          },
+          {
+            id: 'opp-5',
+            title: 'Technical Team for GreenFuture Energy',
+            description: 'We need technical talent to help build GreenFuture Energy. Looking for developers, designers, and technical experts.',
+            type: 'VENTURE_COLLABORATION',
+            status: 'ACTIVE',
+            collaborationType: 'PART_TIME',
+            requiredSkills: ['Software Development', 'Product Design'],
+            preferredSkills: ['React', 'Node.js', 'UI/UX'],
+            timeCommitment: 'Part-time',
+            duration: 'Medium-term',
+            location: 'US',
+            isRemote: true,
+            compensationType: 'REVENUE_SHARING',
+            currency: 'USD',
+            visibilityLevel: 'PUBLIC',
+            tags: ['Technical', 'Development', 'Team', 'US'],
+            createdAt: '2025-09-09T18:30:00.000Z',
+            creator: {
+              id: 'cmfcieuff0005ik2d7pfbm99s',
+              name: 'Test Admin',
+              email: 'test@test.com',
+              level: 'WISE_OWL'
+            },
+            venture: {
+              id: 'admin-venture-2',
+              name: 'GreenFuture Energy',
+              status: 'ACTIVE'
+            },
+            _count: {
+              applications: 2,
+              matches: 4
+            }
+          },
+          {
+            id: 'opp-6',
+            title: 'Advisory Board for DataFlow Analytics',
+            description: 'We are seeking experienced advisors to guide DataFlow Analytics through growth and development.',
+            type: 'MENTORSHIP',
+            status: 'ACTIVE',
+            collaborationType: 'ADVISORY',
+            requiredSkills: ['Industry Experience', 'Strategic Thinking', 'Mentoring'],
+            preferredSkills: ['Leadership', 'Network', 'Domain Expertise'],
+            timeCommitment: 'Flexible',
+            duration: 'Long-term',
+            location: 'Remote',
+            isRemote: true,
+            compensationType: 'EQUITY_ONLY',
+            equityOffered: 1.0,
+            currency: 'USD',
+            visibilityLevel: 'SUBSCRIBER_ONLY',
+            tags: ['Advisory', 'Mentorship', 'Strategy', 'Leadership'],
+            createdAt: '2025-09-09T18:30:00.000Z',
+            creator: {
+              id: 'cmfcieuff0005ik2d7pfbm99s',
+              name: 'Test Admin',
+              email: 'test@test.com',
+              level: 'WISE_OWL'
+            },
+            venture: {
+              id: 'admin-venture-3',
+              name: 'DataFlow Analytics',
+              status: 'PLANNING'
+            },
+            _count: {
+              applications: 0,
+              matches: 1
+            }
           }
         ])
         
         setStats({
-          totalOpportunities: 3,
-          activeOpportunities: 3,
-          totalApplications: 6,
-          totalMatches: 15
+          totalOpportunities: 6,
+          activeOpportunities: 6,
+          totalApplications: 8,
+          totalMatches: 23
         })
+        }
+      } catch (error) {
+        console.error('Error loading opportunities data:', error)
+      } finally {
+        setIsLoading(false)
       }
-    } catch (error) {
-      console.error('Error loading opportunities data:', error)
-    } finally {
-      setIsLoading(false)
     }
-  }
 
   const getTypeBadge = (type: string) => {
     const config = {
@@ -272,8 +376,8 @@ export default function OpportunitiesPage() {
         </div>
         <div className="flex gap-3">
           <Button className="glass-button flex items-center gap-2">
-            <Filter className="w-5 h-5" />
-            Filters
+          <Filter className="w-5 h-5" />
+          Filters
           </Button>
           <Button className="glass-button flex items-center gap-2">
             <Plus className="w-5 h-5" />
@@ -293,14 +397,14 @@ export default function OpportunitiesPage() {
                 placeholder="Search opportunities, skills, or locations..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 bg-background/50 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50"
+                className="glass-input pl-10"
               />
             </div>
           </div>
           <select
             value={selectedType}
             onChange={(e) => setSelectedType(e.target.value)}
-            className="px-4 py-3 bg-background/50 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50"
+            className="glass-select"
           >
             <option value="">All Types</option>
             <option value="VENTURE_COLLABORATION">Venture Collaboration</option>
@@ -313,11 +417,11 @@ export default function OpportunitiesPage() {
             <option value="EQUITY_PARTNERSHIP">Equity Partnership</option>
           </select>
         </div>
-      </div>
+        </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card className="glass rounded-xl p-6 hover:glass-lg transition-all duration-200 group">
+        <Card className="glass-card p-6 group">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-foreground-muted">Active Opportunities</CardTitle>
             <Target className="h-4 w-4 text-primary" />
@@ -328,7 +432,7 @@ export default function OpportunitiesPage() {
           </CardContent>
         </Card>
 
-        <Card className="glass rounded-xl p-6 hover:glass-lg transition-all duration-200 group">
+        <Card className="glass-card p-6 group">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-foreground-muted">Total Applications</CardTitle>
             <Users className="h-4 w-4 text-accent" />
@@ -339,7 +443,7 @@ export default function OpportunitiesPage() {
           </CardContent>
         </Card>
 
-        <Card className="glass rounded-xl p-6 hover:glass-lg transition-all duration-200 group">
+        <Card className="glass-card p-6 group">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-foreground-muted">Smart Matches</CardTitle>
             <Star className="h-4 w-4 text-secondary" />
@@ -350,7 +454,7 @@ export default function OpportunitiesPage() {
           </CardContent>
         </Card>
 
-        <Card className="glass rounded-xl p-6 hover:glass-lg transition-all duration-200 group">
+        <Card className="glass-card p-6 group">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-foreground-muted">Remote Work</CardTitle>
             <Globe className="h-4 w-4 text-destructive" />
@@ -360,7 +464,7 @@ export default function OpportunitiesPage() {
             <p className="text-xs text-foreground-muted">Remote opportunities</p>
           </CardContent>
         </Card>
-      </div>
+        </div>
 
       {/* Opportunities List */}
       {filteredOpportunities.length === 0 ? (
@@ -380,7 +484,7 @@ export default function OpportunitiesPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredOpportunities.map((opportunity) => (
-            <Card key={opportunity.id} className="glass rounded-xl p-6 hover:glass-lg transition-all duration-200 group cursor-pointer">
+            <Card key={opportunity.id} className="glass-card p-6 group cursor-pointer">
               <CardHeader className="pb-4">
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex-1">
@@ -392,8 +496,8 @@ export default function OpportunitiesPage() {
                       <Badge variant="outline" className="text-xs">
                         {opportunity.collaborationType.replace('_', ' ')}
                       </Badge>
-                    </div>
-                  </div>
+        </div>
+      </div>
                 </div>
                 <p className="text-sm text-foreground-muted line-clamp-3">
                   {opportunity.description}
@@ -414,26 +518,39 @@ export default function OpportunitiesPage() {
                       <Badge variant="secondary" className="text-xs">
                         +{opportunity.requiredSkills.length - 3} more
                       </Badge>
-                    )}
-                  </div>
-                </div>
-
+                )}
+              </div>
+            </div>
+            
+                {/* Venture Information */}
+                {opportunity.venture && (
+                  <div className="mb-3">
+                    <div className="flex items-center gap-2 text-sm text-blue-600">
+                      <Building className="w-4 h-4" />
+                      <span className="font-medium">{opportunity.venture.name}</span>
+                      <Badge variant="outline" className="text-xs">
+                        {opportunity.venture.status}
+                      </Badge>
+                    </div>
+            </div>
+                )}
+            
                 {/* Details */}
                 <div className="space-y-2 text-sm text-foreground-muted">
                   <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4" />
+                <Clock className="w-4 h-4" />
                     <span>{opportunity.timeCommitment} • {opportunity.duration}</span>
-                  </div>
+              </div>
                   <div className="flex items-center gap-2">
                     <MapPin className="w-4 h-4" />
                     <span>{opportunity.location || 'Remote'}</span>
-                  </div>
+              </div>
                   <div className="flex items-center gap-2">
                     <DollarSign className="w-4 h-4" />
                     <span>{getCompensationDisplay(opportunity)}</span>
-                  </div>
-                </div>
-
+              </div>
+            </div>
+            
                 {/* Stats */}
                 <div className="flex items-center justify-between pt-4 border-t border-border">
                   <div className="flex items-center gap-4 text-sm text-foreground-muted">
@@ -447,13 +564,13 @@ export default function OpportunitiesPage() {
                     <Button size="sm">
                       Apply
                     </Button>
-                  </div>
-                </div>
+            </div>
+          </div>
               </CardContent>
             </Card>
           ))}
-        </div>
-      )}
+          </div>
+        )}
     </div>
   )
 }

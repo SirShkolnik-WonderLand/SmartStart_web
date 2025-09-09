@@ -80,6 +80,14 @@ class VentureManagementService {
 
             console.log(`✅ Venture setup completed: ${venture.id}`);
 
+            // Auto-create collaboration opportunities for the venture
+            try {
+                await this.createVentureOpportunities(updatedVenture, ventureData);
+                console.log(`✅ Venture opportunities created for: ${venture.id}`);
+            } catch (opportunityError) {
+                console.log('⚠️ Opportunity creation skipped:', opportunityError.message);
+            }
+
             return {
                 venture: updatedVenture,
                 legalEntity: legalEntity.baseLegalEntity,
@@ -90,6 +98,162 @@ class VentureManagementService {
 
         } catch (error) {
             console.error('❌ Failed to create venture:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Create collaboration opportunities for a new venture
+     */
+    async createVentureOpportunities(venture, ventureData) {
+        try {
+            console.log(`🎯 Creating opportunities for venture: ${venture.name}`);
+
+            // Get the venture owner's details
+            const owner = await prisma.user.findUnique({
+                where: { id: venture.ownerUserId },
+                select: { id: true, name: true, level: true }
+            });
+
+            if (!owner) {
+                throw new Error('Venture owner not found');
+            }
+
+            // Create different types of opportunities based on venture data
+            const opportunities = [];
+
+            // 1. Co-founder opportunity
+            if (ventureData.lookingForCoFounder !== false) {
+                const coFounderOpportunity = {
+                    title: `Join ${venture.name} as Co-Founder`,
+                    description: `We are looking for a co-founder to join ${venture.name}. ${venture.purpose}`,
+                    type: 'VENTURE_COLLABORATION',
+                    collaborationType: 'FULL_TIME',
+                    requiredSkills: ventureData.requiredSkills || ['Leadership', 'Entrepreneurship'],
+                    preferredSkills: ventureData.preferredSkills || ['Startup experience', 'Industry knowledge'],
+                    timeCommitment: 'Full-time',
+                    duration: 'Long-term',
+                    location: venture.region,
+                    isRemote: ventureData.isRemote !== false,
+                    compensationType: 'EQUITY_ONLY',
+                    equityOffered: ventureData.equityOffered || 10.0,
+                    currency: 'USD',
+                    visibilityLevel: 'PUBLIC',
+                    targetAudience: ['VENTURE_OWNER', 'VENTURE_PARTICIPANT', 'SUBSCRIBER'],
+                    tags: ['Co-founder', 'Startup', venture.region, 'Equity'],
+                    ventureId: venture.id,
+                    createdBy: owner.id,
+                    requiresNDA: true,
+                    legalLevel: 'MNDA',
+                    complianceRequired: true
+                };
+                opportunities.push(coFounderOpportunity);
+            }
+
+            // 2. Technical team opportunity
+            if (ventureData.lookingForTechnicalTeam !== false) {
+                const techOpportunity = {
+                    title: `Technical Team for ${venture.name}`,
+                    description: `We need technical talent to help build ${venture.name}. Looking for developers, designers, and technical experts.`,
+                    type: 'VENTURE_COLLABORATION',
+                    collaborationType: 'PART_TIME',
+                    requiredSkills: ventureData.techSkills || ['Software Development', 'Product Design'],
+                    preferredSkills: ventureData.preferredTechSkills || ['React', 'Node.js', 'UI/UX'],
+                    timeCommitment: 'Part-time',
+                    duration: 'Medium-term',
+                    location: venture.region,
+                    isRemote: ventureData.isRemote !== false,
+                    compensationType: 'REVENUE_SHARING',
+                    currency: 'USD',
+                    visibilityLevel: 'PUBLIC',
+                    targetAudience: ['MEMBER', 'SUBSCRIBER', 'VENTURE_PARTICIPANT'],
+                    tags: ['Technical', 'Development', 'Team', venture.region],
+                    ventureId: venture.id,
+                    createdBy: owner.id,
+                    requiresNDA: true,
+                    legalLevel: 'MNDA',
+                    complianceRequired: true
+                };
+                opportunities.push(techOpportunity);
+            }
+
+            // 3. Advisory opportunity
+            if (ventureData.lookingForAdvisors !== false) {
+                const advisorOpportunity = {
+                    title: `Advisory Board for ${venture.name}`,
+                    description: `We are seeking experienced advisors to guide ${venture.name} through growth and development.`,
+                    type: 'MENTORSHIP',
+                    collaborationType: 'ADVISORY',
+                    requiredSkills: ['Industry Experience', 'Strategic Thinking', 'Mentoring'],
+                    preferredSkills: ['Leadership', 'Network', 'Domain Expertise'],
+                    timeCommitment: 'Flexible',
+                    duration: 'Long-term',
+                    location: 'Remote',
+                    isRemote: true,
+                    compensationType: 'EQUITY_ONLY',
+                    equityOffered: 1.0,
+                    currency: 'USD',
+                    visibilityLevel: 'SUBSCRIBER_ONLY',
+                    targetAudience: ['VENTURE_OWNER', 'VENTURE_PARTICIPANT'],
+                    tags: ['Advisory', 'Mentorship', 'Strategy', 'Leadership'],
+                    ventureId: venture.id,
+                    createdBy: owner.id,
+                    requiresNDA: true,
+                    legalLevel: 'CONFIDENTIAL_ACCESS',
+                    complianceRequired: true
+                };
+                opportunities.push(advisorOpportunity);
+            }
+
+            // Create all opportunities
+            for (const opportunityData of opportunities) {
+                try {
+                    const opportunity = await prisma.opportunity.create({
+                        data: opportunityData,
+                        include: {
+                            creator: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                    email: true,
+                                    level: true
+                                }
+                            },
+                            venture: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                    status: true
+                                }
+                            }
+                        }
+                    });
+
+                    // Create initial analytics record
+                    await prisma.opportunityAnalytics.create({
+                        data: {
+                            opportunityId: opportunity.id,
+                            views: 0,
+                            applications: 0,
+                            matches: 0,
+                            conversions: 0
+                        }
+                    });
+
+                    console.log(`✅ Created opportunity: ${opportunity.title}`);
+                } catch (oppError) {
+                    console.error(`❌ Failed to create opportunity: ${opportunityData.title}`, oppError);
+                }
+            }
+
+            return {
+                success: true,
+                message: `Created ${opportunities.length} opportunities for ${venture.name}`,
+                opportunities: opportunities.length
+            };
+
+        } catch (error) {
+            console.error('❌ Failed to create venture opportunities:', error);
             throw error;
         }
     }

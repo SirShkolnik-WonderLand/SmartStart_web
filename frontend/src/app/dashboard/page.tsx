@@ -107,17 +107,17 @@ export default function DashboardPage() {
     const totalStages = journeyStatus?.progress.totalStages || 4
     
     if (completedStages === 0) {
-      return { message: "Ready to start your magical journey? ✨", icon: Sparkles, color: "text-purple-600" }
+      return { message: "Ready to start your magical journey? ✨", icon: Sparkles, color: "text-primary" }
     } else if (completedStages === 1) {
-      return { message: "Great start! You're on your way! 🚀", icon: Rocket, color: "text-blue-600" }
+      return { message: "Great start! You're on your way! 🚀", icon: Rocket, color: "text-secondary" }
     } else if (completedStages === 2) {
-      return { message: "Halfway there! Keep the momentum going! 💪", icon: Trophy, color: "text-green-600" }
+      return { message: "Halfway there! Keep the momentum going! 💪", icon: Trophy, color: "text-success" }
     } else if (completedStages === 3) {
-      return { message: "Almost there! You're doing amazing! 🌟", icon: Star, color: "text-yellow-600" }
+      return { message: "Almost there! You're doing amazing! 🌟", icon: Star, color: "text-warning" }
     } else if (completedStages === totalStages) {
-      return { message: "Congratulations! You've completed your journey! 🎉", icon: PartyPopper, color: "text-pink-600" }
+      return { message: "Congratulations! You've completed your journey! 🎉", icon: PartyPopper, color: "text-accent" }
     }
-    return { message: "Keep going! Every step counts! 💫", icon: Heart, color: "text-red-500" }
+    return { message: "Keep going! Every step counts! 💫", icon: Heart, color: "text-error" }
   }
 
   // Fun activity suggestions based on user data
@@ -129,7 +129,7 @@ export default function DashboardPage() {
         title: "Create Your First Venture",
         description: "Start your entrepreneurial journey!",
         icon: Rocket,
-        color: "bg-gradient-to-r from-purple-500 to-pink-500",
+        color: "bg-gradient-to-r from-primary to-accent",
         href: "/ventures/create"
       })
     }
@@ -139,7 +139,7 @@ export default function DashboardPage() {
         title: "Post Your First Role",
         description: "Find amazing contributors for your projects",
         icon: Users,
-        color: "bg-gradient-to-r from-blue-500 to-cyan-500",
+        color: "bg-gradient-to-r from-secondary to-primary",
         href: "/offers/create"
       })
     }
