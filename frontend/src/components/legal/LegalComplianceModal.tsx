@@ -43,6 +43,11 @@ export default function LegalComplianceModal({
   const [viewingDocument, setViewingDocument] = useState<string | null>(null)
   const [documentContent, setDocumentContent] = useState<string>('')
 
+  // API Base URL configuration
+  const API_BASE = process.env.NODE_ENV === 'production' 
+    ? process.env.NEXT_PUBLIC_API_URL || 'https://smartstart-api.onrender.com'
+    : 'http://localhost:3001'
+
   // Load legal documents
   useEffect(() => {
     if (isOpen) {
@@ -53,9 +58,6 @@ export default function LegalComplianceModal({
   const loadDocuments = async () => {
     try {
       const token = localStorage.getItem('auth-token')
-      const API_BASE = process.env.NODE_ENV === 'production' 
-        ? process.env.NEXT_PUBLIC_API_URL || 'https://smartstart-api.onrender.com'
-        : 'http://localhost:3001'
       
       const response = await fetch(`${API_BASE}/api/legal-signing/documents`, {
         headers: {

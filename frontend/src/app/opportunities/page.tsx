@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Target, Building, Globe, Shield, Filter, Clock, Users, Star, Plus, Search, MapPin, DollarSign, Calendar, Briefcase } from 'lucide-react'
+import { Target, Building, Globe, Filter, Clock, Users, Star, Plus, Search, MapPin, DollarSign } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'

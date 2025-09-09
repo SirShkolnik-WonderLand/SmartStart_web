@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const token = authHeader.split(' ')[1]
+    // const token = authHeader.split(' ')[1] // Unused for now
     
     // For now, return mock data that matches our database structure
     // In production, this would connect to the actual API

@@ -15,12 +15,9 @@ import {
   Target,
   ArrowRight,
   MoreHorizontal,
-  Star,
-  Activity,
   Building2,
   Lightbulb,
-  Globe,
-  BarChart3
+  Globe
 } from 'lucide-react'
 import Link from 'next/link'
 
