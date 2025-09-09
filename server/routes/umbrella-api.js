@@ -6,8 +6,15 @@
 const express = require('express');
 const { authenticateToken } = require('../middleware/auth');
 const umbrellaService = require('../services/umbrella-service');
+const UmbrellaSecurityMiddleware = require('../middleware/umbrella-security');
 
 const router = express.Router();
+
+// Initialize security middleware
+const securityMiddleware = new UmbrellaSecurityMiddleware();
+
+// Apply rate limiting
+router.use(securityMiddleware.createUmbrellaRateLimit());
 
 // ===== HEALTH CHECK =====
 
@@ -63,7 +70,11 @@ router.get('/relationships', authenticateToken, async (req, res) => {
  * Create umbrella relationship
  * POST /api/umbrella/relationships
  */
-router.post('/relationships', authenticateToken, async (req, res) => {
+router.post('/relationships', 
+  authenticateToken, 
+  securityMiddleware.validateUmbrellaData.bind(securityMiddleware),
+  securityMiddleware.checkGDPRCompliance.bind(securityMiddleware),
+  async (req, res) => {
   try {
     const { userId } = req.user;
     const { referredId, shareRate = 1.0, relationshipType = 'PRIVATE_UMBRELLA' } = req.body;
@@ -259,7 +270,12 @@ router.get('/revenue/shares', authenticateToken, async (req, res) => {
  * Calculate revenue shares for project
  * POST /api/umbrella/revenue/calculate
  */
-router.post('/revenue/calculate', authenticateToken, async (req, res) => {
+router.post('/revenue/calculate', 
+  authenticateToken, 
+  securityMiddleware.createRevenueCalculationRateLimit(),
+  securityMiddleware.validateRevenueData.bind(securityMiddleware),
+  securityMiddleware.checkFinancialCompliance.bind(securityMiddleware),
+  async (req, res) => {
   try {
     const { projectId, revenue } = req.body;
     
