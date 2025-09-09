@@ -1,3 +1,4 @@
+now this is the next step, u have to read and resarch havliy before starting plan for that step beacuse it is align and connect to everything else on that app
 
 now lets create the concept of "Private Umbrella" its when a memeber of smartstart brings another memebers so from now on every project he will have to submit 0.5%-1.5% (depends on the project size and agrrement it can be change between proejcts between them both)to the one who brgout him to smartstart they need links betwwen users and projects who did what and who brgout who so they will have connections and internal legal document and frontend about the umbrella , first after we read the neede MD lests create the eight MD for that plan the do the plan while taking into consideration everything! everything! even add it in the left menu as another page (it is a full system includign API state machine DB conncetion frotn end and so on)
 

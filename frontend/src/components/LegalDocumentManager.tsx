@@ -1101,7 +1101,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
                   <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
                     <div className="text-sm text-yellow-800">
                       <strong>Document Not Signed:</strong> This document has not been signed yet. 
-                      Use the "Sign Now" button to sign this document and create a complete audit trail.
+                      Use the &quot;Sign Now&quot; button to sign this document and create a complete audit trail.
                     </div>
                   </div>
                 )}
