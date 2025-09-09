@@ -69,7 +69,11 @@ export default function OpportunitiesPage() {
       setIsLoading(true)
       
       // Use real data from our opportunities API
-      const response = await fetch('/api/opportunities', {
+      const API_BASE = process.env.NODE_ENV === 'production' 
+        ? process.env.NEXT_PUBLIC_API_URL || 'https://smartstart-api.onrender.com'
+        : 'http://localhost:3001'
+      
+      const response = await fetch(`${API_BASE}/api/opportunities`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
           'Content-Type': 'application/json'

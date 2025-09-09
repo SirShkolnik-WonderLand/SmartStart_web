@@ -33,7 +33,11 @@ const StateMachineVisualization: React.FC<StateMachineVisualizationProps> = ({
       setLoading(true);
       setError(null);
 
-      const response = await fetch(`/api/legal/state-machine/${type}/${id}/visualization`, {
+      const API_BASE = process.env.NODE_ENV === 'production' 
+        ? process.env.NEXT_PUBLIC_API_URL || 'https://smartstart-api.onrender.com'
+        : 'http://localhost:3001'
+
+      const response = await fetch(`${API_BASE}/api/legal/state-machine/${type}/${id}/visualization`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('auth-token')}`
         }

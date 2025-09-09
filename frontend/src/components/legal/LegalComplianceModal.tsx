@@ -53,7 +53,11 @@ export default function LegalComplianceModal({
   const loadDocuments = async () => {
     try {
       const token = localStorage.getItem('auth-token')
-      const response = await fetch('/api/legal-signing/documents', {
+      const API_BASE = process.env.NODE_ENV === 'production' 
+        ? process.env.NEXT_PUBLIC_API_URL || 'https://smartstart-api.onrender.com'
+        : 'http://localhost:3001'
+      
+      const response = await fetch(`${API_BASE}/api/legal-signing/documents`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -77,7 +81,7 @@ export default function LegalComplianceModal({
   const startSigningSession = async () => {
     try {
       const token = localStorage.getItem('auth-token')
-      const response = await fetch('/api/legal-signing/session/start', {
+      const response = await fetch(`${API_BASE}/api/legal-signing/session/start`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -104,7 +108,7 @@ export default function LegalComplianceModal({
   const signDocument = async (documentId: string, sessionId: string) => {
     try {
       const token = localStorage.getItem('auth-token')
-      const response = await fetch(`/api/legal-signing/session/${sessionId}/sign`, {
+      const response = await fetch(`${API_BASE}/api/legal-signing/session/${sessionId}/sign`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -169,7 +173,7 @@ export default function LegalComplianceModal({
   const viewDocument = async (documentId: string) => {
     try {
       const token = localStorage.getItem('auth-token')
-      const response = await fetch(`/api/legal-signing/documents/${documentId}`, {
+      const response = await fetch(`${API_BASE}/api/legal-signing/documents/${documentId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }

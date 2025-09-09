@@ -43,8 +43,12 @@ const StateMachineDashboard: React.FC<StateMachineDashboardProps> = ({
       setLoading(true);
       setError(null);
 
+      const API_BASE = process.env.NODE_ENV === 'production' 
+        ? process.env.NEXT_PUBLIC_API_URL || 'https://smartstart-api.onrender.com'
+        : 'http://localhost:3001'
+
       // Load system health
-      const healthResponse = await fetch('/api/state-machines/health', {
+      const healthResponse = await fetch(`${API_BASE}/api/state-machines/health`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('auth-token')}`
         }
@@ -61,7 +65,7 @@ const StateMachineDashboard: React.FC<StateMachineDashboardProps> = ({
       const types = ['legal', 'userJourney', 'venture', 'subscription', 'team', 'compliance'];
       const overviewPromises = types.map(async (type) => {
         try {
-          const response = await fetch(`/api/state-machines/${type}/active`, {
+          const response = await fetch(`${API_BASE}/api/state-machines/${type}/active`, {
             headers: {
               'Authorization': `Bearer ${localStorage.getItem('auth-token')}`
             }
