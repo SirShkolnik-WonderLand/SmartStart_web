@@ -142,6 +142,11 @@ model User {
   umbrellaDocumentSignatures UmbrellaDocumentSignature[] @relation("UmbrellaDocumentSigner")
   umbrellaAnalytics     UmbrellaAnalytics[] @relation("UmbrellaAnalytics")
 
+  // Opportunities system relations
+  opportunitiesCreated  Opportunity[] @relation("OpportunityCreator")
+  opportunityApplications OpportunityApplication[] @relation("OpportunityApplicant")
+  opportunityMatches    OpportunityMatch[] @relation("OpportunityMatch")
+
   @@index([tenantId])
   @@index([status])
   @@index([level])
@@ -227,6 +232,9 @@ model Project {
 
   // Umbrella system relations
   revenueShares     RevenueShare[]
+
+  // Opportunities system relations
+  opportunities     Opportunity[]
 
   @@index([tenantId])
   @@index([totalValue])
@@ -1295,6 +1303,9 @@ model LegalDocument {
   ventureId String?
   venture   Venture? @relation("VentureLegalDocuments", fields: [ventureId], references: [id])
 
+  // Opportunities system relations
+  opportunityLegalDocuments OpportunityLegalDocument[]
+
   @@index([entityId])
   @@index([projectId])
   @@index([ventureId])
@@ -1931,6 +1942,9 @@ model Venture {
   
   // Meeting relations
   meetings           Meeting[]
+  
+  // Opportunities system relations
+  opportunities      Opportunity[]
   
   // Timestamps
   createdAt DateTime @default(now())
@@ -3133,6 +3147,239 @@ enum UmbrellaDocumentType {
   REFERRAL_AGREEMENT
   TERMINATION_NOTICE
   AMENDMENT_AGREEMENT
+}
+
+// ===== OPPORTUNITIES SYSTEM =====
+
+// Main opportunities table
+model Opportunity {
+  id                String   @id @default(cuid())
+  title             String
+  description       String
+  type              OpportunityType
+  status            OpportunityStatus @default(ACTIVE)
+  createdBy         String
+  ventureId         String?  // Optional - can be platform-wide
+  projectId         String?  // Optional - specific project
+  
+  // Collaboration details
+  collaborationType CollaborationType
+  requiredSkills    String[] // Array of required skills
+  preferredSkills   String[] // Array of preferred skills
+  timeCommitment    String   // "Part-time", "Full-time", "Flexible"
+  duration          String   // "Short-term", "Long-term", "Ongoing"
+  
+  // Legal and compliance
+  requiresNDA       Boolean  @default(true)
+  legalLevel        String   @default("MNDA") // Required legal level
+  complianceRequired Boolean @default(true)
+  
+  // Location and remote work
+  location          String?
+  isRemote          Boolean  @default(true)
+  timezone          String?
+  
+  // Compensation and equity
+  compensationType  CompensationType
+  compensationValue Float?
+  equityOffered     Float?   // Percentage
+  currency          String   @default("USD")
+  
+  // Matching and visibility
+  visibilityLevel   VisibilityLevel @default(PUBLIC)
+  targetAudience    String[] // Array of target user levels
+  tags              String[] // Array of tags for filtering
+  
+  // Timestamps
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  expiresAt         DateTime?
+  
+  // Relations
+  creator           User     @relation("OpportunityCreator", fields: [createdBy], references: [id])
+  venture           Venture? @relation(fields: [ventureId], references: [id])
+  project           Project? @relation(fields: [projectId], references: [id])
+  applications      OpportunityApplication[]
+  matches           OpportunityMatch[]
+  legalDocuments    OpportunityLegalDocument[]
+  analytics         OpportunityAnalytics[]
+  
+  @@index([type])
+  @@index([status])
+  @@index([createdBy])
+  @@index([ventureId])
+  @@index([visibilityLevel])
+}
+
+// Opportunity applications
+model OpportunityApplication {
+  id            String   @id @default(cuid())
+  opportunityId String
+  applicantId   String
+  status        ApplicationStatus @default(PENDING)
+  
+  // Application details
+  coverLetter   String?
+  relevantSkills String[]
+  experience    String?
+  availability  String?
+  motivation    String?
+  
+  // Legal compliance
+  legalLevel    String   // Current user's legal level
+  ndaAccepted   Boolean  @default(false)
+  complianceMet Boolean  @default(false)
+  
+  // Timestamps
+  appliedAt     DateTime @default(now())
+  reviewedAt    DateTime?
+  respondedAt   DateTime?
+  
+  // Relations
+  opportunity   Opportunity @relation(fields: [opportunityId], references: [id])
+  applicant     User        @relation("OpportunityApplicant", fields: [applicantId], references: [id])
+  
+  @@unique([opportunityId, applicantId])
+  @@index([opportunityId])
+  @@index([applicantId])
+  @@index([status])
+}
+
+// Opportunity matches (AI-powered matching)
+model OpportunityMatch {
+  id            String   @id @default(cuid())
+  opportunityId String
+  userId        String
+  matchScore    Float    // 0.0 to 1.0
+  matchReasons  String[] // Array of match reasons
+  
+  // Match details
+  skillMatch    Float    // Skill compatibility score
+  experienceMatch Float  // Experience compatibility score
+  locationMatch Float    // Location compatibility score
+  timeMatch     Float    // Time availability match
+  legalMatch    Float    // Legal level compatibility
+  
+  // Status
+  status        MatchStatus @default(SUGGESTED)
+  viewedAt      DateTime?
+  appliedAt     DateTime?
+  
+  // Timestamps
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  // Relations
+  opportunity   Opportunity @relation(fields: [opportunityId], references: [id])
+  user          User        @relation("OpportunityMatch", fields: [userId], references: [id])
+  
+  @@unique([opportunityId, userId])
+  @@index([opportunityId])
+  @@index([userId])
+  @@index([matchScore])
+}
+
+// Legal documents for opportunities
+model OpportunityLegalDocument {
+  id            String   @id @default(cuid())
+  opportunityId String
+  documentType  String   // "NDA", "COLLABORATION_AGREEMENT", "IP_ASSIGNMENT"
+  documentId    String   // Reference to LegalDocument
+  isRequired    Boolean  @default(true)
+  
+  // Relations
+  opportunity   Opportunity @relation(fields: [opportunityId], references: [id])
+  document      LegalDocument @relation(fields: [documentId], references: [id])
+  
+  @@index([opportunityId])
+  @@index([documentType])
+}
+
+// Opportunity analytics
+model OpportunityAnalytics {
+  id            String   @id @default(cuid())
+  opportunityId String
+  date          DateTime @default(now())
+  
+  // Metrics
+  views         Int      @default(0)
+  applications  Int      @default(0)
+  matches       Int      @default(0)
+  conversions   Int      @default(0) // Applications to collaborations
+  
+  // Relations
+  opportunity   Opportunity @relation(fields: [opportunityId], references: [id])
+  
+  @@index([opportunityId])
+  @@index([date])
+}
+
+// ===== OPPORTUNITIES SYSTEM ENUMS =====
+
+enum OpportunityType {
+  VENTURE_COLLABORATION    // Join existing venture
+  SKILL_SHARING           // Exchange skills
+  IDEA_COLLABORATION      // Work on ideas together
+  MENTORSHIP              // Find mentors/mentees
+  LEGAL_PARTNERSHIP       // Legal work collaboration
+  UMBRELLA_NETWORK        // Referral partnerships
+  PROJECT_CONSULTING      // Project-based consulting
+  EQUITY_PARTNERSHIP      // Equity-based partnerships
+}
+
+enum OpportunityStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+  FILLED
+  EXPIRED
+  CANCELLED
+}
+
+enum CollaborationType {
+  FULL_TIME
+  PART_TIME
+  CONSULTING
+  MENTORING
+  ADVISORY
+  EQUITY_PARTNERSHIP
+  REVENUE_SHARING
+}
+
+enum CompensationType {
+  EQUITY_ONLY
+  REVENUE_SHARING
+  HOURLY_RATE
+  PROJECT_FEE
+  MENTORSHIP_EXCHANGE
+  SKILL_EXCHANGE
+  UNPAID
+}
+
+enum VisibilityLevel {
+  PUBLIC              // Visible to all users
+  MEMBER_ONLY         // Visible to members and above
+  SUBSCRIBER_ONLY     // Visible to subscribers and above
+  VENTURE_ONLY        // Visible to venture participants
+  PRIVATE             // Only visible to creator
+}
+
+enum ApplicationStatus {
+  PENDING
+  REVIEWING
+  ACCEPTED
+  REJECTED
+  WITHDRAWN
+  EXPIRED
+}
+
+enum MatchStatus {
+  SUGGESTED
+  VIEWED
+  APPLIED
+  ACCEPTED
+  REJECTED
+  IGNORED
 }
 
 

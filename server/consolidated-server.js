@@ -175,6 +175,16 @@ try {
     console.error('❌ Failed to mount Umbrella Security API:', error.message);
 }
 
+// Mount Opportunities API routes
+try {
+    console.log('🚀 Mounting Opportunities API...');
+    const opportunitiesApiRoutes = require('./routes/opportunities-api');
+    app.use('/api/opportunities', opportunitiesApiRoutes);
+    console.log('✅ Opportunities API mounted successfully');
+} catch (error) {
+    console.error('❌ Failed to mount Opportunities API:', error.message);
+}
+
 // Old authentication routes removed - using unified-auth-api instead
 
 const invitationApiRoutes = require('./routes/invitation-api');
