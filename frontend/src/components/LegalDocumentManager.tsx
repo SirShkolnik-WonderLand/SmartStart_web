@@ -190,10 +190,10 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
     // Prefill with known fields from document data
     const ev: EvidenceDetails = {
       signer: doc.signerName || (doc.isSigned ? 'Unknown Signer' : 'Not Signed'),
-      signedAt: doc.signedAt || (doc.isSigned ? 'Unknown Date' : null),
-      signatureHash: doc.signatureHash || (doc.isSigned ? 'Hash Not Available' : null),
-      ip: doc.ipAddress || (doc.isSigned ? 'IP Not Available' : null),
-      userAgent: doc.userAgent || (doc.isSigned ? 'User Agent Not Available' : null),
+      signedAt: doc.signedAt || (doc.isSigned ? 'Unknown Date' : undefined),
+      signatureHash: doc.signatureHash || (doc.isSigned ? 'Hash Not Available' : undefined),
+      ip: doc.ipAddress || (doc.isSigned ? 'IP Not Available' : undefined),
+      userAgent: doc.userAgent || (doc.isSigned ? 'User Agent Not Available' : undefined),
       verified: doc.isSigned && doc.signatureHash ? true : false
     }
     setEvidence(ev)
@@ -1076,7 +1076,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
                   <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
                     <div className="text-gray-600">Signed At</div>
                     <div className={`font-mono ${
-                      evidence?.signedAt === null || evidence?.signedAt === 'Unknown Date'
+                      evidence?.signedAt === undefined || evidence?.signedAt === 'Unknown Date'
                         ? 'text-yellow-600'
                         : 'text-gray-900'
                     }`}>
@@ -1086,7 +1086,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
                   <div className="md:col-span-2 bg-gray-50 rounded-lg p-4 border border-gray-200">
                     <div className="text-gray-600">Signature Hash (sha256)</div>
                     <div className={`font-mono text-xs break-all ${
-                      evidence?.signatureHash === null || evidence?.signatureHash === 'Hash Not Available'
+                      evidence?.signatureHash === undefined || evidence?.signatureHash === 'Hash Not Available'
                         ? 'text-yellow-600'
                         : 'text-gray-900'
                     }`}>
