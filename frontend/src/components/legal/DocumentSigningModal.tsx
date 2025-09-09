@@ -17,7 +17,6 @@ export default function DocumentSigningModal({
   document,
   onSignSuccess
 }: DocumentSigningModalProps) {
-  const [isLoading] = useState(false);
   const [isSigning, setIsSigning] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -97,10 +96,10 @@ export default function DocumentSigningModal({
       const blob = await legalDocumentsApiService.downloadDocument(document.id);
       if (blob) {
         const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
+        const a = window.document.createElement('a');
         a.href = url;
         a.download = `${document.title || 'document'}.pdf`;
-        document.body.appendChild(a);
+        window.document.body.appendChild(a);
         a.click();
         a.remove();
         window.URL.revokeObjectURL(url);

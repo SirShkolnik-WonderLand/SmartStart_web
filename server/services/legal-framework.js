@@ -184,9 +184,30 @@ class LegalFrameworkService {
      */
     async getUserSignedDocuments(userId) {
         try {
-            // This would typically query your database
-            // For now, return empty array - implement based on your DB structure
-            return [];
+            // Import Prisma client
+            const { PrismaClient } = require('@prisma/client');
+            const prisma = new PrismaClient();
+            
+            // Get user signatures from database
+            const signatures = await prisma.legalDocumentSignature.findMany({
+                where: { signerId: userId },
+                include: {
+                    document: {
+                        select: { title: true, type: true, version: true }
+                    }
+                },
+                orderBy: { signedAt: 'desc' }
+            });
+
+            // Transform to match expected format
+            return signatures.map(sig => ({
+                documentId: sig.documentId,
+                documentType: this.getDocumentTypeFromTitle(sig.document.title),
+                status: 'FULLY_EXECUTED',
+                signedAt: sig.signedAt,
+                hash: sig.signatureHash,
+                expiryDate: this.calculateExpiryDate(this.getDocumentTypeFromTitle(sig.document.title))
+            }));
         } catch (error) {
             console.error('Error getting user documents:', error);
             return [];
@@ -734,6 +755,29 @@ DOC HASH (sha256): [TO_BE_COMPUTED]
         expiryDate.setDate(expiryDate.getDate() + days);
 
         return expiryDate;
+    }
+
+    /**
+     * Get document type from title
+     */
+    getDocumentTypeFromTitle(title) {
+        const titleMap = {
+            'Platform Participation Agreement (PPA)': 'PPA',
+            'Electronic Signature & Consent Agreement': 'E_SIGNATURE_CONSENT',
+            'Privacy Notice & Acknowledgment': 'PRIVACY_NOTICE',
+            'Mutual Non-Disclosure Agreement': 'MUTUAL_NDA',
+            'Platform Tools Subscription Agreement (PTSA)': 'PTSA',
+            'Seat Order & Billing Authorization (SOBA)': 'SOBA',
+            'Idea Submission & Evaluation Agreement': 'IDEA_SUBMISSION',
+            'Participant Collaboration Agreement (PCA)': 'PCA',
+            'Joint Development Agreement (JDA)': 'JDA',
+            'Security Tier 1 Acknowledgment': 'SECURITY_TIER_1',
+            'Security Tier 2 Acknowledgment': 'SECURITY_TIER_2',
+            'Security Tier 3 Acknowledgment': 'SECURITY_TIER_3',
+            'Crown Jewel IP Agreement': 'CROWN_JEWEL_IP'
+        };
+
+        return titleMap[title] || 'UNKNOWN';
     }
 
     /**
