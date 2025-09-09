@@ -113,7 +113,7 @@ export default function PersistentLayout({ children }: PersistentLayoutProps) {
   return (
     <div className="min-h-screen wonderland-bg">
       {/* Header */}
-      <header className="glass border-b border-border/50 sticky top-0 z-50">
+      <header className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border/50 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">

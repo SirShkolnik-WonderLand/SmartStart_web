@@ -34,7 +34,7 @@ export default function DocumentSigningModal({
       setSuccess(false);
       
       // Auto-populate user data from localStorage or API
-      const userData = JSON.parse(localStorage.getItem('user') || '{}');
+      const userData = JSON.parse(localStorage.getItem('user-data') || '{}');
       setSignatureData({
         signerName: userData.name || userData.firstName + ' ' + userData.lastName || '',
         signerEmail: userData.email || '',

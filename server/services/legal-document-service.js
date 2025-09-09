@@ -285,13 +285,17 @@ class LegalDocumentService {
      */
     async signDocument(userId, documentId, signatureData) {
         try {
+            console.log('🔍 signDocument called with:', { userId, documentId, signatureData });
+            
             // Check if document exists
             const document = await this.prisma.legalDocument.findUnique({
                 where: { id: documentId }
             });
             
+            console.log('🔍 Document found:', document ? 'YES' : 'NO', document?.title);
+            
             if (!document) {
-                throw new Error('Document not found');
+                throw new Error(`Document not found: ${documentId}`);
             }
             
             // Check if already signed
