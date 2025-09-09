@@ -36,6 +36,7 @@ export default function ActionDocumentSigningModal({
   onError
 }: ActionDocumentSigningModalProps) {
   const [documents, setDocuments] = useState<DocumentToSign[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState<'loading' | 'review' | 'signing' | 'complete'>('loading');
   const [signatureInfo, setSignatureInfo] = useState<SignatureInfo>({
     signerName: '',

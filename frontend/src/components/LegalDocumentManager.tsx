@@ -26,7 +26,7 @@ import {
   SortAsc,
   SortDesc
 } from 'lucide-react'
-import { legalDocumentsApiService, LegalDocument, DocumentStatus, DocumentAuditLog, ComplianceReport } from '@/lib/legal-documents-api'
+import { legalDocumentsApiService, LegalDocument, DocumentAuditLog, ComplianceReport } from '@/lib/legal-documents-api'
 import DocumentSigningModal from './legal/DocumentSigningModal'
 
 type EvidenceDetails = {
