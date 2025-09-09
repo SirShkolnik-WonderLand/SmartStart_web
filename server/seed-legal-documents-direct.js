@@ -198,9 +198,26 @@ async function seedLegalDocumentsDirect() {
     console.log('🌱 Starting direct legal documents seeding...');
 
     try {
-        // Clear existing legal documents
+        // Clear existing legal documents (but preserve signed ones)
         console.log('🗑️  Clearing existing documents...');
-        await prisma.legalDocument.deleteMany({});
+        const existingDocs = await prisma.legalDocument.findMany({
+            where: {
+                NOT: {
+                    id: { in: ['cmf9ys85p0013na2etlh6r2x7', 'cmf9ys1l00011na2e6yc4v9gu', 'cmf9yru9i000zna2e36j0pecs'] }
+                }
+            }
+        });
+
+        if (existingDocs.length > 0) {
+            console.log(`🗑️  Removing ${existingDocs.length} existing documents...`);
+            await prisma.legalDocument.deleteMany({
+                where: {
+                    NOT: {
+                        id: { in: ['cmf9ys85p0013na2etlh6r2x7', 'cmf9ys1l00011na2e6yc4v9gu', 'cmf9yru9i000zna2e36j0pecs'] }
+                    }
+                }
+            });
+        }
 
         // Create legal documents
         for (const doc of documents) {
