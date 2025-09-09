@@ -1,9 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const LegalDocumentService = require('../services/legal-document-service');
+const legalDocumentService = require('../services/legal-document-service');
 const { authenticateToken } = require('../middleware/auth');
-
-const legalDocumentService = new LegalDocumentService();
 
 // Get available documents for user
 router.get('/documents', authenticateToken, async (req, res) => {
