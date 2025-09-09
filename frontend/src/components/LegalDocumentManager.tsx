@@ -45,7 +45,6 @@ interface LegalDocumentManagerProps {
 
 export default function LegalDocumentManager({ className = '' }: LegalDocumentManagerProps) {
   const [documents, setDocuments] = useState<LegalDocument[]>([])
-  const [documentStatus, setDocumentStatus] = useState<DocumentStatus | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
@@ -92,7 +91,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
           const statusDocs = statusResponse.success && statusResponse.data ? statusResponse.data.documents || [] : []
 
           // Create a map of status data for quick lookup
-          const statusMap: Record<string, any> = {}
+          const statusMap: Record<string, { status?: string; signed_at?: string; signature_hash?: string }> = {}
           for (const sdoc of statusDocs) {
             statusMap[sdoc.document_id] = sdoc
           }
@@ -117,12 +116,7 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
           console.warn('Failed to load documents:', documentsResponse)
         }
 
-        // Set document status if available
-        if (statusResponse.success && statusResponse.data) {
-          setDocumentStatus(statusResponse.data)
-        } else {
-          console.warn('Failed to load document status:', statusResponse)
-        }
+        // Document status is handled within the enhanced documents
       } catch (err) {
         console.error('Error loading documents:', err)
         setError('Failed to load documents. Please try again.')
@@ -142,13 +136,9 @@ export default function LegalDocumentManager({ className = '' }: LegalDocumentMa
   // Handle successful signing
   const handleSignSuccess = async () => {
     try {
-      // Refresh documents and status
-      const [documentsResponse, statusResponse] = await Promise.all([
-        legalDocumentsApiService.getAvailableDocuments(),
-        legalDocumentsApiService.getUserDocumentStatus()
-      ])
+      // Refresh documents
+      const documentsResponse = await legalDocumentsApiService.getAvailableDocuments()
       if (documentsResponse.success) setDocuments(documentsResponse.data)
-      if (statusResponse.success) setDocumentStatus(statusResponse.data)
     } catch (err) {
       console.error('Failed to refresh documents:', err)
     }
