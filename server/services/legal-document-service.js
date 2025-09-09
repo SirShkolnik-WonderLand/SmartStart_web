@@ -341,12 +341,15 @@ class LegalDocumentService {
             const signedDocumentIds = userSignatures.map(sig => sig.documentId);
 
             // Get all required documents for user's RBAC level
+            console.log('🔧 LegalFramework type:', typeof this.legalFramework);
+            console.log('🔧 LegalFramework rbacDocumentRequirements:', this.legalFramework.rbacDocumentRequirements);
             const allRequiredDocs = [];
             for (const [level, config] of Object.entries(this.legalFramework.rbacDocumentRequirements)) {
                 if (this.getLevelNumber(level) <= this.getLevelNumber(rbacLevel)) {
                     allRequiredDocs.push(...config);
                 }
             }
+            console.log('📋 All required docs for', rbacLevel, ':', allRequiredDocs);
 
             // Get documents for next level (pending)
             const nextLevelDocs = [];
