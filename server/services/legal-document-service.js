@@ -287,6 +287,25 @@ class LegalDocumentService {
     }
 
     /**
+     * Get next RBAC level
+     */
+    getNextLevel(currentLevel) {
+        const levelOrder = [
+            'GUEST', 'MEMBER', 'SUBSCRIBER', 'SEAT_HOLDER', 'VENTURE_OWNER', 
+            'VENTURE_PARTICIPANT', 'EXTERNAL_PARTNER', 'CONFIDENTIAL_ACCESS', 
+            'RESTRICTED_ACCESS', 'HIGHLY_RESTRICTED_ACCESS', 'BILLING_ADMIN', 
+            'SECURITY_ADMIN', 'LEGAL_ADMIN', 'ANALYTICS_ACCESS', 'API_ACCESS', 
+            'DOCUMENT_ADMIN', 'INCIDENT_RESPONDER', 'AUDIT_PARTICIPANT'
+        ];
+        
+        const currentIndex = levelOrder.indexOf(currentLevel);
+        if (currentIndex >= 0 && currentIndex < levelOrder.length - 1) {
+            return levelOrder[currentIndex + 1];
+        }
+        return null;
+    }
+
+    /**
      * Get available documents for user (API compatibility with existing legal framework)
      */
     async getAvailableDocuments(userId) {
@@ -326,16 +345,27 @@ class LegalDocumentService {
                 }
             }
 
+            // Get documents for next level (pending)
+            const nextLevelDocs = [];
+            const nextLevel = this.getNextLevel(rbacLevel);
+            if (nextLevel) {
+                const nextLevelConfig = this.legalFramework.rbacDocumentRequirements[nextLevel] || [];
+                nextLevelDocs.push(...nextLevelConfig);
+            }
+
             return documents.map(doc => {
                 const docKey = this.getDocumentKey(doc);
                 const isRequired = allRequiredDocs.includes(docKey);
+                const isPending = nextLevelDocs.includes(docKey);
                 const isSigned = signedDocumentIds.includes(doc.id);
                 const signature = userSignatures.find(sig => sig.documentId === doc.id);
 
                 let status = 'NOT_REQUIRED';
                 if (isRequired && isSigned) status = 'SIGNED';
                 else if (isRequired && !isSigned) status = 'REQUIRED';
-                else if (!isRequired && isSigned) status = 'SIGNED';
+                else if (isPending && isSigned) status = 'SIGNED';
+                else if (isPending && !isSigned) status = 'PENDING';
+                else if (!isRequired && !isPending && isSigned) status = 'SIGNED';
 
                 return {
                     id: doc.id,
