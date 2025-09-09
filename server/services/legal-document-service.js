@@ -310,6 +310,7 @@ class LegalDocumentService {
      */
     async getAvailableDocuments(userId) {
         try {
+            console.log('🔍 getAvailableDocuments called for userId:', userId);
             const { PrismaClient } = require('@prisma/client');
             const prisma = new PrismaClient();
             
@@ -320,11 +321,13 @@ class LegalDocumentService {
             
             const userLevel = user?.level || 'OWLET';
             const rbacLevel = this.mapUserLevelToRbacLevel(userLevel);
+            console.log('👤 User level:', userLevel, '-> RBAC level:', rbacLevel);
             
             const documents = await prisma.legalDocument.findMany({
                 where: { status: 'EFFECTIVE' },
                 orderBy: { title: 'asc' }
             });
+            console.log('📄 Found documents:', documents.length);
 
             const userSignatures = await prisma.legalDocumentSignature.findMany({
                 where: { signerId: userId },
@@ -353,7 +356,7 @@ class LegalDocumentService {
                 nextLevelDocs.push(...nextLevelConfig);
             }
 
-            return documents.map(doc => {
+            const result = documents.map(doc => {
                 const docKey = this.getDocumentKey(doc);
                 const isRequired = allRequiredDocs.includes(docKey);
                 const isPending = nextLevelDocs.includes(docKey);
@@ -366,6 +369,8 @@ class LegalDocumentService {
                 else if (isPending && isSigned) status = 'SIGNED';
                 else if (isPending && !isSigned) status = 'PENDING';
                 else if (!isRequired && !isPending && isSigned) status = 'SIGNED';
+
+                console.log(`📋 Document: ${doc.title} -> Key: ${docKey} -> Status: ${status}`);
 
                 return {
                     id: doc.id,
@@ -398,8 +403,11 @@ class LegalDocumentService {
                     generatedFrom: doc.generatedFrom
                 };
             });
+            
+            console.log('✅ Returning', result.length, 'documents');
+            return result;
         } catch (error) {
-            console.error('Error getting available documents:', error);
+            console.error('❌ Error getting available documents:', error);
             return [];
         }
     }
