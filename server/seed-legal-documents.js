@@ -192,7 +192,7 @@ async function seedLegalDocuments() {
                         type: contract.type,
                         content: content,
                         version: contract.version,
-                        status: 'DRAFT',
+                        status: 'EFFECTIVE',
                         requiresSignature: contract.isRequired,
                         complianceRequired: contract.isRequired,
                         createdBy: 'system-seed', // System user
