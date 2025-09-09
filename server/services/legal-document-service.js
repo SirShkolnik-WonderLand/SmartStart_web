@@ -2,10 +2,12 @@ const crypto = require('crypto');
 const fs = require('fs').promises;
 const path = require('path');
 const { PrismaClient } = require('@prisma/client');
+const LegalFrameworkService = require('./legal-framework');
 
 class LegalDocumentService {
     constructor() {
         this.prisma = new PrismaClient();
+        this.legalFramework = new LegalFrameworkService();
         this.documents = new Map(); // Cache for performance
         this.signatures = new Map(); // Cache for sessions
         this.loadLegalDocuments();
@@ -84,10 +86,18 @@ class LegalDocumentService {
     }
 
     /**
-     * Get available documents for user (API compatibility)
+     * Get available documents for user (API compatibility with existing legal framework)
      */
     async getAvailableDocuments(userId) {
         try {
+            // Get user's current RBAC level from database
+            const user = await this.prisma.user.findUnique({
+                where: { id: userId },
+                select: { rbacLevel: true }
+            });
+            
+            const userLevel = user?.rbacLevel || 'GUEST';
+            
             // Get documents from database
             const documents = await this.prisma.legalDocument.findMany({
                 where: {
@@ -104,25 +114,53 @@ class LegalDocumentService {
 
             const signedDocumentIds = userSignatures.map(sig => sig.documentId);
 
-            return documents.map(doc => ({
-                id: doc.id,
-                name: doc.title,
-                title: doc.title,
-                type: doc.type || 'TERMS_OF_SERVICE',
-                content: doc.content,
-                version: doc.version || '1.0',
-                status: signedDocumentIds.includes(doc.id) ? 'SIGNED' : 'PENDING',
-                effectiveDate: doc.createdAt,
-                requiresSignature: doc.requiresSignature,
-                complianceRequired: doc.complianceRequired,
-                createdBy: doc.createdBy,
-                createdAt: doc.createdAt,
-                updatedAt: doc.updatedAt,
-                description: doc.description || '',
-                order: 1, // Default order
-                isSigned: signedDocumentIds.includes(doc.id),
-                signedAt: userSignatures.find(sig => sig.documentId === doc.id)?.signedAt
-            }));
+            // Filter documents based on RBAC level using existing legal framework
+            const rbacRequirements = this.legalFramework.rbacDocumentRequirements[userLevel] || [];
+            const allRequiredDocs = [];
+            
+            // Get all documents for current level and below
+            for (const [level, config] of Object.entries(this.legalFramework.rbacDocumentRequirements)) {
+                if (this.getLevelNumber(level) <= this.getLevelNumber(userLevel)) {
+                    allRequiredDocs.push(...config);
+                }
+            }
+
+            return documents.map(doc => {
+                const docKey = this.getDocumentKey(doc);
+                const isRequired = allRequiredDocs.includes(docKey);
+                const isSigned = signedDocumentIds.includes(doc.id);
+                
+                let status = 'NOT_REQUIRED';
+                if (isRequired && isSigned) {
+                    status = 'SIGNED';
+                } else if (isRequired && !isSigned) {
+                    status = 'REQUIRED';
+                } else if (!isRequired && isSigned) {
+                    status = 'SIGNED';
+                } else if (!isRequired && !isSigned) {
+                    status = 'PENDING';
+                }
+
+                return {
+                    id: doc.id,
+                    name: doc.title,
+                    title: doc.title,
+                    type: doc.type || 'TERMS_OF_SERVICE',
+                    content: doc.content,
+                    version: doc.version || '1.0',
+                    status: status,
+                    effectiveDate: doc.createdAt,
+                    requiresSignature: doc.requiresSignature,
+                    complianceRequired: doc.complianceRequired,
+                    createdBy: doc.createdBy,
+                    createdAt: doc.createdAt,
+                    updatedAt: doc.updatedAt,
+                    description: doc.description || '',
+                    order: 1,
+                    isSigned: isSigned,
+                    signedAt: userSignatures.find(sig => sig.documentId === doc.id)?.signedAt
+                };
+            });
         } catch (error) {
             console.error('Error getting available documents:', error);
             throw error;
@@ -130,46 +168,12 @@ class LegalDocumentService {
     }
 
     /**
-     * Get required documents for current level (API compatibility)
+     * Get required documents for current level (API compatibility with existing legal framework)
      */
     async getRequiredDocuments(userId) {
         try {
-            // Get required documents from database
-            const documents = await this.prisma.legalDocument.findMany({
-                where: {
-                    status: { in: ['DRAFT', 'EFFECTIVE'] },
-                    requiresSignature: true
-                },
-                orderBy: { createdAt: 'asc' }
-            });
-
-            // Get user signatures from database
-            const userSignatures = await this.prisma.legalDocumentSignature.findMany({
-                where: { signerId: userId },
-                select: { documentId: true, signedAt: true }
-            });
-
-            const signedDocumentIds = userSignatures.map(sig => sig.documentId);
-
-            return documents.map(doc => ({
-                id: doc.id,
-                name: doc.title,
-                title: doc.title,
-                type: doc.type || 'TERMS_OF_SERVICE',
-                content: doc.content,
-                version: doc.version || '1.0',
-                status: signedDocumentIds.includes(doc.id) ? 'SIGNED' : 'REQUIRED',
-                effectiveDate: doc.createdAt,
-                requiresSignature: true,
-                complianceRequired: true,
-                createdBy: doc.createdBy,
-                createdAt: doc.createdAt,
-                updatedAt: doc.updatedAt,
-                description: doc.description || '',
-                order: 1,
-                isSigned: signedDocumentIds.includes(doc.id),
-                signedAt: userSignatures.find(sig => sig.documentId === doc.id)?.signedAt
-            }));
+            const allDocs = await this.getAvailableDocuments(userId);
+            return allDocs.filter(doc => doc.status === 'REQUIRED');
         } catch (error) {
             console.error('Error getting required documents:', error);
             throw error;
@@ -177,46 +181,12 @@ class LegalDocumentService {
     }
 
     /**
-     * Get pending documents for next level (API compatibility)
+     * Get pending documents for next level (API compatibility with existing legal framework)
      */
     async getPendingDocuments(userId) {
         try {
-            // Get non-required documents from database
-            const documents = await this.prisma.legalDocument.findMany({
-                where: {
-                    status: { in: ['DRAFT', 'EFFECTIVE'] },
-                    requiresSignature: false
-                },
-                orderBy: { createdAt: 'asc' }
-            });
-
-            // Get user signatures from database
-            const userSignatures = await this.prisma.legalDocumentSignature.findMany({
-                where: { signerId: userId },
-                select: { documentId: true, signedAt: true }
-            });
-
-            const signedDocumentIds = userSignatures.map(sig => sig.documentId);
-
-            return documents.map(doc => ({
-                id: doc.id,
-                name: doc.title,
-                title: doc.title,
-                type: doc.type || 'OTHER',
-                content: doc.content,
-                version: doc.version || '1.0',
-                status: signedDocumentIds.includes(doc.id) ? 'SIGNED' : 'PENDING',
-                effectiveDate: doc.createdAt,
-                requiresSignature: false,
-                complianceRequired: false,
-                createdBy: doc.createdBy,
-                createdAt: doc.createdAt,
-                updatedAt: doc.updatedAt,
-                description: doc.description || '',
-                order: 1,
-                isSigned: signedDocumentIds.includes(doc.id),
-                signedAt: userSignatures.find(sig => sig.documentId === doc.id)?.signedAt
-            }));
+            const allDocs = await this.getAvailableDocuments(userId);
+            return allDocs.filter(doc => doc.status === 'PENDING');
         } catch (error) {
             console.error('Error getting pending documents:', error);
             throw error;
@@ -648,6 +618,52 @@ class LegalDocumentService {
                 this.signatures.delete(sessionId);
             }
         }
+    }
+
+    /**
+     * Get RBAC level number for comparison
+     */
+    getLevelNumber(level) {
+        const levelMap = {
+            'GUEST': 0,
+            'MEMBER': 1,
+            'SUBSCRIBER': 2,
+            'SEAT_HOLDER': 3,
+            'VENTURE_OWNER': 4,
+            'VENTURE_PARTICIPANT': 5,
+            'EXTERNAL_PARTNER': 6,
+            'CONFIDENTIAL_ACCESS': 7,
+            'RESTRICTED_ACCESS': 8,
+            'HIGHLY_RESTRICTED_ACCESS': 9,
+            'BILLING_ADMIN': 10,
+            'SECURITY_ADMIN': 11,
+            'LEGAL_ADMIN': 12
+        };
+        return levelMap[level] || 0;
+    }
+
+    /**
+     * Get document key from document object
+     */
+    getDocumentKey(doc) {
+        // Map document titles to keys used in legal framework
+        const titleMap = {
+            'Platform Participation Agreement (PPA)': 'PPA',
+            'Electronic Signature & Consent Agreement': 'E_SIGNATURE_CONSENT',
+            'Privacy Notice & Acknowledgment': 'PRIVACY_NOTICE',
+            'Mutual Non-Disclosure Agreement': 'MUTUAL_NDA',
+            'Platform Tools Subscription Agreement (PTSA)': 'PTSA',
+            'Seat Order & Billing Authorization (SOBA)': 'SOBA',
+            'Idea Submission & Evaluation Agreement': 'IDEA_SUBMISSION',
+            'Participant Collaboration Agreement (PCA)': 'PCA',
+            'Joint Development Agreement (JDA)': 'JDA',
+            'Security Tier 1 Acknowledgment': 'SECURITY_TIER_1',
+            'Security Tier 2 Acknowledgment': 'SECURITY_TIER_2',
+            'Security Tier 3 Acknowledgment': 'SECURITY_TIER_3',
+            'Crown Jewel IP Agreement': 'CROWN_JEWEL_IP'
+        };
+
+        return titleMap[doc.title] || doc.id;
     }
 }
 
