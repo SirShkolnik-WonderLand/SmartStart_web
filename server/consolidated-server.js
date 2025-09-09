@@ -145,6 +145,16 @@ try {
 const systemInstructionsApiRoutes = require('./routes/system-instructions-api');
 app.use('/api/system', systemInstructionsApiRoutes);
 
+// Mount Umbrella API routes
+try {
+    console.log('🚀 Mounting Umbrella API...');
+    const umbrellaApiRoutes = require('./routes/umbrella-api');
+    app.use('/api/umbrella', umbrellaApiRoutes);
+    console.log('✅ Umbrella API mounted successfully');
+} catch (error) {
+    console.error('❌ Failed to mount Umbrella API:', error.message);
+}
+
 // Old authentication routes removed - using unified-auth-api instead
 
 const invitationApiRoutes = require('./routes/invitation-api');

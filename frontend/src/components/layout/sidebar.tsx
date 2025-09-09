@@ -14,7 +14,8 @@ import {
   Clock,
   Building,
   Users,
-  Trophy
+  Trophy,
+  Network
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -25,6 +26,7 @@ const navigation = [
   { name: 'Ventures', href: '/ventures', icon: Building2, current: false },
   { name: 'Companies', href: '/companies', icon: Building, current: false },
   { name: 'Teams', href: '/teams', icon: Users, current: false },
+  { name: 'Umbrella', href: '/umbrella', icon: Network, current: false },
   { name: 'Opportunities', href: '/opportunities', icon: Search, current: false },
   { name: 'Documents', href: '/documents', icon: FileText, current: false },
   { name: 'Leaderboard', href: '/leaderboard', icon: Trophy, current: false },

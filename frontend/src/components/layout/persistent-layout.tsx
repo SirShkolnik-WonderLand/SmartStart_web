@@ -17,7 +17,8 @@ import {
   BarChart3,
   Menu,
   Sun,
-  Moon
+  Moon,
+  Network
 } from 'lucide-react'
 import { comprehensiveApiService as apiService, User } from '@/lib/api-comprehensive'
 import { useThemeStore } from '@/store/useThemeStore'
@@ -201,6 +202,17 @@ export default function PersistentLayout({ children }: PersistentLayoutProps) {
               >
                 <Briefcase className="w-5 h-5" />
                 {sidebarOpen && <span>My Ventures</span>}
+              </Link>
+              <Link 
+                href="/umbrella" 
+                className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                  pathname === '/umbrella' 
+                    ? 'bg-primary/10 text-primary' 
+                    : 'text-foreground-muted hover:text-foreground hover:bg-glass-surface'
+                }`}
+              >
+                <Network className="w-5 h-5" />
+                {sidebarOpen && <span>Umbrella</span>}
               </Link>
               <Link 
                 href="/opportunities" 

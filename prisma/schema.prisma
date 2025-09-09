@@ -134,6 +134,14 @@ model User {
   meetingsOrganized Meeting[] @relation("MeetingOrganizer")
   meetingAttendances MeetingAttendee[]
 
+  // Umbrella system relations
+  umbrellaReferrals     UmbrellaRelationship[] @relation("UmbrellaReferrer")
+  umbrellaReferred      UmbrellaRelationship[] @relation("UmbrellaReferred")
+  revenueSharesReceived RevenueShare[] @relation("RevenueShareReferrer")
+  revenueSharesGenerated RevenueShare[] @relation("RevenueShareReferred")
+  umbrellaDocumentSignatures UmbrellaDocumentSignature[] @relation("UmbrellaDocumentSigner")
+  umbrellaAnalytics     UmbrellaAnalytics[] @relation("UmbrellaAnalytics")
+
   @@index([tenantId])
   @@index([status])
   @@index([level])
@@ -216,6 +224,9 @@ model Project {
   // New v1 relations
   equityConversions EquityConversion[]
   legalHolds        LegalHold[]
+
+  // Umbrella system relations
+  revenueShares     RevenueShare[]
 
   @@index([tenantId])
   @@index([totalValue])
@@ -2959,5 +2970,178 @@ model MeetingAttendee {
 
   @@unique([meetingId, userId])
   @@map("meeting_attendees")
+}
+
+// ===== PRIVATE UMBRELLA SYSTEM MODELS =====
+
+// Umbrella relationship between users
+model UmbrellaRelationship {
+  id                String   @id @default(cuid())
+  referrerId        String   // User who brought the referred user
+  referredId        String   // User who was brought to platform
+  relationshipType  UmbrellaType @default(PRIVATE_UMBRELLA)
+  status            UmbrellaStatus @default(PENDING_AGREEMENT)
+  defaultShareRate  Float    @default(1.0) // Default percentage (0.5-1.5%)
+  isActive          Boolean  @default(true)
+  agreementSigned   Boolean  @default(false)
+  agreementVersion  String   @default("v1.0")
+  signedAt          DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  // Relations
+  referrer          User     @relation("UmbrellaReferrer", fields: [referrerId], references: [id])
+  referred          User     @relation("UmbrellaReferred", fields: [referredId], references: [id])
+  revenueShares     RevenueShare[]
+  umbrellaDocuments UmbrellaDocument[]
+  
+  @@unique([referrerId, referredId])
+  @@index([referrerId])
+  @@index([referredId])
+  @@index([status])
+}
+
+// Revenue sharing tracking
+model RevenueShare {
+  id                String   @id @default(cuid())
+  umbrellaId        String   // UmbrellaRelationship ID
+  projectId         String   // Project generating revenue
+  referrerId        String   // Who gets the share
+  referredId        String   // Who generated the revenue
+  
+  // Revenue details
+  projectRevenue    Float    // Total project revenue
+  sharePercentage   Float    // Percentage (0.5-1.5%)
+  shareAmount       Float    // Calculated share amount
+  currency          String   @default("USD")
+  
+  // Payment tracking
+  status            PaymentStatus @default(PENDING)
+  paidAt            DateTime?
+  paymentMethod     String?
+  transactionId     String?
+  
+  // Audit trail
+  calculatedAt      DateTime @default(now())
+  
+  // Relations
+  umbrella          UmbrellaRelationship @relation(fields: [umbrellaId], references: [id])
+  project           Project @relation(fields: [projectId], references: [id])
+  referrer          User @relation("RevenueShareReferrer", fields: [referrerId], references: [id])
+  referred          User @relation("RevenueShareReferred", fields: [referredId], references: [id])
+  
+  @@index([umbrellaId])
+  @@index([projectId])
+  @@index([referrerId])
+  @@index([status])
+}
+
+// Umbrella-specific legal documents
+model UmbrellaDocument {
+  id                String   @id @default(cuid())
+  umbrellaId        String   // UmbrellaRelationship ID
+  documentType      UmbrellaDocumentType
+  title             String
+  content           String   // Document content
+  version           String   @default("v1.0")
+  
+  // Legal status
+  status            DocumentStatus @default(DRAFT)
+  requiresSignature Boolean  @default(true)
+  signedAt          DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  // Relations
+  umbrella          UmbrellaRelationship @relation(fields: [umbrellaId], references: [id])
+  signatures        UmbrellaDocumentSignature[]
+  
+  @@index([umbrellaId])
+  @@index([documentType])
+  @@index([status])
+}
+
+// Umbrella document signatures
+model UmbrellaDocumentSignature {
+  id                String   @id @default(cuid())
+  documentId        String
+  signerId          String
+  signatureHash     String   // SHA256 hash
+  signedAt          DateTime @default(now())
+  ipAddress         String?
+  userAgent         String?
+  
+  // Relations
+  document          UmbrellaDocument @relation(fields: [documentId], references: [id])
+  signer            User @relation("UmbrellaDocumentSigner", fields: [signerId], references: [id])
+  
+  @@index([documentId])
+  @@index([signerId])
+}
+
+// Umbrella network analytics
+model UmbrellaAnalytics {
+  id                String   @id @default(cuid())
+  userId            String   // User being analyzed
+  period            String   // "monthly", "quarterly", "yearly"
+  periodStart       DateTime
+  periodEnd         DateTime
+  
+  // Network metrics
+  totalReferrals    Int      @default(0)
+  activeReferrals   Int      @default(0)
+  totalRevenue      Float    @default(0)
+  totalShares       Float    @default(0)
+  averageShareRate  Float    @default(0)
+  
+  // Project metrics
+  projectsGenerated Int      @default(0)
+  projectsActive    Int      @default(0)
+  projectsCompleted Int      @default(0)
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  // Relations
+  user              User @relation("UmbrellaAnalytics", fields: [userId], references: [id])
+  
+  @@unique([userId, period, periodStart])
+  @@index([userId])
+  @@index([period])
+  @@index([periodStart])
+}
+
+// ===== UMBRELLA SYSTEM ENUMS =====
+
+enum UmbrellaType {
+  ALICE_SOLUTIONS_UMBRELLA  // Main platform umbrella
+  PRIVATE_UMBRELLA          // Private referral umbrella
+  CORPORATE_UMBRELLA        // Corporate partnership umbrella
+  AFFILIATE_UMBRELLA        // Affiliate marketing umbrella
+}
+
+enum UmbrellaStatus {
+  PENDING_AGREEMENT
+  ACTIVE
+  SUSPENDED
+  TERMINATED
+  EXPIRED
+}
+
+enum UmbrellaDocumentType {
+  UMBRELLA_AGREEMENT
+  REVENUE_SHARING_TERMS
+  REFERRAL_AGREEMENT
+  TERMINATION_NOTICE
+  AMENDMENT_AGREEMENT
+}
+
+enum PaymentStatus {
+  PENDING
+  CALCULATED
+  APPROVED
+  PAID
+  FAILED
+  DISPUTED
 }
 
