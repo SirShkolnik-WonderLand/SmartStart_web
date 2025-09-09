@@ -353,12 +353,20 @@ class LegalDocumentService {
                 nextLevelDocs.push(...nextLevelConfig);
             }
 
+            console.log('🔍 Debug getAvailableDocuments:');
+            console.log('  - Total documents from DB:', documents.length);
+            console.log('  - User level:', userLevel, '→ RBAC level:', rbacLevel);
+            console.log('  - All required docs for level:', allRequiredDocs);
+            console.log('  - Next level docs:', nextLevelDocs);
+            
             return documents.map(doc => {
                 const docKey = this.getDocumentKey(doc);
                 const isRequired = allRequiredDocs.includes(docKey);
                 const isPending = nextLevelDocs.includes(docKey);
                 const isSigned = signedDocumentIds.includes(doc.id);
                 const signature = userSignatures.find(sig => sig.documentId === doc.id);
+                
+                console.log(`  - Doc: "${doc.title}" → Key: "${docKey}" → Required: ${isRequired}, Pending: ${isPending}`);
 
                 let status = 'NOT_REQUIRED';
                 if (isRequired && isSigned) status = 'SIGNED';
