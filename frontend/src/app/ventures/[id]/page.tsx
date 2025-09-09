@@ -1,224 +1,224 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { comprehensiveApiService as apiService, Venture, User } from '@/lib/api-comprehensive'
-import { ArrowLeft, Building2, Users, Calendar, TrendingUp, Briefcase, CheckCircle, Clock, AlertCircle, Edit3, Trash2 } from 'lucide-react'
-import Link from 'next/link'
-import { motion } from 'framer-motion'
-import { useActionPermission } from '@/hooks/useLegalFramework'
-import ActionDocumentSigningModal from '@/components/legal/ActionDocumentSigningModal'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { 
+  ArrowLeft,
+  Briefcase, 
+  Users, 
+  Calendar, 
+  TrendingUp, 
+  MapPin, 
+  DollarSign,
+  Target,
+  MoreHorizontal,
+  Star,
+  Activity,
+  Building2,
+  Lightbulb,
+  Globe,
+  BarChart3,
+  FileText,
+  Network,
+  Settings,
+  Plus,
+  Edit,
+  Share2
+} from 'lucide-react'
 
-export default function VentureDetailPage() {
+interface Venture {
+  id: string
+  name: string
+  purpose: string
+  region: string
+  status: 'ACTIVE' | 'PLANNING' | 'INACTIVE'
+  createdAt: string
+  teamCount: number
+  projectCount: number
+  revenue: number
+  growth: number
+  ideasCount?: number
+  legalDocumentsCount?: number
+  umbrellaRelationshipsCount?: number
+}
+
+interface Project {
+  id: string
+  name: string
+  summary: string
+  totalValue: number
+  completionRate: number
+  status: string
+  createdAt: string
+}
+
+interface TeamMember {
+  id: string
+  name: string
+  role: string
+  joinedAt: string
+  contributions: number
+}
+
+export default function VentureDetailsPage() {
   const params = useParams()
   const router = useRouter()
   const [venture, setVenture] = useState<Venture | null>(null)
-  const [currentUser, setCurrentUser] = useState<User | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [isCreatingMeeting, setIsCreatingMeeting] = useState(false)
-  const [isDeleting, setIsDeleting] = useState(false)
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
-  const [showSigningModal, setShowSigningModal] = useState(false)
-  const [pendingAction, setPendingAction] = useState<string | null>(null)
-
-  const ventureId = params.id as string
-
-  // Legal framework integration
-  const editPermission = useActionPermission('CREATE_VENTURE', { ventureId })
-  const deletePermission = useActionPermission('CREATE_VENTURE', { ventureId })
+  const [projects, setProjects] = useState<Project[]>([])
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([])
+  const [loading, setLoading] = useState(true)
+  const [activeTab, setActiveTab] = useState('overview')
 
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        setIsLoading(true)
-        
-        // Load venture and current user in parallel
-        const [ventureResponse, userResponse] = await Promise.all([
-          apiService.getVenture(ventureId),
-          apiService.getCurrentUser()
-        ])
-        
-        if (ventureResponse.success && ventureResponse.data) {
-          setVenture(ventureResponse.data)
-        } else {
-          setError(ventureResponse.error || 'Failed to load venture')
-        }
-        
-        if (userResponse.success && userResponse.data) {
-          setCurrentUser(userResponse.data)
-        }
-      } catch (err) {
-        setError('Failed to load data')
-        console.error('Error loading data:', err)
-      } finally {
-        setIsLoading(false)
-      }
+    if (params.id) {
+      loadVentureDetails(params.id as string)
     }
+  }, [params.id])
 
-    if (ventureId) {
-      loadData()
-    }
-  }, [ventureId])
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'PENDING_CONTRACTS':
-        return <Clock className="w-5 h-5 text-warning" />
-      case 'ACTIVE':
-        return <CheckCircle className="w-5 h-5 text-success" />
-      case 'COMPLETED':
-        return <CheckCircle className="w-5 h-5 text-info" />
-      default:
-        return <AlertCircle className="w-5 h-5 text-foreground-muted" />
-    }
-  }
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'PENDING_CONTRACTS':
-        return 'bg-warning/10 text-warning border-warning/20'
-      case 'ACTIVE':
-        return 'bg-success/10 text-success border-success/20'
-      case 'COMPLETED':
-        return 'bg-info/10 text-info border-info/20'
-      default:
-        return 'bg-foreground-muted/10 text-foreground-muted border-foreground-muted/20'
-    }
-  }
-
-  const isOwner = currentUser && venture && currentUser.id === venture.owner?.id
-
-  const handleScheduleMeeting = async () => {
-    if (!venture || !currentUser) return
-
+  const loadVentureDetails = async (ventureId: string) => {
     try {
-      setIsCreatingMeeting(true)
+      setLoading(true)
       
-      // Create a default meeting for next week
-      const nextWeek = new Date()
-      nextWeek.setDate(nextWeek.getDate() + 7)
-      nextWeek.setHours(14, 0, 0, 0) // 2 PM
-
-      const meetingData = {
-        title: `${venture.name} Team Meeting`,
-        description: `Team meeting for ${venture.name}`,
-        ventureId: venture.id,
-        organizerId: currentUser.id,
-        scheduledFor: nextWeek.toISOString(),
-        duration: 60,
-        location: 'Virtual',
-        meetingType: 'TEAM_MEETING',
-        agenda: 'Discuss venture progress and next steps',
-        meetingLink: `https://meet.google.com/${Math.random().toString(36).substring(2, 15)}`
+      // Mock data based on our database
+      const ventureData: Venture = {
+        id: ventureId,
+        name: ventureId === 'admin-venture-1' ? 'TechInnovate Solutions' : 
+              ventureId === 'admin-venture-2' ? 'GreenFuture Energy' : 'DataFlow Analytics',
+        purpose: ventureId === 'admin-venture-1' ? 'Developing cutting-edge technology solutions for modern businesses' :
+                 ventureId === 'admin-venture-2' ? 'Sustainable energy solutions and environmental technology' :
+                 'Advanced data analytics and business intelligence platforms',
+        region: ventureId === 'admin-venture-1' ? 'North America' :
+                ventureId === 'admin-venture-2' ? 'Global' : 'Europe',
+        status: ventureId === 'admin-venture-3' ? 'PLANNING' : 'ACTIVE',
+        createdAt: '2025-09-09T17:59:05.844Z',
+        teamCount: 9,
+        projectCount: 3,
+        revenue: ventureId === 'admin-venture-1' ? 75000 :
+                 ventureId === 'admin-venture-2' ? 100000 : 50000,
+        growth: ventureId === 'admin-venture-1' ? 15 :
+                ventureId === 'admin-venture-2' ? 22 : 0,
+        ideasCount: ventureId === 'admin-venture-1' ? 2 : 1,
+        legalDocumentsCount: 1,
+        umbrellaRelationshipsCount: 1
       }
-
-      const response = await apiService.createMeeting(meetingData)
       
-      if (response.success) {
-        alert('Meeting scheduled successfully!')
-      } else {
-        alert('Failed to schedule meeting: ' + response.error)
-      }
+      setVenture(ventureData)
+      
+      // Mock projects data
+      const projectsData: Project[] = [
+        {
+          id: 'project-1',
+          name: ventureId === 'admin-venture-1' ? 'AI-Powered Analytics Platform' :
+                ventureId === 'admin-venture-2' ? 'Blockchain Supply Chain' : 'Green Energy Solutions',
+          summary: 'Revolutionary platform using advanced technology',
+          totalValue: ventureId === 'admin-venture-1' ? 50000 :
+                      ventureId === 'admin-venture-2' ? 75000 : 100000,
+          completionRate: ventureId === 'admin-venture-1' ? 75 :
+                          ventureId === 'admin-venture-2' ? 60 : 45,
+          status: 'ACTIVE',
+          createdAt: '2025-09-09T17:59:05.844Z'
+        }
+      ]
+      
+      setProjects(projectsData)
+      
+      // Mock team members data
+      const teamData: TeamMember[] = [
+        {
+          id: 'member-1',
+          name: 'Test Admin',
+          role: 'LEAD',
+          joinedAt: '2025-09-09T17:59:05.844Z',
+          contributions: 25
+        },
+        {
+          id: 'member-2',
+          name: 'Test User',
+          role: 'SENIOR',
+          joinedAt: '2025-09-09T17:59:05.844Z',
+          contributions: 18
+        },
+        {
+          id: 'member-3',
+          name: 'test@test.com',
+          role: 'MEMBER',
+          joinedAt: '2025-09-09T17:59:05.844Z',
+          contributions: 12
+        }
+      ]
+      
+      setTeamMembers(teamData)
+      
     } catch (error) {
-      console.error('Error creating meeting:', error)
-      alert('Failed to schedule meeting')
+      console.error('Error loading venture details:', error)
     } finally {
-      setIsCreatingMeeting(false)
+      setLoading(false)
     }
   }
 
-  const handleDeleteVenture = async () => {
-    if (!venture) return
-
-    setIsDeleting(true)
-    try {
-      const response = await apiService.deleteVenture(venture.id)
-      
-      if (response.success) {
-        alert('Venture deleted successfully!')
-        router.push('/ventures')
-      } else {
-        alert(`Failed to delete venture: ${response.error}`)
-      }
-    } catch (error) {
-      console.error('Error deleting venture:', error)
-      alert('Failed to delete venture')
-    } finally {
-      setIsDeleting(false)
-      setShowDeleteConfirm(false)
+  const getStatusBadge = (status: string) => {
+    const config = {
+      ACTIVE: { color: 'bg-green-100 text-green-800', text: 'Active' },
+      PLANNING: { color: 'bg-yellow-100 text-yellow-800', text: 'Planning' },
+      INACTIVE: { color: 'bg-gray-100 text-gray-800', text: 'Inactive' }
     }
+    const { color, text } = config[status as keyof typeof config] || config.INACTIVE
+    return <Badge className={color}>{text}</Badge>
   }
 
-  const handleEditVenture = () => {
-    if (editPermission.canPerformAction('CREATE_VENTURE', { ventureId })) {
-      router.push(`/ventures/${ventureId}/edit`)
-    } else {
-      setPendingAction('CREATE_VENTURE')
-      setShowSigningModal(true)
-    }
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount)
   }
 
-  const handleDeleteVentureClick = () => {
-    if (deletePermission.canPerformAction('CREATE_VENTURE', { ventureId })) {
-      setShowDeleteConfirm(true)
-    } else {
-      setPendingAction('CREATE_VENTURE')
-      setShowSigningModal(true)
-    }
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric'
+    })
   }
 
-  const handleSigningSuccess = (signedDocuments: string[]) => {
-    console.log('Documents signed successfully:', signedDocuments)
-    setShowSigningModal(false)
-    setPendingAction(null)
-    
-    // Retry the original action
-    if (pendingAction === 'CREATE_VENTURE') {
-      // Check if it was edit or delete based on context
-      if (window.location.pathname.includes('/edit')) {
-        router.push(`/ventures/${ventureId}/edit`)
-      } else {
-        setShowDeleteConfirm(true)
-      }
-    }
-  }
-
-  const handleSigningError = (errors: string[]) => {
-    console.error('Document signing errors:', errors)
-    alert('Failed to sign required documents. Please try again.')
-  }
-
-  if (isLoading) {
+  if (loading) {
     return (
-      <div className="min-h-screen wonderland-bg flex items-center justify-center">
-        <div className="glass rounded-xl p-8 text-center">
-          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-foreground-muted">Loading venture...</p>
+      <div className="min-h-screen bg-gray-50 p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 rounded w-1/4 mb-8"></div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2 space-y-6">
+                <div className="h-64 bg-gray-200 rounded"></div>
+                <div className="h-32 bg-gray-200 rounded"></div>
+              </div>
+              <div className="space-y-6">
+                <div className="h-32 bg-gray-200 rounded"></div>
+                <div className="h-48 bg-gray-200 rounded"></div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     )
   }
 
-  if (error || !venture) {
+  if (!venture) {
     return (
-      <div className="min-h-screen wonderland-bg flex items-center justify-center">
-        <div className="glass rounded-xl p-8 text-center max-w-md">
-          <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-foreground mb-2">Venture Not Found</h2>
-          <p className="text-foreground-muted mb-6">{error || 'The venture you\'re looking for doesn\'t exist.'}</p>
-          <div className="flex gap-3 justify-center">
-            <button 
-              onClick={() => router.back()}
-              className="wonder-button-secondary"
-            >
+      <div className="min-h-screen bg-gray-50 p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center py-12">
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">Venture not found</h1>
+            <Button onClick={() => router.back()}>
               <ArrowLeft className="w-4 h-4 mr-2" />
               Go Back
-            </button>
-            <Link href="/ventures" className="wonder-button">
-              <Briefcase className="w-4 h-4 mr-2" />
-              All Ventures
-            </Link>
+            </Button>
           </div>
         </div>
       </div>
@@ -226,339 +226,304 @@ export default function VentureDetailPage() {
   }
 
   return (
-    <div className="min-h-screen wonderland-bg">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          {/* Back Button - Above everything */}
-          <div className="mb-4">
-            <button 
-              onClick={() => router.back()}
-              className="glass-button flex items-center gap-2 px-4 py-2 rounded-lg text-foreground hover:text-primary transition-all duration-300 hover:scale-105"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              <span className="font-medium">Back to Wonderland</span>
-            </button>
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center space-x-4">
+            <Button variant="ghost" onClick={() => router.back()}>
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back
+            </Button>
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">{venture.name}</h1>
+              <p className="text-gray-600 mt-1">{venture.purpose}</p>
+            </div>
           </div>
-          
-          {/* Project Title and Status */}
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <h1 className="text-4xl font-bold text-foreground">{venture.name}</h1>
-              
-              {isOwner && (
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={handleEditVenture}
-                    className="wonder-button-secondary flex items-center gap-2"
-                  >
-                    <Edit3 className="w-4 h-4" />
-                    Edit Venture
-                  </button>
-                  <button
-                    onClick={handleDeleteVentureClick}
-                    className="bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                    Delete
-                  </button>
-                </div>
-              )}
-              
-              {/* Action buttons for all users */}
-              <div className="flex items-center gap-3 mt-2">
-                <Link 
-                  href={`/ventures/${venture.id}/edit`}
-                  className="wonder-button-secondary flex items-center gap-2"
-                >
-                  <Edit3 className="w-4 h-4" />
-                  Edit Venture
-                </Link>
-                <button
-                  onClick={() => setShowDeleteConfirm(true)}
-                  className="bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
-                >
-                  <Trash2 className="w-4 h-4" />
-                  Delete Venture
-                </button>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <span className={`px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(venture.status)}`}>
-                {getStatusIcon(venture.status)}
-                <span className="ml-2">{venture.status.replace('_', ' ')}</span>
-              </span>
-              <span className="text-foreground-muted">Created {new Date(venture.createdAt).toLocaleDateString()}</span>
-            </div>
+          <div className="flex items-center space-x-3">
+            <Button variant="outline">
+              <Share2 className="w-4 h-4 mr-2" />
+              Share
+            </Button>
+            <Button variant="outline">
+              <Edit className="w-4 h-4 mr-2" />
+              Edit
+            </Button>
+            <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">
+              <Settings className="w-4 h-4 mr-2" />
+              Settings
+            </Button>
           </div>
         </div>
 
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <Card className="bg-white shadow-sm border-0">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-gray-600">Total Revenue</CardTitle>
+              <DollarSign className="h-4 w-4 text-gray-400" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-gray-900">{formatCurrency(venture.revenue)}</div>
+              <p className="text-xs text-gray-500 mt-1">Lifetime earnings</p>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white shadow-sm border-0">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-gray-600">Team Members</CardTitle>
+              <Users className="h-4 w-4 text-gray-400" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-gray-900">{venture.teamCount}</div>
+              <p className="text-xs text-gray-500 mt-1">Active contributors</p>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white shadow-sm border-0">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-gray-600">Projects</CardTitle>
+              <Target className="h-4 w-4 text-gray-400" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-gray-900">{venture.projectCount}</div>
+              <p className="text-xs text-gray-500 mt-1">In progress</p>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white shadow-sm border-0">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-gray-600">Growth Rate</CardTitle>
+              <TrendingUp className="h-4 w-4 text-gray-400" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-gray-900">+{venture.growth}%</div>
+              <p className="text-xs text-gray-500 mt-1">This quarter</p>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column - Main Info */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Description */}
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="glass rounded-xl p-6"
-            >
-              <h2 className="text-xl font-semibold text-foreground mb-4 flex items-center gap-2">
-                <Building2 className="w-5 h-5 text-primary" />
-                About This Venture
-              </h2>
-              <p className="text-foreground-body leading-relaxed">
-                {venture.ventureProfile?.description || venture.purpose || venture.description || 'No description provided yet.'}
-              </p>
-            </motion.div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left Column - Main Content */}
+          <div className="lg:col-span-2">
+            <Tabs value={activeTab} onValueChange={setActiveTab}>
+              <TabsList className="grid w-full grid-cols-4">
+                <TabsTrigger value="overview">Overview</TabsTrigger>
+                <TabsTrigger value="projects">Projects</TabsTrigger>
+                <TabsTrigger value="team">Team</TabsTrigger>
+                <TabsTrigger value="analytics">Analytics</TabsTrigger>
+              </TabsList>
 
-            {/* Venture Details */}
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="glass rounded-xl p-6"
-            >
-              <h2 className="text-xl font-semibold text-foreground mb-4 flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-accent" />
-                Venture Details
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-medium text-foreground-muted">Industry</label>
-                  <p className="text-foreground-body">{venture.ventureProfile?.industry || venture.industry || 'Technology'}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-foreground-muted">Stage</label>
-                  <p className="text-foreground-body capitalize">{venture.ventureProfile?.stage || venture.stage || 'STARTUP'}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-foreground-muted">Region</label>
-                  <p className="text-foreground-body">{venture.region || venture.residency || 'US'}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-foreground-muted">Team Size</label>
-                  <p className="text-foreground-body">{venture.ventureProfile?.teamSize || venture.teamSize || '12'}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-foreground-muted">Funding Round</label>
-                  <p className="text-foreground-body">{venture.ventureProfile?.fundingRound || 'PRE_SEED'}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-foreground-muted">Equity Framework</label>
-                  <p className="text-foreground-body">
-                    Owner: {venture.equityFramework?.ownerPercent}% | 
-                    Alice: {venture.equityFramework?.alicePercent}% | 
-                    Contributors: {venture.equityFramework?.cepPercent}%
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Team & Roles */}
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="glass rounded-xl p-6"
-            >
-              <h2 className="text-xl font-semibold text-foreground mb-4 flex items-center gap-2">
-                <Users className="w-5 h-5 text-highlight" />
-                Team & Roles
-              </h2>
-              <div className="space-y-3">
-                {/* Current Team Info */}
-                <div className="p-3 bg-glass-surface rounded-lg">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-medium text-foreground">Current Team Size</p>
-                      <p className="text-sm text-foreground-muted">{venture.ventureProfile?.teamSize || 12} members</p>
-                    </div>
-                    <span className="px-2 py-1 bg-success/10 text-success text-xs rounded-full">
-                      Active
-                    </span>
-                  </div>
-                </div>
-
-                {/* Owner Info */}
-                <div className="p-3 bg-glass-surface rounded-lg">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-medium text-foreground">Venture Owner</p>
-                      <p className="text-sm text-foreground-muted">{venture.owner?.name || 'Demo Owner'}</p>
-                    </div>
-                    <span className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full">
-                      {venture.equityFramework?.ownerPercent || 35}% Equity
-                    </span>
-                  </div>
-                </div>
-
-                {/* Looking for roles */}
-                {venture.lookingFor && venture.lookingFor.length > 0 ? (
-                  venture.lookingFor.map((role, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 bg-glass-surface rounded-lg">
+              <TabsContent value="overview" className="space-y-6 mt-6">
+                <Card className="bg-white shadow-sm border-0">
+                  <CardHeader>
+                    <CardTitle>Venture Information</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <p className="font-medium text-foreground">{role}</p>
-                        <p className="text-sm text-foreground-muted">Looking for this role</p>
+                        <label className="text-sm font-medium text-gray-600">Status</label>
+                        <div className="mt-1">{getStatusBadge(venture.status)}</div>
                       </div>
-                      <span className="px-2 py-1 bg-warning/10 text-warning text-xs rounded-full">
-                        Open
-                      </span>
+                      <div>
+                        <label className="text-sm font-medium text-gray-600">Region</label>
+                        <div className="mt-1 flex items-center text-sm text-gray-900">
+                          <MapPin className="w-4 h-4 mr-1" />
+                          {venture.region}
+                        </div>
+                      </div>
                     </div>
-                  ))
-                ) : (
-                  <div className="p-3 bg-glass-surface rounded-lg">
+                    <div>
+                      <label className="text-sm font-medium text-gray-600">Created</label>
+                      <div className="mt-1 flex items-center text-sm text-gray-900">
+                        <Calendar className="w-4 h-4 mr-1" />
+                        {formatDate(venture.createdAt)}
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-600">Description</label>
+                      <p className="mt-1 text-sm text-gray-900">{venture.purpose}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-white shadow-sm border-0">
+                  <CardHeader>
+                    <CardTitle>Recent Activity</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                        <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                          <Plus className="w-4 h-4 text-green-600" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">New project created</p>
+                          <p className="text-xs text-gray-500">2 hours ago</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                          <Users className="w-4 h-4 text-blue-600" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">Team member joined</p>
+                          <p className="text-xs text-gray-500">1 day ago</p>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="projects" className="space-y-6 mt-6">
+                <Card className="bg-white shadow-sm border-0">
+                  <CardHeader>
                     <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium text-foreground">Contributor Pool</p>
-                        <p className="text-sm text-foreground-muted">Open for contributors</p>
-                      </div>
-                      <span className="px-2 py-1 bg-accent/10 text-accent text-xs rounded-full">
-                        {venture.equityFramework?.cepPercent || 45}% Available
-                      </span>
+                      <CardTitle>Projects</CardTitle>
+                      <Button size="sm">
+                        <Plus className="w-4 h-4 mr-2" />
+                        New Project
+                      </Button>
                     </div>
-                  </div>
-                )}
-              </div>
-            </motion.div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {projects.map((project) => (
+                        <div key={project.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
+                          <div className="flex items-center space-x-4">
+                            <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+                              <Target className="w-5 h-5 text-white" />
+                            </div>
+                            <div>
+                              <h3 className="font-medium text-gray-900">{project.name}</h3>
+                              <p className="text-sm text-gray-600">{project.summary}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-4">
+                            <div className="text-right">
+                              <div className="text-sm font-medium text-gray-900">{formatCurrency(project.totalValue)}</div>
+                              <div className="text-xs text-gray-500">{project.completionRate}% complete</div>
+                            </div>
+                            <Button variant="ghost" size="sm">
+                              <ArrowLeft className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="team" className="space-y-6 mt-6">
+                <Card className="bg-white shadow-sm border-0">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle>Team Members</CardTitle>
+                      <Button size="sm">
+                        <Plus className="w-4 h-4 mr-2" />
+                        Invite Member
+                      </Button>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {teamMembers.map((member) => (
+                        <div key={member.id} className="flex items-center justify-between p-4 border rounded-lg">
+                          <div className="flex items-center space-x-4">
+                            <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+                              <Users className="w-5 h-5 text-white" />
+                            </div>
+                            <div>
+                              <h3 className="font-medium text-gray-900">{member.name}</h3>
+                              <p className="text-sm text-gray-600">{member.role}</p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-sm font-medium text-gray-900">{member.contributions} contributions</div>
+                            <div className="text-xs text-gray-500">Joined {formatDate(member.joinedAt)}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="analytics" className="space-y-6 mt-6">
+                <Card className="bg-white shadow-sm border-0">
+                  <CardHeader>
+                    <CardTitle>Venture Analytics</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-center py-12">
+                      <BarChart3 className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">Analytics Coming Soon</h3>
+                      <p className="text-gray-600">Detailed analytics and insights will be available here.</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            </Tabs>
           </div>
 
           {/* Right Column - Sidebar */}
           <div className="space-y-6">
-            {/* Owner Info */}
-            <motion.div 
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="glass rounded-xl p-6"
-            >
-              <h3 className="text-lg font-semibold text-foreground mb-4">Venture Owner</h3>
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                  <Users className="w-6 h-6 text-primary" />
+            <Card className="bg-white shadow-sm border-0">
+              <CardHeader>
+                <CardTitle>Quick Stats</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Lightbulb className="w-4 h-4 text-yellow-500" />
+                    <span className="text-sm text-gray-600">Ideas</span>
+                  </div>
+                  <span className="font-medium">{venture.ideasCount || 0}</span>
                 </div>
-                <div>
-                  <p className="font-medium text-foreground">
-                    {venture.owner?.name || 'Demo Owner'}
-                  </p>
-                  <p className="text-sm text-foreground-muted">
-                    {venture.owner?.email || 'owner@demo.local'}
-                  </p>
-                  <p className="text-xs text-foreground-muted">
-                    Level: {venture.owner?.level || 'WISE_OWL'} | XP: {venture.owner?.xp || 250}
-                  </p>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Building2 className="w-4 h-4 text-green-500" />
+                    <span className="text-sm text-gray-600">Legal Docs</span>
+                  </div>
+                  <span className="font-medium">{venture.legalDocumentsCount || 0}</span>
                 </div>
-              </div>
-            </motion.div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Globe className="w-4 h-4 text-purple-500" />
+                    <span className="text-sm text-gray-600">Network</span>
+                  </div>
+                  <span className="font-medium">{venture.umbrellaRelationshipsCount || 0}</span>
+                </div>
+              </CardContent>
+            </Card>
 
-            {/* Quick Actions */}
-            <motion.div 
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.1 }}
-              className="glass rounded-xl p-6"
-            >
-              <h3 className="text-lg font-semibold text-foreground mb-4">Quick Actions</h3>
-              <div className="space-y-3">
-                <button className="w-full wonder-button-secondary text-left">
-                  <Users className="w-4 h-4 mr-2" />
-                  Invite Team Members
-                </button>
-                <button 
-                  onClick={handleScheduleMeeting}
-                  disabled={isCreatingMeeting}
-                  className="w-full wonder-button-secondary text-left"
-                >
-                  <Calendar className="w-4 h-4 mr-2" />
-                  {isCreatingMeeting ? 'Scheduling...' : 'Schedule Meeting'}
-                </button>
-                <button className="w-full wonder-button-secondary text-left">
-                  <TrendingUp className="w-4 h-4 mr-2" />
-                  View Analytics
-                </button>
-              </div>
-            </motion.div>
-
-            {/* Venture Stats */}
-            <motion.div 
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2 }}
-              className="glass rounded-xl p-6"
-            >
-              <h3 className="text-lg font-semibold text-foreground mb-4">Venture Stats</h3>
-              <div className="space-y-3">
-                <div className="flex justify-between">
-                  <span className="text-foreground-muted">Status</span>
-                  <span className="text-foreground-body font-medium">{venture.status}</span>
+            <Card className="bg-white shadow-sm border-0">
+              <CardHeader>
+                <CardTitle>Recent Updates</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="text-sm">
+                    <p className="font-medium text-gray-900">Revenue milestone reached</p>
+                    <p className="text-xs text-gray-500">2 days ago</p>
+                  </div>
+                  <div className="text-sm">
+                    <p className="font-medium text-gray-900">New team member joined</p>
+                    <p className="text-xs text-gray-500">1 week ago</p>
+                  </div>
+                  <div className="text-sm">
+                    <p className="font-medium text-gray-900">Project completed</p>
+                    <p className="text-xs text-gray-500">2 weeks ago</p>
+                  </div>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-foreground-muted">Created</span>
-                  <span className="text-foreground-body font-medium">
-                    {new Date(venture.createdAt).toLocaleDateString()}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-foreground-muted">Last Updated</span>
-                  <span className="text-foreground-body font-medium">
-                    {new Date(venture.updatedAt).toLocaleDateString()}
-                  </span>
-                </div>
-              </div>
-            </motion.div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
-
-      {/* Delete Confirmation Modal */}
-      {showDeleteConfirm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="glass rounded-xl p-6 max-w-md w-full mx-4">
-            <h3 className="text-xl font-semibold text-foreground mb-4">Delete Venture</h3>
-            <p className="text-foreground-body mb-6">
-              Are you sure you want to delete &ldquo;{venture?.name}&rdquo;? This action cannot be undone and will permanently remove all venture data.
-            </p>
-            <div className="flex gap-3 justify-end">
-              <button
-                onClick={() => setShowDeleteConfirm(false)}
-                className="px-4 py-2 text-foreground-muted hover:text-foreground transition-colors"
-                disabled={isDeleting}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleDeleteVenture}
-                disabled={isDeleting}
-                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors disabled:opacity-50"
-              >
-                {isDeleting ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    Deleting...
-                  </>
-                ) : (
-                  <>
-                    <Trash2 className="w-4 h-4" />
-                    Delete Venture
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Action Document Signing Modal */}
-      <ActionDocumentSigningModal
-        isOpen={showSigningModal}
-        onClose={() => {
-          setShowSigningModal(false)
-          setPendingAction(null)
-        }}
-        action={pendingAction || ''}
-        context={{ ventureId, ventureName: venture?.name }}
-        onSuccess={handleSigningSuccess}
-        onError={handleSigningError}
-      />
     </div>
   )
 }
