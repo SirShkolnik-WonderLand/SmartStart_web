@@ -1,4 +1,4 @@
-export type Theme = 'light' | 'midnight' | 'ocean' | 'forest' | 'sunset'
+export type Theme = 'light' | 'midnight' | 'ocean' | 'forest' | 'sunset' | 'aurora' | 'rose' | 'cosmic' | 'emerald' | 'crimson'
 
 export interface ThemeConfig {
   name: Theme
@@ -90,6 +90,81 @@ export const themes: Record<Theme, ThemeConfig> = {
       surface: '#292524',
       text: '#FEF3C7',
       muted: '#A78BFA'
+    }
+  },
+  aurora: {
+    name: 'aurora',
+    displayName: 'Aurora Borealis',
+    description: 'Mystical aurora with green and blue waves',
+    colors: {
+      primary: '#10B981',
+      secondary: '#06B6D4',
+      accent: '#8B5CF6',
+      highlight: '#F59E0B',
+      background: '#0F172A',
+      surface: '#1E293B',
+      text: '#F1F5F9',
+      muted: '#94A3B8'
+    }
+  },
+  rose: {
+    name: 'rose',
+    displayName: 'Rose Garden',
+    description: 'Elegant rose garden with pink and red tones',
+    colors: {
+      primary: '#E11D48',
+      secondary: '#BE185D',
+      accent: '#F43F5E',
+      highlight: '#F59E0B',
+      background: '#1F0A1A',
+      surface: '#2D1B2D',
+      text: '#FDF2F8',
+      muted: '#F9A8D4'
+    }
+  },
+  cosmic: {
+    name: 'cosmic',
+    displayName: 'Cosmic Space',
+    description: 'Deep space with purple and blue nebula',
+    colors: {
+      primary: '#7C3AED',
+      secondary: '#3B82F6',
+      accent: '#EC4899',
+      highlight: '#F59E0B',
+      background: '#0A0A0F',
+      surface: '#1A1A2E',
+      text: '#E2E8F0',
+      muted: '#A78BFA'
+    }
+  },
+  emerald: {
+    name: 'emerald',
+    displayName: 'Emerald City',
+    description: 'Rich emerald with gold accents',
+    colors: {
+      primary: '#059669',
+      secondary: '#0D9488',
+      accent: '#D97706',
+      highlight: '#F59E0B',
+      background: '#0F1419',
+      surface: '#1F2937',
+      text: '#F3F4F6',
+      muted: '#9CA3AF'
+    }
+  },
+  crimson: {
+    name: 'crimson',
+    displayName: 'Crimson Fire',
+    description: 'Bold crimson with fiery red tones',
+    colors: {
+      primary: '#DC2626',
+      secondary: '#B91C1C',
+      accent: '#F59E0B',
+      highlight: '#FBBF24',
+      background: '#1A0A0A',
+      surface: '#2D1B1B',
+      text: '#FEF2F2',
+      muted: '#FCA5A5'
     }
   }
 }

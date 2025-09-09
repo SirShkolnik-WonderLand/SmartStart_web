@@ -226,7 +226,7 @@ export default function VentureDetailsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen wonderland-bg p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
@@ -235,21 +235,21 @@ export default function VentureDetailsPage() {
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back
             </Button>
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">{venture.name}</h1>
-              <p className="text-gray-600 mt-1">{venture.purpose}</p>
+          <div>
+              <h1 className="text-3xl font-bold text-foreground">{venture.name}</h1>
+              <p className="text-foreground-muted mt-1">{venture.purpose}</p>
             </div>
           </div>
           <div className="flex items-center space-x-3">
-            <Button variant="outline">
+            <Button className="glass-button">
               <Share2 className="w-4 h-4 mr-2" />
               Share
             </Button>
-            <Button variant="outline">
+            <Button className="glass-button">
               <Edit className="w-4 h-4 mr-2" />
               Edit
             </Button>
-            <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">
+            <Button className="glass-button">
               <Settings className="w-4 h-4 mr-2" />
               Settings
             </Button>
@@ -258,47 +258,47 @@ export default function VentureDetailsPage() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card className="bg-white shadow-sm border-0">
+          <Card className="glass-card">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Total Revenue</CardTitle>
-              <DollarSign className="h-4 w-4 text-gray-400" />
+              <CardTitle className="text-sm font-medium text-foreground-muted">Total Revenue</CardTitle>
+              <DollarSign className="h-4 w-4 text-foreground-muted" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-gray-900">{formatCurrency(venture.revenue)}</div>
-              <p className="text-xs text-gray-500 mt-1">Lifetime earnings</p>
+              <div className="text-2xl font-bold text-foreground">{formatCurrency(venture.revenue)}</div>
+              <p className="text-xs text-foreground-muted mt-1">Lifetime earnings</p>
             </CardContent>
           </Card>
 
-          <Card className="bg-white shadow-sm border-0">
+          <Card className="glass-card">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Team Members</CardTitle>
+              <CardTitle className="text-sm font-medium text-foreground-muted">Team Members</CardTitle>
               <Users className="h-4 w-4 text-gray-400" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-gray-900">{venture.teamCount}</div>
-              <p className="text-xs text-gray-500 mt-1">Active contributors</p>
+              <div className="text-2xl font-bold text-foreground">{venture.teamCount}</div>
+              <p className="text-xs text-foreground-muted mt-1">Active contributors</p>
             </CardContent>
           </Card>
 
-          <Card className="bg-white shadow-sm border-0">
+          <Card className="glass-card">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Projects</CardTitle>
+              <CardTitle className="text-sm font-medium text-foreground-muted">Projects</CardTitle>
               <Target className="h-4 w-4 text-gray-400" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-gray-900">{venture.projectCount}</div>
-              <p className="text-xs text-gray-500 mt-1">In progress</p>
+              <div className="text-2xl font-bold text-foreground">{venture.projectCount}</div>
+              <p className="text-xs text-foreground-muted mt-1">In progress</p>
             </CardContent>
           </Card>
 
-          <Card className="bg-white shadow-sm border-0">
+          <Card className="glass-card">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Growth Rate</CardTitle>
+              <CardTitle className="text-sm font-medium text-foreground-muted">Growth Rate</CardTitle>
               <TrendingUp className="h-4 w-4 text-gray-400" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-gray-900">+{venture.growth}%</div>
-              <p className="text-xs text-gray-500 mt-1">This quarter</p>
+              <div className="text-2xl font-bold text-foreground">+{venture.growth}%</div>
+              <p className="text-xs text-foreground-muted mt-1">This quarter</p>
             </CardContent>
           </Card>
         </div>
@@ -316,24 +316,24 @@ export default function VentureDetailsPage() {
               </TabsList>
 
               <TabsContent value="overview" className="space-y-6 mt-6">
-                <Card className="bg-white shadow-sm border-0">
+                <Card className="glass-card">
                   <CardHeader>
                     <CardTitle>Venture Information</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
-                      <div>
+                <div>
                         <label className="text-sm font-medium text-gray-600">Status</label>
                         <div className="mt-1">{getStatusBadge(venture.status)}</div>
-                      </div>
-                      <div>
+                </div>
+                <div>
                         <label className="text-sm font-medium text-gray-600">Region</label>
                         <div className="mt-1 flex items-center text-sm text-gray-900">
                           <MapPin className="w-4 h-4 mr-1" />
                           {venture.region}
-                        </div>
-                      </div>
-                    </div>
+                </div>
+                </div>
+              </div>
                     <div>
                       <label className="text-sm font-medium text-gray-600">Created</label>
                       <div className="mt-1 flex items-center text-sm text-gray-900">
@@ -348,7 +348,7 @@ export default function VentureDetailsPage() {
                   </CardContent>
                 </Card>
 
-                <Card className="bg-white shadow-sm border-0">
+                <Card className="glass-card">
                   <CardHeader>
                     <CardTitle>Recent Activity</CardTitle>
                   </CardHeader>
@@ -361,13 +361,13 @@ export default function VentureDetailsPage() {
                         <div>
                           <p className="text-sm font-medium text-gray-900">New project created</p>
                           <p className="text-xs text-gray-500">2 hours ago</p>
-                        </div>
-                      </div>
+                  </div>
+                </div>
                       <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
                         <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
                           <Users className="w-4 h-4 text-blue-600" />
                         </div>
-                        <div>
+                      <div>
                           <p className="text-sm font-medium text-gray-900">Team member joined</p>
                           <p className="text-xs text-gray-500">1 day ago</p>
                         </div>
@@ -378,7 +378,7 @@ export default function VentureDetailsPage() {
               </TabsContent>
 
               <TabsContent value="projects" className="space-y-6 mt-6">
-                <Card className="bg-white shadow-sm border-0">
+                <Card className="glass-card">
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <CardTitle>Projects</CardTitle>
@@ -396,7 +396,7 @@ export default function VentureDetailsPage() {
                             <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
                               <Target className="w-5 h-5 text-white" />
                             </div>
-                            <div>
+                      <div>
                               <h3 className="font-medium text-gray-900">{project.name}</h3>
                               <p className="text-sm text-gray-600">{project.summary}</p>
                             </div>
@@ -412,13 +412,13 @@ export default function VentureDetailsPage() {
                           </div>
                         </div>
                       ))}
-                    </div>
+                      </div>
                   </CardContent>
                 </Card>
               </TabsContent>
 
               <TabsContent value="team" className="space-y-6 mt-6">
-                <Card className="bg-white shadow-sm border-0">
+                <Card className="glass-card">
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <CardTitle>Team Members</CardTitle>
@@ -447,13 +447,13 @@ export default function VentureDetailsPage() {
                           </div>
                         </div>
                       ))}
-                    </div>
+                  </div>
                   </CardContent>
                 </Card>
               </TabsContent>
 
               <TabsContent value="analytics" className="space-y-6 mt-6">
-                <Card className="bg-white shadow-sm border-0">
+                <Card className="glass-card">
                   <CardHeader>
                     <CardTitle>Venture Analytics</CardTitle>
                   </CardHeader>
@@ -462,7 +462,7 @@ export default function VentureDetailsPage() {
                       <BarChart3 className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                       <h3 className="text-lg font-medium text-gray-900 mb-2">Analytics Coming Soon</h3>
                       <p className="text-gray-600">Detailed analytics and insights will be available here.</p>
-                    </div>
+              </div>
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -471,7 +471,7 @@ export default function VentureDetailsPage() {
 
           {/* Right Column - Sidebar */}
           <div className="space-y-6">
-            <Card className="bg-white shadow-sm border-0">
+            <Card className="glass-card">
               <CardHeader>
                 <CardTitle>Quick Stats</CardTitle>
               </CardHeader>
@@ -494,13 +494,13 @@ export default function VentureDetailsPage() {
                   <div className="flex items-center space-x-2">
                     <Globe className="w-4 h-4 text-purple-500" />
                     <span className="text-sm text-gray-600">Network</span>
-                  </div>
+              </div>
                   <span className="font-medium">{venture.umbrellaRelationshipsCount || 0}</span>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-white shadow-sm border-0">
+            <Card className="glass-card">
               <CardHeader>
                 <CardTitle>Recent Updates</CardTitle>
               </CardHeader>
@@ -517,7 +517,7 @@ export default function VentureDetailsPage() {
                   <div className="text-sm">
                     <p className="font-medium text-gray-900">Project completed</p>
                     <p className="text-xs text-gray-500">2 weeks ago</p>
-                  </div>
+                </div>
                 </div>
               </CardContent>
             </Card>
