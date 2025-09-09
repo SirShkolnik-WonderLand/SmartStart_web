@@ -116,7 +116,7 @@ export default function ProfilePage() {
         <div className="flex items-start justify-between mb-6">
           <div className="flex items-center gap-6">
             <div className="relative">
-              <div className="w-24 h-24 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">
+              <div className="w-24 h-24 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center text-white text-2xl font-bold">
                 {user.firstName?.[0]}{user.lastName?.[0]}
               </div>
               <button className="absolute -bottom-2 -right-2 w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white hover:bg-primary/80 transition-colors">
@@ -130,15 +130,15 @@ export default function ProfilePage() {
               <p className="text-foreground-muted mb-2">{user.email}</p>
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
-                  <Award className="w-4 h-4 text-yellow-500" />
+                  <Award className="w-4 h-4 text-warning" />
                   <span className="text-sm font-medium">Level {user.level}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Star className="w-4 h-4 text-blue-500" />
+                  <Star className="w-4 h-4 text-secondary" />
                   <span className="text-sm font-medium">{user.xp} XP</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-green-500" />
+                  <CheckCircle className="w-4 h-4 text-success" />
                   <span className="text-sm font-medium">{user.status}</span>
                 </div>
               </div>
@@ -155,32 +155,32 @@ export default function ProfilePage() {
 
         {/* Profile Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-4 border border-purple-100">
+          <div className="glass-card p-4">
             <div className="flex items-center gap-3">
-              <TrendingUp className="w-5 h-5 text-purple-600" />
+              <TrendingUp className="w-5 h-5 text-primary" />
               <div>
-                <div className="text-sm font-medium">Reputation</div>
-                <div className="text-lg font-bold text-purple-600">{user.reputation}</div>
+                <div className="text-sm font-medium text-foreground-muted">Reputation</div>
+                <div className="text-lg font-bold text-primary">{user.reputation}</div>
               </div>
             </div>
           </div>
-          <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg p-4 border border-blue-100">
+          <div className="glass-card p-4">
             <div className="flex items-center gap-3">
-              <Clock className="w-5 h-5 text-blue-600" />
+              <Clock className="w-5 h-5 text-secondary" />
               <div>
-                <div className="text-sm font-medium">Last Active</div>
-                <div className="text-sm text-blue-600">
+                <div className="text-sm font-medium text-foreground-muted">Last Active</div>
+                <div className="text-sm text-secondary">
                   {user.lastActive ? new Date(user.lastActive).toLocaleDateString() : 'Never'}
                 </div>
               </div>
             </div>
           </div>
-          <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-4 border border-green-100">
+          <div className="glass-card p-4">
             <div className="flex items-center gap-3">
-              <User className="w-5 h-5 text-green-600" />
+              <User className="w-5 h-5 text-success" />
               <div>
-                <div className="text-sm font-medium">Member Since</div>
-                <div className="text-sm text-green-600">
+                <div className="text-sm font-medium text-foreground-muted">Member Since</div>
+                <div className="text-sm text-success">
                   {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Unknown'}
                 </div>
               </div>
@@ -202,7 +202,7 @@ export default function ProfilePage() {
                   type="text"
                   value={editData.firstName}
                   onChange={(e) => setEditData({...editData, firstName: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  className="glass-input"
                 />
               ) : (
                 <p className="text-foreground-body">{user.firstName || 'Not set'}</p>
@@ -215,7 +215,7 @@ export default function ProfilePage() {
                   type="text"
                   value={editData.lastName}
                   onChange={(e) => setEditData({...editData, lastName: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  className="glass-input"
                 />
               ) : (
                 <p className="text-foreground-body">{user.lastName || 'Not set'}</p>
@@ -251,14 +251,14 @@ export default function ProfilePage() {
           <div className="flex gap-3 mt-6">
             <button
               onClick={handleSave}
-              className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+              className="glass-button"
             >
               <Save className="w-4 h-4" />
               Save Changes
             </button>
             <button
               onClick={handleCancel}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
+              className="glass-button"
             >
               <X className="w-4 h-4" />
               Cancel
