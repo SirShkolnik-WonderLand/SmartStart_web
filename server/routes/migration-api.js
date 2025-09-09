@@ -73,4 +73,28 @@ router.get('/status', async(req, res) => {
     }
 });
 
+// Seed legal documents
+router.post('/seed-legal-documents', async(req, res) => {
+    try {
+        console.log('🌱 Starting legal documents seeding...');
+        
+        // Import and run the seed function
+        const seedLegalDocuments = require('../seed-legal-documents');
+        await seedLegalDocuments();
+        
+        res.json({
+            success: true,
+            message: 'Legal documents seeded successfully'
+        });
+        
+    } catch (error) {
+        console.error('Seed error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to seed legal documents',
+            error: error.message
+        });
+    }
+});
+
 module.exports = router;
