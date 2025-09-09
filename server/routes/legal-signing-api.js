@@ -169,7 +169,7 @@ router.post('/session/:sessionId/sign', authenticateToken, async (req, res) => {
       timestamp: new Date().toISOString()
     };
     
-    const result = legalDocumentService.signDocument(sessionId, documentId, enhancedSignatureData);
+    const result = legalDocumentService.signDocumentInSession(sessionId, documentId, enhancedSignatureData);
     
     if (!result.success) {
       return res.status(400).json({
