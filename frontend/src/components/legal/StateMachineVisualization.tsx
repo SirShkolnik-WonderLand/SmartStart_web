@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { getApiBaseUrl } from '@/lib/env';
 import { motion } from 'framer-motion';
 
 interface VisualizationData {
@@ -33,9 +34,7 @@ const StateMachineVisualization: React.FC<StateMachineVisualizationProps> = ({
       setLoading(true);
       setError(null);
 
-      const API_BASE = process.env.NODE_ENV === 'production' 
-        ? process.env.NEXT_PUBLIC_API_URL || 'https://smartstart-api.onrender.com'
-        : 'http://localhost:3001'
+      const API_BASE = getApiBaseUrl()
 
       const response = await fetch(`${API_BASE}/api/legal/state-machine/${type}/${id}/visualization`, {
         headers: {

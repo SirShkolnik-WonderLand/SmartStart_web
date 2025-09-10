@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { getApiBaseUrl } from '@/lib/env';
 import { motion, AnimatePresence } from 'framer-motion';
 import StateMachineVisualization from '../legal/StateMachineVisualization';
 
@@ -43,9 +44,7 @@ const StateMachineDashboard: React.FC<StateMachineDashboardProps> = ({
       setLoading(true);
       setError(null);
 
-      const API_BASE = process.env.NODE_ENV === 'production' 
-        ? process.env.NEXT_PUBLIC_API_URL || 'https://smartstart-api.onrender.com'
-        : 'http://localhost:3001'
+      const API_BASE = getApiBaseUrl()
 
       // Load system health
       const healthResponse = await fetch(`${API_BASE}/api/state-machines/health`, {

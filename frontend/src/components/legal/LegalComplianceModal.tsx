@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FileText, CheckCircle, AlertCircle, Loader2, X, Download, Eye } from 'lucide-react'
+import { getApiBaseUrl } from '@/lib/env'
 
 interface LegalComplianceModalProps {
   isOpen: boolean
@@ -44,9 +45,7 @@ export default function LegalComplianceModal({
   const [documentContent, setDocumentContent] = useState<string>('')
 
   // API Base URL configuration
-  const API_BASE = process.env.NODE_ENV === 'production' 
-    ? process.env.NEXT_PUBLIC_API_URL || 'https://smartstart-api.onrender.com'
-    : 'http://localhost:3001'
+  const API_BASE = getApiBaseUrl()
 
   const loadDocuments = useCallback(async () => {
     try {

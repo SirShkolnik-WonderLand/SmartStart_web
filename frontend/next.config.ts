@@ -1,9 +1,8 @@
 import type { NextConfig } from "next";
-import path from 'path';
 
 const nextConfig: NextConfig = {
   // Output configuration for monorepo - use absolute path
-  outputFileTracingRoot: path.join(__dirname, '..'),
+  outputFileTracingRoot: require('path').join(__dirname, '..'),
   
   // Enable build caching for faster deployments
   experimental: {

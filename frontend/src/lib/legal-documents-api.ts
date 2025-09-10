@@ -1,4 +1,5 @@
 // import { comprehensiveApiService } from './api-comprehensive';
+import { getApiBaseUrl } from '@/lib/env';
 
 export interface LegalDocument {
     id: string;

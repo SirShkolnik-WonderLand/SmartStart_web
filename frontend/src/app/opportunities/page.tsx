@@ -5,6 +5,7 @@ import { Target, Building, Globe, Filter, Clock, Users, Star, Plus, Search, MapP
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { getApiBaseUrl } from '@/lib/env'
 
 interface Opportunity {
   id: string
@@ -69,9 +70,7 @@ export default function OpportunitiesPage() {
       setIsLoading(true)
       
       // Use real data from our opportunities API
-      const API_BASE = process.env.NODE_ENV === 'production' 
-        ? process.env.NEXT_PUBLIC_API_URL || 'https://smartstart-api.onrender.com'
-        : 'http://localhost:3001'
+      const API_BASE = getApiBaseUrl()
       
       const response = await fetch(`${API_BASE}/api/opportunities`, {
         headers: {
