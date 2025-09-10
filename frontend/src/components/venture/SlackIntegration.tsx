@@ -49,9 +49,25 @@ const SlackIntegration: React.FC<SlackIntegrationProps> = ({ ventureId }) => {
     webhookUrl: ''
   });
 
-  useEffect(() => {
-    fetchIntegration();
-  }, [ventureId, fetchIntegration]);
+  const fetchMessages = useCallback(async () => {
+    try {
+      const response = await fetch(`/api/venture-management/${ventureId}/slack/messages`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch messages');
+      }
+
+      const data = await response.json();
+      setMessages(data.data);
+    } catch (err) {
+      console.error('Failed to fetch messages:', err);
+    }
+  }, [ventureId]);
 
   const fetchIntegration = useCallback(async () => {
     try {
@@ -79,25 +95,9 @@ const SlackIntegration: React.FC<SlackIntegrationProps> = ({ ventureId }) => {
     }
   }, [ventureId, fetchMessages]);
 
-  const fetchMessages = async () => {
-    try {
-      const response = await fetch(`/api/venture-management/${ventureId}/slack/messages`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch messages');
-      }
-
-      const data = await response.json();
-      setMessages(data.data);
-    } catch (err) {
-      console.error('Failed to fetch messages:', err);
-    }
-  };
+  useEffect(() => {
+    fetchIntegration();
+  }, [ventureId, fetchIntegration]);
 
   const setupSlackIntegration = async () => {
     try {

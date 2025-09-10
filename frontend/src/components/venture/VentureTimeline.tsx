@@ -24,7 +24,15 @@ interface Timeline {
   progressPercentage: number;
   status: string;
   milestones: Milestone[];
-  dailyCheckins: unknown[];
+  dailyCheckins: {
+    id: string;
+    checkinDate: string;
+    status: string;
+    progressNotes?: string;
+    user: {
+      name: string;
+    };
+  }[];
 }
 
 interface VentureTimelineProps {
@@ -35,10 +43,6 @@ const VentureTimeline: React.FC<VentureTimelineProps> = ({ ventureId }) => {
   const [timeline, setTimeline] = useState<Timeline | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    fetchTimeline();
-  }, [ventureId, fetchTimeline]);
 
   const fetchTimeline = useCallback(async () => {
     try {
@@ -61,6 +65,10 @@ const VentureTimeline: React.FC<VentureTimelineProps> = ({ ventureId }) => {
       setLoading(false);
     }
   }, [ventureId]);
+
+  useEffect(() => {
+    fetchTimeline();
+  }, [ventureId, fetchTimeline]);
 
   const createTimeline = async () => {
     try {

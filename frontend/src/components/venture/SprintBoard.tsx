@@ -55,19 +55,6 @@ const SprintBoard: React.FC<SprintBoardProps> = ({ ventureId, sprintId }) => {
     estimatedHours: 0
   });
 
-  useEffect(() => {
-    fetchSprints();
-  }, [ventureId, fetchSprints]);
-
-  useEffect(() => {
-    if (sprintId && sprints.length > 0) {
-      const sprint = sprints.find(s => s.id === sprintId);
-      setCurrentSprint(sprint || null);
-    } else if (sprints.length > 0) {
-      setCurrentSprint(sprints[0]);
-    }
-  }, [sprintId, sprints]);
-
   const fetchSprints = useCallback(async () => {
     try {
       const response = await fetch(`/api/venture-management/${ventureId}/sprints`, {
@@ -89,6 +76,19 @@ const SprintBoard: React.FC<SprintBoardProps> = ({ ventureId, sprintId }) => {
       setLoading(false);
     }
   }, [ventureId]);
+
+  useEffect(() => {
+    fetchSprints();
+  }, [ventureId, fetchSprints]);
+
+  useEffect(() => {
+    if (sprintId && sprints.length > 0) {
+      const sprint = sprints.find(s => s.id === sprintId);
+      setCurrentSprint(sprint || null);
+    } else if (sprints.length > 0) {
+      setCurrentSprint(sprints[0]);
+    }
+  }, [sprintId, sprints]);
 
   const createSprint = async () => {
     try {

@@ -7,8 +7,6 @@ const nextConfig: NextConfig = {
   
   // Enable build caching for faster deployments
   experimental: {
-    // Enable build caching
-    buildCache: true,
     // Optimize bundle analysis
     optimizePackageImports: ['lucide-react', '@radix-ui/react-slot', '@radix-ui/react-tabs'],
   },

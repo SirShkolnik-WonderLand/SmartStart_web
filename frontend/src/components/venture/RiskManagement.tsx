@@ -41,10 +41,6 @@ const RiskManagement: React.FC<RiskManagementProps> = ({ ventureId }) => {
     mitigationPlan: ''
   });
 
-  useEffect(() => {
-    fetchRisks();
-  }, [ventureId, fetchRisks]);
-
   const fetchRisks = useCallback(async () => {
     try {
       const response = await fetch(`/api/venture-management/${ventureId}/risks`, {
@@ -66,6 +62,10 @@ const RiskManagement: React.FC<RiskManagementProps> = ({ ventureId }) => {
       setLoading(false);
     }
   }, [ventureId]);
+
+  useEffect(() => {
+    fetchRisks();
+  }, [ventureId, fetchRisks]);
 
   const createRisk = async () => {
     try {

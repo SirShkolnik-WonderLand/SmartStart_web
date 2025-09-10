@@ -27,10 +27,6 @@ const VentureManagementDashboard: React.FC<VentureManagementDashboardProps> = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchVenture();
-  }, [ventureId, fetchVenture]);
-
   const fetchVenture = useCallback(async () => {
     try {
       const response = await fetch(`/api/ventures/${ventureId}`, {
@@ -52,6 +48,10 @@ const VentureManagementDashboard: React.FC<VentureManagementDashboardProps> = ({
       setLoading(false);
     }
   }, [ventureId]);
+
+  useEffect(() => {
+    fetchVenture();
+  }, [ventureId, fetchVenture]);
 
   const tabs = [
     { id: 'timeline', name: 'Timeline', icon: Calendar, description: '30-day launch timeline' },
