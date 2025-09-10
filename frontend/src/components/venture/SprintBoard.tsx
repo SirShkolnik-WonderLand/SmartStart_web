@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Plus, Clock, User, AlertCircle, CheckCircle, Play, Square } from 'lucide-react';
+import { Plus, Clock, User, AlertCircle, CheckCircle, Play } from 'lucide-react';
 
 interface Task {
   id: string;

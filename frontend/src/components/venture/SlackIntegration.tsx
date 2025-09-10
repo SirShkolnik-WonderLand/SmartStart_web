@@ -77,7 +77,7 @@ const SlackIntegration: React.FC<SlackIntegrationProps> = ({ ventureId }) => {
     } finally {
       setLoading(false);
     }
-  }, [ventureId]);
+  }, [ventureId, fetchMessages]);
 
   const fetchMessages = async () => {
     try {

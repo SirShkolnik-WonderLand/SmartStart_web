@@ -48,13 +48,6 @@ export default function LegalComplianceModal({
     ? process.env.NEXT_PUBLIC_API_URL || 'https://smartstart-api.onrender.com'
     : 'http://localhost:3001'
 
-  // Load legal documents
-  useEffect(() => {
-    if (isOpen) {
-      loadDocuments()
-    }
-  }, [isOpen, loadDocuments])
-
   const loadDocuments = useCallback(async () => {
     try {
       const token = localStorage.getItem('auth-token')
@@ -79,6 +72,13 @@ export default function LegalComplianceModal({
       setCurrentStep('review')
     }
   }, [API_BASE])
+
+  // Load legal documents
+  useEffect(() => {
+    if (isOpen) {
+      loadDocuments()
+    }
+  }, [isOpen, loadDocuments])
 
   const startSigningSession = async () => {
     try {
