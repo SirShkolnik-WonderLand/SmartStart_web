@@ -1,0 +1,64 @@
+# Render ignore file for better caching
+# This file tells Render what to ignore during deployment
+
+# Development files
+*.md
+docs/
+tests/
+test/
+__tests__/
+*.test.js
+*.test.ts
+*.test.tsx
+*.spec.js
+*.spec.ts
+*.spec.tsx
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Cache directories
+node_modules/.cache
+.next/cache
+.eslintcache
+
+# Coverage
+coverage/
+.nyc_output/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Build artifacts (keep .next for production)
+# .next/
+
+# Environment files (keep .env.example)
+.env.local
+.env.development.local
+.env.test.local
+
+# Git
+.git/
+.gitignore
+
+# Package manager files
+yarn.lock
+pnpm-lock.yaml
+
+# Documentation
+README.md
+CHANGELOG.md
+LICENSE

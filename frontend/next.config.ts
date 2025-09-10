@@ -4,12 +4,47 @@ import path from 'path';
 const nextConfig: NextConfig = {
   // Output configuration for monorepo - use absolute path
   outputFileTracingRoot: path.join(__dirname, '..'),
-  // Disable experimental features that cause issues
+  
+  // Enable build caching for faster deployments
   experimental: {
-    // Remove deprecated turbo config
+    // Enable build caching
+    buildCache: true,
+    // Optimize bundle analysis
+    optimizePackageImports: ['lucide-react', '@radix-ui/react-slot', '@radix-ui/react-tabs'],
   },
+  
   // Enable compression
   compress: true,
+  
+  // Optimize build performance
+  swcMinify: true,
+  
+  // Enable static optimization
+  trailingSlash: false,
+  
+  // Optimize images
+  images: {
+    unoptimized: false,
+    formats: ['image/webp', 'image/avif'],
+  },
+  
+  // Webpack optimizations
+  webpack: (config, { dev, isServer }) => {
+    // Optimize for production builds
+    if (!dev && !isServer) {
+      config.optimization.splitChunks = {
+        chunks: 'all',
+        cacheGroups: {
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            chunks: 'all',
+          },
+        },
+      };
+    }
+    return config;
+  },
 };
 
 export default nextConfig;
