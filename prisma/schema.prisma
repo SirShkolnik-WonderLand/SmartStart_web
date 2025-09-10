@@ -115,6 +115,12 @@ model User {
 
   // Venture ownership
   venturesOwned Venture[] @relation("VentureOwner")
+  
+  // Venture Management System Relations
+  dailyCheckins      VentureDailyCheckin[]
+  sprintTasks        VentureSprintTask[]
+  ventureRisks       VentureRisk[]
+  ventureNotifications VentureNotification[]
 
   // User connections
   connectionRequests UserConnection[] @relation("ConnectionRequester")
@@ -1946,6 +1952,16 @@ model Venture {
   // Opportunities system relations
   opportunities      Opportunity[]
   
+  // Venture Management System Relations
+  launchTimeline     VentureLaunchTimeline?
+  dailyCheckins      VentureDailyCheckin[]
+  sprints            VentureSprint[]
+  risks              VentureRisk[]
+  analytics          VentureAnalytics[]
+  notifications      VentureNotification[]
+  slackIntegration   VentureSlackIntegration?
+  slackMessages      SlackMessage[]
+  
   // Timestamps
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -3383,3 +3399,392 @@ enum MatchStatus {
 }
 
 
+// Venture Management System - Database Schema Extensions
+// 30-Day Launch Timeline, Project Management, and Slack Integration
+
+// ============================================================================
+// VENTURE LAUNCH TIMELINE SYSTEM
+// ============================================================================
+
+model VentureLaunchTimeline {
+  id                String   @id @default(cuid())
+  ventureId         String   @unique
+  venture           Venture  @relation(fields: [ventureId], references: [id], onDelete: Cascade)
+  
+  // Timeline Configuration
+  totalDays         Int      @default(30)
+  startDate         DateTime
+  targetLaunchDate  DateTime
+  currentPhase      String   @default("FOUNDATION") // FOUNDATION, SPRINT_1, SPRINT_2, LAUNCH_PREP
+  progressPercentage Float   @default(0.0)
+  status            String   @default("ACTIVE") // ACTIVE, PAUSED, COMPLETED, FAILED
+  
+  // Slack Integration
+  slackWorkspaceId  String?
+  slackChannelId    String?
+  slackChannelName  String?
+  
+  // Timeline Data
+  milestones        VentureMilestone[]
+  dailyCheckins     VentureDailyCheckin[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([ventureId])
+  @@index([status])
+  @@index([currentPhase])
+}
+
+model VentureMilestone {
+  id                String   @id @default(cuid())
+  timelineId        String
+  timeline          VentureLaunchTimeline @relation(fields: [timelineId], references: [id], onDelete: Cascade)
+  
+  // Milestone Details
+  phase             String   // FOUNDATION, SPRINT_1, SPRINT_2, LAUNCH_PREP
+  title             String
+  description       String?
+  targetDate        DateTime
+  completedDate     DateTime?
+  status            String   @default("PENDING") // PENDING, IN_PROGRESS, COMPLETED, BLOCKED
+  priority          Int      @default(3) // 1-5
+  
+  // Dependencies
+  dependencies      Json?    // Array of milestone IDs that must complete first
+  
+  // Slack Integration
+  slackMessageId    String?  // Slack message ID for milestone updates
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([timelineId])
+  @@index([phase])
+  @@index([status])
+  @@index([targetDate])
+}
+
+model VentureDailyCheckin {
+  id                String   @id @default(cuid())
+  ventureId         String
+  venture           Venture  @relation(fields: [ventureId], references: [id], onDelete: Cascade)
+  timelineId        String?
+  timeline          VentureLaunchTimeline? @relation(fields: [timelineId], references: [id], onDelete: Cascade)
+  
+  // Check-in Details
+  checkinDate       DateTime
+  userId            String
+  user              User     @relation(fields: [userId], references: [id])
+  
+  // Status and Progress
+  status            String   // ON_TRACK, AT_RISK, BLOCKED, COMPLETED
+  progressNotes     String?
+  blockers          String[] // Array of blocker descriptions
+  nextActions       String[] // Array of next action items
+  moodScore         Int?     // 1-5 mood/confidence score
+  
+  // Slack Integration
+  slackMessageId    String?  // Slack message ID for check-in
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([ventureId])
+  @@index([checkinDate])
+  @@index([userId])
+  @@index([status])
+}
+
+// ============================================================================
+// PROJECT MANAGEMENT SYSTEM
+// ============================================================================
+
+model VentureSprint {
+  id                String   @id @default(cuid())
+  ventureId         String
+  venture           Venture  @relation(fields: [ventureId], references: [id], onDelete: Cascade)
+  
+  // Sprint Details
+  name              String
+  description       String?
+  startDate         DateTime
+  endDate           DateTime
+  status            String   @default("PLANNING") // PLANNING, ACTIVE, COMPLETED, CANCELLED
+  capacityHours     Int      @default(40)
+  
+  // Sprint Metrics
+  totalStoryPoints  Int      @default(0)
+  completedPoints   Int      @default(0)
+  velocity          Float    @default(0.0)
+  
+  // Slack Integration
+  slackChannelId    String?
+  slackChannelName  String?
+  
+  // Sprint Data
+  tasks             VentureSprintTask[]
+  burndownData      SprintBurndown[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([ventureId])
+  @@index([status])
+  @@index([startDate])
+  @@index([endDate])
+}
+
+model VentureSprintTask {
+  id                String   @id @default(cuid())
+  sprintId          String
+  sprint            VentureSprint @relation(fields: [sprintId], references: [id], onDelete: Cascade)
+  
+  // Task Details
+  title             String
+  description       String?
+  taskType          String   // FEATURE, BUG, IMPROVEMENT, RESEARCH, DOCUMENTATION
+  priority          Int      @default(3) // 1-5
+  storyPoints       Int      @default(1)
+  
+  // Assignment and Status
+  assigneeId        String?
+  assignee          User?    @relation(fields: [assigneeId], references: [id])
+  status            String   @default("TODO") // TODO, IN_PROGRESS, REVIEW, DONE, BLOCKED
+  
+  // Time Tracking
+  estimatedHours    Float?
+  actualHours       Float?
+  
+  // Dependencies
+  dependencies      TaskDependency[] @relation("TaskDependencies")
+  dependents        TaskDependency[] @relation("DependentTasks")
+  
+  // Slack Integration
+  slackMessageId    String?  // Slack message ID for task updates
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([sprintId])
+  @@index([assigneeId])
+  @@index([status])
+  @@index([priority])
+  @@index([taskType])
+}
+
+model TaskDependency {
+  id                String   @id @default(cuid())
+  taskId            String
+  task              VentureSprintTask @relation("TaskDependencies", fields: [taskId], references: [id], onDelete: Cascade)
+  dependsOnTaskId   String
+  dependsOnTask     VentureSprintTask @relation("DependentTasks", fields: [dependsOnTaskId], references: [id], onDelete: Cascade)
+  dependencyType    String   @default("BLOCKS") // BLOCKS, RELATES_TO, DUPLICATES
+  
+  createdAt DateTime @default(now())
+
+  @@unique([taskId, dependsOnTaskId])
+  @@index([taskId])
+  @@index([dependsOnTaskId])
+}
+
+model SprintBurndown {
+  id                String   @id @default(cuid())
+  sprintId          String
+  sprint            VentureSprint @relation(fields: [sprintId], references: [id], onDelete: Cascade)
+  
+  // Burndown Data
+  date              DateTime
+  remainingPoints   Int
+  completedPoints   Int
+  idealBurndown     Int
+  
+  createdAt DateTime @default(now())
+
+  @@index([sprintId])
+  @@index([date])
+}
+
+// ============================================================================
+// SLACK INTEGRATION SYSTEM
+// ============================================================================
+
+model VentureSlackIntegration {
+  id                String   @id @default(cuid())
+  ventureId         String   @unique
+  venture           Venture  @relation(fields: [ventureId], references: [id], onDelete: Cascade)
+  
+  // Slack Workspace Details
+  slackWorkspaceId  String
+  slackWorkspaceName String
+  slackChannelId    String
+  slackChannelName  String
+  
+  // Integration Status
+  status            String   @default("ACTIVE") // ACTIVE, INACTIVE, ERROR
+  lastSyncAt        DateTime?
+  
+  // Bot Configuration
+  botToken          String?  // Encrypted bot token
+  webhookUrl        String?  // Incoming webhook URL
+  
+  // Integration Features
+  features          Json?    // Enabled features: messages, updates, notifications
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([ventureId])
+  @@index([status])
+}
+
+model SlackMessage {
+  id                String   @id @default(cuid())
+  ventureId         String
+  venture           Venture  @relation(fields: [ventureId], references: [id], onDelete: Cascade)
+  
+  // Slack Message Details
+  slackMessageId    String   @unique
+  slackChannelId    String
+  slackUserId       String
+  slackUserName     String
+  
+  // Message Content
+  content           String
+  messageType       String   @default("TEXT") // TEXT, IMAGE, FILE, SYSTEM
+  metadata          Json?    // File attachments, mentions, etc.
+  
+  // Thread Support
+  threadTs          String?  // Slack thread timestamp
+  replyToMessageId  String?
+  replyToMessage    SlackMessage? @relation("MessageReplies", fields: [replyToMessageId], references: [id])
+  replies           SlackMessage[] @relation("MessageReplies")
+  
+  // Reactions
+  reactions         SlackReaction[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([ventureId])
+  @@index([slackChannelId])
+  @@index([slackUserId])
+  @@index([createdAt])
+}
+
+model SlackReaction {
+  id                String   @id @default(cuid())
+  messageId         String
+  message           SlackMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  
+  // Reaction Details
+  emoji             String
+  slackUserId       String
+  slackUserName     String
+  
+  createdAt DateTime @default(now())
+
+  @@unique([messageId, emoji, slackUserId])
+  @@index([messageId])
+  @@index([emoji])
+}
+
+// ============================================================================
+// RISK MANAGEMENT SYSTEM
+// ============================================================================
+
+model VentureRisk {
+  id                String   @id @default(cuid())
+  ventureId         String
+  venture           Venture  @relation(fields: [ventureId], references: [id], onDelete: Cascade)
+  
+  // Risk Details
+  riskType          String   // TECHNICAL, MARKET, TEAM, FINANCIAL, LEGAL, OPERATIONAL
+  title             String
+  description       String?
+  
+  // Risk Assessment
+  impactLevel       Int      // 1-5
+  probabilityLevel  Int      // 1-5
+  riskScore         Float    // Calculated: impact * probability
+  
+  // Risk Management
+  mitigationPlan    String?
+  ownerId           String
+  owner             User     @relation(fields: [ownerId], references: [id])
+  status            String   @default("OPEN") // OPEN, MITIGATED, ACCEPTED, CLOSED
+  
+  // Slack Integration
+  slackMessageId    String?  // Slack message ID for risk updates
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([ventureId])
+  @@index([riskType])
+  @@index([status])
+  @@index([riskScore])
+  @@index([ownerId])
+}
+
+// ============================================================================
+// ANALYTICS AND REPORTING
+// ============================================================================
+
+model VentureAnalytics {
+  id                String   @id @default(cuid())
+  ventureId         String
+  venture           Venture  @relation(fields: [ventureId], references: [id], onDelete: Cascade)
+  
+  // Analytics Data
+  metricName        String   // VELOCITY, BURNDOWN, QUALITY, ENGAGEMENT, RISK_SCORE
+  metricValue       Float
+  metricType        String   // VELOCITY, BURNDOWN, QUALITY, ENGAGEMENT, RISK
+  periodStart       DateTime
+  periodEnd         DateTime
+  
+  // Additional Data
+  metadata          Json?    // Additional metric-specific data
+  
+  createdAt DateTime @default(now())
+
+  @@index([ventureId])
+  @@index([metricName])
+  @@index([metricType])
+  @@index([periodStart])
+  @@index([periodEnd])
+}
+
+// ============================================================================
+// NOTIFICATION SYSTEM
+// ============================================================================
+
+model VentureNotification {
+  id                String   @id @default(cuid())
+  ventureId         String
+  venture           Venture  @relation(fields: [ventureId], references: [id], onDelete: Cascade)
+  
+  // Notification Details
+  userId            String
+  user              User     @relation(fields: [userId], references: [id])
+  type              String   // MILESTONE, TASK, RISK, CHECKIN, SLACK
+  title             String
+  message           String
+  priority          String   @default("MEDIUM") // LOW, MEDIUM, HIGH, URGENT
+  
+  // Status
+  isRead            Boolean  @default(false)
+  readAt            DateTime?
+  
+  // Slack Integration
+  slackMessageId    String?  // Slack message ID if sent to Slack
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([ventureId])
+  @@index([userId])
+  @@index([type])
+  @@index([isRead])
+  @@index([createdAt])
+}

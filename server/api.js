@@ -114,6 +114,14 @@ try {
     console.error('Failed to mount unified auth routes:', e?.message);
 }
 
+// Mount venture management API
+try {
+    const ventureManagementRoutes = require('./routes/venture-management');
+    app.use('/api/venture-management', ventureManagementRoutes);
+} catch (e) {
+    console.error('Failed to mount venture management routes:', e?.message);
+}
+
 // /api/auth/me is now handled by unified-auth-api
 
 // User management routes

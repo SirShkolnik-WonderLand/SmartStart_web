@@ -204,6 +204,17 @@ export default function PersistentLayout({ children }: PersistentLayoutProps) {
                 {sidebarOpen && <span>My Ventures</span>}
               </Link>
               <Link 
+                href="/venture-management" 
+                className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                  pathname === '/venture-management' 
+                    ? 'bg-primary/10 text-primary' 
+                    : 'text-foreground-muted hover:text-foreground hover:bg-glass-surface'
+                }`}
+              >
+                <Target className="w-5 h-5" />
+                {sidebarOpen && <span>Venture Management</span>}
+              </Link>
+              <Link 
                 href="/umbrella" 
                 className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
                   pathname === '/umbrella' 
