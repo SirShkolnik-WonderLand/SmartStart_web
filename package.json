@@ -12,7 +12,19 @@
         "db:push": "prisma db push",
         "db:migrate": "prisma migrate dev",
         "db:seed": "node prisma/seed.js",
-        "lint": "eslint server/"
+        "lint": "eslint server/",
+        "test": "jest",
+        "test:unit": "jest tests/unit",
+        "test:integration": "jest tests/integration",
+        "test:api": "jest tests/api",
+        "test:database": "jest tests/database",
+        "test:security": "jest tests/security",
+        "test:performance": "jest tests/performance",
+        "test:venture-management": "jest tests/venture-management",
+        "test:coverage": "jest --coverage",
+        "test:watch": "jest --watch",
+        "test:ci": "jest --ci --coverage --watchAll=false",
+        "test:all": "jest --runInBand --detectOpenHandles"
     },
     "dependencies": {
         "@prisma/client": "^6.15.0",
@@ -38,8 +50,15 @@
         "@types/express": "^5.0.0",
         "@types/jsonwebtoken": "^9.0.7",
         "@types/node": "^20",
+        "@types/supertest": "^6.0.2",
+        "autocannon": "^7.15.0",
+        "babel-jest": "^29.7.0",
         "eslint": "^9",
+        "jest": "^29.7.0",
+        "jest-junit": "^16.0.0",
+        "jest-sonar-reporter": "^2.0.0",
         "prisma": "^6.15.0",
+        "supertest": "^7.0.0",
         "typescript": "^5"
     },
     "engines": {
