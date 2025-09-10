@@ -10,13 +10,11 @@ services:
         value: production
       - key: NEXT_PUBLIC_API_URL
         value: https://smartstart-api.onrender.com
-    # Enable build caching
-    buildCache:
-      enabled: true
-    # Optimize build performance
-    buildSettings:
-      buildCommand: |
-        cd frontend
-        npm ci --only=production --no-audit --no-fund
-        npm run build
-      installCommand: npm ci --only=production --no-audit --no-fund
+      - key: NEXT_TELEMETRY_DISABLED
+        value: "1"
+    # Health check configuration
+    healthCheckPath: /
+    # Auto-deploy from main branch
+    autoDeploy: true
+    # Branch configuration
+    branch: main
