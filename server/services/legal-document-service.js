@@ -1,11 +1,13 @@
 const crypto = require('crypto');
 const fs = require('fs').promises;
 const path = require('path');
+const RBACLegalMapping = require('./rbac-legal-mapping');
 
 class LegalDocumentService {
     constructor() {
         this.documents = new Map(); // In production, use database
         this.signatures = new Map(); // In production, use database
+        this.rbacMapping = new RBACLegalMapping();
         this.legalFramework = new (require('./legal-framework'))();
         this.loadLegalDocuments();
     }
@@ -320,8 +322,7 @@ class LegalDocumentService {
             });
             
             const userLevel = user?.level || 'OWLET';
-            const rbacLevel = this.mapUserLevelToRbacLevel(userLevel);
-            console.log('👤 User level:', userLevel, '-> RBAC level:', rbacLevel);
+            console.log('👤 User level:', userLevel);
             
             const documents = await prisma.legalDocument.findMany({
                 where: { status: 'EFFECTIVE' },
@@ -338,42 +339,19 @@ class LegalDocumentService {
                 }
             });
 
-            const signedDocumentIds = userSignatures.map(sig => sig.documentId);
+            const signedDocumentTitles = userSignatures.map(sig => {
+                const doc = documents.find(d => d.id === sig.documentId);
+                return doc ? doc.title : null;
+            }).filter(Boolean);
 
-            // Get all required documents for user's RBAC level
-            console.log('🔧 LegalFramework type:', typeof this.legalFramework);
-            console.log('🔧 LegalFramework rbacDocumentRequirements:', this.legalFramework.rbacDocumentRequirements);
-            const allRequiredDocs = [];
-            for (const [level, config] of Object.entries(this.legalFramework.rbacDocumentRequirements)) {
-                if (this.getLevelNumber(level) <= this.getLevelNumber(rbacLevel)) {
-                    allRequiredDocs.push(...config);
-                }
-            }
-            console.log('📋 All required docs for', rbacLevel, ':', allRequiredDocs);
-
-            // Get documents for next level (pending)
-            const nextLevelDocs = [];
-            const nextLevel = this.getNextLevel(rbacLevel);
-            if (nextLevel) {
-                const nextLevelConfig = this.legalFramework.rbacDocumentRequirements[nextLevel] || [];
-                nextLevelDocs.push(...nextLevelConfig);
-            }
+            console.log('📋 Signed documents:', signedDocumentTitles);
 
             const result = documents.map(doc => {
-                const docKey = this.getDocumentKey(doc);
-                const isRequired = allRequiredDocs.includes(docKey);
-                const isPending = nextLevelDocs.includes(docKey);
-                const isSigned = signedDocumentIds.includes(doc.id);
+                const isSigned = signedDocumentTitles.includes(doc.title);
+                const status = this.rbacMapping.getDocumentStatus(userLevel, doc.title, isSigned);
                 const signature = userSignatures.find(sig => sig.documentId === doc.id);
 
-                let status = 'NOT_REQUIRED';
-                if (isRequired && isSigned) status = 'SIGNED';
-                else if (isRequired && !isSigned) status = 'REQUIRED';
-                else if (isPending && isSigned) status = 'SIGNED';
-                else if (isPending && !isSigned) status = 'PENDING';
-                else if (!isRequired && !isPending && isSigned) status = 'SIGNED';
-
-                console.log(`📋 Document: ${doc.title} -> Key: ${docKey} -> Status: ${status}`);
+                console.log(`📋 Document: ${doc.title} -> Status: ${status}`);
 
                 return {
                     id: doc.id,
@@ -393,7 +371,7 @@ class LegalDocumentService {
                     entityId: doc.entityId,
                     projectId: doc.projectId,
                     ventureId: doc.ventureId,
-                    required: isRequired,
+                    required: status === 'REQUIRED',
                     lastUpdated: doc.updatedAt,
                     isSigned: isSigned,
                     signedAt: signature?.signedAt,
@@ -457,7 +435,14 @@ class LegalDocumentService {
                 signed: signed.length,
                 pending: pending.length,
                 compliance: required.length === 0,
-                documents: documents
+                documents: documents,
+                summary: {
+                    total_documents: documents.length,
+                    signed_documents: signed.length,
+                    required_documents: required.length,
+                    pending_documents: pending.length,
+                    compliance_percentage: required.length === 0 ? 100 : Math.round((signed.length / (signed.length + required.length)) * 100)
+                }
             };
         } catch (error) {
             console.error('Error getting user document status:', error);
@@ -467,7 +452,14 @@ class LegalDocumentService {
                 signed: 0,
                 pending: 0,
                 compliance: false,
-                documents: []
+                documents: [],
+                summary: {
+                    total_documents: 0,
+                    signed_documents: 0,
+                    required_documents: 0,
+                    pending_documents: 0,
+                    compliance_percentage: 0
+                }
             };
         }
     }

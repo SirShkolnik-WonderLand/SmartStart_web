@@ -178,7 +178,7 @@ async function seedLegalDocuments() {
         for (const contract of contractFiles) {
             try {
                 // Read the contract file content
-                const fullPath = path.join(process.cwd(), '..', contract.filePath);
+                const fullPath = path.join(process.cwd(), contract.filePath);
                 const content = fs.readFileSync(fullPath, 'utf8');
 
                 // Generate a unique ID

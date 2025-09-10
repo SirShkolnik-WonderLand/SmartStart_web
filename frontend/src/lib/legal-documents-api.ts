@@ -310,33 +310,31 @@ class LegalDocumentsApiService {
     // Get user document status
     async getUserDocumentStatus(): Promise<{ success: boolean; data: DocumentStatus }> {
         try {
-            // Get user ID from JWT token to ensure consistency
             const token = localStorage.getItem('auth-token');
             if (!token) {
                 throw new Error('No authentication token found');
             }
 
-            // Decode JWT token to get user ID
-            const payload = JSON.parse(atob(token.split('.')[1]));
-            const userId = payload.userId;
-            
-            if (!userId) {
-                throw new Error('User ID not found in token');
-            }
-
-            const response = await fetch(`${this.signingBaseUrl}/status/${userId}`, {
+            const response = await fetch(`${this.documentsBaseUrl}/status`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
-                }
+                },
+                credentials: 'include'
             });
 
             if (!response.ok) {
+                if (response.status === 401) {
+                    localStorage.removeItem('auth-token');
+                    localStorage.removeItem('user');
+                    throw new Error('Authentication failed');
+                }
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            return await response.json();
+            const data = await response.json();
+            return { success: true, data: data.data };
         } catch (error) {
             console.error('Error getting user document status:', error);
             return { success: false, data: null as unknown as DocumentStatus };
