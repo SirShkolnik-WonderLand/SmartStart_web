@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   // Output configuration for monorepo - use absolute path
-  outputFileTracingRoot: require('path').join(__dirname, '..'),
+  outputFileTracingRoot: require('path').join(process.cwd(), '..'),
   
   // Enable build caching for faster deployments
   experimental: {
@@ -13,8 +13,8 @@ const nextConfig: NextConfig = {
   // Enable compression
   compress: true,
   
-  // Optimize build performance
-  swcMinify: true,
+  // Optimize build performance (swcMinify is deprecated in Next.js 15+)
+  // swcMinify: true,
   
   // Enable static optimization
   trailingSlash: false,

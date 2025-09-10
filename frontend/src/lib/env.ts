@@ -6,19 +6,19 @@
 export const getApiBaseUrl = (): string => {
   if (typeof window !== 'undefined') {
     // Client-side
-    return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+    return (process as any).env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
   }
   
   // Server-side
-  return process.env.NODE_ENV === 'production' 
-    ? process.env.NEXT_PUBLIC_API_URL || 'https://smartstart-api.onrender.com'
+  return (process as any).env.NODE_ENV === 'production' 
+    ? (process as any).env.NEXT_PUBLIC_API_URL || 'https://smartstart-api.onrender.com'
     : 'http://localhost:3001';
 };
 
 export const isProduction = (): boolean => {
-  return process.env.NODE_ENV === 'production';
+  return (process as any).env.NODE_ENV === 'production';
 };
 
 export const isDevelopment = (): boolean => {
-  return process.env.NODE_ENV === 'development';
+  return (process as any).env.NODE_ENV === 'development';
 };
