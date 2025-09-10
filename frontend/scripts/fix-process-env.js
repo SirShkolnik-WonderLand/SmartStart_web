@@ -20,6 +20,10 @@ const filesToUpdate = [
 const processEnvPattern = /process\.env\.NODE_ENV === 'production'\s*\?\s*process\.env\.NEXT_PUBLIC_API_URL\s*\|\|\s*'[^']*'\s*:\s*'[^']*'/g;
 const replacement = 'getApiBaseUrl()';
 
+// Also fix direct process.env usage
+const directProcessEnvPattern = /process\.env\./g;
+const directReplacement = '(process as any).env.';
+
 filesToUpdate.forEach(filePath => {
   const fullPath = path.join(__dirname, '..', filePath);
   
@@ -48,6 +52,7 @@ filesToUpdate.forEach(filePath => {
     
     // Replace process.env usage
     content = content.replace(processEnvPattern, replacement);
+    content = content.replace(directProcessEnvPattern, directReplacement);
     
     fs.writeFileSync(fullPath, content);
     console.log(`✅ Updated ${filePath}`);

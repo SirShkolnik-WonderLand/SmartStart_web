@@ -3,7 +3,7 @@ services:
     name: smartstart-frontend
     env: node
     plan: starter
-    buildCommand: cd frontend && chmod +x build-render.sh && ./build-render.sh
+    buildCommand: cd frontend && chmod +x build-simple.sh && ./build-simple.sh
     startCommand: cd frontend && npm start
     envVars:
       - key: NODE_ENV

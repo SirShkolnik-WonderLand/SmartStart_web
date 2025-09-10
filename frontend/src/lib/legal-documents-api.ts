@@ -106,11 +106,11 @@ export interface SignatureVerification {
 }
 
 class LegalDocumentsApiService {
-    private signingBaseUrl = process.env.NODE_ENV === 'production'
+    private signingBaseUrl = (process as any).env.NODE_ENV === 'production'
         ? 'https://smartstart-api.onrender.com/api/legal-signing'
         : '/api/legal-signing';
 
-    private documentsBaseUrl = process.env.NODE_ENV === 'production'
+    private documentsBaseUrl = (process as any).env.NODE_ENV === 'production'
         ? 'https://smartstart-api.onrender.com/api/legal-documents'
         : '/api/legal-documents';
 

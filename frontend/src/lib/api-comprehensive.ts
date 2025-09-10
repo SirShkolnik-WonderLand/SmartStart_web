@@ -1,7 +1,7 @@
 // Comprehensive API service mapping all 402 backend endpoints
 // This file provides a complete interface to all backend functionality
 
-const API_BASE = process.env.NODE_ENV === 'production' 
+const API_BASE = (process as any).env.NODE_ENV === 'production' 
   ? 'https://smartstart-api.onrender.com' 
   : 'http://localhost:3001'
 

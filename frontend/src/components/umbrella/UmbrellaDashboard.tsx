@@ -64,7 +64,7 @@ export default function UmbrellaDashboard() {
       const token = localStorage.getItem('auth-token')
       
       // Use correct API base URL
-      const API_BASE = process.env.NODE_ENV === 'production' 
+      const API_BASE = (process as any).env.NODE_ENV === 'production' 
         ? 'https://smartstart-api.onrender.com' 
         : 'http://localhost:3001'
       

@@ -1,20 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Output configuration for monorepo - use absolute path
-  outputFileTracingRoot: require('path').join(process.cwd(), '..'),
-  
-  // Enable build caching for faster deployments
-  experimental: {
-    // Optimize bundle analysis
-    optimizePackageImports: ['lucide-react', '@radix-ui/react-slot', '@radix-ui/react-tabs'],
-  },
-  
   // Enable compression
   compress: true,
-  
-  // Optimize build performance (swcMinify is deprecated in Next.js 15+)
-  // swcMinify: true,
   
   // Enable static optimization
   trailingSlash: false,
