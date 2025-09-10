@@ -19,7 +19,7 @@ const requireRbacWithLegal = (requiredRbacLevel, options = {}) => {
                     success: false,
                     error: 'Insufficient RBAC permissions',
                     required: requiredRbacLevel,
-                    current: req.user ? .roles || []
+                    current: req.user?.roles || []
                 });
             }
 

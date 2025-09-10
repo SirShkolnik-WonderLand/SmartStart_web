@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { MessageSquare, Settings, CheckCircle, AlertCircle, Users, Hash, Bot } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { MessageSquare, CheckCircle, AlertCircle, Bot } from 'lucide-react';
 
 interface SlackIntegration {
   id: string;
@@ -51,9 +51,9 @@ const SlackIntegration: React.FC<SlackIntegrationProps> = ({ ventureId }) => {
 
   useEffect(() => {
     fetchIntegration();
-  }, [ventureId]);
+  }, [ventureId, fetchIntegration]);
 
-  const fetchIntegration = async () => {
+  const fetchIntegration = useCallback(async () => {
     try {
       const response = await fetch(`/api/venture-management/${ventureId}/slack`, {
         headers: {
@@ -77,7 +77,7 @@ const SlackIntegration: React.FC<SlackIntegrationProps> = ({ ventureId }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [ventureId]);
 
   const fetchMessages = async () => {
     try {

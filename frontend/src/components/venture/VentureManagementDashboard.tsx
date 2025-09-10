@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Calendar, Kanban, AlertTriangle, MessageSquare, BarChart3, Users, Target, Clock } from 'lucide-react';
 import VentureTimeline from './VentureTimeline';
 import SprintBoard from './SprintBoard';
@@ -29,9 +29,9 @@ const VentureManagementDashboard: React.FC<VentureManagementDashboardProps> = ({
 
   useEffect(() => {
     fetchVenture();
-  }, [ventureId]);
+  }, [ventureId, fetchVenture]);
 
-  const fetchVenture = async () => {
+  const fetchVenture = useCallback(async () => {
     try {
       const response = await fetch(`/api/ventures/${ventureId}`, {
         headers: {
@@ -51,7 +51,7 @@ const VentureManagementDashboard: React.FC<VentureManagementDashboardProps> = ({
     } finally {
       setLoading(false);
     }
-  };
+  }, [ventureId]);
 
   const tabs = [
     { id: 'timeline', name: 'Timeline', icon: Calendar, description: '30-day launch timeline' },

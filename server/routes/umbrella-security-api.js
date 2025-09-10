@@ -399,7 +399,7 @@ router.get('/alerts', authenticateToken, async (req, res) => {
 /**
  * Get alert message for event type
  */
-getAlertMessage(eventType) {
+function getAlertMessage(eventType) {
   const messages = {
     'UNAUTHORIZED_ACCESS_ATTEMPT': 'Unauthorized access attempt detected',
     'UNAUTHORIZED_ACTION_ATTEMPT': 'Unauthorized action attempt detected',

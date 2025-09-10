@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Plus, Target, Users, Calendar, Kanban, AlertTriangle, MessageSquare, BarChart3 } from 'lucide-react';
+import { Plus, Target, Users, Calendar, Kanban, AlertTriangle, MessageSquare } from 'lucide-react';
 import VentureManagementDashboard from '@/components/venture/VentureManagementDashboard';
 
 interface Venture {

@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { AlertTriangle, Plus, Edit, Trash2, Shield, TrendingUp, Users, Clock } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { AlertTriangle, Plus, Shield, TrendingUp, Clock } from 'lucide-react';
 
 interface Risk {
   id: string;
@@ -31,7 +31,7 @@ const RiskManagement: React.FC<RiskManagementProps> = ({ ventureId }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showCreateRisk, setShowCreateRisk] = useState(false);
-  const [editingRisk, setEditingRisk] = useState<Risk | null>(null);
+  // const [editingRisk, setEditingRisk] = useState<Risk | null>(null);
   const [newRisk, setNewRisk] = useState({
     riskType: 'TECHNICAL',
     title: '',
@@ -43,9 +43,9 @@ const RiskManagement: React.FC<RiskManagementProps> = ({ ventureId }) => {
 
   useEffect(() => {
     fetchRisks();
-  }, [ventureId]);
+  }, [ventureId, fetchRisks]);
 
-  const fetchRisks = async () => {
+  const fetchRisks = useCallback(async () => {
     try {
       const response = await fetch(`/api/venture-management/${ventureId}/risks`, {
         headers: {
@@ -65,7 +65,7 @@ const RiskManagement: React.FC<RiskManagementProps> = ({ ventureId }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [ventureId]);
 
   const createRisk = async () => {
     try {

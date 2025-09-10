@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Calendar, CheckCircle, Clock, AlertCircle, Target, Users, MessageSquare } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Calendar, CheckCircle, Clock, AlertCircle, Target, Users } from 'lucide-react';
 
 interface Milestone {
   id: string;
@@ -24,7 +24,7 @@ interface Timeline {
   progressPercentage: number;
   status: string;
   milestones: Milestone[];
-  dailyCheckins: any[];
+  dailyCheckins: unknown[];
 }
 
 interface VentureTimelineProps {
@@ -38,9 +38,9 @@ const VentureTimeline: React.FC<VentureTimelineProps> = ({ ventureId }) => {
 
   useEffect(() => {
     fetchTimeline();
-  }, [ventureId]);
+  }, [ventureId, fetchTimeline]);
 
-  const fetchTimeline = async () => {
+  const fetchTimeline = useCallback(async () => {
     try {
       const response = await fetch(`/api/venture-management/${ventureId}/timeline`, {
         headers: {
@@ -60,7 +60,7 @@ const VentureTimeline: React.FC<VentureTimelineProps> = ({ ventureId }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [ventureId]);
 
   const createTimeline = async () => {
     try {

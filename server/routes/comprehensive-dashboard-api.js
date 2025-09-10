@@ -1008,7 +1008,7 @@ async function getTotalExpenses(userId) { return 0; }
 async function calculateGrossMargin(userId) { return 0; }
 async function calculateNetMargin(userId) { return 0; }
 async function calculateContributionValue(userId) { return 0; }
-async function calculateTeamCollaboration(userId) { return 0; }
+async function calculateTeamCollaborationUser(userId) { return 0; }
 async function calculateSkillGrowth(userId) { return 0; }
 async function getUserGoals(userId) { return []; }
 async function getUserAchievements(userId) { return []; }

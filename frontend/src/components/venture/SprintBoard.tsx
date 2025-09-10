@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Plus, Clock, User, AlertCircle, CheckCircle, Play, Pause, Square } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Plus, Clock, User, AlertCircle, CheckCircle, Play, Square } from 'lucide-react';
 
 interface Task {
   id: string;
@@ -57,7 +57,7 @@ const SprintBoard: React.FC<SprintBoardProps> = ({ ventureId, sprintId }) => {
 
   useEffect(() => {
     fetchSprints();
-  }, [ventureId]);
+  }, [ventureId, fetchSprints]);
 
   useEffect(() => {
     if (sprintId && sprints.length > 0) {
@@ -68,7 +68,7 @@ const SprintBoard: React.FC<SprintBoardProps> = ({ ventureId, sprintId }) => {
     }
   }, [sprintId, sprints]);
 
-  const fetchSprints = async () => {
+  const fetchSprints = useCallback(async () => {
     try {
       const response = await fetch(`/api/venture-management/${ventureId}/sprints`, {
         headers: {
@@ -88,7 +88,7 @@ const SprintBoard: React.FC<SprintBoardProps> = ({ ventureId, sprintId }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [ventureId]);
 
   const createSprint = async () => {
     try {
@@ -172,27 +172,27 @@ const SprintBoard: React.FC<SprintBoardProps> = ({ ventureId, sprintId }) => {
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'TODO': return 'bg-gray-500';
-      case 'IN_PROGRESS': return 'bg-blue-500';
-      case 'REVIEW': return 'bg-yellow-500';
-      case 'DONE': return 'bg-green-500';
-      case 'BLOCKED': return 'bg-red-500';
-      default: return 'bg-gray-500';
-    }
-  };
+  // const getStatusColor = (status: string) => {
+  //   switch (status) {
+  //     case 'TODO': return 'bg-gray-500';
+  //     case 'IN_PROGRESS': return 'bg-blue-500';
+  //     case 'REVIEW': return 'bg-yellow-500';
+  //     case 'DONE': return 'bg-green-500';
+  //     case 'BLOCKED': return 'bg-red-500';
+  //     default: return 'bg-gray-500';
+  //   }
+  // };
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'TODO': return <Square className="w-4 h-4" />;
-      case 'IN_PROGRESS': return <Play className="w-4 h-4" />;
-      case 'REVIEW': return <Clock className="w-4 h-4" />;
-      case 'DONE': return <CheckCircle className="w-4 h-4" />;
-      case 'BLOCKED': return <AlertCircle className="w-4 h-4" />;
-      default: return <Square className="w-4 h-4" />;
-    }
-  };
+  // const getStatusIcon = (status: string) => {
+  //   switch (status) {
+  //     case 'TODO': return <Square className="w-4 h-4" />;
+  //     case 'IN_PROGRESS': return <Play className="w-4 h-4" />;
+  //     case 'REVIEW': return <Clock className="w-4 h-4" />;
+  //     case 'DONE': return <CheckCircle className="w-4 h-4" />;
+  //     case 'BLOCKED': return <AlertCircle className="w-4 h-4" />;
+  //     default: return <Square className="w-4 h-4" />;
+  //   }
+  // };
 
   const getPriorityColor = (priority: number) => {
     if (priority >= 5) return 'text-red-500';

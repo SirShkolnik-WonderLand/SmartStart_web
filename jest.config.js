@@ -46,7 +46,7 @@ module.exports = {
   restoreMocks: true,
   
   // Module name mapping for absolute imports
-  moduleNameMapping: {
+  moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/frontend/src/$1'
   },
   
