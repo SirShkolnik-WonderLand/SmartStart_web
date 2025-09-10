@@ -20,6 +20,7 @@ import {
   Globe
 } from 'lucide-react'
 import Link from 'next/link'
+import { getApiBaseUrl, getAuthToken } from '@/lib/env'
 
 interface Venture {
   id: string
@@ -54,66 +55,34 @@ export default function VenturesPage() {
   const loadVentures = async () => {
     try {
       setLoading(true)
-      
-      // Use real data from our database
-      const realVentures = [
-        {
-          id: 'admin-venture-1',
-          name: 'TechInnovate Solutions',
-          purpose: 'Developing cutting-edge technology solutions for modern businesses',
-          region: 'North America',
-          status: 'ACTIVE' as const,
-          createdAt: '2025-09-09T17:59:05.844Z',
-          teamCount: 9,
-          projectCount: 3,
-          revenue: 75000, // $50k + $25k from projects
-          growth: 15,
-          ideasCount: 2,
-          legalDocumentsCount: 1,
-          umbrellaRelationshipsCount: 1
+      const API_BASE = getApiBaseUrl()
+      const token = getAuthToken()
+      if (!token) throw new Error('Missing auth token')
+
+      const response = await fetch(`${API_BASE}/api/ventures/list/all`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         },
-        {
-          id: 'admin-venture-2',
-          name: 'GreenFuture Energy',
-          purpose: 'Sustainable energy solutions and environmental technology',
-          region: 'Global',
-          status: 'ACTIVE' as const,
-          createdAt: '2025-09-09T17:59:05.844Z',
-          teamCount: 9,
-          projectCount: 3,
-          revenue: 100000, // $75k + $25k from projects
-          growth: 22,
-          ideasCount: 1,
-          legalDocumentsCount: 1,
-          umbrellaRelationshipsCount: 1
-        },
-        {
-          id: 'admin-venture-3',
-          name: 'DataFlow Analytics',
-          purpose: 'Advanced data analytics and business intelligence platforms',
-          region: 'Europe',
-          status: 'PLANNING' as const,
-          createdAt: '2025-09-09T17:59:05.844Z',
-          teamCount: 9,
-          projectCount: 3,
-          revenue: 50000, // $100k project value
-          growth: 0,
-          ideasCount: 1,
-          legalDocumentsCount: 1,
-          umbrellaRelationshipsCount: 1
-        }
-      ]
-      
-      setVentures(realVentures)
-      
-      // Calculate real stats
-      const totalRevenue = realVentures.reduce((sum, v) => sum + v.revenue, 0)
-      const activeTeams = realVentures.reduce((sum, v) => sum + v.teamCount, 0)
-      const averageGrowth = realVentures.length > 0 ? 
-        realVentures.reduce((sum, v) => sum + v.growth, 0) / realVentures.length : 0
-      
+        credentials: 'include'
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch ventures')
+      }
+
+      const data = await response.json()
+      const venturesData: Venture[] = Array.isArray(data.data) ? data.data : (data.data?.ventures || [])
+      setVentures(venturesData)
+
+      // Calculate stats from backend data
+      const totalRevenue = venturesData.reduce((sum, v) => sum + (v.revenue || 0), 0)
+      const activeTeams = venturesData.reduce((sum, v) => sum + (v.teamCount || 0), 0)
+      const averageGrowth = venturesData.length > 0 ? 
+        venturesData.reduce((sum, v) => sum + (v.growth || 0), 0) / venturesData.length : 0
+
       setStats({
-        totalVentures: realVentures.length,
+        totalVentures: venturesData.length,
         activeTeams,
         totalRevenue,
         averageGrowth

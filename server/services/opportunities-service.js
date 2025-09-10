@@ -54,14 +54,14 @@ class OpportunitiesService {
                         select: {
                             id: true,
                             name: true,
-                            status: true
+                            createdAt: true
                         }
                     },
                     project: {
                         select: {
                             id: true,
                             name: true,
-                            status: true
+                            createdAt: true
                         }
                     }
                 }
@@ -215,16 +215,16 @@ class OpportunitiesService {
                             select: {
                                 id: true,
                                 name: true,
-                                status: true
+                                createdAt: true
                             }
                         },
-                        project: {
-                            select: {
-                                id: true,
-                                name: true,
-                                status: true
-                            }
-                        },
+                    project: {
+                        select: {
+                            id: true,
+                            name: true,
+                            createdAt: true
+                        }
+                    },
                         _count: {
                             select: {
                                 applications: true,
@@ -278,14 +278,14 @@ class OpportunitiesService {
                         select: {
                             id: true,
                             name: true,
-                            status: true
+                            createdAt: true
                         }
                     },
                     project: {
                         select: {
                             id: true,
                             name: true,
-                            status: true
+                            createdAt: true
                         }
                     },
                     applications: {
@@ -319,7 +319,7 @@ class OpportunitiesService {
                                     id: true,
                                     title: true,
                                     type: true,
-                                    status: true
+                                    createdAt: true
                                 }
                             }
                         }
@@ -398,14 +398,14 @@ class OpportunitiesService {
                         select: {
                             id: true,
                             name: true,
-                            status: true
+                            createdAt: true
                         }
                     },
                     project: {
                         select: {
                             id: true,
                             name: true,
-                            status: true
+                            createdAt: true
                         }
                     }
                 }

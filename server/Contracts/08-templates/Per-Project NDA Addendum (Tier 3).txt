@@ -1,0 +1,8 @@
+PER-PROJECT NDA ADDENDUM (TIER 3)
+
+This addendum applies Tier 3 (highly restricted) confidentiality and handling requirements.
+
+Key provisions:
+- Strict distribution; designated approvers only
+- Encrypted storage and transport; access logging required
+- Short retention; mandatory periodic review and destruction

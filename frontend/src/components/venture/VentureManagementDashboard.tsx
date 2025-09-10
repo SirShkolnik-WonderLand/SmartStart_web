@@ -6,6 +6,7 @@ import VentureTimeline from './VentureTimeline';
 import SprintBoard from './SprintBoard';
 import RiskManagement from './RiskManagement';
 import SlackIntegration from './SlackIntegration';
+import { getApiBaseUrl, getAuthToken } from '@/lib/env';
 
 interface Venture {
   id: string;
@@ -29,11 +30,18 @@ const VentureManagementDashboard: React.FC<VentureManagementDashboardProps> = ({
 
   const fetchVenture = useCallback(async () => {
     try {
-      const response = await fetch(`/api/ventures/${ventureId}`, {
+      const API_BASE = getApiBaseUrl();
+      const token = getAuthToken();
+      if (!token) {
+        throw new Error('Missing auth token');
+      }
+
+      const response = await fetch(`${API_BASE}/api/ventures/${ventureId}`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
-        }
+        },
+        credentials: 'include'
       });
 
       if (!response.ok) {

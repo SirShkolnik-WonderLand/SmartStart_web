@@ -5,7 +5,7 @@ import { Target, Building, Globe, Filter, Clock, Users, Star, Plus, Search, MapP
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { getApiBaseUrl } from '@/lib/env'
+import { getApiBaseUrl, getAuthToken } from '@/lib/env'
 
 interface Opportunity {
   id: string
@@ -74,235 +74,38 @@ export default function OpportunitiesPage() {
       
       const response = await fetch(`${API_BASE}/api/opportunities`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Authorization': `Bearer ${getAuthToken() || ''}`,
           'Content-Type': 'application/json'
-        }
+        },
+        credentials: 'include'
       })
       
       if (response.ok) {
         const data = await response.json()
         if (data.success) {
           setOpportunities(data.data.opportunities || [])
-          
-          // Calculate stats
           const totalOpportunities = data.data.opportunities?.length || 0
           const activeOpportunities = data.data.opportunities?.filter((opp: Opportunity) => opp.status === 'ACTIVE').length || 0
           const totalApplications = data.data.opportunities?.reduce((sum: number, opp: Opportunity) => sum + (opp._count?.applications || 0), 0) || 0
           const totalMatches = data.data.opportunities?.reduce((sum: number, opp: Opportunity) => sum + (opp._count?.matches || 0), 0) || 0
-          
-          setStats({
-            totalOpportunities,
-            activeOpportunities,
-            totalApplications,
-            totalMatches
-          })
+          setStats({ totalOpportunities, activeOpportunities, totalApplications, totalMatches })
+        }
+      } else if (response.status === 401) {
+        const publicResp = await fetch(`${API_BASE}/api/opportunities/public`, { credentials: 'include' })
+        if (publicResp.ok) {
+          const data = await publicResp.json()
+          setOpportunities(data.data?.opportunities || [])
+          const totalOpportunities = (data.data?.opportunities || []).length
+          const activeOpportunities = (data.data?.opportunities || []).filter((opp: Opportunity) => opp.status === 'ACTIVE').length
+          const totalApplications = (data.data?.opportunities || []).reduce((sum: number, opp: Opportunity) => sum + (opp._count?.applications || 0), 0)
+          const totalMatches = (data.data?.opportunities || []).reduce((sum: number, opp: Opportunity) => sum + (opp._count?.matches || 0), 0)
+          setStats({ totalOpportunities, activeOpportunities, totalApplications, totalMatches })
+        } else {
+          console.error('Failed to load opportunities (public)')
         }
       } else {
         console.error('Failed to load opportunities')
-        // Set real data from database for demonstration
-        setOpportunities([
-          {
-            id: 'opp-1',
-            title: 'Join our AI startup as CTO',
-            description: 'We are looking for a technical co-founder to join our AI startup. You will lead the technical vision and build our core AI platform.',
-            type: 'VENTURE_COLLABORATION',
-            status: 'ACTIVE',
-            collaborationType: 'FULL_TIME',
-            requiredSkills: ['AI/ML', 'Python', 'TensorFlow', 'Leadership'],
-            preferredSkills: ['Startup experience', 'Team management'],
-            timeCommitment: 'Full-time',
-            duration: 'Long-term',
-            location: 'San Francisco, CA',
-            isRemote: true,
-            compensationType: 'EQUITY_ONLY',
-            equityOffered: 15.0,
-            currency: 'USD',
-            visibilityLevel: 'PUBLIC',
-            tags: ['AI', 'Startup', 'CTO', 'Leadership'],
-            createdAt: '2025-09-09T17:59:05.844Z',
-            creator: {
-              id: 'cmfcieuff0005ik2d7pfbm99s',
-              name: 'Test Admin',
-              email: 'test@test.com',
-              level: 'WISE_OWL'
-            },
-            _count: {
-              applications: 3,
-              matches: 8
-            }
-          },
-          {
-            id: 'opp-2',
-            title: 'Mentor me in React development',
-            description: 'I am looking for a React mentor to help me improve my skills and build better applications. In exchange, I can teach you about design principles.',
-            type: 'SKILL_SHARING',
-            status: 'ACTIVE',
-            collaborationType: 'PART_TIME',
-            requiredSkills: ['React', 'JavaScript', 'Mentoring'],
-            preferredSkills: ['Design', 'UI/UX'],
-            timeCommitment: 'Part-time',
-            duration: 'Short-term',
-            location: 'Remote',
-            isRemote: true,
-            compensationType: 'SKILL_EXCHANGE',
-            currency: 'USD',
-            visibilityLevel: 'PUBLIC',
-            tags: ['React', 'Mentoring', 'Learning'],
-            createdAt: '2025-09-09T17:59:05.844Z',
-            creator: {
-              id: 'cmfcieuff0005ik2d7pfbm99s',
-              name: 'Test Admin',
-              email: 'test@test.com',
-              level: 'WISE_OWL'
-            },
-            _count: {
-              applications: 2,
-              matches: 5
-            }
-          },
-          {
-            id: 'opp-3',
-            title: 'Legal counsel for fintech startup',
-            description: 'We need a legal expert to help us navigate fintech regulations and create compliance frameworks for our payment platform.',
-            type: 'LEGAL_PARTNERSHIP',
-            status: 'ACTIVE',
-            collaborationType: 'CONSULTING',
-            requiredSkills: ['Fintech law', 'Compliance', 'Regulatory'],
-            preferredSkills: ['Payment systems', 'Blockchain'],
-            timeCommitment: 'Flexible',
-            duration: 'Medium-term',
-            location: 'New York, NY',
-            isRemote: true,
-            compensationType: 'HOURLY_RATE',
-            compensationValue: 150.0,
-            currency: 'USD',
-            visibilityLevel: 'SUBSCRIBER_ONLY',
-            tags: ['Legal', 'Fintech', 'Compliance'],
-            createdAt: '2025-09-09T17:59:05.844Z',
-            creator: {
-              id: 'cmfcieuff0005ik2d7pfbm99s',
-              name: 'Test Admin',
-              email: 'test@test.com',
-              level: 'WISE_OWL'
-            },
-            _count: {
-              applications: 1,
-              matches: 2
-            }
-          },
-          {
-            id: 'opp-4',
-            title: 'Join TechInnovate Solutions as Co-Founder',
-            description: 'We are looking for a co-founder to join TechInnovate Solutions. Developing cutting-edge technology solutions for modern businesses',
-            type: 'VENTURE_COLLABORATION',
-            status: 'ACTIVE',
-            collaborationType: 'FULL_TIME',
-            requiredSkills: ['Leadership', 'Entrepreneurship'],
-            preferredSkills: ['Startup experience', 'Industry knowledge'],
-            timeCommitment: 'Full-time',
-            duration: 'Long-term',
-            location: 'US',
-            isRemote: true,
-            compensationType: 'EQUITY_ONLY',
-            equityOffered: 10.0,
-            currency: 'USD',
-            visibilityLevel: 'PUBLIC',
-            tags: ['Co-founder', 'Startup', 'US', 'Equity'],
-            createdAt: '2025-09-09T18:30:00.000Z',
-            creator: {
-              id: 'cmfcieuff0005ik2d7pfbm99s',
-              name: 'Test Admin',
-              email: 'test@test.com',
-              level: 'WISE_OWL'
-            },
-            venture: {
-              id: 'admin-venture-1',
-              name: 'TechInnovate Solutions',
-              status: 'ACTIVE'
-            },
-            _count: {
-              applications: 1,
-              matches: 3
-            }
-          },
-          {
-            id: 'opp-5',
-            title: 'Technical Team for GreenFuture Energy',
-            description: 'We need technical talent to help build GreenFuture Energy. Looking for developers, designers, and technical experts.',
-            type: 'VENTURE_COLLABORATION',
-            status: 'ACTIVE',
-            collaborationType: 'PART_TIME',
-            requiredSkills: ['Software Development', 'Product Design'],
-            preferredSkills: ['React', 'Node.js', 'UI/UX'],
-            timeCommitment: 'Part-time',
-            duration: 'Medium-term',
-            location: 'US',
-            isRemote: true,
-            compensationType: 'REVENUE_SHARING',
-            currency: 'USD',
-            visibilityLevel: 'PUBLIC',
-            tags: ['Technical', 'Development', 'Team', 'US'],
-            createdAt: '2025-09-09T18:30:00.000Z',
-            creator: {
-              id: 'cmfcieuff0005ik2d7pfbm99s',
-              name: 'Test Admin',
-              email: 'test@test.com',
-              level: 'WISE_OWL'
-            },
-            venture: {
-              id: 'admin-venture-2',
-              name: 'GreenFuture Energy',
-              status: 'ACTIVE'
-            },
-            _count: {
-              applications: 2,
-              matches: 4
-            }
-          },
-          {
-            id: 'opp-6',
-            title: 'Advisory Board for DataFlow Analytics',
-            description: 'We are seeking experienced advisors to guide DataFlow Analytics through growth and development.',
-            type: 'MENTORSHIP',
-            status: 'ACTIVE',
-            collaborationType: 'ADVISORY',
-            requiredSkills: ['Industry Experience', 'Strategic Thinking', 'Mentoring'],
-            preferredSkills: ['Leadership', 'Network', 'Domain Expertise'],
-            timeCommitment: 'Flexible',
-            duration: 'Long-term',
-            location: 'Remote',
-            isRemote: true,
-            compensationType: 'EQUITY_ONLY',
-            equityOffered: 1.0,
-            currency: 'USD',
-            visibilityLevel: 'SUBSCRIBER_ONLY',
-            tags: ['Advisory', 'Mentorship', 'Strategy', 'Leadership'],
-            createdAt: '2025-09-09T18:30:00.000Z',
-            creator: {
-              id: 'cmfcieuff0005ik2d7pfbm99s',
-              name: 'Test Admin',
-              email: 'test@test.com',
-              level: 'WISE_OWL'
-            },
-            venture: {
-              id: 'admin-venture-3',
-              name: 'DataFlow Analytics',
-              status: 'PLANNING'
-            },
-            _count: {
-              applications: 0,
-              matches: 1
-            }
-          }
-        ])
-        
-        setStats({
-          totalOpportunities: 6,
-          activeOpportunities: 6,
-          totalApplications: 8,
-          totalMatches: 23
-        })
-        }
+      }
       } catch (error) {
         console.error('Error loading opportunities data:', error)
       } finally {

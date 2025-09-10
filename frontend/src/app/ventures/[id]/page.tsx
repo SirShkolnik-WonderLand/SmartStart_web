@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { getApiBaseUrl, getAuthToken } from '@/lib/env'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { 
@@ -76,76 +77,29 @@ export default function VentureDetailsPage() {
   const loadVentureDetails = async (ventureId: string) => {
     try {
       setLoading(true)
-      
-      // Mock data based on our database
-      const ventureData: Venture = {
-        id: ventureId,
-        name: ventureId === 'admin-venture-1' ? 'TechInnovate Solutions' : 
-              ventureId === 'admin-venture-2' ? 'GreenFuture Energy' : 'DataFlow Analytics',
-        purpose: ventureId === 'admin-venture-1' ? 'Developing cutting-edge technology solutions for modern businesses' :
-                 ventureId === 'admin-venture-2' ? 'Sustainable energy solutions and environmental technology' :
-                 'Advanced data analytics and business intelligence platforms',
-        region: ventureId === 'admin-venture-1' ? 'North America' :
-                ventureId === 'admin-venture-2' ? 'Global' : 'Europe',
-        status: ventureId === 'admin-venture-3' ? 'PLANNING' : 'ACTIVE',
-        createdAt: '2025-09-09T17:59:05.844Z',
-        teamCount: 9,
-        projectCount: 3,
-        revenue: ventureId === 'admin-venture-1' ? 75000 :
-                 ventureId === 'admin-venture-2' ? 100000 : 50000,
-        growth: ventureId === 'admin-venture-1' ? 15 :
-                ventureId === 'admin-venture-2' ? 22 : 0,
-        ideasCount: ventureId === 'admin-venture-1' ? 2 : 1,
-        legalDocumentsCount: 1,
-        umbrellaRelationshipsCount: 1
+      const API_BASE = getApiBaseUrl()
+      const token = getAuthToken()
+      if (!token) throw new Error('Missing auth token')
+
+      const response = await fetch(`${API_BASE}/api/ventures/${ventureId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include'
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch venture')
       }
-      
+
+      const data = await response.json()
+      const ventureData: Venture = data.data
       setVenture(ventureData)
-      
-      // Mock projects data
-      const projectsData: Project[] = [
-        {
-          id: 'project-1',
-          name: ventureId === 'admin-venture-1' ? 'AI-Powered Analytics Platform' :
-                ventureId === 'admin-venture-2' ? 'Blockchain Supply Chain' : 'Green Energy Solutions',
-          summary: 'Revolutionary platform using advanced technology',
-          totalValue: ventureId === 'admin-venture-1' ? 50000 :
-                      ventureId === 'admin-venture-2' ? 75000 : 100000,
-          completionRate: ventureId === 'admin-venture-1' ? 75 :
-                          ventureId === 'admin-venture-2' ? 60 : 45,
-          status: 'ACTIVE',
-          createdAt: '2025-09-09T17:59:05.844Z'
-        }
-      ]
-      
-      setProjects(projectsData)
-      
-      // Mock team members data
-      const teamData: TeamMember[] = [
-        {
-          id: 'member-1',
-          name: 'Test Admin',
-          role: 'LEAD',
-          joinedAt: '2025-09-09T17:59:05.844Z',
-          contributions: 25
-        },
-        {
-          id: 'member-2',
-          name: 'Test User',
-          role: 'SENIOR',
-          joinedAt: '2025-09-09T17:59:05.844Z',
-          contributions: 18
-        },
-        {
-          id: 'member-3',
-          name: 'test@test.com',
-          role: 'MEMBER',
-          joinedAt: '2025-09-09T17:59:05.844Z',
-          contributions: 12
-        }
-      ]
-      
-      setTeamMembers(teamData)
+
+      // Optional: fetch related projects and team members if backend supports
+      setProjects([])
+      setTeamMembers([])
       
     } catch (error) {
       console.error('Error loading venture details:', error)

@@ -59,3 +59,4 @@ process.env.NEXT_PRIVATE_STANDALONE = 'true';
 console.log('✅ Set build optimization environment variables');
 
 console.log('🎉 Build optimization complete!');
+

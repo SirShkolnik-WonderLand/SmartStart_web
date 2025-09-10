@@ -22,3 +22,13 @@ export const isProduction = (): boolean => {
 export const isDevelopment = (): boolean => {
   return (process as any).env.NODE_ENV === 'development';
 };
+
+// Standardized auth token access for client-only contexts
+export const getAuthToken = (): string | null => {
+  if (typeof window === 'undefined') return null;
+  // Prefer a single canonical key; support legacy keys during transition
+  const primary = localStorage.getItem('auth-token');
+  if (primary) return primary;
+  const legacy = localStorage.getItem('token');
+  return legacy;
+};

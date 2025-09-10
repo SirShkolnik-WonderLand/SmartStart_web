@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Target, Users, Calendar, Kanban, AlertTriangle, MessageSquare } from 'lucide-react';
 import VentureManagementDashboard from '@/components/venture/VentureManagementDashboard';
+import { getApiBaseUrl, getAuthToken } from '@/lib/env';
 
 interface Venture {
   id: string;
@@ -26,11 +27,16 @@ const VentureManagementPage: React.FC = () => {
 
   const fetchVentures = async () => {
     try {
-      const response = await fetch('/api/ventures', {
+      const API_BASE = getApiBaseUrl();
+      const token = getAuthToken();
+      if (!token) throw new Error('Missing auth token');
+
+      const response = await fetch(`${API_BASE}/api/ventures/list/all`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
-        }
+        },
+        credentials: 'include'
       });
 
       if (!response.ok) {
@@ -38,11 +44,13 @@ const VentureManagementPage: React.FC = () => {
       }
 
       const data = await response.json();
-      setVentures(data.data);
+      // Expecting { success, data: ventures[] } or { success, data: { ventures: [] } }
+      const venturesData = Array.isArray(data.data) ? data.data : (data.data?.ventures || []);
+      setVentures(venturesData);
       
       // Select first venture by default
-      if (data.data.length > 0) {
-        setSelectedVenture(data.data[0].id);
+      if (venturesData.length > 0) {
+        setSelectedVenture(venturesData[0].id);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');

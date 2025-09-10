@@ -9,12 +9,14 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
 const app = express();
+const metrics = require('./middleware/metrics');
 const prisma = new PrismaClient();
 const PORT = process.env.API_PORT || 3001;
 
 // Security middleware
 app.use(helmet());
 app.use(compression());
+app.use(metrics);
 
 // CORS configuration
 app.use(cors({
