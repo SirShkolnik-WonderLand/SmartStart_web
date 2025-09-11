@@ -257,7 +257,7 @@ router.get('/stats/:userId', authenticateToken, async(req, res) => {
 
 // WebSocket connection handler
 function handleWebSocketConnection(ws, req) {
-    const userId = req.user ? .id;
+    const userId = req.user?.id;
 
     if (!userId) {
         ws.close(1008, 'Authentication required');

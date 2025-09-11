@@ -448,7 +448,7 @@ async function calculateRevenueShares(venture, totalRevenue, calculationPeriod, 
     }
 
     // Get umbrella network revenue sharing rules
-    const rules = venture.umbrellaNetwork ? .revenueSharingRules || [];
+    const rules = venture.umbrellaNetwork?.revenueSharingRules || [];
 
     // Default sharing rules if none exist
     const defaultRules = [

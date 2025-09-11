@@ -11,9 +11,7 @@ setupSecurity(app);
 
 // CORS configuration
 app.use(cors({
-    origin: process.env.NODE_ENV === 'production' ?
-        ['https://smartstart-frontend.onrender.com', 'https://smartstart-platform.onrender.com'] :
-        ['http://localhost:3000'],
+    origin: process.env.NODE_ENV === 'production' ? ['https://smartstart-frontend.onrender.com', 'https://smartstart-platform.onrender.com'] : ['http://localhost:3000'],
     credentials: true
 }));
 
