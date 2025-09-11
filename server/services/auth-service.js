@@ -340,6 +340,43 @@ class AuthService {
     }
 
     /**
+     * Set user password (for onboarding)
+     * @param {string} userId - User ID
+     * @param {string} password - New password
+     * @returns {Promise<object>} Set password result
+     */
+    async setPassword(userId, password) {
+        try {
+            // Hash password
+            const hashedPassword = await bcrypt.hash(password, 12);
+
+            // Update user password in User table
+            await prisma.user.update({
+                where: { id: userId },
+                data: { password: hashedPassword }
+            });
+
+            // Update account password in Account table
+            await prisma.account.updateMany({
+                where: { userId: userId },
+                data: { password: hashedPassword }
+            });
+
+            return {
+                success: true,
+                message: 'Password set successfully'
+            };
+        } catch (error) {
+            console.error('Set password error:', error);
+            return {
+                success: false,
+                message: 'Failed to set password',
+                code: 'SET_PASSWORD_ERROR'
+            };
+        }
+    }
+
+    /**
      * Register a new user
      * @param {object} userData - User registration data
      * @param {object} deviceInfo - Device information

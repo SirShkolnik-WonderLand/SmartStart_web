@@ -53,6 +53,11 @@ export default function OnboardingFlow({ userId, onComplete, initialStep }: Onbo
     website: ''
   })
 
+  const [passwordData, setPasswordData] = useState({
+    password: '',
+    confirmPassword: ''
+  })
+
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null)
   const [paymentData, setPaymentData] = useState({
     cardNumber: '',
@@ -360,6 +365,7 @@ export default function OnboardingFlow({ userId, onComplete, initialStep }: Onbo
       if (currentStep < steps.length - 1) {
         // Update journey progress for current step
         const stepActions = [
+          'PASSWORD_SET',
           'PROFILE_COMPLETED',
           'LEGAL_PACK_SIGNED',
           'SUBSCRIPTION_ACTIVATED',
@@ -368,6 +374,19 @@ export default function OnboardingFlow({ userId, onComplete, initialStep }: Onbo
         
         if (stepActions[currentStep]) {
           console.log(`📝 Updating journey progress for step ${currentStep}: ${stepActions[currentStep]}`)
+          
+          // Handle password setup step
+          if (currentStep === 0 && stepActions[currentStep] === 'PASSWORD_SET') {
+            console.log('🔐 Setting user password...')
+            const passwordResult = await apiService.setUserPassword(passwordData.password)
+            if (!passwordResult.success) {
+              console.error('❌ Failed to set password:', passwordResult.error)
+              setError('Failed to set password. Please try again.')
+              return
+            }
+            console.log('✅ Password set successfully')
+          }
+          
           const progressResult = await updateJourneyProgress(stepActions[currentStep], {
             step: currentStep,
             completedAt: new Date().toISOString(),
@@ -571,6 +590,57 @@ export default function OnboardingFlow({ userId, onComplete, initialStep }: Onbo
   }
 
   const steps: OnboardingStep[] = [
+    {
+      id: 'password',
+      title: 'Set Your Password',
+      description: 'Create a secure password for your account',
+      icon: <Shield className="w-6 h-6" />,
+      isCompleted: false, // Will be completed when password is set
+      isRequired: true,
+      component: (
+        <div className="space-y-6">
+          <div className="text-center mb-6">
+            <Shield className="w-12 h-12 text-primary mx-auto mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Secure Your Account</h3>
+            <p className="text-muted-foreground">Create a strong password to protect your SmartStart account</p>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">Password</label>
+              <input
+                type="password"
+                value={passwordData.password}
+                onChange={(e) => setPasswordData({...passwordData, password: e.target.value})}
+                className="w-full px-3 py-2 border border-glass-border rounded-md bg-glass-surface text-foreground placeholder:text-foreground-muted focus:outline-none focus:ring-2 focus:ring-primary"
+                placeholder="Enter a strong password"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium mb-2">Confirm Password</label>
+              <input
+                type="password"
+                value={passwordData.confirmPassword}
+                onChange={(e) => setPasswordData({...passwordData, confirmPassword: e.target.value})}
+                className="w-full px-3 py-2 border border-glass-border rounded-md bg-glass-surface text-foreground placeholder:text-foreground-muted focus:outline-none focus:ring-2 focus:ring-primary"
+                placeholder="Confirm your password"
+              />
+            </div>
+          </div>
+
+          <div className="bg-blue-900/10 text-blue-300 border border-blue-700/40 rounded-md p-3 text-sm">
+            <strong>Password Requirements:</strong>
+            <ul className="mt-2 space-y-1">
+              <li>• At least 8 characters long</li>
+              <li>• Contains uppercase and lowercase letters</li>
+              <li>• Contains at least one number</li>
+              <li>• Contains at least one special character</li>
+            </ul>
+          </div>
+        </div>
+      )
+    },
     {
       id: 'profile',
       title: 'Complete Your Profile',
@@ -973,13 +1043,22 @@ export default function OnboardingFlow({ userId, onComplete, initialStep }: Onbo
   const currentStepData = steps[currentStep]
   const isStepValid = () => {
     switch (currentStep) {
-      case 0: // Profile
+      case 0: // Password
+        return passwordData.password && 
+               passwordData.confirmPassword && 
+               passwordData.password === passwordData.confirmPassword &&
+               passwordData.password.length >= 8 &&
+               /[A-Z]/.test(passwordData.password) &&
+               /[a-z]/.test(passwordData.password) &&
+               /\d/.test(passwordData.password) &&
+               /[!@#$%^&*(),.?":{}|<>]/.test(passwordData.password)
+      case 1: // Profile
         return profileData.firstName && profileData.lastName && profileData.bio
-      case 1: // Legal
+      case 2: // Legal
         return legalAgreements.confidentiality && legalAgreements.equity && legalAgreements.partnership
-      case 2: // Subscription
+      case 3: // Subscription
         return selectedPlan && paymentData.cardNumber && paymentData.expiryDate && paymentData.cvv && paymentData.name
-      case 3: // Orientation
+      case 4: // Orientation
         return true // Optional step
       default:
         return false

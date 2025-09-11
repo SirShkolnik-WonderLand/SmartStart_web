@@ -734,6 +734,19 @@ class ComprehensiveApiService {
     }
   }
 
+  async setUserPassword(password: string): Promise<ApiResponse> {
+    try {
+      const response = await this.fetchWithAuth('/api/auth/set-password', {
+        method: 'POST',
+        body: JSON.stringify({ password })
+      })
+      return response
+    } catch (error) {
+      console.error('Error setting user password:', error)
+      return { success: false, error: error.message }
+    }
+  }
+
   async getUsers(): Promise<ApiResponse<User[]>> {
     try {
       const response = await this.fetchWithAuth<{ users: User[] }>('/api/users')

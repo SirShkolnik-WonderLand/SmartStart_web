@@ -165,6 +165,53 @@ router.get('/me', authenticateToken, async (req, res) => {
 });
 
 /**
+ * POST /api/auth/set-password
+ * Set user password (for onboarding)
+ */
+router.post('/set-password', authenticateToken, async (req, res) => {
+  try {
+    const { password } = req.body;
+    const userId = req.user.id;
+
+    if (!password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password is required',
+        code: 'MISSING_PASSWORD'
+      });
+    }
+
+    // Validate password strength
+    if (password.length < 8) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password must be at least 8 characters long',
+        code: 'WEAK_PASSWORD'
+      });
+    }
+
+    const result = await authService.setPassword(userId, password);
+
+    if (!result.success) {
+      return res.status(400).json(result);
+    }
+
+    res.json({
+      success: true,
+      message: 'Password set successfully'
+    });
+
+  } catch (error) {
+    console.error('Set password error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to set password',
+      code: 'SET_PASSWORD_ERROR'
+    });
+  }
+});
+
+/**
  * POST /api/auth/refresh
  * Refresh JWT token
  */
