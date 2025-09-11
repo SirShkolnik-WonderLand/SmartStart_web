@@ -20,7 +20,8 @@ import {
   Moon,
   Network,
   Users,
-  Trophy
+  Trophy,
+  Rocket
 } from 'lucide-react'
 import { comprehensiveApiService as apiService, User } from '@/lib/api-comprehensive'
 import { useThemeStore } from '@/store/useThemeStore'
