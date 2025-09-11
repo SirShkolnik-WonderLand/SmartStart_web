@@ -109,9 +109,9 @@ app.use('/api/team-invitations', teamInvitationsApiRoutes);
 const gamificationEnhancedApiRoutes = require('./routes/gamification-enhanced-api');
 app.use('/api/gamification-enhanced', gamificationEnhancedApiRoutes);
 
-// Comment out others temporarily
-// const revenueSharingApiRoutes = require('./routes/revenue-sharing-api');
-// app.use('/api/revenue-sharing', revenueSharingApiRoutes);
+// Testing revenue sharing route
+const revenueSharingApiRoutes = require('./routes/revenue-sharing-api');
+app.use('/api/revenue-sharing', revenueSharingApiRoutes);
 
 // const realtimeNotificationsApiRoutes = require('./routes/realtime-notifications-api');
 // app.use('/api/notifications', realtimeNotificationsApiRoutes);
