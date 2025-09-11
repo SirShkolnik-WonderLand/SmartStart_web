@@ -2349,6 +2349,305 @@ class ComprehensiveApiService {
       return { success: false, error: 'Failed to fetch opportunity applications' }
     }
   }
+
+  // ============================================================================
+  // ENHANCED LEGAL PROTECTIONS API METHODS
+  // ============================================================================
+
+  async getLegalTemplates(filters?: {
+    type?: string
+    rbacLevel?: string
+    jurisdiction?: string
+  }): Promise<ApiResponse<LegalTemplate[]>> {
+    try {
+      const params = new URLSearchParams()
+      if (filters?.type) params.append('type', filters.type)
+      if (filters?.rbacLevel) params.append('rbacLevel', filters.rbacLevel)
+      if (filters?.jurisdiction) params.append('jurisdiction', filters.jurisdiction)
+
+      const response = await this.fetchWithAuth<LegalTemplate[]>(`/api/legal-protections/templates?${params}`)
+      return response
+    } catch (error) {
+      console.error('Error getting legal templates:', error)
+      return { success: false, error: 'Failed to get legal templates' }
+    }
+  }
+
+  async getUserCompliance(userId: string, rbacLevel: string): Promise<ApiResponse<ComplianceStatus>> {
+    try {
+      const response = await this.fetchWithAuth<ComplianceStatus>(`/api/legal-protections/compliance/${userId}/${rbacLevel}`)
+      return response
+    } catch (error) {
+      console.error('Error getting user compliance:', error)
+      return { success: false, error: 'Failed to get user compliance' }
+    }
+  }
+
+  async getIPTheftDetections(filters?: {
+    userId?: string
+    ventureId?: string
+    projectId?: string
+    severity?: string
+    status?: string
+  }): Promise<ApiResponse<IPTheftDetection[]>> {
+    try {
+      const params = new URLSearchParams()
+      if (filters?.userId) params.append('userId', filters.userId)
+      if (filters?.ventureId) params.append('ventureId', filters.ventureId)
+      if (filters?.projectId) params.append('projectId', filters.projectId)
+      if (filters?.severity) params.append('severity', filters.severity)
+      if (filters?.status) params.append('status', filters.status)
+
+      const response = await this.fetchWithAuth<IPTheftDetection[]>(`/api/legal-protections/ip-theft/detections?${params}`)
+      return response
+    } catch (error) {
+      console.error('Error getting IP theft detections:', error)
+      return { success: false, error: 'Failed to get IP theft detections' }
+    }
+  }
+
+  async getRevenueViolations(filters?: {
+    userId?: string
+    ventureId?: string
+    projectId?: string
+    status?: string
+  }): Promise<ApiResponse<RevenueViolation[]>> {
+    try {
+      const params = new URLSearchParams()
+      if (filters?.userId) params.append('userId', filters.userId)
+      if (filters?.ventureId) params.append('ventureId', filters.ventureId)
+      if (filters?.projectId) params.append('projectId', filters.projectId)
+      if (filters?.status) params.append('status', filters.status)
+
+      const response = await this.fetchWithAuth<RevenueViolation[]>(`/api/legal-protections/revenue-violations?${params}`)
+      return response
+    } catch (error) {
+      console.error('Error getting revenue violations:', error)
+      return { success: false, error: 'Failed to get revenue violations' }
+    }
+  }
+
+  async getLegalStatus(userId: string): Promise<ApiResponse<LegalStatus>> {
+    try {
+      const response = await this.fetchWithAuth<LegalStatus>(`/api/legal-protections/status/${userId}`)
+      return response
+    } catch (error) {
+      console.error('Error getting legal status:', error)
+      return { success: false, error: 'Failed to get legal status' }
+    }
+  }
+
+  async detectIPTheft(detectionData: {
+    userId: string
+    ventureId?: string
+    projectId?: string
+    detectionType: string
+    evidence: any
+    severity?: string
+  }): Promise<ApiResponse<IPTheftDetection>> {
+    try {
+      const response = await this.fetchWithAuth<IPTheftDetection>('/api/legal-protections/ip-theft/detect', {
+        method: 'POST',
+        body: JSON.stringify(detectionData)
+      })
+      return response
+    } catch (error) {
+      console.error('Error detecting IP theft:', error)
+      return { success: false, error: 'Failed to detect IP theft' }
+    }
+  }
+
+  async detectRevenueViolation(violationData: {
+    userId: string
+    ventureId: string
+    projectId?: string
+    violationType: string
+    amount: number
+    evidence: any
+  }): Promise<ApiResponse<RevenueViolation>> {
+    try {
+      const response = await this.fetchWithAuth<RevenueViolation>('/api/legal-protections/revenue-violations/detect', {
+        method: 'POST',
+        body: JSON.stringify(violationData)
+      })
+      return response
+    } catch (error) {
+      console.error('Error detecting revenue violation:', error)
+      return { success: false, error: 'Failed to detect revenue violation' }
+    }
+  }
+
+  async initiateEnforcement(violationId: string, violationType: string): Promise<ApiResponse<EnforcementAction[]>> {
+    try {
+      const response = await this.fetchWithAuth<EnforcementAction[]>('/api/legal-protections/enforcement/initiate', {
+        method: 'POST',
+        body: JSON.stringify({ violationId, violationType })
+      })
+      return response
+    } catch (error) {
+      console.error('Error initiating enforcement:', error)
+      return { success: false, error: 'Failed to initiate enforcement' }
+    }
+  }
+
+  async executeEnforcementAction(actionId: string, result: string, executedAt?: string): Promise<ApiResponse<EnforcementAction>> {
+    try {
+      const response = await this.fetchWithAuth<EnforcementAction>(`/api/legal-protections/enforcement/${actionId}/execute`, {
+        method: 'PUT',
+        body: JSON.stringify({ result, executedAt })
+      })
+      return response
+    } catch (error) {
+      console.error('Error executing enforcement action:', error)
+      return { success: false, error: 'Failed to execute enforcement action' }
+    }
+  }
+
+  async createDigitalEvidence(evidenceData: {
+    caseId: string
+    evidenceType: string
+    evidenceData: any
+    blockchainTx?: string
+  }): Promise<ApiResponse<DigitalEvidence>> {
+    try {
+      const response = await this.fetchWithAuth<DigitalEvidence>('/api/legal-protections/evidence', {
+        method: 'POST',
+        body: JSON.stringify(evidenceData)
+      })
+      return response
+    } catch (error) {
+      console.error('Error creating digital evidence:', error)
+      return { success: false, error: 'Failed to create digital evidence' }
+    }
+  }
+
+  async getDigitalEvidence(caseId: string): Promise<ApiResponse<DigitalEvidence[]>> {
+    try {
+      const response = await this.fetchWithAuth<DigitalEvidence[]>(`/api/legal-protections/evidence/${caseId}`)
+      return response
+    } catch (error) {
+      console.error('Error getting digital evidence:', error)
+      return { success: false, error: 'Failed to get digital evidence' }
+    }
+  }
+}
+
+// Type definitions for legal protections
+export interface LegalTemplate {
+  id: string
+  name: string
+  type: string
+  version: string
+  content: string
+  rbacLevel: string
+  isRequired: boolean
+  jurisdiction: string
+  enforcementMechanisms: string[]
+  liquidatedDamages: number
+  survivalPeriod: number
+  createdBy: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface ComplianceStatus {
+  userId: string
+  rbacLevel: string
+  totalRequired: number
+  completed: number
+  pending: number
+  violations: number
+  isCompliant: boolean
+  missingDocuments: Array<{
+    documentId: string
+    documentName: string
+    documentType: string
+  }>
+  violationDetails: Array<{
+    documentId: string
+    documentName: string
+    violationType: string
+  }>
+}
+
+export interface IPTheftDetection {
+  id: string
+  userId: string
+  ventureId?: string
+  projectId?: string
+  detectionType: string
+  evidence: string
+  severity: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL'
+  status: 'DETECTED' | 'INVESTIGATING' | 'CONFIRMED' | 'RESOLVED'
+  damages: number
+  detectedAt: string
+  user?: {
+    id: string
+    name: string
+    email: string
+  }
+}
+
+export interface RevenueViolation {
+  id: string
+  userId: string
+  ventureId: string
+  projectId?: string
+  violationType: string
+  amount: number
+  liquidatedDamages: number
+  evidence: string
+  status: string
+  detectedAt: string
+  user?: {
+    id: string
+    name: string
+    email: string
+  }
+}
+
+export interface LegalStatus {
+  userId: string
+  compliance: ComplianceStatus
+  ipTheft: {
+    totalDetections: number
+    criticalDetections: number
+    totalDamages: number
+  }
+  revenueViolations: {
+    totalViolations: number
+    totalAmount: number
+    totalDamages: number
+  }
+  enforcement: {
+    totalActions: number
+    pendingActions: number
+    executedActions: number
+  }
+  riskLevel: 'MINIMAL' | 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL'
+}
+
+export interface EnforcementAction {
+  id: string
+  violationId: string
+  actionType: string
+  jurisdiction: string
+  status: string
+  result?: string
+  executedAt?: string
+  createdAt: string
+}
+
+export interface DigitalEvidence {
+  id: string
+  caseId: string
+  evidenceType: string
+  evidenceData: string
+  hash: string
+  blockchainTx?: string
+  isAdmissible: boolean
+  chainOfCustody: string[]
+  createdAt: string
 }
 
 export const comprehensiveApiService = new ComprehensiveApiService()
