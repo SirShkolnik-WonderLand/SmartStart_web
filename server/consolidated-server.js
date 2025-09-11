@@ -113,8 +113,13 @@ app.use('/api/gamification-enhanced', gamificationEnhancedApiRoutes);
 const revenueSharingApiRoutes = require('./routes/revenue-sharing-api');
 app.use('/api/revenue-sharing', revenueSharingApiRoutes);
 
-const realtimeNotificationsApiRoutes = require('./routes/realtime-notifications-api');
-app.use('/api/notifications', realtimeNotificationsApiRoutes);
+// Test notifications route first
+const notificationsTestRoutes = require('./routes/notifications-test');
+app.use('/api/notifications-test', notificationsTestRoutes);
+
+// Comment out complex notifications route temporarily
+// const realtimeNotificationsApiRoutes = require('./routes/realtime-notifications-api');
+// app.use('/api/notifications', realtimeNotificationsApiRoutes);
 
 const contributionPipelineApiRoutes = require('./routes/contribution-pipeline-api');
 app.use('/api/contributions', contributionPipelineApiRoutes);
