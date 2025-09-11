@@ -124,12 +124,23 @@ console.log('Notifications simple API loaded successfully');
 app.use('/api/notifications', notificationsSimpleApiRoutes);
 console.log('Notifications API routes registered');
 
+// Legal Protections Test Route
+console.log('Loading legal protections test route...');
+const legalProtectionsTestRoutes = require('./routes/legal-protections-test');
+console.log('Legal protections test route loaded successfully');
+app.use('/api/legal-protections-test', legalProtectionsTestRoutes);
+console.log('Legal protections test routes registered');
+
 // Enhanced Legal Protections API
 console.log('Loading enhanced legal protections API...');
-const enhancedLegalProtectionsApiRoutes = require('./routes/enhanced-legal-protections-api');
-console.log('Enhanced legal protections API loaded successfully');
-app.use('/api/legal-protections', enhancedLegalProtectionsApiRoutes);
-console.log('Enhanced legal protections API routes registered');
+try {
+    const enhancedLegalProtectionsApiRoutes = require('./routes/enhanced-legal-protections-api');
+    console.log('Enhanced legal protections API loaded successfully');
+    app.use('/api/legal-protections', enhancedLegalProtectionsApiRoutes);
+    console.log('Enhanced legal protections API routes registered');
+} catch (error) {
+    console.error('Error loading enhanced legal protections API:', error);
+}
 
 const contributionPipelineApiRoutes = require('./routes/contribution-pipeline-api');
 app.use('/api/contributions', contributionPipelineApiRoutes);
