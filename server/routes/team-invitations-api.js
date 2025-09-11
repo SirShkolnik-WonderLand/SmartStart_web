@@ -7,12 +7,12 @@ const nodemailer = require('nodemailer');
 const prisma = new PrismaClient();
 
 // Email configuration (you'll need to set up your email service)
-const emailTransporter = nodemailer.createTransporter({
-    service: 'gmail', // or your preferred email service
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-    }
+const emailTransporter = nodemailer.createTransport({
+  service: 'gmail', // or your preferred email service
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  }
 });
 
 // ===== TEAM INVITATION SYSTEM =====
