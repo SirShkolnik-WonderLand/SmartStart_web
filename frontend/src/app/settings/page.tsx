@@ -24,7 +24,7 @@ import {
 import { comprehensiveApiService as apiService, User as UserType } from '@/lib/api-comprehensive'
 
 export default function SettingsPage() {
-  const [activeTab, setActiveTab] = useState<'profile' | 'system' | 'rbac' | 'security'>('profile')
+  const [activeTab, setActiveTab] = useState<'profile' | 'system' | 'rbac' | 'security' | 'subscriptions'>('profile')
   const [user, setUser] = useState<UserType | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
@@ -42,6 +42,7 @@ export default function SettingsPage() {
   const tabs = [
     { id: 'profile', name: 'Profile', icon: User },
     { id: 'system', name: 'System', icon: SettingsIcon },
+    { id: 'subscriptions', name: 'Subscriptions', icon: Crown },
     { id: 'rbac', name: 'RBAC', icon: Shield },
     { id: 'security', name: 'Security', icon: Lock }
   ]
@@ -364,6 +365,104 @@ export default function SettingsPage() {
                           Manage Roles
                         </button>
                       </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Subscription Settings */}
+            {activeTab === 'subscriptions' && (
+              <div className="space-y-6">
+                <div className="wonderland-card glass-surface p-6">
+                  <div className="flex items-center gap-3 mb-6">
+                    <Crown className="w-6 h-6 text-primary" />
+                    <h2 className="text-2xl font-bold text-primary">Subscription Management</h2>
+                  </div>
+                  
+                  <div className="space-y-6">
+                    {/* Current Plan */}
+                    <div>
+                      <h3 className="text-lg font-semibold text-foreground mb-4">Current Plan</h3>
+                      <div className="glass rounded-xl p-6">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <div className="text-xl font-semibold text-foreground">Pro Plan</div>
+                            <div className="text-foreground-muted">$29/month • Billed monthly</div>
+                            <div className="text-sm text-success mt-1">✓ Active</div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-2xl font-bold text-foreground">$29</div>
+                            <div className="text-sm text-foreground-muted">per month</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Plan Features */}
+                    <div>
+                      <h3 className="text-lg font-semibold text-foreground mb-4">Plan Features</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="flex items-center gap-3 p-3 bg-glass-surface rounded-lg">
+                          <CheckCircle className="w-5 h-5 text-success" />
+                          <span className="text-foreground">Unlimited ventures</span>
+                        </div>
+                        <div className="flex items-center gap-3 p-3 bg-glass-surface rounded-lg">
+                          <CheckCircle className="w-5 h-5 text-success" />
+                          <span className="text-foreground">Advanced analytics</span>
+                        </div>
+                        <div className="flex items-center gap-3 p-3 bg-glass-surface rounded-lg">
+                          <CheckCircle className="w-5 h-5 text-success" />
+                          <span className="text-foreground">Priority support</span>
+                        </div>
+                        <div className="flex items-center gap-3 p-3 bg-glass-surface rounded-lg">
+                          <CheckCircle className="w-5 h-5 text-success" />
+                          <span className="text-foreground">Custom integrations</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Billing History */}
+                    <div>
+                      <h3 className="text-lg font-semibold text-foreground mb-4">Billing History</h3>
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between p-4 bg-glass-surface rounded-lg">
+                          <div>
+                            <div className="font-medium text-foreground">Pro Plan - Monthly</div>
+                            <div className="text-sm text-foreground-muted">Dec 1, 2024</div>
+                          </div>
+                          <div className="text-right">
+                            <div className="font-medium text-foreground">$29.00</div>
+                            <div className="text-sm text-success">Paid</div>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between p-4 bg-glass-surface rounded-lg">
+                          <div>
+                            <div className="font-medium text-foreground">Pro Plan - Monthly</div>
+                            <div className="text-sm text-foreground-muted">Nov 1, 2024</div>
+                          </div>
+                          <div className="text-right">
+                            <div className="font-medium text-foreground">$29.00</div>
+                            <div className="text-sm text-success">Paid</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex gap-4">
+                      <button className="wonder-button px-6 py-2">
+                        <Crown className="w-4 h-4 mr-2" />
+                        Upgrade Plan
+                      </button>
+                      <button className="px-6 py-2 bg-glass-surface text-foreground rounded-lg hover:bg-glass-highlight transition-colors">
+                        <Download className="w-4 h-4 mr-2" />
+                        Download Invoice
+                      </button>
+                      <button className="px-6 py-2 bg-glass-surface text-foreground rounded-lg hover:bg-glass-highlight transition-colors">
+                        <Settings className="w-4 h-4 mr-2" />
+                        Manage Billing
+                      </button>
                     </div>
                   </div>
                 </div>

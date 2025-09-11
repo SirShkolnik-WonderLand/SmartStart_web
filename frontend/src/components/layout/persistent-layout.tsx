@@ -295,17 +295,6 @@ export default function PersistentLayout({ children }: PersistentLayoutProps) {
                 {sidebarOpen && <span>Teams</span>}
               </Link>
               <Link 
-                href="/subscriptions" 
-                className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
-                  pathname === '/subscriptions' 
-                    ? 'bg-primary/10 text-primary' 
-                    : 'text-foreground-muted hover:text-foreground hover:bg-glass-surface'
-                }`}
-              >
-                <Crown className="w-5 h-5" />
-                {sidebarOpen && <span>Subscriptions</span>}
-              </Link>
-              <Link 
                 href="/leaderboard" 
                 className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
                   pathname === '/leaderboard' 
