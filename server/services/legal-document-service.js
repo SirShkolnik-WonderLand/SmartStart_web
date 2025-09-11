@@ -1,13 +1,15 @@
 const crypto = require('crypto');
 const fs = require('fs').promises;
 const path = require('path');
-const RBACLegalMapping = require('./rbac-legal-mapping');
+const ComprehensiveRBACLegalMapping = require('./comprehensive-rbac-legal-mapping');
+const LegalDocumentCRUDService = require('./legal-document-crud-service');
 
 class LegalDocumentService {
     constructor() {
         this.documents = new Map(); // In production, use database
         this.signatures = new Map(); // In production, use database
-        this.rbacMapping = new RBACLegalMapping();
+        this.rbacMapping = new ComprehensiveRBACLegalMapping();
+        this.crudService = new LegalDocumentCRUDService();
         this.legalFramework = new (require('./legal-framework'))();
         this.loadLegalDocuments();
     }
@@ -313,80 +315,12 @@ class LegalDocumentService {
     async getAvailableDocuments(userId) {
         try {
             console.log('🔍 getAvailableDocuments called for userId:', userId);
-            const { PrismaClient } = require('@prisma/client');
-            const prisma = new PrismaClient();
             
-            const user = await prisma.user.findUnique({
-                where: { id: userId },
-                select: { level: true }
-            });
+            // Use the new CRUD service
+            const documents = await this.crudService.getDocuments(userId, { status: 'EFFECTIVE' });
             
-            const userLevel = user?.level || 'OWLET';
-            console.log('👤 User level:', userLevel);
-            
-            const documents = await prisma.legalDocument.findMany({
-                where: { status: 'EFFECTIVE' },
-                orderBy: { title: 'asc' }
-            });
-            console.log('📄 Found documents:', documents.length);
-
-            const userSignatures = await prisma.legalDocumentSignature.findMany({
-                where: { signerId: userId },
-                include: {
-                    signer: {
-                        select: { name: true, email: true, level: true }
-                    }
-                }
-            });
-
-            const signedDocumentTitles = userSignatures.map(sig => {
-                const doc = documents.find(d => d.id === sig.documentId);
-                return doc ? doc.title : null;
-            }).filter(Boolean);
-
-            console.log('📋 Signed documents:', signedDocumentTitles);
-
-            const result = documents.map(doc => {
-                const isSigned = signedDocumentTitles.includes(doc.title);
-                const status = this.rbacMapping.getDocumentStatus(userLevel, doc.title, isSigned);
-                const signature = userSignatures.find(sig => sig.documentId === doc.id);
-
-                console.log(`📋 Document: ${doc.title} -> Status: ${status}`);
-
-                return {
-                    id: doc.id,
-                    title: doc.title,
-                    type: doc.type,
-                    content: doc.content,
-                    version: doc.version || '1.0',
-                    status: status,
-                    effectiveDate: doc.effectiveDate,
-                    expiryDate: doc.expiryDate,
-                    requiresSignature: doc.requiresSignature,
-                    signatureDeadline: doc.signatureDeadline,
-                    complianceRequired: doc.complianceRequired,
-                    createdBy: doc.createdBy,
-                    createdAt: doc.createdAt,
-                    updatedAt: doc.updatedAt,
-                    entityId: doc.entityId,
-                    projectId: doc.projectId,
-                    ventureId: doc.ventureId,
-                    required: status === 'REQUIRED',
-                    lastUpdated: doc.updatedAt,
-                    isSigned: isSigned,
-                    signedAt: signature?.signedAt,
-                    signatureHash: signature?.signatureHash,
-                    signerName: signature?.signer?.name,
-                    signerEmail: signature?.signer?.email,
-                    signerLevel: signature?.signer?.level,
-                    ipAddress: signature?.ipAddress,
-                    userAgent: signature?.userAgent,
-                    generatedFrom: doc.generatedFrom
-                };
-            });
-            
-            console.log('✅ Returning', result.length, 'documents');
-            return result;
+            console.log('✅ Returning', documents.length, 'documents');
+            return documents;
         } catch (error) {
             console.error('❌ Error getting available documents:', error);
             return [];
@@ -424,25 +358,19 @@ class LegalDocumentService {
      */
     async getUserDocumentStatus(userId) {
         try {
-            const documents = await this.getAvailableDocuments(userId);
-            const required = documents.filter(doc => doc.status === 'REQUIRED');
-            const signed = documents.filter(doc => doc.status === 'SIGNED');
-            const pending = documents.filter(doc => doc.status === 'PENDING');
-
+            // Use the new CRUD service for comprehensive status
+            const status = await this.crudService.getUserDocumentStatus(userId);
+            
             return {
-                total: documents.length,
-                required: required.length,
-                signed: signed.length,
-                pending: pending.length,
-                compliance: required.length === 0,
-                documents: documents,
-                summary: {
-                    total_documents: documents.length,
-                    signed_documents: signed.length,
-                    required_documents: required.length,
-                    pending_documents: pending.length,
-                    compliance_percentage: required.length === 0 ? 100 : Math.round((signed.length / (signed.length + required.length)) * 100)
-                }
+                total: status.summary.total_documents,
+                required: status.summary.required_documents,
+                signed: status.summary.signed_documents,
+                pending: status.summary.pending_documents,
+                compliance: status.summary.compliance_percentage === 100,
+                documents: status.documents,
+                summary: status.summary,
+                user: status.user,
+                nextLevel: status.nextLevel
             };
         } catch (error) {
             console.error('Error getting user document status:', error);
@@ -469,54 +397,16 @@ class LegalDocumentService {
      */
     async signDocument(userId, documentId, signatureData) {
         try {
-            const { PrismaClient } = require('@prisma/client');
-            const prisma = new PrismaClient();
-
-            // Generate signature hash
-            const signatureHash = crypto
-                .createHash('sha256')
-                .update(JSON.stringify({
-                    documentId,
-                    userId,
-                    timestamp: new Date().toISOString(),
-                    signatureData
-                }))
-                .digest('hex');
-
-            // Create signature record
-            const signature = await prisma.legalDocumentSignature.create({
-                data: {
-                    documentId,
-                    signerId: userId,
-                    signatureHash,
-                    signedAt: new Date(),
-                    ipAddress: signatureData.ipAddress,
-                    userAgent: signatureData.userAgent,
-                    termsAccepted: signatureData.termsAccepted || false,
-                    privacyAccepted: signatureData.privacyAccepted || false,
-                    identityVerified: signatureData.identityVerified || false
-                },
-                include: {
-                    signer: {
-                        select: { name: true, email: true, level: true }
-                    }
-                }
-            });
-
-            return {
-                id: signature.id,
-                documentId: signature.documentId,
-                signerId: signature.signerId,
-                signatureHash: signature.signatureHash,
-                signedAt: signature.signedAt,
-                signerName: signature.signer?.name,
-                signerEmail: signature.signer?.email,
-                signerLevel: signature.signer?.level,
-                ipAddress: signature.ipAddress,
-                userAgent: signature.userAgent
-            };
+            console.log('✍️ Signing document:', documentId, 'by user:', userId);
+            
+            // Use the new CRUD service
+            const signature = await this.crudService.signDocument(documentId, userId, signatureData);
+            
+            console.log('✅ Document signed:', documentId);
+            return signature;
+            
         } catch (error) {
-            console.error('Error signing document:', error);
+            console.error('❌ Error signing document:', error);
             throw error;
         }
     }
