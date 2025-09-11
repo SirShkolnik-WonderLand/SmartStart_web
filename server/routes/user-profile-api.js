@@ -63,9 +63,9 @@ router.get('/profile', authenticateToken, async(req, res) => {
         }
 
         // Construct proper name from firstName and lastName
-        const fullName = user.firstName && user.lastName 
-            ? `${user.firstName} ${user.lastName}` 
-            : user.name || 'Unknown User';
+        const fullName = user.firstName && user.lastName ?
+            `${user.firstName} ${user.lastName}` :
+            user.name || 'Unknown User';
 
         res.json({
             success: true,
@@ -546,7 +546,7 @@ router.get('/profile/:userId/privacy', authenticateToken, async(req, res) => {
 
         res.json({
             success: true,
-            privacySettings: profile?.privacySettings || {}
+            privacySettings: profile ? .privacySettings || {}
         });
 
     } catch (error) {
@@ -622,3 +622,145 @@ router.get('/health', (req, res) => {
 });
 
 module.exports = router;
+@ @
+// NOTE: Additional routes appended below
+
+// ===== FULL USER PROFILE AGGREGATION =====
+// GET /profile/:userId/full - Aggregated profile with RBAC/subscription/legal/gamification snapshot
+router.get('/profile/:userId/full', authenticateToken, async(req, res) => {
+    try {
+        const { userId } = req.params;
+        const requestingUser = req.user;
+
+        // Authorization: allow own profile or users with read:user permission
+        if (requestingUser.id !== userId && !(requestingUser.permissions || []).includes('read:user')) {
+            return res.status(403).json({
+                success: false,
+                message: 'Insufficient permissions to view this profile'
+            });
+        }
+
+        // Parallel fetches
+        const [
+            user,
+            profile,
+            skills,
+            portfolioItems,
+            userBadges,
+            subscriptions,
+            legalDocs,
+            legalSigs,
+            notifications
+        ] = await Promise.all([
+            prisma.user.findUnique({
+                where: { id: userId },
+                select: {
+                    id: true,
+                    email: true,
+                    name: true,
+                    firstName: true,
+                    lastName: true,
+                    role: true,
+                    level: true,
+                    xp: true,
+                    reputation: true,
+                    status: true,
+                    lastActive: true,
+                    createdAt: true
+                }
+            }),
+            prisma.userProfile.findUnique({ where: { userId } }),
+            prisma.userSkill.findMany({
+                where: { userId },
+                include: { skill: true },
+                orderBy: { level: 'desc' }
+            }),
+            prisma.portfolioItem.findMany({
+                where: { userId },
+                orderBy: { createdAt: 'desc' },
+                take: 12
+            }),
+            prisma.userBadge.findMany({
+                where: { userId },
+                include: { badge: true },
+                orderBy: { earnedAt: 'desc' }
+            }),
+            prisma.subscription.findMany({
+                where: { userId },
+                include: { plan: true },
+                orderBy: { createdAt: 'desc' },
+                take: 3
+            }),
+            prisma.legalDocument.findMany({
+                where: { userId },
+                orderBy: { updatedAt: 'desc' },
+                take: 20
+            }),
+            prisma.legalDocumentSignature.findMany({
+                where: { signerId: userId },
+                orderBy: { signedAt: 'desc' },
+                take: 20
+            }),
+            prisma.notification.findMany({
+                where: { recipientId: userId },
+                orderBy: { createdAt: 'desc' },
+                take: 20
+            })
+        ]);
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        const fullName = user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : (user.name || 'Unknown User');
+
+        // RBAC snapshot
+        const rbac = {
+            role: user.role,
+            permissions: requestingUser && requestingUser.permissions ? requestingUser.permissions : []
+        };
+
+        // Subscription snapshot
+        const activeSubscription = (subscriptions || []).find(s => s.status === 'ACTIVE') || null;
+
+        // Legal snapshot
+        const legal = {
+            documents: legalDocs || [],
+            signatures: legalSigs || [],
+            signedCount: (legalSigs || []).length,
+            totalDocs: (legalDocs || []).length
+        };
+
+        // Gamification snapshot
+        const gamification = {
+            xp: user.xp,
+            level: user.level,
+            reputation: user.reputation,
+            badges: userBadges || []
+        };
+
+        // Assemble response
+        res.json({
+            success: true,
+            data: {
+                user: {...user, name: fullName },
+                profile: profile || null,
+                rbac,
+                subscription: activeSubscription,
+                subscriptions,
+                skills,
+                portfolio: { items: portfolioItems || [] },
+                gamification,
+                legal,
+                notifications
+            }
+        });
+    } catch (error) {
+        console.error('Full profile aggregation error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to retrieve full profile',
+            error: error.message
+        });
+    }
+});
