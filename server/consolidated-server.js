@@ -95,23 +95,25 @@ app.use('/api/companies', companyManagementApiRoutes);
 const teamManagementApiRoutes = require('./routes/team-management-api');
 app.use('/api/teams', teamManagementApiRoutes);
 
-const teamInvitationsApiRoutes = require('./routes/team-invitations-api');
-app.use('/api/team-invitations', teamInvitationsApiRoutes);
-
+// Test route first to isolate issues
 const testNewRoutesApiRoutes = require('./routes/test-new-routes');
 app.use('/api/test-new-routes', testNewRoutesApiRoutes);
 
-const digitalSignaturesApiRoutes = require('./routes/digital-signatures-api');
-app.use('/api/digital-signatures', digitalSignaturesApiRoutes);
+// Comment out potentially problematic routes temporarily
+// const teamInvitationsApiRoutes = require('./routes/team-invitations-api');
+// app.use('/api/team-invitations', teamInvitationsApiRoutes);
 
-const gamificationEnhancedApiRoutes = require('./routes/gamification-enhanced-api');
-app.use('/api/gamification-enhanced', gamificationEnhancedApiRoutes);
+// const digitalSignaturesApiRoutes = require('./routes/digital-signatures-api');
+// app.use('/api/digital-signatures', digitalSignaturesApiRoutes);
 
-const revenueSharingApiRoutes = require('./routes/revenue-sharing-api');
-app.use('/api/revenue-sharing', revenueSharingApiRoutes);
+// const gamificationEnhancedApiRoutes = require('./routes/gamification-enhanced-api');
+// app.use('/api/gamification-enhanced', gamificationEnhancedApiRoutes);
 
-const realtimeNotificationsApiRoutes = require('./routes/realtime-notifications-api');
-app.use('/api/notifications', realtimeNotificationsApiRoutes);
+// const revenueSharingApiRoutes = require('./routes/revenue-sharing-api');
+// app.use('/api/revenue-sharing', revenueSharingApiRoutes);
+
+// const realtimeNotificationsApiRoutes = require('./routes/realtime-notifications-api');
+// app.use('/api/notifications', realtimeNotificationsApiRoutes);
 
 const contributionPipelineApiRoutes = require('./routes/contribution-pipeline-api');
 app.use('/api/contributions', contributionPipelineApiRoutes);
