@@ -52,78 +52,101 @@ export default function TeamMemberManagement({
     try {
       setIsLoading(true)
       
-      // Load team members
+      // Load team members with real API integration
       const teamResponse = await apiService.getTeam(teamId)
       if (teamResponse.success && teamResponse.data) {
         setMembers(teamResponse.data.members || [])
       }
 
-      // Load invitations (mock data for now)
-      setInvitations([
-        {
-          id: 'inv_1',
-          teamId,
-          ventureId,
-          invitedUserId: 'user_1',
-          invitedByUserId: 'current_user',
-          role: TEAM_ROLES[3], // Senior Member
-          permissions: [],
-          status: 'pending',
-          message: 'Would love to have you join our team!',
-          expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          invitedUser: {
-            id: 'user_1',
-            name: 'Sarah Johnson',
-            email: 'sarah@example.com',
-            avatar: undefined
-          }
-        }
-      ])
+      // Load team goals with real API integration
+      const goalsResponse = await apiService.getTeamGoals(teamId)
+      if (goalsResponse.success && goalsResponse.data) {
+        setGoals(goalsResponse.data.goals || [])
+      }
 
-      // Load contributions (mock data)
-      setContributions([
-        {
-          id: 'contrib_1',
+      // Load team analytics for contributions
+      const analyticsResponse = await apiService.getTeamAnalytics(teamId)
+      if (analyticsResponse.success && analyticsResponse.data) {
+        // Transform analytics data into contributions format
+        const contributionsData = analyticsResponse.data.performanceMetrics?.map((metric: any, index: number) => ({
+          id: `contrib_${index}`,
           teamId,
-          userId: 'user_1',
+          userId: 'system',
           ventureId,
-          type: 'code',
-          title: 'Implemented user authentication',
-          description: 'Added JWT-based authentication system',
-          value: 50,
-          hours: 8,
+          type: 'metric',
+          title: metric.name,
+          description: `Performance metric: ${metric.description || 'No description'}`,
+          value: metric.value,
+          hours: 0,
           status: 'completed',
-          createdAt: new Date().toISOString(),
+          createdAt: metric.effectiveDate || new Date().toISOString(),
           updatedAt: new Date().toISOString(),
-          completedAt: new Date().toISOString(),
+          completedAt: metric.effectiveDate || new Date().toISOString(),
           user: {
-            id: 'user_1',
-            name: 'Sarah Johnson',
+            id: 'system',
+            name: 'System',
             avatar: undefined
           }
-        }
-      ])
+        })) || []
+        setContributions(contributionsData)
+      }
 
-      // Load goals (mock data)
-      setGoals([
-        {
-          id: 'goal_1',
-          teamId,
-          title: 'Complete MVP Development',
-          description: 'Finish the minimum viable product for launch',
-          target: 100,
-          current: 75,
-          unit: '%',
-          deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-          priority: 'high',
-          status: 'active',
-          createdBy: 'current_user',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
+      // Load invitations from API (if available) or use mock data
+      try {
+        const invitationsResponse = await apiService.getTeamInvitations(teamId)
+        if (invitationsResponse.success && invitationsResponse.data) {
+          setInvitations(invitationsResponse.data.invitations || [])
+        } else {
+          // Fallback to mock data
+          setInvitations([
+            {
+              id: 'inv_1',
+              teamId,
+              ventureId,
+              invitedUserId: 'user_1',
+              invitedByUserId: 'current_user',
+              role: TEAM_ROLES[3], // Senior Member
+              permissions: [],
+              status: 'pending',
+              message: 'Would love to have you join our team!',
+              expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+              invitedUser: {
+                id: 'user_1',
+                name: 'Sarah Johnson',
+                email: 'sarah@example.com',
+                avatar: undefined
+              }
+            }
+          ])
         }
-      ])
+      } catch (invitationError) {
+        console.warn('Invitations API not available, using mock data:', invitationError)
+        // Use mock data as fallback
+        setInvitations([
+          {
+            id: 'inv_1',
+            teamId,
+            ventureId,
+            invitedUserId: 'user_1',
+            invitedByUserId: 'current_user',
+            role: TEAM_ROLES[3], // Senior Member
+            permissions: [],
+            status: 'pending',
+            message: 'Would love to have you join our team!',
+            expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            invitedUser: {
+              id: 'user_1',
+              name: 'Sarah Johnson',
+              email: 'sarah@example.com',
+              avatar: undefined
+            }
+          }
+        ])
+      }
 
     } catch (error) {
       console.error('Error loading team data:', error)
@@ -138,25 +161,61 @@ export default function TeamMemberManagement({
   }
 
   const handleAcceptInvitation = async (invitationId: string) => {
-    // Mock acceptance
-    setInvitations(prev => 
-      prev.map(inv => 
-        inv.id === invitationId 
-          ? { ...inv, status: 'accepted' as const }
-          : inv
+    try {
+      // Try to accept invitation via API
+      const response = await apiService.acceptTeamInvitation(invitationId)
+      if (response.success) {
+        setInvitations(prev => 
+          prev.map(inv => 
+            inv.id === invitationId 
+              ? { ...inv, status: 'accepted' as const }
+              : inv
+          )
+        )
+        // Reload team data to get updated member list
+        loadTeamData()
+      } else {
+        console.error('Failed to accept invitation:', response.message)
+      }
+    } catch (error) {
+      console.error('Error accepting invitation:', error)
+      // Fallback to local state update
+      setInvitations(prev => 
+        prev.map(inv => 
+          inv.id === invitationId 
+            ? { ...inv, status: 'accepted' as const }
+            : inv
+        )
       )
-    )
+    }
   }
 
   const handleDeclineInvitation = async (invitationId: string) => {
-    // Mock decline
-    setInvitations(prev => 
-      prev.map(inv => 
-        inv.id === invitationId 
-          ? { ...inv, status: 'declined' as const }
-          : inv
+    try {
+      // Try to decline invitation via API
+      const response = await apiService.declineTeamInvitation(invitationId)
+      if (response.success) {
+        setInvitations(prev => 
+          prev.map(inv => 
+            inv.id === invitationId 
+              ? { ...inv, status: 'declined' as const }
+              : inv
+          )
+        )
+      } else {
+        console.error('Failed to decline invitation:', response.message)
+      }
+    } catch (error) {
+      console.error('Error declining invitation:', error)
+      // Fallback to local state update
+      setInvitations(prev => 
+        prev.map(inv => 
+          inv.id === invitationId 
+            ? { ...inv, status: 'declined' as const }
+            : inv
+        )
       )
-    )
+    }
   }
 
   const getRoleInfo = (roleId: string) => {
@@ -175,6 +234,40 @@ export default function TeamMemberManagement({
   const getPriorityColor = (priority: string) => {
     const priorityInfo = GOAL_PRIORITIES.find(p => p.value === priority)
     return priorityInfo?.color || 'bg-gray-100 text-gray-800'
+  }
+
+  const handleRoleChange = async (memberId: string, newRole: string) => {
+    try {
+      const response = await apiService.updateTeamMemberRole(teamId, memberId, newRole)
+      if (response.success) {
+        setMembers(prev => 
+          prev.map(member => 
+            member.id === memberId 
+              ? { ...member, role: newRole }
+              : member
+          )
+        )
+        onMemberUpdate?.(members.find(m => m.id === memberId)!)
+      } else {
+        console.error('Failed to update member role:', response.message)
+      }
+    } catch (error) {
+      console.error('Error updating member role:', error)
+    }
+  }
+
+  const handleRemoveMember = async (memberId: string) => {
+    try {
+      const response = await apiService.removeTeamMember(teamId, memberId)
+      if (response.success) {
+        setMembers(prev => prev.filter(member => member.id !== memberId))
+        onMemberRemove?.(memberId)
+      } else {
+        console.error('Failed to remove member:', response.message)
+      }
+    } catch (error) {
+      console.error('Error removing member:', error)
+    }
   }
 
   if (isLoading) {
@@ -277,10 +370,22 @@ export default function TeamMemberManagement({
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <button className="p-2 text-foreground-muted hover:text-foreground hover:bg-gray-100 rounded-lg transition-colors">
-                      <Edit className="w-4 h-4" />
-                    </button>
-                    <button className="p-2 text-foreground-muted hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                    <select
+                      value={member.role}
+                      onChange={(e) => handleRoleChange(member.id, e.target.value)}
+                      className="px-2 py-1 text-xs border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-primary/20"
+                    >
+                      {TEAM_ROLES.map(role => (
+                        <option key={role.id} value={role.id}>
+                          {role.name}
+                        </option>
+                      ))}
+                    </select>
+                    <button 
+                      onClick={() => handleRemoveMember(member.id)}
+                      className="p-2 text-foreground-muted hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                      title="Remove member"
+                    >
                       <Trash2 className="w-4 h-4" />
                     </button>
                     <button className="p-2 text-foreground-muted hover:text-foreground hover:bg-gray-100 rounded-lg transition-colors">

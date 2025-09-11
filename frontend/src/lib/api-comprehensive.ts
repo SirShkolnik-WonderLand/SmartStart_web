@@ -1561,6 +1561,236 @@ class ComprehensiveApiService {
     }
   }
 
+  // ===== TEAM INVITATION METHODS =====
+  async inviteTeamMember(invitationData: {
+    teamId: string
+    ventureId?: string
+    invitedUserId: string
+    role?: string
+    permissions?: string[]
+    message?: string
+    expiresInDays?: number
+  }): Promise<ApiResponse> {
+    try {
+      const response = await this.fetchWithAuth('/api/team-invitations/invite', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(invitationData)
+      })
+      return response
+    } catch (error) {
+      console.error('Error inviting team member:', error)
+      return { success: false, error: 'Failed to invite team member' }
+    }
+  }
+
+  async getTeamInvitations(teamId: string): Promise<ApiResponse<{ invitations: any[] }>> {
+    try {
+      const response = await this.fetchWithAuth<{ invitations: any[] }>(`/api/team-invitations/team/${teamId}`)
+      return response
+    } catch (error) {
+      console.error('Error fetching team invitations:', error)
+      return { success: false, error: 'Failed to fetch team invitations' }
+    }
+  }
+
+  async getUserInvitations(): Promise<ApiResponse<{ invitations: any[] }>> {
+    try {
+      const response = await this.fetchWithAuth<{ invitations: any[] }>('/api/team-invitations/user')
+      return response
+    } catch (error) {
+      console.error('Error fetching user invitations:', error)
+      return { success: false, error: 'Failed to fetch user invitations' }
+    }
+  }
+
+  async acceptTeamInvitation(invitationId: string): Promise<ApiResponse> {
+    try {
+      const response = await this.fetchWithAuth(`/api/team-invitations/${invitationId}/accept`, {
+        method: 'POST'
+      })
+      return response
+    } catch (error) {
+      console.error('Error accepting invitation:', error)
+      return { success: false, error: 'Failed to accept invitation' }
+    }
+  }
+
+  async declineTeamInvitation(invitationId: string): Promise<ApiResponse> {
+    try {
+      const response = await this.fetchWithAuth(`/api/team-invitations/${invitationId}/decline`, {
+        method: 'POST'
+      })
+      return response
+    } catch (error) {
+      console.error('Error declining invitation:', error)
+      return { success: false, error: 'Failed to decline invitation' }
+    }
+  }
+
+  async cancelTeamInvitation(invitationId: string): Promise<ApiResponse> {
+    try {
+      const response = await this.fetchWithAuth(`/api/team-invitations/${invitationId}/cancel`, {
+        method: 'POST'
+      })
+      return response
+    } catch (error) {
+      console.error('Error canceling invitation:', error)
+      return { success: false, error: 'Failed to cancel invitation' }
+    }
+  }
+
+  async updateTeamMemberRole(teamId: string, memberId: string, newRole: string): Promise<ApiResponse> {
+    try {
+      const response = await this.fetchWithAuth(`/api/teams/${teamId}/members/${memberId}/role`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ role: newRole })
+      })
+      return response
+    } catch (error) {
+      console.error('Error updating member role:', error)
+      return { success: false, error: 'Failed to update member role' }
+    }
+  }
+
+  async removeTeamMember(teamId: string, memberId: string): Promise<ApiResponse> {
+    try {
+      const response = await this.fetchWithAuth(`/api/teams/${teamId}/members/${memberId}`, {
+        method: 'DELETE'
+      })
+      return response
+    } catch (error) {
+      console.error('Error removing team member:', error)
+      return { success: false, error: 'Failed to remove team member' }
+    }
+  }
+
+  async getTeamGoals(teamId: string): Promise<ApiResponse<{ goals: any[] }>> {
+    try {
+      const response = await this.fetchWithAuth<{ goals: any[] }>(`/api/teams/${teamId}/goals`)
+      return { success: true, data: response.data }
+    } catch (error) {
+      console.error('Error getting team goals:', error)
+      return { success: false, data: { goals: [] }, error: 'Failed to fetch team goals' }
+    }
+  }
+
+  async getTeamAnalytics(teamId: string): Promise<ApiResponse<{ performanceMetrics: any[] }>> {
+    try {
+      const response = await this.fetchWithAuth<{ analytics: any }>(`/api/teams/${teamId}/analytics`)
+      return { success: true, data: response.data?.analytics || { performanceMetrics: [] } }
+    } catch (error) {
+      console.error('Error getting team analytics:', error)
+      return { success: false, data: { performanceMetrics: [] }, error: 'Failed to fetch team analytics' }
+    }
+  }
+
+  async updateTeamMemberRole(teamId: string, memberId: string, role: string): Promise<ApiResponse> {
+    try {
+      const response = await this.fetchWithAuth(`/api/teams/${teamId}/members/${memberId}`, {
+        method: 'PUT',
+        body: JSON.stringify({ role })
+      })
+      return response
+    } catch (error) {
+      console.error('Error updating team member role:', error)
+      return { success: false, error: 'Failed to update team member role' }
+    }
+  }
+
+  async removeTeamMember(teamId: string, memberId: string): Promise<ApiResponse> {
+    try {
+      const response = await this.fetchWithAuth(`/api/teams/${teamId}/members/${memberId}`, {
+        method: 'DELETE'
+      })
+      return response
+    } catch (error) {
+      console.error('Error removing team member:', error)
+      return { success: false, error: 'Failed to remove team member' }
+    }
+  }
+
+  // ============================================================================
+  // TEAM INVITATIONS (10+ endpoints)
+  // ============================================================================
+
+  async inviteTeamMember(teamId: string, invitationData: {
+    invitedUserId: string
+    role?: string
+    permissions?: string[]
+    message?: string
+    expiresInDays?: number
+  }): Promise<ApiResponse<any>> {
+    try {
+      const response = await this.fetchWithAuth<{ invitation: any }>('/api/team-invitations/invite', {
+        method: 'POST',
+        body: JSON.stringify({
+          teamId,
+          ...invitationData
+        })
+      })
+      return { success: true, data: response.data?.invitation }
+    } catch (error) {
+      console.error('Error inviting team member:', error)
+      return { success: false, error: 'Failed to invite team member' }
+    }
+  }
+
+  async getTeamInvitations(teamId: string): Promise<ApiResponse<{ invitations: any[] }>> {
+    try {
+      const response = await this.fetchWithAuth<{ invitations: any[] }>(`/api/team-invitations/team/${teamId}`)
+      return { success: true, data: response.data }
+    } catch (error) {
+      console.error('Error getting team invitations:', error)
+      return { success: false, data: { invitations: [] }, error: 'Failed to fetch team invitations' }
+    }
+  }
+
+  async getUserInvitations(userId: string): Promise<ApiResponse<{ invitations: any[] }>> {
+    try {
+      const response = await this.fetchWithAuth<{ invitations: any[] }>(`/api/team-invitations/user/${userId}`)
+      return { success: true, data: response.data }
+    } catch (error) {
+      console.error('Error getting user invitations:', error)
+      return { success: false, data: { invitations: [] }, error: 'Failed to fetch user invitations' }
+    }
+  }
+
+  async acceptTeamInvitation(invitationId: string): Promise<ApiResponse<any>> {
+    try {
+      const response = await this.fetchWithAuth<{ teamMember: any }>(`/api/team-invitations/${invitationId}/accept`, {
+        method: 'POST'
+      })
+      return { success: true, data: response.data?.teamMember }
+    } catch (error) {
+      console.error('Error accepting team invitation:', error)
+      return { success: false, error: 'Failed to accept team invitation' }
+    }
+  }
+
+  async declineTeamInvitation(invitationId: string): Promise<ApiResponse> {
+    try {
+      const response = await this.fetchWithAuth(`/api/team-invitations/${invitationId}/decline`, {
+        method: 'POST'
+      })
+      return response
+    } catch (error) {
+      console.error('Error declining team invitation:', error)
+      return { success: false, error: 'Failed to decline team invitation' }
+    }
+  }
+
+  async getTeamInvitation(invitationId: string): Promise<ApiResponse<any>> {
+    try {
+      const response = await this.fetchWithAuth<{ invitation: any }>(`/api/team-invitations/${invitationId}`)
+      return { success: true, data: response.data?.invitation }
+    } catch (error) {
+      console.error('Error getting team invitation:', error)
+      return { success: false, error: 'Failed to fetch team invitation' }
+    }
+  }
+
   // ============================================================================
   // GAMIFICATION (20+ endpoints)
   // ============================================================================
@@ -1615,6 +1845,408 @@ class ComprehensiveApiService {
     } catch (error) {
       console.error('Error getting user metrics:', error)
       return { success: false, error: 'Failed to fetch user metrics' }
+    }
+  }
+
+  // ===== DIGITAL SIGNATURES METHODS =====
+  async createDigitalSignature(signatureData: {
+    documentId: string
+    documentType: string
+    signerId: string
+    signatureData: string
+    signatureMethod?: string
+    ipAddress?: string
+    userAgent?: string
+    location?: string
+  }): Promise<ApiResponse> {
+    try {
+      const response = await this.fetchWithAuth('/api/digital-signatures/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(signatureData)
+      })
+      return response
+    } catch (error) {
+      console.error('Error creating digital signature:', error)
+      return { success: false, error: 'Failed to create digital signature' }
+    }
+  }
+
+  async getDocumentSignatures(documentId: string): Promise<ApiResponse<{ signatures: any[] }>> {
+    try {
+      const response = await this.fetchWithAuth<{ signatures: any[] }>(`/api/digital-signatures/document/${documentId}`)
+      return response
+    } catch (error) {
+      console.error('Error fetching document signatures:', error)
+      return { success: false, error: 'Failed to fetch document signatures' }
+    }
+  }
+
+  async getUserSignatures(): Promise<ApiResponse<{ signatures: any[] }>> {
+    try {
+      const response = await this.fetchWithAuth<{ signatures: any[] }>('/api/digital-signatures/user')
+      return response
+    } catch (error) {
+      console.error('Error fetching user signatures:', error)
+      return { success: false, error: 'Failed to fetch user signatures' }
+    }
+  }
+
+  async verifySignature(signatureId: string, verificationData: any): Promise<ApiResponse> {
+    try {
+      const response = await this.fetchWithAuth(`/api/digital-signatures/verify/${signatureId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ verificationData })
+      })
+      return response
+    } catch (error) {
+      console.error('Error verifying signature:', error)
+      return { success: false, error: 'Failed to verify signature' }
+    }
+  }
+
+  async revokeSignature(signatureId: string, reason?: string): Promise<ApiResponse> {
+    try {
+      const response = await this.fetchWithAuth(`/api/digital-signatures/revoke/${signatureId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reason })
+      })
+      return response
+    } catch (error) {
+      console.error('Error revoking signature:', error)
+      return { success: false, error: 'Failed to revoke signature' }
+    }
+  }
+
+  // ===== GAMIFICATION ENHANCED METHODS =====
+  async awardXp(xpData: {
+    userId: string
+    xpAmount: number
+    activityType: string
+    activityId?: string
+    description?: string
+    metadata?: any
+  }): Promise<ApiResponse> {
+    try {
+      const response = await this.fetchWithAuth('/api/gamification-enhanced/xp/award', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(xpData)
+      })
+      return response
+    } catch (error) {
+      console.error('Error awarding XP:', error)
+      return { success: false, error: 'Failed to award XP' }
+    }
+  }
+
+  async getXpHistory(userId: string, page = 1, limit = 20, activityType?: string): Promise<ApiResponse<{ xpHistory: any[], pagination: any }>> {
+    try {
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: limit.toString(),
+        ...(activityType && { activityType })
+      })
+      const response = await this.fetchWithAuth<{ xpHistory: any[], pagination: any }>(`/api/gamification-enhanced/xp/history/${userId}?${params}`)
+      return response
+    } catch (error) {
+      console.error('Error fetching XP history:', error)
+      return { success: false, error: 'Failed to fetch XP history' }
+    }
+  }
+
+  async awardBadge(badgeData: {
+    userId: string
+    badgeId: string
+    awardedBy?: string
+    reason?: string
+    metadata?: any
+  }): Promise<ApiResponse> {
+    try {
+      const response = await this.fetchWithAuth('/api/gamification-enhanced/badges/award', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(badgeData)
+      })
+      return response
+    } catch (error) {
+      console.error('Error awarding badge:', error)
+      return { success: false, error: 'Failed to award badge' }
+    }
+  }
+
+  async getUserBadgesEnhanced(userId: string, category?: string): Promise<ApiResponse<{ userBadges: any[] }>> {
+    try {
+      const params = new URLSearchParams()
+      if (category) params.append('category', category)
+      const response = await this.fetchWithAuth<{ userBadges: any[] }>(`/api/gamification-enhanced/badges/user/${userId}?${params}`)
+      return response
+    } catch (error) {
+      console.error('Error fetching user badges:', error)
+      return { success: false, error: 'Failed to fetch user badges' }
+    }
+  }
+
+  async getAvailableBadges(category?: string, rarity?: string): Promise<ApiResponse<{ badges: any[] }>> {
+    try {
+      const params = new URLSearchParams()
+      if (category) params.append('category', category)
+      if (rarity) params.append('rarity', rarity)
+      const response = await this.fetchWithAuth<{ badges: any[] }>(`/api/gamification-enhanced/badges/available?${params}`)
+      return response
+    } catch (error) {
+      console.error('Error fetching available badges:', error)
+      return { success: false, error: 'Failed to fetch available badges' }
+    }
+  }
+
+  async createAchievement(achievementData: {
+    userId: string
+    achievementType: string
+    title: string
+    description?: string
+    xpReward?: number
+    badgeReward?: string
+    metadata?: any
+  }): Promise<ApiResponse> {
+    try {
+      const response = await this.fetchWithAuth('/api/gamification-enhanced/achievements/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(achievementData)
+      })
+      return response
+    } catch (error) {
+      console.error('Error creating achievement:', error)
+      return { success: false, error: 'Failed to create achievement' }
+    }
+  }
+
+  async getUserAchievements(userId: string, achievementType?: string): Promise<ApiResponse<{ achievements: any[] }>> {
+    try {
+      const params = new URLSearchParams()
+      if (achievementType) params.append('achievementType', achievementType)
+      const response = await this.fetchWithAuth<{ achievements: any[] }>(`/api/gamification-enhanced/achievements/user/${userId}?${params}`)
+      return response
+    } catch (error) {
+      console.error('Error fetching user achievements:', error)
+      return { success: false, error: 'Failed to fetch user achievements' }
+    }
+  }
+
+  async getLeaderboardEnhanced(type = 'xp', limit = 50, timeframe = 'all'): Promise<ApiResponse<{ leaderboard: any[] }>> {
+    try {
+      const params = new URLSearchParams({
+        type,
+        limit: limit.toString(),
+        timeframe
+      })
+      const response = await this.fetchWithAuth<{ leaderboard: any[] }>(`/api/gamification-enhanced/leaderboard?${params}`)
+      return response
+    } catch (error) {
+      console.error('Error fetching leaderboard:', error)
+      return { success: false, error: 'Failed to fetch leaderboard' }
+    }
+  }
+
+  async getGamificationAnalytics(userId?: string, startDate?: string, endDate?: string): Promise<ApiResponse<{ analytics: any }>> {
+    try {
+      const params = new URLSearchParams()
+      if (userId) params.append('userId', userId)
+      if (startDate) params.append('startDate', startDate)
+      if (endDate) params.append('endDate', endDate)
+      const response = await this.fetchWithAuth<{ analytics: any }>(`/api/gamification-enhanced/analytics?${params}`)
+      return response
+    } catch (error) {
+      console.error('Error fetching gamification analytics:', error)
+      return { success: false, error: 'Failed to fetch gamification analytics' }
+    }
+  }
+
+  // ===== REVENUE SHARING METHODS =====
+  async calculateRevenueShare(ventureId: string, totalRevenue: number, calculationPeriod = 'monthly', customShares?: any[]): Promise<ApiResponse> {
+    try {
+      const response = await this.fetchWithAuth(`/api/revenue-sharing/calculate/${ventureId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          totalRevenue,
+          calculationPeriod,
+          customShares
+        })
+      })
+      return response
+    } catch (error) {
+      console.error('Error calculating revenue share:', error)
+      return { success: false, error: 'Failed to calculate revenue share' }
+    }
+  }
+
+  async distributeRevenue(calculationId: string, distributionMethod = 'AUTOMATIC', paymentProcessor = 'STRIPE', notes?: string): Promise<ApiResponse> {
+    try {
+      const response = await this.fetchWithAuth(`/api/revenue-sharing/distribute/${calculationId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          distributionMethod,
+          paymentProcessor,
+          notes
+        })
+      })
+      return response
+    } catch (error) {
+      console.error('Error distributing revenue:', error)
+      return { success: false, error: 'Failed to distribute revenue' }
+    }
+  }
+
+  async getRevenueSharingHistory(ventureId: string, page = 1, limit = 20, status?: string): Promise<ApiResponse<{ calculations: any[], pagination: any }>> {
+    try {
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: limit.toString(),
+        ...(status && { status })
+      })
+      const response = await this.fetchWithAuth<{ calculations: any[], pagination: any }>(`/api/revenue-sharing/history/${ventureId}?${params}`)
+      return response
+    } catch (error) {
+      console.error('Error fetching revenue sharing history:', error)
+      return { success: false, error: 'Failed to fetch revenue sharing history' }
+    }
+  }
+
+  async getUserDistributions(userId: string, page = 1, limit = 20, status?: string): Promise<ApiResponse<{ distributions: any[], pagination: any }>> {
+    try {
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: limit.toString(),
+        ...(status && { status })
+      })
+      const response = await this.fetchWithAuth<{ distributions: any[], pagination: any }>(`/api/revenue-sharing/user/${userId}?${params}`)
+      return response
+    } catch (error) {
+      console.error('Error fetching user distributions:', error)
+      return { success: false, error: 'Failed to fetch user distributions' }
+    }
+  }
+
+  async updateDistributionStatus(distributionId: string, status: string, paymentId?: string, notes?: string): Promise<ApiResponse> {
+    try {
+      const response = await this.fetchWithAuth(`/api/revenue-sharing/distribution/${distributionId}/status`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          status,
+          paymentId,
+          notes
+        })
+      })
+      return response
+    } catch (error) {
+      console.error('Error updating distribution status:', error)
+      return { success: false, error: 'Failed to update distribution status' }
+    }
+  }
+
+  async getRevenueSharingAnalytics(ventureId?: string, startDate?: string, endDate?: string): Promise<ApiResponse<{ analytics: any }>> {
+    try {
+      const params = new URLSearchParams()
+      if (ventureId) params.append('ventureId', ventureId)
+      if (startDate) params.append('startDate', startDate)
+      if (endDate) params.append('endDate', endDate)
+      const response = await this.fetchWithAuth<{ analytics: any }>(`/api/revenue-sharing/analytics?${params}`)
+      return response
+    } catch (error) {
+      console.error('Error fetching revenue sharing analytics:', error)
+      return { success: false, error: 'Failed to fetch revenue sharing analytics' }
+    }
+  }
+
+  // ===== REAL-TIME NOTIFICATIONS METHODS =====
+  async createNotification(notificationData: {
+    recipientId: string
+    type: string
+    title: string
+    message: string
+    data?: any
+    priority?: string
+    expiresAt?: string
+  }): Promise<ApiResponse> {
+    try {
+      const response = await this.fetchWithAuth('/api/notifications/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(notificationData)
+      })
+      return response
+    } catch (error) {
+      console.error('Error creating notification:', error)
+      return { success: false, error: 'Failed to create notification' }
+    }
+  }
+
+  async getUserNotifications(userId: string, page = 1, limit = 20, status = 'ALL', type?: string, priority?: string): Promise<ApiResponse<{ notifications: any[], pagination: any }>> {
+    try {
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: limit.toString(),
+        status,
+        ...(type && { type }),
+        ...(priority && { priority })
+      })
+      const response = await this.fetchWithAuth<{ notifications: any[], pagination: any }>(`/api/notifications/user/${userId}?${params}`)
+      return response
+    } catch (error) {
+      console.error('Error fetching user notifications:', error)
+      return { success: false, error: 'Failed to fetch user notifications' }
+    }
+  }
+
+  async markNotificationAsRead(notificationId: string): Promise<ApiResponse> {
+    try {
+      const response = await this.fetchWithAuth(`/api/notifications/${notificationId}/read`, {
+        method: 'PUT'
+      })
+      return response
+    } catch (error) {
+      console.error('Error marking notification as read:', error)
+      return { success: false, error: 'Failed to mark notification as read' }
+    }
+  }
+
+  async markAllNotificationsAsRead(userId: string): Promise<ApiResponse> {
+    try {
+      const response = await this.fetchWithAuth(`/api/notifications/user/${userId}/read-all`, {
+        method: 'PUT'
+      })
+      return response
+    } catch (error) {
+      console.error('Error marking all notifications as read:', error)
+      return { success: false, error: 'Failed to mark all notifications as read' }
+    }
+  }
+
+  async deleteNotification(notificationId: string): Promise<ApiResponse> {
+    try {
+      const response = await this.fetchWithAuth(`/api/notifications/${notificationId}`, {
+        method: 'DELETE'
+      })
+      return response
+    } catch (error) {
+      console.error('Error deleting notification:', error)
+      return { success: false, error: 'Failed to delete notification' }
+    }
+  }
+
+  async getNotificationStats(userId: string): Promise<ApiResponse<{ stats: any }>> {
+    try {
+      const response = await this.fetchWithAuth<{ stats: any }>(`/api/notifications/stats/${userId}`)
+      return response
+    } catch (error) {
+      console.error('Error fetching notification stats:', error)
+      return { success: false, error: 'Failed to fetch notification stats' }
     }
   }
 }

@@ -11,9 +11,9 @@ setupSecurity(app);
 
 // CORS configuration
 app.use(cors({
-    origin: process.env.NODE_ENV === 'production' 
-        ? ['https://smartstart-frontend.onrender.com', 'https://smartstart-platform.onrender.com']
-        : ['http://localhost:3000'],
+    origin: process.env.NODE_ENV === 'production' ?
+        ['https://smartstart-frontend.onrender.com', 'https://smartstart-platform.onrender.com'] :
+        ['http://localhost:3000'],
     credentials: true
 }));
 
@@ -94,6 +94,21 @@ app.use('/api/companies', companyManagementApiRoutes);
 
 const teamManagementApiRoutes = require('./routes/team-management-api');
 app.use('/api/teams', teamManagementApiRoutes);
+
+const teamInvitationsApiRoutes = require('./routes/team-invitations-api');
+app.use('/api/team-invitations', teamInvitationsApiRoutes);
+
+const digitalSignaturesApiRoutes = require('./routes/digital-signatures-api');
+app.use('/api/digital-signatures', digitalSignaturesApiRoutes);
+
+const gamificationEnhancedApiRoutes = require('./routes/gamification-enhanced-api');
+app.use('/api/gamification-enhanced', gamificationEnhancedApiRoutes);
+
+const revenueSharingApiRoutes = require('./routes/revenue-sharing-api');
+app.use('/api/revenue-sharing', revenueSharingApiRoutes);
+
+const realtimeNotificationsApiRoutes = require('./routes/realtime-notifications-api');
+app.use('/api/notifications', realtimeNotificationsApiRoutes);
 
 const contributionPipelineApiRoutes = require('./routes/contribution-pipeline-api');
 app.use('/api/contributions', contributionPipelineApiRoutes);
