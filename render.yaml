@@ -1,5 +1,18 @@
 services:
   - type: web
+    name: smartstart-api
+    env: node
+    plan: starter
+    buildCommand: npm install --production && npx prisma generate && npx prisma db push --accept-data-loss
+    startCommand: npm start
+    autoDeploy: true
+    branch: main
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # DATABASE_URL is set in Render dashboard; omit here to preserve secret
+  - type: web
     name: smartstart-frontend
     env: node
     plan: starter
