@@ -124,12 +124,12 @@ console.log('Notifications simple API loaded successfully');
 app.use('/api/notifications', notificationsSimpleApiRoutes);
 console.log('Notifications API routes registered');
 
-// Legal Protections Test Route
-console.log('Loading legal protections test route...');
-const legalProtectionsTestRoutes = require('./routes/legal-protections-test');
-console.log('Legal protections test route loaded successfully');
-app.use('/api/legal-protections-test', legalProtectionsTestRoutes);
-console.log('Legal protections test routes registered');
+// Simple Legal Test Route
+console.log('Loading simple legal test route...');
+const simpleLegalTestRoutes = require('./routes/simple-legal-test');
+console.log('Simple legal test route loaded successfully');
+app.use('/api/simple-legal-test', simpleLegalTestRoutes);
+console.log('Simple legal test routes registered');
 
 // Enhanced Legal Protections API
 console.log('Loading enhanced legal protections API...');
