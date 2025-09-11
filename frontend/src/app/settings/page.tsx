@@ -19,7 +19,8 @@ import {
   Upload,
   CheckCircle,
   AlertCircle,
-  RefreshCw
+  RefreshCw,
+  Crown
 } from 'lucide-react'
 import { comprehensiveApiService as apiService, User as UserType } from '@/lib/api-comprehensive'
 
