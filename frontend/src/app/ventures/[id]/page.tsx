@@ -24,6 +24,7 @@ import {
   Edit,
   Share2
 } from 'lucide-react'
+import { TeamMemberManagement } from '@/components/team/collaboration'
 
 interface Venture {
   id: string
@@ -404,38 +405,18 @@ export default function VentureDetailsPage() {
               </TabsContent>
 
               <TabsContent value="team" className="space-y-6 mt-6">
-                <Card className="glass-card">
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <CardTitle>Team Members</CardTitle>
-                      <Button size="sm">
-                        <Plus className="w-4 h-4 mr-2" />
-                        Invite Member
-                      </Button>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {teamMembers.map((member) => (
-                        <div key={member.id} className="flex items-center justify-between p-4 border rounded-lg">
-                          <div className="flex items-center space-x-4">
-                            <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-                              <Users className="w-5 h-5 text-white" />
-                            </div>
-                            <div>
-                              <h3 className="font-medium text-gray-900">{member.name}</h3>
-                              <p className="text-sm text-gray-600">{member.role}</p>
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <div className="text-sm font-medium text-gray-900">{member.contributions} contributions</div>
-                            <div className="text-xs text-gray-500">Joined {formatDate(member.joinedAt)}</div>
-                          </div>
-                        </div>
-                      ))}
-                  </div>
-                  </CardContent>
-                </Card>
+                <TeamMemberManagement 
+                  teamId={venture.id} 
+                  ventureId={venture.id}
+                  onMemberUpdate={(member) => {
+                    // Handle member update
+                    console.log('Member updated:', member)
+                  }}
+                  onMemberRemove={(memberId) => {
+                    // Handle member removal
+                    console.log('Member removed:', memberId)
+                  }}
+                />
               </TabsContent>
 
               <TabsContent value="analytics" className="space-y-6 mt-6">

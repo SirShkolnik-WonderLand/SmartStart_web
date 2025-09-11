@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import { comprehensiveApiService as apiService, Team, AnalyticsData } from '@/lib/api-comprehensive'
-import { Users, Target, TrendingUp, Plus, Search, Calendar, Award } from 'lucide-react'
+import { Users, Target, TrendingUp, Plus, Search, Calendar, Award, UserPlus, Crown, BarChart3, ArrowLeft } from 'lucide-react'
 import { TeamForm } from '@/components/team/TeamForm'
+import { TeamMemberManagement } from '@/components/team/collaboration'
 
 export default function TeamsPage() {
   const [teams, setTeams] = useState<Team[]>([])
@@ -11,6 +12,7 @@ export default function TeamsPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [showCreateModal, setShowCreateModal] = useState(false)
+  const [selectedTeam, setSelectedTeam] = useState<Team | null>(null)
 
   useEffect(() => {
     const loadTeamsData = async () => {
