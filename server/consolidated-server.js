@@ -113,13 +113,16 @@ app.use('/api/gamification-enhanced', gamificationEnhancedApiRoutes);
 const revenueSharingApiRoutes = require('./routes/revenue-sharing-api');
 app.use('/api/revenue-sharing', revenueSharingApiRoutes);
 
-// Use simplified notifications route (without WebSocket for now)
-const notificationsSimpleApiRoutes = require('./routes/notifications-simple-api');
-app.use('/api/notifications', notificationsSimpleApiRoutes);
-
 // Test route for debugging
 const notificationsTestRoutes = require('./routes/notifications-test');
 app.use('/api/notifications-test', notificationsTestRoutes);
+
+// Use simplified notifications route (without WebSocket for now)
+console.log('Loading notifications simple API...');
+const notificationsSimpleApiRoutes = require('./routes/notifications-simple-api');
+console.log('Notifications simple API loaded successfully');
+app.use('/api/notifications', notificationsSimpleApiRoutes);
+console.log('Notifications API routes registered');
 
 const contributionPipelineApiRoutes = require('./routes/contribution-pipeline-api');
 app.use('/api/contributions', contributionPipelineApiRoutes);
