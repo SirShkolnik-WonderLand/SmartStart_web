@@ -617,6 +617,8 @@ router.get('/health', (req, res) => {
             'GET /profile/:userId/achievements - Get user achievements',
             'GET /profile/:userId/privacy - Get privacy settings',
             'PUT /profile/:userId/privacy - Update privacy settings'
+            ,
+            'GET /profile/:userId/full - Aggregated full profile'
         ]
     });
 });
