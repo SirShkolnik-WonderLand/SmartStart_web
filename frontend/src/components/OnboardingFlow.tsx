@@ -83,6 +83,15 @@ export default function OnboardingFlow({ userId, onComplete, initialStep }: Onbo
     try {
       setIsLoading(true)
       
+      // Check authentication token
+      const token = localStorage.getItem('auth-token')
+      if (!token) {
+        console.error('❌ No authentication token found!')
+        setError('Authentication required. Please log in again.')
+        return
+      }
+      console.log('✅ Authentication token found')
+      
       // Load user data from localStorage to pre-fill profile
       try {
         const storedUser = localStorage.getItem('user')
@@ -158,7 +167,23 @@ export default function OnboardingFlow({ userId, onComplete, initialStep }: Onbo
             console.log(`Starting onboarding at step ${startingStep} from URL parameter`)
           } else {
             // Map journey stages to onboarding steps
-            if (completedStageNames.includes('Account Creation') && completedStageNames.includes('Profile Setup')) {
+            if (completedStageNames.includes('Account Creation') && 
+                completedStageNames.includes('Profile Setup') && 
+                completedStageNames.includes('Platform Legal Pack') && 
+                completedStageNames.includes('Subscription Selection') && 
+                completedStageNames.includes('Platform Orientation')) {
+              startingStep = 3 // All steps completed, should be on final step
+            } else if (completedStageNames.includes('Account Creation') && 
+                       completedStageNames.includes('Profile Setup') && 
+                       completedStageNames.includes('Platform Legal Pack') && 
+                       completedStageNames.includes('Subscription Selection')) {
+              startingStep = 3 // Start at Platform Orientation step
+            } else if (completedStageNames.includes('Account Creation') && 
+                       completedStageNames.includes('Profile Setup') && 
+                       completedStageNames.includes('Platform Legal Pack')) {
+              startingStep = 2 // Start at Subscription step
+            } else if (completedStageNames.includes('Account Creation') && 
+                       completedStageNames.includes('Profile Setup')) {
               startingStep = 1 // Start at Legal step
             } else if (completedStageNames.includes('Account Creation')) {
               startingStep = 0 // Start at Profile step
@@ -238,21 +263,30 @@ export default function OnboardingFlow({ userId, onComplete, initialStep }: Onbo
 
   const updateJourneyProgress = useCallback(async (action: string, data: Record<string, unknown> = {}) => {
     try {
+      console.log(`🔄 updateJourneyProgress called - action: ${action}, userId: ${userId}`, data)
       const response = await apiService.updateJourneyProgress(userId, action, data)
+      console.log(`📝 updateJourneyProgress response:`, response)
+      
       if (response.success) {
         // Reload journey status
         try {
           const journeyResponse = await apiService.getJourneyStatus(userId)
           if (journeyResponse.success && journeyResponse.data) {
             setJourneyStatus(journeyResponse.data)
+            console.log('📝 Journey status reloaded successfully')
           }
         } catch (journeyError) {
-          console.warn('Failed to reload journey status after update:', journeyError)
+          console.warn('⚠️ Failed to reload journey status after update:', journeyError)
         }
+        return response
+      } else {
+        console.error('❌ updateJourneyProgress failed:', response.error)
+        return response
       }
     } catch (err) {
-      console.warn('Error updating journey progress (continuing anyway):', err)
+      console.error('❌ Error updating journey progress:', err)
       // Don't fail the onboarding flow if journey updates fail
+      return { success: false, error: err.message }
     }
   }, [userId])
 
@@ -318,6 +352,8 @@ export default function OnboardingFlow({ userId, onComplete, initialStep }: Onbo
 
   const handleNext = async () => {
     try {
+      console.log(`🔄 handleNext called - currentStep: ${currentStep}, steps.length: ${steps.length}`)
+      
       // Save current step data first
       await autoSaveData()
       
@@ -331,23 +367,29 @@ export default function OnboardingFlow({ userId, onComplete, initialStep }: Onbo
         ]
         
         if (stepActions[currentStep]) {
-          console.log(`Updating journey progress for step ${currentStep}: ${stepActions[currentStep]}`)
-          await updateJourneyProgress(stepActions[currentStep], {
+          console.log(`📝 Updating journey progress for step ${currentStep}: ${stepActions[currentStep]}`)
+          const progressResult = await updateJourneyProgress(stepActions[currentStep], {
             step: currentStep,
             completedAt: new Date().toISOString(),
             data: getCurrentStepData()
           })
+          console.log('📝 Journey progress update result:', progressResult)
         }
         
         await handleStepChange(currentStep + 1)
       } else {
         // Complete onboarding
-        console.log('Completing onboarding flow')
+        console.log('🎉 Completing onboarding flow - this is the final step!')
+        
         // Mark orientation completed explicitly before finalizing
-        await updateJourneyProgress('ORIENTATION_COMPLETED', {
+        console.log('📝 Marking ORIENTATION_COMPLETED...')
+        const orientationResult = await updateJourneyProgress('ORIENTATION_COMPLETED', {
           completedAt: new Date().toISOString()
         })
-        await updateJourneyProgress('ONBOARDING_COMPLETE', {
+        console.log('📝 ORIENTATION_COMPLETED result:', orientationResult)
+        
+        console.log('📝 Marking ONBOARDING_COMPLETE...')
+        const completeResult = await updateJourneyProgress('ONBOARDING_COMPLETE', {
           completedAt: new Date().toISOString(),
           allData: {
             profileData,
@@ -356,17 +398,21 @@ export default function OnboardingFlow({ userId, onComplete, initialStep }: Onbo
             paymentData
           }
         })
+        console.log('📝 ONBOARDING_COMPLETE result:', completeResult)
         
         // Clear backup data on completion
         localStorage.removeItem(`onboarding_backup_${userId}`)
+        console.log('🎉 Calling onComplete() to redirect to dashboard...')
         onComplete()
       }
     } catch (error) {
-      console.error('Error in handleNext:', error)
+      console.error('❌ Error in handleNext:', error)
       // Still proceed to next step even if journey update fails
       if (currentStep < steps.length - 1) {
+        console.log('⚠️ Continuing to next step despite error...')
         await handleStepChange(currentStep + 1)
       } else {
+        console.log('⚠️ Completing onboarding despite error...')
         onComplete()
       }
     }
@@ -1007,6 +1053,19 @@ export default function OnboardingFlow({ userId, onComplete, initialStep }: Onbo
                 <span>{currentStep === steps.length - 1 ? 'Complete Initial Setup' : 'Next'}</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
+              
+              {/* Emergency completion button for debugging */}
+              {currentStep === steps.length - 1 && (
+                <button
+                  onClick={() => {
+                    console.log('🚨 Emergency completion button clicked!')
+                    onComplete()
+                  }}
+                  className="wonder-button-secondary flex items-center space-x-2 px-4 py-2 ml-2 text-sm"
+                >
+                  <span>Force Complete</span>
+                </button>
+              )}
             </div>
           </div>
         </div>

@@ -62,16 +62,23 @@ function OnboardingPageContent() {
   }, [router, searchParams])
 
   const handleOnboardingComplete = () => {
+    console.log('🎉 handleOnboardingComplete called - redirecting to dashboard...')
     // Redirect to dashboard after onboarding completion (with hard fallback)
     try {
+      console.log('🔄 Attempting router.push to /dashboard...')
       router.push('/dashboard')
       setTimeout(() => {
         if (typeof window !== 'undefined' && !window.location.pathname.includes('/dashboard')) {
+          console.log('⚠️ Router push failed, using window.location.href fallback...')
           window.location.href = '/dashboard'
+        } else {
+          console.log('✅ Successfully redirected to dashboard')
         }
       }, 400)
-    } catch {
+    } catch (error) {
+      console.error('❌ Error in handleOnboardingComplete:', error)
       if (typeof window !== 'undefined') {
+        console.log('🔄 Using window.location.href fallback...')
         window.location.href = '/dashboard'
       }
     }
