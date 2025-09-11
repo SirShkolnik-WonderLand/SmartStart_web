@@ -1447,7 +1447,7 @@ class ComprehensiveApiService {
       return { success: true, data: response.data?.companies || [] }
     } catch (error) {
       console.error('Error getting companies:', error)
-      throw error
+      return { success: false, data: [], error: 'Failed to fetch companies' }
     }
   }
 
@@ -1457,7 +1457,7 @@ class ComprehensiveApiService {
       return { success: true, data: response.data?.company }
     } catch (error) {
       console.error('Error getting company:', error)
-      throw error
+      return { success: false, error: 'Failed to fetch company' }
     }
   }
 
@@ -1470,7 +1470,7 @@ class ComprehensiveApiService {
       return { success: true, data: response.data?.company }
     } catch (error) {
       console.error('Error creating company:', error)
-      throw error
+      return { success: false, error: 'Failed to create company' }
     }
   }
 
@@ -1483,7 +1483,7 @@ class ComprehensiveApiService {
       return { success: true, data: response.data?.company }
     } catch (error) {
       console.error('Error updating company:', error)
-      throw error
+      return { success: false, error: 'Failed to update company' }
     }
   }
 
@@ -1495,7 +1495,7 @@ class ComprehensiveApiService {
       return response
     } catch (error) {
       console.error('Error deleting company:', error)
-      throw error
+      return { success: false, error: 'Failed to delete company' }
     }
   }
 
@@ -1509,7 +1509,7 @@ class ComprehensiveApiService {
       return { success: true, data: response.data?.teams || [] }
     } catch (error) {
       console.error('Error getting teams:', error)
-      throw error
+      return { success: false, data: [], error: 'Failed to fetch teams' }
     }
   }
 
@@ -1519,7 +1519,7 @@ class ComprehensiveApiService {
       return { success: true, data: response.data?.team }
     } catch (error) {
       console.error('Error getting team:', error)
-      throw error
+      return { success: false, error: 'Failed to fetch team' }
     }
   }
 
@@ -1532,7 +1532,32 @@ class ComprehensiveApiService {
       return { success: true, data: response.data?.team }
     } catch (error) {
       console.error('Error creating team:', error)
-      throw error
+      return { success: false, error: 'Failed to create team' }
+    }
+  }
+
+  async updateTeam(id: string, teamData: Partial<Team>): Promise<ApiResponse<Team>> {
+    try {
+      const response = await this.fetchWithAuth<{ team: Team }>(`/api/teams/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(teamData)
+      })
+      return { success: true, data: response.data?.team }
+    } catch (error) {
+      console.error('Error updating team:', error)
+      return { success: false, error: 'Failed to update team' }
+    }
+  }
+
+  async deleteTeam(id: string): Promise<ApiResponse> {
+    try {
+      const response = await this.fetchWithAuth(`/api/teams/${id}`, {
+        method: 'DELETE'
+      })
+      return response
+    } catch (error) {
+      console.error('Error deleting team:', error)
+      return { success: false, error: 'Failed to delete team' }
     }
   }
 
@@ -1546,7 +1571,7 @@ class ComprehensiveApiService {
       return { success: true, data: response.data }
     } catch (error) {
       console.error('Error getting user XP:', error)
-      throw error
+      return { success: false, error: 'Failed to fetch user XP' }
     }
   }
 
@@ -1559,7 +1584,7 @@ class ComprehensiveApiService {
       return { success: true, data: response.data }
     } catch (error) {
       console.error('Error adding XP:', error)
-      throw error
+      return { success: false, error: 'Failed to add XP' }
     }
   }
 
@@ -1569,7 +1594,7 @@ class ComprehensiveApiService {
       return { success: true, data: response.data?.badges || [] }
     } catch (error) {
       console.error('Error getting user badges:', error)
-      throw error
+      return { success: false, data: [], error: 'Failed to fetch user badges' }
     }
   }
 
@@ -1579,7 +1604,17 @@ class ComprehensiveApiService {
       return { success: true, data: response.data?.leaderboard || [] }
     } catch (error) {
       console.error('Error getting leaderboard:', error)
-      throw error
+      return { success: false, data: [], error: 'Failed to fetch leaderboard' }
+    }
+  }
+
+  async getUserMetrics(userId: string): Promise<ApiResponse<UserMetrics>> {
+    try {
+      const response = await this.fetchWithAuth<UserMetrics>(`/api/user-gamification/profile/${userId}`)
+      return response
+    } catch (error) {
+      console.error('Error getting user metrics:', error)
+      return { success: false, error: 'Failed to fetch user metrics' }
     }
   }
 }

@@ -3,867 +3,855 @@
 /* Wonderland Unified Theme System */
 
 :root {
-  /* Alice's Garden Theme (Default Light) */
-  --background: 248 250 255;
-  --foreground: 30 27 75;
-  --foreground-body: 55 48 163;
-  --foreground-muted: 107 114 128;
-  
-  /* Glass Surfaces */
-  --glass-surface: rgba(241, 245, 255, 0.85);
-  --glass-border: rgba(139, 92, 246, 0.15);
-  --glass-highlight: rgba(139, 92, 246, 0.08);
-  --glass-shadow: 0 8px 25px rgba(139, 92, 246, 0.12);
-  --glass-shadow-lg: 0 12px 35px rgba(139, 92, 246, 0.18);
-  
-  /* Wonderland Brand Colors */
-  --primary: 139 92 246;
-  --primary-foreground: 255 255 255;
-  --secondary: 59 130 246;
-  --secondary-foreground: 255 255 255;
-  --accent: 236 72 153;
-  --accent-foreground: 255 255 255;
-  --highlight: 245 158 11;
-  --highlight-foreground: 255 255 255;
-  
-  /* Interactive States */
-  --hover: rgba(139, 92, 246, 0.08);
-  --active: rgba(139, 92, 246, 0.15);
-  --focus: 139 92 246;
-  
-  /* Borders & Dividers */
-  --border: rgba(139, 92, 246, 0.2);
-  --border-light: rgba(139, 92, 246, 0.1);
-  
-  /* Status Colors */
-  --success: 34 197 94;
-  --warning: 245 158 11;
-  --error: 239 68 68;
-  --info: 139 92 246;
-  
-  /* Border Radius */
-  --radius: 12px;
-  
-  /* Header & Navigation */
-  --header-bg: 248 250 255;
-  --header-border: rgba(139, 92, 246, 0.2);
-  --sidebar-bg: 241 245 255;
-  --sidebar-border: rgba(139, 92, 246, 0.15);
-  
-  /* Cards & Surfaces */
-  --card-bg: 255 255 255;
-  --card-border: rgba(139, 92, 246, 0.1);
-  --card-shadow: 0 4px 15px rgba(139, 92, 246, 0.08);
-  
-  /* Buttons */
-  --btn-primary-bg: 139 92 246;
-  --btn-primary-hover: 124 58 237;
-  --btn-secondary-bg: 59 130 246;
-  --btn-secondary-hover: 37 99 235;
-  --btn-accent-bg: 236 72 153;
-  --btn-accent-hover: 219 39 119;
-  --btn-ghost-bg: rgba(139, 92, 246, 0.08);
-  --btn-ghost-hover: rgba(139, 92, 246, 0.15);
+    /* Alice's Garden Theme (Default Light) */
+    --background: 248 250 255;
+    --foreground: 30 27 75;
+    --foreground-body: 55 48 163;
+    --foreground-muted: 107 114 128;
+    /* Glass Surfaces */
+    --glass-surface: rgba(241, 245, 255, 0.85);
+    --glass-border: rgba(139, 92, 246, 0.15);
+    --glass-highlight: rgba(139, 92, 246, 0.08);
+    --glass-shadow: 0 8px 25px rgba(139, 92, 246, 0.12);
+    --glass-shadow-lg: 0 12px 35px rgba(139, 92, 246, 0.18);
+    /* Wonderland Brand Colors */
+    --primary: 139 92 246;
+    --primary-foreground: 255 255 255;
+    --secondary: 59 130 246;
+    --secondary-foreground: 255 255 255;
+    --accent: 236 72 153;
+    --accent-foreground: 255 255 255;
+    --highlight: 245 158 11;
+    --highlight-foreground: 255 255 255;
+    /* Interactive States */
+    --hover: rgba(139, 92, 246, 0.08);
+    --active: rgba(139, 92, 246, 0.15);
+    --focus: 139 92 246;
+    /* Borders & Dividers */
+    --border: rgba(139, 92, 246, 0.2);
+    --border-light: rgba(139, 92, 246, 0.1);
+    /* Status Colors */
+    --success: 34 197 94;
+    --warning: 245 158 11;
+    --error: 239 68 68;
+    --info: 139 92 246;
+    /* Border Radius */
+    --radius: 12px;
+    /* Header & Navigation */
+    --header-bg: 248 250 255;
+    --header-border: rgba(139, 92, 246, 0.2);
+    --sidebar-bg: 241 245 255;
+    --sidebar-border: rgba(139, 92, 246, 0.15);
+    /* Cards & Surfaces */
+    --card-bg: 255 255 255;
+    --card-border: rgba(139, 92, 246, 0.1);
+    --card-shadow: 0 4px 15px rgba(139, 92, 246, 0.08);
+    /* Buttons */
+    --btn-primary-bg: 139 92 246;
+    --btn-primary-hover: 124 58 237;
+    --btn-secondary-bg: 59 130 246;
+    --btn-secondary-hover: 37 99 235;
+    --btn-accent-bg: 236 72 153;
+    --btn-accent-hover: 219 39 119;
+    --btn-ghost-bg: rgba(139, 92, 246, 0.08);
+    --btn-ghost-hover: rgba(139, 92, 246, 0.15);
 }
+
 
 /* Midnight Glass Theme */
+
 [data-theme="midnight"] {
-  --background: 11 16 33;
-  --foreground: 245 247 250;
-  --foreground-body: 203 213 225;
-  --foreground-muted: 152 162 184;
-  
-  --glass-surface: rgba(18, 23, 54, 0.85);
-  --glass-border: rgba(58, 123, 222, 0.2);
-  --glass-highlight: rgba(58, 123, 222, 0.1);
-  --glass-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-  --glass-shadow-lg: 0 12px 35px rgba(0, 0, 0, 0.4);
-  
-  --primary: 58 123 222;
-  --primary-foreground: 255 255 255;
-  --secondary: 107 57 209;
-  --secondary-foreground: 255 255 255;
-  --accent: 222 110 166;
-  --accent-foreground: 255 255 255;
-  --highlight: 245 158 11;
-  --highlight-foreground: 255 255 255;
-  
-  --hover: rgba(58, 123, 222, 0.15);
-  --active: rgba(58, 123, 222, 0.25);
-  --focus: 58 123 222;
-  
-  --border: rgba(58, 123, 222, 0.3);
-  --border-light: rgba(58, 123, 222, 0.15);
-  
-  --success: 34 197 94;
-  --warning: 245 158 11;
-  --error: 239 68 68;
-  --info: 58 123 222;
-  
-  --header-bg: 11 16 33;
-  --header-border: rgba(58, 123, 222, 0.3);
-  --sidebar-bg: 18 23 54;
-  --sidebar-border: rgba(58, 123, 222, 0.2);
-  
-  --card-bg: 18 23 54;
-  --card-border: rgba(58, 123, 222, 0.2);
-  --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-  
-  --btn-primary-bg: 58 123 222;
-  --btn-primary-hover: 37 99 235;
-  --btn-secondary-bg: 107 57 209;
-  --btn-secondary-hover: 91 33 182;
-  --btn-accent-bg: 222 110 166;
-  --btn-accent-hover: 219 39 119;
-  --btn-ghost-bg: rgba(58, 123, 222, 0.15);
-  --btn-ghost-hover: rgba(58, 123, 222, 0.25);
+    --background: 11 16 33;
+    --foreground: 245 247 250;
+    --foreground-body: 203 213 225;
+    --foreground-muted: 152 162 184;
+    --glass-surface: rgba(18, 23, 54, 0.85);
+    --glass-border: rgba(58, 123, 222, 0.2);
+    --glass-highlight: rgba(58, 123, 222, 0.1);
+    --glass-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    --glass-shadow-lg: 0 12px 35px rgba(0, 0, 0, 0.4);
+    --primary: 58 123 222;
+    --primary-foreground: 255 255 255;
+    --secondary: 107 57 209;
+    --secondary-foreground: 255 255 255;
+    --accent: 222 110 166;
+    --accent-foreground: 255 255 255;
+    --highlight: 245 158 11;
+    --highlight-foreground: 255 255 255;
+    --hover: rgba(58, 123, 222, 0.15);
+    --active: rgba(58, 123, 222, 0.25);
+    --focus: 58 123 222;
+    --border: rgba(58, 123, 222, 0.3);
+    --border-light: rgba(58, 123, 222, 0.15);
+    --success: 34 197 94;
+    --warning: 245 158 11;
+    --error: 239 68 68;
+    --info: 58 123 222;
+    --header-bg: 11 16 33;
+    --header-border: rgba(58, 123, 222, 0.3);
+    --sidebar-bg: 18 23 54;
+    --sidebar-border: rgba(58, 123, 222, 0.2);
+    --card-bg: 18 23 54;
+    --card-border: rgba(58, 123, 222, 0.2);
+    --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    --btn-primary-bg: 58 123 222;
+    --btn-primary-hover: 37 99 235;
+    --btn-secondary-bg: 107 57 209;
+    --btn-secondary-hover: 91 33 182;
+    --btn-accent-bg: 222 110 166;
+    --btn-accent-hover: 219 39 119;
+    --btn-ghost-bg: rgba(58, 123, 222, 0.15);
+    --btn-ghost-hover: rgba(58, 123, 222, 0.25);
 }
+
 
 /* Ocean Depths Theme */
+
 [data-theme="ocean"] {
-  --background: 12 24 33;
-  --foreground: 226 232 240;
-  --foreground-body: 203 213 225;
-  --foreground-muted: 148 163 184;
-  
-  --glass-surface: rgba(30, 41, 59, 0.85);
-  --glass-border: rgba(14, 165, 233, 0.2);
-  --glass-highlight: rgba(14, 165, 233, 0.1);
-  --glass-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-  --glass-shadow-lg: 0 12px 35px rgba(0, 0, 0, 0.4);
-  
-  --primary: 14 165 233;
-  --primary-foreground: 255 255 255;
-  --secondary: 6 182 212;
-  --secondary-foreground: 255 255 255;
-  --accent: 16 185 129;
-  --accent-foreground: 255 255 255;
-  --highlight: 245 158 11;
-  --highlight-foreground: 255 255 255;
-  
-  --hover: rgba(14, 165, 233, 0.15);
-  --active: rgba(14, 165, 233, 0.25);
-  --focus: 14 165 233;
-  
-  --border: rgba(14, 165, 233, 0.3);
-  --border-light: rgba(14, 165, 233, 0.15);
-  
-  --success: 34 197 94;
-  --warning: 245 158 11;
-  --error: 239 68 68;
-  --info: 14 165 233;
-  
-  --header-bg: 12 24 33;
-  --header-border: rgba(14, 165, 233, 0.3);
-  --sidebar-bg: 30 41 59;
-  --sidebar-border: rgba(14, 165, 233, 0.2);
-  
-  --card-bg: 30 41 59;
-  --card-border: rgba(14, 165, 233, 0.2);
-  --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-  
-  --btn-primary-bg: 14 165 233;
-  --btn-primary-hover: 2 132 199;
-  --btn-secondary-bg: 6 182 212;
-  --btn-secondary-hover: 8 145 178;
-  --btn-accent-bg: 16 185 129;
-  --btn-accent-hover: 5 150 105;
-  --btn-ghost-bg: rgba(14, 165, 233, 0.15);
-  --btn-ghost-hover: rgba(14, 165, 233, 0.25);
+    --background: 12 24 33;
+    --foreground: 226 232 240;
+    --foreground-body: 203 213 225;
+    --foreground-muted: 148 163 184;
+    --glass-surface: rgba(30, 41, 59, 0.85);
+    --glass-border: rgba(14, 165, 233, 0.2);
+    --glass-highlight: rgba(14, 165, 233, 0.1);
+    --glass-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    --glass-shadow-lg: 0 12px 35px rgba(0, 0, 0, 0.4);
+    --primary: 14 165 233;
+    --primary-foreground: 255 255 255;
+    --secondary: 6 182 212;
+    --secondary-foreground: 255 255 255;
+    --accent: 16 185 129;
+    --accent-foreground: 255 255 255;
+    --highlight: 245 158 11;
+    --highlight-foreground: 255 255 255;
+    --hover: rgba(14, 165, 233, 0.15);
+    --active: rgba(14, 165, 233, 0.25);
+    --focus: 14 165 233;
+    --border: rgba(14, 165, 233, 0.3);
+    --border-light: rgba(14, 165, 233, 0.15);
+    --success: 34 197 94;
+    --warning: 245 158 11;
+    --error: 239 68 68;
+    --info: 14 165 233;
+    --header-bg: 12 24 33;
+    --header-border: rgba(14, 165, 233, 0.3);
+    --sidebar-bg: 30 41 59;
+    --sidebar-border: rgba(14, 165, 233, 0.2);
+    --card-bg: 30 41 59;
+    --card-border: rgba(14, 165, 233, 0.2);
+    --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    --btn-primary-bg: 14 165 233;
+    --btn-primary-hover: 2 132 199;
+    --btn-secondary-bg: 6 182 212;
+    --btn-secondary-hover: 8 145 178;
+    --btn-accent-bg: 16 185 129;
+    --btn-accent-hover: 5 150 105;
+    --btn-ghost-bg: rgba(14, 165, 233, 0.15);
+    --btn-ghost-hover: rgba(14, 165, 233, 0.25);
 }
+
 
 /* Enchanted Forest Theme */
+
 [data-theme="forest"] {
-  --background: 15 20 25;
-  --foreground: 243 244 246;
-  --foreground-body: 209 213 219;
-  --foreground-muted: 156 163 175;
-  
-  --glass-surface: rgba(31, 41, 55, 0.85);
-  --glass-border: rgba(5, 150, 105, 0.2);
-  --glass-highlight: rgba(5, 150, 105, 0.1);
-  --glass-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-  --glass-shadow-lg: 0 12px 35px rgba(0, 0, 0, 0.4);
-  
-  --primary: 5 150 105;
-  --primary-foreground: 255 255 255;
-  --secondary: 13 148 136;
-  --secondary-foreground: 255 255 255;
-  --accent: 217 119 6;
-  --accent-foreground: 255 255 255;
-  --highlight: 245 158 11;
-  --highlight-foreground: 255 255 255;
-  
-  --hover: rgba(5, 150, 105, 0.15);
-  --active: rgba(5, 150, 105, 0.25);
-  --focus: 5 150 105;
-  
-  --border: rgba(5, 150, 105, 0.3);
-  --border-light: rgba(5, 150, 105, 0.15);
-  
-  --success: 34 197 94;
-  --warning: 245 158 11;
-  --error: 239 68 68;
-  --info: 5 150 105;
-  
-  --header-bg: 15 20 25;
-  --header-border: rgba(5, 150, 105, 0.3);
-  --sidebar-bg: 31 41 55;
-  --sidebar-border: rgba(5, 150, 105, 0.2);
-  
-  --card-bg: 31 41 55;
-  --card-border: rgba(5, 150, 105, 0.2);
-  --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-  
-  --btn-primary-bg: 5 150 105;
-  --btn-primary-hover: 4 120 87;
-  --btn-secondary-bg: 13 148 136;
-  --btn-secondary-hover: 15 118 110;
-  --btn-accent-bg: 217 119 6;
-  --btn-accent-hover: 194 65 12;
-  --btn-ghost-bg: rgba(5, 150, 105, 0.15);
-  --btn-ghost-hover: rgba(5, 150, 105, 0.25);
+    --background: 15 20 25;
+    --foreground: 243 244 246;
+    --foreground-body: 209 213 219;
+    --foreground-muted: 156 163 175;
+    --glass-surface: rgba(31, 41, 55, 0.85);
+    --glass-border: rgba(5, 150, 105, 0.2);
+    --glass-highlight: rgba(5, 150, 105, 0.1);
+    --glass-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    --glass-shadow-lg: 0 12px 35px rgba(0, 0, 0, 0.4);
+    --primary: 5 150 105;
+    --primary-foreground: 255 255 255;
+    --secondary: 13 148 136;
+    --secondary-foreground: 255 255 255;
+    --accent: 217 119 6;
+    --accent-foreground: 255 255 255;
+    --highlight: 245 158 11;
+    --highlight-foreground: 255 255 255;
+    --hover: rgba(5, 150, 105, 0.15);
+    --active: rgba(5, 150, 105, 0.25);
+    --focus: 5 150 105;
+    --border: rgba(5, 150, 105, 0.3);
+    --border-light: rgba(5, 150, 105, 0.15);
+    --success: 34 197 94;
+    --warning: 245 158 11;
+    --error: 239 68 68;
+    --info: 5 150 105;
+    --header-bg: 15 20 25;
+    --header-border: rgba(5, 150, 105, 0.3);
+    --sidebar-bg: 31 41 55;
+    --sidebar-border: rgba(5, 150, 105, 0.2);
+    --card-bg: 31 41 55;
+    --card-border: rgba(5, 150, 105, 0.2);
+    --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    --btn-primary-bg: 5 150 105;
+    --btn-primary-hover: 4 120 87;
+    --btn-secondary-bg: 13 148 136;
+    --btn-secondary-hover: 15 118 110;
+    --btn-accent-bg: 217 119 6;
+    --btn-accent-hover: 194 65 12;
+    --btn-ghost-bg: rgba(5, 150, 105, 0.15);
+    --btn-ghost-hover: rgba(5, 150, 105, 0.25);
 }
+
 
 /* Golden Sunset Theme */
+
 [data-theme="sunset"] {
-  --background: 28 25 23;
-  --foreground: 254 243 199;
-  --foreground-body: 251 191 36;
-  --foreground-muted: 167 139 250;
-  
-  --glass-surface: rgba(41, 37, 36, 0.85);
-  --glass-border: rgba(234, 88, 12, 0.2);
-  --glass-highlight: rgba(234, 88, 12, 0.1);
-  --glass-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-  --glass-shadow-lg: 0 12px 35px rgba(0, 0, 0, 0.4);
-  
-  --primary: 234 88 12;
-  --primary-foreground: 255 255 255;
-  --secondary: 220 38 38;
-  --secondary-foreground: 255 255 255;
-  --accent: 236 72 153;
-  --accent-foreground: 255 255 255;
-  --highlight: 245 158 11;
-  --highlight-foreground: 255 255 255;
-  
-  --hover: rgba(234, 88, 12, 0.15);
-  --active: rgba(234, 88, 12, 0.25);
-  --focus: 234 88 12;
-  
-  --border: rgba(234, 88, 12, 0.3);
-  --border-light: rgba(234, 88, 12, 0.15);
-  
-  --success: 34 197 94;
-  --warning: 245 158 11;
-  --error: 239 68 68;
-  --info: 234 88 12;
-  
-  --header-bg: 28 25 23;
-  --header-border: rgba(234, 88, 12, 0.3);
-  --sidebar-bg: 41 37 36;
-  --sidebar-border: rgba(234, 88, 12, 0.2);
-  
-  --card-bg: 41 37 36;
-  --card-border: rgba(234, 88, 12, 0.2);
-  --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-  
-  --btn-primary-bg: 234 88 12;
-  --btn-primary-hover: 194 65 12;
-  --btn-secondary-bg: 220 38 38;
-  --btn-secondary-hover: 185 28 28;
-  --btn-accent-bg: 236 72 153;
-  --btn-accent-hover: 219 39 119;
-  --btn-ghost-bg: rgba(234, 88, 12, 0.15);
-  --btn-ghost-hover: rgba(234, 88, 12, 0.25);
+    --background: 28 25 23;
+    --foreground: 254 243 199;
+    --foreground-body: 251 191 36;
+    --foreground-muted: 167 139 250;
+    --glass-surface: rgba(41, 37, 36, 0.85);
+    --glass-border: rgba(234, 88, 12, 0.2);
+    --glass-highlight: rgba(234, 88, 12, 0.1);
+    --glass-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    --glass-shadow-lg: 0 12px 35px rgba(0, 0, 0, 0.4);
+    --primary: 234 88 12;
+    --primary-foreground: 255 255 255;
+    --secondary: 220 38 38;
+    --secondary-foreground: 255 255 255;
+    --accent: 236 72 153;
+    --accent-foreground: 255 255 255;
+    --highlight: 245 158 11;
+    --highlight-foreground: 255 255 255;
+    --hover: rgba(234, 88, 12, 0.15);
+    --active: rgba(234, 88, 12, 0.25);
+    --focus: 234 88 12;
+    --border: rgba(234, 88, 12, 0.3);
+    --border-light: rgba(234, 88, 12, 0.15);
+    --success: 34 197 94;
+    --warning: 245 158 11;
+    --error: 239 68 68;
+    --info: 234 88 12;
+    --header-bg: 28 25 23;
+    --header-border: rgba(234, 88, 12, 0.3);
+    --sidebar-bg: 41 37 36;
+    --sidebar-border: rgba(234, 88, 12, 0.2);
+    --card-bg: 41 37 36;
+    --card-border: rgba(234, 88, 12, 0.2);
+    --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    --btn-primary-bg: 234 88 12;
+    --btn-primary-hover: 194 65 12;
+    --btn-secondary-bg: 220 38 38;
+    --btn-secondary-hover: 185 28 28;
+    --btn-accent-bg: 236 72 153;
+    --btn-accent-hover: 219 39 119;
+    --btn-ghost-bg: rgba(234, 88, 12, 0.15);
+    --btn-ghost-hover: rgba(234, 88, 12, 0.25);
 }
+
 
 /* Aurora Borealis Theme */
+
 [data-theme="aurora"] {
-  --background: 15 23 42;
-  --foreground: 241 245 249;
-  --foreground-body: 203 213 225;
-  --foreground-muted: 148 163 184;
-  
-  --glass-surface: rgba(30, 41, 59, 0.85);
-  --glass-border: rgba(16, 185, 129, 0.2);
-  --glass-highlight: rgba(16, 185, 129, 0.1);
-  --glass-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-  --glass-shadow-lg: 0 12px 35px rgba(0, 0, 0, 0.4);
-  
-  --primary: 16 185 129;
-  --primary-foreground: 255 255 255;
-  --secondary: 6 182 212;
-  --secondary-foreground: 255 255 255;
-  --accent: 139 92 246;
-  --accent-foreground: 255 255 255;
-  --highlight: 245 158 11;
-  --highlight-foreground: 255 255 255;
-  
-  --hover: rgba(16, 185, 129, 0.15);
-  --active: rgba(16, 185, 129, 0.25);
-  --focus: 16 185 129;
-  
-  --border: rgba(16, 185, 129, 0.3);
-  --border-light: rgba(16, 185, 129, 0.15);
-  
-  --success: 34 197 94;
-  --warning: 245 158 11;
-  --error: 239 68 68;
-  --info: 16 185 129;
-  
-  --header-bg: 15 23 42;
-  --header-border: rgba(16, 185, 129, 0.3);
-  --sidebar-bg: 30 41 59;
-  --sidebar-border: rgba(16, 185, 129, 0.2);
-  
-  --card-bg: 30 41 59;
-  --card-border: rgba(16, 185, 129, 0.2);
-  --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-  
-  --btn-primary-bg: 16 185 129;
-  --btn-primary-hover: 5 150 105;
-  --btn-secondary-bg: 6 182 212;
-  --btn-secondary-hover: 8 145 178;
-  --btn-accent-bg: 139 92 246;
-  --btn-accent-hover: 124 58 237;
-  --btn-ghost-bg: rgba(16, 185, 129, 0.15);
-  --btn-ghost-hover: rgba(16, 185, 129, 0.25);
+    --background: 15 23 42;
+    --foreground: 241 245 249;
+    --foreground-body: 203 213 225;
+    --foreground-muted: 148 163 184;
+    --glass-surface: rgba(30, 41, 59, 0.85);
+    --glass-border: rgba(16, 185, 129, 0.2);
+    --glass-highlight: rgba(16, 185, 129, 0.1);
+    --glass-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    --glass-shadow-lg: 0 12px 35px rgba(0, 0, 0, 0.4);
+    --primary: 16 185 129;
+    --primary-foreground: 255 255 255;
+    --secondary: 6 182 212;
+    --secondary-foreground: 255 255 255;
+    --accent: 139 92 246;
+    --accent-foreground: 255 255 255;
+    --highlight: 245 158 11;
+    --highlight-foreground: 255 255 255;
+    --hover: rgba(16, 185, 129, 0.15);
+    --active: rgba(16, 185, 129, 0.25);
+    --focus: 16 185 129;
+    --border: rgba(16, 185, 129, 0.3);
+    --border-light: rgba(16, 185, 129, 0.15);
+    --success: 34 197 94;
+    --warning: 245 158 11;
+    --error: 239 68 68;
+    --info: 16 185 129;
+    --header-bg: 15 23 42;
+    --header-border: rgba(16, 185, 129, 0.3);
+    --sidebar-bg: 30 41 59;
+    --sidebar-border: rgba(16, 185, 129, 0.2);
+    --card-bg: 30 41 59;
+    --card-border: rgba(16, 185, 129, 0.2);
+    --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    --btn-primary-bg: 16 185 129;
+    --btn-primary-hover: 5 150 105;
+    --btn-secondary-bg: 6 182 212;
+    --btn-secondary-hover: 8 145 178;
+    --btn-accent-bg: 139 92 246;
+    --btn-accent-hover: 124 58 237;
+    --btn-ghost-bg: rgba(16, 185, 129, 0.15);
+    --btn-ghost-hover: rgba(16, 185, 129, 0.25);
 }
+
 
 /* Rose Garden Theme */
+
 [data-theme="rose"] {
-  --background: 31 10 26;
-  --foreground: 253 242 248;
-  --foreground-body: 251 207 232;
-  --foreground-muted: 249 168 212;
-  
-  --glass-surface: rgba(45, 27, 45, 0.85);
-  --glass-border: rgba(225, 29, 72, 0.2);
-  --glass-highlight: rgba(225, 29, 72, 0.1);
-  --glass-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-  --glass-shadow-lg: 0 12px 35px rgba(0, 0, 0, 0.4);
-  
-  --primary: 225 29 72;
-  --primary-foreground: 255 255 255;
-  --secondary: 190 24 93;
-  --secondary-foreground: 255 255 255;
-  --accent: 244 63 94;
-  --accent-foreground: 255 255 255;
-  --highlight: 245 158 11;
-  --highlight-foreground: 255 255 255;
-  
-  --hover: rgba(225, 29, 72, 0.15);
-  --active: rgba(225, 29, 72, 0.25);
-  --focus: 225 29 72;
-  
-  --border: rgba(225, 29, 72, 0.3);
-  --border-light: rgba(225, 29, 72, 0.15);
-  
-  --success: 34 197 94;
-  --warning: 245 158 11;
-  --error: 239 68 68;
-  --info: 225 29 72;
-  
-  --header-bg: 31 10 26;
-  --header-border: rgba(225, 29, 72, 0.3);
-  --sidebar-bg: 45 27 45;
-  --sidebar-border: rgba(225, 29, 72, 0.2);
-  
-  --card-bg: 45 27 45;
-  --card-border: rgba(225, 29, 72, 0.2);
-  --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-  
-  --btn-primary-bg: 225 29 72;
-  --btn-primary-hover: 190 24 93;
-  --btn-secondary-bg: 190 24 93;
-  --btn-secondary-hover: 159 18 57;
-  --btn-accent-bg: 244 63 94;
-  --btn-accent-hover: 244 63 94;
-  --btn-ghost-bg: rgba(225, 29, 72, 0.15);
-  --btn-ghost-hover: rgba(225, 29, 72, 0.25);
+    --background: 31 10 26;
+    --foreground: 253 242 248;
+    --foreground-body: 251 207 232;
+    --foreground-muted: 249 168 212;
+    --glass-surface: rgba(45, 27, 45, 0.85);
+    --glass-border: rgba(225, 29, 72, 0.2);
+    --glass-highlight: rgba(225, 29, 72, 0.1);
+    --glass-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    --glass-shadow-lg: 0 12px 35px rgba(0, 0, 0, 0.4);
+    --primary: 225 29 72;
+    --primary-foreground: 255 255 255;
+    --secondary: 190 24 93;
+    --secondary-foreground: 255 255 255;
+    --accent: 244 63 94;
+    --accent-foreground: 255 255 255;
+    --highlight: 245 158 11;
+    --highlight-foreground: 255 255 255;
+    --hover: rgba(225, 29, 72, 0.15);
+    --active: rgba(225, 29, 72, 0.25);
+    --focus: 225 29 72;
+    --border: rgba(225, 29, 72, 0.3);
+    --border-light: rgba(225, 29, 72, 0.15);
+    --success: 34 197 94;
+    --warning: 245 158 11;
+    --error: 239 68 68;
+    --info: 225 29 72;
+    --header-bg: 31 10 26;
+    --header-border: rgba(225, 29, 72, 0.3);
+    --sidebar-bg: 45 27 45;
+    --sidebar-border: rgba(225, 29, 72, 0.2);
+    --card-bg: 45 27 45;
+    --card-border: rgba(225, 29, 72, 0.2);
+    --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    --btn-primary-bg: 225 29 72;
+    --btn-primary-hover: 190 24 93;
+    --btn-secondary-bg: 190 24 93;
+    --btn-secondary-hover: 159 18 57;
+    --btn-accent-bg: 244 63 94;
+    --btn-accent-hover: 244 63 94;
+    --btn-ghost-bg: rgba(225, 29, 72, 0.15);
+    --btn-ghost-hover: rgba(225, 29, 72, 0.25);
 }
+
 
 /* Cosmic Space Theme */
+
 [data-theme="cosmic"] {
-  --background: 10 10 15;
-  --foreground: 226 232 240;
-  --foreground-body: 203 213 225;
-  --foreground-muted: 167 139 250;
-  
-  --glass-surface: rgba(26, 26, 46, 0.85);
-  --glass-border: rgba(124, 58, 237, 0.2);
-  --glass-highlight: rgba(124, 58, 237, 0.1);
-  --glass-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-  --glass-shadow-lg: 0 12px 35px rgba(0, 0, 0, 0.5);
-  
-  --primary: 124 58 237;
-  --primary-foreground: 255 255 255;
-  --secondary: 59 130 246;
-  --secondary-foreground: 255 255 255;
-  --accent: 236 72 153;
-  --accent-foreground: 255 255 255;
-  --highlight: 245 158 11;
-  --highlight-foreground: 255 255 255;
-  
-  --hover: rgba(124, 58, 237, 0.15);
-  --active: rgba(124, 58, 237, 0.25);
-  --focus: 124 58 237;
-  
-  --border: rgba(124, 58, 237, 0.3);
-  --border-light: rgba(124, 58, 237, 0.15);
-  
-  --success: 34 197 94;
-  --warning: 245 158 11;
-  --error: 239 68 68;
-  --info: 124 58 237;
-  
-  --header-bg: 10 10 15;
-  --header-border: rgba(124, 58, 237, 0.3);
-  --sidebar-bg: 26 26 46;
-  --sidebar-border: rgba(124, 58, 237, 0.2);
-  
-  --card-bg: 26 26 46;
-  --card-border: rgba(124, 58, 237, 0.2);
-  --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-  
-  --btn-primary-bg: 124 58 237;
-  --btn-primary-hover: 109 40 217;
-  --btn-secondary-bg: 59 130 246;
-  --btn-secondary-hover: 37 99 235;
-  --btn-accent-bg: 236 72 153;
-  --btn-accent-hover: 219 39 119;
-  --btn-ghost-bg: rgba(124, 58, 237, 0.15);
-  --btn-ghost-hover: rgba(124, 58, 237, 0.25);
+    --background: 10 10 15;
+    --foreground: 226 232 240;
+    --foreground-body: 203 213 225;
+    --foreground-muted: 167 139 250;
+    --glass-surface: rgba(26, 26, 46, 0.85);
+    --glass-border: rgba(124, 58, 237, 0.2);
+    --glass-highlight: rgba(124, 58, 237, 0.1);
+    --glass-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    --glass-shadow-lg: 0 12px 35px rgba(0, 0, 0, 0.5);
+    --primary: 124 58 237;
+    --primary-foreground: 255 255 255;
+    --secondary: 59 130 246;
+    --secondary-foreground: 255 255 255;
+    --accent: 236 72 153;
+    --accent-foreground: 255 255 255;
+    --highlight: 245 158 11;
+    --highlight-foreground: 255 255 255;
+    --hover: rgba(124, 58, 237, 0.15);
+    --active: rgba(124, 58, 237, 0.25);
+    --focus: 124 58 237;
+    --border: rgba(124, 58, 237, 0.3);
+    --border-light: rgba(124, 58, 237, 0.15);
+    --success: 34 197 94;
+    --warning: 245 158 11;
+    --error: 239 68 68;
+    --info: 124 58 237;
+    --header-bg: 10 10 15;
+    --header-border: rgba(124, 58, 237, 0.3);
+    --sidebar-bg: 26 26 46;
+    --sidebar-border: rgba(124, 58, 237, 0.2);
+    --card-bg: 26 26 46;
+    --card-border: rgba(124, 58, 237, 0.2);
+    --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    --btn-primary-bg: 124 58 237;
+    --btn-primary-hover: 109 40 217;
+    --btn-secondary-bg: 59 130 246;
+    --btn-secondary-hover: 37 99 235;
+    --btn-accent-bg: 236 72 153;
+    --btn-accent-hover: 219 39 119;
+    --btn-ghost-bg: rgba(124, 58, 237, 0.15);
+    --btn-ghost-hover: rgba(124, 58, 237, 0.25);
 }
+
 
 /* Emerald City Theme */
+
 [data-theme="emerald"] {
-  --background: 15 20 25;
-  --foreground: 243 244 246;
-  --foreground-body: 209 213 219;
-  --foreground-muted: 156 163 175;
-  
-  --glass-surface: rgba(31, 41, 55, 0.85);
-  --glass-border: rgba(5, 150, 105, 0.2);
-  --glass-highlight: rgba(5, 150, 105, 0.1);
-  --glass-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-  --glass-shadow-lg: 0 12px 35px rgba(0, 0, 0, 0.4);
-  
-  --primary: 5 150 105;
-  --primary-foreground: 255 255 255;
-  --secondary: 13 148 136;
-  --secondary-foreground: 255 255 255;
-  --accent: 217 119 6;
-  --accent-foreground: 255 255 255;
-  --highlight: 245 158 11;
-  --highlight-foreground: 255 255 255;
-  
-  --hover: rgba(5, 150, 105, 0.15);
-  --active: rgba(5, 150, 105, 0.25);
-  --focus: 5 150 105;
-  
-  --border: rgba(5, 150, 105, 0.3);
-  --border-light: rgba(5, 150, 105, 0.15);
-  
-  --success: 34 197 94;
-  --warning: 245 158 11;
-  --error: 239 68 68;
-  --info: 5 150 105;
-  
-  --header-bg: 15 20 25;
-  --header-border: rgba(5, 150, 105, 0.3);
-  --sidebar-bg: 31 41 55;
-  --sidebar-border: rgba(5, 150, 105, 0.2);
-  
-  --card-bg: 31 41 55;
-  --card-border: rgba(5, 150, 105, 0.2);
-  --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-  
-  --btn-primary-bg: 5 150 105;
-  --btn-primary-hover: 4 120 87;
-  --btn-secondary-bg: 13 148 136;
-  --btn-secondary-hover: 15 118 110;
-  --btn-accent-bg: 217 119 6;
-  --btn-accent-hover: 194 65 12;
-  --btn-ghost-bg: rgba(5, 150, 105, 0.15);
-  --btn-ghost-hover: rgba(5, 150, 105, 0.25);
+    --background: 15 20 25;
+    --foreground: 243 244 246;
+    --foreground-body: 209 213 219;
+    --foreground-muted: 156 163 175;
+    --glass-surface: rgba(31, 41, 55, 0.85);
+    --glass-border: rgba(5, 150, 105, 0.2);
+    --glass-highlight: rgba(5, 150, 105, 0.1);
+    --glass-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    --glass-shadow-lg: 0 12px 35px rgba(0, 0, 0, 0.4);
+    --primary: 5 150 105;
+    --primary-foreground: 255 255 255;
+    --secondary: 13 148 136;
+    --secondary-foreground: 255 255 255;
+    --accent: 217 119 6;
+    --accent-foreground: 255 255 255;
+    --highlight: 245 158 11;
+    --highlight-foreground: 255 255 255;
+    --hover: rgba(5, 150, 105, 0.15);
+    --active: rgba(5, 150, 105, 0.25);
+    --focus: 5 150 105;
+    --border: rgba(5, 150, 105, 0.3);
+    --border-light: rgba(5, 150, 105, 0.15);
+    --success: 34 197 94;
+    --warning: 245 158 11;
+    --error: 239 68 68;
+    --info: 5 150 105;
+    --header-bg: 15 20 25;
+    --header-border: rgba(5, 150, 105, 0.3);
+    --sidebar-bg: 31 41 55;
+    --sidebar-border: rgba(5, 150, 105, 0.2);
+    --card-bg: 31 41 55;
+    --card-border: rgba(5, 150, 105, 0.2);
+    --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    --btn-primary-bg: 5 150 105;
+    --btn-primary-hover: 4 120 87;
+    --btn-secondary-bg: 13 148 136;
+    --btn-secondary-hover: 15 118 110;
+    --btn-accent-bg: 217 119 6;
+    --btn-accent-hover: 194 65 12;
+    --btn-ghost-bg: rgba(5, 150, 105, 0.15);
+    --btn-ghost-hover: rgba(5, 150, 105, 0.25);
 }
+
 
 /* Crimson Fire Theme */
+
 [data-theme="crimson"] {
-  --background: 26 10 10;
-  --foreground: 254 242 242;
-  --foreground-body: 252 231 243;
-  --foreground-muted: 252 165 165;
-  
-  --glass-surface: rgba(45, 27, 27, 0.85);
-  --glass-border: rgba(220, 38, 38, 0.2);
-  --glass-highlight: rgba(220, 38, 38, 0.1);
-  --glass-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-  --glass-shadow-lg: 0 12px 35px rgba(0, 0, 0, 0.4);
-  
-  --primary: 220 38 38;
-  --primary-foreground: 255 255 255;
-  --secondary: 185 28 28;
-  --secondary-foreground: 255 255 255;
-  --accent: 245 158 11;
-  --accent-foreground: 255 255 255;
-  --highlight: 251 191 36;
-  --highlight-foreground: 255 255 255;
-  
-  --hover: rgba(220, 38, 38, 0.15);
-  --active: rgba(220, 38, 38, 0.25);
-  --focus: 220 38 38;
-  
-  --border: rgba(220, 38, 38, 0.3);
-  --border-light: rgba(220, 38, 38, 0.15);
-  
-  --success: 34 197 94;
-  --warning: 245 158 11;
-  --error: 239 68 68;
-  --info: 220 38 38;
-  
-  --header-bg: 26 10 10;
-  --header-border: rgba(220, 38, 38, 0.3);
-  --sidebar-bg: 45 27 27;
-  --sidebar-border: rgba(220, 38, 38, 0.2);
-  
-  --card-bg: 45 27 27;
-  --card-border: rgba(220, 38, 38, 0.2);
-  --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-  
-  --btn-primary-bg: 220 38 38;
-  --btn-primary-hover: 185 28 28;
-  --btn-secondary-bg: 185 28 28;
-  --btn-secondary-hover: 153 27 27;
-  --btn-accent-bg: 245 158 11;
-  --btn-accent-hover: 217 119 6;
-  --btn-ghost-bg: rgba(220, 38, 38, 0.15);
-  --btn-ghost-hover: rgba(220, 38, 38, 0.25);
+    --background: 26 10 10;
+    --foreground: 254 242 242;
+    --foreground-body: 252 231 243;
+    --foreground-muted: 252 165 165;
+    --glass-surface: rgba(45, 27, 27, 0.85);
+    --glass-border: rgba(220, 38, 38, 0.2);
+    --glass-highlight: rgba(220, 38, 38, 0.1);
+    --glass-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    --glass-shadow-lg: 0 12px 35px rgba(0, 0, 0, 0.4);
+    --primary: 220 38 38;
+    --primary-foreground: 255 255 255;
+    --secondary: 185 28 28;
+    --secondary-foreground: 255 255 255;
+    --accent: 245 158 11;
+    --accent-foreground: 255 255 255;
+    --highlight: 251 191 36;
+    --highlight-foreground: 255 255 255;
+    --hover: rgba(220, 38, 38, 0.15);
+    --active: rgba(220, 38, 38, 0.25);
+    --focus: 220 38 38;
+    --border: rgba(220, 38, 38, 0.3);
+    --border-light: rgba(220, 38, 38, 0.15);
+    --success: 34 197 94;
+    --warning: 245 158 11;
+    --error: 239 68 68;
+    --info: 220 38 38;
+    --header-bg: 26 10 10;
+    --header-border: rgba(220, 38, 38, 0.3);
+    --sidebar-bg: 45 27 27;
+    --sidebar-border: rgba(220, 38, 38, 0.2);
+    --card-bg: 45 27 27;
+    --card-border: rgba(220, 38, 38, 0.2);
+    --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    --btn-primary-bg: 220 38 38;
+    --btn-primary-hover: 185 28 28;
+    --btn-secondary-bg: 185 28 28;
+    --btn-secondary-hover: 153 27 27;
+    --btn-accent-bg: 245 158 11;
+    --btn-accent-hover: 217 119 6;
+    --btn-ghost-bg: rgba(220, 38, 38, 0.15);
+    --btn-ghost-hover: rgba(220, 38, 38, 0.25);
 }
 
+
 /* Base Styles */
+
 * {
-  border-color: rgb(var(--border));
+    border-color: rgb(var(--border));
 }
 
 body {
-  background-color: rgb(var(--background));
-  color: rgb(var(--foreground));
-  font-feature-settings: "rlig" 1, "calt" 1;
+    background-color: rgb(var(--background));
+    color: rgb(var(--foreground));
+    font-feature-settings: "rlig" 1, "calt" 1;
 }
+
 
 /* Ensure proper text contrast */
-h1, h2, h3, h4, h5, h6 {
-  color: rgb(var(--foreground));
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: rgb(var(--foreground));
 }
 
-p, span, div {
-  color: rgb(var(--foreground-body));
+p,
+span,
+div {
+    color: rgb(var(--foreground-body));
 }
 
 .text-muted {
-  color: rgb(var(--foreground-muted));
+    color: rgb(var(--foreground-muted));
 }
 
+
 /* Focus States */
+
 *:focus {
-  outline: none !important;
+    outline: none !important;
 }
 
 *:focus-visible {
-  outline: 2px solid rgb(var(--focus));
-  outline-offset: 2px;
+    outline: 2px solid rgb(var(--focus));
+    outline-offset: 2px;
 }
 
 input:focus,
 button:focus,
 select:focus,
 textarea:focus {
-  outline: none !important;
-  box-shadow: 0 0 0 2px rgb(var(--focus) / 0.2) !important;
+    outline: none !important;
+    box-shadow: 0 0 0 2px rgb(var(--focus) / 0.2) !important;
 }
 
 ::selection {
-  background-color: rgb(var(--focus) / 0.2);
-  color: rgb(var(--foreground));
+    background-color: rgb(var(--focus) / 0.2);
+    color: rgb(var(--foreground));
 }
 
 ::-moz-selection {
-  background-color: rgb(var(--focus) / 0.2);
-  color: rgb(var(--foreground));
+    background-color: rgb(var(--focus) / 0.2);
+    color: rgb(var(--foreground));
 }
 
+
 /* Unified Component Styles */
+
 .wonderland-header {
-  background-color: rgb(var(--header-bg));
-  border-bottom: 1px solid rgb(var(--header-border));
+    background-color: rgb(var(--header-bg));
+    border-bottom: 1px solid rgb(var(--header-border));
 }
 
 .wonderland-sidebar {
-  background-color: rgb(var(--sidebar-bg));
-  border-right: 1px solid rgb(var(--sidebar-border));
+    background-color: rgb(var(--sidebar-bg));
+    border-right: 1px solid rgb(var(--sidebar-border));
 }
 
 .wonderland-card {
-  background-color: rgb(var(--card-bg));
-  border: 1px solid rgb(var(--card-border));
-  box-shadow: var(--card-shadow);
-  border-radius: var(--radius);
+    background-color: rgb(var(--card-bg));
+    border: 1px solid rgb(var(--card-border));
+    box-shadow: var(--card-shadow);
+    border-radius: var(--radius);
 }
 
 .wonderland-button-primary {
-  background-color: rgb(var(--btn-primary-bg));
-  color: rgb(var(--primary-foreground));
-  border: none;
-  transition: all 0.2s ease;
+    background-color: rgb(var(--btn-primary-bg));
+    color: rgb(var(--primary-foreground));
+    border: none;
+    transition: all 0.2s ease;
 }
 
 .wonderland-button-primary:hover {
-  background-color: rgb(var(--btn-primary-hover));
+    background-color: rgb(var(--btn-primary-hover));
 }
 
 .wonderland-button-secondary {
-  background-color: rgb(var(--btn-secondary-bg));
-  color: rgb(var(--secondary-foreground));
-  border: none;
-  transition: all 0.2s ease;
+    background-color: rgb(var(--btn-secondary-bg));
+    color: rgb(var(--secondary-foreground));
+    border: none;
+    transition: all 0.2s ease;
 }
 
 .wonderland-button-secondary:hover {
-  background-color: rgb(var(--btn-secondary-hover));
+    background-color: rgb(var(--btn-secondary-hover));
 }
 
 .wonderland-button-accent {
-  background-color: rgb(var(--btn-accent-bg));
-  color: rgb(var(--accent-foreground));
-  border: none;
-  transition: all 0.2s ease;
+    background-color: rgb(var(--btn-accent-bg));
+    color: rgb(var(--accent-foreground));
+    border: none;
+    transition: all 0.2s ease;
 }
 
 .wonderland-button-accent:hover {
-  background-color: rgb(var(--btn-accent-hover));
+    background-color: rgb(var(--btn-accent-hover));
 }
 
 .wonderland-button-ghost {
-  background-color: rgb(var(--btn-ghost-bg));
-  color: rgb(var(--foreground));
-  border: 1px solid rgb(var(--border-light));
-  transition: all 0.2s ease;
+    background-color: rgb(var(--btn-ghost-bg));
+    color: rgb(var(--foreground));
+    border: 1px solid rgb(var(--border-light));
+    transition: all 0.2s ease;
 }
 
 .wonderland-button-ghost:hover {
-  background-color: rgb(var(--btn-ghost-hover));
+    background-color: rgb(var(--btn-ghost-hover));
 }
 
+
 /* Glassmorphism Effects */
+
 .glass-surface {
-  background: var(--glass-surface);
-  backdrop-filter: blur(12px);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow);
+    background: var(--glass-surface);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
 }
 
 .glass-surface-lg {
-  background: var(--glass-surface);
-  backdrop-filter: blur(16px);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow-lg);
+    background: var(--glass-surface);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow-lg);
 }
 
+
 /* Standardized Glass Components */
+
 .glass {
-  background: var(--glass-surface);
-  backdrop-filter: blur(12px);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow);
-  border-radius: var(--radius);
-  transition: all 0.2s ease;
+    background: var(--glass-surface);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    border-radius: var(--radius);
+    transition: all 0.2s ease;
 }
 
 .glass-lg {
-  background: var(--glass-surface);
-  backdrop-filter: blur(16px);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow-lg);
-  border-radius: var(--radius);
-  transition: all 0.2s ease;
+    background: var(--glass-surface);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow-lg);
+    border-radius: var(--radius);
+    transition: all 0.2s ease;
 }
 
 .glass:hover {
-  background: var(--glass-surface);
-  box-shadow: var(--glass-shadow-lg);
-  transform: translateY(-1px);
+    background: var(--glass-surface);
+    box-shadow: var(--glass-shadow-lg);
+    transform: translateY(-1px);
 }
 
 .glass-lg:hover {
-  background: var(--glass-surface);
-  box-shadow: var(--glass-shadow-lg);
-  transform: translateY(-2px);
+    background: var(--glass-surface);
+    box-shadow: var(--glass-shadow-lg);
+    transform: translateY(-2px);
 }
 
+
 /* Standardized Glass Buttons */
+
 .glass-button {
-  background: var(--glass-surface);
-  backdrop-filter: blur(12px);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow);
-  border-radius: var(--radius);
-  color: rgb(var(--foreground));
-  padding: 0.75rem 1.5rem;
-  font-weight: 500;
-  transition: all 0.2s ease;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
+    background: var(--glass-surface);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    border-radius: var(--radius);
+    color: rgb(var(--foreground));
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
 }
 
 .glass-button:hover {
-  background: var(--glass-surface);
-  box-shadow: var(--glass-shadow-lg);
-  transform: translateY(-1px);
-  border-color: rgb(var(--primary));
+    background: var(--glass-surface);
+    box-shadow: var(--glass-shadow-lg);
+    transform: translateY(-1px);
+    border-color: rgb(var(--primary));
 }
 
 .glass-button:active {
-  transform: translateY(0);
-  box-shadow: var(--glass-shadow);
+    transform: translateY(0);
+    box-shadow: var(--glass-shadow);
 }
 
 .glass-button:focus {
-  outline: none;
-  box-shadow: 0 0 0 2px rgb(var(--focus) / 0.2);
+    outline: none;
+    box-shadow: 0 0 0 2px rgb(var(--focus) / 0.2);
 }
 
+
+/* Wonder Button - Primary Action Button */
+
+.wonder-button {
+    background: linear-gradient(135deg, rgb(var(--primary)), rgb(var(--accent)));
+    color: rgb(var(--primary-foreground));
+    border: none;
+    border-radius: var(--radius);
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    box-shadow: var(--glass-shadow);
+    text-decoration: none;
+}
+
+.wonder-button:hover {
+    background: linear-gradient(135deg, rgb(var(--btn-primary-hover)), rgb(var(--btn-accent-hover)));
+    transform: translateY(-1px);
+    box-shadow: var(--glass-shadow-lg);
+    color: rgb(var(--primary-foreground));
+    text-decoration: none;
+}
+
+.wonder-button:active {
+    transform: translateY(0);
+    box-shadow: var(--glass-shadow);
+}
+
+.wonder-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgb(var(--focus) / 0.2);
+}
+
+
 /* Standardized Glass Cards */
+
 .glass-card {
-  background: var(--glass-surface);
-  backdrop-filter: blur(12px);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow);
-  border-radius: var(--radius);
-  transition: all 0.2s ease;
+    background: var(--glass-surface);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    border-radius: var(--radius);
+    transition: all 0.2s ease;
 }
 
 .glass-card:hover {
-  background: var(--glass-surface);
-  box-shadow: var(--glass-shadow-lg);
-  transform: translateY(-1px);
+    background: var(--glass-surface);
+    box-shadow: var(--glass-shadow-lg);
+    transform: translateY(-1px);
 }
 
 .glass-card-lg {
-  background: var(--glass-surface);
-  backdrop-filter: blur(16px);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow-lg);
-  border-radius: var(--radius);
-  transition: all 0.2s ease;
+    background: var(--glass-surface);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow-lg);
+    border-radius: var(--radius);
+    transition: all 0.2s ease;
 }
 
 .glass-card-lg:hover {
-  background: var(--glass-surface);
-  box-shadow: var(--glass-shadow-lg);
-  transform: translateY(-2px);
+    background: var(--glass-surface);
+    box-shadow: var(--glass-shadow-lg);
+    transform: translateY(-2px);
 }
 
+
 /* Standardized Glass Inputs */
+
 .glass-input {
-  background: var(--glass-surface);
-  backdrop-filter: blur(8px);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius);
-  color: rgb(var(--foreground));
-  padding: 0.75rem 1rem;
-  transition: all 0.2s ease;
-  width: 100%;
+    background: var(--glass-surface);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius);
+    color: rgb(var(--foreground));
+    padding: 0.75rem 1rem;
+    transition: all 0.2s ease;
+    width: 100%;
 }
 
 .glass-input:focus {
-  outline: none;
-  border-color: rgb(var(--focus));
-  box-shadow: 0 0 0 2px rgb(var(--focus) / 0.2);
-  background: var(--glass-surface);
+    outline: none;
+    border-color: rgb(var(--focus));
+    box-shadow: 0 0 0 2px rgb(var(--focus) / 0.2);
+    background: var(--glass-surface);
 }
 
 .glass-input::placeholder {
-  color: rgb(var(--foreground-muted));
+    color: rgb(var(--foreground-muted));
 }
 
 .glass-select {
-  background: var(--glass-surface);
-  backdrop-filter: blur(8px);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius);
-  color: rgb(var(--foreground));
-  padding: 0.75rem 1rem;
-  transition: all 0.2s ease;
-  width: 100%;
+    background: var(--glass-surface);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius);
+    color: rgb(var(--foreground));
+    padding: 0.75rem 1rem;
+    transition: all 0.2s ease;
+    width: 100%;
 }
 
 .glass-select:focus {
-  outline: none;
-  border-color: rgb(var(--focus));
-  box-shadow: 0 0 0 2px rgb(var(--focus) / 0.2);
+    outline: none;
+    border-color: rgb(var(--focus));
+    box-shadow: 0 0 0 2px rgb(var(--focus) / 0.2);
 }
 
 .glass-textarea {
-  background: var(--glass-surface);
-  backdrop-filter: blur(8px);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius);
-  color: rgb(var(--foreground));
-  padding: 0.75rem 1rem;
-  transition: all 0.2s ease;
-  width: 100%;
-  min-height: 100px;
-  resize: vertical;
+    background: var(--glass-surface);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius);
+    color: rgb(var(--foreground));
+    padding: 0.75rem 1rem;
+    transition: all 0.2s ease;
+    width: 100%;
+    min-height: 100px;
+    resize: vertical;
 }
 
 .glass-textarea:focus {
-  outline: none;
-  border-color: rgb(var(--focus));
-  box-shadow: 0 0 0 2px rgb(var(--focus) / 0.2);
+    outline: none;
+    border-color: rgb(var(--focus));
+    box-shadow: 0 0 0 2px rgb(var(--focus) / 0.2);
 }
 
 .glass-textarea::placeholder {
-  color: rgb(var(--foreground-muted));
+    color: rgb(var(--foreground-muted));
 }
 
+
 /* Wonderland Background Gradients */
+
 .wonderland-bg {
-  background: linear-gradient(135deg, 
-    rgb(var(--background)) 0%, 
-    rgb(var(--background) / 0.8) 50%, 
-    rgb(var(--primary) / 0.1) 100%);
+    background: linear-gradient(135deg, rgb(var(--background)) 0%, rgb(var(--background) / 0.8) 50%, rgb(var(--primary) / 0.1) 100%);
 }
 
 .wonderland-bg-midnight {
-  background: linear-gradient(135deg, 
-    rgb(var(--background)) 0%, 
-    rgb(var(--background) / 0.9) 50%, 
-    rgb(var(--primary) / 0.15) 100%);
+    background: linear-gradient(135deg, rgb(var(--background)) 0%, rgb(var(--background) / 0.9) 50%, rgb(var(--primary) / 0.15) 100%);
 }
 
 .wonderland-bg-ocean {
-  background: linear-gradient(135deg, 
-    rgb(var(--background)) 0%, 
-    rgb(var(--background) / 0.9) 50%, 
-    rgb(var(--primary) / 0.15) 100%);
+    background: linear-gradient(135deg, rgb(var(--background)) 0%, rgb(var(--background) / 0.9) 50%, rgb(var(--primary) / 0.15) 100%);
 }
 
 .wonderland-bg-forest {
-  background: linear-gradient(135deg, 
-    rgb(var(--background)) 0%, 
-    rgb(var(--background) / 0.9) 50%, 
-    rgb(var(--primary) / 0.15) 100%);
+    background: linear-gradient(135deg, rgb(var(--background)) 0%, rgb(var(--background) / 0.9) 50%, rgb(var(--primary) / 0.15) 100%);
 }
 
 .wonderland-bg-sunset {
-  background: linear-gradient(135deg, 
-    rgb(var(--background)) 0%, 
-    rgb(var(--background) / 0.9) 50%, 
-    rgb(var(--primary) / 0.15) 100%);
+    background: linear-gradient(135deg, rgb(var(--background)) 0%, rgb(var(--background) / 0.9) 50%, rgb(var(--primary) / 0.15) 100%);
 }

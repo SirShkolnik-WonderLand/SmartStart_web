@@ -139,8 +139,11 @@ export default function UmbrellaDashboard() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      <div className="min-h-screen wonderland-bg flex items-center justify-center">
+        <div className="glass rounded-xl p-8 text-center">
+          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-foreground-muted">Loading umbrella network...</p>
+        </div>
       </div>
     )
   }

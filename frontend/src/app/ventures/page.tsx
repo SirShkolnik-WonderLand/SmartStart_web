@@ -1,9 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+// UI components are now using Wonderland theme classes
 import { 
   Plus, 
   Briefcase, 
@@ -20,76 +18,39 @@ import {
   Globe
 } from 'lucide-react'
 import Link from 'next/link'
-import { getApiBaseUrl, getAuthToken } from '@/lib/env'
+import { comprehensiveApiService as apiService, Venture, AnalyticsData } from '@/lib/api-comprehensive'
 
-interface Venture {
-  id: string
-  name: string
-  purpose: string
-  region: string
-  status: 'ACTIVE' | 'PLANNING' | 'INACTIVE'
-  createdAt: string
-  teamCount: number
-  projectCount: number
-  revenue: number
-  growth: number
-  ideasCount?: number
-  legalDocumentsCount?: number
-  umbrellaRelationshipsCount?: number
-}
+// Venture interface is now imported from api-comprehensive
 
 export default function VenturesPage() {
   const [ventures, setVentures] = useState<Venture[]>([])
+  const [analytics, setAnalytics] = useState<AnalyticsData | null>(null)
   const [loading, setLoading] = useState(true)
-  const [stats, setStats] = useState({
-    totalVentures: 0,
-    activeTeams: 0,
-    totalRevenue: 0,
-    averageGrowth: 0
-  })
 
   useEffect(() => {
-    loadVentures()
+    loadVenturesData()
   }, [])
 
-  const loadVentures = async () => {
+  const loadVenturesData = async () => {
     try {
       setLoading(true)
-      const API_BASE = getApiBaseUrl()
-      const token = getAuthToken()
-      if (!token) throw new Error('Missing auth token')
+      
+      // Load ventures and analytics in parallel
+      const [venturesResponse, analyticsResponse] = await Promise.all([
+        apiService.getVentures(),
+        apiService.getAnalytics()
+      ])
 
-      const response = await fetch(`${API_BASE}/api/ventures/list/all`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        credentials: 'include'
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch ventures')
+      if (venturesResponse.success && venturesResponse.data) {
+        setVentures(venturesResponse.data)
       }
 
-      const data = await response.json()
-      const venturesData: Venture[] = Array.isArray(data.data) ? data.data : (data.data?.ventures || [])
-      setVentures(venturesData)
-
-      // Calculate stats from backend data
-      const totalRevenue = venturesData.reduce((sum, v) => sum + (v.revenue || 0), 0)
-      const activeTeams = venturesData.reduce((sum, v) => sum + (v.teamCount || 0), 0)
-      const averageGrowth = venturesData.length > 0 ? 
-        venturesData.reduce((sum, v) => sum + (v.growth || 0), 0) / venturesData.length : 0
-
-      setStats({
-        totalVentures: venturesData.length,
-        activeTeams,
-        totalRevenue,
-        averageGrowth
-      })
+      if (analyticsResponse.success && analyticsResponse.data) {
+        setAnalytics(analyticsResponse.data)
+      }
       
     } catch (error) {
-      console.error('Error loading ventures:', error)
+      console.error('Error loading ventures data:', error)
     } finally {
       setLoading(false)
     }
@@ -99,10 +60,12 @@ export default function VenturesPage() {
     const config = {
       ACTIVE: { color: 'bg-success/20 text-success border-success/30', text: 'Active' },
       PLANNING: { color: 'bg-warning/20 text-warning border-warning/30', text: 'Planning' },
-      INACTIVE: { color: 'bg-foreground-muted/20 text-foreground-muted border-foreground-muted/30', text: 'Inactive' }
+      INACTIVE: { color: 'bg-foreground-muted/20 text-foreground-muted border-foreground-muted/30', text: 'Inactive' },
+      PENDING_CONTRACTS: { color: 'bg-highlight/20 text-highlight border-highlight/30', text: 'Pending' },
+      COMPLETED: { color: 'bg-success/20 text-success border-success/30', text: 'Completed' }
     }
     const { color, text } = config[status as keyof typeof config] || config.INACTIVE
-    return <Badge className={`${color} border`}>{text}</Badge>
+    return <span className={`px-2 py-1 rounded-full text-xs font-medium ${color} border`}>{text}</span>
   }
 
   const formatCurrency = (amount: number) => {
@@ -124,17 +87,17 @@ export default function VenturesPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 p-6">
+      <div className="min-h-screen wonderland-bg p-6">
         <div className="max-w-7xl mx-auto">
           <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 rounded w-1/4 mb-2"></div>
-            <div className="h-4 bg-gray-200 rounded w-1/3 mb-8"></div>
+            <div className="h-8 bg-glass-surface rounded w-1/4 mb-2"></div>
+            <div className="h-4 bg-glass-surface rounded w-1/3 mb-8"></div>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
               {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="bg-white p-6 rounded-lg shadow">
-                  <div className="h-4 bg-gray-200 rounded w-1/2 mb-2"></div>
-                  <div className="h-8 bg-gray-200 rounded w-1/3 mb-2"></div>
-                  <div className="h-3 bg-gray-200 rounded w-1/4"></div>
+                <div key={i} className="glass p-6 rounded-lg">
+                  <div className="h-4 bg-glass-surface rounded w-1/2 mb-2"></div>
+                  <div className="h-8 bg-glass-surface rounded w-1/3 mb-2"></div>
+                  <div className="h-3 bg-glass-surface rounded w-1/4"></div>
                 </div>
               ))}
             </div>
@@ -145,117 +108,121 @@ export default function VenturesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen wonderland-bg p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Ventures</h1>
-            <p className="text-gray-600 mt-1">Discover and manage your ventures</p>
+            <h1 className="text-4xl font-bold text-foreground">Ventures</h1>
+            <p className="text-xl text-foreground-muted mt-1">Discover and manage your ventures</p>
           </div>
-          <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">
-            <Plus className="w-4 h-4 mr-2" />
-            Create Venture
-          </Button>
+          <Link href="/ventures/create">
+            <button className="wonder-button flex items-center gap-2">
+              <Plus className="w-5 h-5" />
+              Create Venture
+            </button>
+          </Link>
         </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card className="glass-card">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-foreground-muted">Total Ventures</CardTitle>
-              <Briefcase className="h-4 w-4 text-gray-400" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-foreground">{stats.totalVentures}</div>
-              <p className="text-xs text-foreground-muted mt-1">All time</p>
-            </CardContent>
-          </Card>
+          <div className="glass rounded-xl p-6 hover:glass-lg transition-all duration-200 group">
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                <Briefcase className="w-6 h-6 text-primary" />
+              </div>
+              <TrendingUp className="w-5 h-5 text-success" />
+            </div>
+            <div className="text-2xl font-bold text-foreground mb-1">{ventures.length}</div>
+            <div className="text-sm text-foreground-muted">Total Ventures</div>
+            <div className="text-xs text-success mt-1">+{analytics?.ventureGrowth || 0}%</div>
+          </div>
 
-          <Card className="glass-card">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-foreground-muted">Active Teams</CardTitle>
-              <Users className="h-4 w-4 text-foreground-muted" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-foreground">{stats.activeTeams}</div>
-              <p className="text-xs text-foreground-muted mt-1">Across all ventures</p>
-            </CardContent>
-          </Card>
+          <div className="glass rounded-xl p-6 hover:glass-lg transition-all duration-200 group">
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                <Users className="w-6 h-6 text-accent" />
+              </div>
+              <TrendingUp className="w-5 h-5 text-success" />
+            </div>
+            <div className="text-2xl font-bold text-foreground mb-1">{analytics?.totalUsers || 0}</div>
+            <div className="text-sm text-foreground-muted">Active Members</div>
+            <div className="text-xs text-success mt-1">+{analytics?.userGrowth || 0}%</div>
+          </div>
 
-          <Card className="glass-card">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-foreground-muted">Total Revenue</CardTitle>
-              <DollarSign className="h-4 w-4 text-gray-400" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-foreground">{formatCurrency(stats.totalRevenue)}</div>
-              <p className="text-xs text-foreground-muted mt-1">Lifetime earnings</p>
-            </CardContent>
-          </Card>
+          <div className="glass rounded-xl p-6 hover:glass-lg transition-all duration-200 group">
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-12 h-12 bg-highlight/10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                <DollarSign className="w-6 h-6 text-highlight" />
+              </div>
+              <TrendingUp className="w-5 h-5 text-success" />
+            </div>
+            <div className="text-2xl font-bold text-foreground mb-1">{formatCurrency(analytics?.totalRevenue || 0)}</div>
+            <div className="text-sm text-foreground-muted">Total Revenue</div>
+            <div className="text-xs text-success mt-1">+{analytics?.revenueGrowth || 0}%</div>
+          </div>
 
-          <Card className="glass-card">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-foreground-muted">Avg Growth</CardTitle>
-              <TrendingUp className="h-4 w-4 text-gray-400" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-foreground">+{stats.averageGrowth.toFixed(1)}%</div>
-              <p className="text-xs text-foreground-muted mt-1">This quarter</p>
-            </CardContent>
-          </Card>
+          <div className="glass rounded-xl p-6 hover:glass-lg transition-all duration-200 group">
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-12 h-12 bg-success/10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                <TrendingUp className="w-6 h-6 text-success" />
+              </div>
+              <TrendingUp className="w-5 h-5 text-success" />
+            </div>
+            <div className="text-2xl font-bold text-foreground mb-1">{analytics?.totalOffers || 0}</div>
+            <div className="text-sm text-foreground-muted">Open Roles</div>
+            <div className="text-xs text-success mt-1">+{analytics?.offerGrowth || 0}%</div>
+          </div>
         </div>
 
         {/* Ventures Grid */}
         {ventures.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {ventures.map((venture) => (
-              <Card key={venture.id} className="glass-card cursor-pointer group">
-                <CardHeader className="pb-4">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg">
-                        <Briefcase className="w-6 h-6 text-white" />
-                      </div>
-                      <div className="flex-1">
-                        <CardTitle className="text-xl font-bold text-gray-900 group-hover:text-purple-600 transition-colors mb-2">
-                          {venture.name}
-                        </CardTitle>
-                        <div className="flex items-center space-x-3">
-                          {getStatusBadge(venture.status)}
-                          <div className="flex items-center text-sm text-gray-500">
-                            <MapPin className="w-4 h-4 mr-1" />
-                            {venture.region}
-                          </div>
+              <div key={venture.id} className="glass rounded-xl p-6 cursor-pointer group hover:glass-lg transition-all duration-200">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-12 h-12 bg-gradient-to-r from-primary to-accent rounded-xl flex items-center justify-center shadow-lg">
+                      <Briefcase className="w-6 h-6 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors mb-2">
+                        {venture.name}
+                      </h3>
+                      <div className="flex items-center space-x-3">
+                        {getStatusBadge(venture.status)}
+                        <div className="flex items-center text-sm text-foreground-muted">
+                          <MapPin className="w-4 h-4 mr-1" />
+                          {venture.region || 'Global'}
                         </div>
                       </div>
                     </div>
-                    <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity">
-                      <MoreHorizontal className="w-4 h-4" />
-                    </Button>
                   </div>
-                </CardHeader>
+                  <button className="opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-glass-highlight rounded-lg">
+                    <MoreHorizontal className="w-4 h-4 text-foreground-muted" />
+                  </button>
+                </div>
                 
-                <CardContent className="pt-0">
-                  <p className="text-sm text-gray-600 mb-6 line-clamp-2 leading-relaxed">{venture.purpose}</p>
+                <div className="space-y-4">
+                  <p className="text-sm text-foreground-muted mb-6 line-clamp-2 leading-relaxed">{venture.purpose || venture.description || 'No description available'}</p>
                   
                   {/* Key Metrics */}
                   <div className="grid grid-cols-2 gap-4 mb-6">
-                    <div className="bg-gray-50 rounded-lg p-3">
+                    <div className="bg-glass-surface rounded-lg p-3">
                       <div className="flex items-center space-x-2 mb-1">
-                        <Users className="w-4 h-4 text-purple-600" />
-                        <span className="text-xs font-medium text-gray-600">Team</span>
+                        <Users className="w-4 h-4 text-primary" />
+                        <span className="text-xs font-medium text-foreground-muted">Team</span>
                       </div>
-                      <div className="text-lg font-bold text-gray-900">{venture.teamCount}</div>
-                      <div className="text-xs text-gray-500">Active members</div>
+                      <div className="text-lg font-bold text-foreground">{venture.teamSize || 0}</div>
+                      <div className="text-xs text-foreground-muted">Active members</div>
                     </div>
-                    <div className="bg-gray-50 rounded-lg p-3">
+                    <div className="bg-glass-surface rounded-lg p-3">
                       <div className="flex items-center space-x-2 mb-1">
-                        <Target className="w-4 h-4 text-blue-600" />
-                        <span className="text-xs font-medium text-gray-600">Projects</span>
+                        <Target className="w-4 h-4 text-accent" />
+                        <span className="text-xs font-medium text-foreground-muted">Stage</span>
                       </div>
-                      <div className="text-lg font-bold text-gray-900">{venture.projectCount}</div>
-                      <div className="text-xs text-gray-500">In progress</div>
+                      <div className="text-lg font-bold text-foreground">{venture.stage || 'Planning'}</div>
+                      <div className="text-xs text-foreground-muted">Current stage</div>
                     </div>
                   </div>
 
@@ -263,83 +230,60 @@ export default function VenturesPage() {
                   <div className="grid grid-cols-3 gap-3 mb-6">
                     <div className="text-center">
                       <div className="flex items-center justify-center mb-1">
-                        <Lightbulb className="w-4 h-4 text-yellow-500" />
+                        <Lightbulb className="w-4 h-4 text-highlight" />
                       </div>
-                      <div className="text-sm font-bold text-gray-900">{venture.ideasCount || 0}</div>
-                      <div className="text-xs text-gray-500">Ideas</div>
+                      <div className="text-sm font-bold text-foreground">{venture.lookingFor?.length || 0}</div>
+                      <div className="text-xs text-foreground-muted">Looking For</div>
                     </div>
                     <div className="text-center">
                       <div className="flex items-center justify-center mb-1">
-                        <Building2 className="w-4 h-4 text-green-500" />
+                        <Building2 className="w-4 h-4 text-success" />
                       </div>
-                      <div className="text-sm font-bold text-gray-900">{venture.legalDocumentsCount || 0}</div>
-                      <div className="text-xs text-gray-500">Legal</div>
+                      <div className="text-sm font-bold text-foreground">{venture.tier || 'T1'}</div>
+                      <div className="text-xs text-foreground-muted">Tier</div>
                     </div>
                     <div className="text-center">
                       <div className="flex items-center justify-center mb-1">
-                        <Globe className="w-4 h-4 text-purple-500" />
+                        <Globe className="w-4 h-4 text-primary" />
                       </div>
-                      <div className="text-sm font-bold text-gray-900">{venture.umbrellaRelationshipsCount || 0}</div>
-                      <div className="text-xs text-gray-500">Network</div>
+                      <div className="text-sm font-bold text-foreground">{venture.industry || 'Tech'}</div>
+                      <div className="text-xs text-foreground-muted">Industry</div>
                     </div>
                   </div>
 
-                  {/* Revenue Section */}
-                  {venture.revenue > 0 && (
-                    <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-4 mb-6 border border-green-200">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                            <DollarSign className="w-4 h-4 text-green-600" />
-                          </div>
-                          <div>
-                            <div className="text-lg font-bold text-gray-900">{formatCurrency(venture.revenue)}</div>
-                            <div className="text-xs text-gray-600">Total Revenue</div>
-                          </div>
-                        </div>
-                        {venture.growth > 0 && (
-                          <div className="flex items-center space-x-1 text-green-600 bg-green-100 px-2 py-1 rounded-full">
-                            <TrendingUp className="w-3 h-3" />
-                            <span className="text-sm font-medium">+{venture.growth}%</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-
                   {/* Footer */}
-                  <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                    <div className="flex items-center space-x-2 text-sm text-gray-500">
+                  <div className="flex items-center justify-between pt-4 border-t border-glass-border">
+                    <div className="flex items-center space-x-2 text-sm text-foreground-muted">
                       <Calendar className="w-4 h-4" />
                       <span>Created {formatDate(venture.createdAt)}</span>
                     </div>
                     <Link href={`/ventures/${venture.id}`}>
-                      <Button variant="ghost" size="sm" className="text-purple-600 hover:text-purple-700 hover:bg-purple-50 group-hover:bg-purple-50">
+                      <button className="px-3 py-1 border border-glass-border rounded-md hover:bg-glass-highlight transition-colors text-sm text-primary hover:text-primary">
                         View Details
-                        <ArrowRight className="w-4 h-4 ml-1" />
-                      </Button>
+                        <ArrowRight className="w-4 h-4 ml-1 inline" />
+                      </button>
                     </Link>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
         ) : (
-          <Card className="glass-card">
-            <CardContent className="flex flex-col items-center justify-center py-12">
-              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                <Briefcase className="w-8 h-8 text-gray-400" />
-              </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No ventures yet</h3>
-              <p className="text-gray-500 text-center mb-6 max-w-md">
-                Start building your entrepreneurial journey by creating your first venture.
-              </p>
-              <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">
-                <Plus className="w-4 h-4 mr-2" />
+          <div className="glass rounded-xl p-12 text-center">
+            <div className="w-16 h-16 bg-glass-surface rounded-full flex items-center justify-center mb-4 mx-auto">
+              <Briefcase className="w-8 h-8 text-foreground-muted" />
+            </div>
+            <h3 className="text-xl font-semibold text-foreground mb-2">No ventures yet</h3>
+            <p className="text-foreground-muted text-center mb-6 max-w-md mx-auto">
+              Start building your entrepreneurial journey by creating your first venture.
+            </p>
+            <Link href="/ventures/create">
+              <button className="wonder-button">
+                <Plus className="w-5 h-5 mr-2" />
                 Create Your First Venture
-              </Button>
-            </CardContent>
-          </Card>
+              </button>
+            </Link>
+          </div>
         )}
       </div>
     </div>

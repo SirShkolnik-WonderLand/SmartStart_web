@@ -40,6 +40,16 @@ export default function CompaniesPage() {
     setShowCreateModal(false)
   }
 
+  const handleCompanyUpdated = (updatedCompany: Company) => {
+    setCompanies(prev => prev.map(company => 
+      company.id === updatedCompany.id ? updatedCompany : company
+    ))
+  }
+
+  const handleCompanyDeleted = (companyId: string) => {
+    setCompanies(prev => prev.filter(company => company.id !== companyId))
+  }
+
   if (isLoading) {
     return (
       <div className="min-h-screen wonderland-bg flex items-center justify-center">

@@ -18,7 +18,9 @@ import {
   Menu,
   Sun,
   Moon,
-  Network
+  Network,
+  Users,
+  Trophy
 } from 'lucide-react'
 import { comprehensiveApiService as apiService, User } from '@/lib/api-comprehensive'
 import { useThemeStore } from '@/store/useThemeStore'
@@ -269,6 +271,50 @@ export default function PersistentLayout({ children }: PersistentLayoutProps) {
               >
                 <BarChart3 className="w-5 h-5" />
                 {sidebarOpen && <span>Analytics</span>}
+              </Link>
+              <Link 
+                href="/companies" 
+                className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                  pathname === '/companies' 
+                    ? 'bg-primary/10 text-primary' 
+                    : 'text-foreground-muted hover:text-foreground hover:bg-glass-surface'
+                }`}
+              >
+                <Briefcase className="w-5 h-5" />
+                {sidebarOpen && <span>Companies</span>}
+              </Link>
+              <Link 
+                href="/teams" 
+                className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                  pathname === '/teams' 
+                    ? 'bg-primary/10 text-primary' 
+                    : 'text-foreground-muted hover:text-foreground hover:bg-glass-surface'
+                }`}
+              >
+                <Users className="w-5 h-5" />
+                {sidebarOpen && <span>Teams</span>}
+              </Link>
+              <Link 
+                href="/subscriptions" 
+                className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                  pathname === '/subscriptions' 
+                    ? 'bg-primary/10 text-primary' 
+                    : 'text-foreground-muted hover:text-foreground hover:bg-glass-surface'
+                }`}
+              >
+                <Crown className="w-5 h-5" />
+                {sidebarOpen && <span>Subscriptions</span>}
+              </Link>
+              <Link 
+                href="/leaderboard" 
+                className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                  pathname === '/leaderboard' 
+                    ? 'bg-primary/10 text-primary' 
+                    : 'text-foreground-muted hover:text-foreground hover:bg-glass-surface'
+                }`}
+              >
+                <Trophy className="w-5 h-5" />
+                {sidebarOpen && <span>Leaderboard</span>}
               </Link>
             </nav>
           </div>

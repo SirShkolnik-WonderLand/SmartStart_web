@@ -39,6 +39,16 @@ export default function TeamsPage() {
     setShowCreateModal(false)
   }
 
+  const handleTeamUpdated = (updatedTeam: Team) => {
+    setTeams(prev => prev.map(team => 
+      team.id === updatedTeam.id ? updatedTeam : team
+    ))
+  }
+
+  const handleTeamDeleted = (teamId: string) => {
+    setTeams(prev => prev.filter(team => team.id !== teamId))
+  }
+
   if (isLoading) {
     return (
       <div className="min-h-screen wonderland-bg flex items-center justify-center">
