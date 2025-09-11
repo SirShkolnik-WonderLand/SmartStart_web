@@ -7,6 +7,9 @@ const express = require('express');
 const router = express.Router();
 const opportunitiesService = require('../services/opportunities-service');
 const { authenticateToken } = require('../middleware/auth');
+const { PrismaClient } = require('@prisma/client');
+
+const prisma = new PrismaClient();
 
 // ===== OPPORTUNITY MANAGEMENT ROUTES =====
 
@@ -87,6 +90,12 @@ router.post('/', authenticateToken, async (req, res) => {
         const result = await opportunitiesService.createOpportunity(req.body, req.user.id);
         
         if (result.success) {
+            // Send notification to relevant users
+            await sendOpportunityCreatedNotification(result.data.opportunity, req.user);
+            
+            // Award XP for creating opportunity
+            await awardOpportunityCreationXP(req.user.id, result.data.opportunity);
+            
             res.status(201).json(result);
         } else {
             res.status(400).json(result);
@@ -411,6 +420,79 @@ router.post('/search', authenticateToken, async (req, res) => {
 });
 
 /**
+ * POST /api/opportunities/:id/apply
+ * Apply to an opportunity
+ */
+router.post('/:id/apply', authenticateToken, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { coverLetter, portfolioItems, availability } = req.body;
+
+        // Check if opportunity exists and is active
+        const opportunity = await prisma.opportunity.findFirst({
+            where: { 
+                id, 
+                status: 'ACTIVE' 
+            }
+        });
+
+        if (!opportunity) {
+            return res.status(404).json({
+                success: false,
+                message: 'Opportunity not found or not active'
+            });
+        }
+
+        // Check if user already applied
+        const existingApplication = await prisma.opportunityApplication.findFirst({
+            where: {
+                opportunityId: id,
+                applicantId: req.user.id
+            }
+        });
+
+        if (existingApplication) {
+            return res.status(400).json({
+                success: false,
+                message: 'You have already applied to this opportunity'
+            });
+        }
+
+        // Create application
+        const application = await prisma.opportunityApplication.create({
+            data: {
+                opportunityId: id,
+                applicantId: req.user.id,
+                coverLetter: coverLetter || '',
+                portfolioItems: portfolioItems || [],
+                availability: availability || '',
+                status: 'PENDING',
+                appliedAt: new Date()
+            }
+        });
+
+        // Award XP for applying
+        await awardOpportunityApplicationXP(req.user.id, id);
+
+        // Send notification to opportunity creator
+        await sendApplicationNotification(opportunity, req.user, application);
+
+        res.json({
+            success: true,
+            data: { application },
+            message: 'Application submitted successfully'
+        });
+
+    } catch (error) {
+        console.error('Error in POST /api/opportunities/:id/apply:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error'
+        });
+    }
+});
+
+/**
  * GET /api/opportunities/suggestions
  * Get personalized opportunity suggestions
  */
@@ -432,5 +514,169 @@ router.get('/suggestions', authenticateToken, async (req, res) => {
         });
     }
 });
+
+// ===== HELPER FUNCTIONS =====
+
+/**
+ * Send notification when opportunity is created
+ */
+async function sendOpportunityCreatedNotification(opportunity, creator) {
+    try {
+        // Find users who might be interested in this opportunity
+        const interestedUsers = await prisma.user.findMany({
+            where: {
+                AND: [
+                    { id: { not: creator.id } }, // Exclude creator
+                    {
+                        OR: [
+                            // Users with matching skills
+                            { skills: { hasSome: opportunity.requiredSkills || [] } },
+                            // Users in same venture
+                            { ventures: { some: { ventureId: opportunity.ventureId } } },
+                            // Users with similar interests
+                            { interests: { hasSome: opportunity.tags || [] } }
+                        ]
+                    }
+                ]
+            },
+            select: { id: true, name: true }
+        });
+
+        // Create notifications for interested users
+        const notifications = interestedUsers.map(user => ({
+            recipientId: user.id,
+            type: 'OPPORTUNITY_CREATED',
+            title: `New Opportunity: ${opportunity.title}`,
+            message: `A new ${opportunity.type.toLowerCase().replace('_', ' ')} opportunity has been posted that matches your profile.`,
+            data: JSON.stringify({
+                opportunityId: opportunity.id,
+                opportunityType: opportunity.type,
+                creatorId: creator.id,
+                creatorName: creator.name
+            }),
+            priority: 'NORMAL',
+            status: 'UNREAD',
+            createdAt: new Date()
+        }));
+
+        if (notifications.length > 0) {
+            await prisma.notification.createMany({
+                data: notifications
+            });
+        }
+    } catch (error) {
+        console.error('Error sending opportunity created notifications:', error);
+    }
+}
+
+/**
+ * Award XP for creating opportunity
+ */
+async function awardOpportunityCreationXP(userId, opportunity) {
+    try {
+        let xpAmount = 50; // Base XP for creating opportunity
+        
+        // Bonus XP based on opportunity type
+        switch (opportunity.type) {
+            case 'VENTURE_COLLABORATION':
+                xpAmount += 25;
+                break;
+            case 'MENTORSHIP':
+                xpAmount += 15;
+                break;
+            case 'CONSULTING':
+                xpAmount += 20;
+                break;
+        }
+
+        // Award XP
+        await prisma.user.update({
+            where: { id: userId },
+            data: {
+                xp: { increment: xpAmount },
+                totalXp: { increment: xpAmount }
+            }
+        });
+
+        // Create XP transaction record
+        await prisma.xpTransaction.create({
+            data: {
+                userId,
+                amount: xpAmount,
+                type: 'OPPORTUNITY_CREATED',
+                description: `Created ${opportunity.type.toLowerCase().replace('_', ' ')} opportunity`,
+                metadata: JSON.stringify({
+                    opportunityId: opportunity.id,
+                    opportunityType: opportunity.type
+                }),
+                createdAt: new Date()
+            }
+        });
+    } catch (error) {
+        console.error('Error awarding opportunity creation XP:', error);
+    }
+}
+
+/**
+ * Award XP for applying to opportunity
+ */
+async function awardOpportunityApplicationXP(userId, opportunityId) {
+    try {
+        const xpAmount = 25; // XP for applying to opportunity
+
+        // Award XP
+        await prisma.user.update({
+            where: { id: userId },
+            data: {
+                xp: { increment: xpAmount },
+                totalXp: { increment: xpAmount }
+            }
+        });
+
+        // Create XP transaction record
+        await prisma.xpTransaction.create({
+            data: {
+                userId,
+                amount: xpAmount,
+                type: 'OPPORTUNITY_APPLIED',
+                description: 'Applied to opportunity',
+                metadata: JSON.stringify({
+                    opportunityId
+                }),
+                createdAt: new Date()
+            }
+        });
+    } catch (error) {
+        console.error('Error awarding opportunity application XP:', error);
+    }
+}
+
+/**
+ * Send notification when someone applies to opportunity
+ */
+async function sendApplicationNotification(opportunity, applicant, application) {
+    try {
+        // Notify opportunity creator
+        await prisma.notification.create({
+            data: {
+                recipientId: opportunity.createdBy,
+                type: 'OPPORTUNITY_APPLICATION',
+                title: `New Application: ${opportunity.title}`,
+                message: `${applicant.name} has applied to your opportunity.`,
+                data: JSON.stringify({
+                    opportunityId: opportunity.id,
+                    applicationId: application.id,
+                    applicantId: applicant.id,
+                    applicantName: applicant.name
+                }),
+                priority: 'NORMAL',
+                status: 'UNREAD',
+                createdAt: new Date()
+            }
+        });
+    } catch (error) {
+        console.error('Error sending application notification:', error);
+    }
+}
 
 module.exports = router;

@@ -2249,6 +2249,106 @@ class ComprehensiveApiService {
       return { success: false, error: 'Failed to fetch notification stats' }
     }
   }
+
+  // ============================================================================
+  // OPPORTUNITIES API
+  // ============================================================================
+
+  async getOpportunities(filters: {
+    page?: number
+    limit?: number
+    status?: string
+    type?: string
+    search?: string
+  } = {}): Promise<ApiResponse<{ opportunities: any[], pagination: any }>> {
+    try {
+      const params = new URLSearchParams()
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== undefined && value !== '') {
+          params.append(key, value.toString())
+        }
+      })
+      const response = await this.fetchWithAuth<{ opportunities: any[], pagination: any }>(`/api/opportunities?${params.toString()}`)
+      return response
+    } catch (error) {
+      console.error('Error fetching opportunities:', error)
+      return { success: false, error: 'Failed to fetch opportunities' }
+    }
+  }
+
+  async getOpportunity(id: string): Promise<ApiResponse<{ opportunity: any }>> {
+    try {
+      const response = await this.fetchWithAuth<{ opportunity: any }>(`/api/opportunities/${id}`)
+      return response
+    } catch (error) {
+      console.error('Error fetching opportunity:', error)
+      return { success: false, error: 'Failed to fetch opportunity' }
+    }
+  }
+
+  async createOpportunity(data: {
+    title: string
+    description: string
+    type: string
+    collaborationType: string
+    requiredSkills: string[]
+    timeCommitment: string
+    duration: string
+    compensationType: string
+    compensationValue?: number
+    equityOffered?: number
+    location?: string
+    isRemote: boolean
+    tags: string[]
+  }): Promise<ApiResponse<{ opportunity: any }>> {
+    try {
+      const response = await this.fetchWithAuth<{ opportunity: any }>('/api/opportunities', {
+        method: 'POST',
+        body: JSON.stringify(data)
+      })
+      return response
+    } catch (error) {
+      console.error('Error creating opportunity:', error)
+      return { success: false, error: 'Failed to create opportunity' }
+    }
+  }
+
+  async applyToOpportunity(opportunityId: string, data: {
+    coverLetter: string
+    portfolioItems: string[]
+    availability: string
+  }): Promise<ApiResponse<{ application: any }>> {
+    try {
+      const response = await this.fetchWithAuth<{ application: any }>(`/api/opportunities/${opportunityId}/apply`, {
+        method: 'POST',
+        body: JSON.stringify(data)
+      })
+      return response
+    } catch (error) {
+      console.error('Error applying to opportunity:', error)
+      return { success: false, error: 'Failed to apply to opportunity' }
+    }
+  }
+
+  async getUserApplications(): Promise<ApiResponse<any[]>> {
+    try {
+      const response = await this.fetchWithAuth<any[]>('/api/opportunities/my-applications')
+      return response
+    } catch (error) {
+      console.error('Error fetching user applications:', error)
+      return { success: false, error: 'Failed to fetch user applications' }
+    }
+  }
+
+  async getOpportunityApplications(opportunityId: string): Promise<ApiResponse<any[]>> {
+    try {
+      const response = await this.fetchWithAuth<any[]>(`/api/opportunities/${opportunityId}/applications`)
+      return response
+    } catch (error) {
+      console.error('Error fetching opportunity applications:', error)
+      return { success: false, error: 'Failed to fetch opportunity applications' }
+    }
+  }
 }
 
 export const comprehensiveApiService = new ComprehensiveApiService()
