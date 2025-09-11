@@ -98,6 +98,9 @@ app.use('/api/teams', teamManagementApiRoutes);
 const teamInvitationsApiRoutes = require('./routes/team-invitations-api');
 app.use('/api/team-invitations', teamInvitationsApiRoutes);
 
+const testNewRoutesApiRoutes = require('./routes/test-new-routes');
+app.use('/api/test-new-routes', testNewRoutesApiRoutes);
+
 const digitalSignaturesApiRoutes = require('./routes/digital-signatures-api');
 app.use('/api/digital-signatures', digitalSignaturesApiRoutes);
 
