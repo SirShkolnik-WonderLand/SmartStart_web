@@ -1586,6 +1586,7 @@ enum LegalEntityRole {
 }
 
 enum LegalDocumentType {
+  // Existing types
   ARTICLES_OF_INCORPORATION
   BYLAWS
   OPERATING_AGREEMENT
@@ -1598,9 +1599,21 @@ enum LegalDocumentType {
   TERMS_OF_SERVICE
   PRIVACY_POLICY
   OTHER
+
+  // Additional values present in production DB to avoid destructive enum changes
+  WORK_FOR_HIRE_AGREEMENT
+  WORLDWIDE_NON_COMPETE
+  ANTI_IP_THEFT_AGREEMENT
+  PLATFORM_LOCK_IN_AGREEMENT
+  REVENUE_SHARING_ENFORCEMENT
+  DIGITAL_EVIDENCE_AGREEMENT
+  INTERNATIONAL_ENFORCEMENT
+  ASSET_SEIZURE_AGREEMENT
+  LIQUIDATED_DAMAGES_CLAUSE
 }
 
 enum LegalDocumentStatus {
+  // Existing statuses
   DRAFT
   REVIEW
   APPROVED
@@ -1608,6 +1621,13 @@ enum LegalDocumentStatus {
   EXPIRED
   AMENDED
   TERMINATED
+
+  // Additional values present in production DB to avoid destructive enum changes
+  PENDING_SIGNATURE
+  SIGNATURE_DEADLINE_PASSED
+  ENFORCEMENT_ACTIVE
+  VIOLATION_DETECTED
+  LEGAL_ACTION_PENDING
 }
 
 enum CoopType {
