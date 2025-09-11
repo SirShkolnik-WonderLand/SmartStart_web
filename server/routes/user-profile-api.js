@@ -546,7 +546,7 @@ router.get('/profile/:userId/privacy', authenticateToken, async(req, res) => {
 
         res.json({
             success: true,
-            privacySettings: profile ? .privacySettings || {}
+            privacySettings: profile?.privacySettings || {}
         });
 
     } catch (error) {
@@ -621,8 +621,6 @@ router.get('/health', (req, res) => {
     });
 });
 
-module.exports = router;
-@ @
 // NOTE: Additional routes appended below
 
 // ===== FULL USER PROFILE AGGREGATION =====
