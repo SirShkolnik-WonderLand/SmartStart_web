@@ -103,9 +103,9 @@ app.use('/api/test-new-routes', testNewRoutesApiRoutes);
 const digitalSignaturesApiRoutes = require('./routes/digital-signatures-api');
 app.use('/api/digital-signatures', digitalSignaturesApiRoutes);
 
-// Still commented out - testing digital signatures first
-// const teamInvitationsApiRoutes = require('./routes/team-invitations-api');
-// app.use('/api/team-invitations', teamInvitationsApiRoutes);
+// Testing team invitations route
+const teamInvitationsApiRoutes = require('./routes/team-invitations-api');
+app.use('/api/team-invitations', teamInvitationsApiRoutes);
 
 // const gamificationEnhancedApiRoutes = require('./routes/gamification-enhanced-api');
 // app.use('/api/gamification-enhanced', gamificationEnhancedApiRoutes);
