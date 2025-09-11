@@ -182,129 +182,131 @@ export default function PersistentLayout({ children }: PersistentLayoutProps) {
         {/* Sidebar */}
         <aside className={`${sidebarOpen ? 'w-64' : 'w-16'} transition-all duration-300 wonderland-sidebar glass-surface min-h-screen sticky top-16 z-40`}>
           <div className="p-6">
-            <nav className="space-y-2">
-              <Link 
-                href="/dashboard" 
-                className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
-                  pathname === '/dashboard' 
-                    ? 'bg-primary/10 text-primary' 
-                    : 'text-foreground-muted hover:text-foreground hover:bg-glass-surface'
-                }`}
-              >
-                <Home className="w-5 h-5" />
-                {sidebarOpen && <span>Dashboard</span>}
-              </Link>
-              <Link 
-                href="/ventures" 
-                className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
-                  pathname === '/ventures' 
-                    ? 'bg-primary/10 text-primary' 
-                    : 'text-foreground-muted hover:text-foreground hover:bg-glass-surface'
-                }`}
-              >
-                <Briefcase className="w-5 h-5" />
-                {sidebarOpen && <span>My Ventures</span>}
-              </Link>
-              <Link 
-                href="/venture-management" 
-                className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
-                  pathname === '/venture-management' 
-                    ? 'bg-primary/10 text-primary' 
-                    : 'text-foreground-muted hover:text-foreground hover:bg-glass-surface'
-                }`}
-              >
-                <Target className="w-5 h-5" />
-                {sidebarOpen && <span>Venture Management</span>}
-              </Link>
-              <Link 
-                href="/umbrella" 
-                className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
-                  pathname === '/umbrella' 
-                    ? 'bg-primary/10 text-primary' 
-                    : 'text-foreground-muted hover:text-foreground hover:bg-glass-surface'
-                }`}
-              >
-                <Network className="w-5 h-5" />
-                {sidebarOpen && <span>Umbrella</span>}
-              </Link>
-              <Link 
-                href="/opportunities" 
-                className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
-                  pathname === '/opportunities' 
-                    ? 'bg-primary/10 text-primary' 
-                    : 'text-foreground-muted hover:text-foreground hover:bg-glass-surface'
-                }`}
-              >
-                <Target className="w-5 h-5" />
-                {sidebarOpen && <span>Opportunities</span>}
-              </Link>
-              <Link 
-                href="/approvals" 
-                className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
-                  pathname === '/approvals' 
-                    ? 'bg-primary/10 text-primary' 
-                    : 'text-foreground-muted hover:text-foreground hover:bg-glass-surface'
-                }`}
-              >
-                <UserCheck className="w-5 h-5" />
-                {sidebarOpen && <span>Approvals</span>}
-                {sidebarOpen && <span className="ml-auto bg-accent text-accent-foreground text-xs px-2 py-1 rounded-full">3</span>}
-              </Link>
-              <Link 
-                href="/documents" 
-                className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
-                  pathname === '/documents' 
-                    ? 'bg-primary/10 text-primary' 
-                    : 'text-foreground-muted hover:text-foreground hover:bg-glass-surface'
-                }`}
-              >
-                <FileText className="w-5 h-5" />
-                {sidebarOpen && <span>Documents</span>}
-              </Link>
-              <Link 
-                href="/analytics" 
-                className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
-                  pathname === '/analytics' 
-                    ? 'bg-primary/10 text-primary' 
-                    : 'text-foreground-muted hover:text-foreground hover:bg-glass-surface'
-                }`}
-              >
-                <BarChart3 className="w-5 h-5" />
-                {sidebarOpen && <span>Analytics</span>}
-              </Link>
-              <Link 
-                href="/companies" 
-                className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
-                  pathname === '/companies' 
-                    ? 'bg-primary/10 text-primary' 
-                    : 'text-foreground-muted hover:text-foreground hover:bg-glass-surface'
-                }`}
-              >
-                <Briefcase className="w-5 h-5" />
-                {sidebarOpen && <span>Companies</span>}
-              </Link>
-              <Link 
-                href="/teams" 
-                className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
-                  pathname === '/teams' 
-                    ? 'bg-primary/10 text-primary' 
-                    : 'text-foreground-muted hover:text-foreground hover:bg-glass-surface'
-                }`}
-              >
-                <Users className="w-5 h-5" />
-                {sidebarOpen && <span>Teams</span>}
-              </Link>
-              <Link 
-                href="/leaderboard" 
-                className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
-                  pathname === '/leaderboard' 
-                    ? 'bg-primary/10 text-primary' 
-                    : 'text-foreground-muted hover:text-foreground hover:bg-glass-surface'
-                }`}
-              >
-                <Trophy className="w-5 h-5" />
-                {sidebarOpen && <span>Leaderboard</span>}
-              </Link>
+            <nav className="space-y-4">
+              {/* Core Journey Navigation */}
+              <div>
+                <h3 className="text-xs font-semibold text-foreground-muted uppercase tracking-wider mb-3 px-3">
+                  {sidebarOpen ? 'My Journey' : ''}
+                </h3>
+                <div className="space-y-1">
+                  <Link 
+                    href="/dashboard" 
+                    className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                      pathname === '/dashboard' 
+                        ? 'bg-primary/10 text-primary' 
+                        : 'text-foreground-muted hover:text-foreground hover:bg-glass-surface'
+                    }`}
+                  >
+                    <Home className="w-5 h-5" />
+                    {sidebarOpen && <span>Dashboard</span>}
+                  </Link>
+                  <Link 
+                    href="/ventures" 
+                    className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                      pathname === '/ventures' 
+                        ? 'bg-primary/10 text-primary' 
+                        : 'text-foreground-muted hover:text-foreground hover:bg-glass-surface'
+                    }`}
+                  >
+                    <Rocket className="w-5 h-5" />
+                    {sidebarOpen && <span>My Ventures</span>}
+                  </Link>
+                  <Link 
+                    href="/opportunities" 
+                    className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                      pathname === '/opportunities' 
+                        ? 'bg-primary/10 text-primary' 
+                        : 'text-foreground-muted hover:text-foreground hover:bg-glass-surface'
+                    }`}
+                  >
+                    <Target className="w-5 h-5" />
+                    {sidebarOpen && <span>Find Work</span>}
+                  </Link>
+                </div>
+              </div>
+
+              {/* Collaboration Tools */}
+              <div>
+                <h3 className="text-xs font-semibold text-foreground-muted uppercase tracking-wider mb-3 px-3">
+                  {sidebarOpen ? 'Collaborate' : ''}
+                </h3>
+                <div className="space-y-1">
+                  <Link 
+                    href="/documents" 
+                    className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                      pathname === '/documents' 
+                        ? 'bg-primary/10 text-primary' 
+                        : 'text-foreground-muted hover:text-foreground hover:bg-glass-surface'
+                    }`}
+                  >
+                    <FileText className="w-5 h-5" />
+                    {sidebarOpen && <span>Legal Docs</span>}
+                  </Link>
+                  <Link 
+                    href="/approvals" 
+                    className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                      pathname === '/approvals' 
+                        ? 'bg-primary/10 text-primary' 
+                        : 'text-foreground-muted hover:text-foreground hover:bg-glass-surface'
+                    }`}
+                  >
+                    <UserCheck className="w-5 h-5" />
+                    {sidebarOpen && <span>Approvals</span>}
+                    {sidebarOpen && <span className="ml-auto bg-accent text-accent-foreground text-xs px-2 py-1 rounded-full">3</span>}
+                  </Link>
+                </div>
+              </div>
+
+              {/* Community & Growth */}
+              <div>
+                <h3 className="text-xs font-semibold text-foreground-muted uppercase tracking-wider mb-3 px-3">
+                  {sidebarOpen ? 'Community' : ''}
+                </h3>
+                <div className="space-y-1">
+                  <Link 
+                    href="/leaderboard" 
+                    className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                      pathname === '/leaderboard' 
+                        ? 'bg-primary/10 text-primary' 
+                        : 'text-foreground-muted hover:text-foreground hover:bg-glass-surface'
+                    }`}
+                  >
+                    <Trophy className="w-5 h-5" />
+                    {sidebarOpen && <span>Leaderboard</span>}
+                  </Link>
+                  <Link 
+                    href="/analytics" 
+                    className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                      pathname === '/analytics' 
+                        ? 'bg-primary/10 text-primary' 
+                        : 'text-foreground-muted hover:text-foreground hover:bg-glass-surface'
+                    }`}
+                  >
+                    <BarChart3 className="w-5 h-5" />
+                    {sidebarOpen && <span>Analytics</span>}
+                  </Link>
+                </div>
+              </div>
+
+              {/* Advanced Features (Collapsible) */}
+              <div>
+                <h3 className="text-xs font-semibold text-foreground-muted uppercase tracking-wider mb-3 px-3">
+                  {sidebarOpen ? 'Advanced' : ''}
+                </h3>
+                <div className="space-y-1">
+                  <Link 
+                    href="/umbrella" 
+                    className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                      pathname === '/umbrella' 
+                        ? 'bg-primary/10 text-primary' 
+                        : 'text-foreground-muted hover:text-foreground hover:bg-glass-surface'
+                    }`}
+                  >
+                    <Network className="w-5 h-5" />
+                    {sidebarOpen && <span>Umbrella</span>}
+                  </Link>
+                </div>
+              </div>
             </nav>
           </div>
         </aside>
