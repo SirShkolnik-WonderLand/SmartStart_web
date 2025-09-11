@@ -28,14 +28,33 @@ import {
 interface Venture {
   id: string
   name: string
-  purpose: string
-  region: string
-  status: 'ACTIVE' | 'PLANNING' | 'INACTIVE'
-  createdAt: string
-  teamCount: number
-  projectCount: number
-  revenue: number
-  growth: number
+  description?: string
+  purpose?: string
+  stage?: 'idea' | 'mvp' | 'growth' | 'scale'
+  industry?: string
+  teamSize?: number
+  lookingFor?: string[]
+  rewards?: {
+    type: 'equity' | 'cash' | 'hybrid'
+    amount: string
+  }
+  owner?: {
+    id: string
+    name: string
+    email: string
+    avatar?: string
+    level?: string
+    xp?: number
+    reputation?: number
+  }
+  createdAt?: string
+  updatedAt?: string
+  status?: 'ACTIVE' | 'PLANNING' | 'INACTIVE'
+  // Mock data for display
+  teamCount?: number
+  projectCount?: number
+  revenue?: number
+  growth?: number
   ideasCount?: number
   legalDocumentsCount?: number
   umbrellaRelationshipsCount?: number
@@ -94,7 +113,18 @@ export default function VentureDetailsPage() {
       }
 
       const data = await response.json()
-      const ventureData: Venture = data.data
+      const ventureData: Venture = {
+        ...data.data,
+        // Add mock data for display
+        teamCount: data.data.teamSize || 1,
+        projectCount: 0,
+        revenue: 0,
+        growth: 0,
+        ideasCount: 0,
+        legalDocumentsCount: 0,
+        umbrellaRelationshipsCount: 0,
+        status: 'ACTIVE'
+      }
       setVenture(ventureData)
 
       // Optional: fetch related projects and team members if backend supports
@@ -183,9 +213,9 @@ export default function VentureDetailsPage() {
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back
             </Button>
-          <div>
+            <div>
               <h1 className="text-3xl font-bold text-foreground">{venture.name}</h1>
-              <p className="text-foreground-muted mt-1">{venture.purpose}</p>
+              <p className="text-foreground-muted mt-1">{venture.description || venture.purpose || 'No description available'}</p>
             </div>
           </div>
           <div className="flex items-center space-x-3">
@@ -275,10 +305,10 @@ export default function VentureDetailsPage() {
                         <div className="mt-1">{getStatusBadge(venture.status)}</div>
                 </div>
                 <div>
-                        <label className="text-sm font-medium text-gray-600">Region</label>
+                        <label className="text-sm font-medium text-gray-600">Industry</label>
                         <div className="mt-1 flex items-center text-sm text-gray-900">
-                          <MapPin className="w-4 h-4 mr-1" />
-                          {venture.region}
+                          <Building2 className="w-4 h-4 mr-1" />
+                          {venture.industry || 'Not specified'}
                 </div>
                 </div>
               </div>
@@ -286,12 +316,20 @@ export default function VentureDetailsPage() {
                       <label className="text-sm font-medium text-gray-600">Created</label>
                       <div className="mt-1 flex items-center text-sm text-gray-900">
                         <Calendar className="w-4 h-4 mr-1" />
-                        {formatDate(venture.createdAt)}
+                        {venture.createdAt ? formatDate(venture.createdAt) : 'Recently created'}
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-600">Stage</label>
+                      <div className="mt-1">
+                        <Badge className="bg-blue-100 text-blue-800">
+                          {venture.stage ? venture.stage.charAt(0).toUpperCase() + venture.stage.slice(1) : 'Idea'}
+                        </Badge>
                       </div>
                     </div>
                     <div>
                       <label className="text-sm font-medium text-gray-600">Description</label>
-                      <p className="mt-1 text-sm text-gray-900">{venture.purpose}</p>
+                      <p className="mt-1 text-sm text-gray-900">{venture.description || venture.purpose || 'No description available'}</p>
                     </div>
                   </CardContent>
                 </Card>

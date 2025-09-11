@@ -50,54 +50,64 @@ export default function VentureCreationForm({
         className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden"
       >
         {/* Header */}
-        <div className="bg-gradient-to-r from-primary to-primary/80 text-white p-6">
-          <div className="flex items-center justify-between">
+        <div className="bg-gradient-to-r from-primary via-primary/90 to-primary/80 text-white p-8">
+          <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-2xl font-bold">Create New Venture</h2>
-              <p className="text-white/80 mt-1">
+              <h2 className="text-3xl font-bold mb-2">Create New Venture</h2>
+              <p className="text-white/90 text-lg">
                 Step {currentStep + 1} of {steps.length}: {steps[currentStep].title}
               </p>
             </div>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+              className="p-3 hover:bg-white/20 rounded-xl transition-all duration-200 hover:scale-105"
             >
               <X className="w-6 h-6" />
             </button>
           </div>
 
-          {/* Progress Bar */}
-          <div className="mt-6">
-            <div className="flex items-center justify-between mb-2">
+          {/* Enhanced Progress Bar */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
               {steps.map((step, index) => (
-                <div
-                  key={step.id}
-                  className={`flex items-center ${
-                    index <= currentStep ? 'text-white' : 'text-white/50'
-                  }`}
-                >
+                <div key={step.id} className="flex items-center">
                   <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                    className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 ${
                       index < currentStep
-                        ? 'bg-white text-primary'
+                        ? 'bg-white text-primary shadow-lg scale-110'
                         : index === currentStep
-                        ? 'bg-white/20 text-white'
-                        : 'bg-white/10 text-white/50'
+                        ? 'bg-white/25 text-white border-2 border-white/50 scale-105'
+                        : 'bg-white/10 text-white/60'
                     }`}
                   >
                     {index < currentStep ? (
-                      <CheckCircle className="w-5 h-5" />
+                      <CheckCircle className="w-6 h-6" />
                     ) : (
                       index + 1
                     )}
                   </div>
                   {index < steps.length - 1 && (
                     <div
-                      className={`w-12 h-0.5 mx-2 ${
+                      className={`w-16 h-1 mx-4 rounded-full transition-all duration-300 ${
                         index < currentStep ? 'bg-white' : 'bg-white/30'
                       }`}
                     />
                   )}
+                </div>
+              ))}
+            </div>
+            
+            {/* Step Labels */}
+            <div className="flex justify-between text-sm">
+              {steps.map((step, index) => (
+                <div
+                  key={step.id}
+                  className={`text-center max-w-20 ${
+                    index <= currentStep ? 'text-white' : 'text-white/60'
+                  }`}
+                >
+                  <div className="font-medium">{step.title}</div>
+                  <div className="text-xs opacity-80 mt-1">{step.description}</div>
                 </div>
               ))}
             </div>

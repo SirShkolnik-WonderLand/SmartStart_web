@@ -52,11 +52,11 @@ export default function BasicInformationStep({
   return (
     <div className="space-y-8">
       <div className="text-center">
-        <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-          <Building2 className="w-8 h-8 text-primary" />
+        <div className="w-20 h-20 bg-gradient-to-br from-primary/20 to-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+          <Building2 className="w-10 h-10 text-primary" />
         </div>
-        <h2 className="text-2xl font-bold text-foreground mb-2">Basic Information</h2>
-        <p className="text-foreground-muted">Tell us about your venture idea</p>
+        <h2 className="text-3xl font-bold text-foreground mb-3">Basic Information</h2>
+        <p className="text-foreground-muted text-lg">Tell us about your venture idea</p>
       </div>
 
       <div className="space-y-6">
@@ -70,10 +70,10 @@ export default function BasicInformationStep({
             value={data.name}
             onChange={(e) => updateData({ name: e.target.value })}
             placeholder="Enter your venture name"
-            className={`w-full px-4 py-3 rounded-lg border transition-colors ${
+            className={`w-full px-4 py-4 rounded-xl border-2 transition-all duration-200 ${
               errors.name 
-                ? 'border-red-500 bg-red-50' 
-                : 'border-gray-300 bg-white focus:border-primary focus:ring-2 focus:ring-primary/20'
+                ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-2 focus:ring-red-200' 
+                : 'border-gray-200 bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 hover:border-gray-300'
             }`}
           />
           {errors.name && (
