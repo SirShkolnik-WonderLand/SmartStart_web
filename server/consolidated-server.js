@@ -119,6 +119,16 @@ try {
     console.error('Error loading digital signatures minimal API:', error);
 }
 
+console.log('Loading digital signatures no-prisma API...');
+try {
+    const digitalSignaturesNoPrismaApiRoutes = require('./routes/digital-signatures-no-prisma');
+    console.log('Digital signatures no-prisma API loaded successfully');
+    app.use('/api/digital-signatures-no-prisma', digitalSignaturesNoPrismaApiRoutes);
+    console.log('Digital signatures no-prisma API routes registered');
+} catch (error) {
+    console.error('Error loading digital signatures no-prisma API:', error);
+}
+
 console.log('Loading digital signatures API...');
 try {
     const digitalSignaturesApiRoutes = require('./routes/digital-signatures-api');
