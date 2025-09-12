@@ -97,6 +97,17 @@ app.use('/api/teams', teamManagementApiRoutes);
 const testNewRoutesApiRoutes = require('./routes/test-new-routes');
 app.use('/api/test-new-routes', testNewRoutesApiRoutes);
 
+// Simple test route without dependencies
+console.log('Loading simple test API...');
+try {
+    const simpleTestApiRoutes = require('./routes/simple-test-api');
+    console.log('Simple test API loaded successfully');
+    app.use('/api/simple-test', simpleTestApiRoutes);
+    console.log('Simple test API routes registered');
+} catch (error) {
+    console.error('Error loading simple test API:', error);
+}
+
 // Add routes back one by one to identify the problematic one
 console.log('Loading digital signatures API...');
 try {
