@@ -98,20 +98,48 @@ const testNewRoutesApiRoutes = require('./routes/test-new-routes');
 app.use('/api/test-new-routes', testNewRoutesApiRoutes);
 
 // Add routes back one by one to identify the problematic one
-const digitalSignaturesApiRoutes = require('./routes/digital-signatures-api');
-app.use('/api/digital-signatures', digitalSignaturesApiRoutes);
+console.log('Loading digital signatures API...');
+try {
+    const digitalSignaturesApiRoutes = require('./routes/digital-signatures-api');
+    console.log('Digital signatures API loaded successfully');
+    app.use('/api/digital-signatures', digitalSignaturesApiRoutes);
+    console.log('Digital signatures API routes registered');
+} catch (error) {
+    console.error('Error loading digital signatures API:', error);
+}
 
 // Testing team invitations route
-const teamInvitationsApiRoutes = require('./routes/team-invitations-api');
-app.use('/api/team-invitations', teamInvitationsApiRoutes);
+console.log('Loading team invitations API...');
+try {
+    const teamInvitationsApiRoutes = require('./routes/team-invitations-api');
+    console.log('Team invitations API loaded successfully');
+    app.use('/api/team-invitations', teamInvitationsApiRoutes);
+    console.log('Team invitations API routes registered');
+} catch (error) {
+    console.error('Error loading team invitations API:', error);
+}
 
 // Testing gamification route first
-const gamificationEnhancedApiRoutes = require('./routes/gamification-enhanced-api');
-app.use('/api/gamification-enhanced', gamificationEnhancedApiRoutes);
+console.log('Loading gamification enhanced API...');
+try {
+    const gamificationEnhancedApiRoutes = require('./routes/gamification-enhanced-api');
+    console.log('Gamification enhanced API loaded successfully');
+    app.use('/api/gamification-enhanced', gamificationEnhancedApiRoutes);
+    console.log('Gamification enhanced API routes registered');
+} catch (error) {
+    console.error('Error loading gamification enhanced API:', error);
+}
 
 // Testing revenue sharing route
-const revenueSharingApiRoutes = require('./routes/revenue-sharing-api');
-app.use('/api/revenue-sharing', revenueSharingApiRoutes);
+console.log('Loading revenue sharing API...');
+try {
+    const revenueSharingApiRoutes = require('./routes/revenue-sharing-api');
+    console.log('Revenue sharing API loaded successfully');
+    app.use('/api/revenue-sharing', revenueSharingApiRoutes);
+    console.log('Revenue sharing API routes registered');
+} catch (error) {
+    console.error('Error loading revenue sharing API:', error);
+}
 
 // Test route for debugging
 const notificationsTestRoutes = require('./routes/notifications-test');
