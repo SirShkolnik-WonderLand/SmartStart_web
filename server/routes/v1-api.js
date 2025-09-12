@@ -10,6 +10,8 @@ const prisma = new PrismaClient();
 // Import services
 const GamificationService = require('../services/gamification-service');
 const gamificationService = new GamificationService();
+const BUZTokenService = require('../services/buz-token-service');
+const buzService = new BUZTokenService();
 
 // ===== MIDDLEWARE =====
 
@@ -51,25 +53,16 @@ const requirePermission = (permission) => {
  */
 router.get('/buz/supply', async (req, res) => {
     try {
-        res.json({
-            success: true,
-            data: {
-                totalSupply: 1000000000,
-                circulatingSupply: 0,
-                burnedSupply: 0,
-                stakedSupply: 0,
-                reserveSupply: 200000000,
-                teamSupply: 150000000,
-                communitySupply: 100000000,
-                liquiditySupply: 100000000,
-                stakingRewardsSupply: 200000000,
-                userRewardsSupply: 150000000,
-                ventureFundSupply: 100000000,
-                currentPrice: 0.01,
-                marketCap: 0,
-                lastUpdated: new Date().toISOString()
-            }
-        });
+        const result = await buzService.getSupplyInfo();
+        if (result.success) {
+            res.json(result);
+        } else {
+            res.status(500).json({
+                success: false,
+                message: 'Failed to retrieve supply information',
+                error: result.error
+            });
+        }
     } catch (error) {
         console.error('Get BUZ supply error:', error);
         res.status(500).json({
@@ -85,18 +78,16 @@ router.get('/buz/supply', async (req, res) => {
  */
 router.get('/buz/stats', async (req, res) => {
     try {
-        res.json({
-            success: true,
-            data: {
-                totalUsers: 0,
-                totalTransactions: 0,
-                totalStaked: 0,
-                totalBurned: 0,
-                recentTransactions24h: 0,
-                activeStakingPositions: 0,
-                totalRewardsClaimed: 0
-            }
-        });
+        const result = await buzService.getSystemStats();
+        if (result.success) {
+            res.json(result);
+        } else {
+            res.status(500).json({
+                success: false,
+                message: 'Failed to retrieve statistics',
+                error: result.error
+            });
+        }
     } catch (error) {
         console.error('Get BUZ stats error:', error);
         res.status(500).json({
@@ -123,18 +114,16 @@ router.get('/buz/balance/:userId', authenticateToken, async (req, res) => {
             });
         }
 
-        res.json({
-            success: true,
-            data: {
-                userId,
-                balance: 0,
-                stakedBalance: 0,
-                totalEarned: 0,
-                totalSpent: 0,
-                totalBurned: 0,
-                lastActivity: null
-            }
-        });
+        const result = await buzService.getUserBalance(userId);
+        if (result.success) {
+            res.json(result);
+        } else {
+            res.status(500).json({
+                success: false,
+                message: 'Failed to retrieve BUZ balance',
+                error: result.error
+            });
+        }
     } catch (error) {
         console.error('Get BUZ balance error:', error);
         res.status(500).json({
@@ -162,18 +151,16 @@ router.get('/buz/transactions/:userId', authenticateToken, async (req, res) => {
             });
         }
 
-        res.json({
-            success: true,
-            data: {
-                transactions: [],
-                pagination: {
-                    page: parseInt(page),
-                    limit: parseInt(limit),
-                    total: 0,
-                    pages: 0
-                }
-            }
-        });
+        const result = await buzService.getUserTransactions(userId, parseInt(page), parseInt(limit), type, status);
+        if (result.success) {
+            res.json(result);
+        } else {
+            res.status(500).json({
+                success: false,
+                message: 'Failed to retrieve transaction history',
+                error: result.error
+            });
+        }
     } catch (error) {
         console.error('Get BUZ transactions error:', error);
         res.status(500).json({
@@ -214,17 +201,20 @@ router.post('/buz/transfer', authenticateToken, async (req, res) => {
             });
         }
 
-        res.json({
-            success: true,
-            message: 'BUZ transfer completed successfully',
-            data: {
-                transactionId: `buz_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-                fromUserId,
-                toUserId,
-                amount: parseFloat(amount),
-                status: 'CONFIRMED'
-            }
-        });
+        const result = await buzService.transferTokens(fromUserId, toUserId, amount, reason, description);
+        if (result.success) {
+            res.json({
+                success: true,
+                message: 'BUZ transfer completed successfully',
+                data: result.data
+            });
+        } else {
+            res.status(400).json({
+                success: false,
+                message: 'Failed to transfer BUZ tokens',
+                error: result.error
+            });
+        }
     } catch (error) {
         console.error('BUZ transfer error:', error);
         res.status(500).json({
@@ -266,33 +256,20 @@ router.post('/buz/stake', authenticateToken, async (req, res) => {
             });
         }
 
-        // Calculate staking parameters
-        const stakingConfig = {
-            'BASIC': { duration: 30, apy: 5.00 },
-            'PREMIUM': { duration: 90, apy: 10.00 },
-            'VIP': { duration: 180, apy: 15.00 },
-            'GOVERNANCE': { duration: 365, apy: 20.00 }
-        };
-
-        const config = stakingConfig[tier];
-        const endDate = new Date();
-        endDate.setDate(endDate.getDate() + config.duration);
-        const expectedReward = amount * (config.apy / 100) * (config.duration / 365);
-
-        res.json({
-            success: true,
-            message: 'BUZ tokens staked successfully',
-            data: {
-                stakingId: `staking_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-                userId,
-                amount: parseFloat(amount),
-                tier,
-                duration: config.duration,
-                apy: config.apy,
-                expectedReward: parseFloat(expectedReward),
-                endDate: endDate.toISOString()
-            }
-        });
+        const result = await buzService.stakeTokens(userId, amount, tier);
+        if (result.success) {
+            res.json({
+                success: true,
+                message: 'BUZ tokens staked successfully',
+                data: result.data
+            });
+        } else {
+            res.status(400).json({
+                success: false,
+                message: 'Failed to stake BUZ tokens',
+                error: result.error
+            });
+        }
     } catch (error) {
         console.error('BUZ stake error:', error);
         res.status(500).json({
@@ -319,12 +296,16 @@ router.get('/buz/staking/:userId', authenticateToken, async (req, res) => {
             });
         }
 
-        res.json({
-            success: true,
-            data: {
-                stakingPositions: []
-            }
-        });
+        const result = await buzService.getUserStaking(userId);
+        if (result.success) {
+            res.json(result);
+        } else {
+            res.status(500).json({
+                success: false,
+                message: 'Failed to retrieve staking positions',
+                error: result.error
+            });
+        }
     } catch (error) {
         console.error('Get BUZ staking error:', error);
         res.status(500).json({
@@ -416,18 +397,20 @@ router.post('/buz/admin/mint', authenticateToken, requirePermission('admin:buz')
             });
         }
 
-        res.json({
-            success: true,
-            message: 'BUZ tokens minted successfully',
-            data: {
-                transactionId: `mint_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-                userId,
-                amount: parseFloat(amount),
-                mintedBy: adminUser.id,
-                reason: reason || 'Admin mint',
-                status: 'CONFIRMED'
-            }
-        });
+        const result = await buzService.mintTokens(userId, amount, reason, adminUser.id);
+        if (result.success) {
+            res.json({
+                success: true,
+                message: 'BUZ tokens minted successfully',
+                data: result.data
+            });
+        } else {
+            res.status(400).json({
+                success: false,
+                message: 'Failed to mint BUZ tokens',
+                error: result.error
+            });
+        }
     } catch (error) {
         console.error('Admin BUZ mint error:', error);
         res.status(500).json({
@@ -460,18 +443,20 @@ router.post('/buz/admin/burn', authenticateToken, requirePermission('admin:buz')
             });
         }
 
-        res.json({
-            success: true,
-            message: 'BUZ tokens burned successfully',
-            data: {
-                transactionId: `burn_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-                userId,
-                amount: parseFloat(amount),
-                burnedBy: adminUser.id,
-                reason: reason || 'Admin burn',
-                status: 'CONFIRMED'
-            }
-        });
+        const result = await buzService.burnTokens(userId, amount, reason, adminUser.id);
+        if (result.success) {
+            res.json({
+                success: true,
+                message: 'BUZ tokens burned successfully',
+                data: result.data
+            });
+        } else {
+            res.status(400).json({
+                success: false,
+                message: 'Failed to burn BUZ tokens',
+                error: result.error
+            });
+        }
     } catch (error) {
         console.error('Admin BUZ burn error:', error);
         res.status(500).json({
@@ -579,22 +564,16 @@ router.post('/buz/admin/set-price', authenticateToken, requirePermission('admin:
  */
 router.get('/buz/admin/analytics', authenticateToken, requirePermission('admin:buz'), async (req, res) => {
     try {
-        res.json({
-            success: true,
-            data: {
-                totalUsers: 0,
-                totalTransactions: 0,
-                totalVolume: 0,
-                totalStaked: 0,
-                totalBurned: 0,
-                averageTransactionSize: 0,
-                topUsers: [],
-                recentActivity: [],
-                priceHistory: [],
-                marketCap: 0,
-                circulatingSupply: 0
-            }
-        });
+        const result = await buzService.getSystemStats();
+        if (result.success) {
+            res.json(result);
+        } else {
+            res.status(500).json({
+                success: false,
+                message: 'Failed to retrieve BUZ analytics',
+                error: result.error
+            });
+        }
     } catch (error) {
         console.error('Admin get BUZ analytics error:', error);
         res.status(500).json({
