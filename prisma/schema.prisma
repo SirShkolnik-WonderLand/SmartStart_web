@@ -3961,6 +3961,9 @@ model EnforcementAction {
   initiatedAt     DateTime @default(now())
   completedAt     DateTime?
 
+  // Relations
+  assetSeizures   AssetSeizure[]
+
   @@index([violationId])
   @@index([actionType])
   @@index([status])
