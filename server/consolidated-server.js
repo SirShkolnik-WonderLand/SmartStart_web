@@ -144,10 +144,13 @@ console.log('Loading digital signatures API...');
 try {
     const digitalSignaturesApiRoutes = require('./routes/digital-signatures-api');
     console.log('Digital signatures API loaded successfully');
+    console.log('Digital signatures API type:', typeof digitalSignaturesApiRoutes);
+    console.log('Digital signatures API keys:', Object.keys(digitalSignaturesApiRoutes));
     app.use('/api/digital-signatures', digitalSignaturesApiRoutes);
-    console.log('Digital signatures API routes registered');
+    console.log('Digital signatures API routes registered successfully');
 } catch (error) {
     console.error('Error loading digital signatures API:', error);
+    console.error('Error stack:', error.stack);
 }
 
 // Testing team invitations route
