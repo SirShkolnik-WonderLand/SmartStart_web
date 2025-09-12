@@ -228,6 +228,17 @@ try {
     console.error('Error loading perfect notifications API:', error);
 }
 
+// Simple BUZ API - Ultra minimal
+console.log('Loading Simple BUZ API...');
+try {
+    const simpleBuzApiRoutes = require('./routes/simple-buz');
+    console.log('Simple BUZ API loaded successfully');
+    app.use('/api/buz', simpleBuzApiRoutes);
+    console.log('Simple BUZ API routes registered successfully');
+} catch (error) {
+    console.error('Error loading Simple BUZ API:', error);
+}
+
 // BUZ Token Minimal API - No dependencies
 console.log('Loading BUZ Token Minimal API...');
 try {
