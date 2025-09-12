@@ -93,6 +93,17 @@ app.use('/api/companies', companyManagementApiRoutes);
 const teamManagementApiRoutes = require('./routes/team-management-api');
 app.use('/api/teams', teamManagementApiRoutes);
 
+// Perfect test route - first and simple
+console.log('Loading perfect test API...');
+try {
+    const perfectTestApiRoutes = require('./routes/perfect-test-api');
+    console.log('Perfect test API loaded successfully');
+    app.use('/api/perfect-test', perfectTestApiRoutes);
+    console.log('Perfect test API routes registered successfully');
+} catch (error) {
+    console.error('Error loading perfect test API:', error);
+}
+
 // Test route first to isolate issues
 const testNewRoutesApiRoutes = require('./routes/test-new-routes');
 app.use('/api/test-new-routes', testNewRoutesApiRoutes);
@@ -160,6 +171,17 @@ try {
     console.log('Digital signatures no-prisma API routes registered');
 } catch (error) {
     console.error('Error loading digital signatures no-prisma API:', error);
+}
+
+// Perfect digital signatures API
+console.log('Loading perfect digital signatures API...');
+try {
+    const digitalSignaturesPerfectApiRoutes = require('./routes/digital-signatures-perfect');
+    console.log('Perfect digital signatures API loaded successfully');
+    app.use('/api/digital-signatures-perfect', digitalSignaturesPerfectApiRoutes);
+    console.log('Perfect digital signatures API routes registered successfully');
+} catch (error) {
+    console.error('Error loading perfect digital signatures API:', error);
 }
 
 console.log('Loading digital signatures API...');
