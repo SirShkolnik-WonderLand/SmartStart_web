@@ -119,6 +119,13 @@ try {
     console.error('Error loading BUZ Loading Test:', error);
 }
 
+// Direct route test - bypass require
+console.log('Adding direct BUZ test route...');
+app.get('/api/buz-direct-test', (req, res) => {
+    res.json({ message: 'Direct BUZ test successful!' });
+});
+console.log('Direct BUZ test route added successfully');
+
 // BUZ Diagnostic API - Early loading to test
 console.log('Loading BUZ Diagnostic API...');
 try {
