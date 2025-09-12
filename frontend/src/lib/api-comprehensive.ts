@@ -38,6 +38,128 @@ export interface User {
   lastActive?: string
 }
 
+// BUZ Token System Interfaces
+export interface BUZBalance {
+  userId: string
+  balance: number
+  stakedBalance: number
+  totalEarned: number
+  totalSpent: number
+  totalBurned: number
+  lastActivity: string | null
+}
+
+export interface BUZTransaction {
+  id: string
+  fromUserId: string | null
+  toUserId: string | null
+  fromUser: { id: string; email: string; name: string } | null
+  toUser: { id: string; email: string; name: string } | null
+  amount: number
+  type: string
+  reason: string | null
+  description: string | null
+  status: string
+  blockNumber: number | null
+  transactionHash: string | null
+  gasUsed: number | null
+  gasPrice: number | null
+  metadata: any
+  createdAt: string
+  updatedAt: string
+}
+
+export interface BUZStaking {
+  id: string
+  userId: string
+  amount: number
+  tier: string
+  duration: number
+  apy: number
+  expectedReward: number
+  actualReward: number
+  startDate: string
+  endDate: string | null
+  status: string
+  isAutoRenew: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+export interface BUZReward {
+  id: string
+  userId: string
+  amount: number
+  type: string
+  reason: string
+  isClaimed: boolean
+  claimedAt: string | null
+  expiresAt: string | null
+  metadata: any
+  createdAt: string
+}
+
+export interface BUZGovernanceProposal {
+  id: string
+  proposerId: string
+  proposer: User
+  title: string
+  description: string
+  proposalType: string
+  status: string
+  votingStart: string | null
+  votingEnd: string | null
+  executionDate: string | null
+  yesVotes: number
+  noVotes: number
+  abstainVotes: number
+  totalVotes: number
+  quorumRequired: number
+  minStakeRequired: number
+  metadata: any
+  createdAt: string
+  updatedAt: string
+}
+
+export interface BUZGovernanceVote {
+  id: string
+  proposalId: string
+  proposal: BUZGovernanceProposal
+  voterId: string
+  voter: User
+  vote: string
+  votingPower: number
+  stakedAmount: number
+  createdAt: string
+}
+
+export interface BUZSupply {
+  totalSupply: number
+  circulatingSupply: number
+  burnedSupply: number
+  stakedSupply: number
+  reserveSupply: number
+  teamSupply: number
+  communitySupply: number
+  liquiditySupply: number
+  stakingRewardsSupply: number
+  userRewardsSupply: number
+  ventureFundSupply: number
+  currentPrice: number
+  marketCap: number
+  lastUpdated: string
+}
+
+export interface BUZStats {
+  totalUsers: number
+  totalTransactions: number
+  totalStaked: number
+  totalBurned: number
+  recentTransactions24h: number
+  activeStakingPositions: number
+  totalRewardsClaimed: number
+}
+
 export interface UserProfile {
   id: string
   userId: string
@@ -2347,6 +2469,161 @@ class ComprehensiveApiService {
     } catch (error) {
       console.error('Error fetching opportunity applications:', error)
       return { success: false, error: 'Failed to fetch opportunity applications' }
+    }
+  }
+
+  // ============================================================================
+  // BUZ TOKEN SYSTEM API METHODS
+  // ============================================================================
+
+  async getBUZBalance(userId: string): Promise<ApiResponse<BUZBalance>> {
+    try {
+      const response = await this.fetchWithAuth<BUZBalance>(`/api/buz-token/balance/${userId}`)
+      return response
+    } catch (error) {
+      console.error('Get BUZ balance error:', error)
+      return { success: false, error: 'Failed to get BUZ balance' }
+    }
+  }
+
+  async getBUZTransactions(userId: string, options: {
+    page?: number
+    limit?: number
+    type?: string
+    status?: string
+  } = {}): Promise<ApiResponse<{ transactions: BUZTransaction[]; pagination: any }>> {
+    try {
+      const params = new URLSearchParams()
+      if (options.page) params.append('page', options.page.toString())
+      if (options.limit) params.append('limit', options.limit.toString())
+      if (options.type) params.append('type', options.type)
+      if (options.status) params.append('status', options.status)
+      
+      const response = await this.fetchWithAuth<{ transactions: BUZTransaction[]; pagination: any }>(`/api/buz-token/transactions/${userId}?${params}`)
+      return response
+    } catch (error) {
+      console.error('Get BUZ transactions error:', error)
+      return { success: false, error: 'Failed to get BUZ transactions' }
+    }
+  }
+
+  async transferBUZ(data: {
+    toUserId: string
+    amount: number
+    reason?: string
+    description?: string
+  }): Promise<ApiResponse<{ transactionId: string; fromUserId: string; toUserId: string; amount: number; status: string }>> {
+    try {
+      const response = await this.fetchWithAuth<{ transactionId: string; fromUserId: string; toUserId: string; amount: number; status: string }>('/api/buz-token/transfer', {
+        method: 'POST',
+        body: JSON.stringify(data)
+      })
+      return response
+    } catch (error) {
+      console.error('Transfer BUZ error:', error)
+      return { success: false, error: 'Failed to transfer BUZ tokens' }
+    }
+  }
+
+  async mintBUZ(data: {
+    userId: string
+    amount: number
+    reason?: string
+  }): Promise<ApiResponse<{ transactionId: string; userId: string; amount: number; status: string }>> {
+    try {
+      const response = await this.fetchWithAuth<{ transactionId: string; userId: string; amount: number; status: string }>('/api/buz-token/mint', {
+        method: 'POST',
+        body: JSON.stringify(data)
+      })
+      return response
+    } catch (error) {
+      console.error('Mint BUZ error:', error)
+      return { success: false, error: 'Failed to mint BUZ tokens' }
+    }
+  }
+
+  async burnBUZ(data: {
+    userId: string
+    amount: number
+    reason?: string
+  }): Promise<ApiResponse<{ transactionId: string; userId: string; amount: number; status: string }>> {
+    try {
+      const response = await this.fetchWithAuth<{ transactionId: string; userId: string; amount: number; status: string }>('/api/buz-token/burn', {
+        method: 'POST',
+        body: JSON.stringify(data)
+      })
+      return response
+    } catch (error) {
+      console.error('Burn BUZ error:', error)
+      return { success: false, error: 'Failed to burn BUZ tokens' }
+    }
+  }
+
+  async stakeBUZ(data: {
+    amount: number
+    tier: string
+  }): Promise<ApiResponse<{ stakingId: string; userId: string; amount: number; tier: string; duration: number; apy: number; expectedReward: number; endDate: string }>> {
+    try {
+      const response = await this.fetchWithAuth<{ stakingId: string; userId: string; amount: number; tier: string; duration: number; apy: number; expectedReward: number; endDate: string }>('/api/buz-token/stake', {
+        method: 'POST',
+        body: JSON.stringify(data)
+      })
+      return response
+    } catch (error) {
+      console.error('Stake BUZ error:', error)
+      return { success: false, error: 'Failed to stake BUZ tokens' }
+    }
+  }
+
+  async getBUZStaking(userId: string): Promise<ApiResponse<{ stakingPositions: BUZStaking[] }>> {
+    try {
+      const response = await this.fetchWithAuth<{ stakingPositions: BUZStaking[] }>(`/api/buz-token/staking/${userId}`)
+      return response
+    } catch (error) {
+      console.error('Get BUZ staking error:', error)
+      return { success: false, error: 'Failed to get BUZ staking positions' }
+    }
+  }
+
+  async claimBUZRewards(): Promise<ApiResponse<{ claimedRewards: any[]; totalAmount: number }>> {
+    try {
+      const response = await this.fetchWithAuth<{ claimedRewards: any[]; totalAmount: number }>('/api/buz-token/rewards/claim', {
+        method: 'POST'
+      })
+      return response
+    } catch (error) {
+      console.error('Claim BUZ rewards error:', error)
+      return { success: false, error: 'Failed to claim BUZ rewards' }
+    }
+  }
+
+  async getBUZRewards(userId: string): Promise<ApiResponse<{ rewards: BUZReward[] }>> {
+    try {
+      const response = await this.fetchWithAuth<{ rewards: BUZReward[] }>(`/api/buz-token/rewards/${userId}`)
+      return response
+    } catch (error) {
+      console.error('Get BUZ rewards error:', error)
+      return { success: false, error: 'Failed to get BUZ rewards' }
+    }
+  }
+
+  async getBUZSupply(): Promise<ApiResponse<BUZSupply>> {
+    try {
+      const response = await this.fetchWithAuth<BUZSupply>('/api/buz-token/supply')
+      return response
+    } catch (error) {
+      console.error('Get BUZ supply error:', error)
+      return { success: false, error: 'Failed to get BUZ supply information' }
+    }
+  }
+
+  async getBUZStats(): Promise<ApiResponse<BUZStats>> {
+    try {
+      const response = await this.fetchWithAuth<BUZStats>('/api/buz-token/stats')
+      return response
+    } catch (error) {
+      console.error('Get BUZ stats error:', error)
+      return { success: false, error: 'Failed to get BUZ statistics' }
     }
   }
 

@@ -228,6 +228,17 @@ try {
     console.error('Error loading perfect notifications API:', error);
 }
 
+// BUZ Token API - Complete token management system
+console.log('Loading BUZ Token API...');
+try {
+    const buzTokenApiRoutes = require('./routes/buz-token-api');
+    console.log('BUZ Token API loaded successfully');
+    app.use('/api/buz-token', buzTokenApiRoutes);
+    console.log('BUZ Token API routes registered successfully');
+} catch (error) {
+    console.error('Error loading BUZ Token API:', error);
+}
+
 console.log('Loading digital signatures API...');
 try {
     const digitalSignaturesApiRoutes = require('./routes/digital-signatures-api');

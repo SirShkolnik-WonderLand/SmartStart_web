@@ -158,6 +158,15 @@ model User {
   ipTheftDetections      IPTheftDetection[]
   revenueSharingViolations RevenueSharingViolation[]
 
+  // BUZ Token System
+  buzToken                BUZToken?
+  buzTransactionsFrom     BUZTransaction[] @relation("BUZTransactionFrom")
+  buzTransactionsTo       BUZTransaction[] @relation("BUZTransactionTo")
+  buzStaking              BUZStaking[]
+  buzRewards              BUZReward[]
+  buzGovernanceProposals  BUZGovernanceProposal[]
+  buzGovernanceVotes      BUZGovernanceVote[]
+
   @@index([tenantId])
   @@index([status])
   @@index([level])
@@ -3988,4 +3997,160 @@ model AssetSeizure {
   @@index([enforcementActionId])
   @@index([assetType])
   @@index([status])
+}
+
+// ============================================================================
+// BUZ TOKEN SYSTEM - BUSINESS UTILITY ZONE
+// ============================================================================
+
+model BUZToken {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id])
+  balance       Decimal  @default(0) @db.Decimal(18, 8)
+  stakedBalance Decimal  @default(0) @db.Decimal(18, 8)
+  totalEarned   Decimal  @default(0) @db.Decimal(18, 8)
+  totalSpent    Decimal  @default(0) @db.Decimal(18, 8)
+  totalBurned   Decimal  @default(0) @db.Decimal(18, 8)
+  isActive      Boolean  @default(true)
+  lastActivity  DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([userId])
+  @@index([balance])
+  @@index([stakedBalance])
+  @@index([lastActivity])
+}
+
+model BUZTransaction {
+  id              String   @id @default(cuid())
+  fromUserId      String?
+  fromUser        User?    @relation("BUZTransactionFrom", fields: [fromUserId], references: [id])
+  toUserId        String?
+  toUser          User?    @relation("BUZTransactionTo", fields: [toUserId], references: [id])
+  amount          Decimal  @db.Decimal(18, 8)
+  type            String   // TRANSFER, MINT, BURN, STAKE, UNSTAKE, REWARD, FEE, etc.
+  reason          String?
+  description     String?
+  status          String   @default("PENDING") // PENDING, CONFIRMED, FAILED, CANCELLED
+  blockNumber     BigInt?
+  transactionHash String?
+  gasUsed         BigInt?
+  gasPrice        BigInt?
+  metadata        Json?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([fromUserId])
+  @@index([toUserId])
+  @@index([type])
+  @@index([status])
+  @@index([createdAt])
+  @@index([transactionHash])
+}
+
+model BUZStaking {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+  amount          Decimal  @db.Decimal(18, 8)
+  tier            String   // BASIC, PREMIUM, VIP, GOVERNANCE
+  duration        Int      // days
+  apy             Decimal  @db.Decimal(5, 2)
+  expectedReward  Decimal  @db.Decimal(18, 8)
+  actualReward    Decimal  @default(0) @db.Decimal(18, 8)
+  startDate       DateTime @default(now())
+  endDate         DateTime?
+  status          String   @default("ACTIVE") // ACTIVE, MATURED, UNSTAKED, SLASHED, CANCELLED
+  isAutoRenew     Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([userId])
+  @@index([tier])
+  @@index([status])
+  @@index([endDate])
+}
+
+model BUZReward {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  amount    Decimal   @db.Decimal(18, 8)
+  type      String    // DAILY_LOGIN, PROFILE_COMPLETE, TEAM_JOIN, etc.
+  reason    String
+  isClaimed Boolean   @default(false)
+  claimedAt DateTime?
+  expiresAt DateTime?
+  metadata  Json?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+  @@index([type])
+  @@index([isClaimed])
+  @@index([expiresAt])
+}
+
+model BUZGovernanceProposal {
+  id                String   @id @default(cuid())
+  proposerId        String
+  proposer          User     @relation(fields: [proposerId], references: [id])
+  title             String
+  description       String
+  proposalType      String   // TOKENOMICS, PLATFORM_FEATURE, FEE_CHANGE, etc.
+  status            String   @default("DRAFT") // DRAFT, ACTIVE, PASSED, REJECTED, EXECUTED, EXPIRED
+  votingStart       DateTime?
+  votingEnd         DateTime?
+  executionDate     DateTime?
+  yesVotes          BigInt   @default(0)
+  noVotes           BigInt   @default(0)
+  abstainVotes      BigInt   @default(0)
+  totalVotes        BigInt   @default(0)
+  quorumRequired    BigInt
+  minStakeRequired  Decimal  @db.Decimal(18, 8)
+  metadata          Json?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([proposerId])
+  @@index([status])
+  @@index([votingEnd])
+}
+
+model BUZGovernanceVote {
+  id           String   @id @default(cuid())
+  proposalId   String
+  proposal     BUZGovernanceProposal @relation(fields: [proposalId], references: [id])
+  voterId      String
+  voter        User     @relation(fields: [voterId], references: [id])
+  vote         String   // YES, NO, ABSTAIN
+  votingPower  Decimal  @db.Decimal(18, 8)
+  stakedAmount Decimal  @db.Decimal(18, 8)
+  createdAt    DateTime @default(now())
+
+  @@unique([proposalId, voterId])
+  @@index([proposalId])
+  @@index([voterId])
+}
+
+model BUZTokenSupply {
+  id                    String   @id @default(cuid())
+  totalSupply           Decimal  @default(1000000000) @db.Decimal(18, 8)
+  circulatingSupply     Decimal  @default(0) @db.Decimal(18, 8)
+  burnedSupply          Decimal  @default(0) @db.Decimal(18, 8)
+  stakedSupply          Decimal  @default(0) @db.Decimal(18, 8)
+  reserveSupply         Decimal  @default(200000000) @db.Decimal(18, 8)
+  teamSupply            Decimal  @default(150000000) @db.Decimal(18, 8)
+  communitySupply       Decimal  @default(100000000) @db.Decimal(18, 8)
+  liquiditySupply       Decimal  @default(100000000) @db.Decimal(18, 8)
+  stakingRewardsSupply  Decimal  @default(200000000) @db.Decimal(18, 8)
+  userRewardsSupply     Decimal  @default(150000000) @db.Decimal(18, 8)
+  ventureFundSupply     Decimal  @default(100000000) @db.Decimal(18, 8)
+  currentPrice          Decimal  @default(0.01) @db.Decimal(10, 8)
+  marketCap             Decimal  @default(0) @db.Decimal(18, 2)
+  lastUpdated           DateTime @default(now())
+  createdAt             DateTime @default(now())
+
+  @@index([lastUpdated])
 }
