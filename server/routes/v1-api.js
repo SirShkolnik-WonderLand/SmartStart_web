@@ -373,6 +373,161 @@ router.get('/buz/rewards/:userId', authenticateToken, async (req, res) => {
     }
 });
 
+// ===== BUZ LEGAL DOCUMENTS =====
+
+// BUZ Token Terms of Service signing
+router.post('/buz/legal/terms/sign', async (req, res) => {
+    try {
+        const { userId, signature, ipAddress, userAgent } = req.body;
+        
+        if (!userId || !signature) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'User ID and signature are required' 
+            });
+        }
+
+        // Create legal agreement record
+        const agreement = await prisma.legalAgreement.create({
+            data: {
+                userId,
+                documentType: 'BUZ_TOKEN_TERMS',
+                documentVersion: '1.0',
+                status: 'SIGNED',
+                signedAt: new Date(),
+                signatureData: signature,
+                ipAddress: ipAddress || req.ip,
+                userAgent: userAgent || req.get('User-Agent'),
+                metadata: {
+                    buzTokenAccess: true,
+                    legalCompliance: 'CANADA_ONTARIO',
+                    documentHash: require('crypto').createHash('sha256').update(signature).digest('hex')
+                }
+            }
+        });
+
+        // Update user RBAC level to BUZ_USER
+        await prisma.user.update({
+            where: { id: userId },
+            data: { 
+                role: 'BUZ_USER',
+                updatedAt: new Date()
+            }
+        });
+
+        res.json({
+            success: true,
+            message: 'BUZ Token Terms of Service signed successfully',
+            data: {
+                agreementId: agreement.id,
+                userId: agreement.userId,
+                documentType: agreement.documentType,
+                signedAt: agreement.signedAt,
+                rbacLevel: 'BUZ_USER'
+            }
+        });
+    } catch (error) {
+        console.error('BUZ terms signing error:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Failed to sign BUZ Token Terms of Service',
+            error: error.message 
+        });
+    }
+});
+
+// BUZ Token Privacy Policy signing
+router.post('/buz/legal/privacy/sign', async (req, res) => {
+    try {
+        const { userId, signature, ipAddress, userAgent } = req.body;
+        
+        if (!userId || !signature) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'User ID and signature are required' 
+            });
+        }
+
+        // Create legal agreement record
+        const agreement = await prisma.legalAgreement.create({
+            data: {
+                userId,
+                documentType: 'BUZ_TOKEN_PRIVACY',
+                documentVersion: '1.0',
+                status: 'SIGNED',
+                signedAt: new Date(),
+                signatureData: signature,
+                ipAddress: ipAddress || req.ip,
+                userAgent: userAgent || req.get('User-Agent'),
+                metadata: {
+                    buzTokenDataProcessing: true,
+                    privacyCompliance: 'PIPEDA_PHIPA_CASL_AODA',
+                    documentHash: require('crypto').createHash('sha256').update(signature).digest('hex')
+                }
+            }
+        });
+
+        res.json({
+            success: true,
+            message: 'BUZ Token Privacy Policy signed successfully',
+            data: {
+                agreementId: agreement.id,
+                userId: agreement.userId,
+                documentType: agreement.documentType,
+                signedAt: agreement.signedAt
+            }
+        });
+    } catch (error) {
+        console.error('BUZ privacy signing error:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Failed to sign BUZ Token Privacy Policy',
+            error: error.message 
+        });
+    }
+});
+
+// Get BUZ legal document status
+router.get('/buz/legal/status/:userId', async (req, res) => {
+    try {
+        const { userId } = req.params;
+        
+        const agreements = await prisma.legalAgreement.findMany({
+            where: {
+                userId,
+                documentType: {
+                    in: ['BUZ_TOKEN_TERMS', 'BUZ_TOKEN_PRIVACY']
+                }
+            },
+            orderBy: { signedAt: 'desc' }
+        });
+
+        const status = {
+            termsSigned: agreements.some(a => a.documentType === 'BUZ_TOKEN_TERMS' && a.status === 'SIGNED'),
+            privacySigned: agreements.some(a => a.documentType === 'BUZ_TOKEN_PRIVACY' && a.status === 'SIGNED'),
+            buzAccess: agreements.some(a => a.documentType === 'BUZ_TOKEN_TERMS' && a.status === 'SIGNED'),
+            agreements: agreements.map(a => ({
+                documentType: a.documentType,
+                status: a.status,
+                signedAt: a.signedAt,
+                version: a.documentVersion
+            }))
+        };
+
+        res.json({
+            success: true,
+            data: status
+        });
+    } catch (error) {
+        console.error('BUZ legal status error:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Failed to get BUZ legal status',
+            error: error.message 
+        });
+    }
+});
+
 // ===== ADMIN BUZ MANAGEMENT =====
 
 /**

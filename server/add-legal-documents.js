@@ -145,6 +145,32 @@ const contractFiles = [
         isTemplate: true,
         version: '1.0',
         description: 'Template for seat order and billing authorization'
+    },
+
+    // BUZ Token System Documents
+    {
+        filePath: 'server/Contracts/04-buz-token-system/BUZ_TOKEN_TERMS_OF_SERVICE.txt',
+        title: 'BUZ Token Terms of Service (BTS)',
+        legalName: 'BUZ Token Terms of Service',
+        type: 'TERMS_OF_SERVICE',
+        category: '04-buz-token-system',
+        rbacLevel: 'BUZ_USER',
+        isRequired: true,
+        isTemplate: false,
+        version: '1.0',
+        description: 'Terms governing BUZ token use and platform participation'
+    },
+    {
+        filePath: 'server/Contracts/04-buz-token-system/BUZ_TOKEN_PRIVACY_POLICY.txt',
+        title: 'BUZ Token Privacy Policy (BPP)',
+        legalName: 'BUZ Token Privacy Policy',
+        type: 'PRIVACY_POLICY',
+        category: '04-buz-token-system',
+        rbacLevel: 'BUZ_USER',
+        isRequired: true,
+        isTemplate: false,
+        version: '1.0',
+        description: 'Privacy policy for BUZ token data collection and processing'
     }
 ];
 

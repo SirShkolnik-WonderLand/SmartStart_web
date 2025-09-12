@@ -225,18 +225,31 @@ export default function PersistentLayout({ children }: PersistentLayoutProps) {
                     <Target className="w-5 h-5" />
                     {sidebarOpen && <span>Find Work</span>}
                   </Link>
-                  <Link 
-                    href="/buz" 
-                    className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
-                      pathname === '/buz' 
-                        ? 'bg-primary/10 text-primary' 
-                        : 'text-foreground-muted hover:text-foreground hover:bg-glass-surface'
-                    }`}
-                  >
-                    <Coins className="w-5 h-5" />
-                    {sidebarOpen && <span>BUZ Tokens</span>}
-                  </Link>
-                  {/* BUZ Tokens navigation item */}
+        <Link
+          href="/buz"
+          className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+            pathname === '/buz'
+              ? 'bg-primary/10 text-primary'
+              : 'text-foreground-muted hover:text-foreground hover:bg-glass-surface'
+          }`}
+        >
+          <Coins className="w-5 h-5" />
+          {sidebarOpen && <span>BUZ Tokens</span>}
+        </Link>
+        {/* BUZ Tokens navigation item */}
+        
+        <Link
+          href="/wallet"
+          className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+            pathname === '/wallet'
+              ? 'bg-primary/10 text-primary'
+              : 'text-foreground-muted hover:text-foreground hover:bg-glass-surface'
+          }`}
+        >
+          <Wallet className="w-5 h-5" />
+          {sidebarOpen && <span>Personal Wallet</span>}
+        </Link>
+        {/* Personal Wallet navigation item */}
                 </div>
               </div>
 

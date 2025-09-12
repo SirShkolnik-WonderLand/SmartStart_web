@@ -33,6 +33,12 @@
 | **JDA** | Joint Development Agreement | `VENTURE_PARTICIPANT` → `EXTERNAL_PARTNER` | External collaboration terms |
 | **CLA** | Contributor License Agreement | `VENTURE_PARTICIPANT` | Code contribution licensing |
 
+### 🪙 **BUZ TOKEN SYSTEM** (Token Users)
+| Document | Legal Name | RBAC Access | Purpose |
+|----------|------------|-------------|---------|
+| **BTS** | BUZ Token Terms of Service | `MEMBER` → `BUZ_USER` | BUZ token use and platform participation |
+| **BPP** | BUZ Token Privacy Policy | `MEMBER` → `BUZ_USER` | BUZ token data collection and processing |
+
 ### 🔒 **SECURITY TIER AGREEMENTS** (Security-Cleared Users)
 | Document | Legal Name | RBAC Access | Purpose |
 |----------|------------|-------------|---------|
