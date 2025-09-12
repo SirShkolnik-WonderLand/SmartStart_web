@@ -4,14 +4,41 @@
 
 This document provides a comprehensive reference for all API endpoints available in the SmartStart Platform. The API follows RESTful principles and uses JWT-based authentication.
 
-**🎯 Current Status: COMPLETE LEGAL PACK SYSTEM & COMPREHENSIVE MATRIX**
-- **Total Endpoints:** 150+ endpoints with full RBAC security
-- **Total Features:** 84+ features with real data integration
-- **Database Tables:** 50+ tables with proper relationships
+**🎯 Current Status: COMPLETE LEGAL PACK SYSTEM & BUZ TOKEN ECOSYSTEM**
+- **Total Endpoints:** 165+ endpoints with full RBAC security
+- **Total Features:** 90+ features with real data integration
+- **Database Tables:** 57+ tables with proper relationships
 - **Legal Pack System:** Complete role-based document management
+- **BUZ Token System:** Complete utility token ecosystem with legal compliance
 - **Frontend Integration:** 100% real data, no mock data
-- **Security:** Full RBAC with 7 user roles and ownership validation
+- **Security:** Full RBAC with 8 user roles and ownership validation
 - **CRUD Operations:** Complete Create, Read, Update, Delete with proper permissions
+
+---
+
+## **🪙 BUZ Token System APIs**
+
+### **User Token Operations**
+- **Get Balance**: `GET /api/v1/buz/balance/:userId` - Get user's BUZ token balance
+- **Get Supply Info**: `GET /api/v1/buz/supply` - Get token supply information
+- **Get System Stats**: `GET /api/v1/buz/stats` - Get platform statistics
+- **Get Transactions**: `GET /api/v1/buz/transactions/:userId` - Get user transaction history
+- **Transfer Tokens**: `POST /api/v1/buz/transfer` - Transfer tokens between users
+- **Stake Tokens**: `POST /api/v1/buz/stake` - Stake tokens for rewards
+- **Get Staking**: `GET /api/v1/buz/staking/:userId` - Get user staking positions
+
+### **Admin Token Management**
+- **Mint Tokens**: `POST /api/v1/buz/admin/mint` - Mint new tokens (Admin only)
+- **Burn Tokens**: `POST /api/v1/buz/admin/burn` - Burn tokens (Admin only)
+- **Get All Users**: `GET /api/v1/buz/admin/users` - Get all users with token data
+- **Get All Transactions**: `GET /api/v1/buz/admin/transactions` - Get all transactions
+- **Set Token Price**: `POST /api/v1/buz/admin/set-price` - Set token price
+- **Get Analytics**: `GET /api/v1/buz/admin/analytics` - Get system analytics
+
+### **Legal Document Signing**
+- **Sign Terms**: `POST /api/v1/buz/legal/terms/sign` - Sign BUZ Token Terms of Service
+- **Sign Privacy**: `POST /api/v1/buz/legal/privacy/sign` - Sign BUZ Token Privacy Policy
+- **Get Legal Status**: `GET /api/v1/buz/legal/status/:userId` - Get user's legal document status
 
 ---
 

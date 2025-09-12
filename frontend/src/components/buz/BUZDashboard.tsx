@@ -26,6 +26,11 @@ import {
   Settings
 } from 'lucide-react';
 
+// API Configuration
+const API_BASE = (process as any).env.NODE_ENV === 'production' 
+  ? 'https://smartstart-api.onrender.com' 
+  : 'http://localhost:3001';
+
 // Types
 interface BUZBalance {
   userId: string;
@@ -122,11 +127,11 @@ const BUZDashboard: React.FC = () => {
 
       // Load all dashboard data in parallel using v1 API
       const [balanceRes, transactionsRes, stakingRes, rewardsRes, supplyRes] = await Promise.all([
-        fetch(`/api/v1/buz/balance/${userId}`),
-        fetch(`/api/v1/buz/transactions/${userId}?limit=10`),
-        fetch(`/api/v1/buz/staking/${userId}`),
-        fetch(`/api/v1/buz/rewards/${userId}`),
-        fetch('/api/v1/buz/supply')
+        fetch(`${API_BASE}/api/v1/buz/balance/${userId}`),
+        fetch(`${API_BASE}/api/v1/buz/transactions/${userId}?limit=10`),
+        fetch(`${API_BASE}/api/v1/buz/staking/${userId}`),
+        fetch(`${API_BASE}/api/v1/buz/rewards/${userId}`),
+        fetch(`${API_BASE}/api/v1/buz/supply`)
       ]);
 
       if (balanceRes.ok) {
@@ -164,7 +169,7 @@ const BUZDashboard: React.FC = () => {
   const handleTransfer = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch('/api/v1/buz/transfer', {
+      const response = await fetch(`${API_BASE}/api/v1/buz/transfer`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(transferForm)
@@ -187,7 +192,7 @@ const BUZDashboard: React.FC = () => {
   const handleStake = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch('/api/v1/buz/stake', {
+      const response = await fetch(`${API_BASE}/api/v1/buz/stake`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(stakingForm)
@@ -209,7 +214,7 @@ const BUZDashboard: React.FC = () => {
 
   const handleClaimRewards = async () => {
     try {
-      const response = await fetch('/api/v1/buz/rewards/claim', {
+      const response = await fetch(`${API_BASE}/api/v1/buz/rewards/claim`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
       });

@@ -15,6 +15,11 @@ import {
   BarChart3
 } from 'lucide-react';
 
+// API Configuration
+const API_BASE = (process as any).env.NODE_ENV === 'production' 
+  ? 'https://smartstart-api.onrender.com' 
+  : 'http://localhost:3001';
+
 interface BUZAdminData {
   totalUsers: number;
   totalTransactions: number;
@@ -49,7 +54,7 @@ export function AdminBUZDashboard() {
       setLoading(true);
       setError(null);
 
-      const response = await fetch('/api/v1/buz/admin/analytics', {
+      const response = await fetch(`${API_BASE}/api/v1/buz/admin/analytics`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('auth-token')}`
         }
@@ -72,7 +77,7 @@ export function AdminBUZDashboard() {
   const handleMint = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch('/api/v1/buz/admin/mint', {
+      const response = await fetch(`${API_BASE}/api/v1/buz/admin/mint`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -97,7 +102,7 @@ export function AdminBUZDashboard() {
   const handleBurn = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch('/api/v1/buz/admin/burn', {
+      const response = await fetch(`${API_BASE}/api/v1/buz/admin/burn`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -122,7 +127,7 @@ export function AdminBUZDashboard() {
   const handleSetPrice = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch('/api/v1/buz/admin/set-price', {
+      const response = await fetch(`${API_BASE}/api/v1/buz/admin/set-price`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

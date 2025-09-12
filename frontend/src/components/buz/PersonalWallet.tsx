@@ -25,7 +25,7 @@ import {
   Clock,
   Star
 } from 'lucide-react';
-import { useAuthStore } from '@/lib/stores/auth-store';
+import { useAuthStore } from '@/store/useAuthStore';
 import { api } from '@/lib/api-comprehensive';
 
 interface WalletData {
