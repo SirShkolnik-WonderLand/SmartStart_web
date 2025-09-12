@@ -120,13 +120,13 @@ const BUZDashboard: React.FC = () => {
       setLoading(true);
       setError(null);
 
-      // Load all dashboard data in parallel
+      // Load all dashboard data in parallel using v1 API
       const [balanceRes, transactionsRes, stakingRes, rewardsRes, supplyRes] = await Promise.all([
-        fetch(`/api/buz-token/balance/${userId}`),
-        fetch(`/api/buz-token/transactions/${userId}?limit=10`),
-        fetch(`/api/buz-token/staking/${userId}`),
-        fetch(`/api/buz-token/rewards/${userId}`),
-        fetch('/api/buz-token/supply')
+        fetch(`/api/v1/buz/balance/${userId}`),
+        fetch(`/api/v1/buz/transactions/${userId}?limit=10`),
+        fetch(`/api/v1/buz/staking/${userId}`),
+        fetch(`/api/v1/buz/rewards/${userId}`),
+        fetch('/api/v1/buz/supply')
       ]);
 
       if (balanceRes.ok) {
@@ -164,7 +164,7 @@ const BUZDashboard: React.FC = () => {
   const handleTransfer = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch('/api/buz-token/transfer', {
+      const response = await fetch('/api/v1/buz/transfer', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(transferForm)
@@ -187,7 +187,7 @@ const BUZDashboard: React.FC = () => {
   const handleStake = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch('/api/buz-token/stake', {
+      const response = await fetch('/api/v1/buz/stake', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(stakingForm)
@@ -209,7 +209,7 @@ const BUZDashboard: React.FC = () => {
 
   const handleClaimRewards = async () => {
     try {
-      const response = await fetch('/api/buz-token/rewards/claim', {
+      const response = await fetch('/api/v1/buz/rewards/claim', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
       });

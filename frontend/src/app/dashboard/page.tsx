@@ -18,7 +18,10 @@ import {
   Trophy,
   Heart,
   Lightbulb,
-  PartyPopper
+  PartyPopper,
+  Coins,
+  Wallet,
+  TrendingDown
 } from 'lucide-react'
 import { comprehensiveApiService as apiService, User, AnalyticsData, Venture, Offer } from '@/lib/api-comprehensive'
 import Link from 'next/link'
@@ -64,6 +67,10 @@ export default function DashboardPage() {
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null)
   const [ventures, setVentures] = useState<Venture[]>([])
   const [offers, setOffers] = useState<Offer[]>([])
+  const [buzBalance, setBuzBalance] = useState<number>(0)
+  const [buzStaked, setBuzStaked] = useState<number>(0)
+  const [buzRewards, setBuzRewards] = useState<number>(0)
+  const [buzPrice, setBuzPrice] = useState<number>(0.01)
   const [legalPackStatus, setLegalPackStatus] = useState<{
     signed: boolean
     signedAt?: string
@@ -154,12 +161,21 @@ export default function DashboardPage() {
       })
     }
     
+    // Add BUZ token management
+    suggestions.push({
+      title: "Manage BUZ Tokens",
+      description: "View balance, stake, and transfer tokens",
+      icon: Coins,
+      color: "bg-gradient-to-r from-yellow-500 to-orange-500",
+      href: "/buz"
+    })
+    
     // Add some fun activities
     suggestions.push({
       title: "Explore Opportunities",
       description: "Discover exciting projects to contribute to",
       icon: Lightbulb,
-      color: "bg-gradient-to-r from-yellow-500 to-orange-500",
+      color: "bg-gradient-to-r from-green-500 to-teal-500",
       href: "/opportunities"
     })
     
@@ -241,11 +257,20 @@ export default function DashboardPage() {
           apiService.getOffers().catch(err => {
             console.warn('Offers failed:', err)
             return { success: false, data: [] }
+          }),
+          // Load BUZ token data
+          fetch('/api/v1/buz/supply').then(res => res.json()).catch(err => {
+            console.warn('BUZ supply failed:', err)
+            return { success: false, data: { currentPrice: 0.01 } }
+          }),
+          fetch('/api/v1/buz/balance/sample-user-id').then(res => res.json()).catch(err => {
+            console.warn('BUZ balance failed:', err)
+            return { success: false, data: { balance: 0, stakedBalance: 0 } }
           })
         ]
 
         // Wait for all data with timeout
-        const [analyticsResponse, venturesResponse, offersResponse] = await Promise.allSettled(
+        const [analyticsResponse, venturesResponse, offersResponse, buzSupplyResponse, buzBalanceResponse] = await Promise.allSettled(
           dataPromises.map(promise => Promise.race([
             promise,
             new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000))
@@ -261,6 +286,15 @@ export default function DashboardPage() {
         }
         if (offersResponse.status === 'fulfilled' && offersResponse.value && (offersResponse.value as { success: boolean }).success) {
           setOffers((offersResponse.value as { success: boolean; data: Offer[] }).data)
+        }
+        if (buzSupplyResponse.status === 'fulfilled' && buzSupplyResponse.value && (buzSupplyResponse.value as { success: boolean }).success) {
+          const supplyData = (buzSupplyResponse.value as { success: boolean; data: any }).data
+          setBuzPrice(supplyData.currentPrice || 0.01)
+        }
+        if (buzBalanceResponse.status === 'fulfilled' && buzBalanceResponse.value && (buzBalanceResponse.value as { success: boolean }).success) {
+          const balanceData = (buzBalanceResponse.value as { success: boolean; data: any }).data
+          setBuzBalance(balanceData.balance || 0)
+          setBuzStaked(balanceData.stakedBalance || 0)
         }
 
         // Load user-specific data if user is available
@@ -479,7 +513,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid md:grid-cols-2 lg:grid-cols-6 gap-6">
         <div className="wonderland-card glass-surface p-6 hover:shadow-lg transition-all duration-200 group">
           <div className="flex items-center justify-between mb-4">
             <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
@@ -529,6 +563,35 @@ export default function DashboardPage() {
           <div className="text-sm text-muted">XP Points</div>
           <div className="text-xs text-yellow-600 mt-1">
             Level: {user?.level || 'Unknown'}
+          </div>
+        </div>
+
+        {/* BUZ Token Cards */}
+        <div className="wonderland-card glass-surface p-6 hover:shadow-lg transition-all duration-200 group">
+          <div className="flex items-center justify-between mb-4">
+            <div className="w-12 h-12 bg-gradient-to-r from-yellow-100 to-orange-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+              <Coins className="w-6 h-6 text-yellow-600" />
+            </div>
+            <TrendingUp className="w-5 h-5 text-green-500" />
+          </div>
+          <div className="text-2xl font-bold mb-1">{buzBalance.toLocaleString()}</div>
+          <div className="text-sm text-muted">BUZ Balance</div>
+          <div className="text-xs text-green-600 mt-1">
+            ${(buzBalance * buzPrice).toFixed(2)} USD
+          </div>
+        </div>
+
+        <div className="wonderland-card glass-surface p-6 hover:shadow-lg transition-all duration-200 group">
+          <div className="flex items-center justify-between mb-4">
+            <div className="w-12 h-12 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+              <Wallet className="w-6 h-6 text-blue-600" />
+            </div>
+            <TrendingDown className="w-5 h-5 text-blue-500" />
+          </div>
+          <div className="text-2xl font-bold mb-1">{buzStaked.toLocaleString()}</div>
+          <div className="text-sm text-muted">Staked BUZ</div>
+          <div className="text-xs text-blue-600 mt-1">
+            ${(buzStaked * buzPrice).toFixed(2)} USD
           </div>
         </div>
       </div>
