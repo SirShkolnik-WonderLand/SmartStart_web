@@ -130,6 +130,17 @@ try {
     console.error('Error loading auth test API:', error);
 }
 
+// Route debug API for testing
+console.log('Loading route debug API...');
+try {
+    const routeDebugApiRoutes = require('./routes/route-debug-api');
+    console.log('Route debug API loaded successfully');
+    app.use('/api/route-debug', routeDebugApiRoutes);
+    console.log('Route debug API routes registered');
+} catch (error) {
+    console.error('Error loading route debug API:', error);
+}
+
 // Add routes back one by one to identify the problematic one
 console.log('Loading digital signatures minimal API...');
 try {
