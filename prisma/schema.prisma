@@ -4113,6 +4113,9 @@ model BUZGovernanceProposal {
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
+  // Relations
+  votes             BUZGovernanceVote[]
+
   @@index([proposerId])
   @@index([status])
   @@index([votingEnd])
