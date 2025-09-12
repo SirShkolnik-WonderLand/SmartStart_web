@@ -108,6 +108,17 @@ try {
 const testNewRoutesApiRoutes = require('./routes/test-new-routes');
 app.use('/api/test-new-routes', testNewRoutesApiRoutes);
 
+// BUZ Diagnostic API - Early loading to test
+console.log('Loading BUZ Diagnostic API...');
+try {
+    const buzDiagnosticApiRoutes = require('./routes/buz-diagnostic');
+    console.log('BUZ Diagnostic API loaded successfully');
+    app.use('/api/buz-diagnostic', buzDiagnosticApiRoutes);
+    console.log('BUZ Diagnostic API routes registered successfully');
+} catch (error) {
+    console.error('Error loading BUZ Diagnostic API:', error);
+}
+
 // Simple test route without dependencies
 console.log('Loading simple test API...');
 try {
@@ -239,15 +250,15 @@ try {
     console.error('Error loading Simple BUZ API:', error);
 }
 
-// BUZ Token Minimal API - No dependencies
-console.log('Loading BUZ Token Minimal API...');
+// BUZ Token Working API - Full functionality without external dependencies
+console.log('Loading BUZ Token Working API...');
 try {
-    const buzMinimalApiRoutes = require('./routes/buz-minimal');
-    console.log('BUZ Token Minimal API loaded successfully');
-    app.use('/api/buz-token', buzMinimalApiRoutes);
-    console.log('BUZ Token Minimal API routes registered successfully');
+    const buzTokenWorkingApiRoutes = require('./routes/buz-token-working');
+    console.log('BUZ Token Working API loaded successfully');
+    app.use('/api/buz-token', buzTokenWorkingApiRoutes);
+    console.log('BUZ Token Working API routes registered successfully');
 } catch (error) {
-    console.error('Error loading BUZ Token Minimal API:', error);
+    console.error('Error loading BUZ Token Working API:', error);
 }
 
 // BUZ Token API - Complete token management system
