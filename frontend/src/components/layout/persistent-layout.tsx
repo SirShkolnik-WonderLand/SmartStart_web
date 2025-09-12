@@ -236,6 +236,7 @@ export default function PersistentLayout({ children }: PersistentLayoutProps) {
                     <Coins className="w-5 h-5" />
                     {sidebarOpen && <span>BUZ Tokens</span>}
                   </Link>
+                  {/* BUZ Tokens navigation item */}
                 </div>
               </div>
 
@@ -330,6 +331,7 @@ export default function PersistentLayout({ children }: PersistentLayoutProps) {
                     <Wallet className="w-5 h-5" />
                     {sidebarOpen && <span>Admin BUZ</span>}
                   </Link>
+                  {/* Admin BUZ navigation item */}
                 </div>
               </div>
             </nav>
