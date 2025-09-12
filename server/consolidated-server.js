@@ -109,6 +109,16 @@ try {
 }
 
 // Add routes back one by one to identify the problematic one
+console.log('Loading digital signatures minimal API...');
+try {
+    const digitalSignaturesMinimalApiRoutes = require('./routes/digital-signatures-minimal');
+    console.log('Digital signatures minimal API loaded successfully');
+    app.use('/api/digital-signatures-minimal', digitalSignaturesMinimalApiRoutes);
+    console.log('Digital signatures minimal API routes registered');
+} catch (error) {
+    console.error('Error loading digital signatures minimal API:', error);
+}
+
 console.log('Loading digital signatures API...');
 try {
     const digitalSignaturesApiRoutes = require('./routes/digital-signatures-api');
