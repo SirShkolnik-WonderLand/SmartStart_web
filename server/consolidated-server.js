@@ -119,6 +119,17 @@ try {
     console.error('Error loading diagnostic API:', error);
 }
 
+// Auth test API for debugging
+console.log('Loading auth test API...');
+try {
+    const authTestApiRoutes = require('./routes/auth-test-api');
+    console.log('Auth test API loaded successfully');
+    app.use('/api/auth-test', authTestApiRoutes);
+    console.log('Auth test API routes registered');
+} catch (error) {
+    console.error('Error loading auth test API:', error);
+}
+
 // Add routes back one by one to identify the problematic one
 console.log('Loading digital signatures minimal API...');
 try {
