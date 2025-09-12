@@ -153,6 +153,11 @@ model User {
   opportunityApplications OpportunityApplication[] @relation("OpportunityApplicant")
   opportunityMatches    OpportunityMatch[] @relation("OpportunityMatch")
 
+  // Enhanced legal protections relations
+  legalDocumentCompliance LegalDocumentCompliance[]
+  ipTheftDetections      IPTheftDetection[]
+  revenueSharingViolations RevenueSharingViolation[]
+
   @@index([tenantId])
   @@index([status])
   @@index([level])
@@ -241,6 +246,10 @@ model Project {
 
   // Opportunities system relations
   opportunities     Opportunity[]
+
+  // Enhanced legal protections relations
+  ipTheftDetections      IPTheftDetection[]
+  revenueSharingViolations RevenueSharingViolation[]
 
   @@index([tenantId])
   @@index([totalValue])
@@ -1304,6 +1313,7 @@ model LegalDocument {
 
   // Relations
   signatures LegalDocumentSignature[]
+  versions   LegalDocumentVersion[]
   
   // Venture relationship for auto-issuance
   ventureId String?
@@ -1311,6 +1321,9 @@ model LegalDocument {
 
   // Opportunities system relations
   opportunityLegalDocuments OpportunityLegalDocument[]
+
+  // Enhanced legal protections relations
+  compliance LegalDocumentCompliance[]
 
   @@index([entityId])
   @@index([projectId])
@@ -1981,6 +1994,10 @@ model Venture {
   notifications      VentureNotification[]
   slackIntegration   VentureSlackIntegration?
   slackMessages      SlackMessage[]
+  
+  // Enhanced legal protections relations
+  ipTheftDetections      IPTheftDetection[]
+  revenueSharingViolations RevenueSharingViolation[]
   
   // Timestamps
   createdAt DateTime @default(now())
@@ -3807,4 +3824,164 @@ model VentureNotification {
   @@index([type])
   @@index([isRead])
   @@index([createdAt])
+}
+
+// ============================================================================
+// ENHANCED LEGAL PROTECTIONS SYSTEM
+// ============================================================================
+
+model LegalDocumentTemplate {
+  id                    String   @id @default(cuid())
+  name                  String
+  type                  String   // WORK_FOR_HIRE_AGREEMENT, WORLDWIDE_NON_COMPETE, etc.
+  version               String   @default("1.0")
+  content               String
+  rbacLevel             String   // MEMBER, SUBSCRIBER, etc.
+  isRequired            Boolean  @default(true)
+  jurisdiction          String   @default("WORLDWIDE")
+  enforcementMechanisms String[] // Array of enforcement mechanisms
+  liquidatedDamages     Float    @default(0.0)
+  survivalPeriod        Int      @default(5) // Years
+  createdBy             String
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@index([type])
+  @@index([rbacLevel])
+  @@index([isRequired])
+}
+
+model LegalDocumentVersion {
+  id          String   @id @default(cuid())
+  documentId  String
+  document    LegalDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  version     String
+  content     String
+  changes     String?  // Description of changes
+  createdBy   String
+  createdAt   DateTime @default(now())
+
+  @@unique([documentId, version])
+  @@index([documentId])
+}
+
+model LegalDocumentCompliance {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  documentId  String
+  document    LegalDocument @relation(fields: [documentId], references: [id])
+  rbacLevel   String
+  status      String   @default("PENDING") // PENDING, SIGNED, EXPIRED, VIOLATED
+  signedAt    DateTime?
+  expiresAt   DateTime?
+  evidence    Json?    // Digital signature evidence
+  createdBy   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([userId, documentId])
+  @@index([userId])
+  @@index([documentId])
+  @@index([status])
+}
+
+model IPTheftDetection {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+  ventureId       String?
+  venture         Venture? @relation(fields: [ventureId], references: [id])
+  projectId       String?
+  project         Project? @relation(fields: [projectId], references: [id])
+  detectionType   String   // CODE_THEFT, IDEA_THEFT, REVERSE_ENGINEERING, etc.
+  evidence        Json     // Digital evidence
+  severity        String   @default("HIGH") // LOW, MEDIUM, HIGH, CRITICAL
+  status          String   @default("DETECTED") // DETECTED, INVESTIGATING, CONFIRMED, FALSE_POSITIVE
+  description     String?
+  detectedAt      DateTime @default(now())
+  investigatedAt  DateTime?
+  resolvedAt      DateTime?
+
+  @@index([userId])
+  @@index([ventureId])
+  @@index([projectId])
+  @@index([detectionType])
+  @@index([status])
+}
+
+model RevenueSharingViolation {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+  ventureId       String?
+  venture         Venture? @relation(fields: [ventureId], references: [id])
+  projectId       String?
+  project         Project? @relation(fields: [projectId], references: [id])
+  violationType   String   // BYPASS_PLATFORM, DIRECT_PAYMENT, SIDE_DEAL, etc.
+  amount          Float    @default(0.0)
+  description     String?
+  evidence        Json?    // Evidence of violation
+  status          String   @default("DETECTED") // DETECTED, INVESTIGATING, CONFIRMED, RESOLVED
+  detectedAt      DateTime @default(now())
+  resolvedAt      DateTime?
+
+  @@index([userId])
+  @@index([ventureId])
+  @@index([projectId])
+  @@index([violationType])
+  @@index([status])
+}
+
+model DigitalEvidence {
+  id            String   @id @default(cuid())
+  caseId        String   // Case or violation ID
+  evidenceType  String   // CODE_SNAPSHOT, COMMUNICATION, TRANSACTION, etc.
+  hash          String   // SHA-256 hash of evidence
+  blockchainTx  String?  // Blockchain transaction hash
+  content       Json     // Evidence content
+  metadata      Json?    // Additional metadata
+  createdBy     String
+  createdAt     DateTime @default(now())
+
+  @@index([caseId])
+  @@index([evidenceType])
+  @@index([hash])
+}
+
+model EnforcementAction {
+  id              String   @id @default(cuid())
+  violationId     String   // ID of the violation being enforced
+  violationType   String   // IP_THEFT, REVENUE_VIOLATION, etc.
+  actionType      String   // SUSPENSION, TERMINATION, LEGAL_ACTION, ASSET_SEIZURE
+  status          String   @default("PENDING") // PENDING, IN_PROGRESS, COMPLETED, FAILED
+  description     String?
+  evidence        Json?    // Evidence supporting the action
+  initiatedBy     String
+  initiatedAt     DateTime @default(now())
+  completedAt     DateTime?
+
+  @@index([violationId])
+  @@index([actionType])
+  @@index([status])
+}
+
+model AssetSeizure {
+  id              String   @id @default(cuid())
+  violationId     String
+  enforcementActionId String
+  enforcementAction EnforcementAction @relation(fields: [enforcementActionId], references: [id])
+  assetType       String   // BANK_ACCOUNT, INTELLECTUAL_PROPERTY, BUSINESS_ASSETS, etc.
+  assetValue      Float?   // Estimated value
+  jurisdiction    String   // Where seizure is taking place
+  status          String   @default("PENDING") // PENDING, IN_PROGRESS, COMPLETED, FAILED
+  description     String?
+  courtOrder      String?  // Court order reference
+  initiatedAt     DateTime @default(now())
+  completedAt     DateTime?
+
+  @@index([violationId])
+  @@index([enforcementActionId])
+  @@index([assetType])
+  @@index([status])
 }
