@@ -2478,7 +2478,7 @@ class ComprehensiveApiService {
 
   async getBUZBalance(userId: string): Promise<ApiResponse<BUZBalance>> {
     try {
-      const response = await this.fetchWithAuth<BUZBalance>(`/api/buz-token/balance/${userId}`)
+      const response = await this.fetchWithAuth<BUZBalance>(`/api/v1/buz/balance/${userId}`)
       return response
     } catch (error) {
       console.error('Get BUZ balance error:', error)
@@ -2499,7 +2499,7 @@ class ComprehensiveApiService {
       if (options.type) params.append('type', options.type)
       if (options.status) params.append('status', options.status)
       
-      const response = await this.fetchWithAuth<{ transactions: BUZTransaction[]; pagination: any }>(`/api/buz-token/transactions/${userId}?${params}`)
+      const response = await this.fetchWithAuth<{ transactions: BUZTransaction[]; pagination: any }>(`/api/v1/buz/transactions/${userId}?${params}`)
       return response
     } catch (error) {
       console.error('Get BUZ transactions error:', error)
@@ -2514,7 +2514,7 @@ class ComprehensiveApiService {
     description?: string
   }): Promise<ApiResponse<{ transactionId: string; fromUserId: string; toUserId: string; amount: number; status: string }>> {
     try {
-      const response = await this.fetchWithAuth<{ transactionId: string; fromUserId: string; toUserId: string; amount: number; status: string }>('/api/buz-token/transfer', {
+      const response = await this.fetchWithAuth<{ transactionId: string; fromUserId: string; toUserId: string; amount: number; status: string }>('/api/v1/buz/transfer', {
         method: 'POST',
         body: JSON.stringify(data)
       })
@@ -2531,7 +2531,7 @@ class ComprehensiveApiService {
     reason?: string
   }): Promise<ApiResponse<{ transactionId: string; userId: string; amount: number; status: string }>> {
     try {
-      const response = await this.fetchWithAuth<{ transactionId: string; userId: string; amount: number; status: string }>('/api/buz-token/mint', {
+      const response = await this.fetchWithAuth<{ transactionId: string; userId: string; amount: number; status: string }>('/api/v1/buz/admin/mint', {
         method: 'POST',
         body: JSON.stringify(data)
       })
@@ -2548,7 +2548,7 @@ class ComprehensiveApiService {
     reason?: string
   }): Promise<ApiResponse<{ transactionId: string; userId: string; amount: number; status: string }>> {
     try {
-      const response = await this.fetchWithAuth<{ transactionId: string; userId: string; amount: number; status: string }>('/api/buz-token/burn', {
+      const response = await this.fetchWithAuth<{ transactionId: string; userId: string; amount: number; status: string }>('/api/v1/buz/admin/burn', {
         method: 'POST',
         body: JSON.stringify(data)
       })
@@ -2564,7 +2564,7 @@ class ComprehensiveApiService {
     tier: string
   }): Promise<ApiResponse<{ stakingId: string; userId: string; amount: number; tier: string; duration: number; apy: number; expectedReward: number; endDate: string }>> {
     try {
-      const response = await this.fetchWithAuth<{ stakingId: string; userId: string; amount: number; tier: string; duration: number; apy: number; expectedReward: number; endDate: string }>('/api/buz-token/stake', {
+      const response = await this.fetchWithAuth<{ stakingId: string; userId: string; amount: number; tier: string; duration: number; apy: number; expectedReward: number; endDate: string }>('/api/v1/buz/stake', {
         method: 'POST',
         body: JSON.stringify(data)
       })
@@ -2577,7 +2577,7 @@ class ComprehensiveApiService {
 
   async getBUZStaking(userId: string): Promise<ApiResponse<{ stakingPositions: BUZStaking[] }>> {
     try {
-      const response = await this.fetchWithAuth<{ stakingPositions: BUZStaking[] }>(`/api/buz-token/staking/${userId}`)
+      const response = await this.fetchWithAuth<{ stakingPositions: BUZStaking[] }>(`/api/v1/buz/staking/${userId}`)
       return response
     } catch (error) {
       console.error('Get BUZ staking error:', error)
@@ -2587,7 +2587,7 @@ class ComprehensiveApiService {
 
   async claimBUZRewards(): Promise<ApiResponse<{ claimedRewards: any[]; totalAmount: number }>> {
     try {
-      const response = await this.fetchWithAuth<{ claimedRewards: any[]; totalAmount: number }>('/api/buz-token/rewards/claim', {
+      const response = await this.fetchWithAuth<{ claimedRewards: any[]; totalAmount: number }>('/api/v1/buz/rewards/claim', {
         method: 'POST'
       })
       return response
@@ -2599,7 +2599,7 @@ class ComprehensiveApiService {
 
   async getBUZRewards(userId: string): Promise<ApiResponse<{ rewards: BUZReward[] }>> {
     try {
-      const response = await this.fetchWithAuth<{ rewards: BUZReward[] }>(`/api/buz-token/rewards/${userId}`)
+      const response = await this.fetchWithAuth<{ rewards: BUZReward[] }>(`/api/v1/buz/rewards/${userId}`)
       return response
     } catch (error) {
       console.error('Get BUZ rewards error:', error)
@@ -2609,7 +2609,7 @@ class ComprehensiveApiService {
 
   async getBUZSupply(): Promise<ApiResponse<BUZSupply>> {
     try {
-      const response = await this.fetchWithAuth<BUZSupply>('/api/buz-token/supply')
+      const response = await this.fetchWithAuth<BUZSupply>('/api/v1/buz/supply')
       return response
     } catch (error) {
       console.error('Get BUZ supply error:', error)
@@ -2619,7 +2619,7 @@ class ComprehensiveApiService {
 
   async getBUZStats(): Promise<ApiResponse<BUZStats>> {
     try {
-      const response = await this.fetchWithAuth<BUZStats>('/api/buz-token/stats')
+      const response = await this.fetchWithAuth<BUZStats>('/api/v1/buz/stats')
       return response
     } catch (error) {
       console.error('Get BUZ stats error:', error)
