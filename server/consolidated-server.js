@@ -108,6 +108,17 @@ try {
     console.error('Error loading simple test API:', error);
 }
 
+// Diagnostic API for debugging
+console.log('Loading diagnostic API...');
+try {
+    const diagnosticApiRoutes = require('./routes/diagnostic-api');
+    console.log('Diagnostic API loaded successfully');
+    app.use('/api/diagnostic', diagnosticApiRoutes);
+    console.log('Diagnostic API routes registered');
+} catch (error) {
+    console.error('Error loading diagnostic API:', error);
+}
+
 // Add routes back one by one to identify the problematic one
 console.log('Loading digital signatures minimal API...');
 try {
