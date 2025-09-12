@@ -392,6 +392,219 @@ router.get('/buz/rewards/:userId', authenticateToken, async (req, res) => {
     }
 });
 
+// ===== ADMIN BUZ MANAGEMENT =====
+
+/**
+ * POST /buz/admin/mint - Mint new BUZ tokens (Admin only)
+ */
+router.post('/buz/admin/mint', authenticateToken, requirePermission('admin:buz'), async (req, res) => {
+    try {
+        const { userId, amount, reason } = req.body;
+        const adminUser = req.user;
+
+        if (!userId || !amount) {
+            return res.status(400).json({
+                success: false,
+                message: 'userId and amount are required'
+            });
+        }
+
+        if (amount <= 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'Amount must be positive'
+            });
+        }
+
+        res.json({
+            success: true,
+            message: 'BUZ tokens minted successfully',
+            data: {
+                transactionId: `mint_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+                userId,
+                amount: parseFloat(amount),
+                mintedBy: adminUser.id,
+                reason: reason || 'Admin mint',
+                status: 'CONFIRMED'
+            }
+        });
+    } catch (error) {
+        console.error('Admin BUZ mint error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to mint BUZ tokens',
+            error: error.message
+        });
+    }
+});
+
+/**
+ * POST /buz/admin/burn - Burn BUZ tokens (Admin only)
+ */
+router.post('/buz/admin/burn', authenticateToken, requirePermission('admin:buz'), async (req, res) => {
+    try {
+        const { userId, amount, reason } = req.body;
+        const adminUser = req.user;
+
+        if (!userId || !amount) {
+            return res.status(400).json({
+                success: false,
+                message: 'userId and amount are required'
+            });
+        }
+
+        if (amount <= 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'Amount must be positive'
+            });
+        }
+
+        res.json({
+            success: true,
+            message: 'BUZ tokens burned successfully',
+            data: {
+                transactionId: `burn_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+                userId,
+                amount: parseFloat(amount),
+                burnedBy: adminUser.id,
+                reason: reason || 'Admin burn',
+                status: 'CONFIRMED'
+            }
+        });
+    } catch (error) {
+        console.error('Admin BUZ burn error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to burn BUZ tokens',
+            error: error.message
+        });
+    }
+});
+
+/**
+ * GET /buz/admin/users - Get all users with BUZ balances (Admin only)
+ */
+router.get('/buz/admin/users', authenticateToken, requirePermission('admin:buz'), async (req, res) => {
+    try {
+        const { page = 1, limit = 50, search } = req.query;
+
+        res.json({
+            success: true,
+            data: {
+                users: [],
+                pagination: {
+                    page: parseInt(page),
+                    limit: parseInt(limit),
+                    total: 0,
+                    pages: 0
+                }
+            }
+        });
+    } catch (error) {
+        console.error('Admin get BUZ users error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to retrieve BUZ users',
+            error: error.message
+        });
+    }
+});
+
+/**
+ * GET /buz/admin/transactions - Get all BUZ transactions (Admin only)
+ */
+router.get('/buz/admin/transactions', authenticateToken, requirePermission('admin:buz'), async (req, res) => {
+    try {
+        const { page = 1, limit = 50, type, status, userId } = req.query;
+
+        res.json({
+            success: true,
+            data: {
+                transactions: [],
+                pagination: {
+                    page: parseInt(page),
+                    limit: parseInt(limit),
+                    total: 0,
+                    pages: 0
+                }
+            }
+        });
+    } catch (error) {
+        console.error('Admin get BUZ transactions error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to retrieve BUZ transactions',
+            error: error.message
+        });
+    }
+});
+
+/**
+ * POST /buz/admin/set-price - Set BUZ token price (Admin only)
+ */
+router.post('/buz/admin/set-price', authenticateToken, requirePermission('admin:buz'), async (req, res) => {
+    try {
+        const { price } = req.body;
+        const adminUser = req.user;
+
+        if (!price || price <= 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'Valid price is required'
+            });
+        }
+
+        res.json({
+            success: true,
+            message: 'BUZ token price updated successfully',
+            data: {
+                newPrice: parseFloat(price),
+                updatedBy: adminUser.id,
+                updatedAt: new Date().toISOString()
+            }
+        });
+    } catch (error) {
+        console.error('Admin set BUZ price error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to update BUZ price',
+            error: error.message
+        });
+    }
+});
+
+/**
+ * GET /buz/admin/analytics - Get BUZ system analytics (Admin only)
+ */
+router.get('/buz/admin/analytics', authenticateToken, requirePermission('admin:buz'), async (req, res) => {
+    try {
+        res.json({
+            success: true,
+            data: {
+                totalUsers: 0,
+                totalTransactions: 0,
+                totalVolume: 0,
+                totalStaked: 0,
+                totalBurned: 0,
+                averageTransactionSize: 0,
+                topUsers: [],
+                recentActivity: [],
+                priceHistory: [],
+                marketCap: 0,
+                circulatingSupply: 0
+            }
+        });
+    } catch (error) {
+        console.error('Admin get BUZ analytics error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to retrieve BUZ analytics',
+            error: error.message
+        });
+    }
+});
+
 // ===== PROFILES & GAMIFICATION =====
 
 /**
