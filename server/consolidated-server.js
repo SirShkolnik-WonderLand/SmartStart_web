@@ -108,6 +108,17 @@ try {
 const testNewRoutesApiRoutes = require('./routes/test-new-routes');
 app.use('/api/test-new-routes', testNewRoutesApiRoutes);
 
+// BUZ Loading Test - Ultra simple
+console.log('Loading BUZ Loading Test...');
+try {
+    const testBuzLoadingApiRoutes = require('./routes/test-buz-loading');
+    console.log('BUZ Loading Test loaded successfully');
+    app.use('/api/test-buz', testBuzLoadingApiRoutes);
+    console.log('BUZ Loading Test routes registered successfully');
+} catch (error) {
+    console.error('Error loading BUZ Loading Test:', error);
+}
+
 // BUZ Diagnostic API - Early loading to test
 console.log('Loading BUZ Diagnostic API...');
 try {
