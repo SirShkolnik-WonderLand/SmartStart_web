@@ -228,15 +228,15 @@ try {
     console.error('Error loading perfect notifications API:', error);
 }
 
-// BUZ Token Test API - Simple test version
-console.log('Loading BUZ Token Test API...');
+// BUZ Token Minimal API - No dependencies
+console.log('Loading BUZ Token Minimal API...');
 try {
-    const buzTokenTestApiRoutes = require('./routes/buz-token-test');
-    console.log('BUZ Token Test API loaded successfully');
-    app.use('/api/buz-token', buzTokenTestApiRoutes);
-    console.log('BUZ Token Test API routes registered successfully');
+    const buzMinimalApiRoutes = require('./routes/buz-minimal');
+    console.log('BUZ Token Minimal API loaded successfully');
+    app.use('/api/buz-token', buzMinimalApiRoutes);
+    console.log('BUZ Token Minimal API routes registered successfully');
 } catch (error) {
-    console.error('Error loading BUZ Token Test API:', error);
+    console.error('Error loading BUZ Token Minimal API:', error);
 }
 
 // BUZ Token API - Complete token management system
