@@ -184,6 +184,50 @@ try {
     console.error('Error loading perfect digital signatures API:', error);
 }
 
+// Perfect team invitations API
+console.log('Loading perfect team invitations API...');
+try {
+    const teamInvitationsPerfectApiRoutes = require('./routes/team-invitations-perfect');
+    console.log('Perfect team invitations API loaded successfully');
+    app.use('/api/team-invitations-perfect', teamInvitationsPerfectApiRoutes);
+    console.log('Perfect team invitations API routes registered successfully');
+} catch (error) {
+    console.error('Error loading perfect team invitations API:', error);
+}
+
+// Perfect gamification API
+console.log('Loading perfect gamification API...');
+try {
+    const gamificationPerfectApiRoutes = require('./routes/gamification-perfect');
+    console.log('Perfect gamification API loaded successfully');
+    app.use('/api/gamification-perfect', gamificationPerfectApiRoutes);
+    console.log('Perfect gamification API routes registered successfully');
+} catch (error) {
+    console.error('Error loading perfect gamification API:', error);
+}
+
+// Perfect revenue sharing API
+console.log('Loading perfect revenue sharing API...');
+try {
+    const revenueSharingPerfectApiRoutes = require('./routes/revenue-sharing-perfect');
+    console.log('Perfect revenue sharing API loaded successfully');
+    app.use('/api/revenue-sharing-perfect', revenueSharingPerfectApiRoutes);
+    console.log('Perfect revenue sharing API routes registered successfully');
+} catch (error) {
+    console.error('Error loading perfect revenue sharing API:', error);
+}
+
+// Perfect notifications API
+console.log('Loading perfect notifications API...');
+try {
+    const notificationsPerfectApiRoutes = require('./routes/notifications-perfect');
+    console.log('Perfect notifications API loaded successfully');
+    app.use('/api/notifications-perfect', notificationsPerfectApiRoutes);
+    console.log('Perfect notifications API routes registered successfully');
+} catch (error) {
+    console.error('Error loading perfect notifications API:', error);
+}
+
 console.log('Loading digital signatures API...');
 try {
     const digitalSignaturesApiRoutes = require('./routes/digital-signatures-api');
