@@ -3833,11 +3833,12 @@ model VentureNotification {
 model LegalDocumentTemplate {
   id                    String   @id @default(cuid())
   name                  String
-  type                  String   // WORK_FOR_HIRE_AGREEMENT, WORLDWIDE_NON_COMPETE, etc.
+  type                  LegalDocumentType
   version               String   @default("1.0")
   content               String
   rbacLevel             String   // MEMBER, SUBSCRIBER, etc.
   isRequired            Boolean  @default(true)
+  isActive              Boolean  @default(true)
   jurisdiction          String   @default("WORLDWIDE")
   enforcementMechanisms String[] // Array of enforcement mechanisms
   liquidatedDamages     Float    @default(0.0)
