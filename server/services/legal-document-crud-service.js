@@ -145,8 +145,8 @@ class LegalDocumentCRUDService {
                     ...doc,
                     status: status,
                     isSigned: isSigned,
-                    signedAt: signature ? .signedAt,
-                    signatureHash: signature ? .signatureHash,
+                    signedAt: signature ? signature.signedAt : null,
+                    signatureHash: signature ? signature.signatureHash : null,
                     required: status === 'REQUIRED',
                     pending: status === 'PENDING'
                 };
@@ -489,8 +489,8 @@ class LegalDocumentCRUDService {
                         type: doc.type,
                         status: status,
                         isSigned: isSigned,
-                        signedAt: signature ? .signedAt,
-                        signatureHash: signature ? .signatureHash,
+                        signedAt: signature ? signature.signedAt : null,
+                        signatureHash: signature ? signature.signatureHash : null,
                         required: status === 'REQUIRED',
                         pending: status === 'PENDING',
                         description: doc.description
