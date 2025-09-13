@@ -2005,7 +2005,7 @@ router.get('/ventures/list/all', authenticateToken, async (req, res) => {
         const ventures = await prisma.venture.findMany({
             where: {
                 OR: [
-                    { ownerId: userId },
+                    { ownerUserId: userId },
                     { teamMembers: { some: { userId: userId } } }
                 ]
             },

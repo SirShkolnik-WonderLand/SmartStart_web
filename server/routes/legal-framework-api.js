@@ -19,13 +19,11 @@ router.get('/health', async (req, res) => {
             totalDocuments,
             activeDocuments,
             totalSignatures,
-            pendingSignatures,
             complianceChecks
         ] = await Promise.all([
             prisma.legalDocument.count(),
             prisma.legalDocument.count({ where: { status: 'ACTIVE' } }),
             prisma.legalDocumentSignature.count(),
-            prisma.legalDocumentSignature.count({ where: { status: 'PENDING' } }),
             prisma.legalDocumentCompliance.count()
         ]);
 
@@ -37,8 +35,7 @@ router.get('/health', async (req, res) => {
                     active: activeDocuments
                 },
                 signatures: {
-                    total: totalSignatures,
-                    pending: pendingSignatures
+                    total: totalSignatures
                 },
                 compliance: {
                     checks: complianceChecks
