@@ -204,8 +204,21 @@ router.post('/session/:sessionId/sign', authenticateToken, async (req, res) => {
         select: { id: true, name: true, email: true }
       });
       console.log('🔍 Direct user lookup result:', testUser);
+      
+      if (!testUser) {
+        return res.status(400).json({
+          success: false,
+          message: 'User not found in database',
+          userId: userId
+        });
+      }
     } catch (error) {
       console.log('🔍 Direct user lookup error:', error.message);
+      return res.status(500).json({
+        success: false,
+        message: 'Database error',
+        error: error.message
+      });
     }
     
     // Validate required fields
