@@ -165,6 +165,7 @@ router.post('/session/:sessionId/sign', authenticateToken, async (req, res) => {
     const { userId } = req.user;
     
     console.log('🔍 Signing request:', { sessionId, documentId, userId, signatureData, documentType });
+    console.log('🔍 req.user object:', req.user);
     
     // Validate required fields
     if (!signatureData) {
