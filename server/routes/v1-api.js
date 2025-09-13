@@ -28,7 +28,7 @@ const authenticateToken = async(req, res, next) => {
         // Decode JWT token (without verification for now)
         const jwt = require('jsonwebtoken');
         const decoded = jwt.decode(token);
-        
+
         if (!decoded) {
             return res.status(403).json({ error: 'Invalid token' });
         }
@@ -48,7 +48,7 @@ const authenticateToken = async(req, res, next) => {
                 "system:read", "system:write", "system:admin"
             ]
         };
-        
+
         next();
     } catch (error) {
         console.error('Token verification error:', error);
@@ -70,7 +70,7 @@ const requirePermission = (permission) => {
 /**
  * GET /buz/supply - Get BUZ token supply information
  */
-router.get('/buz/supply', async (req, res) => {
+router.get('/buz/supply', async(req, res) => {
     try {
         const result = await buzService.getSupplyInfo();
         if (result.success) {
@@ -95,7 +95,7 @@ router.get('/buz/supply', async (req, res) => {
 /**
  * GET /buz/stats - Get BUZ token statistics
  */
-router.get('/buz/stats', async (req, res) => {
+router.get('/buz/stats', async(req, res) => {
     try {
         const result = await buzService.getSystemStats();
         if (result.success) {
@@ -120,10 +120,10 @@ router.get('/buz/stats', async (req, res) => {
 /**
  * GET /buz/debug/user - Debug current user info
  */
-router.get('/buz/debug/user', authenticateToken, async (req, res) => {
+router.get('/buz/debug/user', authenticateToken, async(req, res) => {
     try {
         const requestingUser = req.user;
-        
+
         res.json({
             success: true,
             debug: {
@@ -146,10 +146,10 @@ router.get('/buz/debug/user', authenticateToken, async (req, res) => {
 /**
  * GET /buz/balance/current-user - Get current user's BUZ balance
  */
-router.get('/buz/balance/current-user', authenticateToken, async (req, res) => {
+router.get('/buz/balance/current-user', authenticateToken, async(req, res) => {
     try {
         const requestingUser = req.user;
-        
+
         console.log('BUZ Balance Current User Debug:', {
             requestingUserId: requestingUser.id,
             email: requestingUser.email,
@@ -161,7 +161,7 @@ router.get('/buz/balance/current-user', authenticateToken, async (req, res) => {
             const buzToken = await prisma.BUZToken.findUnique({
                 where: { userId: requestingUser.id }
             });
-            
+
             if (!buzToken) {
                 return res.status(404).json({
                     success: false,
@@ -169,7 +169,7 @@ router.get('/buz/balance/current-user', authenticateToken, async (req, res) => {
                     error: 'No BUZ token record for user'
                 });
             }
-            
+
             res.json({
                 success: true,
                 data: {
@@ -203,7 +203,7 @@ router.get('/buz/balance/current-user', authenticateToken, async (req, res) => {
 /**
  * GET /buz/balance/:userId - Get user BUZ balance
  */
-router.get('/buz/balance/:userId', authenticateToken, async (req, res) => {
+router.get('/buz/balance/:userId', authenticateToken, async(req, res) => {
     try {
         const { userId } = req.params;
         const requestingUser = req.user;
@@ -248,7 +248,7 @@ router.get('/buz/balance/:userId', authenticateToken, async (req, res) => {
 /**
  * GET /buz/transactions/:userId - Get user transaction history
  */
-router.get('/buz/transactions/:userId', authenticateToken, async (req, res) => {
+router.get('/buz/transactions/:userId', authenticateToken, async(req, res) => {
     try {
         const { userId } = req.params;
         const { page = 1, limit = 50, type, status } = req.query;
@@ -285,7 +285,7 @@ router.get('/buz/transactions/:userId', authenticateToken, async (req, res) => {
 /**
  * POST /buz/transfer - Transfer BUZ tokens
  */
-router.post('/buz/transfer', authenticateToken, async (req, res) => {
+router.post('/buz/transfer', authenticateToken, async(req, res) => {
     try {
         const { toUserId, amount, reason, description } = req.body;
         const fromUserId = req.user.id;
@@ -339,7 +339,7 @@ router.post('/buz/transfer', authenticateToken, async (req, res) => {
 /**
  * POST /buz/stake - Stake BUZ tokens
  */
-router.post('/buz/stake', authenticateToken, async (req, res) => {
+router.post('/buz/stake', authenticateToken, async(req, res) => {
     try {
         const { amount, tier } = req.body;
         const userId = req.user.id;
@@ -394,7 +394,7 @@ router.post('/buz/stake', authenticateToken, async (req, res) => {
 /**
  * GET /buz/staking/:userId - Get user staking positions
  */
-router.get('/buz/staking/:userId', authenticateToken, async (req, res) => {
+router.get('/buz/staking/:userId', authenticateToken, async(req, res) => {
     try {
         const { userId } = req.params;
         const requestingUser = req.user;
@@ -430,7 +430,7 @@ router.get('/buz/staking/:userId', authenticateToken, async (req, res) => {
 /**
  * POST /buz/rewards/claim - Claim available rewards
  */
-router.post('/buz/rewards/claim', authenticateToken, async (req, res) => {
+router.post('/buz/rewards/claim', authenticateToken, async(req, res) => {
     try {
         const userId = req.user.id;
 
@@ -455,7 +455,7 @@ router.post('/buz/rewards/claim', authenticateToken, async (req, res) => {
 /**
  * GET /buz/rewards/:userId - Get user rewards
  */
-router.get('/buz/rewards/:userId', authenticateToken, async (req, res) => {
+router.get('/buz/rewards/:userId', authenticateToken, async(req, res) => {
     try {
         const { userId } = req.params;
         const requestingUser = req.user;
@@ -487,14 +487,14 @@ router.get('/buz/rewards/:userId', authenticateToken, async (req, res) => {
 // ===== BUZ LEGAL DOCUMENTS =====
 
 // BUZ Token Terms of Service signing
-router.post('/buz/legal/terms/sign', async (req, res) => {
+router.post('/buz/legal/terms/sign', async(req, res) => {
     try {
         const { userId, signature, ipAddress, userAgent } = req.body;
-        
+
         if (!userId || !signature) {
-            return res.status(400).json({ 
-                success: false, 
-                message: 'User ID and signature are required' 
+            return res.status(400).json({
+                success: false,
+                message: 'User ID and signature are required'
             });
         }
 
@@ -520,7 +520,7 @@ router.post('/buz/legal/terms/sign', async (req, res) => {
         // Update user RBAC level to BUZ_USER
         await prisma.user.update({
             where: { id: userId },
-            data: { 
+            data: {
                 role: 'BUZ_USER',
                 updatedAt: new Date()
             }
@@ -539,23 +539,23 @@ router.post('/buz/legal/terms/sign', async (req, res) => {
         });
     } catch (error) {
         console.error('BUZ terms signing error:', error);
-        res.status(500).json({ 
-            success: false, 
+        res.status(500).json({
+            success: false,
             message: 'Failed to sign BUZ Token Terms of Service',
-            error: error.message 
+            error: error.message
         });
     }
 });
 
 // BUZ Token Privacy Policy signing
-router.post('/buz/legal/privacy/sign', async (req, res) => {
+router.post('/buz/legal/privacy/sign', async(req, res) => {
     try {
         const { userId, signature, ipAddress, userAgent } = req.body;
-        
+
         if (!userId || !signature) {
-            return res.status(400).json({ 
-                success: false, 
-                message: 'User ID and signature are required' 
+            return res.status(400).json({
+                success: false,
+                message: 'User ID and signature are required'
             });
         }
 
@@ -590,24 +590,23 @@ router.post('/buz/legal/privacy/sign', async (req, res) => {
         });
     } catch (error) {
         console.error('BUZ privacy signing error:', error);
-        res.status(500).json({ 
-            success: false, 
+        res.status(500).json({
+            success: false,
             message: 'Failed to sign BUZ Token Privacy Policy',
-            error: error.message 
+            error: error.message
         });
     }
 });
 
 // Get BUZ legal document status
-router.get('/buz/legal/status/:userId', async (req, res) => {
+router.get('/buz/legal/status/:userId', async(req, res) => {
     try {
         const { userId } = req.params;
-        
+
         const agreements = await prisma.legalAgreement.findMany({
             where: {
                 userId,
-                documentType: {
-                    in: ['BUZ_TOKEN_TERMS', 'BUZ_TOKEN_PRIVACY']
+                documentType: { in: ['BUZ_TOKEN_TERMS', 'BUZ_TOKEN_PRIVACY']
                 }
             },
             orderBy: { signedAt: 'desc' }
@@ -631,10 +630,10 @@ router.get('/buz/legal/status/:userId', async (req, res) => {
         });
     } catch (error) {
         console.error('BUZ legal status error:', error);
-        res.status(500).json({ 
-            success: false, 
+        res.status(500).json({
+            success: false,
             message: 'Failed to get BUZ legal status',
-            error: error.message 
+            error: error.message
         });
     }
 });
@@ -644,7 +643,7 @@ router.get('/buz/legal/status/:userId', async (req, res) => {
 /**
  * POST /buz/admin/mint - Mint new BUZ tokens (Admin only)
  */
-router.post('/buz/admin/mint', authenticateToken, requirePermission('admin:buz'), async (req, res) => {
+router.post('/buz/admin/mint', authenticateToken, requirePermission('admin:buz'), async(req, res) => {
     try {
         const { userId, amount, reason } = req.body;
         const adminUser = req.user;
@@ -690,7 +689,7 @@ router.post('/buz/admin/mint', authenticateToken, requirePermission('admin:buz')
 /**
  * POST /buz/admin/burn - Burn BUZ tokens (Admin only)
  */
-router.post('/buz/admin/burn', authenticateToken, requirePermission('admin:buz'), async (req, res) => {
+router.post('/buz/admin/burn', authenticateToken, requirePermission('admin:buz'), async(req, res) => {
     try {
         const { userId, amount, reason } = req.body;
         const adminUser = req.user;
@@ -736,7 +735,7 @@ router.post('/buz/admin/burn', authenticateToken, requirePermission('admin:buz')
 /**
  * GET /buz/admin/users - Get all users with BUZ balances (Admin only)
  */
-router.get('/buz/admin/users', authenticateToken, requirePermission('admin:buz'), async (req, res) => {
+router.get('/buz/admin/users', authenticateToken, requirePermission('admin:buz'), async(req, res) => {
     try {
         const { page = 1, limit = 50, search } = req.query;
 
@@ -765,7 +764,7 @@ router.get('/buz/admin/users', authenticateToken, requirePermission('admin:buz')
 /**
  * GET /buz/admin/transactions - Get all BUZ transactions (Admin only)
  */
-router.get('/buz/admin/transactions', authenticateToken, requirePermission('admin:buz'), async (req, res) => {
+router.get('/buz/admin/transactions', authenticateToken, requirePermission('admin:buz'), async(req, res) => {
     try {
         const { page = 1, limit = 50, type, status, userId } = req.query;
 
@@ -794,7 +793,7 @@ router.get('/buz/admin/transactions', authenticateToken, requirePermission('admi
 /**
  * POST /buz/admin/set-price - Set BUZ token price (Admin only)
  */
-router.post('/buz/admin/set-price', authenticateToken, requirePermission('admin:buz'), async (req, res) => {
+router.post('/buz/admin/set-price', authenticateToken, requirePermission('admin:buz'), async(req, res) => {
     try {
         const { price } = req.body;
         const adminUser = req.user;
@@ -828,7 +827,7 @@ router.post('/buz/admin/set-price', authenticateToken, requirePermission('admin:
 /**
  * GET /buz/admin/analytics - Get BUZ system analytics (Admin only)
  */
-router.get('/buz/admin/analytics', authenticateToken, requirePermission('admin:buz'), async (req, res) => {
+router.get('/buz/admin/analytics', authenticateToken, requirePermission('admin:buz'), async(req, res) => {
     try {
         const result = await buzService.getSystemStats();
         if (result.success) {
