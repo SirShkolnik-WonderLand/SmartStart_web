@@ -2479,6 +2479,322 @@ class ComprehensiveApiService {
   }
 
   // ============================================================================
+  // UMBRELLA & REVENUE SHARING API METHODS
+  // ============================================================================
+
+  async getUmbrellaRelationships(): Promise<ApiResponse<any[]>> {
+    try {
+      const response = await this.fetchWithAuth<any[]>('/api/umbrella/relationships')
+      return response
+    } catch (error) {
+      console.error('Get umbrella relationships error:', error)
+      return { success: false, error: 'Failed to get umbrella relationships' }
+    }
+  }
+
+  async createUmbrellaRelationship(data: {
+    referredId: string
+    relationshipType?: string
+    notes?: string
+  }): Promise<ApiResponse<any>> {
+    try {
+      const response = await this.fetchWithAuth<any>('/api/umbrella/relationships', {
+        method: 'POST',
+        body: JSON.stringify(data)
+      })
+      return response
+    } catch (error) {
+      console.error('Create umbrella relationship error:', error)
+      return { success: false, error: 'Failed to create umbrella relationship' }
+    }
+  }
+
+  async getRevenueShares(): Promise<ApiResponse<any[]>> {
+    try {
+      const response = await this.fetchWithAuth<any[]>('/api/umbrella/revenue/shares')
+      return response
+    } catch (error) {
+      console.error('Get revenue shares error:', error)
+      return { success: false, error: 'Failed to get revenue shares' }
+    }
+  }
+
+  async createRevenueShare(data: {
+    referredId: string
+    ventureId: string
+    amount: number
+    percentage?: number
+    description?: string
+  }): Promise<ApiResponse<any>> {
+    try {
+      const response = await this.fetchWithAuth<any>('/api/umbrella/revenue/shares', {
+        method: 'POST',
+        body: JSON.stringify(data)
+      })
+      return response
+    } catch (error) {
+      console.error('Create revenue share error:', error)
+      return { success: false, error: 'Failed to create revenue share' }
+    }
+  }
+
+  async getUmbrellaAnalytics(): Promise<ApiResponse<any>> {
+    try {
+      const response = await this.fetchWithAuth<any>('/api/umbrella/analytics')
+      return response
+    } catch (error) {
+      console.error('Get umbrella analytics error:', error)
+      return { success: false, error: 'Failed to get umbrella analytics' }
+    }
+  }
+
+  // ============================================================================
+  // VENTURE MANAGEMENT API METHODS
+  // ============================================================================
+
+  async getVentureDetails(ventureId: string): Promise<ApiResponse<any>> {
+    try {
+      const response = await this.fetchWithAuth<any>(`/api/venture-management/${ventureId}`)
+      return response
+    } catch (error) {
+      console.error('Get venture details error:', error)
+      return { success: false, error: 'Failed to get venture details' }
+    }
+  }
+
+  async getVentureSprints(ventureId: string, options?: {
+    status?: string
+    limit?: number
+    offset?: number
+  }): Promise<ApiResponse<any[]>> {
+    try {
+      const params = new URLSearchParams()
+      if (options?.status) params.append('status', options.status)
+      if (options?.limit) params.append('limit', options.limit.toString())
+      if (options?.offset) params.append('offset', options.offset.toString())
+      
+      const response = await this.fetchWithAuth<any[]>(`/api/venture-management/${ventureId}/sprints?${params}`)
+      return response
+    } catch (error) {
+      console.error('Get venture sprints error:', error)
+      return { success: false, error: 'Failed to get venture sprints' }
+    }
+  }
+
+  async createVentureSprint(ventureId: string, data: {
+    name: string
+    description?: string
+    startDate: string
+    endDate: string
+    goals?: string[]
+  }): Promise<ApiResponse<any>> {
+    try {
+      const response = await this.fetchWithAuth<any>(`/api/venture-management/${ventureId}/sprints`, {
+        method: 'POST',
+        body: JSON.stringify(data)
+      })
+      return response
+    } catch (error) {
+      console.error('Create venture sprint error:', error)
+      return { success: false, error: 'Failed to create venture sprint' }
+    }
+  }
+
+  async getVentureRisks(ventureId: string): Promise<ApiResponse<any[]>> {
+    try {
+      const response = await this.fetchWithAuth<any[]>(`/api/venture-management/${ventureId}/risks`)
+      return response
+    } catch (error) {
+      console.error('Get venture risks error:', error)
+      return { success: false, error: 'Failed to get venture risks' }
+    }
+  }
+
+  async createVentureRisk(ventureId: string, data: {
+    title: string
+    description?: string
+    severity: string
+    probability: string
+    impact: string
+    mitigation?: string
+  }): Promise<ApiResponse<any>> {
+    try {
+      const response = await this.fetchWithAuth<any>(`/api/venture-management/${ventureId}/risks`, {
+        method: 'POST',
+        body: JSON.stringify(data)
+      })
+      return response
+    } catch (error) {
+      console.error('Create venture risk error:', error)
+      return { success: false, error: 'Failed to create venture risk' }
+    }
+  }
+
+  async getSlackIntegration(ventureId: string): Promise<ApiResponse<any>> {
+    try {
+      const response = await this.fetchWithAuth<any>(`/api/venture-management/${ventureId}/slack`)
+      return response
+    } catch (error) {
+      console.error('Get Slack integration error:', error)
+      return { success: false, error: 'Failed to get Slack integration' }
+    }
+  }
+
+  async setupSlackIntegration(ventureId: string, data: {
+    workspaceId: string
+    workspaceName: string
+    channelId: string
+    channelName: string
+    botToken: string
+    webhookUrl: string
+  }): Promise<ApiResponse<any>> {
+    try {
+      const response = await this.fetchWithAuth<any>(`/api/venture-management/${ventureId}/slack`, {
+        method: 'POST',
+        body: JSON.stringify(data)
+      })
+      return response
+    } catch (error) {
+      console.error('Setup Slack integration error:', error)
+      return { success: false, error: 'Failed to setup Slack integration' }
+    }
+  }
+
+  async getSlackMessages(ventureId: string, options?: {
+    limit?: number
+    offset?: number
+  }): Promise<ApiResponse<any[]>> {
+    try {
+      const params = new URLSearchParams()
+      if (options?.limit) params.append('limit', options.limit.toString())
+      if (options?.offset) params.append('offset', options.offset.toString())
+      
+      const response = await this.fetchWithAuth<any[]>(`/api/venture-management/${ventureId}/slack/messages?${params}`)
+      return response
+    } catch (error) {
+      console.error('Get Slack messages error:', error)
+      return { success: false, error: 'Failed to get Slack messages' }
+    }
+  }
+
+  async getVentureAnalytics(ventureId: string): Promise<ApiResponse<any>> {
+    try {
+      const response = await this.fetchWithAuth<any>(`/api/venture-management/${ventureId}/analytics`)
+      return response
+    } catch (error) {
+      console.error('Get venture analytics error:', error)
+      return { success: false, error: 'Failed to get venture analytics' }
+    }
+  }
+
+  // ============================================================================
+  // LEGAL FRAMEWORK API METHODS
+  // ============================================================================
+
+  async getLegalFrameworkHealth(): Promise<ApiResponse<any>> {
+    try {
+      const response = await this.fetchWithAuth<any>('/api/legal-framework/health')
+      return response
+    } catch (error) {
+      console.error('Get legal framework health error:', error)
+      return { success: false, error: 'Failed to get legal framework health' }
+    }
+  }
+
+  async getUserCompliance(userId: string): Promise<ApiResponse<any>> {
+    try {
+      const response = await this.fetchWithAuth<any>(`/api/legal-framework/compliance/${userId}`)
+      return response
+    } catch (error) {
+      console.error('Get user compliance error:', error)
+      return { success: false, error: 'Failed to get user compliance' }
+    }
+  }
+
+  async updateCompliance(userId: string, data: {
+    documentId: string
+    status: string
+    notes?: string
+  }): Promise<ApiResponse<any>> {
+    try {
+      const response = await this.fetchWithAuth<any>(`/api/legal-framework/compliance/${userId}`, {
+        method: 'PUT',
+        body: JSON.stringify(data)
+      })
+      return response
+    } catch (error) {
+      console.error('Update compliance error:', error)
+      return { success: false, error: 'Failed to update compliance' }
+    }
+  }
+
+  async getUserSignatures(userId: string): Promise<ApiResponse<any[]>> {
+    try {
+      const response = await this.fetchWithAuth<any[]>(`/api/legal-framework/signatures/${userId}`)
+      return response
+    } catch (error) {
+      console.error('Get user signatures error:', error)
+      return { success: false, error: 'Failed to get user signatures' }
+    }
+  }
+
+  async createSignature(data: {
+    documentId: string
+    signerId: string
+    signatureData: any
+    ipAddress?: string
+    userAgent?: string
+  }): Promise<ApiResponse<any>> {
+    try {
+      const response = await this.fetchWithAuth<any>('/api/legal-framework/signatures', {
+        method: 'POST',
+        body: JSON.stringify(data)
+      })
+      return response
+    } catch (error) {
+      console.error('Create signature error:', error)
+      return { success: false, error: 'Failed to create signature' }
+    }
+  }
+
+  async getLegalDocuments(options?: {
+    type?: string
+    status?: string
+  }): Promise<ApiResponse<any[]>> {
+    try {
+      const params = new URLSearchParams()
+      if (options?.type) params.append('type', options.type)
+      if (options?.status) params.append('status', options.status)
+      
+      const response = await this.fetchWithAuth<any[]>(`/api/legal-framework/documents?${params}`)
+      return response
+    } catch (error) {
+      console.error('Get legal documents error:', error)
+      return { success: false, error: 'Failed to get legal documents' }
+    }
+  }
+
+  async getLegalDocument(documentId: string): Promise<ApiResponse<any>> {
+    try {
+      const response = await this.fetchWithAuth<any>(`/api/legal-framework/documents/${documentId}`)
+      return response
+    } catch (error) {
+      console.error('Get legal document error:', error)
+      return { success: false, error: 'Failed to get legal document' }
+    }
+  }
+
+  async getLegalAnalytics(): Promise<ApiResponse<any>> {
+    try {
+      const response = await this.fetchWithAuth<any>('/api/legal-framework/analytics')
+      return response
+    } catch (error) {
+      console.error('Get legal analytics error:', error)
+      return { success: false, error: 'Failed to get legal analytics' }
+    }
+  }
+
+  // ============================================================================
   // BUZ TOKEN SYSTEM API METHODS
   // ============================================================================
 

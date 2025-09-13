@@ -1,471 +1,383 @@
 /**
  * Legal Framework API Routes
- * Handles document generation, signing, and compliance checking
+ * Handles legal document compliance and framework management
  */
 
 const express = require('express');
 const router = express.Router();
-const LegalFrameworkService = require('../services/legal-framework');
-const { authenticateToken, requireRole } = require('../middleware/auth');
+const { PrismaClient } = require('@prisma/client');
+const { authenticateToken } = require('../middleware/auth');
 
-const legalService = new LegalFrameworkService();
+const prisma = new PrismaClient();
 
-// ============================================================================
-// DOCUMENT COMPLIANCE & RBAC GATING
-// ============================================================================
+// ===== LEGAL FRAMEWORK HEALTH =====
 
-/**
- * Check user's document compliance for RBAC level
- * GET /api/legal/compliance/:userId/:rbacLevel
- */
-router.get('/compliance/:userId/:rbacLevel', authenticateToken, async(req, res) => {
+// Get legal framework health
+router.get('/health', async (req, res) => {
     try {
-        const { userId, rbacLevel } = req.params;
+        const [
+            totalDocuments,
+            activeDocuments,
+            totalSignatures,
+            pendingSignatures,
+            complianceChecks
+        ] = await Promise.all([
+            prisma.legalDocument.count(),
+            prisma.legalDocument.count({ where: { status: 'ACTIVE' } }),
+            prisma.legalDocumentSignature.count(),
+            prisma.legalDocumentSignature.count({ where: { status: 'PENDING' } }),
+            prisma.legalDocumentCompliance.count()
+        ]);
 
-        // Verify user can check this compliance (own user or admin)
-        if (req.user.id !== userId && !req.user.roles.includes('ADMIN')) {
+        res.json({
+            success: true,
+            data: {
+                documents: {
+                    total: totalDocuments,
+                    active: activeDocuments
+                },
+                signatures: {
+                    total: totalSignatures,
+                    pending: pendingSignatures
+                },
+                compliance: {
+                    checks: complianceChecks
+                },
+                status: 'OPERATIONAL'
+            },
+            message: 'Legal framework health retrieved successfully'
+        });
+    } catch (error) {
+        console.error('Error fetching legal framework health:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch legal framework health',
+            error: error.message
+        });
+    }
+});
+
+// ===== DOCUMENT COMPLIANCE =====
+
+// Check user compliance
+router.get('/compliance/:userId', authenticateToken, async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const requestingUserId = req.user.id;
+
+        // Check if user can view compliance (own data or admin)
+        if (requestingUserId !== userId && !req.user.permissions?.includes('user:read')) {
             return res.status(403).json({
                 success: false,
-                error: 'Insufficient permissions to check compliance'
+                message: 'Insufficient permissions to view compliance data'
             });
         }
 
-        const compliance = await legalService.checkUserDocumentCompliance(userId, rbacLevel);
-
-        res.json({
-            success: true,
-            data: compliance
+        const compliance = await prisma.legalDocumentCompliance.findMany({
+            where: { userId },
+            include: {
+                document: {
+                    select: { id: true, name: true, type: true, status: true }
+                }
+            },
+            orderBy: { updatedAt: 'desc' }
         });
-    } catch (error) {
-        console.error('Error checking compliance:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to check document compliance'
-        });
-    }
-});
 
-/**
- * Check if user can perform specific action
- * POST /api/legal/can-perform-action
- */
-router.post('/can-perform-action', authenticateToken, async(req, res) => {
-    try {
-        const { action, context = {} } = req.body;
-        const userId = req.user.id;
-
-        if (!action) {
-            return res.status(400).json({
-                success: false,
-                error: 'Action is required'
-            });
-        }
-
-        const result = await legalService.canUserPerformAction(userId, action, context);
-
-        res.json({
-            success: true,
-            data: result
-        });
-    } catch (error) {
-        console.error('Error checking action permission:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to check action permission'
-        });
-    }
-});
-
-/**
- * Get required documents for action
- * GET /api/legal/required-documents/:action
- */
-router.get('/required-documents/:action', authenticateToken, async(req, res) => {
-    try {
-        const { action } = req.params;
-        const { context } = req.query;
-
-        const requiredDocuments = legalService.getRequiredDocumentsForAction(
-            action,
-            context ? JSON.parse(context) : {}
-        );
-
-        res.json({
-            success: true,
-            data: {
-                action,
-                requiredDocuments,
-                rbacLevel: legalService.getRbacLevelForAction(action)
-            }
-        });
-    } catch (error) {
-        console.error('Error getting required documents:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to get required documents'
-        });
-    }
-});
-
-// ============================================================================
-// DOCUMENT GENERATION
-// ============================================================================
-
-/**
- * Generate document from template
- * POST /api/legal/generate-document
- */
-router.post('/generate-document', authenticateToken, async(req, res) => {
-    try {
-        const { templateType, variables = {} } = req.body;
-
-        if (!templateType) {
-            return res.status(400).json({
-                success: false,
-                error: 'Template type is required'
-            });
-        }
-
-        // Add user info to variables
-        const documentVariables = {
-            ...variables,
-            userName: req.user.name || req.user.email,
-            userEmail: req.user.email,
-            currentDate: new Date().toISOString().split('T')[0],
-            userId: req.user.id
+        const complianceStatus = {
+            userId,
+            totalDocuments: compliance.length,
+            compliant: compliance.filter(c => c.status === 'COMPLIANT').length,
+            nonCompliant: compliance.filter(c => c.status === 'NON_COMPLIANT').length,
+            pending: compliance.filter(c => c.status === 'PENDING').length,
+            documents: compliance
         };
 
-        // Validate Canadian compliance
-        const compliance = legalService.validateCanadianCompliance(templateType, documentVariables);
-        if (!compliance.valid) {
+        res.json({
+            success: true,
+            data: complianceStatus,
+            message: 'Compliance status retrieved successfully'
+        });
+    } catch (error) {
+        console.error('Error fetching compliance:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch compliance status',
+            error: error.message
+        });
+    }
+});
+
+// Update compliance status
+router.put('/compliance/:userId', authenticateToken, async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { documentId, status, notes } = req.body;
+        const requestingUserId = req.user.id;
+
+        if (!documentId || !status) {
             return res.status(400).json({
                 success: false,
-                error: 'Document does not meet Canadian compliance requirements',
-                compliance
+                message: 'Document ID and status are required'
             });
         }
 
-        const document = await legalService.generateDocument(templateType, documentVariables);
-
-        res.json({
-            success: true,
-            data: {
-                templateType,
-                document,
-                variables: documentVariables,
-                compliance
+        const compliance = await prisma.legalDocumentCompliance.upsert({
+            where: {
+                userId_documentId: {
+                    userId,
+                    documentId
+                }
+            },
+            update: {
+                status,
+                notes,
+                updatedBy: requestingUserId,
+                updatedAt: new Date()
+            },
+            create: {
+                userId,
+                documentId,
+                status,
+                notes,
+                createdBy: requestingUserId
             }
         });
-    } catch (error) {
-        console.error('Error generating document:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to generate document'
-        });
-    }
-});
-
-/**
- * Store document and get signing URL
- * POST /api/legal/store-document
- */
-router.post('/store-document', authenticateToken, async(req, res) => {
-    try {
-        const { templateType, document, variables = {} } = req.body;
-
-        if (!templateType || !document) {
-            return res.status(400).json({
-                success: false,
-                error: 'Template type and document are required'
-            });
-        }
-
-        const result = await legalService.storeDocument(
-            templateType,
-            document,
-            variables,
-            req.user.id
-        );
 
         res.json({
             success: true,
-            data: result
+            data: compliance,
+            message: 'Compliance status updated successfully'
         });
     } catch (error) {
-        console.error('Error storing document:', error);
+        console.error('Error updating compliance:', error);
         res.status(500).json({
             success: false,
-            error: 'Failed to store document'
+            message: 'Failed to update compliance status',
+            error: error.message
         });
     }
 });
 
-// ============================================================================
-// E-SIGNATURE PROCESSING
-// ============================================================================
+// ===== DOCUMENT SIGNATURES =====
 
-/**
- * Process e-signature
- * POST /api/legal/sign-document
- */
-router.post('/sign-document', authenticateToken, async(req, res) => {
+// Get user signatures
+router.get('/signatures/:userId', authenticateToken, async (req, res) => {
     try {
-        const { documentId, signerInfo } = req.body;
+        const { userId } = req.params;
+        const requestingUserId = req.user.id;
 
-        if (!documentId || !signerInfo) {
-            return res.status(400).json({
+        if (requestingUserId !== userId && !req.user.permissions?.includes('user:read')) {
+            return res.status(403).json({
                 success: false,
-                error: 'Document ID and signer info are required'
+                message: 'Insufficient permissions to view signature data'
             });
         }
 
-        // Add request info to signer info
-        const enhancedSignerInfo = {
-            ...signerInfo,
-            ip: req.ip || req.connection.remoteAddress,
-            userAgent: req.get('User-Agent'),
-            signerEmail: req.user.email,
-            signerName: req.user.name || req.user.email
-        };
-
-        const result = await legalService.processESignature(documentId, enhancedSignerInfo);
+        const signatures = await prisma.legalDocumentSignature.findMany({
+            where: { signerId: userId },
+            include: {
+                document: {
+                    select: { id: true, name: true, type: true, status: true }
+                }
+            },
+            orderBy: { createdAt: 'desc' }
+        });
 
         res.json({
             success: true,
-            data: result
+            data: signatures,
+            message: 'Signatures retrieved successfully'
         });
     } catch (error) {
-        console.error('Error processing signature:', error);
+        console.error('Error fetching signatures:', error);
         res.status(500).json({
             success: false,
-            error: 'Failed to process signature'
+            message: 'Failed to fetch signatures',
+            error: error.message
         });
     }
 });
 
-/**
- * Get document status
- * GET /api/legal/document-status/:documentId
- */
-router.get('/document-status/:documentId', authenticateToken, async(req, res) => {
+// Create signature
+router.post('/signatures', authenticateToken, async (req, res) => {
+    try {
+        const { documentId, signerId, signatureData, ipAddress, userAgent } = req.body;
+        const requestingUserId = req.user.id;
+
+        if (!documentId || !signerId || !signatureData) {
+            return res.status(400).json({
+                success: false,
+                message: 'Document ID, signer ID, and signature data are required'
+            });
+        }
+
+        const signature = await prisma.legalDocumentSignature.create({
+            data: {
+                documentId,
+                signerId,
+                signatureData,
+                ipAddress,
+                userAgent,
+                status: 'SIGNED',
+                signedAt: new Date(),
+                createdBy: requestingUserId
+            },
+            include: {
+                document: {
+                    select: { id: true, name: true, type: true }
+                }
+            }
+        });
+
+        res.status(201).json({
+            success: true,
+            data: signature,
+            message: 'Signature created successfully'
+        });
+    } catch (error) {
+        console.error('Error creating signature:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to create signature',
+            error: error.message
+        });
+    }
+});
+
+// ===== LEGAL DOCUMENTS =====
+
+// Get available legal documents
+router.get('/documents', authenticateToken, async (req, res) => {
+    try {
+        const { type, status = 'ACTIVE' } = req.query;
+
+        const whereClause = { status };
+        if (type) {
+            whereClause.type = type;
+        }
+
+        const documents = await prisma.legalDocument.findMany({
+            where: whereClause,
+            orderBy: { createdAt: 'desc' }
+        });
+
+        res.json({
+            success: true,
+            data: documents,
+            message: 'Legal documents retrieved successfully'
+        });
+    } catch (error) {
+        console.error('Error fetching legal documents:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch legal documents',
+            error: error.message
+        });
+    }
+});
+
+// Get document by ID
+router.get('/documents/:documentId', authenticateToken, async (req, res) => {
     try {
         const { documentId } = req.params;
 
-        // This would typically load from your database
-        // For now, return a basic response
-        res.json({
-            success: true,
-            data: {
-                documentId,
-                status: 'DRAFTED',
-                message: 'Document status endpoint - implement with your database'
+        const document = await prisma.legalDocument.findUnique({
+            where: { id: documentId },
+            include: {
+                signatures: {
+                    include: {
+                        signer: {
+                            select: { id: true, name: true, email: true }
+                        }
+                    }
+                }
             }
         });
-    } catch (error) {
-        console.error('Error getting document status:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to get document status'
-        });
-    }
-});
 
-// ============================================================================
-// SECURITY TIER MANAGEMENT
-// ============================================================================
-
-/**
- * Get security tier requirements
- * GET /api/legal/security-tier/:tier
- */
-router.get('/security-tier/:tier', authenticateToken, async(req, res) => {
-    try {
-        const { tier } = req.params;
-
-        const requirements = legalService.getSecurityTierRequirements(tier);
-
-        if (!requirements) {
+        if (!document) {
             return res.status(404).json({
                 success: false,
-                error: 'Security tier not found'
+                message: 'Document not found'
             });
         }
 
         res.json({
             success: true,
-            data: requirements
+            data: document,
+            message: 'Document retrieved successfully'
         });
     } catch (error) {
-        console.error('Error getting security tier requirements:', error);
+        console.error('Error fetching document:', error);
         res.status(500).json({
             success: false,
-            error: 'Failed to get security tier requirements'
+            message: 'Failed to fetch document',
+            error: error.message
         });
     }
 });
 
-/**
- * List all security tiers
- * GET /api/legal/security-tiers
- */
-router.get('/security-tiers', authenticateToken, async(req, res) => {
+// ===== LEGAL ANALYTICS =====
+
+// Get legal analytics
+router.get('/analytics', authenticateToken, async (req, res) => {
     try {
-        const tiers = Object.keys(legalService.securityTierRequirements).map(tier => ({
-            tier,
-            ...legalService.securityTierRequirements[tier]
-        }));
-
-        res.json({
-            success: true,
-            data: tiers
-        });
-    } catch (error) {
-        console.error('Error getting security tiers:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to get security tiers'
-        });
-    }
-});
-
-// ============================================================================
-// RBAC GATING MIDDLEWARE
-// ============================================================================
-
-/**
- * Middleware to check document compliance before action
- */
-const requireDocumentCompliance = (action) => {
-    return async(req, res, next) => {
-        try {
-            const result = await legalService.canUserPerformAction(req.user.id, action, req.body);
-
-            if (!result.allowed) {
-                return res.status(403).json({
-                    success: false,
-                    error: 'Document compliance required',
-                    data: {
-                        missingDocuments: result.missingDocuments,
-                        requiredDocuments: result.requiredDocuments,
-                        action
+        const [
+            totalDocuments,
+            activeDocuments,
+            totalSignatures,
+            pendingSignatures,
+            complianceRate,
+            recentActivity
+        ] = await Promise.all([
+            prisma.legalDocument.count(),
+            prisma.legalDocument.count({ where: { status: 'ACTIVE' } }),
+            prisma.legalDocumentSignature.count(),
+            prisma.legalDocumentSignature.count({ where: { status: 'PENDING' } }),
+            prisma.legalDocumentCompliance.aggregate({
+                _avg: {
+                    status: true
+                }
+            }),
+            prisma.legalDocumentSignature.findMany({
+                include: {
+                    document: {
+                        select: { id: true, name: true, type: true }
+                    },
+                    signer: {
+                        select: { id: true, name: true, email: true }
                     }
-                });
-            }
-
-            // Add compliance info to request
-            req.documentCompliance = result;
-            next();
-        } catch (error) {
-            console.error('Error checking document compliance:', error);
-            res.status(500).json({
-                success: false,
-                error: 'Failed to verify document compliance'
-            });
-        }
-    };
-};
-
-// ============================================================================
-// BULK OPERATIONS
-// ============================================================================
-
-/**
- * Generate multiple documents for user action
- * POST /api/legal/generate-action-documents
- */
-router.post('/generate-action-documents', authenticateToken, async(req, res) => {
-    try {
-        const { action, context = {} } = req.body;
-
-        if (!action) {
-            return res.status(400).json({
-                success: false,
-                error: 'Action is required'
-            });
-        }
-
-        const requiredDocuments = legalService.getRequiredDocumentsForAction(action, context);
-        const documents = [];
-
-        for (const docType of requiredDocuments) {
-            try {
-                const document = await legalService.generateDocument(docType, {
-                    ...context,
-                    userName: req.user.name || req.user.email,
-                    userEmail: req.user.email,
-                    currentDate: new Date().toISOString().split('T')[0],
-                    userId: req.user.id
-                });
-
-                documents.push({
-                    documentType: docType,
-                    document,
-                    status: 'GENERATED'
-                });
-            } catch (error) {
-                console.error(`Error generating document ${docType}:`, error);
-                documents.push({
-                    documentType: docType,
-                    error: error.message,
-                    status: 'FAILED'
-                });
-            }
-        }
+                },
+                orderBy: { createdAt: 'desc' },
+                take: 10
+            })
+        ]);
 
         res.json({
             success: true,
             data: {
-                action,
-                requiredDocuments,
-                documents,
-                rbacLevel: legalService.getRbacLevelForAction(action)
-            }
+                documents: {
+                    total: totalDocuments,
+                    active: activeDocuments
+                },
+                signatures: {
+                    total: totalSignatures,
+                    pending: pendingSignatures
+                },
+                compliance: {
+                    rate: complianceRate._avg.status || 0
+                },
+                recentActivity
+            },
+            message: 'Legal analytics retrieved successfully'
         });
     } catch (error) {
-        console.error('Error generating action documents:', error);
+        console.error('Error fetching legal analytics:', error);
         res.status(500).json({
             success: false,
-            error: 'Failed to generate action documents'
+            message: 'Failed to fetch legal analytics',
+            error: error.message
         });
     }
 });
-
-/**
- * Get user's document status summary
- * GET /api/legal/user-documents/:userId
- */
-router.get('/user-documents/:userId', authenticateToken, async(req, res) => {
-    try {
-        const { userId } = req.params;
-
-        // Verify user can access this info
-        if (req.user.id !== userId && !req.user.roles.includes('ADMIN')) {
-            return res.status(403).json({
-                success: false,
-                error: 'Insufficient permissions'
-            });
-        }
-
-        // This would typically query your database
-        // For now, return a basic response
-        res.json({
-            success: true,
-            data: {
-                userId,
-                documents: [],
-                message: 'User documents endpoint - implement with your database'
-            }
-        });
-    } catch (error) {
-        console.error('Error getting user documents:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to get user documents'
-        });
-    }
-});
-
-// Export the middleware for use in other routes
-router.requireDocumentCompliance = requireDocumentCompliance;
 
 module.exports = router;

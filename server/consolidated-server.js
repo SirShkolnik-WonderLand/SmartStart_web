@@ -376,6 +376,34 @@ app.use('/api/contributions', contributionPipelineApiRoutes);
 const gamificationApiRoutes = require('./routes/gamification-api');
 app.use('/api/gamification', gamificationApiRoutes);
 
+// ===== NEW INTEGRATED API ROUTES =====
+console.log('Loading umbrella API...');
+try {
+    const umbrellaApiRoutes = require('./routes/umbrella-api');
+    app.use('/api/umbrella', umbrellaApiRoutes);
+    console.log('✅ Umbrella API loaded successfully');
+} catch (error) {
+    console.error('❌ Failed to load umbrella API:', error.message);
+}
+
+console.log('Loading venture management API...');
+try {
+    const ventureManagementApiRoutes = require('./routes/venture-management-api');
+    app.use('/api/venture-management', ventureManagementApiRoutes);
+    console.log('✅ Venture management API loaded successfully');
+} catch (error) {
+    console.error('❌ Failed to load venture management API:', error.message);
+}
+
+console.log('Loading legal framework API...');
+try {
+    const legalFrameworkApiRoutes = require('./routes/legal-framework-api');
+    app.use('/api/legal-framework', legalFrameworkApiRoutes);
+    console.log('✅ Legal framework API loaded successfully');
+} catch (error) {
+    console.error('❌ Failed to load legal framework API:', error.message);
+}
+
 const contractsApiRoutes = require('./routes/contracts-api');
 app.use('/api/contracts', contractsApiRoutes);
 

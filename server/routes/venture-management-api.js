@@ -1,598 +1,394 @@
-const express = require('express');
-const { PrismaClient } = require('@prisma/client');
-const VentureManagementService = require('../services/venture-management-service');
-const { authenticateToken, requirePermission } = require('../middleware/unified-auth');
-
-const router = express.Router();
-const prisma = new PrismaClient();
-const ventureService = new VentureManagementService();
-
 /**
  * Venture Management API Routes
- * Handles venture creation, management, and IT pack provisioning
+ * Handles venture management, sprints, and Slack integration
  */
 
-// Health check endpoint
-router.get('/health', async(req, res) => {
-    try {
-        const stats = await ventureService.getVentureStatistics();
-        res.json({
-            success: true,
-            message: 'Venture Management API is healthy',
-            timestamp: new Date().toISOString(),
-            statistics: stats
-        });
-    } catch (error) {
-        console.error('Health check failed:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Health check failed',
-            error: error.message
-        });
-    }
-});
+const express = require('express');
+const router = express.Router();
+const { PrismaClient } = require('@prisma/client');
+const { authenticateToken } = require('../middleware/auth');
 
-// Create new venture
-router.post('/create', authenticateToken, async(req, res) => {
-    try {
-        const ventureData = req.body;
+const prisma = new PrismaClient();
 
-        // Validate required fields
-        if (!ventureData.name || !ventureData.purpose || !ventureData.ownerUserId) {
-            return res.status(400).json({
-                success: false,
-                message: 'Missing required fields: name, purpose, ownerUserId'
-            });
-        }
-
-        // Create venture with complete setup
-        const result = await ventureService.createVenture(ventureData);
-
-        res.json({
-            success: true,
-            message: 'Venture created successfully',
-            venture: {
-                id: result.venture.id,
-                name: result.venture.name,
-                status: result.venture.status,
-                createdAt: result.venture.createdAt
-            },
-            legalEntity: {
-                id: result.legalEntity.id,
-                name: result.legalEntity.name,
-                type: result.legalEntity.type
-            },
-            equityFramework: {
-                id: result.equityFramework.id,
-                ownerPercent: result.equityFramework.ownerPercent,
-                alicePercent: result.equityFramework.alicePercent,
-                cepPercent: result.equityFramework.cepPercent
-            }
-        });
-
-    } catch (error) {
-        console.error('Failed to create venture:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to create venture',
-            error: error.message
-        });
-    }
-});
+// ===== VENTURE MANAGEMENT =====
 
 // Get venture details
-router.get('/:ventureId', authenticateToken, async(req, res) => {
+router.get('/:ventureId', authenticateToken, async (req, res) => {
     try {
         const { ventureId } = req.params;
-        
-        console.log(`Venture details requested for ${ventureId}`);
-        
-        const venture = await ventureService.getVentureWithDetails(ventureId);
+        const userId = req.user.id;
 
-        res.json({
-            success: true,
-            message: 'Venture details retrieved successfully',
-            venture: {
-                id: venture.id,
-                name: venture.name,
-                purpose: venture.purpose,
-                region: venture.region,
-                status: venture.status,
-                createdAt: venture.createdAt,
-                updatedAt: venture.updatedAt
-            },
-            owner: venture.owner,
-            legalEntity: venture.legalEntity,
-            equityFramework: venture.equityFramework,
-            ventureProfile: venture.ventureProfile,
-            ventureITPack: venture.ventureITPack,
-            legalDocuments: venture.legalDocuments
-        });
-
-    } catch (error) {
-        console.error('Failed to get venture details:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to get venture details',
-            error: error.message
-        });
-    }
-});
-
-// Update venture status
-router.put('/:ventureId/status', async(req, res) => {
-    try {
-        const { ventureId } = req.params;
-        const { status } = req.body;
-        
-        // Basic auth validation
-        const authHeader = req.headers.authorization;
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            return res.status(401).json({
-                success: false,
-                message: 'Authorization header required'
-            });
-        }
-
-        if (!status) {
-            return res.status(400).json({
-                success: false,
-                message: 'Status is required'
-            });
-        }
-
-        const venture = await ventureService.updateVentureStatus(ventureId, status);
-
-        res.json({
-            success: true,
-            message: 'Venture status updated successfully',
-            venture: {
-                id: venture.id,
-                name: venture.name,
-                status: venture.status,
-                updatedAt: venture.updatedAt
-            }
-        });
-
-    } catch (error) {
-        console.error('Failed to update venture status:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to update venture status',
-            error: error.message
-        });
-    }
-});
-
-// Provision IT pack for venture
-router.post('/:ventureId/it-pack', async(req, res) => {
-    try {
-        const { ventureId } = req.params;
-        const itPack = await ventureService.provisionITPack(ventureId);
-
-        res.json({
-            success: true,
-            message: 'IT pack provisioning initiated',
-            itPack: {
-                id: itPack.id,
-                ventureId: itPack.ventureId,
-                status: itPack.status,
-                m365TenantId: itPack.m365TenantId,
-                emailAddress: itPack.emailAddress,
-                githubOrg: itPack.githubOrg,
-                renderServiceId: itPack.renderServiceId,
-                provisionedAt: itPack.provisionedAt
-            }
-        });
-
-    } catch (error) {
-        console.error('Failed to provision IT pack:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to provision IT pack',
-            error: error.message
-        });
-    }
-});
-
-// Get venture statistics
-router.get('/statistics/overview', async(req, res) => {
-    try {
-        const stats = await ventureService.getVentureStatistics();
-
-        res.json({
-            success: true,
-            message: 'Venture statistics retrieved successfully',
-            statistics: stats
-        });
-
-    } catch (error) {
-        console.error('Failed to get venture statistics:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to get venture statistics',
-            error: error.message
-        });
-    }
-});
-
-// List all ventures
-router.get('/list/all', authenticateToken, async(req, res) => {
-    try {
-        const { page = 1, limit = 10, status } = req.query;
-        const offset = (page - 1) * limit;
-
-        const whereClause = status ? { status } : {};
-
-        const [ventures, total] = await Promise.all([
-            prisma.venture.findMany({
-                where: whereClause,
-                include: {
-                    owner: {
-                        select: {
-                            id: true,
-                            name: true,
-                            email: true
-                        }
-                    },
-                    ventureLegalEntity: {
-                        include: {
-                            legalEntity: {
-                                select: {
-                                    name: true,
-                                    type: true,
-                                    jurisdiction: true
-                                }
-                            }
+        const venture = await prisma.venture.findUnique({
+            where: { id: ventureId },
+            include: {
+                owner: {
+                    select: { id: true, name: true, email: true }
+                },
+                teamMembers: {
+                    include: {
+                        user: {
+                            select: { id: true, name: true, email: true }
                         }
                     }
                 },
-                orderBy: { createdAt: 'desc' },
-                skip: offset,
-                take: parseInt(limit)
-            }),
-            prisma.venture.count({ where: whereClause })
-        ]);
-
-        res.json({
-            success: true,
-            message: 'Ventures retrieved successfully',
-            ventures,
-            pagination: {
-                page: parseInt(page),
-                limit: parseInt(limit),
-                total,
-                pages: Math.ceil(total / limit)
+                sprints: {
+                    orderBy: { createdAt: 'desc' },
+                    take: 10
+                },
+                risks: {
+                    orderBy: { createdAt: 'desc' },
+                    take: 10
+                }
             }
         });
 
-    } catch (error) {
-        console.error('Failed to list ventures:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to list ventures',
-            error: error.message
-        });
-    }
-});
-
-// Get venture equity details
-router.get('/:ventureId/equity', async(req, res) => {
-    try {
-        const { ventureId } = req.params;
-
-        const equityDetails = await prisma.equityLedger.findMany({
-            where: { ventureId },
-            include: {
-                vestingPolicy: true
-            },
-            orderBy: { effectiveFrom: 'desc' }
-        });
-
-        const equityFramework = await prisma.equityFramework.findUnique({
-            where: { ventureId }
-        });
-
-        res.json({
-            success: true,
-            message: 'Venture equity details retrieved successfully',
-            equityFramework,
-            equityLedger: equityDetails
-        });
-
-    } catch (error) {
-        console.error('Failed to get venture equity details:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to get venture equity details',
-            error: error.message
-        });
-    }
-});
-
-// Update venture profile
-router.put('/:ventureId/profile', async(req, res) => {
-    try {
-        const { ventureId } = req.params;
-        const profileData = req.body;
-        
-        // Basic auth validation
-        const authHeader = req.headers.authorization;
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            return res.status(401).json({
-                success: false,
-                message: 'Authorization header required'
-            });
-        }
-
-        const updatedProfile = await prisma.ventureProfile.update({
-            where: { ventureId },
-            data: {
-                ...profileData,
-                updatedAt: new Date()
-            }
-        });
-
-        res.json({
-            success: true,
-            message: 'Venture profile updated successfully',
-            profile: updatedProfile
-        });
-
-    } catch (error) {
-        console.error('Failed to update venture profile:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to update venture profile',
-            error: error.message
-        });
-    }
-});
-
-// Update venture details
-router.put('/:ventureId', authenticateToken, async(req, res) => {
-    try {
-        const { ventureId } = req.params;
-        const ventureData = req.body;
-
-        // Validate that the venture exists
-        const existingVenture = await prisma.venture.findUnique({
-            where: { id: ventureId }
-        });
-
-        if (!existingVenture) {
+        if (!venture) {
             return res.status(404).json({
                 success: false,
                 message: 'Venture not found'
             });
         }
 
-        // Update the venture with the provided data
-        const updatedVenture = await prisma.venture.update({
-            where: { id: ventureId },
-            data: {
-                name: ventureData.name || existingVenture.name,
-                purpose: ventureData.purpose || existingVenture.purpose,
-                region: ventureData.region || existingVenture.region,
-                updatedAt: new Date()
-            },
-            include: {
-                owner: {
-                    select: {
-                        id: true,
-                        name: true,
-                        email: true
-                    }
-                }
-            }
-        });
+        // Check if user has access to this venture
+        const hasAccess = venture.ownerUserId === userId || 
+                         venture.teamMembers.some(member => member.userId === userId);
 
-        // If there's a venture profile, update it too
-        if (ventureData.industry || ventureData.stage || ventureData.teamSize || 
-            ventureData.lookingFor || ventureData.rewards || ventureData.tags) {
-            
-            try {
-                await prisma.ventureProfile.upsert({
-                    where: { ventureId },
-                    update: {
-                        industry: ventureData.industry,
-                        stage: ventureData.stage,
-                        teamSize: ventureData.teamSize,
-                        lookingFor: ventureData.lookingFor,
-                        rewards: ventureData.rewards,
-                        tags: ventureData.tags,
-                        updatedAt: new Date()
-                    },
-                    create: {
-                        ventureId,
-                        industry: ventureData.industry,
-                        stage: ventureData.stage,
-                        teamSize: ventureData.teamSize,
-                        lookingFor: ventureData.lookingFor,
-                        rewards: ventureData.rewards,
-                        tags: ventureData.tags,
-                        createdAt: new Date(),
-                        updatedAt: new Date()
-                    }
-                });
-            } catch (profileError) {
-                console.log('Venture profile update failed (non-critical):', profileError.message);
-            }
-        }
-
-        res.json({
-            success: true,
-            message: 'Venture updated successfully',
-            venture: {
-                id: updatedVenture.id,
-                name: updatedVenture.name,
-                purpose: updatedVenture.purpose,
-                region: updatedVenture.region,
-                status: updatedVenture.status,
-                createdAt: updatedVenture.createdAt,
-                updatedAt: updatedVenture.updatedAt,
-                ownerUserId: updatedVenture.ownerUserId
-            }
-        });
-
-    } catch (error) {
-        console.error('Failed to update venture:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to update venture',
-            error: error.message
-        });
-    }
-});
-
-// Delete venture
-router.delete('/:ventureId', authenticateToken, async(req, res) => {
-    try {
-        const { ventureId } = req.params;
-
-        // Validate that the venture exists
-        const existingVenture = await prisma.venture.findUnique({
-            where: { id: ventureId },
-            include: {
-                owner: {
-                    select: {
-                        id: true,
-                        name: true,
-                        email: true
-                    }
-                }
-            }
-        });
-
-        if (!existingVenture) {
-            return res.status(404).json({
+        if (!hasAccess) {
+            return res.status(403).json({
                 success: false,
-                message: 'Venture not found'
+                message: 'Access denied to this venture'
             });
         }
 
-        // Delete the venture (this will cascade delete related records due to onDelete: Cascade)
-        await prisma.venture.delete({
-            where: { id: ventureId }
-        });
-
         res.json({
             success: true,
-            message: 'Venture deleted successfully',
-            venture: {
-                id: existingVenture.id,
-                name: existingVenture.name,
-                owner: existingVenture.owner
-            }
+            data: venture,
+            message: 'Venture details retrieved successfully'
         });
-
     } catch (error) {
-        console.error('Failed to delete venture:', error);
+        console.error('Error fetching venture:', error);
         res.status(500).json({
             success: false,
-            message: 'Failed to delete venture',
+            message: 'Failed to fetch venture details',
             error: error.message
         });
     }
 });
 
-// Run venture management migration
-router.post('/migrate', async(req, res) => {
-    try {
-        const { migrateVentureManagement } = require('../../migrate-venture-management');
-        await migrateVentureManagement();
+// ===== SPRINT MANAGEMENT =====
 
-        res.json({
-            success: true,
-            message: 'Venture Management System migration completed successfully',
-            timestamp: new Date().toISOString()
-        });
-    } catch (error) {
-        console.error('Migration failed:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Venture Management migration failed',
-            error: error.message
-        });
-    }
-});
-
-// Test venture creation with raw SQL
-router.post('/create-test', async(req, res) => {
-    try {
-        const { PrismaClient } = require('@prisma/client');
-        const prisma = new PrismaClient();
-
-        console.log('🧪 Creating test venture with raw SQL...');
-
-        // Create a test venture using raw SQL
-        const ventureId = 'test-venture-' + Date.now();
-        const result = await prisma.$executeRaw `
-            INSERT INTO "Venture" ("id", "name", "purpose", "region", "status", "ownerUserId", "createdAt", "updatedAt")
-            VALUES (${ventureId}, 'Test Venture', 'Testing Venture Management System', 'US', 'DRAFT', 'cmf1r92vo0001s8299wr0vh66', NOW(), NOW())
-        `;
-
-        // Fetch the created venture
-        const venture = await prisma.$queryRaw `
-            SELECT * FROM "Venture" WHERE "id" = ${ventureId}
-        `;
-
-        await prisma.$disconnect();
-
-        res.json({
-            success: true,
-            message: 'Test venture created successfully with raw SQL',
-            venture: venture[0],
-            timestamp: new Date().toISOString()
-        });
-
-    } catch (error) {
-        console.error('Raw SQL venture creation failed:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Raw SQL venture creation failed',
-            error: error.message
-        });
-    }
-});
-
-// Get venture legal documents
-router.get('/:ventureId/documents', async(req, res) => {
+// Get sprints for a venture
+router.get('/:ventureId/sprints', authenticateToken, async (req, res) => {
     try {
         const { ventureId } = req.params;
+        const { status, limit = 20, offset = 0 } = req.query;
 
-        const documents = await prisma.legalDocument.findMany({
-            where: {
-                entityId: ventureId
-            },
+        const whereClause = { ventureId };
+        if (status) {
+            whereClause.status = status;
+        }
+
+        const sprints = await prisma.ventureSprint.findMany({
+            where: whereClause,
             include: {
-                signatures: {
+                tasks: {
                     include: {
-                        signer: {
-                            select: {
-                                id: true,
-                                displayName: true,
-                                email: true
-                            }
+                        assignee: {
+                            select: { id: true, name: true, email: true }
                         }
                     }
                 }
             },
+            orderBy: { createdAt: 'desc' },
+            take: parseInt(limit),
+            skip: parseInt(offset)
+        });
+
+        res.json({
+            success: true,
+            data: sprints,
+            message: 'Sprints retrieved successfully'
+        });
+    } catch (error) {
+        console.error('Error fetching sprints:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch sprints',
+            error: error.message
+        });
+    }
+});
+
+// Create sprint
+router.post('/:ventureId/sprints', authenticateToken, async (req, res) => {
+    try {
+        const { ventureId } = req.params;
+        const { name, description, startDate, endDate, goals } = req.body;
+        const userId = req.user.id;
+
+        const sprint = await prisma.ventureSprint.create({
+            data: {
+                ventureId,
+                name,
+                description,
+                startDate: new Date(startDate),
+                endDate: new Date(endDate),
+                goals: goals || [],
+                status: 'PLANNING',
+                createdBy: userId
+            }
+        });
+
+        res.status(201).json({
+            success: true,
+            data: sprint,
+            message: 'Sprint created successfully'
+        });
+    } catch (error) {
+        console.error('Error creating sprint:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to create sprint',
+            error: error.message
+        });
+    }
+});
+
+// ===== RISK MANAGEMENT =====
+
+// Get risks for a venture
+router.get('/:ventureId/risks', authenticateToken, async (req, res) => {
+    try {
+        const { ventureId } = req.params;
+
+        const risks = await prisma.ventureRisk.findMany({
+            where: { ventureId },
             orderBy: { createdAt: 'desc' }
         });
 
         res.json({
             success: true,
-            message: 'Venture legal documents retrieved successfully',
-            documents,
-            count: documents.length
+            data: risks,
+            message: 'Risks retrieved successfully'
         });
-
     } catch (error) {
-        console.error('Failed to get venture documents:', error);
+        console.error('Error fetching risks:', error);
         res.status(500).json({
             success: false,
-            message: 'Failed to get venture documents',
+            message: 'Failed to fetch risks',
+            error: error.message
+        });
+    }
+});
+
+// Create risk
+router.post('/:ventureId/risks', authenticateToken, async (req, res) => {
+    try {
+        const { ventureId } = req.params;
+        const { title, description, severity, probability, impact, mitigation } = req.body;
+        const userId = req.user.id;
+
+        const risk = await prisma.ventureRisk.create({
+            data: {
+                ventureId,
+                title,
+                description,
+                severity,
+                probability,
+                impact,
+                mitigation,
+                status: 'ACTIVE',
+                ownerId: userId
+            }
+        });
+
+        res.status(201).json({
+            success: true,
+            data: risk,
+            message: 'Risk created successfully'
+        });
+    } catch (error) {
+        console.error('Error creating risk:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to create risk',
+            error: error.message
+        });
+    }
+});
+
+// ===== SLACK INTEGRATION =====
+
+// Get Slack integration for venture
+router.get('/:ventureId/slack', authenticateToken, async (req, res) => {
+    try {
+        const { ventureId } = req.params;
+
+        const integration = await prisma.integration.findFirst({
+            where: {
+                ventureId,
+                type: 'SLACK'
+            }
+        });
+
+        res.json({
+            success: true,
+            data: integration,
+            message: 'Slack integration retrieved successfully'
+        });
+    } catch (error) {
+        console.error('Error fetching Slack integration:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch Slack integration',
+            error: error.message
+        });
+    }
+});
+
+// Setup Slack integration
+router.post('/:ventureId/slack', authenticateToken, async (req, res) => {
+    try {
+        const { ventureId } = req.params;
+        const { workspaceId, workspaceName, channelId, channelName, botToken, webhookUrl } = req.body;
+        const userId = req.user.id;
+
+        const integration = await prisma.integration.upsert({
+            where: {
+                ventureId_type: {
+                    ventureId,
+                    type: 'SLACK'
+                }
+            },
+            update: {
+                config: {
+                    workspaceId,
+                    workspaceName,
+                    channelId,
+                    channelName,
+                    botToken,
+                    webhookUrl
+                },
+                status: 'ACTIVE',
+                updatedBy: userId
+            },
+            create: {
+                ventureId,
+                type: 'SLACK',
+                config: {
+                    workspaceId,
+                    workspaceName,
+                    channelId,
+                    channelName,
+                    botToken,
+                    webhookUrl
+                },
+                status: 'ACTIVE',
+                createdBy: userId
+            }
+        });
+
+        res.status(201).json({
+            success: true,
+            data: integration,
+            message: 'Slack integration setup successfully'
+        });
+    } catch (error) {
+        console.error('Error setting up Slack integration:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to setup Slack integration',
+            error: error.message
+        });
+    }
+});
+
+// Get Slack messages
+router.get('/:ventureId/slack/messages', authenticateToken, async (req, res) => {
+    try {
+        const { ventureId } = req.params;
+        const { limit = 50, offset = 0 } = req.query;
+
+        const messages = await prisma.message.findMany({
+            where: {
+                ventureId,
+                channel: 'SLACK'
+            },
+            orderBy: { createdAt: 'desc' },
+            take: parseInt(limit),
+            skip: parseInt(offset)
+        });
+
+        res.json({
+            success: true,
+            data: messages,
+            message: 'Slack messages retrieved successfully'
+        });
+    } catch (error) {
+        console.error('Error fetching Slack messages:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch Slack messages',
+            error: error.message
+        });
+    }
+});
+
+// ===== VENTURE ANALYTICS =====
+
+// Get venture analytics
+router.get('/:ventureId/analytics', authenticateToken, async (req, res) => {
+    try {
+        const { ventureId } = req.params;
+
+        const [
+            totalSprints,
+            activeSprints,
+            completedSprints,
+            totalTasks,
+            completedTasks,
+            totalRisks,
+            activeRisks,
+            teamMembers
+        ] = await Promise.all([
+            prisma.ventureSprint.count({ where: { ventureId } }),
+            prisma.ventureSprint.count({ where: { ventureId, status: 'ACTIVE' } }),
+            prisma.ventureSprint.count({ where: { ventureId, status: 'COMPLETED' } }),
+            prisma.ventureSprintTask.count({ where: { ventureId } }),
+            prisma.ventureSprintTask.count({ where: { ventureId, status: 'COMPLETED' } }),
+            prisma.ventureRisk.count({ where: { ventureId } }),
+            prisma.ventureRisk.count({ where: { ventureId, status: 'ACTIVE' } }),
+            prisma.ventureTeamMember.count({ where: { ventureId } })
+        ]);
+
+        res.json({
+            success: true,
+            data: {
+                sprints: {
+                    total: totalSprints,
+                    active: activeSprints,
+                    completed: completedSprints
+                },
+                tasks: {
+                    total: totalTasks,
+                    completed: completedTasks,
+                    completionRate: totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0
+                },
+                risks: {
+                    total: totalRisks,
+                    active: activeRisks
+                },
+                team: {
+                    members: teamMembers
+                }
+            },
+            message: 'Venture analytics retrieved successfully'
+        });
+    } catch (error) {
+        console.error('Error fetching venture analytics:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch venture analytics',
             error: error.message
         });
     }
