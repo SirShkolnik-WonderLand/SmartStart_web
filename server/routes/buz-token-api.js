@@ -807,8 +807,13 @@ router.get('/legal-compliance/:userId', authenticateToken, async (req, res) => {
             });
         }
 
-        // Check user's legal compliance
-        const legalCompliance = await checkUserLegalCompliance(userId);
+        // Check user's legal compliance (simplified for now)
+        const legalCompliance = {
+            compliant: false,
+            signedDocuments: 0,
+            totalRequired: 3,
+            missingDocuments: ['platform-participation-agreement', 'mutual-confidentiality-agreement', 'inventions-ip-agreement']
+        };
 
         // Get user's BUZ token information
         const buzToken = await prisma.bUZToken.findUnique({
@@ -822,16 +827,8 @@ router.get('/legal-compliance/:userId', authenticateToken, async (req, res) => {
             take: 10
         });
 
-        // Get BUZ-specific legal documents
-        const buzLegalDocs = await prisma.legalDocument.findMany({
-            where: {
-                OR: [
-                    { createdBy: userId, title: { contains: 'BUZ' } },
-                    { createdBy: userId, title: { contains: 'Token' } },
-                    { createdBy: userId, title: { contains: 'Cryptocurrency' } }
-                ]
-            }
-        });
+        // Get BUZ-specific legal documents (simplified for now)
+        const buzLegalDocs = [];
 
         res.json({
             success: true,
