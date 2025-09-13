@@ -106,8 +106,8 @@ router.get('/buz/balance/:userId', authenticateToken, async (req, res) => {
         const { userId } = req.params;
         const requestingUser = req.user;
 
-        // Authorization: allow own balance or users with read:user permission
-        if (requestingUser.id !== userId && !(requestingUser.permissions || []).includes('read:user')) {
+        // Authorization: allow own balance or users with user:read permission
+        if (requestingUser.id !== userId && !(requestingUser.permissions || []).includes('user:read')) {
             return res.status(403).json({
                 success: false,
                 message: 'Insufficient permissions to view this balance'
@@ -143,8 +143,8 @@ router.get('/buz/transactions/:userId', authenticateToken, async (req, res) => {
         const { page = 1, limit = 50, type, status } = req.query;
         const requestingUser = req.user;
 
-        // Authorization: allow own transactions or users with read:user permission
-        if (requestingUser.id !== userId && !(requestingUser.permissions || []).includes('read:user')) {
+        // Authorization: allow own transactions or users with user:read permission
+        if (requestingUser.id !== userId && !(requestingUser.permissions || []).includes('user:read')) {
             return res.status(403).json({
                 success: false,
                 message: 'Insufficient permissions to view these transactions'
@@ -288,8 +288,8 @@ router.get('/buz/staking/:userId', authenticateToken, async (req, res) => {
         const { userId } = req.params;
         const requestingUser = req.user;
 
-        // Authorization: allow own staking or users with read:user permission
-        if (requestingUser.id !== userId && !(requestingUser.permissions || []).includes('read:user')) {
+        // Authorization: allow own staking or users with user:read permission
+        if (requestingUser.id !== userId && !(requestingUser.permissions || []).includes('user:read')) {
             return res.status(403).json({
                 success: false,
                 message: 'Insufficient permissions to view staking positions'
@@ -349,8 +349,8 @@ router.get('/buz/rewards/:userId', authenticateToken, async (req, res) => {
         const { userId } = req.params;
         const requestingUser = req.user;
 
-        // Authorization: allow own rewards or users with read:user permission
-        if (requestingUser.id !== userId && !(requestingUser.permissions || []).includes('read:user')) {
+        // Authorization: allow own rewards or users with user:read permission
+        if (requestingUser.id !== userId && !(requestingUser.permissions || []).includes('user:read')) {
             return res.status(403).json({
                 success: false,
                 message: 'Insufficient permissions to view rewards'
