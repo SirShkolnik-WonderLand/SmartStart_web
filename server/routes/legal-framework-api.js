@@ -377,4 +377,172 @@ router.get('/analytics', authenticateToken, async (req, res) => {
     }
 });
 
+// ===== RBAC-LEGAL INTEGRATION =====
+
+// Get legal documents accessible to user based on RBAC level
+router.get('/rbac-access/:userId', authenticateToken, async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const currentUserId = req.user.id;
+
+        // Check if user can access this endpoint (own access or admin)
+        if (userId !== currentUserId && req.user.role !== 'ADMIN') {
+            return res.status(403).json({
+                success: false,
+                message: 'Access denied'
+            });
+        }
+
+        // Get user's RBAC level
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            select: { id: true, level: true, name: true, email: true }
+        });
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        // Get accessible documents based on RBAC level
+        const ComprehensiveRBACLegalMapping = require('../services/comprehensive-rbac-legal-mapping');
+        const rbacMapping = new ComprehensiveRBACLegalMapping();
+        const accessibleDocs = rbacMapping.getAccessibleDocumentsForLevel(user.level);
+        
+        // Get pending documents for next level
+        const pendingDocs = rbacMapping.getPendingDocumentsForNextLevel(user.level);
+
+        // Get user's signed documents
+        const signedDocs = await prisma.legalDocumentSignature.findMany({
+            where: { signerId: userId },
+            include: {
+                document: {
+                    select: {
+                        id: true,
+                        key: true,
+                        title: true,
+                        category: true,
+                        status: true
+                    }
+                }
+            }
+        });
+
+        // Calculate compliance status
+        const signedDocumentKeys = signedDocs.map(doc => doc.document.key);
+        const requiredDocs = accessibleDocs.filter(doc => doc.isRequired);
+        const completedRequiredDocs = requiredDocs.filter(doc => signedDocumentKeys.includes(doc.key));
+        
+        const compliancePercentage = requiredDocs.length > 0 
+            ? Math.round((completedRequiredDocs.length / requiredDocs.length) * 100)
+            : 100;
+
+        res.json({
+            success: true,
+            data: {
+                user: {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    rbacLevel: user.level
+                },
+                accessibleDocuments: accessibleDocs,
+                pendingDocuments: pendingDocs,
+                signedDocuments: signedDocs.map(doc => ({
+                    id: doc.id,
+                    documentKey: doc.document.key,
+                    documentTitle: doc.document.title,
+                    signedAt: doc.signedAt,
+                    signatureHash: doc.signatureHash
+                })),
+                compliance: {
+                    percentage: compliancePercentage,
+                    completedRequired: completedRequiredDocs.length,
+                    totalRequired: requiredDocs.length,
+                    isCompliant: compliancePercentage === 100
+                }
+            },
+            message: 'RBAC-legal access information retrieved successfully'
+        });
+
+    } catch (error) {
+        console.error('Error fetching RBAC-legal access:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch RBAC-legal access information',
+            error: error.message
+        });
+    }
+});
+
+// Get legal document requirements for RBAC level upgrade
+router.get('/rbac-upgrade-requirements/:userId', authenticateToken, async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const currentUserId = req.user.id;
+
+        // Check if user can access this endpoint (own access or admin)
+        if (userId !== currentUserId && req.user.role !== 'ADMIN') {
+            return res.status(403).json({
+                success: false,
+                message: 'Access denied'
+            });
+        }
+
+        // Get user's current RBAC level
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            select: { id: true, level: true, name: true, email: true }
+        });
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        // Get requirements for next RBAC level
+        const ComprehensiveRBACLegalMapping = require('../services/comprehensive-rbac-legal-mapping');
+        const rbacMapping = new ComprehensiveRBACLegalMapping();
+        const nextLevel = rbacMapping.getNextRBACLevel(user.level);
+        
+        if (!nextLevel) {
+            return res.json({
+                success: true,
+                data: {
+                    currentLevel: user.level,
+                    nextLevel: null,
+                    message: 'User is at the highest RBAC level'
+                }
+            });
+        }
+
+        const upgradeRequirements = rbacMapping.getDocumentsRequiredForLevel(nextLevel);
+        const pendingDocuments = rbacMapping.getPendingDocumentsForNextLevel(user.level);
+
+        res.json({
+            success: true,
+            data: {
+                currentLevel: user.level,
+                nextLevel: nextLevel,
+                upgradeRequirements: upgradeRequirements,
+                pendingDocuments: pendingDocuments,
+                totalDocumentsRequired: pendingDocuments.length
+            },
+            message: 'RBAC upgrade requirements retrieved successfully'
+        });
+
+    } catch (error) {
+        console.error('Error fetching RBAC upgrade requirements:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch RBAC upgrade requirements',
+            error: error.message
+        });
+    }
+});
+
 module.exports = router;

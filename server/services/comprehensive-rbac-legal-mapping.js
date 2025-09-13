@@ -204,6 +204,40 @@ class ComprehensiveRBACLegalMapping {
     }
 
     /**
+     * Get next RBAC level for user
+     */
+    getNextRBACLevel(currentLevel) {
+        const levels = Object.keys(this.rbacLevels).sort((a, b) => this.rbacLevels[a] - this.rbacLevels[b]);
+        const currentIndex = levels.indexOf(currentLevel);
+        
+        if (currentIndex === -1 || currentIndex === levels.length - 1) {
+            return null; // Current level not found or already at highest level
+        }
+        
+        return levels[currentIndex + 1];
+    }
+
+    /**
+     * Get documents required for a specific RBAC level
+     */
+    getDocumentsRequiredForLevel(targetLevel) {
+        const requiredDocs = [];
+        
+        for (const category of Object.values(this.documentCategories)) {
+            for (const doc of Object.values(category)) {
+                if (doc.requiredFor.includes(targetLevel) && doc.isRequired) {
+                    requiredDocs.push({
+                        key: Object.keys(category).find(key => category[key] === doc),
+                        ...doc
+                    });
+                }
+            }
+        }
+        
+        return requiredDocs;
+    }
+
+    /**
      * Get pending documents for next RBAC level
      */
     getPendingDocumentsForNextLevel(userLevel) {
