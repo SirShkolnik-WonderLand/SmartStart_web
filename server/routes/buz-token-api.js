@@ -791,4 +791,298 @@ router.get('/stats', async (req, res) => {
     }
 });
 
+// ===== BUZ-LEGAL INTEGRATION =====
+
+// Get BUZ token legal compliance status
+router.get('/legal-compliance/:userId', authenticateToken, async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const currentUserId = req.user.id;
+
+        // Check if user can access this endpoint (own compliance or admin)
+        if (userId !== currentUserId && req.user.role !== 'ADMIN') {
+            return res.status(403).json({
+                success: false,
+                message: 'Access denied'
+            });
+        }
+
+        // Check user's legal compliance
+        const legalCompliance = await checkUserLegalCompliance(userId);
+
+        // Get user's BUZ token information
+        const buzToken = await prisma.bUZToken.findUnique({
+            where: { userId, isActive: true }
+        });
+
+        // Get user's BUZ token transactions
+        const buzTransactions = await prisma.bUZTokenTransaction.findMany({
+            where: { userId },
+            orderBy: { createdAt: 'desc' },
+            take: 10
+        });
+
+        // Get BUZ-specific legal documents
+        const buzLegalDocs = await prisma.legalDocument.findMany({
+            where: {
+                OR: [
+                    { createdBy: userId, title: { contains: 'BUZ' } },
+                    { createdBy: userId, title: { contains: 'Token' } },
+                    { createdBy: userId, title: { contains: 'Cryptocurrency' } }
+                ]
+            }
+        });
+
+        res.json({
+            success: true,
+            data: {
+                userId,
+                legalCompliance,
+                buzToken: buzToken ? {
+                    balance: buzToken.balance,
+                    isActive: buzToken.isActive,
+                    createdAt: buzToken.createdAt
+                } : null,
+                buzTransactions: buzTransactions.length,
+                buzLegalDocuments: buzLegalDocs.length,
+                canUseBUZTokens: legalCompliance.compliant,
+                restrictedOperations: legalCompliance.compliant ? [] : [
+                    'token_transfer',
+                    'token_staking',
+                    'token_governance',
+                    'token_rewards'
+                ]
+            },
+            message: 'BUZ token legal compliance status retrieved successfully'
+        });
+
+    } catch (error) {
+        console.error('Error fetching BUZ token legal compliance:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch BUZ token legal compliance',
+            error: error.message
+        });
+    }
+});
+
+// Enhanced token transfer with legal compliance check
+router.post('/transfer-legal', authenticateToken, async (req, res) => {
+    try {
+        const { toUserId, amount, memo } = req.body;
+        const fromUserId = req.user.id;
+
+        // Check if sender has completed required legal documents
+        const senderLegalCompliance = await checkUserLegalCompliance(fromUserId);
+        if (!senderLegalCompliance.compliant) {
+            return res.status(400).json({
+                success: false,
+                message: 'Legal document requirements not met for token transfer',
+                error: {
+                    code: 'LEGAL_COMPLIANCE_REQUIRED',
+                    message: 'You must complete all required legal documents before transferring BUZ tokens',
+                    missingDocuments: senderLegalCompliance.missingDocuments
+                }
+            });
+        }
+
+        // Check if recipient has completed required legal documents
+        const recipientLegalCompliance = await checkUserLegalCompliance(toUserId);
+        if (!recipientLegalCompliance.compliant) {
+            return res.status(400).json({
+                success: false,
+                message: 'Recipient legal compliance required',
+                error: {
+                    code: 'RECIPIENT_LEGAL_COMPLIANCE_REQUIRED',
+                    message: 'Recipient must complete all required legal documents before receiving BUZ tokens',
+                    missingDocuments: recipientLegalCompliance.missingDocuments
+                }
+            });
+        }
+
+        // Validate amount
+        validateAmount(amount);
+
+        // Check sender balance
+        await checkBalance(fromUserId, amount);
+
+        // Check recipient exists
+        const recipient = await prisma.user.findUnique({
+            where: { id: toUserId }
+        });
+
+        if (!recipient) {
+            return res.status(404).json({
+                success: false,
+                message: 'Recipient not found'
+            });
+        }
+
+        // Perform the transfer
+        const transactionId = generateTransactionId();
+        
+        // Create transaction record
+        const transaction = await prisma.bUZTokenTransaction.create({
+            data: {
+                id: transactionId,
+                userId: fromUserId,
+                type: 'TRANSFER_OUT',
+                amount: -amount,
+                balance: 0, // Will be updated
+                memo: memo || `Transfer to ${recipient.name}`,
+                metadata: {
+                    recipientId: toUserId,
+                    legalCompliance: {
+                        senderCompliant: true,
+                        recipientCompliant: true
+                    }
+                }
+            }
+        });
+
+        // Update balances
+        await updateBalance(fromUserId, -amount, 'TRANSFER_OUT');
+        await updateBalance(toUserId, amount, 'TRANSFER_IN');
+
+        // Generate BUZ transfer legal documents
+        await generateBUZTransferLegalDocuments(transactionId, fromUserId, toUserId, amount);
+
+        res.json({
+            success: true,
+            data: {
+                transaction,
+                legalDocuments: await getBUZTransferLegalDocuments(transactionId),
+                message: 'BUZ token transfer completed successfully with legal compliance'
+            }
+        });
+
+    } catch (error) {
+        console.error('Error in BUZ token transfer:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to transfer BUZ tokens',
+            error: error.message
+        });
+    }
+});
+
+// Helper function to check user legal compliance (reused from other integrations)
+async function checkUserLegalCompliance(userId) {
+    try {
+        const legalPacks = await prisma.platformLegalPack.findMany({
+            where: { userId },
+            include: { documents: true }
+        });
+
+        const requiredDocuments = [
+            'platform-participation-agreement',
+            'mutual-confidentiality-agreement', 
+            'inventions-ip-agreement'
+        ];
+
+        let signedDocuments = 0;
+        let missingDocuments = [];
+
+        for (const pack of legalPacks) {
+            for (const doc of pack.documents) {
+                if (requiredDocuments.includes(doc.key) && 
+                    (doc.status === 'EFFECTIVE' || doc.signatureCount > 0)) {
+                    signedDocuments++;
+                }
+            }
+        }
+
+        // Check for missing documents
+        for (const requiredDoc of requiredDocuments) {
+            let found = false;
+            for (const pack of legalPacks) {
+                for (const doc of pack.documents) {
+                    if (doc.key === requiredDoc && 
+                        (doc.status === 'EFFECTIVE' || doc.signatureCount > 0)) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (found) break;
+            }
+            if (!found) {
+                missingDocuments.push(requiredDoc);
+            }
+        }
+
+        return {
+            compliant: signedDocuments === requiredDocuments.length,
+            signedDocuments,
+            totalRequired: requiredDocuments.length,
+            missingDocuments
+        };
+
+    } catch (error) {
+        console.error('Error checking legal compliance:', error);
+        return {
+            compliant: false,
+            signedDocuments: 0,
+            totalRequired: 3,
+            missingDocuments: ['platform-participation-agreement', 'mutual-confidentiality-agreement', 'inventions-ip-agreement']
+        };
+    }
+}
+
+// Helper function to generate BUZ transfer legal documents
+async function generateBUZTransferLegalDocuments(transactionId, fromUserId, toUserId, amount) {
+    try {
+        const buzTransferDocuments = [
+            {
+                title: 'BUZ Token Transfer Agreement',
+                type: 'TOKEN_TRANSFER_AGREEMENT',
+                content: `This BUZ Token Transfer Agreement governs the transfer of ${amount} BUZ tokens from user ${fromUserId} to user ${toUserId}...`,
+                status: 'DRAFT',
+                requiresSignature: true
+            },
+            {
+                title: 'BUZ Token Legal Compliance Certificate',
+                type: 'COMPLIANCE_CERTIFICATE',
+                content: `This certificate confirms that both parties have completed all required legal documents for BUZ token operations...`,
+                status: 'DRAFT',
+                requiresSignature: true
+            }
+        ];
+
+        for (const doc of buzTransferDocuments) {
+            await prisma.legalDocument.create({
+                data: {
+                    ...doc,
+                    createdBy: fromUserId
+                }
+            });
+        }
+
+        console.log(`Generated ${buzTransferDocuments.length} BUZ transfer legal documents for transaction ${transactionId}`);
+
+    } catch (error) {
+        console.error('Error generating BUZ transfer legal documents:', error);
+    }
+}
+
+// Helper function to get BUZ transfer legal documents
+async function getBUZTransferLegalDocuments(transactionId) {
+    try {
+        return await prisma.legalDocument.findMany({
+            where: {
+                title: { contains: 'BUZ Token Transfer' }
+            },
+            select: {
+                id: true,
+                title: true,
+                type: true,
+                status: true,
+                createdAt: true
+            }
+        });
+    } catch (error) {
+        console.error('Error getting BUZ transfer legal documents:', error);
+        return [];
+    }
+}
+
 module.exports = router;
