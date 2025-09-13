@@ -803,19 +803,27 @@ class ComprehensiveApiService {
 
   async login(email: string, password: string): Promise<ApiResponse<{ user: User; token: string }>> {
     try {
+      console.log('🔍 API Service: Attempting login for:', email)
+      console.log('🔍 API Service: API_BASE:', API_BASE)
+      
       const response = await fetch(`${API_BASE}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       })
 
+      console.log('🔍 API Service: Response status:', response.status)
+      console.log('🔍 API Service: Response ok:', response.ok)
+
       const data = await response.json()
+      console.log('🔍 API Service: Response data:', data)
 
       if (data.success && data.user) {
         // Prefer top-level token, but also check nested token
         const token: string | undefined = data.token || data.user.token
         if (token) {
           localStorage.setItem('auth-token', token)
+          console.log('🔍 API Service: Token stored successfully')
         }
         localStorage.setItem('user-id', data.user.id)
         localStorage.setItem('user-data', JSON.stringify(data.user))
