@@ -166,6 +166,20 @@ router.post('/session/:sessionId/sign', authenticateToken, async (req, res) => {
     
     console.log('🔍 Signing request:', { sessionId, documentId, userId, signatureData, documentType });
     console.log('🔍 req.user object:', req.user);
+    console.log('🔍 userId type:', typeof userId, 'userId value:', userId);
+    
+    // Test direct user lookup
+    const { PrismaClient } = require('@prisma/client');
+    const prisma = new PrismaClient();
+    try {
+      const testUser = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { id: true, name: true, email: true }
+      });
+      console.log('🔍 Direct user lookup result:', testUser);
+    } catch (error) {
+      console.log('🔍 Direct user lookup error:', error.message);
+    }
     
     // Validate required fields
     if (!signatureData) {
