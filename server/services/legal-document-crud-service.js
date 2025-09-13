@@ -38,7 +38,10 @@ class LegalDocumentCRUDService {
 
             // Check if user has permission to create this document type
             const accessibleDocs = this.rbacMapping.getAccessibleDocumentsForLevel(user.level);
+            console.log('🔍 Accessible documents for level', user.level, ':', accessibleDocs.map(doc => doc.title));
+            console.log('🔍 Document title to create:', documentData.title);
             const canCreate = accessibleDocs.some(doc => doc.title === documentData.title);
+            console.log('🔍 Can create document:', canCreate);
             
             if (!canCreate) {
                 throw new Error(`User level ${user.level} cannot create document: ${documentData.title}`);
