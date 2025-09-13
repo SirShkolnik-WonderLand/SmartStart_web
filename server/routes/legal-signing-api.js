@@ -156,6 +156,33 @@ router.post('/session/start', authenticateToken, async (req, res) => {
 });
 
 /**
+ * Test user lookup functionality
+ */
+router.get('/test-user-lookup', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    console.log('🔍 Testing user lookup for userId:', userId);
+    
+    const { PrismaClient } = require('@prisma/client');
+    const prisma = new PrismaClient();
+    
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, name: true, email: true, level: true }
+    });
+    
+    if (!user) {
+      return res.json({ success: false, error: 'User not found in database', userId });
+    }
+    
+    return res.json({ success: true, user, userId });
+  } catch (error) {
+    console.error('Error in user lookup test:', error);
+    return res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+/**
  * Sign a document
  */
 router.post('/session/:sessionId/sign', authenticateToken, async (req, res) => {
