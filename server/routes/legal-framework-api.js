@@ -421,9 +421,8 @@ router.get('/rbac-access/:userId', authenticateToken, async (req, res) => {
                 document: {
                     select: {
                         id: true,
-                        key: true,
                         title: true,
-                        category: true,
+                        type: true,
                         status: true
                     }
                 }
@@ -431,9 +430,9 @@ router.get('/rbac-access/:userId', authenticateToken, async (req, res) => {
         });
 
         // Calculate compliance status
-        const signedDocumentKeys = signedDocs.map(doc => doc.document.key);
+        const signedDocumentTitles = signedDocs.map(doc => doc.document.title);
         const requiredDocs = accessibleDocs.filter(doc => doc.isRequired);
-        const completedRequiredDocs = requiredDocs.filter(doc => signedDocumentKeys.includes(doc.key));
+        const completedRequiredDocs = requiredDocs.filter(doc => signedDocumentTitles.includes(doc.title));
         
         const compliancePercentage = requiredDocs.length > 0 
             ? Math.round((completedRequiredDocs.length / requiredDocs.length) * 100)
@@ -452,8 +451,8 @@ router.get('/rbac-access/:userId', authenticateToken, async (req, res) => {
                 pendingDocuments: pendingDocs,
                 signedDocuments: signedDocs.map(doc => ({
                     id: doc.id,
-                    documentKey: doc.document.key,
                     documentTitle: doc.document.title,
+                    documentType: doc.document.type,
                     signedAt: doc.signedAt,
                     signatureHash: doc.signatureHash
                 })),
