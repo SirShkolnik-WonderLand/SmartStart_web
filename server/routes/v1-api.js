@@ -126,10 +126,12 @@ router.get('/buz/balance/current-user', authenticateToken, async (req, res) => {
         
         console.log('BUZ Balance Current User Debug:', {
             requestingUserId: requestingUser.id,
-            email: requestingUser.email
+            email: requestingUser.email,
+            fullUser: requestingUser
         });
 
         const result = await buzService.getUserBalance(requestingUser.id);
+        console.log('BUZ Service Result:', result);
         if (result.success) {
             res.json(result);
         } else {
