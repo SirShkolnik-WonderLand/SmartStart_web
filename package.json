@@ -1,6 +1,6 @@
 {
     "name": "smartstart-backend",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "SmartStart Backend API Server",
     "main": "server/consolidated-server.js",
     "scripts": {
