@@ -56,7 +56,7 @@ UserBehaviorAnalyzer = DummyBrainModule
 
 # Import real NodeJSConnector
 try:
-    from services.nodejs_connector import NodeJSConnector
+    from nodejs_connector import NodeJSConnector
     print("✅ NodeJSConnector imported successfully")
 except ImportError as e:
     print(f"⚠️  NodeJSConnector import error: {e}")
@@ -256,49 +256,6 @@ class SmartStartBrain:
 brain = SmartStartBrain()
 
 # API Endpoints
-@app.route('/health', methods=['GET'])
-def health_check():
-    """Health check endpoint"""
-    return jsonify({
-        'status': 'healthy',
-        'service': 'smartstart-brain',
-        'timestamp': datetime.now().isoformat(),
-        'version': '3.0.0',
-        'modules': {
-            'ml_engine': 'active',
-            'analytics_engine': 'active',
-            'legal_processor': 'active',
-            'venture_analyzer': 'active',
-            'user_behavior_analyzer': 'active'
-        },
-        'python_services': {
-            'user_service': 'active',
-            'legal_service': 'active',
-            'venture_service': 'active',
-            'gamification_service': 'active',
-            'buz_token_service': 'active',
-            'umbrella_service': 'active',
-            'authentication_service': 'active',
-            'file_service': 'active',
-            'analytics_service': 'active',
-            'notification_service': 'active'
-        },
-        'api_endpoints': {
-            'total_endpoints': 40,
-            'brain_endpoints': 8,
-            'service_endpoints': 32,
-            'categories': [
-                'User Management',
-                'Legal Processing',
-                'Venture Management',
-                'Gamification',
-                'BUZ Token Economy',
-                'Umbrella Relationships',
-                'ML & Analytics',
-                'AI Insights'
-            ]
-        }
-    })
 
 @app.route('/process', methods=['POST'])
 def process_request():
