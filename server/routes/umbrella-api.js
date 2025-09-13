@@ -419,8 +419,8 @@ router.get('/legal-compliance/:userId', authenticateToken, async (req, res) => {
         const umbrellaLegalDocs = await prisma.legalDocument.findMany({
             where: {
                 OR: [
-                    { userId: userId, title: { contains: 'Umbrella' } },
-                    { userId: userId, title: { contains: 'Revenue Sharing' } }
+                    { createdBy: userId, title: { contains: 'Umbrella' } },
+                    { createdBy: userId, title: { contains: 'Revenue Sharing' } }
                 ]
             }
         });
@@ -533,7 +533,7 @@ async function generateUmbrellaLegalDocuments(relationshipId, referrerId, referr
             await prisma.legalDocument.create({
                 data: {
                     ...doc,
-                    userId: referrerId
+                    createdBy: referrerId
                 }
             });
         }
