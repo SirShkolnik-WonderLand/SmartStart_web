@@ -278,8 +278,8 @@ class OnboardingOrchestrator extends EventEmitter {
                 data: {
                     userId,
                     progress,
-                    currentStage: currentStage ? .stage || null,
-                    nextStage: nextStage ? .stage || null,
+                    currentStage: currentStage?.stage || null,
+                    nextStage: nextStage?.stage || null,
                     isComplete: progress.percentage === 100
                 }
             }
