@@ -24,12 +24,77 @@ from nodejs_connector import NodeJSConnector
 import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'services'))
-from user_service import UserService
-from legal_service import LegalService
-from venture_service import VentureService
-from gamification_service import GamificationService
-from buz_token_service import BUZTokenService
-from umbrella_service import UmbrellaService
+
+try:
+    from user_service import UserService
+    from legal_service import LegalService
+    from venture_service import VentureService
+    from gamification_service import GamificationService
+    from buz_token_service import BUZTokenService
+    from umbrella_service import UmbrellaService
+except ImportError as e:
+    print(f"Warning: Could not import Python services: {e}")
+    # Create dummy services for now
+    class DummyService:
+        def __init__(self, *args, **kwargs):
+            pass
+        def create_user(self, data):
+            return {"success": False, "message": "Service not available"}
+        def get_user(self, user_id):
+            return {"success": False, "message": "Service not available"}
+        def update_user(self, user_id, data):
+            return {"success": False, "message": "Service not available"}
+        def create_legal_document(self, data):
+            return {"success": False, "message": "Service not available"}
+        def sign_legal_document(self, user_id, document_id, signature_data):
+            return {"success": False, "message": "Service not available"}
+        def check_user_legal_compliance(self, user_id):
+            return {"success": False, "message": "Service not available"}
+        def create_venture(self, data):
+            return {"success": False, "message": "Service not available"}
+        def get_venture(self, venture_id):
+            return {"success": False, "message": "Service not available"}
+        def update_venture(self, venture_id, data):
+            return {"success": False, "message": "Service not available"}
+        def get_venture_analytics(self, venture_id):
+            return {"success": False, "message": "Service not available"}
+        def search_ventures(self, data):
+            return {"success": False, "message": "Service not available"}
+        def award_xp(self, user_id, activity, metadata):
+            return {"success": False, "message": "Service not available"}
+        def get_user_gamification_data(self, user_id):
+            return {"success": False, "message": "Service not available"}
+        def unlock_achievement(self, user_id, achievement_id):
+            return {"success": False, "message": "Service not available"}
+        def get_leaderboard(self, category, limit):
+            return {"success": False, "message": "Service not available"}
+        def get_user_balance(self, user_id):
+            return {"success": False, "message": "Service not available"}
+        def transfer_tokens(self, from_user_id, to_user_id, amount, transaction_type, metadata):
+            return {"success": False, "message": "Service not available"}
+        def stake_tokens(self, user_id, amount, staking_period, staking_type):
+            return {"success": False, "message": "Service not available"}
+        def unstake_tokens(self, user_id, staking_id):
+            return {"success": False, "message": "Service not available"}
+        def get_token_economy_stats(self):
+            return {"success": False, "message": "Service not available"}
+        def create_umbrella_relationship(self, data):
+            return {"success": False, "message": "Service not available"}
+        def accept_relationship(self, relationship_id, user_id, acceptance_data):
+            return {"success": False, "message": "Service not available"}
+        def update_relationship(self, relationship_id, user_id, update_data):
+            return {"success": False, "message": "Service not available"}
+        def get_user_relationships(self, user_id, relationship_type, status):
+            return {"success": False, "message": "Service not available"}
+        def calculate_revenue_sharing(self, relationship_id, data):
+            return {"success": False, "message": "Service not available"}
+    
+    UserService = DummyService
+    LegalService = DummyService
+    VentureService = DummyService
+    GamificationService = DummyService
+    BUZTokenService = DummyService
+    UmbrellaService = DummyService
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

@@ -1354,7 +1354,7 @@ router.get('/legal-requirements/:userId', authenticateToken, async(req, res) => 
 // ===== JOURNEY-LEGAL GATES INTEGRATION =====
 
 // Check legal compliance before advancing to next journey stage
-router.post('/advance-stage/:userId', authenticateToken, async (req, res) => {
+router.post('/advance-stage/:userId', authenticateToken, async(req, res) => {
     try {
         const { userId } = req.params;
         const { targetStage } = req.body;
@@ -1370,7 +1370,7 @@ router.post('/advance-stage/:userId', authenticateToken, async (req, res) => {
 
         // Get current journey status
         const journeyStatus = await onboardingOrchestrator.getUserJourneyStatus(userId);
-        
+
         // Check if user is trying to advance to a valid stage
         const validStages = ['Account Creation', 'Profile Setup', 'Legal Documents', 'Subscription Setup', 'Platform Orientation', 'Welcome & Dashboard'];
         if (!validStages.includes(targetStage)) {
@@ -1383,12 +1383,12 @@ router.post('/advance-stage/:userId', authenticateToken, async (req, res) => {
 
         // Get legal requirements for the target stage
         const legalRequirements = await onboardingOrchestrator.getLegalRequirementsForStage(targetStage);
-        
+
         // Check if legal documents are required for this stage
         if (legalRequirements.length > 0) {
             // Check user's legal compliance
             const legalCompliance = await checkUserLegalComplianceForJourney(userId);
-            
+
             if (!legalCompliance.compliant) {
                 return res.status(400).json({
                     success: false,
@@ -1429,7 +1429,7 @@ router.post('/advance-stage/:userId', authenticateToken, async (req, res) => {
 });
 
 // Get journey stage legal gates and requirements
-router.get('/legal-gates/:userId', authenticateToken, async (req, res) => {
+router.get('/legal-gates/:userId', authenticateToken, async(req, res) => {
     try {
         const { userId } = req.params;
         const currentUserId = req.user.id;
@@ -1444,7 +1444,7 @@ router.get('/legal-gates/:userId', authenticateToken, async (req, res) => {
 
         // Get current journey status
         const journeyStatus = await onboardingOrchestrator.getUserJourneyStatus(userId);
-        
+
         // Get legal requirements for all stages
         const allStages = ['Account Creation', 'Profile Setup', 'Legal Documents', 'Subscription Setup', 'Platform Orientation', 'Welcome & Dashboard'];
         const stageLegalGates = {};
@@ -1492,7 +1492,7 @@ router.get('/legal-gates/:userId', authenticateToken, async (req, res) => {
 });
 
 // Get journey stage with legal compliance check
-router.get('/stage-with-legal-check/:userId', authenticateToken, async (req, res) => {
+router.get('/stage-with-legal-check/:userId', authenticateToken, async(req, res) => {
     try {
         const { userId } = req.params;
         const currentUserId = req.user.id;
@@ -1507,13 +1507,13 @@ router.get('/stage-with-legal-check/:userId', authenticateToken, async (req, res
 
         // Get current journey status
         const journeyStatus = await onboardingOrchestrator.getUserJourneyStatus(userId);
-        
+
         // Get legal requirements for current stage
         const legalRequirements = await onboardingOrchestrator.getLegalRequirementsForStage(journeyStatus.currentStage);
-        
+
         // Check legal compliance
         const legalCompliance = await checkUserLegalComplianceForJourney(userId);
-        
+
         // Determine if user can access current stage
         const canAccessCurrentStage = legalRequirements.length === 0 || legalCompliance.compliant;
 
