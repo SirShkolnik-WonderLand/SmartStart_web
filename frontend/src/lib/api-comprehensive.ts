@@ -939,7 +939,7 @@ class ComprehensiveApiService {
 
   async getVentures(): Promise<ApiResponse<Venture[]>> {
     try {
-      const response = await this.fetchWithAuth<{ventures: Venture[]}>('/api/ventures/list/all')
+      const response = await this.fetchWithAuth<{ventures: Venture[]}>('/api/v1/ventures/list/all')
       
       // Handle the actual backend response format: { success: true, ventures: [...] }
       const responseData = response as ApiResponse<{ventures: Venture[]}> & { ventures?: Venture[] }

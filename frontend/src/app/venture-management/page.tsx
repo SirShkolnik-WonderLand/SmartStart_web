@@ -31,7 +31,7 @@ const VentureManagementPage: React.FC = () => {
       const token = getAuthToken();
       if (!token) throw new Error('Missing auth token');
 
-      const response = await fetch(`${API_BASE}/api/ventures/list/all`, {
+      const response = await fetch(`${API_BASE}/api/v1/ventures/list/all`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
