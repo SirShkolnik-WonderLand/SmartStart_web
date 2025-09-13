@@ -118,6 +118,32 @@ router.get('/buz/stats', async (req, res) => {
 });
 
 /**
+ * GET /buz/debug/user - Debug current user info
+ */
+router.get('/buz/debug/user', authenticateToken, async (req, res) => {
+    try {
+        const requestingUser = req.user;
+        
+        res.json({
+            success: true,
+            debug: {
+                requestingUserId: requestingUser.id,
+                email: requestingUser.email,
+                fullUser: requestingUser,
+                timestamp: new Date().toISOString()
+            }
+        });
+    } catch (error) {
+        console.error('Debug user error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Debug failed',
+            error: error.message
+        });
+    }
+});
+
+/**
  * GET /buz/balance/current-user - Get current user's BUZ balance
  */
 router.get('/buz/balance/current-user', authenticateToken, async (req, res) => {
