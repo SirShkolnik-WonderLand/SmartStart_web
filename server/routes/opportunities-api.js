@@ -78,7 +78,7 @@ router.post('/', authenticateToken, async (req, res) => {
     try {
         // Check user level - only SUBSCRIBER+ can create opportunities
         const userLevel = req.user.level;
-        const requiredLevels = ['SUBSCRIBER', 'SEAT_HOLDER', 'VENTURE_OWNER', 'VENTURE_PARTICIPANT', 'ADMIN'];
+        const requiredLevels = ['SUBSCRIBER', 'SEAT_HOLDER', 'VENTURE_OWNER', 'VENTURE_PARTICIPANT', 'ADMIN', 'SUPER_ADMIN'];
         
         if (!requiredLevels.includes(userLevel)) {
             return res.status(403).json({
