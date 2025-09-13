@@ -821,7 +821,7 @@ router.get('/legal-compliance/:userId', authenticateToken, async (req, res) => {
         });
 
         // Get user's BUZ token transactions
-        const buzTransactions = await prisma.bUZTokenTransaction.findMany({
+        const buzTransactions = await prisma.bUZTransaction.findMany({
             where: { userId },
             orderBy: { createdAt: 'desc' },
             take: 10
