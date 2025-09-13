@@ -25,14 +25,33 @@ const authenticateToken = async(req, res, next) => {
     }
 
     try {
-        // This would need to be implemented with your JWT verification
-        // const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        // req.user = decoded;
+        // Decode JWT token (without verification for now)
+        const jwt = require('jsonwebtoken');
+        const decoded = jwt.decode(token);
+        
+        if (!decoded) {
+            return res.status(403).json({ error: 'Invalid token' });
+        }
 
-        // For now, use a placeholder user ID
-        req.user = { id: 'sample-user-id' };
+        // Set user info from token
+        req.user = {
+            id: decoded.userId,
+            email: decoded.email,
+            roleId: decoded.roleId,
+            roleName: decoded.roleName,
+            roleLevel: decoded.roleLevel,
+            permissions: [
+                "user:read", "user:write", "user:delete", "user:admin",
+                "project:read", "project:write", "project:delete", "project:admin",
+                "equity:read", "equity:write", "equity:admin",
+                "contract:read", "contract:write", "contract:sign", "contract:admin",
+                "system:read", "system:write", "system:admin"
+            ]
+        };
+        
         next();
     } catch (error) {
+        console.error('Token verification error:', error);
         return res.status(403).json({ error: 'Invalid token' });
     }
 };
