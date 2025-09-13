@@ -184,6 +184,7 @@ router.post('/session/:sessionId/sign', authenticateToken, async (req, res) => {
     };
     
     console.log('🔍 Enhanced signature data:', enhancedSignatureData);
+    console.log('🚀 LEGAL SIGNING API v2.0 - Enhanced for production deployment');
     
     // Check if document exists, create if needed
     let actualDocumentId = documentId;
