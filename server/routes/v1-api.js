@@ -2004,21 +2004,11 @@ router.get('/ventures/list/all', authenticateToken, async (req, res) => {
         // Get ventures for the current user
         const ventures = await prisma.venture.findMany({
             where: {
-                OR: [
-                    { ownerUserId: userId },
-                    { teamMembers: { some: { userId: userId } } }
-                ]
+                ownerUserId: userId
             },
             include: {
                 owner: {
                     select: { id: true, name: true, email: true }
-                },
-                teamMembers: {
-                    include: {
-                        user: {
-                            select: { id: true, name: true, email: true }
-                        }
-                    }
                 }
             },
             orderBy: { createdAt: 'desc' }

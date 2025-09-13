@@ -22,7 +22,7 @@ router.get('/health', async (req, res) => {
             complianceChecks
         ] = await Promise.all([
             prisma.legalDocument.count(),
-            prisma.legalDocument.count({ where: { status: 'ACTIVE' } }),
+            prisma.legalDocument.count({ where: { status: 'EFFECTIVE' } }),
             prisma.legalDocumentSignature.count(),
             prisma.legalDocumentCompliance.count()
         ]);
@@ -327,7 +327,7 @@ router.get('/analytics', authenticateToken, async (req, res) => {
             recentActivity
         ] = await Promise.all([
             prisma.legalDocument.count(),
-            prisma.legalDocument.count({ where: { status: 'ACTIVE' } }),
+            prisma.legalDocument.count({ where: { status: 'EFFECTIVE' } }),
             prisma.legalDocumentSignature.count(),
             prisma.legalDocumentSignature.count({ where: { status: 'PENDING' } }),
             prisma.legalDocumentCompliance.aggregate({
