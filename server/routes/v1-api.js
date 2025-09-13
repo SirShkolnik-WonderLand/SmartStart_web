@@ -130,15 +130,38 @@ router.get('/buz/balance/current-user', authenticateToken, async (req, res) => {
             fullUser: requestingUser
         });
 
-        const result = await buzService.getUserBalance(requestingUser.id);
-        console.log('BUZ Service Result:', result);
-        if (result.success) {
-            res.json(result);
-        } else {
+        // Direct database query for testing
+        try {
+            const buzToken = await prisma.BUZToken.findUnique({
+                where: { userId: requestingUser.id }
+            });
+            
+            if (!buzToken) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'BUZ token record not found',
+                    error: 'No BUZ token record for user'
+                });
+            }
+            
+            res.json({
+                success: true,
+                data: {
+                    userId: buzToken.userId,
+                    balance: parseFloat(buzToken.balance),
+                    stakedBalance: parseFloat(buzToken.stakedBalance),
+                    totalEarned: parseFloat(buzToken.totalEarned),
+                    totalSpent: parseFloat(buzToken.totalSpent),
+                    totalBurned: parseFloat(buzToken.totalBurned),
+                    lastActivity: buzToken.lastActivity
+                }
+            });
+        } catch (dbError) {
+            console.error('Database error:', dbError);
             res.status(500).json({
                 success: false,
-                message: 'Failed to retrieve BUZ balance',
-                error: result.error
+                message: 'Database error',
+                error: dbError.message
             });
         }
     } catch (error) {
