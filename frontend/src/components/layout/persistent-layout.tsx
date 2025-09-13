@@ -47,6 +47,11 @@ export default function PersistentLayout({ children }: PersistentLayoutProps) {
 
   useEffect(() => {
     setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (!mounted) return
+    
     // Initialize theme
     initializeTheme()
     
@@ -90,7 +95,7 @@ export default function PersistentLayout({ children }: PersistentLayoutProps) {
     }
 
     checkAuth()
-  }, [router, isAuthPage, initializeTheme])
+  }, [mounted, router, isAuthPage, initializeTheme])
 
   const handleLogout = async () => {
     try {

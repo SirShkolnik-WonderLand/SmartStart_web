@@ -2454,7 +2454,13 @@ class ComprehensiveApiService {
 
   async getUserApplications(): Promise<ApiResponse<any[]>> {
     try {
-      const response = await this.fetchWithAuth<any[]>('/api/opportunities/my-applications')
+      // Get current user first to get their ID
+      const currentUser = await this.getCurrentUser()
+      if (!currentUser.success || !currentUser.data) {
+        return { success: false, error: 'User not authenticated' }
+      }
+      
+      const response = await this.fetchWithAuth<any[]>(`/api/opportunities/user/${currentUser.data.id}/applications`)
       return response
     } catch (error) {
       console.error('Error fetching user applications:', error)
