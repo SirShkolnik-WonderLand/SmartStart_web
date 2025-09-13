@@ -29,7 +29,7 @@ class BUZTokenService {
       }
 
       // Fallback to BUZToken table
-      let buzToken = await prisma.bUZToken.findUnique({
+      let buzToken = await prisma.BUZToken.findUnique({
         where: { userId }
       });
 
@@ -47,7 +47,7 @@ class BUZTokenService {
         }
 
         // Create BUZ token record for new user
-        buzToken = await prisma.bUZToken.create({
+        buzToken = await prisma.BUZToken.create({
           data: {
             userId,
             balance: 0,
@@ -83,7 +83,7 @@ class BUZTokenService {
       const transferAmount = parseFloat(amount);
       
       // Check if sender has sufficient balance
-      const senderToken = await prisma.bUZToken.findUnique({
+      const senderToken = await prisma.BUZToken.findUnique({
         where: { userId: fromUserId }
       });
 
@@ -92,12 +92,12 @@ class BUZTokenService {
       }
 
       // Get or create recipient token record
-      let recipientToken = await prisma.bUZToken.findUnique({
+      let recipientToken = await prisma.BUZToken.findUnique({
         where: { userId: toUserId }
       });
 
       if (!recipientToken) {
-        recipientToken = await prisma.bUZToken.create({
+        recipientToken = await prisma.BUZToken.create({
           data: {
             userId: toUserId,
             balance: 0,
@@ -128,7 +128,7 @@ class BUZTokenService {
       });
 
       // Update balances
-      await prisma.bUZToken.update({
+      await prisma.BUZToken.update({
         where: { userId: fromUserId },
         data: {
           balance: { decrement: transferAmount },
@@ -137,7 +137,7 @@ class BUZTokenService {
         }
       });
 
-      await prisma.bUZToken.update({
+      await prisma.BUZToken.update({
         where: { userId: toUserId },
         data: {
           balance: { increment: transferAmount },
@@ -167,7 +167,7 @@ class BUZTokenService {
       const stakeAmount = parseFloat(amount);
       
       // Check if user has sufficient balance
-      const userToken = await prisma.bUZToken.findUnique({
+      const userToken = await prisma.BUZToken.findUnique({
         where: { userId }
       });
 
@@ -204,7 +204,7 @@ class BUZTokenService {
       });
 
       // Update user balances
-      await prisma.bUZToken.update({
+      await prisma.BUZToken.update({
         where: { userId },
         data: {
           balance: { decrement: stakeAmount },
@@ -342,12 +342,12 @@ class BUZTokenService {
       const mintAmount = parseFloat(amount);
       
       // Get or create user token record
-      let userToken = await prisma.bUZToken.findUnique({
+      let userToken = await prisma.BUZToken.findUnique({
         where: { userId }
       });
 
       if (!userToken) {
-        userToken = await prisma.bUZToken.create({
+        userToken = await prisma.BUZToken.create({
           data: {
             userId,
             balance: 0,
@@ -379,7 +379,7 @@ class BUZTokenService {
       });
 
       // Update user balance
-      await prisma.bUZToken.update({
+      await prisma.BUZToken.update({
         where: { userId },
         data: {
           balance: { increment: mintAmount },
@@ -410,7 +410,7 @@ class BUZTokenService {
       const burnAmount = parseFloat(amount);
       
       // Check if user has sufficient balance
-      const userToken = await prisma.bUZToken.findUnique({
+      const userToken = await prisma.BUZToken.findUnique({
         where: { userId }
       });
 
@@ -437,7 +437,7 @@ class BUZTokenService {
       });
 
       // Update user balance
-      await prisma.bUZToken.update({
+      await prisma.BUZToken.update({
         where: { userId },
         data: {
           balance: { decrement: burnAmount },
@@ -474,7 +474,7 @@ class BUZTokenService {
         activeStakingPositions,
         totalRewardsClaimed
       ] = await Promise.all([
-        prisma.bUZToken.count(),
+        prisma.BUZToken.count(),
         prisma.bUZTransaction.count(),
         prisma.bUZStaking.aggregate({
           _sum: { amount: true }
@@ -519,13 +519,13 @@ class BUZTokenService {
 
   async getSupplyInfo() {
     try {
-      const supply = await prisma.bUZTokenSupply.findFirst({
+      const supply = await prisma.BUZTokenSupply.findFirst({
         orderBy: { lastUpdated: 'desc' }
       });
 
       if (!supply) {
         // Create default supply record
-        const defaultSupply = await prisma.bUZTokenSupply.create({
+        const defaultSupply = await prisma.BUZTokenSupply.create({
           data: {
             totalSupply: 1000000000,
             circulatingSupply: 0,
