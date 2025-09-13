@@ -118,6 +118,38 @@ router.get('/buz/stats', async (req, res) => {
 });
 
 /**
+ * GET /buz/balance/current-user - Get current user's BUZ balance
+ */
+router.get('/buz/balance/current-user', authenticateToken, async (req, res) => {
+    try {
+        const requestingUser = req.user;
+        
+        console.log('BUZ Balance Current User Debug:', {
+            requestingUserId: requestingUser.id,
+            email: requestingUser.email
+        });
+
+        const result = await buzService.getUserBalance(requestingUser.id);
+        if (result.success) {
+            res.json(result);
+        } else {
+            res.status(500).json({
+                success: false,
+                message: 'Failed to retrieve BUZ balance',
+                error: result.error
+            });
+        }
+    } catch (error) {
+        console.error('Get current user BUZ balance error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to retrieve BUZ balance',
+            error: error.message
+        });
+    }
+});
+
+/**
  * GET /buz/balance/:userId - Get user BUZ balance
  */
 router.get('/buz/balance/:userId', authenticateToken, async (req, res) => {
