@@ -672,8 +672,8 @@ def get_user_analytics(user_id):
     return jsonify(result)
 
 @app.route('/analytics/venture/<venture_id>', methods=['GET'])
-def get_venture_analytics(venture_id):
-    """Get venture analytics"""
+def get_venture_analytics_detailed(venture_id):
+    """Get detailed venture analytics"""
     period = request.args.get('period', '30d')
     result = brain.analytics_service.get_venture_analytics(venture_id, period)
     return jsonify(result)
