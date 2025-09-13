@@ -193,8 +193,8 @@ router.post('/session/:sessionId/sign', authenticateToken, async (req, res) => {
     console.log('🔍 Enhanced signature data:', enhancedSignatureData);
     
     // Use direct database signing instead of session-based
-    console.log('🔍 Calling signDocument with:', { userId, documentId, enhancedSignatureData });
-    const signature = await legalDocumentService.signDocument(userId, documentId, enhancedSignatureData);
+    console.log('🔍 Calling signDocument with:', { sessionId, documentId, enhancedSignatureData });
+    const signature = await legalDocumentService.signDocument(sessionId, documentId, enhancedSignatureData);
     
     console.log('🔍 Signing result:', signature);
     
