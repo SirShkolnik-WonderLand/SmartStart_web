@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-export async function GET(request: NextRequest) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { userId: string } }
+) {
   try {
     // Get authorization header
     const authHeader = request.headers.get('authorization')
@@ -9,10 +12,11 @@ export async function GET(request: NextRequest) {
     }
 
     const token = authHeader.split(' ')[1]
+    const { userId } = params
 
     // Proxy to backend API
     const backendUrl = process.env.BACKEND_URL || 'https://smartstart-api.onrender.com'
-    const response = await fetch(`${backendUrl}/api/ventures/list/all`, {
+    const response = await fetch(`${backendUrl}/api/v1/buz/balance/${userId}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -28,9 +32,9 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(data)
   } catch (error) {
-    console.error('Error fetching ventures:', error)
+    console.error('Error fetching BUZ balance:', error)
     return NextResponse.json(
-      { error: 'Failed to fetch ventures' },
+      { error: 'Failed to fetch BUZ balance' },
       { status: 500 }
     )
   }
