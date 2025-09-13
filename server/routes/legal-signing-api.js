@@ -162,7 +162,7 @@ router.post('/session/:sessionId/sign', authenticateToken, async (req, res) => {
   try {
     const { sessionId } = req.params;
     const { documentId, signatureData, documentType = 'SOBA' } = req.body;
-    const { userId } = req.user;
+    const userId = req.user.id;
     
     console.log('🔍 Signing request:', { sessionId, documentId, userId, signatureData, documentType });
     console.log('🔍 req.user object:', req.user);
