@@ -13,7 +13,7 @@ const prisma = new PrismaClient();
 // ===== LEGAL FRAMEWORK HEALTH =====
 
 // Get legal framework health
-router.get('/health', async (req, res) => {
+router.get('/health', async(req, res) => {
     try {
         const [
             totalDocuments,
@@ -57,13 +57,13 @@ router.get('/health', async (req, res) => {
 // ===== DOCUMENT COMPLIANCE =====
 
 // Check user compliance
-router.get('/compliance/:userId', authenticateToken, async (req, res) => {
+router.get('/compliance/:userId', authenticateToken, async(req, res) => {
     try {
         const { userId } = req.params;
         const requestingUserId = req.user.id;
 
         // Check if user can view compliance (own data or admin)
-        if (requestingUserId !== userId && !req.user.permissions?.includes('user:read')) {
+        if (requestingUserId !== userId && !req.user.permissions ? .includes('user:read')) {
             return res.status(403).json({
                 success: false,
                 message: 'Insufficient permissions to view compliance data'
@@ -105,7 +105,7 @@ router.get('/compliance/:userId', authenticateToken, async (req, res) => {
 });
 
 // Update compliance status
-router.put('/compliance/:userId', authenticateToken, async (req, res) => {
+router.put('/compliance/:userId', authenticateToken, async(req, res) => {
     try {
         const { userId } = req.params;
         const { documentId, status, notes } = req.body;
@@ -158,12 +158,12 @@ router.put('/compliance/:userId', authenticateToken, async (req, res) => {
 // ===== DOCUMENT SIGNATURES =====
 
 // Get user signatures
-router.get('/signatures/:userId', authenticateToken, async (req, res) => {
+router.get('/signatures/:userId', authenticateToken, async(req, res) => {
     try {
         const { userId } = req.params;
         const requestingUserId = req.user.id;
 
-        if (requestingUserId !== userId && !req.user.permissions?.includes('user:read')) {
+        if (requestingUserId !== userId && !req.user.permissions ? .includes('user:read')) {
             return res.status(403).json({
                 success: false,
                 message: 'Insufficient permissions to view signature data'
@@ -196,7 +196,7 @@ router.get('/signatures/:userId', authenticateToken, async (req, res) => {
 });
 
 // Create signature
-router.post('/signatures', authenticateToken, async (req, res) => {
+router.post('/signatures', authenticateToken, async(req, res) => {
     try {
         const { documentId, signerId, signatureData, ipAddress, userAgent } = req.body;
         const requestingUserId = req.user.id;
@@ -244,7 +244,7 @@ router.post('/signatures', authenticateToken, async (req, res) => {
 // ===== LEGAL DOCUMENTS =====
 
 // Get available legal documents
-router.get('/documents', authenticateToken, async (req, res) => {
+router.get('/documents', authenticateToken, async(req, res) => {
     try {
         const { type, status = 'ACTIVE' } = req.query;
 
@@ -274,7 +274,7 @@ router.get('/documents', authenticateToken, async (req, res) => {
 });
 
 // Get document by ID
-router.get('/documents/:documentId', authenticateToken, async (req, res) => {
+router.get('/documents/:documentId', authenticateToken, async(req, res) => {
     try {
         const { documentId } = req.params;
 
@@ -316,7 +316,7 @@ router.get('/documents/:documentId', authenticateToken, async (req, res) => {
 // ===== LEGAL ANALYTICS =====
 
 // Get legal analytics
-router.get('/analytics', authenticateToken, async (req, res) => {
+router.get('/analytics', authenticateToken, async(req, res) => {
     try {
         const [
             totalDocuments,
@@ -380,7 +380,7 @@ router.get('/analytics', authenticateToken, async (req, res) => {
 // ===== RBAC-LEGAL INTEGRATION =====
 
 // Get legal documents accessible to user based on RBAC level
-router.get('/rbac-access/:userId', authenticateToken, async (req, res) => {
+router.get('/rbac-access/:userId', authenticateToken, async(req, res) => {
     try {
         const { userId } = req.params;
         const currentUserId = req.user.id;
@@ -410,7 +410,7 @@ router.get('/rbac-access/:userId', authenticateToken, async (req, res) => {
         const ComprehensiveRBACLegalMapping = require('../services/comprehensive-rbac-legal-mapping');
         const rbacMapping = new ComprehensiveRBACLegalMapping();
         const accessibleDocs = rbacMapping.getAccessibleDocumentsForLevel(user.level);
-        
+
         // Get pending documents for next level
         const pendingDocs = rbacMapping.getPendingDocumentsForNextLevel(user.level);
 
@@ -433,10 +433,10 @@ router.get('/rbac-access/:userId', authenticateToken, async (req, res) => {
         const signedDocumentTitles = signedDocs.map(doc => doc.document.title);
         const requiredDocs = accessibleDocs.filter(doc => doc.isRequired);
         const completedRequiredDocs = requiredDocs.filter(doc => signedDocumentTitles.includes(doc.title));
-        
-        const compliancePercentage = requiredDocs.length > 0 
-            ? Math.round((completedRequiredDocs.length / requiredDocs.length) * 100)
-            : 100;
+
+        const compliancePercentage = requiredDocs.length > 0 ?
+            Math.round((completedRequiredDocs.length / requiredDocs.length) * 100) :
+            100;
 
         res.json({
             success: true,
@@ -477,7 +477,7 @@ router.get('/rbac-access/:userId', authenticateToken, async (req, res) => {
 });
 
 // Get legal document requirements for RBAC level upgrade
-router.get('/rbac-upgrade-requirements/:userId', authenticateToken, async (req, res) => {
+router.get('/rbac-upgrade-requirements/:userId', authenticateToken, async(req, res) => {
     try {
         const { userId } = req.params;
         const currentUserId = req.user.id;
@@ -507,7 +507,7 @@ router.get('/rbac-upgrade-requirements/:userId', authenticateToken, async (req, 
         const ComprehensiveRBACLegalMapping = require('../services/comprehensive-rbac-legal-mapping');
         const rbacMapping = new ComprehensiveRBACLegalMapping();
         const nextLevel = rbacMapping.getNextRBACLevel(user.level);
-        
+
         if (!nextLevel) {
             return res.json({
                 success: true,
