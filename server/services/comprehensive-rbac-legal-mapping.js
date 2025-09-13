@@ -366,7 +366,7 @@ class ComprehensiveRBACLegalMapping {
             }
         };
 
-        return tierRequirements[documentKey] ? .[userLevel] || 'TIER_0';
+        return tierRequirements[documentKey]?.[userLevel] || 'TIER_0';
     }
 
     /**
