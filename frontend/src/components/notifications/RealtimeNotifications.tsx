@@ -143,7 +143,11 @@ export default function RealtimeNotifications({
 
   const connectWebSocket = () => {
     try {
-      const ws = new WebSocket(`ws://localhost:3001/notifications?userId=${userId}`)
+      const wsUrl = process.env.NODE_ENV === 'production' 
+        ? `wss://smartstart-api.onrender.com/notifications?userId=${userId}`
+        : `ws://localhost:3001/notifications?userId=${userId}`
+      
+      const ws = new WebSocket(wsUrl)
       
       ws.onopen = () => {
         console.log('WebSocket connected')

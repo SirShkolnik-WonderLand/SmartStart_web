@@ -24,6 +24,7 @@ import {
   TrendingDown
 } from 'lucide-react'
 import { comprehensiveApiService as apiService, User, AnalyticsData, Venture, Offer } from '@/lib/api-comprehensive'
+import RealtimeDashboard from '@/components/realtime/RealtimeDashboard'
 import Link from 'next/link'
 
 // Utility function to extract user ID from JWT token
@@ -725,6 +726,17 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+
+      {/* Real-time Features Section */}
+      {userId && (
+        <div className="wonderland-card glass-surface p-8">
+          <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+            <Bell className="w-6 h-6 text-purple-600" />
+            Real-time Collaboration
+          </h2>
+          <RealtimeDashboard userId={userId} />
+        </div>
+      )}
     </div>
   )
 }

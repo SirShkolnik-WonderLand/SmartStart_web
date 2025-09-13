@@ -1,10 +1,15 @@
 const express = require('express');
 const cors = require('cors');
+const http = require('http');
+const WebSocket = require('ws');
 const { setupSecurity } = require('./middleware/security');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 const app = express();
+
+// Create HTTP server for WebSocket support
+const server = http.createServer(app);
 
 // Setup security middleware first - CLI System Ready
 setupSecurity(app);
@@ -602,12 +607,158 @@ app.use('*', (req, res) => {
 
 const PORT = process.env.PORT || 3001;
 
-app.listen(PORT, () => {
+// ===== WEBSOCKET SERVER SETUP =====
+const wss = new WebSocket.Server({
+    server,
+    path: '/notifications',
+    verifyClient: (info) => {
+        // Extract userId from query params for authentication
+        const url = new URL(info.req.url, `http://${info.req.headers.host}`);
+        const userId = url.searchParams.get('userId');
+        if (userId) {
+            info.req.user = { id: userId };
+            return true;
+        }
+        return false;
+    }
+});
+
+// WebSocket connections storage
+const connections = new Map();
+
+wss.on('connection', (ws, req) => {
+    const userId = req.user ? .id;
+
+    if (!userId) {
+        ws.close(1008, 'Authentication required');
+        return;
+    }
+
+    // Store connection
+    connections.set(userId, ws);
+    console.log(`🔌 WebSocket connected for user ${userId}`);
+
+    // Send connection confirmation
+    ws.send(JSON.stringify({
+        type: 'CONNECTION_ESTABLISHED',
+        userId,
+        timestamp: new Date().toISOString()
+    }));
+
+    // Handle incoming messages
+    ws.on('message', async(message) => {
+        try {
+            const data = JSON.parse(message);
+            await handleWebSocketMessage(userId, data);
+        } catch (error) {
+            console.error('Error handling WebSocket message:', error);
+            ws.send(JSON.stringify({
+                type: 'ERROR',
+                message: 'Invalid message format'
+            }));
+        }
+    });
+
+    // Handle connection close
+    ws.on('close', () => {
+        connections.delete(userId);
+        console.log(`🔌 WebSocket disconnected for user ${userId}`);
+    });
+
+    // Handle errors
+    ws.on('error', (error) => {
+        console.error(`WebSocket error for user ${userId}:`, error);
+        connections.delete(userId);
+    });
+});
+
+// Handle WebSocket messages
+async function handleWebSocketMessage(userId, data) {
+    const { type, payload } = data;
+
+    switch (type) {
+        case 'PING':
+            const connection = connections.get(userId);
+            if (connection) {
+                connection.send(JSON.stringify({
+                    type: 'PONG',
+                    timestamp: new Date().toISOString()
+                }));
+            }
+            break;
+
+        case 'SUBSCRIBE_TO_VENTURE':
+            if (payload.ventureId) {
+                console.log(`User ${userId} subscribed to venture ${payload.ventureId}`);
+            }
+            break;
+
+        case 'SUBSCRIBE_TO_TEAM':
+            if (payload.teamId) {
+                console.log(`User ${userId} subscribed to team ${payload.teamId}`);
+            }
+            break;
+
+        default:
+            console.log(`Unknown WebSocket message type: ${type}`);
+    }
+}
+
+// Send real-time notification
+async function sendRealtimeNotification(recipientId, notification) {
+    const connection = connections.get(recipientId);
+
+    if (connection && connection.readyState === WebSocket.OPEN) {
+        try {
+            connection.send(JSON.stringify({
+                type: 'NOTIFICATION',
+                data: notification
+            }));
+        } catch (error) {
+            console.error('Error sending real-time notification:', error);
+        }
+    }
+}
+
+// Broadcast to all connected users
+function broadcastToAll(message) {
+    connections.forEach((connection, userId) => {
+        if (connection.readyState === WebSocket.OPEN) {
+            try {
+                connection.send(JSON.stringify(message));
+            } catch (error) {
+                console.error(`Error broadcasting to user ${userId}:`, error);
+            }
+        }
+    });
+}
+
+// Broadcast to specific users
+function broadcastToUsers(userIds, message) {
+    userIds.forEach(userId => {
+        const connection = connections.get(userId);
+        if (connection && connection.readyState === WebSocket.OPEN) {
+            try {
+                connection.send(JSON.stringify(message));
+            } catch (error) {
+                console.error(`Error broadcasting to user ${userId}:`, error);
+            }
+        }
+    });
+}
+
+// Make WebSocket functions available globally
+global.sendRealtimeNotification = sendRealtimeNotification;
+global.broadcastToAll = broadcastToAll;
+global.broadcastToUsers = broadcastToUsers;
+
+server.listen(PORT, () => {
             console.log(`🚀 SmartStart Platform Server running on port ${PORT}`);
             console.log(`📡 CLI API available at /api/cli`);
             console.log(`🔐 Security middleware enabled`);
             console.log(`📊 All 12 systems operational`);
             console.log(`🔄 CLI System Version: 2.0.1`);
+            console.log(`🔌 WebSocket server running on /notifications`);
 
             // Ensure Postgres enum GateType exists and includes expected values
             (async() => {
@@ -640,4 +791,4 @@ app.listen(PORT, () => {
     })();
 });
 
-module.exports = app;
+module.exports = { app, server, wss };
