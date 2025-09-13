@@ -969,51 +969,49 @@ router.post('/transfer-legal', authenticateToken, async (req, res) => {
 // Helper function to check user legal compliance (reused from other integrations)
 async function checkUserLegalCompliance(userId) {
     try {
-        const legalPacks = await prisma.platformLegalPack.findMany({
-            where: { userId },
-            include: { documents: true }
+        // Check user's signed legal documents directly
+        const signedLegalDocs = await prisma.legalDocumentSignature.findMany({
+            where: { signerId: userId },
+            include: {
+                document: {
+                    select: {
+                        id: true,
+                        title: true,
+                        type: true,
+                        status: true
+                    }
+                }
+            }
         });
 
-        const requiredDocuments = [
-            'platform-participation-agreement',
-            'mutual-confidentiality-agreement', 
-            'inventions-ip-agreement'
+        const requiredDocumentTitles = [
+            'Platform Participation Agreement',
+            'Mutual Confidentiality Agreement',
+            'Inventions & Intellectual Property Agreement'
         ];
 
         let signedDocuments = 0;
         let missingDocuments = [];
 
-        for (const pack of legalPacks) {
-            for (const doc of pack.documents) {
-                if (requiredDocuments.includes(doc.key) && 
-                    (doc.status === 'EFFECTIVE' || doc.signatureCount > 0)) {
-                    signedDocuments++;
-                }
-            }
-        }
-
-        // Check for missing documents
-        for (const requiredDoc of requiredDocuments) {
+        // Check which required documents are signed
+        for (const requiredDoc of requiredDocumentTitles) {
             let found = false;
-            for (const pack of legalPacks) {
-                for (const doc of pack.documents) {
-                    if (doc.key === requiredDoc && 
-                        (doc.status === 'EFFECTIVE' || doc.signatureCount > 0)) {
-                        found = true;
-                        break;
-                    }
+            for (const signedDoc of signedLegalDocs) {
+                if (signedDoc.document.title.includes(requiredDoc.split(' ')[0])) {
+                    found = true;
+                    signedDocuments++;
+                    break;
                 }
-                if (found) break;
             }
             if (!found) {
-                missingDocuments.push(requiredDoc);
+                missingDocuments.push(requiredDoc.toLowerCase().replace(/\s+/g, '-'));
             }
         }
 
         return {
-            compliant: signedDocuments === requiredDocuments.length,
+            compliant: signedDocuments === requiredDocumentTitles.length,
             signedDocuments,
-            totalRequired: requiredDocuments.length,
+            totalRequired: requiredDocumentTitles.length,
             missingDocuments
         };
 
