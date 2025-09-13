@@ -21,7 +21,7 @@ class LegalDocumentCRUDService {
     async createDocument(documentData, userId) {
         try {
             console.log('📄 Creating legal document:', documentData.title);
-            
+
             // Validate user permissions
             console.log('🔍 Looking up user with ID:', userId);
             const user = await this.prisma.user.findUnique({
@@ -33,7 +33,7 @@ class LegalDocumentCRUDService {
                 console.log('🔍 User not found in database for userId:', userId);
                 throw new Error('User not found');
             }
-            
+
             console.log('🔍 User found:', { id: user.id, level: user.level, name: user.name });
 
             // Check if user has permission to create this document type
@@ -42,7 +42,7 @@ class LegalDocumentCRUDService {
             console.log('🔍 Document title to create:', documentData.title);
             const canCreate = accessibleDocs.some(doc => doc.title === documentData.title);
             console.log('🔍 Can create document:', canCreate);
-            
+
             if (!canCreate) {
                 throw new Error(`User level ${user.level} cannot create document: ${documentData.title}`);
             }
@@ -86,7 +86,7 @@ class LegalDocumentCRUDService {
     async getDocuments(userId, filters = {}) {
         try {
             console.log('📖 Getting documents for user:', userId);
-            
+
             const user = await this.prisma.user.findUnique({
                 where: { id: userId },
                 select: { level: true }
@@ -145,8 +145,8 @@ class LegalDocumentCRUDService {
                     ...doc,
                     status: status,
                     isSigned: isSigned,
-                    signedAt: signature?.signedAt,
-                    signatureHash: signature?.signatureHash,
+                    signedAt: signature ? .signedAt,
+                    signatureHash: signature ? .signatureHash,
                     required: status === 'REQUIRED',
                     pending: status === 'PENDING'
                 };
@@ -167,7 +167,7 @@ class LegalDocumentCRUDService {
     async updateDocument(documentId, updateData, userId) {
         try {
             console.log('📝 Updating document:', documentId);
-            
+
             // Check if document exists
             const existingDoc = await this.prisma.legalDocument.findUnique({
                 where: { id: documentId }
@@ -216,7 +216,7 @@ class LegalDocumentCRUDService {
     async deleteDocument(documentId, userId) {
         try {
             console.log('🗑️ Deleting document:', documentId);
-            
+
             // Check if document exists
             const existingDoc = await this.prisma.legalDocument.findUnique({
                 where: { id: documentId }
@@ -265,7 +265,7 @@ class LegalDocumentCRUDService {
     async signDocument(documentId, userId, signatureData) {
         try {
             console.log('✍️ Signing document:', documentId, 'by user:', userId);
-            
+
             // Check if document exists
             const document = await this.prisma.legalDocument.findUnique({
                 where: { id: documentId }
@@ -300,7 +300,7 @@ class LegalDocumentCRUDService {
             // Check if user can sign this document
             const accessibleDocs = this.rbacMapping.getAccessibleDocumentsForLevel(user.level);
             const canSign = accessibleDocs.some(doc => doc.title === document.title);
-            
+
             if (!canSign) {
                 throw new Error(`User level ${user.level} cannot sign document: ${document.title}`);
             }
@@ -330,7 +330,7 @@ class LegalDocumentCRUDService {
                 await this.prisma.legalDocument.update({
                     where: { id: documentId },
                     data: {
-                        status: 'SIGNED',
+                        status: 'EFFECTIVE',
                         updatedAt: new Date()
                     }
                 });
@@ -351,10 +351,10 @@ class LegalDocumentCRUDService {
     async generateDocumentFromTemplate(templateKey, variables, userId) {
         try {
             console.log('🔧 Generating document from template:', templateKey);
-            
+
             // Get generation requirements
             const requirements = this.rbacMapping.getDocumentGenerationRequirements(templateKey);
-            
+
             if (!requirements.template) {
                 throw new Error(`Template not found: ${templateKey}`);
             }
@@ -368,7 +368,7 @@ class LegalDocumentCRUDService {
             // Read template file
             const templatePath = path.join(process.cwd(), 'server/Contracts/templates', requirements.template);
             let templateContent;
-            
+
             try {
                 templateContent = await fs.readFile(templatePath, 'utf8');
             } catch (error) {
@@ -387,7 +387,7 @@ class LegalDocumentCRUDService {
             // Get document info from mapping
             const accessibleDocs = this.rbacMapping.getAccessibleDocumentsForLevel('LEGAL_ADMIN');
             const docInfo = accessibleDocs.find(doc => doc.key === templateKey);
-            
+
             if (!docInfo) {
                 throw new Error(`Document info not found for template: ${templateKey}`);
             }
@@ -405,7 +405,7 @@ class LegalDocumentCRUDService {
             };
 
             const document = await this.createDocument(documentData, userId);
-            
+
             console.log('✅ Generated document:', document.id);
             return document;
 
@@ -421,7 +421,7 @@ class LegalDocumentCRUDService {
     async getUserDocumentStatus(userId) {
         try {
             console.log('📊 Getting user document status:', userId);
-            
+
             const user = await this.prisma.user.findUnique({
                 where: { id: userId },
                 select: { level: true, name: true, email: true }
@@ -489,8 +489,8 @@ class LegalDocumentCRUDService {
                         type: doc.type,
                         status: status,
                         isSigned: isSigned,
-                        signedAt: signature?.signedAt,
-                        signatureHash: signature?.signatureHash,
+                        signedAt: signature ? .signedAt,
+                        signatureHash: signature ? .signatureHash,
                         required: status === 'REQUIRED',
                         pending: status === 'PENDING',
                         description: doc.description
@@ -510,7 +510,7 @@ class LegalDocumentCRUDService {
     async verifySignature(documentId, signatureHash) {
         try {
             console.log('🔍 Verifying signature:', signatureHash);
-            
+
             const signature = await this.prisma.legalDocumentSignature.findFirst({
                 where: {
                     documentId: documentId,
@@ -565,7 +565,7 @@ class LegalDocumentCRUDService {
     async getAuditLog(documentId, startDate, endDate, page = 1, limit = 50) {
         try {
             console.log('📋 Getting audit log for document:', documentId);
-            
+
             const whereClause = {
                 documentId: documentId,
                 ...(startDate && { createdAt: { gte: new Date(startDate) } }),
@@ -627,7 +627,7 @@ class LegalDocumentCRUDService {
     async generateComplianceReport(startDate, endDate, userId) {
         try {
             console.log('📊 Generating compliance report');
-            
+
             const user = await this.prisma.user.findUnique({
                 where: { id: userId },
                 select: { level: true }
@@ -688,7 +688,7 @@ class LegalDocumentCRUDService {
             for (const level in report.compliance_summary) {
                 const levelUsers = report.user_compliance.filter(u => u.level === level);
                 const totalCompliance = levelUsers.reduce((sum, u) => sum + u.compliance_percentage, 0);
-                report.compliance_summary[level].average_compliance = 
+                report.compliance_summary[level].average_compliance =
                     levelUsers.length > 0 ? Math.round(totalCompliance / levelUsers.length) : 0;
             }
 
