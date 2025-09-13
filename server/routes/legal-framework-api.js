@@ -63,7 +63,7 @@ router.get('/compliance/:userId', authenticateToken, async(req, res) => {
         const requestingUserId = req.user.id;
 
         // Check if user can view compliance (own data or admin)
-        if (requestingUserId !== userId && !req.user.permissions ? .includes('user:read')) {
+        if (requestingUserId !== userId && !(req.user.permissions && req.user.permissions.includes('user:read'))) {
             return res.status(403).json({
                 success: false,
                 message: 'Insufficient permissions to view compliance data'
@@ -163,7 +163,7 @@ router.get('/signatures/:userId', authenticateToken, async(req, res) => {
         const { userId } = req.params;
         const requestingUserId = req.user.id;
 
-        if (requestingUserId !== userId && !req.user.permissions ? .includes('user:read')) {
+        if (requestingUserId !== userId && !(req.user.permissions && req.user.permissions.includes('user:read'))) {
             return res.status(403).json({
                 success: false,
                 message: 'Insufficient permissions to view signature data'
