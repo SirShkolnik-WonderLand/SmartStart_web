@@ -552,7 +552,7 @@ const fileManagementApiRoutes = require('./routes/file-management-api');
 app.use('/api/files', fileManagementApiRoutes);
 
 const digitalDocumentsApiRoutes = require('./routes/digital-documents-api');
-app.use('/api/documents', digitalDocumentsApiRoutes);
+app.use('/api/digital-documents', digitalDocumentsApiRoutes);
 
 // Mount User Journey APIs
 const userProfileApiRoutes = require('./routes/user-profile-api');
