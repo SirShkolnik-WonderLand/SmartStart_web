@@ -23,14 +23,18 @@ class LegalDocumentCRUDService {
             console.log('📄 Creating legal document:', documentData.title);
             
             // Validate user permissions
+            console.log('🔍 Looking up user with ID:', userId);
             const user = await this.prisma.user.findUnique({
                 where: { id: userId },
-                select: { level: true, name: true, email: true }
+                select: { id: true, level: true, name: true, email: true }
             });
 
             if (!user) {
+                console.log('🔍 User not found in database for userId:', userId);
                 throw new Error('User not found');
             }
+            
+            console.log('🔍 User found:', { id: user.id, level: user.level, name: user.name });
 
             // Check if user has permission to create this document type
             const accessibleDocs = this.rbacMapping.getAccessibleDocumentsForLevel(user.level);
