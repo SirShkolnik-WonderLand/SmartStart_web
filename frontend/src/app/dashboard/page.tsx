@@ -65,6 +65,7 @@ import Link from 'next/link'
 
 export default function DashboardPage() {
   const [user, setUser] = useState<User | null>(null)
+  const [userId, setUserId] = useState<string | null>(null)
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null)
   const [ventures, setVentures] = useState<Venture[]>([])
   const [offers, setOffers] = useState<Offer[]>([])
@@ -268,6 +269,7 @@ export default function DashboardPage() {
         const userResponse = await apiService.getCurrentUser()
         if (userResponse.success && userResponse.data) {
           setUser(userResponse.data)
+          setUserId(userResponse.data.id)
         }
 
         // Load other data in parallel with timeout protection
@@ -289,7 +291,7 @@ export default function DashboardPage() {
             console.warn('BUZ supply failed:', err)
             return { success: false, data: { currentPrice: 0.01 } }
           }),
-          apiService.getBUZBalance('current-user').catch(err => {
+          apiService.getBUZBalance(userId || 'current-user').catch(err => {
             console.warn('BUZ balance failed:', err)
             return { success: false, data: { balance: 0, stakedBalance: 0 } }
           })
@@ -327,19 +329,20 @@ export default function DashboardPage() {
         // Use user ID from JWT token to ensure consistency, fallback to user response
         const userIdFromToken = getUserIdFromToken()
         if (userResponse.success && userResponse.data) {
-          const userId = userIdFromToken || userResponse.data.id
+          const currentUserId = userIdFromToken || userResponse.data.id
+          setUserId(currentUserId)
           
           // Load additional user data in parallel
           const userDataPromises = [
-            apiService.getJourneyStatus(userId).catch(err => {
+            apiService.getJourneyStatus(currentUserId).catch(err => {
               console.warn('Journey status failed:', err)
               return { success: false, data: null }
             }),
-            apiService.getLegalPackStatus(userId).catch(err => {
+            apiService.getLegalPackStatus(currentUserId).catch(err => {
               console.warn('Legal pack status failed:', err)
               return { success: false, data: null }
             }),
-            apiService.getSubscriptionStatus(userId).catch(err => {
+            apiService.getSubscriptionStatus(currentUserId).catch(err => {
               console.warn('Subscription status failed:', err)
               return { success: false, data: null }
             })
@@ -734,7 +737,9 @@ export default function DashboardPage() {
             <Bell className="w-6 h-6 text-purple-600" />
             Real-time Collaboration
           </h2>
-          <RealtimeDashboard userId={userId} />
+          <div className="min-h-[400px]">
+            <RealtimeDashboard userId={userId} />
+          </div>
         </div>
       )}
     </div>

@@ -48,6 +48,8 @@ export default function RealtimeDashboard({ userId }: RealtimeDashboardProps) {
   const updatesRef = useRef<LiveUpdate[]>([])
 
   useEffect(() => {
+    if (!userId) return
+    
     const service = realtimeService.current
     
     // Connect to WebSocket
