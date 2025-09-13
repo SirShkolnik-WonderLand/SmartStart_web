@@ -1,9 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { comprehensiveApiService as apiService } from '@/lib/api-comprehensive'
-import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { 
   Eye, 
   EyeOff, 
@@ -15,12 +14,17 @@ import {
 } from 'lucide-react'
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('udi.admin')
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [showPassword, setShowPassword] = useState(false)
+  const [mounted, setMounted] = useState(false)
   const router = useRouter()
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -29,16 +33,11 @@ export default function LoginPage() {
 
     try {
       // Clear any old localStorage data before login
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem('user-id')
-        localStorage.removeItem('user-data')
-        localStorage.removeItem('auth-token')
-      }
+      localStorage.removeItem('user-id')
+      localStorage.removeItem('user-data')
+      localStorage.removeItem('auth-token')
       
-      // Ensure email is in correct format
-      const loginEmail = email.includes('@') ? email : `${email}@alicesolutionsgroup.com`
-      
-      const response = await apiService.login(loginEmail, password)
+      const response = await apiService.login(email, password)
       
       if (response.success) {
         // Redirect to dashboard on successful login
@@ -55,18 +54,23 @@ export default function LoginPage() {
   }
 
   const handleClearCache = () => {
-    if (typeof window !== 'undefined') {
-      localStorage.clear()
-    }
+    localStorage.clear()
     setError('')
     setEmail('')
     setPassword('')
     alert('Cache cleared! Please login again.')
   }
 
-  return (
-    <ErrorBoundary>
+  if (!mounted) {
+    return (
       <div className="min-h-screen wonderland-bg flex items-center justify-center p-4 relative overflow-hidden">
+        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="min-h-screen wonderland-bg flex items-center justify-center p-4 relative overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/10 rounded-full blur-3xl"></div>
@@ -99,8 +103,8 @@ export default function LoginPage() {
                   </span>
                 </h2>
                 <p className="text-lg text-muted-foreground max-w-md mx-auto lg:mx-0">
-                  The place where dreams become ventures and ideas become reality. 
-                  Build, collaborate, and scale your startup with our comprehensive platform.
+                  The place where dreams become ventures. Build, collaborate, and scale your startup with our comprehensive platform. 
+                  From legal documents to team management, we&apos;ve got you covered.
                 </p>
               </div>
 
@@ -213,19 +217,9 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {/* Clear Cache Section */}
-            <div className="mt-8 text-center">
-              <button
-                type="button"
-                onClick={handleClearCache}
-                className="text-xs text-muted-foreground hover:text-foreground underline transition-colors"
-              >
-                Clear Cache (if having issues)
-              </button>
-            </div>
           </div>
         </div>
       </div>
-    </ErrorBoundary>
+    </div>
   )
 }
