@@ -13,7 +13,7 @@ const prisma = new PrismaClient();
 // ===== UMBRELLA RELATIONSHIPS =====
 
 // Get all umbrella relationships for a user
-router.get('/relationships', authenticateToken, async (req, res) => {
+router.get('/relationships', authenticateToken, async(req, res) => {
     try {
         const userId = req.user.id;
 
@@ -51,7 +51,7 @@ router.get('/relationships', authenticateToken, async (req, res) => {
 });
 
 // Create umbrella relationship
-router.post('/relationships', authenticateToken, async (req, res) => {
+router.post('/relationships', authenticateToken, async(req, res) => {
     try {
         const { referredId, relationshipType = 'REFERRAL', notes } = req.body;
         const referrerId = req.user.id;
@@ -106,7 +106,7 @@ router.post('/relationships', authenticateToken, async (req, res) => {
 // ===== REVENUE SHARING =====
 
 // Get revenue shares for a user
-router.get('/revenue/shares', authenticateToken, async (req, res) => {
+router.get('/revenue/shares', authenticateToken, async(req, res) => {
     try {
         const userId = req.user.id;
 
@@ -147,7 +147,7 @@ router.get('/revenue/shares', authenticateToken, async (req, res) => {
 });
 
 // Create revenue share
-router.post('/revenue/shares', authenticateToken, async (req, res) => {
+router.post('/revenue/shares', authenticateToken, async(req, res) => {
     try {
         const { referredId, ventureId, amount, percentage, description } = req.body;
         const referrerId = req.user.id;
@@ -200,7 +200,7 @@ router.post('/revenue/shares', authenticateToken, async (req, res) => {
 // ===== UMBRELLA ANALYTICS =====
 
 // Get umbrella analytics
-router.get('/analytics', authenticateToken, async (req, res) => {
+router.get('/analytics', authenticateToken, async(req, res) => {
     try {
         const userId = req.user.id;
 
@@ -216,7 +216,7 @@ router.get('/analytics', authenticateToken, async (req, res) => {
                 where: { referrerId: userId }
             }),
             prisma.umbrellaRelationship.count({
-                where: { 
+                where: {
                     referrerId: userId,
                     status: 'ACTIVE'
                 }
@@ -278,7 +278,7 @@ router.get('/analytics', authenticateToken, async (req, res) => {
 // ===== UMBRELLA-LEGAL INTEGRATION =====
 
 // Create umbrella relationship with legal compliance check
-router.post('/create-relationship', authenticateToken, async (req, res) => {
+router.post('/create-relationship', authenticateToken, async(req, res) => {
     try {
         const { referredEmail, agreementTerms } = req.body;
         const referrerId = req.user.id;
@@ -381,7 +381,7 @@ router.post('/create-relationship', authenticateToken, async (req, res) => {
 });
 
 // Get umbrella legal compliance status
-router.get('/legal-compliance/:userId', authenticateToken, async (req, res) => {
+router.get('/legal-compliance/:userId', authenticateToken, async(req, res) => {
     try {
         const { userId } = req.params;
         const currentUserId = req.user.id;
@@ -457,7 +457,7 @@ async function checkUserLegalCompliance(userId) {
 
         const requiredDocuments = [
             'platform-participation-agreement',
-            'mutual-confidentiality-agreement', 
+            'mutual-confidentiality-agreement',
             'inventions-ip-agreement'
         ];
 
@@ -466,7 +466,7 @@ async function checkUserLegalCompliance(userId) {
 
         for (const pack of legalPacks) {
             for (const doc of pack.documents) {
-                if (requiredDocuments.includes(doc.key) && 
+                if (requiredDocuments.includes(doc.key) &&
                     (doc.status === 'EFFECTIVE' || doc.signatureCount > 0)) {
                     signedDocuments++;
                 }
@@ -478,7 +478,7 @@ async function checkUserLegalCompliance(userId) {
             let found = false;
             for (const pack of legalPacks) {
                 for (const doc of pack.documents) {
-                    if (doc.key === requiredDoc && 
+                    if (doc.key === requiredDoc &&
                         (doc.status === 'EFFECTIVE' || doc.signatureCount > 0)) {
                         found = true;
                         break;
@@ -512,8 +512,7 @@ async function checkUserLegalCompliance(userId) {
 // Helper function to generate umbrella-specific legal documents
 async function generateUmbrellaLegalDocuments(relationshipId, referrerId, referredId) {
     try {
-        const umbrellaDocuments = [
-            {
+        const umbrellaDocuments = [{
                 title: 'Umbrella Revenue Sharing Agreement',
                 type: 'REVENUE_SHARING_AGREEMENT',
                 content: `This Umbrella Revenue Sharing Agreement governs the revenue sharing relationship between users ${referrerId} and ${referredId}...`,
