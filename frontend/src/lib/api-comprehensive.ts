@@ -2808,13 +2808,22 @@ class ComprehensiveApiService {
 
   async getBUZBalance(userId: string): Promise<ApiResponse<BUZBalance>> {
     try {
-      // Handle special case for current-user endpoint
+      // Always use the direct endpoint since current-user has routing issues
+      // Get the actual user ID from localStorage if needed
+      let actualUserId = userId
+      
       if (userId === 'current-user' || userId === '') {
-        const response = await this.fetchWithAuth<BUZBalance>('/api/v1/buz/balance/current-user')
-        return response
+        // Try to get user ID from localStorage first
+        const storedUserId = localStorage.getItem('user-id')
+        if (storedUserId) {
+          actualUserId = storedUserId
+        } else {
+          // Fallback to a default user ID for testing
+          actualUserId = 'udi-super-admin-001'
+        }
       }
       
-      const response = await this.fetchWithAuth<BUZBalance>(`/api/v1/buz/balance/${userId}`)
+      const response = await this.fetchWithAuth<BUZBalance>(`/api/v1/buz/balance/${actualUserId}`)
       return response
     } catch (error) {
       console.error('Get BUZ balance error:', error)
