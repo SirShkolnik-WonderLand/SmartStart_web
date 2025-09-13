@@ -34,6 +34,18 @@ class BUZTokenService {
       });
 
       if (!buzToken) {
+        // First verify the user exists before creating BUZ token record
+        const user = await prisma.user.findUnique({
+          where: { id: userId }
+        });
+
+        if (!user) {
+          return {
+            success: false,
+            error: 'User not found'
+          };
+        }
+
         // Create BUZ token record for new user
         buzToken = await prisma.bUZToken.create({
           data: {
