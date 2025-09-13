@@ -284,11 +284,11 @@ export default function DashboardPage() {
             return { success: false, data: [] }
           }),
           // Load BUZ token data
-          fetch('/api/v1/buz/supply').then(res => res.json()).catch(err => {
+          apiService.getBUZSupply().catch(err => {
             console.warn('BUZ supply failed:', err)
             return { success: false, data: { currentPrice: 0.01 } }
           }),
-          fetch('/api/v1/buz/balance/sample-user-id').then(res => res.json()).catch(err => {
+          apiService.getBUZBalance('current-user').catch(err => {
             console.warn('BUZ balance failed:', err)
             return { success: false, data: { balance: 0, stakedBalance: 0 } }
           })

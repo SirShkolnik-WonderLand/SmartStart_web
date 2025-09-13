@@ -36,15 +36,17 @@ export default function PersistentLayout({ children }: PersistentLayoutProps) {
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [mounted, setMounted] = useState(false)
   const { theme, toggleTheme, initializeTheme } = useThemeStore()
   const router = useRouter()
   const pathname = usePathname()
 
   // Pages that don't need the persistent layout or authentication checks
-  const authPages = ['/auth/login', '/auth/register', '/onboarding']
+  const authPages = ['/auth/login', '/auth/register', '/auth/forgot-password', '/auth/reset-password', '/onboarding']
   const isAuthPage = authPages.includes(pathname)
 
   useEffect(() => {
+    setMounted(true)
     // Initialize theme
     initializeTheme()
     
@@ -57,14 +59,18 @@ export default function PersistentLayout({ children }: PersistentLayoutProps) {
       try {
         const token = localStorage.getItem('auth-token')
         if (!token) {
+          console.log('No auth token found, redirecting to login')
           router.push('/auth/login')
           return
         }
 
+        console.log('Checking authentication with token:', token.substring(0, 20) + '...')
         const response = await apiService.getCurrentUser()
         if (response.success && response.data) {
+          console.log('Authentication successful:', response.data.name)
           setUser(response.data)
         } else {
+          console.log('Authentication failed, clearing tokens')
           // Clear invalid token and redirect
           localStorage.removeItem('auth-token')
           localStorage.removeItem('user-id')
@@ -95,6 +101,14 @@ export default function PersistentLayout({ children }: PersistentLayoutProps) {
       localStorage.clear()
       router.push('/auth/login')
     }
+  }
+
+  if (!mounted) {
+    return (
+      <div className="min-h-screen wonderland-bg flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    )
   }
 
   if (isAuthPage) {
