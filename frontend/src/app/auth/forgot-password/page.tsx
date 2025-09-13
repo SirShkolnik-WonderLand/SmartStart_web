@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { ArrowLeft, Mail, CheckCircle, AlertCircle } from 'lucide-react'
-import { apiService } from '@/services/apiService'
+import { comprehensiveApiService as apiService } from '@/lib/api-comprehensive'
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('')
