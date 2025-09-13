@@ -8,6 +8,27 @@ class BUZTokenService {
 
   async getUserBalance(userId) {
     try {
+      // First check Wallet table (primary source)
+      let wallet = await prisma.wallet.findFirst({
+        where: { userId }
+      });
+
+      if (wallet) {
+        return {
+          success: true,
+          data: {
+            userId: wallet.userId,
+            balance: parseFloat(wallet.buzBalance || 0),
+            stakedBalance: 0, // TODO: Add staking to Wallet table
+            totalEarned: 0, // TODO: Add earned tracking
+            totalSpent: 0, // TODO: Add spent tracking
+            totalBurned: 0, // TODO: Add burned tracking
+            lastActivity: wallet.updatedAt
+          }
+        };
+      }
+
+      // Fallback to BUZToken table
       let buzToken = await prisma.bUZToken.findUnique({
         where: { userId }
       });
