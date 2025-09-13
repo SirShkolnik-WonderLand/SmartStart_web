@@ -32,6 +32,10 @@ try:
     from gamification_service import GamificationService
     from buz_token_service import BUZTokenService
     from umbrella_service import UmbrellaService
+    from authentication_service import AuthenticationService
+    from file_service import FileService
+    from analytics_service import AnalyticsService
+    from notification_service import NotificationService
 except ImportError as e:
     print(f"Warning: Could not import Python services: {e}")
     # Create dummy services for now
@@ -88,6 +92,24 @@ except ImportError as e:
             return {"success": False, "message": "Service not available"}
         def calculate_revenue_sharing(self, relationship_id, data):
             return {"success": False, "message": "Service not available"}
+        def register_user(self, data):
+            return {"success": False, "message": "Service not available"}
+        def login_user(self, email, password):
+            return {"success": False, "message": "Service not available"}
+        def verify_token(self, token):
+            return {"success": False, "message": "Service not available"}
+        def upload_file(self, file_data, filename, user_id, file_type, metadata):
+            return {"success": False, "message": "Service not available"}
+        def download_file(self, file_id, user_id):
+            return {"success": False, "message": "Service not available"}
+        def get_user_analytics(self, user_id, period):
+            return {"success": False, "message": "Service not available"}
+        def get_platform_analytics(self, period):
+            return {"success": False, "message": "Service not available"}
+        def send_notification(self, user_id, notification_data):
+            return {"success": False, "message": "Service not available"}
+        def get_user_notifications(self, user_id, status, limit, offset):
+            return {"success": False, "message": "Service not available"}
     
     UserService = DummyService
     LegalService = DummyService
@@ -95,6 +117,10 @@ except ImportError as e:
     GamificationService = DummyService
     BUZTokenService = DummyService
     UmbrellaService = DummyService
+    AuthenticationService = DummyService
+    FileService = DummyService
+    AnalyticsService = DummyService
+    NotificationService = DummyService
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -122,6 +148,10 @@ class SmartStartBrain:
         self.gamification_service = GamificationService(self.nodejs_connector)
         self.buz_token_service = BUZTokenService(self.nodejs_connector)
         self.umbrella_service = UmbrellaService(self.nodejs_connector)
+        self.authentication_service = AuthenticationService(self.nodejs_connector)
+        self.file_service = FileService(self.nodejs_connector)
+        self.analytics_service = AnalyticsService(self.nodejs_connector)
+        self.notification_service = NotificationService(self.nodejs_connector)
         
         logger.info("🧠 SmartStart Brain initialized successfully with all Python services")
     
@@ -183,12 +213,16 @@ def health_check():
             'venture_service': 'active',
             'gamification_service': 'active',
             'buz_token_service': 'active',
-            'umbrella_service': 'active'
+            'umbrella_service': 'active',
+            'authentication_service': 'active',
+            'file_service': 'active',
+            'analytics_service': 'active',
+            'notification_service': 'active'
         },
         'api_endpoints': {
-            'total_endpoints': 25,
+            'total_endpoints': 40,
             'brain_endpoints': 8,
-            'service_endpoints': 17,
+            'service_endpoints': 32,
             'categories': [
                 'User Management',
                 'Legal Processing',
@@ -509,6 +543,185 @@ def get_dashboard_data(user_id):
     except Exception as e:
         logger.error(f"Error getting dashboard data: {e}")
         return jsonify({"error": str(e)}), 500
+
+# ===== NEW SERVICE API ENDPOINTS =====
+
+# Authentication Service Endpoints
+@app.route('/auth/register', methods=['POST'])
+def register_user():
+    """Register a new user"""
+    data = request.json
+    result = brain.authentication_service.register_user(data)
+    return jsonify(result)
+
+@app.route('/auth/login', methods=['POST'])
+def login_user():
+    """Login user"""
+    data = request.json
+    result = brain.authentication_service.login_user(data.get('email'), data.get('password'))
+    return jsonify(result)
+
+@app.route('/auth/verify', methods=['POST'])
+def verify_token():
+    """Verify JWT token"""
+    data = request.json
+    result = brain.authentication_service.verify_token(data.get('token'))
+    return jsonify(result)
+
+@app.route('/auth/refresh', methods=['POST'])
+def refresh_token():
+    """Refresh JWT token"""
+    data = request.json
+    result = brain.authentication_service.refresh_token(data.get('token'))
+    return jsonify(result)
+
+@app.route('/auth/logout', methods=['POST'])
+def logout_user():
+    """Logout user"""
+    data = request.json
+    result = brain.authentication_service.logout_user(data.get('token'))
+    return jsonify(result)
+
+# File Service Endpoints
+@app.route('/files/upload', methods=['POST'])
+def upload_file():
+    """Upload a file"""
+    data = request.json
+    result = brain.file_service.upload_file(
+        data.get('file_data'),
+        data.get('filename'),
+        data.get('user_id'),
+        data.get('file_type', 'document'),
+        data.get('metadata', {})
+    )
+    return jsonify(result)
+
+@app.route('/files/<file_id>/download', methods=['GET'])
+def download_file(file_id):
+    """Download a file"""
+    user_id = request.headers.get('X-User-ID')
+    result = brain.file_service.download_file(file_id, user_id)
+    return jsonify(result)
+
+@app.route('/files/<file_id>', methods=['GET'])
+def get_file_info(file_id):
+    """Get file information"""
+    user_id = request.headers.get('X-User-ID')
+    result = brain.file_service.get_file_info(file_id, user_id)
+    return jsonify(result)
+
+@app.route('/files', methods=['GET'])
+def list_user_files():
+    """List user files"""
+    user_id = request.headers.get('X-User-ID')
+    file_type = request.args.get('type')
+    page = int(request.args.get('page', 1))
+    limit = int(request.args.get('limit', 50))
+    
+    result = brain.file_service.list_user_files(user_id, file_type, page, limit)
+    return jsonify(result)
+
+@app.route('/files/<file_id>', methods=['DELETE'])
+def delete_file(file_id):
+    """Delete a file"""
+    user_id = request.headers.get('X-User-ID')
+    result = brain.file_service.delete_file(file_id, user_id)
+    return jsonify(result)
+
+# Analytics Service Endpoints
+@app.route('/analytics/user/<user_id>', methods=['GET'])
+def get_user_analytics(user_id):
+    """Get user analytics"""
+    period = request.args.get('period', '30d')
+    result = brain.analytics_service.get_user_analytics(user_id, period)
+    return jsonify(result)
+
+@app.route('/analytics/venture/<venture_id>', methods=['GET'])
+def get_venture_analytics(venture_id):
+    """Get venture analytics"""
+    period = request.args.get('period', '30d')
+    result = brain.analytics_service.get_venture_analytics(venture_id, period)
+    return jsonify(result)
+
+@app.route('/analytics/platform', methods=['GET'])
+def get_platform_analytics():
+    """Get platform analytics"""
+    period = request.args.get('period', '30d')
+    result = brain.analytics_service.get_platform_analytics(period)
+    return jsonify(result)
+
+@app.route('/analytics/report', methods=['POST'])
+def generate_custom_report():
+    """Generate custom analytics report"""
+    data = request.json
+    result = brain.analytics_service.get_custom_report(data)
+    return jsonify(result)
+
+@app.route('/analytics/insights', methods=['GET'])
+def get_insights():
+    """Get AI-powered insights"""
+    user_id = request.args.get('user_id')
+    venture_id = request.args.get('venture_id')
+    result = brain.analytics_service.get_insights(user_id, venture_id)
+    return jsonify(result)
+
+# Notification Service Endpoints
+@app.route('/notifications/send', methods=['POST'])
+def send_notification():
+    """Send a notification"""
+    data = request.json
+    result = brain.notification_service.send_notification(data.get('user_id'), data)
+    return jsonify(result)
+
+@app.route('/notifications/bulk', methods=['POST'])
+def send_bulk_notification():
+    """Send bulk notification"""
+    data = request.json
+    result = brain.notification_service.send_bulk_notification(data.get('user_ids'), data)
+    return jsonify(result)
+
+@app.route('/notifications/<user_id>', methods=['GET'])
+def get_user_notifications(user_id):
+    """Get user notifications"""
+    status = request.args.get('status')
+    limit = int(request.args.get('limit', 50))
+    offset = int(request.args.get('offset', 0))
+    
+    result = brain.notification_service.get_user_notifications(user_id, status, limit, offset)
+    return jsonify(result)
+
+@app.route('/notifications/<notification_id>/read', methods=['POST'])
+def mark_notification_read(notification_id):
+    """Mark notification as read"""
+    user_id = request.headers.get('X-User-ID')
+    result = brain.notification_service.mark_notification_read(notification_id, user_id)
+    return jsonify(result)
+
+@app.route('/notifications/<user_id>/read-all', methods=['POST'])
+def mark_all_notifications_read(user_id):
+    """Mark all notifications as read"""
+    result = brain.notification_service.mark_all_notifications_read(user_id)
+    return jsonify(result)
+
+@app.route('/notifications/<notification_id>', methods=['DELETE'])
+def delete_notification(notification_id):
+    """Delete a notification"""
+    user_id = request.headers.get('X-User-ID')
+    result = brain.notification_service.delete_notification(notification_id, user_id)
+    return jsonify(result)
+
+@app.route('/notifications/preferences/<user_id>', methods=['GET'])
+def get_notification_preferences(user_id):
+    """Get notification preferences"""
+    result = brain.notification_service.get_notification_preferences(user_id)
+    return jsonify(result)
+
+@app.route('/notifications/preferences/<user_id>', methods=['PUT'])
+def update_notification_preferences(user_id):
+    """Update notification preferences"""
+    data = request.json
+    result = brain.notification_service.update_notification_preferences(user_id, data)
+    return jsonify(result)
 
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
