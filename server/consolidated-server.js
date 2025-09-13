@@ -395,6 +395,61 @@ try {
     console.error('❌ Failed to load venture management API:', error.message);
 }
 
+// Mount ventures API (simple endpoint for frontend compatibility)
+console.log('Loading ventures API...');
+try {
+    const { authenticateToken } = require('./middleware/auth');
+    const { PrismaClient } = require('@prisma/client');
+    const prisma = new PrismaClient();
+    
+    // Simple ventures endpoint for frontend compatibility
+    app.get('/api/ventures/list/all', authenticateToken, async (req, res) => {
+        try {
+            const userId = req.user.id;
+            
+            // Get ventures for the current user
+            const ventures = await prisma.venture.findMany({
+                where: {
+                    OR: [
+                        { ownerId: userId },
+                        { teamMembers: { some: { userId: userId } } }
+                    ]
+                },
+                include: {
+                    owner: {
+                        select: { id: true, name: true, email: true }
+                    },
+                    teamMembers: {
+                        include: {
+                            user: {
+                                select: { id: true, name: true, email: true }
+                            }
+                        }
+                    }
+                },
+                orderBy: { createdAt: 'desc' }
+            });
+            
+            res.json({
+                success: true,
+                ventures: ventures,
+                message: 'Ventures retrieved successfully'
+            });
+        } catch (error) {
+            console.error('Error fetching ventures:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Failed to fetch ventures',
+                error: error.message
+            });
+        }
+    });
+    
+    console.log('✅ Ventures API endpoint mounted successfully');
+} catch (error) {
+    console.error('❌ Failed to mount ventures API:', error.message);
+}
+
 console.log('Loading legal framework API...');
 try {
     const legalFrameworkApiRoutes = require('./routes/legal-framework-api');
