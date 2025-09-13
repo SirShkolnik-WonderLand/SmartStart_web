@@ -710,7 +710,7 @@ const wss = new WebSocket.Server({
 const connections = new Map();
 
 wss.on('connection', (ws, req) => {
-    const userId = req.user ? .id;
+    const userId = req.user?.id;
 
     if (!userId) {
         ws.close(1008, 'Authentication required');
