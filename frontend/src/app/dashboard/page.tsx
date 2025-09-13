@@ -291,7 +291,7 @@ export default function DashboardPage() {
             console.warn('BUZ supply failed:', err)
             return { success: false, data: { currentPrice: 0.01 } }
           }),
-          apiService.getBUZBalance(userId || 'current-user').catch(err => {
+          apiService.getBUZBalance(userId || user?.id || '').catch(err => {
             console.warn('BUZ balance failed:', err)
             return { success: false, data: { balance: 0, stakedBalance: 0 } }
           })

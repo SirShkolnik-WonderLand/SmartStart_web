@@ -2808,6 +2808,12 @@ class ComprehensiveApiService {
 
   async getBUZBalance(userId: string): Promise<ApiResponse<BUZBalance>> {
     try {
+      // Handle special case for current-user endpoint
+      if (userId === 'current-user' || userId === '') {
+        const response = await this.fetchWithAuth<BUZBalance>('/api/v1/buz/balance/current-user')
+        return response
+      }
+      
       const response = await this.fetchWithAuth<BUZBalance>(`/api/v1/buz/balance/${userId}`)
       return response
     } catch (error) {
