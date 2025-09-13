@@ -21,7 +21,8 @@ import {
   TrendingUp,
   Shield,
   DollarSign,
-  Bell
+  Bell,
+  Activity
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -42,6 +43,7 @@ const navigation = [
   { name: 'Leaderboard', href: '/leaderboard', icon: Trophy, current: false },
   { name: 'Analytics', href: '/analytics', icon: TrendingUp, current: false },
   { name: 'Notifications', href: '/notifications', icon: Bell, current: false },
+  { name: 'Real-time', href: '/realtime', icon: Activity, current: false },
   { name: 'Search', href: '/search', icon: Search, current: false },
   { name: 'Approvals', href: '/approvals', icon: CheckCircle, current: false },
   { name: 'Admin', href: '/admin', icon: Settings, current: false },

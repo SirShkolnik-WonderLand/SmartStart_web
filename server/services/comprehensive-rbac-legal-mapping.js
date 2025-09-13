@@ -168,7 +168,7 @@ class ComprehensiveRBACLegalMapping {
      */
     getRequiredDocumentsForLevel(userLevel) {
         const requiredDocs = [];
-        
+
         for (const category of Object.values(this.documentCategories)) {
             for (const doc of Object.values(category)) {
                 if (doc.requiredFor.includes(userLevel) && doc.isRequired) {
@@ -179,7 +179,7 @@ class ComprehensiveRBACLegalMapping {
                 }
             }
         }
-        
+
         return requiredDocs;
     }
 
@@ -188,7 +188,7 @@ class ComprehensiveRBACLegalMapping {
      */
     getAccessibleDocumentsForLevel(userLevel) {
         const accessibleDocs = [];
-        
+
         for (const category of Object.values(this.documentCategories)) {
             for (const doc of Object.values(category)) {
                 if (doc.requiredFor.includes(userLevel)) {
@@ -199,7 +199,7 @@ class ComprehensiveRBACLegalMapping {
                 }
             }
         }
-        
+
         return accessibleDocs;
     }
 
@@ -209,11 +209,11 @@ class ComprehensiveRBACLegalMapping {
     getNextRBACLevel(currentLevel) {
         const levels = Object.keys(this.rbacLevels).sort((a, b) => this.rbacLevels[a] - this.rbacLevels[b]);
         const currentIndex = levels.indexOf(currentLevel);
-        
+
         if (currentIndex === -1 || currentIndex === levels.length - 1) {
             return null; // Current level not found or already at highest level
         }
-        
+
         return levels[currentIndex + 1];
     }
 
@@ -222,7 +222,7 @@ class ComprehensiveRBACLegalMapping {
      */
     getDocumentsRequiredForLevel(targetLevel) {
         const requiredDocs = [];
-        
+
         for (const category of Object.values(this.documentCategories)) {
             for (const doc of Object.values(category)) {
                 if (doc.requiredFor.includes(targetLevel) && doc.isRequired) {
@@ -233,7 +233,7 @@ class ComprehensiveRBACLegalMapping {
                 }
             }
         }
-        
+
         return requiredDocs;
     }
 
@@ -243,13 +243,13 @@ class ComprehensiveRBACLegalMapping {
     getPendingDocumentsForNextLevel(userLevel) {
         const currentLevel = this.getUserLevelNumber(userLevel);
         const nextLevel = currentLevel + 1;
-        
+
         const nextLevelName = Object.keys(this.rbacLevels).find(
             level => this.rbacLevels[level] === nextLevel
         );
-        
+
         if (!nextLevelName) return [];
-        
+
         return this.getRequiredDocumentsForLevel(nextLevelName);
     }
 
@@ -259,15 +259,15 @@ class ComprehensiveRBACLegalMapping {
     getDocumentStatus(userLevel, documentTitle, isSigned, documentState = 'EFFECTIVE') {
         const requiredDocs = this.getRequiredDocumentsForLevel(userLevel);
         const pendingDocs = this.getPendingDocumentsForNextLevel(userLevel);
-        
+
         // Check if document is required for current level
         const isRequired = requiredDocs.some(doc => doc.title === documentTitle);
         const isPending = pendingDocs.some(doc => doc.title === documentTitle);
-        
+
         if (documentState === 'EXPIRED' || documentState === 'TERMINATED') {
             return 'EXPIRED';
         }
-        
+
         if (isRequired && isSigned) {
             return 'SIGNED';
         } else if (isRequired && !isSigned) {
@@ -289,7 +289,7 @@ class ComprehensiveRBACLegalMapping {
     getNextLevel(currentLevel) {
         const currentLevelNumber = this.getUserLevelNumber(currentLevel);
         const nextLevelNumber = currentLevelNumber + 1;
-        
+
         return Object.keys(this.rbacLevels).find(
             level => this.rbacLevels[level] === nextLevelNumber
         ) || null;
@@ -301,7 +301,7 @@ class ComprehensiveRBACLegalMapping {
     canAdvanceToNextLevel(userLevel, signedDocuments) {
         const requiredDocs = this.getRequiredDocumentsForLevel(userLevel);
         const requiredTitles = requiredDocs.map(doc => doc.title);
-        
+
         return requiredTitles.every(title => signedDocuments.includes(title));
     }
 
@@ -346,7 +346,7 @@ class ComprehensiveRBACLegalMapping {
                 autoAdvance: false
             }
         };
-        
+
         return workflows[documentKey] || {
             steps: ['DRAFT', 'PENDING_REVIEW', 'APPROVED', 'SIGNED', 'EFFECTIVE'],
             requiredSignatures: ['USER', 'ALICESOLUTIONS'],
@@ -365,8 +365,8 @@ class ComprehensiveRBACLegalMapping {
                 'HIGHLY_RESTRICTED_ACCESS': 'TIER_3'
             }
         };
-        
-        return tierRequirements[documentKey]?.[userLevel] || 'TIER_0';
+
+        return tierRequirements[documentKey] ? .[userLevel] || 'TIER_0';
     }
 
     /**
@@ -418,7 +418,7 @@ class ComprehensiveRBACLegalMapping {
                 hardwareKeys: true
             }
         };
-        
+
         return requirements[userLevel] || requirements['MEMBER'];
     }
 
@@ -448,7 +448,7 @@ class ComprehensiveRBACLegalMapping {
                 requiredFields: ['projectName', 'securityTier']
             }
         };
-        
+
         return generationRequirements[documentKey] || {
             template: null,
             variables: [],

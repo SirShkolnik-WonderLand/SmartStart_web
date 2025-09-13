@@ -401,12 +401,12 @@ try {
     const { authenticateToken } = require('./middleware/auth');
     const { PrismaClient } = require('@prisma/client');
     const prisma = new PrismaClient();
-    
+
     // Simple ventures endpoint for frontend compatibility
-    app.get('/api/ventures/list/all', authenticateToken, async (req, res) => {
+    app.get('/api/ventures/list/all', authenticateToken, async(req, res) => {
         try {
             const userId = req.user.id;
-            
+
             // Get ventures for the current user
             const ventures = await prisma.venture.findMany({
                 where: {
@@ -429,7 +429,7 @@ try {
                 },
                 orderBy: { createdAt: 'desc' }
             });
-            
+
             res.json({
                 success: true,
                 ventures: ventures,
@@ -444,7 +444,7 @@ try {
             });
         }
     });
-    
+
     console.log('✅ Ventures API endpoint mounted successfully');
 } catch (error) {
     console.error('❌ Failed to mount ventures API:', error.message);
@@ -710,7 +710,7 @@ const wss = new WebSocket.Server({
 const connections = new Map();
 
 wss.on('connection', (ws, req) => {
-    const userId = req.user?.id;
+    const userId = req.user ? .id;
 
     if (!userId) {
         ws.close(1008, 'Authentication required');
