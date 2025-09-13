@@ -29,7 +29,7 @@ router.get('/test', (req, res) => {
  * GET /api/opportunities/public
  * Public route to test without authentication
  */
-router.get('/public', async (req, res) => {
+router.get('/public', async(req, res) => {
     try {
         const result = await opportunitiesService.getOpportunities({}, 'public');
         res.json(result);
@@ -46,7 +46,7 @@ router.get('/public', async (req, res) => {
  * GET /api/opportunities
  * List all opportunities with filtering and pagination
  */
-router.get('/', authenticateToken, async (req, res) => {
+router.get('/', authenticateToken, async(req, res) => {
     try {
         const filters = {
             ...req.query,
@@ -55,7 +55,7 @@ router.get('/', authenticateToken, async (req, res) => {
         };
 
         const result = await opportunitiesService.getOpportunities(filters, req.user.id);
-        
+
         if (result.success) {
             res.json(result);
         } else {
@@ -74,11 +74,14 @@ router.get('/', authenticateToken, async (req, res) => {
  * POST /api/opportunities
  * Create a new opportunity
  */
-router.post('/', authenticateToken, async (req, res) => {
+router.post('/', authenticateToken, async(req, res) => {
     try {
         // Check user level - only SUBSCRIBER+ can create opportunities
         const userLevel = req.user.level;
         const requiredLevels = ['SUBSCRIBER', 'SEAT_HOLDER', 'VENTURE_OWNER', 'VENTURE_PARTICIPANT', 'ADMIN', 'SUPER_ADMIN', 'SKY_MASTER'];
+        
+        // Debug logging
+        console.log('Opportunity creation - User level:', userLevel, 'Required levels:', requiredLevels);
         
         if (!requiredLevels.includes(userLevel)) {
             return res.status(403).json({
@@ -88,14 +91,14 @@ router.post('/', authenticateToken, async (req, res) => {
         }
 
         const result = await opportunitiesService.createOpportunity(req.body, req.user.id);
-        
+
         if (result.success) {
             // Send notification to relevant users
             await sendOpportunityCreatedNotification(result.data.opportunity, req.user);
-            
+
             // Award XP for creating opportunity
             await awardOpportunityCreationXP(req.user.id, result.data.opportunity);
-            
+
             res.status(201).json(result);
         } else {
             res.status(400).json(result);
@@ -113,10 +116,10 @@ router.post('/', authenticateToken, async (req, res) => {
  * GET /api/opportunities/:id
  * Get opportunity details
  */
-router.get('/:id', authenticateToken, async (req, res) => {
+router.get('/:id', authenticateToken, async(req, res) => {
     try {
         const result = await opportunitiesService.getOpportunityById(req.params.id, req.user.id);
-        
+
         if (result.success) {
             res.json(result);
         } else {
@@ -135,10 +138,10 @@ router.get('/:id', authenticateToken, async (req, res) => {
  * PUT /api/opportunities/:id
  * Update opportunity
  */
-router.put('/:id', authenticateToken, async (req, res) => {
+router.put('/:id', authenticateToken, async(req, res) => {
     try {
         const result = await opportunitiesService.updateOpportunity(req.params.id, req.body, req.user.id);
-        
+
         if (result.success) {
             res.json(result);
         } else {
@@ -157,10 +160,10 @@ router.put('/:id', authenticateToken, async (req, res) => {
  * DELETE /api/opportunities/:id
  * Delete opportunity
  */
-router.delete('/:id', authenticateToken, async (req, res) => {
+router.delete('/:id', authenticateToken, async(req, res) => {
     try {
         const result = await opportunitiesService.deleteOpportunity(req.params.id, req.user.id);
-        
+
         if (result.success) {
             res.json(result);
         } else {
@@ -181,12 +184,12 @@ router.delete('/:id', authenticateToken, async (req, res) => {
  * POST /api/opportunities/:id/applications
  * Apply to an opportunity
  */
-router.post('/:id/applications', authenticateToken, async (req, res) => {
+router.post('/:id/applications', authenticateToken, async(req, res) => {
     try {
         // Check user level - MEMBER+ can apply
         const userLevel = req.user.level;
         const requiredLevels = ['MEMBER', 'SUBSCRIBER', 'SEAT_HOLDER', 'VENTURE_OWNER', 'VENTURE_PARTICIPANT', 'ADMIN'];
-        
+
         if (!requiredLevels.includes(userLevel)) {
             return res.status(403).json({
                 success: false,
@@ -195,7 +198,7 @@ router.post('/:id/applications', authenticateToken, async (req, res) => {
         }
 
         const result = await opportunitiesService.applyToOpportunity(req.params.id, req.body, req.user.id);
-        
+
         if (result.success) {
             res.status(201).json(result);
         } else {
@@ -214,10 +217,10 @@ router.post('/:id/applications', authenticateToken, async (req, res) => {
  * GET /api/opportunities/:id/applications
  * Get applications for an opportunity (creator only)
  */
-router.get('/:id/applications', authenticateToken, async (req, res) => {
+router.get('/:id/applications', authenticateToken, async(req, res) => {
     try {
         const result = await opportunitiesService.getOpportunityApplications(req.params.id, req.user.id);
-        
+
         if (result.success) {
             res.json(result);
         } else {
@@ -236,10 +239,10 @@ router.get('/:id/applications', authenticateToken, async (req, res) => {
  * PUT /api/opportunities/:id/applications/:applicationId
  * Update application status (creator only)
  */
-router.put('/:id/applications/:applicationId', authenticateToken, async (req, res) => {
+router.put('/:id/applications/:applicationId', authenticateToken, async(req, res) => {
     try {
         const { status, feedback } = req.body;
-        
+
         // This would be implemented in the service
         res.json({
             success: true,
@@ -260,7 +263,7 @@ router.put('/:id/applications/:applicationId', authenticateToken, async (req, re
  * GET /api/opportunities/:id/matches
  * Get opportunity matches (creator only)
  */
-router.get('/:id/matches', authenticateToken, async (req, res) => {
+router.get('/:id/matches', authenticateToken, async(req, res) => {
     try {
         // This would be implemented in the service
         res.json({
@@ -283,10 +286,10 @@ router.get('/:id/matches', authenticateToken, async (req, res) => {
  * POST /api/opportunities/:id/matches/generate
  * Generate matches for an opportunity (creator only)
  */
-router.post('/:id/matches/generate', authenticateToken, async (req, res) => {
+router.post('/:id/matches/generate', authenticateToken, async(req, res) => {
     try {
         const result = await opportunitiesService.generateMatches(req.params.id);
-        
+
         if (result.success) {
             res.json(result);
         } else {
@@ -307,10 +310,10 @@ router.post('/:id/matches/generate', authenticateToken, async (req, res) => {
  * GET /api/opportunities/:id/analytics
  * Get opportunity analytics (creator only)
  */
-router.get('/:id/analytics', authenticateToken, async (req, res) => {
+router.get('/:id/analytics', authenticateToken, async(req, res) => {
     try {
         const result = await opportunitiesService.getOpportunityAnalytics(req.params.id, req.user.id);
-        
+
         if (result.success) {
             res.json(result);
         } else {
@@ -331,7 +334,7 @@ router.get('/:id/analytics', authenticateToken, async (req, res) => {
  * GET /api/opportunities/user/:userId/applications
  * Get user's applications
  */
-router.get('/user/:userId/applications', authenticateToken, async (req, res) => {
+router.get('/user/:userId/applications', authenticateToken, async(req, res) => {
     try {
         // Check if user is accessing their own applications
         if (req.params.userId !== req.user.id) {
@@ -362,7 +365,7 @@ router.get('/user/:userId/applications', authenticateToken, async (req, res) => 
  * GET /api/opportunities/user/:userId/matches
  * Get user's opportunity matches
  */
-router.get('/user/:userId/matches', authenticateToken, async (req, res) => {
+router.get('/user/:userId/matches', authenticateToken, async(req, res) => {
     try {
         // Check if user is accessing their own matches
         if (req.params.userId !== req.user.id) {
@@ -395,7 +398,7 @@ router.get('/user/:userId/matches', authenticateToken, async (req, res) => {
  * POST /api/opportunities/search
  * Advanced opportunity search
  */
-router.post('/search', authenticateToken, async (req, res) => {
+router.post('/search', authenticateToken, async(req, res) => {
     try {
         const filters = {
             ...req.body,
@@ -404,7 +407,7 @@ router.post('/search', authenticateToken, async (req, res) => {
         };
 
         const result = await opportunitiesService.getOpportunities(filters, req.user.id);
-        
+
         if (result.success) {
             res.json(result);
         } else {
@@ -423,16 +426,16 @@ router.post('/search', authenticateToken, async (req, res) => {
  * POST /api/opportunities/:id/apply
  * Apply to an opportunity
  */
-router.post('/:id/apply', authenticateToken, async (req, res) => {
+router.post('/:id/apply', authenticateToken, async(req, res) => {
     try {
         const { id } = req.params;
         const { coverLetter, portfolioItems, availability } = req.body;
 
         // Check if opportunity exists and is active
         const opportunity = await prisma.opportunity.findFirst({
-            where: { 
-                id, 
-                status: 'ACTIVE' 
+            where: {
+                id,
+                status: 'ACTIVE'
             }
         });
 
@@ -496,7 +499,7 @@ router.post('/:id/apply', authenticateToken, async (req, res) => {
  * GET /api/opportunities/suggestions
  * Get personalized opportunity suggestions
  */
-router.get('/suggestions', authenticateToken, async (req, res) => {
+router.get('/suggestions', authenticateToken, async(req, res) => {
     try {
         // This would be implemented in the service
         res.json({
@@ -575,7 +578,7 @@ async function sendOpportunityCreatedNotification(opportunity, creator) {
 async function awardOpportunityCreationXP(userId, opportunity) {
     try {
         let xpAmount = 50; // Base XP for creating opportunity
-        
+
         // Bonus XP based on opportunity type
         switch (opportunity.type) {
             case 'VENTURE_COLLABORATION':
