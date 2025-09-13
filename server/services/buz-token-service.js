@@ -277,10 +277,10 @@ class BUZTokenService {
                         reason: tx.reason,
                         description: tx.description,
                         status: tx.status,
-                        blockNumber: tx.blockNumber ? .toString(),
+                        blockNumber: tx.blockNumber?.toString(),
                         transactionHash: tx.transactionHash,
-                        gasUsed: tx.gasUsed ? .toString(),
-                        gasPrice: tx.gasPrice ? .toString(),
+                        gasUsed: tx.gasUsed?.toString(),
+                        gasPrice: tx.gasPrice?.toString(),
                         metadata: tx.metadata,
                         createdAt: tx.createdAt,
                         updatedAt: tx.updatedAt
