@@ -30,24 +30,24 @@ const validateAmount = (amount) => {
 };
 
 // Check user BUZ balance
-const checkBalance = async (userId, requiredAmount) => {
+const checkBalance = async(userId, requiredAmount) => {
     const token = await prisma.bUZToken.findUnique({
         where: { userId, isActive: true }
     });
-    
+
     if (!token) {
         throw new Error('User BUZ token account not found');
     }
-    
+
     if (token.balance < requiredAmount) {
         throw new Error('Insufficient BUZ balance');
     }
-    
+
     return token;
 };
 
 // Update user BUZ balance
-const updateBalance = async (userId, amountChange, type) => {
+const updateBalance = async(userId, amountChange, type) => {
     const token = await prisma.bUZToken.upsert({
         where: { userId },
         update: {
@@ -65,7 +65,7 @@ const updateBalance = async (userId, amountChange, type) => {
             totalBurned: type === 'BURN' ? Math.abs(amountChange) : 0
         }
     });
-    
+
     return token;
 };
 
@@ -74,7 +74,7 @@ const updateBalance = async (userId, amountChange, type) => {
 // ============================================================================
 
 // GET /api/buz-token/balance/:userId - Get user BUZ balance
-router.get('/balance/:userId', authenticateToken, async (req, res) => {
+router.get('/balance/:userId', authenticateToken, async(req, res) => {
     try {
         const { userId } = req.params;
         const requestingUser = req.user;
@@ -129,7 +129,7 @@ router.get('/balance/:userId', authenticateToken, async (req, res) => {
 });
 
 // GET /api/buz-token/transactions/:userId - Get user transaction history
-router.get('/transactions/:userId', authenticateToken, async (req, res) => {
+router.get('/transactions/:userId', authenticateToken, async(req, res) => {
     try {
         const { userId } = req.params;
         const { page = 1, limit = 50, type, status } = req.query;
@@ -208,7 +208,7 @@ router.get('/transactions/:userId', authenticateToken, async (req, res) => {
 });
 
 // POST /api/buz-token/transfer - Transfer BUZ tokens
-router.post('/transfer', authenticateToken, async (req, res) => {
+router.post('/transfer', authenticateToken, async(req, res) => {
     try {
         const { toUserId, amount, reason, description } = req.body;
         const fromUserId = req.user.id;
@@ -290,7 +290,7 @@ router.post('/transfer', authenticateToken, async (req, res) => {
 });
 
 // POST /api/buz-token/mint - Mint new BUZ tokens (Admin only)
-router.post('/mint', authenticateToken, async (req, res) => {
+router.post('/mint', authenticateToken, async(req, res) => {
     try {
         const { userId, amount, reason } = req.body;
         const requestingUser = req.user;
@@ -366,7 +366,7 @@ router.post('/mint', authenticateToken, async (req, res) => {
 });
 
 // POST /api/buz-token/burn - Burn BUZ tokens (Admin only)
-router.post('/burn', authenticateToken, async (req, res) => {
+router.post('/burn', authenticateToken, async(req, res) => {
     try {
         const { userId, amount, reason } = req.body;
         const requestingUser = req.user;
@@ -437,7 +437,7 @@ router.post('/burn', authenticateToken, async (req, res) => {
 // ============================================================================
 
 // POST /api/buz-token/stake - Stake BUZ tokens
-router.post('/stake', authenticateToken, async (req, res) => {
+router.post('/stake', authenticateToken, async(req, res) => {
     try {
         const { amount, tier } = req.body;
         const userId = req.user.id;
@@ -530,7 +530,7 @@ router.post('/stake', authenticateToken, async (req, res) => {
 });
 
 // GET /api/buz-token/staking/:userId - Get user staking positions
-router.get('/staking/:userId', authenticateToken, async (req, res) => {
+router.get('/staking/:userId', authenticateToken, async(req, res) => {
     try {
         const { userId } = req.params;
         const requestingUser = req.user;
@@ -581,7 +581,7 @@ router.get('/staking/:userId', authenticateToken, async (req, res) => {
 // ============================================================================
 
 // POST /api/buz-token/rewards/claim - Claim available rewards
-router.post('/rewards/claim', authenticateToken, async (req, res) => {
+router.post('/rewards/claim', authenticateToken, async(req, res) => {
     try {
         const userId = req.user.id;
 
@@ -654,7 +654,7 @@ router.post('/rewards/claim', authenticateToken, async (req, res) => {
 });
 
 // GET /api/buz-token/rewards/:userId - Get user rewards
-router.get('/rewards/:userId', authenticateToken, async (req, res) => {
+router.get('/rewards/:userId', authenticateToken, async(req, res) => {
     try {
         const { userId } = req.params;
         const requestingUser = req.user;
@@ -702,7 +702,7 @@ router.get('/rewards/:userId', authenticateToken, async (req, res) => {
 // ============================================================================
 
 // GET /api/buz-token/supply - Get BUZ token supply information
-router.get('/supply', async (req, res) => {
+router.get('/supply', async(req, res) => {
     try {
         const supply = await prisma.bUZTokenSupply.findFirst({
             orderBy: { lastUpdated: 'desc' }
@@ -745,7 +745,7 @@ router.get('/supply', async (req, res) => {
 });
 
 // GET /api/buz-token/stats - Get BUZ token statistics
-router.get('/stats', async (req, res) => {
+router.get('/stats', async(req, res) => {
     try {
         const [
             totalUsers,
@@ -794,7 +794,7 @@ router.get('/stats', async (req, res) => {
 // ===== BUZ-LEGAL INTEGRATION =====
 
 // Get BUZ token legal compliance status
-router.get('/legal-compliance/:userId', authenticateToken, async (req, res) => {
+router.get('/legal-compliance/:userId', authenticateToken, async(req, res) => {
     try {
         const { userId } = req.params;
         const currentUserId = req.user.id;
@@ -864,7 +864,7 @@ router.get('/legal-compliance/:userId', authenticateToken, async (req, res) => {
 });
 
 // Enhanced token transfer with legal compliance check
-router.post('/transfer-legal', authenticateToken, async (req, res) => {
+router.post('/transfer-legal', authenticateToken, async(req, res) => {
     try {
         const { toUserId, amount, memo } = req.body;
         const fromUserId = req.user.id;
@@ -917,7 +917,7 @@ router.post('/transfer-legal', authenticateToken, async (req, res) => {
 
         // Perform the transfer
         const transactionId = generateTransactionId();
-        
+
         // Create transaction record
         const transaction = await prisma.bUZTokenTransaction.create({
             data: {
@@ -1026,8 +1026,7 @@ async function checkUserLegalCompliance(userId) {
 // Helper function to generate BUZ transfer legal documents
 async function generateBUZTransferLegalDocuments(transactionId, fromUserId, toUserId, amount) {
     try {
-        const buzTransferDocuments = [
-            {
+        const buzTransferDocuments = [{
                 title: 'BUZ Token Transfer Agreement',
                 type: 'TOKEN_TRANSFER_AGREEMENT',
                 content: `This BUZ Token Transfer Agreement governs the transfer of ${amount} BUZ tokens from user ${fromUserId} to user ${toUserId}...`,
