@@ -199,7 +199,7 @@ def health_check():
         'status': 'healthy',
         'service': 'smartstart-brain',
         'timestamp': datetime.now().isoformat(),
-        'version': '2.0.0',
+        'version': '3.0.0',
         'modules': {
             'ml_engine': 'active',
             'analytics_engine': 'active',
