@@ -1329,7 +1329,7 @@ router.get('/legal-requirements/:userId', authenticateToken, async(req, res) => 
 
         // Get user's current journey stage
         const journeyStatus = await onboardingOrchestrator.getUserJourneyStatus(userId);
-        
+
         // Get required legal documents based on stage
         const legalRequirements = await onboardingOrchestrator.getLegalRequirementsForStage(journeyStatus.currentStage);
 
@@ -1350,5 +1350,261 @@ router.get('/legal-requirements/:userId', authenticateToken, async(req, res) => 
         });
     }
 });
+
+// ===== JOURNEY-LEGAL GATES INTEGRATION =====
+
+// Check legal compliance before advancing to next journey stage
+router.post('/advance-stage/:userId', authenticateToken, async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { targetStage } = req.body;
+        const currentUserId = req.user.id;
+
+        // Check if user can access this endpoint (own journey or admin)
+        if (userId !== currentUserId && req.user.role !== 'ADMIN') {
+            return res.status(403).json({
+                success: false,
+                message: 'Access denied'
+            });
+        }
+
+        // Get current journey status
+        const journeyStatus = await onboardingOrchestrator.getUserJourneyStatus(userId);
+        
+        // Check if user is trying to advance to a valid stage
+        const validStages = ['Account Creation', 'Profile Setup', 'Legal Documents', 'Subscription Setup', 'Platform Orientation', 'Welcome & Dashboard'];
+        if (!validStages.includes(targetStage)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid target stage',
+                validStages
+            });
+        }
+
+        // Get legal requirements for the target stage
+        const legalRequirements = await onboardingOrchestrator.getLegalRequirementsForStage(targetStage);
+        
+        // Check if legal documents are required for this stage
+        if (legalRequirements.length > 0) {
+            // Check user's legal compliance
+            const legalCompliance = await checkUserLegalComplianceForJourney(userId);
+            
+            if (!legalCompliance.compliant) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Legal document requirements not met for stage advancement',
+                    error: {
+                        code: 'LEGAL_COMPLIANCE_REQUIRED',
+                        currentStage: journeyStatus.currentStage,
+                        targetStage: targetStage,
+                        missingDocuments: legalCompliance.missingDocuments,
+                        requiredDocuments: legalRequirements
+                    }
+                });
+            }
+        }
+
+        // Advance to next stage
+        const advancementResult = await onboardingOrchestrator.advanceToStage(userId, targetStage);
+
+        res.json({
+            success: true,
+            data: {
+                previousStage: journeyStatus.currentStage,
+                currentStage: targetStage,
+                legalCompliance: legalRequirements.length > 0 ? await checkUserLegalComplianceForJourney(userId) : null,
+                advancementResult
+            },
+            message: 'Journey stage advanced successfully with legal compliance check'
+        });
+
+    } catch (error) {
+        console.error('Error advancing journey stage:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to advance journey stage',
+            error: error.message
+        });
+    }
+});
+
+// Get journey stage legal gates and requirements
+router.get('/legal-gates/:userId', authenticateToken, async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const currentUserId = req.user.id;
+
+        // Check if user can access this endpoint (own journey or admin)
+        if (userId !== currentUserId && req.user.role !== 'ADMIN') {
+            return res.status(403).json({
+                success: false,
+                message: 'Access denied'
+            });
+        }
+
+        // Get current journey status
+        const journeyStatus = await onboardingOrchestrator.getUserJourneyStatus(userId);
+        
+        // Get legal requirements for all stages
+        const allStages = ['Account Creation', 'Profile Setup', 'Legal Documents', 'Subscription Setup', 'Platform Orientation', 'Welcome & Dashboard'];
+        const stageLegalGates = {};
+
+        for (const stage of allStages) {
+            const legalRequirements = await onboardingOrchestrator.getLegalRequirementsForStage(stage);
+            stageLegalGates[stage] = {
+                hasLegalGate: legalRequirements.length > 0,
+                requiredDocuments: legalRequirements,
+                canAccess: true // Will be determined by legal compliance check
+            };
+        }
+
+        // Check current legal compliance
+        const legalCompliance = await checkUserLegalComplianceForJourney(userId);
+
+        // Determine which stages can be accessed
+        for (const [stage, gate] of Object.entries(stageLegalGates)) {
+            if (gate.hasLegalGate) {
+                gate.canAccess = legalCompliance.compliant;
+                gate.blockingReason = legalCompliance.compliant ? null : 'Legal documents required';
+            }
+        }
+
+        res.json({
+            success: true,
+            data: {
+                userId,
+                currentStage: journeyStatus.currentStage,
+                legalCompliance,
+                stageLegalGates,
+                journeyProgress: journeyStatus.progress
+            },
+            message: 'Journey legal gates information retrieved successfully'
+        });
+
+    } catch (error) {
+        console.error('Error fetching journey legal gates:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch journey legal gates',
+            error: error.message
+        });
+    }
+});
+
+// Get journey stage with legal compliance check
+router.get('/stage-with-legal-check/:userId', authenticateToken, async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const currentUserId = req.user.id;
+
+        // Check if user can access this endpoint (own journey or admin)
+        if (userId !== currentUserId && req.user.role !== 'ADMIN') {
+            return res.status(403).json({
+                success: false,
+                message: 'Access denied'
+            });
+        }
+
+        // Get current journey status
+        const journeyStatus = await onboardingOrchestrator.getUserJourneyStatus(userId);
+        
+        // Get legal requirements for current stage
+        const legalRequirements = await onboardingOrchestrator.getLegalRequirementsForStage(journeyStatus.currentStage);
+        
+        // Check legal compliance
+        const legalCompliance = await checkUserLegalComplianceForJourney(userId);
+        
+        // Determine if user can access current stage
+        const canAccessCurrentStage = legalRequirements.length === 0 || legalCompliance.compliant;
+
+        res.json({
+            success: true,
+            data: {
+                userId,
+                currentStage: journeyStatus.currentStage,
+                canAccessCurrentStage,
+                legalRequirements,
+                legalCompliance,
+                blockingReason: canAccessCurrentStage ? null : 'Legal documents required for current stage',
+                journeyProgress: journeyStatus.progress
+            },
+            message: 'Journey stage with legal compliance check retrieved successfully'
+        });
+
+    } catch (error) {
+        console.error('Error fetching journey stage with legal check:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch journey stage with legal check',
+            error: error.message
+        });
+    }
+});
+
+// Helper function to check user legal compliance for journey stages
+async function checkUserLegalComplianceForJourney(userId) {
+    try {
+        // Check user's signed legal documents
+        const signedLegalDocs = await prisma.legalDocumentSignature.findMany({
+            where: { signerId: userId },
+            include: {
+                document: {
+                    select: {
+                        id: true,
+                        title: true,
+                        type: true,
+                        status: true
+                    }
+                }
+            }
+        });
+
+        const requiredDocumentTitles = [
+            'Platform Participation Agreement',
+            'Mutual Confidentiality Agreement',
+            'Inventions & Intellectual Property Agreement'
+        ];
+
+        let signedDocuments = 0;
+        let missingDocuments = [];
+
+        // Check which required documents are signed
+        for (const requiredDoc of requiredDocumentTitles) {
+            let found = false;
+            for (const signedDoc of signedLegalDocs) {
+                if (signedDoc.document.title.includes(requiredDoc.split(' ')[0])) {
+                    found = true;
+                    signedDocuments++;
+                    break;
+                }
+            }
+            if (!found) {
+                missingDocuments.push(requiredDoc.toLowerCase().replace(/\s+/g, '-'));
+            }
+        }
+
+        return {
+            compliant: signedDocuments === requiredDocumentTitles.length,
+            signedDocuments,
+            totalRequired: requiredDocumentTitles.length,
+            missingDocuments,
+            signedDocumentsList: signedLegalDocs.map(doc => ({
+                title: doc.document.title,
+                type: doc.document.type,
+                signedAt: doc.signedAt
+            }))
+        };
+
+    } catch (error) {
+        console.error('Error checking legal compliance for journey:', error);
+        return {
+            compliant: false,
+            signedDocuments: 0,
+            totalRequired: 3,
+            missingDocuments: ['platform-participation-agreement', 'mutual-confidentiality-agreement', 'inventions-ip-agreement'],
+            signedDocumentsList: []
+        };
+    }
+}
 
 module.exports = router;
