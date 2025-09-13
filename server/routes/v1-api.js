@@ -106,6 +106,15 @@ router.get('/buz/balance/:userId', authenticateToken, async (req, res) => {
         const { userId } = req.params;
         const requestingUser = req.user;
 
+        // Debug logging
+        console.log('BUZ Balance Debug:', {
+            requestingUserId: requestingUser.id,
+            targetUserId: userId,
+            isOwnBalance: requestingUser.id === userId,
+            hasUserReadPermission: (requestingUser.permissions || []).includes('user:read'),
+            permissions: requestingUser.permissions
+        });
+
         // Authorization: allow own balance or users with user:read permission
         if (requestingUser.id !== userId && !(requestingUser.permissions || []).includes('user:read')) {
             return res.status(403).json({
