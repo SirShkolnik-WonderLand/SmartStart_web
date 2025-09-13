@@ -16,7 +16,10 @@ import {
   Star,
   Shield,
   Zap,
-  X
+  X,
+  Coins,
+  Wallet,
+  TrendingUp
 } from 'lucide-react'
 
 interface OnboardingStep {
@@ -369,7 +372,8 @@ export default function OnboardingFlow({ userId, onComplete, initialStep }: Onbo
           'PROFILE_COMPLETED',
           'LEGAL_PACK_SIGNED',
           'SUBSCRIPTION_ACTIVATED',
-          'ORIENTATION_COMPLETED'
+          'ORIENTATION_COMPLETED',
+          'BUZ_TOKENS_INTRODUCED'
         ]
         
         if (stepActions[currentStep]) {
@@ -1015,6 +1019,79 @@ export default function OnboardingFlow({ userId, onComplete, initialStep }: Onbo
           </div>
         </div>
       )
+    },
+    {
+      id: 'buz-tokens',
+      title: 'BUZ Token Setup',
+      description: 'Learn about BUZ tokens and set up your wallet',
+      icon: <Coins className="w-6 h-6" />,
+      isCompleted: false, // We'll check this based on user's BUZ balance
+      isRequired: false,
+      component: (
+        <div className="space-y-6">
+          <div className="text-center mb-6">
+            <Coins className="w-12 h-12 text-yellow-600 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Welcome to BUZ Tokens!</h3>
+            <p className="text-muted-foreground">BUZ tokens are the utility currency of SmartStart platform</p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="border border-border rounded-lg p-4">
+              <h4 className="font-semibold mb-2 flex items-center gap-2">
+                <Wallet className="w-5 h-5 text-blue-600" />
+                Personal Wallet
+              </h4>
+              <p className="text-sm text-muted-foreground">
+                Store, send, and receive BUZ tokens securely
+              </p>
+            </div>
+            
+            <div className="border border-border rounded-lg p-4">
+              <h4 className="font-semibold mb-2 flex items-center gap-2">
+                <TrendingUp className="w-5 h-5 text-green-600" />
+                Earn Rewards
+              </h4>
+              <p className="text-sm text-muted-foreground">
+                Earn BUZ tokens by contributing to ventures and completing tasks
+              </p>
+            </div>
+            
+            <div className="border border-border rounded-lg p-4">
+              <h4 className="font-semibold mb-2 flex items-center gap-2">
+                <Shield className="w-5 h-5 text-purple-600" />
+                Staking Program
+              </h4>
+              <p className="text-sm text-muted-foreground">
+                Stake your BUZ tokens to earn additional rewards and APY
+              </p>
+            </div>
+            
+            <div className="border border-border rounded-lg p-4">
+              <h4 className="font-semibold mb-2 flex items-center gap-2">
+                <Star className="w-5 h-5 text-yellow-600" />
+                Platform Services
+              </h4>
+              <p className="text-sm text-muted-foreground">
+                Use BUZ tokens to access premium features and services
+              </p>
+            </div>
+          </div>
+
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+            <h4 className="font-semibold mb-2 text-yellow-800">🎉 You'll receive 100 BUZ tokens as a welcome bonus!</h4>
+            <p className="text-sm text-yellow-700">
+              These tokens will be automatically added to your wallet after completing setup.
+            </p>
+          </div>
+
+          <div className="bg-primary/10 rounded-lg p-4">
+            <h4 className="font-semibold mb-2">Ready to explore BUZ tokens?</h4>
+            <p className="text-sm text-muted-foreground">
+              You can access your wallet and BUZ token dashboard anytime from the main navigation.
+            </p>
+          </div>
+        </div>
+      )
     }
   ]
 
@@ -1060,6 +1137,8 @@ export default function OnboardingFlow({ userId, onComplete, initialStep }: Onbo
         return selectedPlan && paymentData.cardNumber && paymentData.expiryDate && paymentData.cvv && paymentData.name
       case 4: // Orientation
         return true // Optional step
+      case 5: // BUZ Tokens
+        return true // Optional step - just informational
       default:
         return false
     }

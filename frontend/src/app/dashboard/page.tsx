@@ -170,6 +170,15 @@ export default function DashboardPage() {
       href: "/buz"
     })
     
+    // Add wallet management
+    suggestions.push({
+      title: "Personal Wallet",
+      description: "Access your BUZ token wallet",
+      icon: Wallet,
+      color: "bg-gradient-to-r from-blue-500 to-indigo-500",
+      href: "/wallet"
+    })
+    
     // Add some fun activities
     suggestions.push({
       title: "Explore Opportunities",
@@ -222,6 +231,22 @@ export default function DashboardPage() {
       facts.push({
         icon: Star,
         text: `You're on the ${subscriptionStatus.planName || 'Pro'} plan!`,
+        color: "text-blue-600"
+      })
+    }
+    
+    if (buzBalance > 0) {
+      facts.push({
+        icon: Coins,
+        text: `You have ${buzBalance.toLocaleString()} BUZ tokens!`,
+        color: "text-yellow-600"
+      })
+    }
+    
+    if (buzStaked > 0) {
+      facts.push({
+        icon: Wallet,
+        text: `You have ${buzStaked.toLocaleString()} BUZ staked!`,
         color: "text-blue-600"
       })
     }
@@ -682,6 +707,20 @@ export default function DashboardPage() {
             >
               <TrendingUp className="w-4 h-4" />
               View Analytics
+            </Link>
+            <Link
+              href="/buz"
+              className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-6 py-3 rounded-lg hover:from-yellow-600 hover:to-orange-600 transition-all duration-200 shadow-lg flex items-center gap-2"
+            >
+              <Coins className="w-4 h-4" />
+              BUZ Tokens
+            </Link>
+            <Link
+              href="/wallet"
+              className="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-6 py-3 rounded-lg hover:from-blue-600 hover:to-indigo-600 transition-all duration-200 shadow-lg flex items-center gap-2"
+            >
+              <Wallet className="w-4 h-4" />
+              My Wallet
             </Link>
           </div>
         </div>

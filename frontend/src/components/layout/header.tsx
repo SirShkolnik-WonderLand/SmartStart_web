@@ -8,17 +8,24 @@ import { Input } from '@/components/ui/input'
 import { useTheme } from '@/components/theme-provider'
 import { useUIStore } from '@/store/useUIStore'
 import { useAuthStore } from '@/store/useAuthStore'
+import GlobalSearch from '@/components/search/GlobalSearch'
 
 export function Header() {
   const { theme, toggleTheme } = useTheme()
   const { setSidebarOpen } = useUIStore()
   const { user } = useAuthStore()
   const [searchQuery, setSearchQuery] = useState('')
+  const [isGlobalSearchOpen, setIsGlobalSearchOpen] = useState(false)
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
-    // TODO: Implement search functionality
-    console.log('Search:', searchQuery)
+    if (searchQuery.trim()) {
+      setIsGlobalSearchOpen(true)
+    }
+  }
+
+  const handleSearchInputFocus = () => {
+    setIsGlobalSearchOpen(true)
   }
 
   // const handleLogout = () => {
@@ -62,7 +69,8 @@ export function Header() {
                 placeholder="Search ventures, roles, or people..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 pr-4"
+                onFocus={handleSearchInputFocus}
+                className="pl-10 pr-4 cursor-pointer"
               />
             </div>
           </form>
@@ -107,6 +115,12 @@ export function Header() {
           )}
         </div>
       </div>
+
+      {/* Global Search Modal */}
+      <GlobalSearch
+        isOpen={isGlobalSearchOpen}
+        onClose={() => setIsGlobalSearchOpen(false)}
+      />
     </motion.header>
   )
 }

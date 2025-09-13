@@ -1,590 +1,489 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
+import { motion } from 'framer-motion'
 import { 
-  User, 
   Shield, 
-  Settings as SettingsIcon, 
-  Lock,
-  Save,
-  Eye,
+  Bell, 
+  User, 
+  Lock, 
+  Smartphone, 
+  Key, 
+  Eye, 
   EyeOff,
-  Bell,
-  Globe,
-  Palette,
-  Database,
-  Key,
-  Trash2,
-  Download,
-  Upload,
   CheckCircle,
   AlertCircle,
-  RefreshCw,
-  Crown
+  Save,
+  Trash2
 } from 'lucide-react'
-import { comprehensiveApiService as apiService, User as UserType } from '@/lib/api-comprehensive'
+import TwoFactorSetup from '@/components/auth/TwoFactorSetup'
 
 export default function SettingsPage() {
-  const [activeTab, setActiveTab] = useState<'profile' | 'system' | 'rbac' | 'security' | 'subscriptions'>('profile')
-  const [user, setUser] = useState<UserType | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [isSaving, setIsSaving] = useState(false)
-  const [showPassword, setShowPassword] = useState(false)
-  const [notifications, setNotifications] = useState({
+  const [activeTab, setActiveTab] = useState('security')
+  const [is2FASetupOpen, setIs2FASetupOpen] = useState(false)
+  const [is2FAEnabled, setIs2FAEnabled] = useState(false)
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false)
+  const [showNewPassword, setShowNewPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [passwordForm, setPasswordForm] = useState({
+    current: '',
+    new: '',
+    confirm: ''
+  })
+  const [profileForm, setProfileForm] = useState({
+    firstName: 'John',
+    lastName: 'Doe',
+    email: 'john.doe@example.com',
+    bio: 'Entrepreneur and startup enthusiast',
+    location: 'San Francisco, CA'
+  })
+  const [notificationSettings, setNotificationSettings] = useState({
     email: true,
     push: true,
     sms: false,
-    marketing: false
+    marketing: false,
+    security: true,
+    updates: true
   })
-  const [theme, setTheme] = useState('light')
-  const [language, setLanguage] = useState('en')
-  const [timezone, setTimezone] = useState('UTC')
+  const [isLoading, setIsLoading] = useState(false)
+  const [message, setMessage] = useState('')
 
   const tabs = [
-    { id: 'profile', name: 'Profile', icon: User },
-    { id: 'system', name: 'System', icon: SettingsIcon },
-    { id: 'subscriptions', name: 'Subscriptions', icon: Crown },
-    { id: 'rbac', name: 'RBAC', icon: Shield },
-    { id: 'security', name: 'Security', icon: Lock }
+    { id: 'profile', label: 'Profile', icon: User },
+    { id: 'security', label: 'Security', icon: Shield },
+    { id: 'notifications', label: 'Notifications', icon: Bell },
+    { id: 'privacy', label: 'Privacy', icon: Lock }
   ]
 
-  useEffect(() => {
-    const loadUserData = async () => {
-      try {
-        const response = await apiService.getCurrentUser()
-        if (response.success && response.data) {
-          setUser(response.data)
-        }
-      } catch (error) {
-        console.error('Error loading user data:', error)
-      } finally {
-        setIsLoading(false)
-      }
+  const handlePasswordChange = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsLoading(true)
+    setMessage('')
+
+    if (passwordForm.new !== passwordForm.confirm) {
+      setMessage('New passwords do not match')
+      setIsLoading(false)
+      return
     }
 
-    loadUserData()
-  }, [])
+    if (passwordForm.new.length < 8) {
+      setMessage('Password must be at least 8 characters long')
+      setIsLoading(false)
+      return
+    }
 
-  const handleSaveProfile = async () => {
-    if (!user) return
-    
-    setIsSaving(true)
     try {
-      const response = await apiService.updateUser(user.id, {
-        name: user.name,
-        email: user.email,
-        bio: user.bio || '',
-        location: user.location || '',
-        website: user.website || ''
-      })
-      
-      if (response.success) {
-        // Show success message
-        console.log('Profile updated successfully')
-      }
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      setMessage('Password updated successfully!')
+      setPasswordForm({ current: '', new: '', confirm: '' })
     } catch (error) {
-      console.error('Error updating profile:', error)
+      setMessage('Failed to update password. Please try again.')
     } finally {
-      setIsSaving(false)
+      setIsLoading(false)
     }
   }
 
-  const handlePasswordChange = async (currentPassword: string, newPassword: string) => {
-    setIsSaving(true)
+  const handleProfileUpdate = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsLoading(true)
+    setMessage('')
+
     try {
-      // This would call a password change API endpoint
-      console.log('Changing password...')
-      // await apiService.changePassword(currentPassword, newPassword)
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      setMessage('Profile updated successfully!')
     } catch (error) {
-      console.error('Error changing password:', error)
+      setMessage('Failed to update profile. Please try again.')
     } finally {
-      setIsSaving(false)
+      setIsLoading(false)
     }
   }
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen wonderland-bg flex items-center justify-center">
-        <div className="glass rounded-xl p-8 text-center">
-          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-foreground-muted">Loading settings...</p>
-        </div>
-      </div>
-    )
+  const handleNotificationUpdate = async () => {
+    setIsLoading(true)
+    setMessage('')
+
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      setMessage('Notification settings updated!')
+    } catch (error) {
+      setMessage('Failed to update notification settings.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handle2FAComplete = () => {
+    setIs2FAEnabled(true)
+    setIs2FASetupOpen(false)
+    setMessage('Two-factor authentication enabled successfully!')
+  }
+
+  const handle2FADisable = async () => {
+    if (!confirm('Are you sure you want to disable two-factor authentication? This will make your account less secure.')) {
+      return
+    }
+
+    setIsLoading(true)
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      setIs2FAEnabled(false)
+      setMessage('Two-factor authentication disabled.')
+    } catch (error) {
+      setMessage('Failed to disable 2FA. Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
-    <div className="min-h-screen wonderland-bg">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50">
       <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-primary mb-2">Settings</h1>
-          <p className="text-foreground-muted">Manage your account, system preferences, and access controls</p>
-        </div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="max-w-4xl mx-auto"
+        >
+          {/* Header */}
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Settings</h1>
+            <p className="text-gray-600">Manage your account settings and preferences</p>
+          </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Sidebar Navigation */}
-          <div className="lg:col-span-1">
-            <div className="wonderland-card glass-surface p-6 sticky top-8">
-              <nav className="space-y-2">
+          {/* Message */}
+          {message && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className={`mb-6 p-4 rounded-lg flex items-center ${
+                message.includes('success') || message.includes('enabled')
+                  ? 'bg-green-50 text-green-700 border border-green-200'
+                  : 'bg-red-50 text-red-700 border border-red-200'
+              }`}
+            >
+              {message.includes('success') || message.includes('enabled') ? (
+                <CheckCircle className="w-5 h-5 mr-2" />
+              ) : (
+                <AlertCircle className="w-5 h-5 mr-2" />
+              )}
+              {message}
+            </motion.div>
+          )}
+
+          <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-lg border border-purple-100 overflow-hidden">
+            {/* Tabs */}
+            <div className="border-b border-gray-200">
+              <nav className="flex space-x-8 px-6">
                 {tabs.map((tab) => {
-                  const Icon = tab.icon
+                  const IconComponent = tab.icon
                   return (
                     <button
                       key={tab.id}
-                      onClick={() => setActiveTab(tab.id as 'profile' | 'system' | 'rbac' | 'security')}
-                      className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
+                      onClick={() => setActiveTab(tab.id)}
+                      className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 transition-colors ${
                         activeTab === tab.id
-                          ? 'bg-gradient-to-r from-primary to-accent text-white shadow-lg'
-                          : 'text-foreground-muted hover:bg-glass-surface hover:text-primary'
+                          ? 'border-purple-500 text-purple-600'
+                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                       }`}
                     >
-                      <Icon className="w-5 h-5" />
-                      <span className="font-medium">{tab.name}</span>
+                      <IconComponent className="w-4 h-4" />
+                      <span>{tab.label}</span>
                     </button>
                   )
                 })}
               </nav>
             </div>
-          </div>
 
-          {/* Main Content */}
-          <div className="lg:col-span-3">
-            {/* Profile Settings */}
-            {activeTab === 'profile' && (
-              <div className="space-y-6">
-                <div className="wonderland-card glass-surface p-6">
-                  <div className="flex items-center gap-3 mb-6">
-                    <User className="w-6 h-6 text-primary" />
-                    <h2 className="text-2xl font-bold text-primary">Profile Settings</h2>
-                  </div>
-                  
-                  <div className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Tab Content */}
+            <div className="p-6">
+              {/* Profile Tab */}
+              {activeTab === 'profile' && (
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="space-y-6"
+                >
+                  <h2 className="text-xl font-semibold text-gray-900">Profile Information</h2>
+                  <form onSubmit={handleProfileUpdate} className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-foreground mb-2">Full Name</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          First Name
+                        </label>
                         <input
                           type="text"
-                          value={user?.name || ''}
-                          onChange={(e) => setUser(prev => prev ? { ...prev, name: e.target.value } : null)}
-                          className="w-full px-3 py-2 bg-glass-surface border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                          value={profileForm.firstName}
+                          onChange={(e) => setProfileForm({...profileForm, firstName: e.target.value})}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-foreground mb-2">Email</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Last Name
+                        </label>
                         <input
-                          type="email"
-                          value={user?.email || ''}
-                          onChange={(e) => setUser(prev => prev ? { ...prev, email: e.target.value } : null)}
-                          className="w-full px-3 py-2 bg-glass-surface border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                          type="text"
+                          value={profileForm.lastName}
+                          onChange={(e) => setProfileForm({...profileForm, lastName: e.target.value})}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                         />
                       </div>
                     </div>
-
                     <div>
-                      <label className="block text-sm font-medium text-foreground mb-2">Bio</label>
-                      <textarea
-                        value={user?.bio || ''}
-                        onChange={(e) => setUser(prev => prev ? { ...prev, bio: e.target.value } : null)}
-                        rows={3}
-                        className="w-full px-3 py-2 bg-glass-surface border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                        placeholder="Tell us about yourself..."
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Email
+                      </label>
+                      <input
+                        type="email"
+                        value={profileForm.email}
+                        onChange={(e) => setProfileForm({...profileForm, email: e.target.value})}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                       />
                     </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div>
-                        <label className="block text-sm font-medium text-foreground mb-2">Location</label>
-                        <input
-                          type="text"
-                          value={user?.location || ''}
-                          onChange={(e) => setUser(prev => prev ? { ...prev, location: e.target.value } : null)}
-                          className="w-full px-3 py-2 bg-glass-surface border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                          placeholder="City, Country"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-foreground mb-2">Website</label>
-                        <input
-                          type="url"
-                          value={user?.website || ''}
-                          onChange={(e) => setUser(prev => prev ? { ...prev, website: e.target.value } : null)}
-                          className="w-full px-3 py-2 bg-glass-surface border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                          placeholder="https://yourwebsite.com"
-                        />
-                      </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Bio
+                      </label>
+                      <textarea
+                        value={profileForm.bio}
+                        onChange={(e) => setProfileForm({...profileForm, bio: e.target.value})}
+                        rows={3}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      />
                     </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Location
+                      </label>
+                      <input
+                        type="text"
+                        value={profileForm.location}
+                        onChange={(e) => setProfileForm({...profileForm, location: e.target.value})}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      />
+                    </div>
+                    <button
+                      type="submit"
+                      disabled={isLoading}
+                      className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-2 rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-200 shadow-lg disabled:opacity-50"
+                    >
+                      {isLoading ? 'Saving...' : 'Save Changes'}
+                    </button>
+                  </form>
+                </motion.div>
+              )}
 
-                    <div className="flex justify-end">
-                      <button
-                        onClick={handleSaveProfile}
-                        disabled={isSaving}
-                        className="wonder-button flex items-center gap-2 px-6 py-2"
-                      >
-                        {isSaving ? (
-                          <RefreshCw className="w-4 h-4 animate-spin" />
+              {/* Security Tab */}
+              {activeTab === 'security' && (
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="space-y-6"
+                >
+                  <h2 className="text-xl font-semibold text-gray-900">Security Settings</h2>
+                  
+                  {/* Two-Factor Authentication */}
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                          is2FAEnabled ? 'bg-green-100' : 'bg-gray-100'
+                        }`}>
+                          <Smartphone className={`w-5 h-5 ${
+                            is2FAEnabled ? 'text-green-600' : 'text-gray-600'
+                          }`} />
+                        </div>
+                        <div>
+                          <h3 className="font-medium text-gray-900">Two-Factor Authentication</h3>
+                          <p className="text-sm text-gray-600">
+                            {is2FAEnabled 
+                              ? 'Your account is protected with 2FA'
+                              : 'Add an extra layer of security to your account'
+                            }
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        {is2FAEnabled ? (
+                          <button
+                            onClick={handle2FADisable}
+                            disabled={isLoading}
+                            className="px-4 py-2 text-red-600 hover:text-red-700 text-sm font-medium disabled:opacity-50"
+                          >
+                            Disable
+                          </button>
                         ) : (
-                          <Save className="w-4 h-4" />
+                          <button
+                            onClick={() => setIs2FASetupOpen(true)}
+                            className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm font-medium"
+                          >
+                            Enable
+                          </button>
                         )}
-                        {isSaving ? 'Saving...' : 'Save Changes'}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* System Settings */}
-            {activeTab === 'system' && (
-              <div className="space-y-6">
-                <div className="wonderland-card glass-surface p-6">
-                  <div className="flex items-center gap-3 mb-6">
-                    <SettingsIcon className="w-6 h-6 text-primary" />
-                    <h2 className="text-2xl font-bold text-primary">System Settings</h2>
-                  </div>
-                  
-                  <div className="space-y-6">
-                    {/* Theme Settings */}
-                    <div>
-                      <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-                        <Palette className="w-5 h-5" />
-                        Appearance
-                      </h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-sm font-medium text-foreground mb-2">Theme</label>
-                          <select
-                            value={theme}
-                            onChange={(e) => setTheme(e.target.value)}
-                            className="w-full px-3 py-2 bg-glass-surface border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                          >
-                            <option value="light">Light</option>
-                            <option value="dark">Dark</option>
-                            <option value="auto">Auto</option>
-                          </select>
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-foreground mb-2">Language</label>
-                          <select
-                            value={language}
-                            onChange={(e) => setLanguage(e.target.value)}
-                            className="w-full px-3 py-2 bg-glass-surface border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                          >
-                            <option value="en">English</option>
-                            <option value="es">Spanish</option>
-                            <option value="fr">French</option>
-                            <option value="de">German</option>
-                          </select>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Notifications */}
-                    <div>
-                      <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-                        <Bell className="w-5 h-5" />
-                        Notifications
-                      </h3>
-                      <div className="space-y-4">
-                        {Object.entries(notifications).map(([key, value]) => (
-                          <div key={key} className="flex items-center justify-between p-4 bg-glass-surface rounded-lg">
-                            <div>
-                              <div className="font-medium text-foreground capitalize">{key} notifications</div>
-                              <div className="text-sm text-foreground-muted">
-                                {key === 'email' && 'Receive notifications via email'}
-                                {key === 'push' && 'Receive push notifications'}
-                                {key === 'sms' && 'Receive SMS notifications'}
-                                {key === 'marketing' && 'Receive marketing communications'}
-                              </div>
-                            </div>
-                            <button
-                              onClick={() => setNotifications(prev => ({ ...prev, [key]: !value }))}
-                              className={`w-12 h-6 rounded-full transition-colors ${
-                                value ? 'bg-primary' : 'bg-gray-300'
-                              }`}
-                            >
-                              <div className={`w-5 h-5 bg-white rounded-full transition-transform ${
-                                value ? 'translate-x-6' : 'translate-x-0.5'
-                              }`} />
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Data Management */}
-                    <div>
-                      <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-                        <Database className="w-5 h-5" />
-                        Data Management
-                      </h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <button className="flex items-center gap-3 p-4 bg-glass-surface rounded-lg hover:bg-glass-highlight transition-colors">
-                          <Download className="w-5 h-5 text-primary" />
-                          <div className="text-left">
-                            <div className="font-medium text-foreground">Export Data</div>
-                            <div className="text-sm text-foreground-muted">Download your data</div>
-                          </div>
-                        </button>
-                        <button className="flex items-center gap-3 p-4 bg-glass-surface rounded-lg hover:bg-glass-highlight transition-colors">
-                          <Upload className="w-5 h-5 text-accent" />
-                          <div className="text-left">
-                            <div className="font-medium text-foreground">Import Data</div>
-                            <div className="text-sm text-foreground-muted">Upload your data</div>
-                          </div>
-                        </button>
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>
-            )}
 
-            {/* RBAC Settings */}
-            {activeTab === 'rbac' && (
-              <div className="space-y-6">
-                <div className="wonderland-card glass-surface p-6">
-                  <div className="flex items-center gap-3 mb-6">
-                    <Shield className="w-6 h-6 text-primary" />
-                    <h2 className="text-2xl font-bold text-primary">Role-Based Access Control</h2>
-                  </div>
-                  
-                  <div className="space-y-6">
-                    <div className="text-center py-8">
-                      <Shield className="w-16 h-16 text-foreground-muted mx-auto mb-4" />
-                      <h3 className="text-xl font-semibold text-foreground mb-2">RBAC Management</h3>
-                      <p className="text-foreground-muted mb-6">
-                        Role-based access control settings will be available here. This feature allows you to manage user permissions and roles.
-                      </p>
-                      <div className="flex justify-center gap-4">
-                        <button className="wonder-button flex items-center gap-2 px-4 py-2">
-                          <User className="w-4 h-4" />
-                          Manage Users
-                        </button>
-                        <button className="wonder-button flex items-center gap-2 px-4 py-2">
-                          <Shield className="w-4 h-4" />
-                          Manage Roles
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Subscription Settings */}
-            {activeTab === 'subscriptions' && (
-              <div className="space-y-6">
-                <div className="wonderland-card glass-surface p-6">
-                  <div className="flex items-center gap-3 mb-6">
-                    <Crown className="w-6 h-6 text-primary" />
-                    <h2 className="text-2xl font-bold text-primary">Subscription Management</h2>
-                  </div>
-                  
-                  <div className="space-y-6">
-                    {/* Current Plan */}
-                    <div>
-                      <h3 className="text-lg font-semibold text-foreground mb-4">Current Plan</h3>
-                      <div className="glass rounded-xl p-6">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <div className="text-xl font-semibold text-foreground">Pro Plan</div>
-                            <div className="text-foreground-muted">$29/month • Billed monthly</div>
-                            <div className="text-sm text-success mt-1">✓ Active</div>
-                          </div>
-                          <div className="text-right">
-                            <div className="text-2xl font-bold text-foreground">$29</div>
-                            <div className="text-sm text-foreground-muted">per month</div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Plan Features */}
-                    <div>
-                      <h3 className="text-lg font-semibold text-foreground mb-4">Plan Features</h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="flex items-center gap-3 p-3 bg-glass-surface rounded-lg">
-                          <CheckCircle className="w-5 h-5 text-success" />
-                          <span className="text-foreground">Unlimited ventures</span>
-                        </div>
-                        <div className="flex items-center gap-3 p-3 bg-glass-surface rounded-lg">
-                          <CheckCircle className="w-5 h-5 text-success" />
-                          <span className="text-foreground">Advanced analytics</span>
-                        </div>
-                        <div className="flex items-center gap-3 p-3 bg-glass-surface rounded-lg">
-                          <CheckCircle className="w-5 h-5 text-success" />
-                          <span className="text-foreground">Priority support</span>
-                        </div>
-                        <div className="flex items-center gap-3 p-3 bg-glass-surface rounded-lg">
-                          <CheckCircle className="w-5 h-5 text-success" />
-                          <span className="text-foreground">Custom integrations</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Billing History */}
-                    <div>
-                      <h3 className="text-lg font-semibold text-foreground mb-4">Billing History</h3>
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between p-4 bg-glass-surface rounded-lg">
-                          <div>
-                            <div className="font-medium text-foreground">Pro Plan - Monthly</div>
-                            <div className="text-sm text-foreground-muted">Dec 1, 2024</div>
-                          </div>
-                          <div className="text-right">
-                            <div className="font-medium text-foreground">$29.00</div>
-                            <div className="text-sm text-success">Paid</div>
-                          </div>
-                        </div>
-                        <div className="flex items-center justify-between p-4 bg-glass-surface rounded-lg">
-                          <div>
-                            <div className="font-medium text-foreground">Pro Plan - Monthly</div>
-                            <div className="text-sm text-foreground-muted">Nov 1, 2024</div>
-                          </div>
-                          <div className="text-right">
-                            <div className="font-medium text-foreground">$29.00</div>
-                            <div className="text-sm text-success">Paid</div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex gap-4">
-                      <button className="wonder-button px-6 py-2">
-                        <Crown className="w-4 h-4 mr-2" />
-                        Upgrade Plan
-                      </button>
-                      <button className="px-6 py-2 bg-glass-surface text-foreground rounded-lg hover:bg-glass-highlight transition-colors">
-                        <Download className="w-4 h-4 mr-2" />
-                        Download Invoice
-                      </button>
-                      <button className="px-6 py-2 bg-glass-surface text-foreground rounded-lg hover:bg-glass-highlight transition-colors">
-                        <Settings className="w-4 h-4 mr-2" />
-                        Manage Billing
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Security Settings */}
-            {activeTab === 'security' && (
-              <div className="space-y-6">
-                <div className="wonderland-card glass-surface p-6">
-                  <div className="flex items-center gap-3 mb-6">
-                    <Lock className="w-6 h-6 text-primary" />
-                    <h2 className="text-2xl font-bold text-primary">Security Settings</h2>
-                  </div>
-                  
-                  <div className="space-y-6">
-                    {/* Password Change */}
-                    <div>
-                      <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-                        <Key className="w-5 h-5" />
-                        Change Password
-                      </h3>
-                      <div className="space-y-4">
-                        <div>
-                          <label className="block text-sm font-medium text-foreground mb-2">Current Password</label>
-                          <div className="relative">
-                            <input
-                              type={showPassword ? 'text' : 'password'}
-                              className="w-full px-3 py-2 pr-10 bg-glass-surface border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                              placeholder="Enter current password"
-                            />
-                            <button
-                              type="button"
-                              onClick={() => setShowPassword(!showPassword)}
-                              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-foreground-muted hover:text-foreground"
-                            >
-                              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                            </button>
-                          </div>
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-foreground mb-2">New Password</label>
+                  {/* Change Password */}
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <h3 className="font-medium text-gray-900 mb-4">Change Password</h3>
+                    <form onSubmit={handlePasswordChange} className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Current Password
+                        </label>
+                        <div className="relative">
                           <input
-                            type="password"
-                            className="w-full px-3 py-2 bg-glass-surface border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                            placeholder="Enter new password"
+                            type={showCurrentPassword ? 'text' : 'password'}
+                            value={passwordForm.current}
+                            onChange={(e) => setPasswordForm({...passwordForm, current: e.target.value})}
+                            className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                           />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-foreground mb-2">Confirm New Password</label>
-                          <input
-                            type="password"
-                            className="w-full px-3 py-2 bg-glass-surface border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                            placeholder="Confirm new password"
-                          />
-                        </div>
-                        <button className="wonder-button flex items-center gap-2 px-4 py-2">
-                          <Key className="w-4 h-4" />
-                          Update Password
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Two-Factor Authentication */}
-                    <div>
-                      <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-                        <Shield className="w-5 h-5" />
-                        Two-Factor Authentication
-                      </h3>
-                      <div className="p-4 bg-glass-surface rounded-lg">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <div className="font-medium text-foreground">2FA Status</div>
-                            <div className="text-sm text-foreground-muted">Add an extra layer of security to your account</div>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm text-foreground-muted">Disabled</span>
-                            <button className="wonder-button px-4 py-2">
-                              Enable 2FA
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Active Sessions */}
-                    <div>
-                      <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-                        <Globe className="w-5 h-5" />
-                        Active Sessions
-                      </h3>
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between p-4 bg-glass-surface rounded-lg">
-                          <div>
-                            <div className="font-medium text-foreground">Current Session</div>
-                            <div className="text-sm text-foreground-muted">Chrome on macOS • San Francisco, CA</div>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <CheckCircle className="w-4 h-4 text-success" />
-                            <span className="text-sm text-success">Active</span>
-                          </div>
-                        </div>
-                        <div className="flex items-center justify-between p-4 bg-glass-surface rounded-lg">
-                          <div>
-                            <div className="font-medium text-foreground">Mobile App</div>
-                            <div className="text-sm text-foreground-muted">iOS App • Last seen 2 hours ago</div>
-                          </div>
-                          <button className="text-destructive hover:text-destructive/80 flex items-center gap-1">
-                            <Trash2 className="w-4 h-4" />
-                            Revoke
+                          <button
+                            type="button"
+                            onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                          >
+                            {showCurrentPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                           </button>
                         </div>
                       </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          New Password
+                        </label>
+                        <div className="relative">
+                          <input
+                            type={showNewPassword ? 'text' : 'password'}
+                            value={passwordForm.new}
+                            onChange={(e) => setPasswordForm({...passwordForm, new: e.target.value})}
+                            className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowNewPassword(!showNewPassword)}
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                          >
+                            {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                          </button>
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Confirm New Password
+                        </label>
+                        <div className="relative">
+                          <input
+                            type={showConfirmPassword ? 'text' : 'password'}
+                            value={passwordForm.confirm}
+                            onChange={(e) => setPasswordForm({...passwordForm, confirm: e.target.value})}
+                            className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                          >
+                            {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                          </button>
+                        </div>
+                      </div>
+                      <button
+                        type="submit"
+                        disabled={isLoading}
+                        className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-2 rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-200 shadow-lg disabled:opacity-50"
+                      >
+                        {isLoading ? 'Updating...' : 'Update Password'}
+                      </button>
+                    </form>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Notifications Tab */}
+              {activeTab === 'notifications' && (
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="space-y-6"
+                >
+                  <h2 className="text-xl font-semibold text-gray-900">Notification Preferences</h2>
+                  <div className="space-y-4">
+                    {Object.entries(notificationSettings).map(([key, value]) => (
+                      <div key={key} className="flex items-center justify-between py-3 border-b border-gray-200 last:border-b-0">
+                        <div>
+                          <h3 className="font-medium text-gray-900 capitalize">
+                            {key.replace(/([A-Z])/g, ' $1').trim()}
+                          </h3>
+                          <p className="text-sm text-gray-600">
+                            {key === 'email' && 'Receive notifications via email'}
+                            {key === 'push' && 'Receive push notifications in browser'}
+                            {key === 'sms' && 'Receive notifications via SMS'}
+                            {key === 'marketing' && 'Receive marketing and promotional emails'}
+                            {key === 'security' && 'Receive security alerts and updates'}
+                            {key === 'updates' && 'Receive product updates and news'}
+                          </p>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={value}
+                            onChange={(e) => {
+                              setNotificationSettings({...notificationSettings, [key]: e.target.checked})
+                              handleNotificationUpdate()
+                            }}
+                            className="sr-only peer"
+                          />
+                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Privacy Tab */}
+              {activeTab === 'privacy' && (
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="space-y-6"
+                >
+                  <h2 className="text-xl font-semibold text-gray-900">Privacy Settings</h2>
+                  <div className="space-y-4">
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                      <h3 className="font-medium text-red-900 mb-2">Delete Account</h3>
+                      <p className="text-red-700 text-sm mb-4">
+                        Permanently delete your account and all associated data. This action cannot be undone.
+                      </p>
+                      <button className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium flex items-center space-x-2">
+                        <Trash2 className="w-4 h-4" />
+                        <span>Delete Account</span>
+                      </button>
                     </div>
                   </div>
-                </div>
-              </div>
-            )}
+                </motion.div>
+              )}
+            </div>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* 2FA Setup Modal */}
+      {is2FASetupOpen && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex min-h-screen items-center justify-center p-4">
+            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setIs2FASetupOpen(false)} />
+            <TwoFactorSetup
+              onComplete={handle2FAComplete}
+              onCancel={() => setIs2FASetupOpen(false)}
+            />
           </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }

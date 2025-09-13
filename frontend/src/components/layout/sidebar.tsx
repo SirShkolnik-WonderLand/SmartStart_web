@@ -15,7 +15,13 @@ import {
   Building,
   Users,
   Trophy,
-  Network
+  Network,
+  Coins,
+  Wallet,
+  TrendingUp,
+  Shield,
+  DollarSign,
+  Bell
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -28,9 +34,18 @@ const navigation = [
   { name: 'Teams', href: '/teams', icon: Users, current: false },
   { name: 'Umbrella', href: '/umbrella', icon: Network, current: false },
   { name: 'Opportunities', href: '/opportunities', icon: Search, current: false },
+  { name: 'BUZ Tokens', href: '/buz', icon: Coins, current: false },
   { name: 'Documents', href: '/documents', icon: FileText, current: false },
+  { name: 'Legal Compliance', href: '/legal-compliance', icon: Shield, current: false },
+  { name: 'Revenue Sharing', href: '/revenue-sharing', icon: DollarSign, current: false },
+  { name: 'Gamification', href: '/gamification', icon: Trophy, current: false },
   { name: 'Leaderboard', href: '/leaderboard', icon: Trophy, current: false },
+  { name: 'Analytics', href: '/analytics', icon: TrendingUp, current: false },
+  { name: 'Notifications', href: '/notifications', icon: Bell, current: false },
+  { name: 'Search', href: '/search', icon: Search, current: false },
   { name: 'Approvals', href: '/approvals', icon: CheckCircle, current: false },
+  { name: 'Admin', href: '/admin', icon: Settings, current: false },
+  { name: 'Admin BUZ', href: '/admin/buz', icon: Wallet, current: false },
   { name: 'Settings', href: '/settings', icon: Settings, current: false },
 ]
 

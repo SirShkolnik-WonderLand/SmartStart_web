@@ -1,388 +1,394 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { useRouter } from 'next/navigation'
+import { motion, AnimatePresence } from 'framer-motion'
 import { 
   Search, 
   X, 
+  Clock, 
+  TrendingUp, 
   Building2, 
   Users, 
-  Target, 
   FileText, 
-  Clock,
-  ArrowRight,
-  Sparkles
+  Coins,
+  Loader2,
+  AlertCircle
 } from 'lucide-react'
+import { apiService } from '@/lib/api'
 
 interface SearchResult {
   id: string
-  type: 'venture' | 'company' | 'team' | 'user' | 'document' | 'opportunity'
+  type: 'venture' | 'user' | 'document' | 'team' | 'company' | 'buz'
   title: string
   description: string
   url: string
-  category: string
-  timestamp?: string
-  metadata?: Record<string, unknown>
+  icon: React.ComponentType<{ className?: string }>
+  metadata?: {
+    status?: string
+    date?: string
+    author?: string
+    category?: string
+  }
 }
 
 interface GlobalSearchProps {
   isOpen: boolean
   onClose: () => void
+  className?: string
 }
 
-export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
+export default function GlobalSearch({ isOpen, onClose, className = '' }: GlobalSearchProps) {
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<SearchResult[]>([])
-  const [isSearching, setIsSearching] = useState(false)
-  const [selectedIndex, setSelectedIndex] = useState(0)
-  const [filter, setFilter] = useState<'all' | 'ventures' | 'companies' | 'teams' | 'users' | 'documents' | 'opportunities'>('all')
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [recentSearches, setRecentSearches] = useState<string[]>([])
+  const [selectedIndex, setSelectedIndex] = useState(-1)
   const inputRef = useRef<HTMLInputElement>(null)
+  const router = useRouter()
 
+  // Load recent searches from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem('recent-searches')
+    if (saved) {
+      setRecentSearches(JSON.parse(saved))
+    }
+  }, [])
+
+  // Focus input when opened
   useEffect(() => {
     if (isOpen && inputRef.current) {
       inputRef.current.focus()
     }
   }, [isOpen])
 
+  // Handle keyboard navigation
   useEffect(() => {
-    if (query.length < 2) {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!isOpen) return
+
+      if (e.key === 'Escape') {
+        onClose()
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault()
+        setSelectedIndex(prev => Math.min(prev + 1, results.length - 1))
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault()
+        setSelectedIndex(prev => Math.max(prev - 1, -1))
+      } else if (e.key === 'Enter' && selectedIndex >= 0) {
+        e.preventDefault()
+        handleResultClick(results[selectedIndex])
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [isOpen, results, selectedIndex, onClose])
+
+  const search = async (searchQuery: string) => {
+    if (!searchQuery.trim()) {
       setResults([])
       return
     }
 
-    setIsSearching(true)
-    
-    // Simulate search delay
-    const timeoutId = setTimeout(() => {
-      // Mock search results - replace with real API calls
+    setIsLoading(true)
+    setError('')
+
+    try {
+      // Simulate API call - replace with actual search endpoint
       const mockResults: SearchResult[] = [
         {
           id: '1',
           type: 'venture',
-          title: 'Quantum AI Labs',
-          description: 'Revolutionary AI-powered quantum computing solutions for enterprise',
-          url: '/ventures/quantum-ai-labs',
-          category: 'Technology',
-          timestamp: '2 days ago',
-          metadata: { stage: 'Growth', teamSize: 12 }
+          title: 'AI-Powered Analytics Platform',
+          description: 'Revolutionary analytics platform using machine learning',
+          url: '/ventures/1',
+          icon: Building2,
+          metadata: {
+            status: 'Active',
+            date: '2024-01-15',
+            author: 'John Doe'
+          }
         },
         {
           id: '2',
-          type: 'company',
-          title: 'TechStart Solutions',
-          description: 'Leading provider of innovative software development services',
-          url: '/companies/techstart-solutions',
-          category: 'Software',
-          timestamp: '1 week ago',
-          metadata: { size: '51-200 employees', founded: '2020' }
+          type: 'user',
+          title: 'Sarah Johnson',
+          description: 'Senior Developer at TechCorp',
+          url: '/users/2',
+          icon: Users,
+          metadata: {
+            status: 'Online',
+            category: 'Developer'
+          }
         },
         {
           id: '3',
-          type: 'team',
-          title: 'Frontend Development Team',
-          description: 'Expert team specializing in React, Next.js, and modern web technologies',
-          url: '/teams/frontend-dev',
-          category: 'Development',
-          timestamp: '3 days ago',
-          metadata: { members: 8, active: true }
+          type: 'document',
+          title: 'Partnership Agreement Template',
+          description: 'Standard template for venture partnerships',
+          url: '/documents/3',
+          icon: FileText,
+          metadata: {
+            category: 'Legal',
+            date: '2024-01-10'
+          }
         },
         {
           id: '4',
-          type: 'user',
-          title: 'Sarah Johnson',
-          description: 'Senior Frontend Developer with 5+ years experience in React ecosystem',
-          url: '/users/sarah-johnson',
-          category: 'Developer',
-          timestamp: 'Online now',
-          metadata: { skills: ['React', 'TypeScript', 'Node.js'], level: 5 }
-        },
-        {
-          id: '5',
-          type: 'document',
-          title: 'NDA Template - Standard',
-          description: 'Standard Non-Disclosure Agreement template for venture collaborations',
-          url: '/documents/nda-standard',
-          category: 'Legal',
-          timestamp: '1 month ago',
-          metadata: { type: 'Template', status: 'Active' }
-        },
-        {
-          id: '6',
-          type: 'opportunity',
-          title: 'Frontend Developer - Quantum AI Labs',
-          description: 'Join our team to build cutting-edge quantum computing interfaces',
-          url: '/opportunities/frontend-dev-quantum',
-          category: 'Development',
-          timestamp: '5 days ago',
-          metadata: { type: 'Full-time', compensation: 'Equity + Salary' }
+          type: 'buz',
+          title: 'BUZ Token Rewards',
+          description: 'Earn BUZ tokens for platform contributions',
+          url: '/buz',
+          icon: Coins,
+          metadata: {
+            status: 'Active',
+            category: 'Rewards'
+          }
         }
-      ]
+      ].filter(result => 
+        result.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        result.description.toLowerCase().includes(searchQuery.toLowerCase())
+      )
 
-      const filteredResults = mockResults.filter(result => {
-        const matchesQuery = result.title.toLowerCase().includes(query.toLowerCase()) ||
-                           result.description.toLowerCase().includes(query.toLowerCase()) ||
-                           result.category.toLowerCase().includes(query.toLowerCase())
-        
-        const matchesFilter = filter === 'all' || result.type === filter.slice(0, -1) as SearchResult['type']
-        
-        return matchesQuery && matchesFilter
-      })
+      setResults(mockResults)
+      
+      // Add to recent searches
+      if (searchQuery && !recentSearches.includes(searchQuery)) {
+        const newRecent = [searchQuery, ...recentSearches].slice(0, 5)
+        setRecentSearches(newRecent)
+        localStorage.setItem('recent-searches', JSON.stringify(newRecent))
+      }
+    } catch (error) {
+      console.error('Search error:', error)
+      setError('Failed to search. Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
-      setResults(filteredResults)
-      setIsSearching(false)
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    setQuery(value)
+    setSelectedIndex(-1)
+    
+    // Debounce search
+    const timeoutId = setTimeout(() => {
+      search(value)
     }, 300)
 
     return () => clearTimeout(timeoutId)
-  }, [query, filter])
-
-  const getResultIcon = (type: SearchResult['type']) => {
-    switch (type) {
-      case 'venture':
-        return <Building2 className="w-4 h-4 text-primary" />
-      case 'company':
-        return <Building2 className="w-4 h-4 text-accent" />
-      case 'team':
-        return <Users className="w-4 h-4 text-highlight" />
-      case 'user':
-        return <Users className="w-4 h-4 text-success" />
-      case 'document':
-        return <FileText className="w-4 h-4 text-warning" />
-      case 'opportunity':
-        return <Target className="w-4 h-4 text-primary" />
-      default:
-        return <Search className="w-4 h-4 text-foreground-muted" />
-    }
-  }
-
-  const getResultTypeLabel = (type: SearchResult['type']) => {
-    switch (type) {
-      case 'venture':
-        return 'Venture'
-      case 'company':
-        return 'Company'
-      case 'team':
-        return 'Team'
-      case 'user':
-        return 'User'
-      case 'document':
-        return 'Document'
-      case 'opportunity':
-        return 'Opportunity'
-      default:
-        return 'Result'
-    }
-  }
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Escape') {
-      onClose()
-    } else if (e.key === 'ArrowDown') {
-      e.preventDefault()
-      setSelectedIndex(prev => Math.min(prev + 1, results.length - 1))
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault()
-      setSelectedIndex(prev => Math.max(prev - 1, 0))
-    } else if (e.key === 'Enter' && results[selectedIndex]) {
-      e.preventDefault()
-      window.location.href = results[selectedIndex].url
-    }
   }
 
   const handleResultClick = (result: SearchResult) => {
-    window.location.href = result.url
+    router.push(result.url)
+    onClose()
+  }
+
+  const handleRecentSearchClick = (searchTerm: string) => {
+    setQuery(searchTerm)
+    search(searchTerm)
+  }
+
+  const clearRecentSearches = () => {
+    setRecentSearches([])
+    localStorage.removeItem('recent-searches')
+  }
+
+  const getResultIcon = (type: string) => {
+    switch (type) {
+      case 'venture': return Building2
+      case 'user': return Users
+      case 'document': return FileText
+      case 'team': return Users
+      case 'company': return Building2
+      case 'buz': return Coins
+      default: return Search
+    }
+  }
+
+  const getResultColor = (type: string) => {
+    switch (type) {
+      case 'venture': return 'text-blue-500'
+      case 'user': return 'text-green-500'
+      case 'document': return 'text-purple-500'
+      case 'team': return 'text-orange-500'
+      case 'company': return 'text-indigo-500'
+      case 'buz': return 'text-yellow-500'
+      default: return 'text-gray-500'
+    }
   }
 
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-20">
+    <div className="fixed inset-0 z-50 overflow-hidden">
       {/* Backdrop */}
-      <div 
-        className="absolute inset-0 bg-black/20 backdrop-blur-sm"
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
         onClick={onClose}
       />
-      
-      {/* Search Panel */}
-      <div className="relative w-full max-w-2xl glass rounded-xl border border-border shadow-2xl">
-        {/* Search Input */}
-        <div className="p-4 border-b border-border">
-          <div className="relative">
-            <Search className="w-5 h-5 text-foreground-muted absolute left-3 top-1/2 transform -translate-y-1/2" />
+
+      {/* Search Modal */}
+      <motion.div
+        initial={{ opacity: 0, y: -20, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: -20, scale: 0.95 }}
+        className={`relative mx-auto mt-20 max-w-2xl ${className}`}
+      >
+        <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl border border-gray-200 overflow-hidden">
+          {/* Search Input */}
+          <div className="flex items-center px-4 py-3 border-b border-gray-200">
+            <Search className="w-5 h-5 text-gray-400 mr-3" />
             <input
               ref={inputRef}
               type="text"
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onKeyDown={handleKeyDown}
-              className="w-full pl-10 pr-10 py-3 bg-glass-surface border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary text-foreground text-lg"
-              placeholder="Search ventures, companies, teams, users..."
+              onChange={handleInputChange}
+              placeholder="Search ventures, users, documents, teams..."
+              className="flex-1 outline-none bg-transparent text-gray-900 placeholder-gray-500"
             />
-            {query && (
-              <button
-                onClick={() => setQuery('')}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1 hover:bg-glass-surface rounded transition-colors"
-              >
-                <X className="w-4 h-4 text-foreground-muted" />
-              </button>
+            <button
+              onClick={onClose}
+              className="ml-3 p-1 hover:bg-gray-100 rounded-full transition-colors"
+            >
+              <X className="w-5 h-5 text-gray-400" />
+            </button>
+          </div>
+
+          {/* Search Results */}
+          <div className="max-h-96 overflow-y-auto">
+            {isLoading && (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                <span className="ml-2 text-gray-600">Searching...</span>
+              </div>
             )}
-          </div>
-        </div>
 
-        {/* Filters */}
-        <div className="p-4 border-b border-border">
-          <div className="flex gap-2 overflow-x-auto">
-            <button
-              onClick={() => setFilter('all')}
-              className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
-                filter === 'all' 
-                  ? 'bg-primary text-primary-foreground' 
-                  : 'bg-glass-surface text-foreground-muted hover:text-foreground'
-              }`}
-            >
-              All
-            </button>
-            <button
-              onClick={() => setFilter('ventures')}
-              className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
-                filter === 'ventures' 
-                  ? 'bg-primary text-primary-foreground' 
-                  : 'bg-glass-surface text-foreground-muted hover:text-foreground'
-              }`}
-            >
-              Ventures
-            </button>
-            <button
-              onClick={() => setFilter('companies')}
-              className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
-                filter === 'companies' 
-                  ? 'bg-primary text-primary-foreground' 
-                  : 'bg-glass-surface text-foreground-muted hover:text-foreground'
-              }`}
-            >
-              Companies
-            </button>
-            <button
-              onClick={() => setFilter('teams')}
-              className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
-                filter === 'teams' 
-                  ? 'bg-primary text-primary-foreground' 
-                  : 'bg-glass-surface text-foreground-muted hover:text-foreground'
-              }`}
-            >
-              Teams
-            </button>
-            <button
-              onClick={() => setFilter('users')}
-              className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
-                filter === 'users' 
-                  ? 'bg-primary text-primary-foreground' 
-                  : 'bg-glass-surface text-foreground-muted hover:text-foreground'
-              }`}
-            >
-              Users
-            </button>
-            <button
-              onClick={() => setFilter('opportunities')}
-              className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
-                filter === 'opportunities' 
-                  ? 'bg-primary text-primary-foreground' 
-                  : 'bg-glass-surface text-foreground-muted hover:text-foreground'
-              }`}
-            >
-              Opportunities
-            </button>
-          </div>
-        </div>
+            {error && (
+              <div className="flex items-center justify-center py-8 text-red-500">
+                <AlertCircle className="w-5 h-5 mr-2" />
+                <span>{error}</span>
+              </div>
+            )}
 
-        {/* Results */}
-        <div className="max-h-96 overflow-y-auto">
-          {query.length < 2 ? (
-            <div className="p-8 text-center">
-              <Sparkles className="w-12 h-12 text-foreground-muted mx-auto mb-3" />
-              <h3 className="font-medium text-foreground mb-1">Start typing to search</h3>
-              <p className="text-sm text-foreground-muted">
-                Search across ventures, companies, teams, users, and more
-              </p>
-            </div>
-          ) : isSearching ? (
-            <div className="p-8 text-center">
-              <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
-              <p className="text-sm text-foreground-muted">Searching...</p>
-            </div>
-          ) : results.length === 0 ? (
-            <div className="p-8 text-center">
-              <Search className="w-12 h-12 text-foreground-muted mx-auto mb-3" />
-              <h3 className="font-medium text-foreground mb-1">No results found</h3>
-              <p className="text-sm text-foreground-muted">
-                Try different keywords or check your spelling
-              </p>
-            </div>
-          ) : (
-            <div className="divide-y divide-border">
-              {results.map((result, index) => (
-                <div
-                  key={result.id}
-                  className={`p-4 cursor-pointer transition-colors ${
-                    index === selectedIndex 
-                      ? 'bg-primary/10 border-l-4 border-primary' 
-                      : 'hover:bg-glass-surface'
-                  }`}
-                  onClick={() => handleResultClick(result)}
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="p-2 bg-glass-surface rounded-lg">
-                      {getResultIcon(result.type)}
-                    </div>
-                    
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-2">
-                        <h4 className="font-medium text-foreground">
-                          {result.title}
-                        </h4>
-                        <div className="flex items-center gap-2">
-                          <span className="px-2 py-1 bg-glass-surface text-xs text-foreground-muted rounded">
-                            {getResultTypeLabel(result.type)}
-                          </span>
-                          <ArrowRight className="w-4 h-4 text-foreground-muted" />
-                        </div>
+            {!isLoading && !error && query && results.length === 0 && (
+              <div className="text-center py-8 text-gray-500">
+                <Search className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                <p>No results found for "{query}"</p>
+              </div>
+            )}
+
+            {!isLoading && !error && !query && recentSearches.length > 0 && (
+              <div className="p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm font-medium text-gray-700 flex items-center">
+                    <Clock className="w-4 h-4 mr-2" />
+                    Recent Searches
+                  </h3>
+                  <button
+                    onClick={clearRecentSearches}
+                    className="text-xs text-gray-500 hover:text-gray-700"
+                  >
+                    Clear
+                  </button>
+                </div>
+                <div className="space-y-1">
+                  {recentSearches.map((searchTerm, index) => (
+                    <button
+                      key={index}
+                      onClick={() => handleRecentSearchClick(searchTerm)}
+                      className="w-full text-left px-3 py-2 hover:bg-gray-100 rounded-lg text-sm text-gray-600 flex items-center"
+                    >
+                      <Clock className="w-4 h-4 mr-2 text-gray-400" />
+                      {searchTerm}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {!isLoading && !error && results.length > 0 && (
+              <div className="p-2">
+                {results.map((result, index) => {
+                  const IconComponent = getResultIcon(result.type)
+                  const iconColor = getResultColor(result.type)
+                  
+                  return (
+                    <motion.button
+                      key={result.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.05 }}
+                      onClick={() => handleResultClick(result)}
+                      className={`w-full text-left p-3 rounded-lg transition-colors flex items-start space-x-3 ${
+                        selectedIndex === index
+                          ? 'bg-primary/10 border border-primary/20'
+                          : 'hover:bg-gray-100'
+                      }`}
+                    >
+                      <div className={`flex-shrink-0 w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center ${iconColor}`}>
+                        <IconComponent className="w-4 h-4" />
                       </div>
-                      
-                      <p className="text-sm text-foreground-muted mt-1 line-clamp-2">
-                        {result.description}
-                      </p>
-                      
-                      <div className="flex items-center gap-4 mt-2">
-                        <span className="text-xs text-foreground-muted">
-                          {result.category}
-                        </span>
-                        {result.timestamp && (
-                          <div className="flex items-center gap-1 text-xs text-foreground-muted">
-                            <Clock className="w-3 h-3" />
-                            {result.timestamp}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center space-x-2">
+                          <h4 className="font-medium text-gray-900 truncate">{result.title}</h4>
+                          <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
+                            {result.type}
+                          </span>
+                        </div>
+                        <p className="text-sm text-gray-600 mt-1 line-clamp-2">{result.description}</p>
+                        {result.metadata && (
+                          <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500">
+                            {result.metadata.status && (
+                              <span className="flex items-center">
+                                <div className={`w-2 h-2 rounded-full mr-1 ${
+                                  result.metadata.status === 'Active' ? 'bg-green-500' : 'bg-gray-400'
+                                }`} />
+                                {result.metadata.status}
+                              </span>
+                            )}
+                            {result.metadata.date && (
+                              <span>{result.metadata.date}</span>
+                            )}
+                            {result.metadata.author && (
+                              <span>by {result.metadata.author}</span>
+                            )}
                           </div>
                         )}
                       </div>
-                    </div>
-                  </div>
+                    </motion.button>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Search Tips */}
+          {!query && !isLoading && (
+            <div className="p-4 bg-gray-50 border-t border-gray-200">
+              <div className="flex items-center space-x-4 text-xs text-gray-500">
+                <div className="flex items-center">
+                  <kbd className="px-2 py-1 bg-white border border-gray-300 rounded text-xs">↑↓</kbd>
+                  <span className="ml-1">Navigate</span>
                 </div>
-              ))}
+                <div className="flex items-center">
+                  <kbd className="px-2 py-1 bg-white border border-gray-300 rounded text-xs">Enter</kbd>
+                  <span className="ml-1">Select</span>
+                </div>
+                <div className="flex items-center">
+                  <kbd className="px-2 py-1 bg-white border border-gray-300 rounded text-xs">Esc</kbd>
+                  <span className="ml-1">Close</span>
+                </div>
+              </div>
             </div>
           )}
         </div>
-
-        {/* Footer */}
-        {results.length > 0 && (
-          <div className="p-4 border-t border-border">
-            <div className="flex items-center justify-between text-sm text-foreground-muted">
-              <span>{results.length} result{results.length !== 1 ? 's' : ''} found</span>
-              <div className="flex items-center gap-4">
-                <span>↑↓ Navigate</span>
-                <span>↵ Select</span>
-                <span>Esc Close</span>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
+      </motion.div>
     </div>
   )
 }

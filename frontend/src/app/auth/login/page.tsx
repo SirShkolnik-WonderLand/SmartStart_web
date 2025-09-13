@@ -3,64 +3,24 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { comprehensiveApiService as apiService } from '@/lib/api-comprehensive'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { 
   Eye, 
   EyeOff, 
   Mail, 
   Lock, 
-  Users, 
-  Shield, 
   Rocket,
-  Crown,
-  Sparkles,
   ArrowRight,
   CheckCircle
 } from 'lucide-react'
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('')
+  const [email, setEmail] = useState('udi.admin')
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [showPassword, setShowPassword] = useState(false)
-  const [selectedDemo, setSelectedDemo] = useState('')
   const router = useRouter()
-
-  const demoUsers = [
-    {
-      id: 'owner',
-      name: 'Demo Owner',
-      email: 'owner@demo.local',
-      password: 'owner123',
-      role: 'VENTURE_OWNER',
-      description: 'Full platform access with venture management',
-      icon: Crown,
-      color: 'from-purple-500 to-pink-500',
-      features: ['Create Ventures', 'Manage Teams', 'Legal Documents', 'Full Access']
-    },
-    {
-      id: 'admin',
-      name: 'Admin User',
-      email: 'admin@smartstart.com',
-      password: 'admin123',
-      role: 'ADMIN',
-      description: 'System administration and oversight',
-      icon: Shield,
-      color: 'from-blue-500 to-cyan-500',
-      features: ['System Admin', 'User Management', 'Platform Control', 'Analytics']
-    },
-    {
-      id: 'contributor',
-      name: 'Demo Contributor',
-      email: 'contrib@demo.local',
-      password: 'contrib123',
-      role: 'CONTRIBUTOR',
-      description: 'Team collaboration and project participation',
-      icon: Users,
-      color: 'from-green-500 to-emerald-500',
-      features: ['Join Ventures', 'Collaborate', 'Track Progress', 'Team Access']
-    }
-  ]
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -69,11 +29,16 @@ export default function LoginPage() {
 
     try {
       // Clear any old localStorage data before login
-      localStorage.removeItem('user-id')
-      localStorage.removeItem('user-data')
-      localStorage.removeItem('auth-token')
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('user-id')
+        localStorage.removeItem('user-data')
+        localStorage.removeItem('auth-token')
+      }
       
-      const response = await apiService.login(email, password)
+      // Ensure email is in correct format
+      const loginEmail = email.includes('@') ? email : `${email}@alicesolutionsgroup.com`
+      
+      const response = await apiService.login(loginEmail, password)
       
       if (response.success) {
         // Redirect to dashboard on successful login
@@ -89,24 +54,19 @@ export default function LoginPage() {
     }
   }
 
-  const handleDemoLogin = (demoUser: typeof demoUsers[0]) => {
-    setEmail(demoUser.email)
-    setPassword(demoUser.password)
-    setSelectedDemo(demoUser.id)
-    setError('')
-  }
-
   const handleClearCache = () => {
-    localStorage.clear()
+    if (typeof window !== 'undefined') {
+      localStorage.clear()
+    }
     setError('')
     setEmail('')
     setPassword('')
-    setSelectedDemo('')
     alert('Cache cleared! Please login again.')
   }
 
   return (
-    <div className="min-h-screen wonderland-bg flex items-center justify-center p-4 relative overflow-hidden">
+    <ErrorBoundary>
+      <div className="min-h-screen wonderland-bg flex items-center justify-center p-4 relative overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/10 rounded-full blur-3xl"></div>
@@ -133,14 +93,14 @@ export default function LoginPage() {
               
               <div className="space-y-4">
                 <h2 className="text-4xl lg:text-5xl font-bold leading-tight">
-                  Welcome to the
+                  Welcome to
                   <span className="block bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                    Future of Ventures
+                    WonderLand
                   </span>
                 </h2>
                 <p className="text-lg text-muted-foreground max-w-md mx-auto lg:mx-0">
-                  Build, collaborate, and scale your startup with our comprehensive platform. 
-                  From legal documents to team management, we&apos;ve got you covered.
+                  The place where dreams become ventures and ideas become reality. 
+                  Build, collaborate, and scale your startup with our comprehensive platform.
                 </p>
               </div>
 
@@ -237,81 +197,35 @@ export default function LoginPage() {
                 </button>
               </form>
 
-              <div className="text-center">
+              <div className="text-center space-y-2">
                 <p className="text-sm text-muted-foreground">
                   Don&apos;t have an account?{' '}
                   <a href="/auth/register" className="text-primary hover:underline font-medium">
                     Create one here
                   </a>
                 </p>
+                <p className="text-sm text-muted-foreground">
+                  Forgot your password?{' '}
+                  <a href="/auth/forgot-password" className="text-primary hover:underline font-medium">
+                    Reset it here
+                  </a>
+                </p>
               </div>
             </div>
 
-            {/* Demo Users Section */}
-            <div className="mt-8 space-y-4">
-              <div className="text-center">
-                <h4 className="text-lg font-semibold mb-2 flex items-center justify-center space-x-2">
-                  <Sparkles className="h-5 w-5 text-primary" />
-                  <span>Demo Users</span>
-                </h4>
-                <p className="text-sm text-muted-foreground">Click to auto-fill credentials</p>
-              </div>
-
-              <div className="grid gap-3">
-                {demoUsers.map((user) => {
-                  const IconComponent = user.icon
-                  return (
-                    <button
-                      key={user.id}
-                      onClick={() => handleDemoLogin(user)}
-                      className={`p-4 rounded-lg border-2 transition-all hover:scale-[1.02] ${
-                        selectedDemo === user.id
-                          ? 'border-primary bg-primary/5 shadow-lg'
-                          : 'border-glass-border hover:border-primary/50 bg-glass-surface/50'
-                      }`}
-                    >
-                      <div className="flex items-center space-x-3">
-                        <div className={`h-10 w-10 rounded-lg bg-gradient-to-r ${user.color} flex items-center justify-center flex-shrink-0`}>
-                          <IconComponent className="h-5 w-5 text-white" />
-                        </div>
-                        <div className="flex-1 text-left">
-                          <div className="flex items-center space-x-2">
-                            <h5 className="font-medium">{user.name}</h5>
-                            {selectedDemo === user.id && (
-                              <CheckCircle className="h-4 w-4 text-primary" />
-                            )}
-                          </div>
-                          <p className="text-sm text-muted-foreground">{user.description}</p>
-                          <div className="flex flex-wrap gap-1 mt-1">
-                            {user.features.map((feature, index) => (
-                              <span
-                                key={index}
-                                className="text-xs bg-muted px-2 py-1 rounded-full"
-                              >
-                                {feature}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </button>
-                  )
-                })}
-              </div>
-
-              <div className="text-center">
-                <button
-                  type="button"
-                  onClick={handleClearCache}
-                  className="text-xs text-muted-foreground hover:text-foreground underline transition-colors"
-                >
-                  Clear Cache (if having issues)
-                </button>
-              </div>
+            {/* Clear Cache Section */}
+            <div className="mt-8 text-center">
+              <button
+                type="button"
+                onClick={handleClearCache}
+                className="text-xs text-muted-foreground hover:text-foreground underline transition-colors"
+              >
+                Clear Cache (if having issues)
+              </button>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </ErrorBoundary>
   )
 }

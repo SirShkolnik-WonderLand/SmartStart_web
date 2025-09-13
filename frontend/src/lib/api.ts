@@ -241,6 +241,70 @@ class ApiService {
     }
   }
 
+  // Password Reset
+  async forgotPassword(email: string): Promise<ApiResponse> {
+    try {
+      const response = await fetch(`${API_BASE}/api/auth/forgot-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      })
+
+      const data = await response.json()
+      return data
+    } catch (error) {
+      console.error('Forgot password error:', error)
+      return { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Failed to send reset email' 
+      }
+    }
+  }
+
+  async validateResetToken(token: string): Promise<ApiResponse> {
+    try {
+      const response = await fetch(`${API_BASE}/api/auth/validate-reset-token`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token }),
+      })
+
+      const data = await response.json()
+      return data
+    } catch (error) {
+      console.error('Token validation error:', error)
+      return { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Failed to validate token' 
+      }
+    }
+  }
+
+  async resetPassword(token: string, password: string): Promise<ApiResponse> {
+    try {
+      const response = await fetch(`${API_BASE}/api/auth/reset-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token, password }),
+      })
+
+      const data = await response.json()
+      return data
+    } catch (error) {
+      console.error('Reset password error:', error)
+      return { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Failed to reset password' 
+      }
+    }
+  }
+
   // Ventures
   async getVentures(): Promise<ApiResponse<Venture[]>> {
     try {

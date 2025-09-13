@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { 
   Target, Building, Globe, Filter, Clock, Users, Star, Plus, Search, 
   MapPin, DollarSign, Bell, Zap, TrendingUp, Award, Briefcase,
-  CheckCircle, XCircle, Eye, Heart, Share2, MessageSquare
+  CheckCircle, XCircle, Eye, Heart, Share2, MessageSquare, Coins, Wallet
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -32,6 +32,8 @@ interface Opportunity {
   compensationValue?: number
   equityOffered?: number
   currency: string
+  buzReward?: number
+  buzRewardType?: 'FIXED' | 'PERCENTAGE' | 'BONUS'
   visibilityLevel: string
   tags: string[]
   createdAt: string
@@ -75,6 +77,7 @@ export default function EnhancedOpportunitiesPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedType, setSelectedType] = useState('')
   const [selectedStatus, setSelectedStatus] = useState('')
+  const [selectedBuzReward, setSelectedBuzReward] = useState('')
   const [showNotifications, setShowNotifications] = useState(false)
   const [showGamification, setShowGamification] = useState(false)
   const [showSignatureModal, setShowSignatureModal] = useState(false)
@@ -201,14 +204,24 @@ export default function EnhancedOpportunitiesPage() {
   }
 
   const getCompensationDisplay = (opportunity: Opportunity) => {
+    const compensations = []
+    
     if (opportunity.compensationType === 'EQUITY_ONLY') {
-      return `${opportunity.equityOffered}% equity`
+      compensations.push(`${opportunity.equityOffered}% equity`)
     } else if (opportunity.compensationType === 'REVENUE_SHARING') {
-      return `${opportunity.compensationValue}% revenue share`
+      compensations.push(`${opportunity.compensationValue}% revenue share`)
     } else if (opportunity.compensationValue) {
-      return `${opportunity.currency} ${opportunity.compensationValue.toLocaleString()}`
+      compensations.push(`${opportunity.currency} ${opportunity.compensationValue.toLocaleString()}`)
     }
-    return 'Negotiable'
+    
+    if (opportunity.buzReward) {
+      const buzText = opportunity.buzRewardType === 'PERCENTAGE' 
+        ? `${opportunity.buzReward}% BUZ bonus`
+        : `${opportunity.buzReward.toLocaleString()} BUZ tokens`
+      compensations.push(buzText)
+    }
+    
+    return compensations.length > 0 ? compensations.join(' + ') : 'Negotiable'
   }
 
   const filteredOpportunities = opportunities.filter(opportunity => {
@@ -222,7 +235,13 @@ export default function EnhancedOpportunitiesPage() {
     const matchesType = !selectedType || opportunity.type === selectedType
     const matchesStatus = !selectedStatus || opportunity.status === selectedStatus
     
-    return matchesSearch && matchesType && matchesStatus
+    const matchesBuzReward = !selectedBuzReward || 
+      (selectedBuzReward === 'buz' && opportunity.buzReward) ||
+      (selectedBuzReward === 'equity' && opportunity.compensationType === 'EQUITY_ONLY') ||
+      (selectedBuzReward === 'cash' && opportunity.compensationValue && !opportunity.equityOffered && !opportunity.buzReward) ||
+      (selectedBuzReward === 'mixed' && (opportunity.buzReward || opportunity.equityOffered) && opportunity.compensationValue)
+    
+    return matchesSearch && matchesType && matchesStatus && matchesBuzReward
   })
 
   if (isLoading) {
@@ -372,6 +391,17 @@ export default function EnhancedOpportunitiesPage() {
               <option value="CLOSED">Closed</option>
               <option value="PAUSED">Paused</option>
             </select>
+            <select
+              value={selectedBuzReward}
+              onChange={(e) => setSelectedBuzReward(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">All Rewards</option>
+              <option value="buz">BUZ Token Rewards</option>
+              <option value="equity">Equity Only</option>
+              <option value="cash">Cash Only</option>
+              <option value="mixed">Mixed Compensation</option>
+            </select>
             <Button onClick={loadOpportunitiesData} variant="outline">
               <Filter className="w-4 h-4 mr-2" />
               Apply Filters
@@ -442,6 +472,16 @@ export default function EnhancedOpportunitiesPage() {
                     <DollarSign className="w-4 h-4 mr-2" />
                     {getCompensationDisplay(opportunity)}
                   </div>
+                  
+                  {opportunity.buzReward && (
+                    <div className="flex items-center text-sm text-yellow-600">
+                      <Coins className="w-4 h-4 mr-2" />
+                      {opportunity.buzRewardType === 'PERCENTAGE' 
+                        ? `${opportunity.buzReward}% BUZ bonus`
+                        : `${opportunity.buzReward.toLocaleString()} BUZ tokens`
+                      }
+                    </div>
+                  )}
                   
                   <div className="flex items-center text-sm text-gray-600">
                     <Users className="w-4 h-4 mr-2" />
