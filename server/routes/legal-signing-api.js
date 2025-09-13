@@ -231,7 +231,7 @@ This authorization enables team expansion and collaboration on the platform.`,
         complianceRequired: true
       };
       
-      const newDocument = await crudService.createDocument(documentData, userId);
+      const newDocument = await crudService.createDocument(documentData, req.user.id);
       actualDocumentId = newDocument.id;
       console.log('🔍 Created new document:', actualDocumentId);
     }
