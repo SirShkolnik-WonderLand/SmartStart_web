@@ -292,17 +292,22 @@ class OnboardingOrchestrator extends EventEmitter {
   }
 
   /**
-   * Handle legal document signing
+   * Handle legal document signing (Enhanced with working legal signing API)
    */
   async handleLegalDocumentSigning(userId, documentId, signatureData) {
     try {
       console.log(`📝 Handling legal document signing for user: ${userId}`)
 
+      // Use the working legal signing API
+      const legalDocumentService = require('./legal-document-service')
+      const signature = await legalDocumentService.signDocument(userId, documentId, signatureData)
+
       // Update journey progress
       await this.updateJourneyProgress(userId, 'LEGAL_DOCUMENTS_SIGNED', {
         documentId,
         signedAt: new Date().toISOString(),
-        signatureData
+        signatureData,
+        signatureId: signature.id
       })
 
       // Check if all legal documents are signed
@@ -319,7 +324,8 @@ class OnboardingOrchestrator extends EventEmitter {
       return {
         success: true,
         message: 'Legal document signing processed',
-        legalPackStatus
+        legalPackStatus,
+        signature
       }
 
     } catch (error) {
@@ -355,6 +361,44 @@ class OnboardingOrchestrator extends EventEmitter {
       allSigned: totalDocuments > 0 && signedDocuments === totalDocuments,
       percentage: totalDocuments > 0 ? Math.round((signedDocuments / totalDocuments) * 100) : 0
     }
+  }
+
+  /**
+   * Get legal document requirements for specific journey stage
+   */
+  async getLegalRequirementsForStage(stage) {
+    const legalRequirements = {
+      'Account Creation': [],
+      'Profile Setup': [],
+      'Legal Documents': [
+        {
+          id: 'platform-participation-agreement',
+          name: 'Platform Participation Agreement',
+          description: 'Core platform terms and conditions',
+          required: true,
+          category: 'core-platform'
+        },
+        {
+          id: 'mutual-confidentiality-agreement',
+          name: 'Mutual Confidentiality & Non-Exfiltration Agreement',
+          description: '5-year confidentiality obligations',
+          required: true,
+          category: 'core-platform'
+        },
+        {
+          id: 'inventions-ip-agreement',
+          name: 'Inventions & Intellectual Property Agreement',
+          description: 'Background vs foreground IP terms',
+          required: true,
+          category: 'core-platform'
+        }
+      ],
+      'Subscription Setup': [],
+      'Platform Orientation': [],
+      'Welcome & Dashboard': []
+    }
+
+    return legalRequirements[stage] || []
   }
 
   /**

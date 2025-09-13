@@ -1279,4 +1279,76 @@ router.post('/seed', async(req, res) => {
     }
 });
 
+// Legal document signing endpoint (integrated with journey)
+router.post('/legal-sign/:userId', authenticateToken, async(req, res) => {
+    try {
+        const { userId } = req.params;
+        const { documentId, signatureData } = req.body;
+        const currentUserId = req.user.id;
+
+        // Check if user can access this endpoint (own journey or admin)
+        if (userId !== currentUserId && req.user.role !== 'ADMIN') {
+            return res.status(403).json({
+                success: false,
+                message: 'Access denied'
+            });
+        }
+
+        // Use onboarding orchestrator to handle legal document signing
+        const result = await onboardingOrchestrator.handleLegalDocumentSigning(userId, documentId, signatureData);
+
+        res.json({
+            success: true,
+            message: 'Legal document signed successfully',
+            data: result
+        });
+
+    } catch (error) {
+        console.error('Error signing legal document:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to sign legal document',
+            error: error.message
+        });
+    }
+});
+
+// Get legal document requirements for user journey stage
+router.get('/legal-requirements/:userId', authenticateToken, async(req, res) => {
+    try {
+        const { userId } = req.params;
+        const currentUserId = req.user.id;
+
+        // Check if user can access this endpoint (own journey or admin)
+        if (userId !== currentUserId && req.user.role !== 'ADMIN') {
+            return res.status(403).json({
+                success: false,
+                message: 'Access denied'
+            });
+        }
+
+        // Get user's current journey stage
+        const journeyStatus = await onboardingOrchestrator.getUserJourneyStatus(userId);
+        
+        // Get required legal documents based on stage
+        const legalRequirements = await onboardingOrchestrator.getLegalRequirementsForStage(journeyStatus.currentStage);
+
+        res.json({
+            success: true,
+            data: {
+                currentStage: journeyStatus.currentStage,
+                legalRequirements
+            }
+        });
+
+    } catch (error) {
+        console.error('Error getting legal requirements:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to get legal requirements',
+            error: error.message
+        });
+    }
+});
+
 module.exports = router;
