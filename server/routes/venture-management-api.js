@@ -394,4 +394,214 @@ router.get('/:ventureId/analytics', authenticateToken, async (req, res) => {
     }
 });
 
+// Create venture endpoint with legal document integration
+router.post('/create', authenticateToken, async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const { 
+            name, 
+            description, 
+            industry, 
+            stage, 
+            teamSize, 
+            tier, 
+            residency, 
+            lookingFor, 
+            requiredSkills, 
+            rewardType, 
+            amount, 
+            tags, 
+            visibility 
+        } = req.body;
+
+        // Check if user has completed legal document requirements
+        const legalComplianceCheck = await checkUserLegalCompliance(userId);
+        if (!legalComplianceCheck.compliant) {
+            return res.status(400).json({
+                success: false,
+                message: 'Legal document requirements not met',
+                error: {
+                    code: 'LEGAL_COMPLIANCE_REQUIRED',
+                    message: 'You must complete all required legal documents before creating ventures',
+                    missingDocuments: legalComplianceCheck.missingDocuments
+                }
+            });
+        }
+
+        // Create the venture
+        const venture = await prisma.venture.create({
+            data: {
+                name,
+                description,
+                industry,
+                stage,
+                teamSize: parseInt(teamSize),
+                tier,
+                residency,
+                lookingFor: lookingFor || [],
+                requiredSkills: requiredSkills || [],
+                rewardType,
+                amount: parseFloat(amount),
+                tags: tags || [],
+                visibility,
+                ownerUserId: userId,
+                status: 'ACTIVE'
+            }
+        });
+
+        // Auto-generate required legal documents for the venture
+        await generateVentureLegalDocuments(venture.id, userId);
+
+        // Create initial venture team membership
+        await prisma.ventureTeamMember.create({
+            data: {
+                ventureId: venture.id,
+                userId: userId,
+                role: 'OWNER',
+                status: 'ACTIVE',
+                joinedAt: new Date()
+            }
+        });
+
+        res.status(201).json({
+            success: true,
+            data: {
+                venture,
+                legalDocuments: await getVentureLegalDocuments(venture.id),
+                message: 'Venture created successfully with legal document requirements'
+            }
+        });
+
+    } catch (error) {
+        console.error('Error creating venture:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to create venture',
+            error: error.message
+        });
+    }
+});
+
+// Helper function to check user legal compliance
+async function checkUserLegalCompliance(userId) {
+    try {
+        const legalPacks = await prisma.platformLegalPack.findMany({
+            where: { userId },
+            include: { documents: true }
+        });
+
+        const requiredDocuments = [
+            'platform-participation-agreement',
+            'mutual-confidentiality-agreement', 
+            'inventions-ip-agreement'
+        ];
+
+        let signedDocuments = 0;
+        let missingDocuments = [];
+
+        for (const pack of legalPacks) {
+            for (const doc of pack.documents) {
+                if (requiredDocuments.includes(doc.key) && 
+                    (doc.status === 'EFFECTIVE' || doc.signatureCount > 0)) {
+                    signedDocuments++;
+                }
+            }
+        }
+
+        // Check for missing documents
+        for (const requiredDoc of requiredDocuments) {
+            let found = false;
+            for (const pack of legalPacks) {
+                for (const doc of pack.documents) {
+                    if (doc.key === requiredDoc && 
+                        (doc.status === 'EFFECTIVE' || doc.signatureCount > 0)) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (found) break;
+            }
+            if (!found) {
+                missingDocuments.push(requiredDoc);
+            }
+        }
+
+        return {
+            compliant: signedDocuments === requiredDocuments.length,
+            signedDocuments,
+            totalRequired: requiredDocuments.length,
+            missingDocuments
+        };
+
+    } catch (error) {
+        console.error('Error checking legal compliance:', error);
+        return {
+            compliant: false,
+            signedDocuments: 0,
+            totalRequired: 3,
+            missingDocuments: ['platform-participation-agreement', 'mutual-confidentiality-agreement', 'inventions-ip-agreement']
+        };
+    }
+}
+
+// Helper function to generate venture-specific legal documents
+async function generateVentureLegalDocuments(ventureId, userId) {
+    try {
+        const ventureDocuments = [
+            {
+                key: `venture-nda-${ventureId}`,
+                name: 'Venture-Specific NDA',
+                description: 'Non-disclosure agreement for this specific venture',
+                category: 'venture-project',
+                status: 'DRAFT',
+                content: `This Non-Disclosure Agreement ("NDA") governs the confidentiality obligations for venture: ${ventureId}...`
+            },
+            {
+                key: `venture-equity-${ventureId}`,
+                name: 'Venture Equity Agreement',
+                description: 'Equity distribution agreement for this venture',
+                category: 'venture-project', 
+                status: 'DRAFT',
+                content: `This Equity Agreement governs the distribution of equity in venture: ${ventureId}...`
+            }
+        ];
+
+        for (const doc of ventureDocuments) {
+            await prisma.legalDocument.create({
+                data: {
+                    ...doc,
+                    userId: userId,
+                    ventureId: ventureId
+                }
+            });
+        }
+
+        console.log(`Generated ${ventureDocuments.length} legal documents for venture ${ventureId}`);
+
+    } catch (error) {
+        console.error('Error generating venture legal documents:', error);
+    }
+}
+
+// Helper function to get venture legal documents
+async function getVentureLegalDocuments(ventureId) {
+    try {
+        return await prisma.legalDocument.findMany({
+            where: { ventureId },
+            select: {
+                id: true,
+                key: true,
+                name: true,
+                description: true,
+                category: true,
+                status: true,
+                createdAt: true
+            }
+        });
+    } catch (error) {
+        console.error('Error getting venture legal documents:', error);
+        return [];
+    }
+}
+
 module.exports = router;
