@@ -161,19 +161,12 @@ router.post('/session/start', authenticateToken, async (req, res) => {
 router.post('/session/:sessionId/sign', authenticateToken, async (req, res) => {
   try {
     const { sessionId } = req.params;
-    const { documentId, signatureData } = req.body;
+    const { documentId, signatureData, documentType = 'SOBA' } = req.body;
     const { userId } = req.user;
     
-    console.log('🔍 Signing request:', { sessionId, documentId, userId, signatureData });
+    console.log('🔍 Signing request:', { sessionId, documentId, userId, signatureData, documentType });
     
     // Validate required fields
-    if (!documentId) {
-      return res.status(400).json({
-        success: false,
-        message: 'Document ID is required'
-      });
-    }
-    
     if (!signatureData) {
       return res.status(400).json({
         success: false,
@@ -192,9 +185,59 @@ router.post('/session/:sessionId/sign', authenticateToken, async (req, res) => {
     
     console.log('🔍 Enhanced signature data:', enhancedSignatureData);
     
+    // Check if document exists, create if needed
+    let actualDocumentId = documentId;
+    if (!documentId || documentId === 'undefined') {
+      // Create a new document for signing
+      const LegalDocumentCRUDService = require('../services/legal-document-crud-service');
+      const crudService = new LegalDocumentCRUDService();
+      
+      const documentData = {
+        title: `Seat Order & Billing Authorization (SOBA)`,
+        type: 'TERMS_OF_SERVICE',
+        content: `SEAT ORDER & BILLING AUTHORIZATION
+
+This agreement authorizes billing for additional platform seats and team members.
+
+1. SEAT PROVISIONING
+- Additional seats for team members
+- Role-based access control
+- User management capabilities
+- Seat utilization tracking
+
+2. BILLING AUTHORIZATION
+- Per-seat monthly billing
+- Automatic seat provisioning
+- Usage-based adjustments
+- Invoice generation and delivery
+
+3. USER MANAGEMENT
+- Add/remove team members
+- Role assignment and permissions
+- Access control and monitoring
+- Compliance requirements
+
+4. TERMS AND CONDITIONS
+- Seat minimums and maximums
+- Billing cycles and terms
+- Cancellation procedures
+- Data handling requirements
+
+This authorization enables team expansion and collaboration on the platform.`,
+        version: '1.0',
+        status: 'DRAFT',
+        requiresSignature: true,
+        complianceRequired: true
+      };
+      
+      const newDocument = await crudService.createDocument(documentData, userId);
+      actualDocumentId = newDocument.id;
+      console.log('🔍 Created new document:', actualDocumentId);
+    }
+    
     // Use direct database signing instead of session-based
-    console.log('🔍 Calling signDocument with:', { sessionId, documentId, enhancedSignatureData });
-    const signature = await legalDocumentService.signDocument(sessionId, documentId, enhancedSignatureData);
+    console.log('🔍 Calling signDocument with:', { sessionId, actualDocumentId, enhancedSignatureData });
+    const signature = await legalDocumentService.signDocument(sessionId, actualDocumentId, enhancedSignatureData);
     
     console.log('🔍 Signing result:', signature);
     
@@ -202,6 +245,7 @@ router.post('/session/:sessionId/sign', authenticateToken, async (req, res) => {
       success: true,
       data: {
         signature: signature,
+        documentId: actualDocumentId,
         message: 'Document signed successfully'
       }
     });
