@@ -1992,6 +1992,53 @@ router.get('/test/files', async(req, res) => {
     }
 });
 
+// ===== VENTURES API =====
+
+/**
+ * GET /ventures/list/all - Get all ventures for current user
+ */
+router.get('/ventures/list/all', authenticateToken, async (req, res) => {
+    try {
+        const userId = req.user.id;
+        
+        // Get ventures for the current user
+        const ventures = await prisma.venture.findMany({
+            where: {
+                OR: [
+                    { ownerId: userId },
+                    { teamMembers: { some: { userId: userId } } }
+                ]
+            },
+            include: {
+                owner: {
+                    select: { id: true, name: true, email: true }
+                },
+                teamMembers: {
+                    include: {
+                        user: {
+                            select: { id: true, name: true, email: true }
+                        }
+                    }
+                }
+            },
+            orderBy: { createdAt: 'desc' }
+        });
+        
+        res.json({
+            success: true,
+            ventures: ventures,
+            message: 'Ventures retrieved successfully'
+        });
+    } catch (error) {
+        console.error('Error fetching ventures:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch ventures',
+            error: error.message
+        });
+    }
+});
+
 // ===== HELPER FUNCTIONS =====
 
 async function getLastWalletHash(walletId) {
