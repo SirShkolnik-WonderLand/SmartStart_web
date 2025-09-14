@@ -143,7 +143,7 @@ class DatabaseConnector:
     def get_umbrella_relationships(self, user_id: str) -> List[Dict]:
         """Get user's umbrella relationships"""
         try:
-            # Return mock umbrella relationships
+            # Return mock umbrella relationships with full user objects
             return [
                 {
                     "id": f"umbrella_{user_id}_001",
@@ -154,7 +154,28 @@ class DatabaseConnector:
                     "default_share_rate": 1.0,
                     "is_active": True,
                     "agreement_signed": True,
-                    "created_at": "2025-01-01T00:00:00Z"
+                    "created_at": "2025-01-01T00:00:00Z",
+                    "referrer": {
+                        "id": user_id,
+                        "name": "Udi Shkolnik",
+                        "email": "udi.admin@alicesolutionsgroup.com",
+                        "level": "SUPER_ADMIN"
+                    },
+                    "referred": {
+                        "id": "user_002",
+                        "name": "Sarah Johnson",
+                        "email": "sarah.johnson@example.com",
+                        "level": "MEMBER"
+                    },
+                    "revenue_shares": [
+                        {
+                            "id": f"revenue_{user_id}_001",
+                            "project_revenue": 10000.0,
+                            "share_amount": 100.0,
+                            "status": "PENDING",
+                            "calculated_at": "2025-09-14T00:00:00Z"
+                        }
+                    ]
                 },
                 {
                     "id": f"umbrella_{user_id}_002",
@@ -165,7 +186,28 @@ class DatabaseConnector:
                     "default_share_rate": 1.2,
                     "is_active": True,
                     "agreement_signed": True,
-                    "created_at": "2025-02-01T00:00:00Z"
+                    "created_at": "2025-02-01T00:00:00Z",
+                    "referrer": {
+                        "id": "user_003",
+                        "name": "Michael Chen",
+                        "email": "michael.chen@example.com",
+                        "level": "ADMIN"
+                    },
+                    "referred": {
+                        "id": user_id,
+                        "name": "Udi Shkolnik",
+                        "email": "udi.admin@alicesolutionsgroup.com",
+                        "level": "SUPER_ADMIN"
+                    },
+                    "revenue_shares": [
+                        {
+                            "id": f"revenue_{user_id}_002",
+                            "project_revenue": 15000.0,
+                            "share_amount": 180.0,
+                            "status": "COMPLETED",
+                            "calculated_at": "2025-09-10T00:00:00Z"
+                        }
+                    ]
                 }
             ]
         except Exception as e:
@@ -175,7 +217,7 @@ class DatabaseConnector:
     def get_umbrella_revenue_shares(self, user_id: str) -> List[Dict]:
         """Get user's umbrella revenue shares"""
         try:
-            # Return mock revenue shares
+            # Return mock revenue shares with full project and user objects
             return [
                 {
                     "id": f"revenue_{user_id}_001",
@@ -188,7 +230,38 @@ class DatabaseConnector:
                     "share_amount": 100.0,
                     "currency": "USD",
                     "status": "PENDING",
-                    "calculated_at": "2025-09-14T00:00:00Z"
+                    "calculated_at": "2025-09-14T00:00:00Z",
+                    "project": {
+                        "id": "project_001",
+                        "name": "SmartStart Mobile App"
+                    },
+                    "referred": {
+                        "id": "user_002",
+                        "name": "Sarah Johnson",
+                        "email": "sarah.johnson@example.com"
+                    }
+                },
+                {
+                    "id": f"revenue_{user_id}_002",
+                    "umbrella_id": f"umbrella_{user_id}_002",
+                    "project_id": "project_002",
+                    "referrer_id": "user_003",
+                    "referred_id": user_id,
+                    "project_revenue": 15000.0,
+                    "share_percentage": 1.2,
+                    "share_amount": 180.0,
+                    "currency": "USD",
+                    "status": "COMPLETED",
+                    "calculated_at": "2025-09-10T00:00:00Z",
+                    "project": {
+                        "id": "project_002",
+                        "name": "AI Analytics Platform"
+                    },
+                    "referred": {
+                        "id": user_id,
+                        "name": "Udi Shkolnik",
+                        "email": "udi.admin@alicesolutionsgroup.com"
+                    }
                 }
             ]
         except Exception as e:

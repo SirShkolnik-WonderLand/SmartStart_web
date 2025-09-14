@@ -8,133 +8,133 @@
       "status": "\u2705 PASS",
       "message": "API is healthy",
       "data": null,
-      "timestamp": "2025-09-14T18:26:06.095166"
+      "timestamp": "2025-09-14T18:31:38.334884"
     },
     {
       "test": "Python Brain Health",
       "status": "\u2705 PASS",
       "message": "Status: healthy",
       "data": null,
-      "timestamp": "2025-09-14T18:26:06.396718"
+      "timestamp": "2025-09-14T18:31:38.607416"
     },
     {
       "test": "Frontend Health",
       "status": "\u2705 PASS",
       "message": "Frontend is accessible",
       "data": null,
-      "timestamp": "2025-09-14T18:26:06.768321"
+      "timestamp": "2025-09-14T18:31:38.917805"
     },
     {
       "test": "User Login",
       "status": "\u2705 PASS",
       "message": "Logged in as Udi Shkolnik",
       "data": null,
-      "timestamp": "2025-09-14T18:26:06.911408"
+      "timestamp": "2025-09-14T18:31:39.033015"
     },
     {
       "test": "User Registration",
       "status": "\u2705 PASS",
-      "message": "Registered user: test_1757888766@example.com",
+      "message": "Registered user: test_1757889099@example.com",
       "data": null,
-      "timestamp": "2025-09-14T18:26:07.022308"
+      "timestamp": "2025-09-14T18:31:39.124158"
     },
     {
       "test": "BUZ Supply",
       "status": "\u2705 PASS",
       "message": "Total Supply: 999,999,999",
       "data": null,
-      "timestamp": "2025-09-14T18:26:07.114350"
+      "timestamp": "2025-09-14T18:31:39.219221"
     },
     {
       "test": "BUZ Wallet",
       "status": "\u2705 PASS",
       "message": "Balance: 2,350 BUZ",
       "data": null,
-      "timestamp": "2025-09-14T18:26:07.213705"
+      "timestamp": "2025-09-14T18:31:39.334410"
     },
     {
       "test": "BUZ Rules",
       "status": "\u2705 PASS",
       "message": "Costs: 20, Rewards: 26",
       "data": null,
-      "timestamp": "2025-09-14T18:26:07.311344"
+      "timestamp": "2025-09-14T18:31:39.421129"
     },
     {
       "test": "Venture Creation",
       "status": "\u2705 PASS",
-      "message": "Created venture: Test Venture 1757888767",
+      "message": "Created venture: Test Venture 1757889099",
       "data": null,
-      "timestamp": "2025-09-14T18:26:07.425098"
+      "timestamp": "2025-09-14T18:31:39.514627"
     },
     {
       "test": "Ventures List",
       "status": "\u2705 PASS",
       "message": "Found 2 ventures",
       "data": null,
-      "timestamp": "2025-09-14T18:26:07.514431"
+      "timestamp": "2025-09-14T18:31:39.616445"
     },
     {
       "test": "Legal Documents Status",
       "status": "\u2705 PASS",
       "message": "Signed: 2/5",
       "data": null,
-      "timestamp": "2025-09-14T18:26:07.650043"
+      "timestamp": "2025-09-14T18:31:39.730310"
     },
     {
       "test": "Legal Documents List",
       "status": "\u2705 PASS",
       "message": "Found 5 documents",
       "data": null,
-      "timestamp": "2025-09-14T18:26:07.742805"
+      "timestamp": "2025-09-14T18:31:39.823280"
     },
     {
       "test": "Journey Status",
       "status": "\u2705 PASS",
       "message": "Current Stage: VENTURE_CREATION, Progress: 75%",
       "data": null,
-      "timestamp": "2025-09-14T18:26:07.855437"
+      "timestamp": "2025-09-14T18:31:39.949948"
     },
     {
       "test": "Opportunities List",
       "status": "\u2705 PASS",
       "message": "Found 3 opportunities",
       "data": null,
-      "timestamp": "2025-09-14T18:26:07.998238"
+      "timestamp": "2025-09-14T18:31:40.053823"
     },
     {
       "test": "Dashboard Analytics",
       "status": "\u2705 PASS",
       "message": "Users: 7, Ventures: 12",
       "data": null,
-      "timestamp": "2025-09-14T18:26:08.113578"
+      "timestamp": "2025-09-14T18:31:40.159243"
     },
     {
       "test": "Venture Legal Dashboard",
       "status": "\u2705 PASS",
       "message": "Legal Health Score: None",
       "data": null,
-      "timestamp": "2025-09-14T18:26:08.219750"
+      "timestamp": "2025-09-14T18:31:40.256293"
     },
     {
       "test": "Team Charters",
       "status": "\u274c FAIL",
       "message": "Status: 404",
       "data": null,
-      "timestamp": "2025-09-14T18:26:08.331623"
+      "timestamp": "2025-09-14T18:31:40.384259"
     },
     {
       "test": "Leaderboard",
       "status": "\u2705 PASS",
       "message": "Found 5 users on leaderboard",
       "data": null,
-      "timestamp": "2025-09-14T18:26:08.418909"
+      "timestamp": "2025-09-14T18:31:40.473666"
     },
     {
       "test": "Umbrella Relationships",
       "status": "\u2705 PASS",
       "message": "Found 3 relationships",
       "data": null,
-      "timestamp": "2025-09-14T18:26:08.517011"
+      "timestamp": "2025-09-14T18:31:40.571738"
     }
   ]
 }
