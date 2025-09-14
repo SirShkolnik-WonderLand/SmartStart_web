@@ -122,7 +122,7 @@ app.post('/api/auth/register', (req, res) => {
 // Logout endpoint
 app.post('/api/auth/logout', (req, res) => {
     console.log(`🚪 Logout request`);
-    
+
     res.json({
         success: true,
         message: 'Logged out successfully'
@@ -169,7 +169,7 @@ app.get('/api/auth/me', (req, res) => {
 app.get('/api/v1/buz/balance/:userId', (req, res) => {
     const { userId } = req.params;
     console.log(`💰 BUZ balance request for user: ${userId}`);
-    
+
     res.json({
         success: true,
         data: {
@@ -185,7 +185,7 @@ app.get('/api/v1/buz/balance/:userId', (req, res) => {
 
 app.get('/api/v1/buz/supply', (req, res) => {
     console.log(`📊 BUZ supply request`);
-    
+
     res.json({
         success: true,
         data: {
@@ -202,7 +202,7 @@ app.get('/api/v1/buz/supply', (req, res) => {
 // BUZ Admin Analytics endpoint
 app.get('/api/v1/buz/admin/analytics', (req, res) => {
     console.log(`📊 BUZ admin analytics request`);
-    
+
     res.json({
         success: true,
         data: {
@@ -234,7 +234,7 @@ app.get('/api/v1/buz/admin/analytics', (req, res) => {
 // Dashboard analytics endpoint
 app.get('/api/dashboard/', (req, res) => {
     console.log(`📈 Dashboard analytics request`);
-    
+
     res.json({
         success: true,
         data: {
@@ -261,12 +261,11 @@ app.get('/api/dashboard/', (req, res) => {
 // Ventures endpoints
 app.get('/api/v1/ventures/list/all', (req, res) => {
     console.log(`🚀 Ventures list request`);
-    
+
     res.json({
         success: true,
         data: {
-            ventures: [
-                {
+            ventures: [{
                     id: 'venture-1',
                     name: 'TechCorp',
                     description: 'Revolutionary tech startup',
@@ -302,12 +301,11 @@ app.get('/api/v1/ventures/list/all', (req, res) => {
 // Contracts/Offers endpoints
 app.get('/api/contracts', (req, res) => {
     console.log(`📋 Contracts request`);
-    
+
     res.json({
         success: true,
         data: {
-            contracts: [
-                {
+            contracts: [{
                     id: 'contract-1',
                     title: 'Partnership Agreement',
                     type: 'PARTNERSHIP',
@@ -333,7 +331,7 @@ app.get('/api/contracts', (req, res) => {
 app.get('/api/legal-signing/status/:userId', (req, res) => {
     const { userId } = req.params;
     console.log(`⚖️ Legal signing status request for user: ${userId}`);
-    
+
     res.json({
         success: true,
         data: {
@@ -358,7 +356,7 @@ app.get('/api/legal-signing/status/:userId', (req, res) => {
 app.get('/api/journey/status/:userId', (req, res) => {
     const { userId } = req.params;
     console.log(`🛤️ Journey status request for user: ${userId}`);
-    
+
     res.json({
         success: true,
         data: {
@@ -396,7 +394,7 @@ app.get('/api/journey/status/:userId', (req, res) => {
 app.get('/api/subscriptions/user/:userId', (req, res) => {
     const { userId } = req.params;
     console.log(`💳 Subscription status request for user: ${userId}`);
-    
+
     res.json({
         success: true,
         data: {
@@ -421,7 +419,7 @@ app.get('/api/subscriptions/user/:userId', (req, res) => {
 // Legal Document Management API Endpoints
 app.get('/api/legal-documents/status', (req, res) => {
     console.log(`⚖️ Legal documents status request`);
-    
+
     res.json({
         success: true,
         data: {
@@ -432,42 +430,41 @@ app.get('/api/legal-documents/status', (req, res) => {
             documents_required: 5,
             compliance_score: 40,
             last_updated: new Date().toISOString(),
-            required_documents: [
-                { 
+            required_documents: [{
                     id: 'doc-1',
-                    name: 'Terms of Service', 
+                    name: 'Terms of Service',
                     status: 'SIGNED',
                     category: 'LEGAL',
                     required_for: 'BASIC_ACCESS',
                     signed_at: '2025-01-14T10:30:00Z'
                 },
-                { 
+                {
                     id: 'doc-2',
-                    name: 'Privacy Policy', 
+                    name: 'Privacy Policy',
                     status: 'SIGNED',
                     category: 'LEGAL',
                     required_for: 'BASIC_ACCESS',
                     signed_at: '2025-01-14T10:35:00Z'
                 },
-                { 
+                {
                     id: 'doc-3',
-                    name: 'Investment Agreement', 
+                    name: 'Investment Agreement',
                     status: 'PENDING',
                     category: 'INVESTMENT',
                     required_for: 'VENTURE_CREATION',
                     signed_at: null
                 },
-                { 
+                {
                     id: 'doc-4',
-                    name: 'Non-Disclosure Agreement', 
+                    name: 'Non-Disclosure Agreement',
                     status: 'PENDING',
                     category: 'CONFIDENTIALITY',
                     required_for: 'TEAM_COLLABORATION',
                     signed_at: null
                 },
-                { 
+                {
                     id: 'doc-5',
-                    name: 'Partnership Agreement', 
+                    name: 'Partnership Agreement',
                     status: 'PENDING',
                     category: 'PARTNERSHIP',
                     required_for: 'ADVANCED_FEATURES',
@@ -480,11 +477,10 @@ app.get('/api/legal-documents/status', (req, res) => {
 
 app.get('/api/legal-documents/documents', (req, res) => {
     console.log(`📄 Available legal documents request`);
-    
+
     res.json({
         success: true,
-        data: [
-            {
+        data: [{
                 id: 'doc-1',
                 name: 'Terms of Service',
                 description: 'Platform terms and conditions',
@@ -545,11 +541,10 @@ app.get('/api/legal-documents/documents', (req, res) => {
 
 app.get('/api/legal-documents/documents/pending', (req, res) => {
     console.log(`⏳ Pending legal documents request`);
-    
+
     res.json({
         success: true,
-        data: [
-            {
+        data: [{
                 id: 'doc-3',
                 name: 'Investment Agreement',
                 description: 'Standard investment terms and conditions',
@@ -591,11 +586,10 @@ app.get('/api/legal-documents/documents/pending', (req, res) => {
 
 app.get('/api/legal-documents/documents/required', (req, res) => {
     console.log(`📋 Required legal documents request`);
-    
+
     res.json({
         success: true,
-        data: [
-            {
+        data: [{
                 id: 'doc-1',
                 name: 'Terms of Service',
                 description: 'Platform terms and conditions',
@@ -657,12 +651,11 @@ app.get('/api/legal-documents/documents/required', (req, res) => {
 // Gamification API Endpoints
 app.get('/api/gamification/leaderboard', (req, res) => {
     console.log(`🏆 Gamification leaderboard request`);
-    
+
     res.json({
         success: true,
         data: {
-            leaderboard: [
-                {
+            leaderboard: [{
                     rank: 1,
                     user_id: 'udi-super-admin-001',
                     name: 'Udi Shkolnik',
@@ -727,13 +720,12 @@ app.get('/api/gamification/leaderboard', (req, res) => {
 app.get('/api/gamification/badges/:userId', (req, res) => {
     const { userId } = req.params;
     console.log(`🏅 User badges request for: ${userId}`);
-    
+
     res.json({
         success: true,
         data: {
             user_id: userId,
-            badges: [
-                {
+            badges: [{
                     id: 'badge-1',
                     name: 'First Steps',
                     description: 'Complete your first venture',
@@ -780,8 +772,7 @@ app.get('/api/gamification/badges/:userId', (req, res) => {
                 }
             ],
             total_badges: 5,
-            recent_badges: [
-                {
+            recent_badges: [{
                     id: 'badge-5',
                     name: 'Innovation Leader',
                     earned_at: '2025-01-16T00:00:00Z'
@@ -792,6 +783,293 @@ app.get('/api/gamification/badges/:userId', (req, res) => {
                     earned_at: '2025-01-15T00:00:00Z'
                 }
             ]
+        }
+    });
+});
+
+// Umbrella API endpoints
+app.get('/api/umbrella/relationships', (req, res) => {
+    console.log(`🌂 Umbrella relationships request`);
+    
+    res.json({
+        success: true,
+        data: [{
+            id: 'rel-1',
+            type: 'REFERRAL',
+            status: 'ACTIVE',
+            referred_user: {
+                id: 'user-2',
+                name: 'Sarah Johnson',
+                email: 'sarah@example.com',
+                avatar: 'https://via.placeholder.com/40'
+            },
+            share_rate: 0.15,
+            created_at: '2025-01-10T00:00:00Z',
+            total_revenue: 2500.00,
+            last_payment: '2025-01-15T00:00:00Z'
+        }, {
+            id: 'rel-2',
+            type: 'PARTNERSHIP',
+            status: 'ACTIVE',
+            referred_user: {
+                id: 'user-3',
+                name: 'Mike Chen',
+                email: 'mike@example.com',
+                avatar: 'https://via.placeholder.com/40'
+            },
+            share_rate: 0.20,
+            created_at: '2025-01-12T00:00:00Z',
+            total_revenue: 1800.00,
+            last_payment: '2025-01-14T00:00:00Z'
+        }, {
+            id: 'rel-3',
+            type: 'REFERRAL',
+            status: 'PENDING',
+            referred_user: {
+                id: 'user-4',
+                name: 'Emily Davis',
+                email: 'emily@example.com',
+                avatar: 'https://via.placeholder.com/40'
+            },
+            share_rate: 0.10,
+            created_at: '2025-01-16T00:00:00Z',
+            total_revenue: 0.00,
+            last_payment: null
+        }],
+        summary: {
+            total_relationships: 3,
+            active_relationships: 2,
+            pending_relationships: 1,
+            total_revenue_generated: 4300.00,
+            total_commission_earned: 645.00
+        }
+    });
+});
+
+app.get('/api/umbrella/revenue/shares', (req, res) => {
+    console.log(`💰 Umbrella revenue shares request`);
+    
+    res.json({
+        success: true,
+        data: [{
+            id: 'share-1',
+            project: {
+                id: 'proj-1',
+                name: 'EcoTech Solutions'
+            },
+            referred_user: {
+                id: 'user-2',
+                name: 'Sarah Johnson',
+                email: 'sarah@example.com'
+            },
+            amount: 375.00,
+            share_rate: 0.15,
+            status: 'PAID',
+            calculated_at: '2025-01-15T00:00:00Z',
+            paid_at: '2025-01-16T00:00:00Z'
+        }, {
+            id: 'share-2',
+            project: {
+                id: 'proj-2',
+                name: 'HealthTech Innovation'
+            },
+            referred_user: {
+                id: 'user-3',
+                name: 'Mike Chen',
+                email: 'mike@example.com'
+            },
+            amount: 360.00,
+            share_rate: 0.20,
+            status: 'PENDING',
+            calculated_at: '2025-01-14T00:00:00Z',
+            paid_at: null
+        }, {
+            id: 'share-3',
+            project: {
+                id: 'proj-3',
+                name: 'FinTech Platform'
+            },
+            referred_user: {
+                id: 'user-2',
+                name: 'Sarah Johnson',
+                email: 'sarah@example.com'
+            },
+            amount: 270.00,
+            share_rate: 0.15,
+            status: 'PAID',
+            calculated_at: '2025-01-10T00:00:00Z',
+            paid_at: '2025-01-12T00:00:00Z'
+        }],
+        summary: {
+            total_shares: 3,
+            paid_shares: 2,
+            pending_shares: 1,
+            total_amount: 1005.00,
+            paid_amount: 645.00,
+            pending_amount: 360.00
+        }
+    });
+});
+
+// Opportunities API endpoints
+app.get('/api/opportunities', (req, res) => {
+    const { page = 1, limit = 50 } = req.query;
+    console.log(`🎯 Opportunities request - page: ${page}, limit: ${limit}`);
+    
+    res.json({
+        success: true,
+        data: {
+            opportunities: [{
+                id: 'opp-1',
+                title: 'Senior Full-Stack Developer',
+                description: 'Join our innovative fintech startup as a senior developer. Work with cutting-edge technologies and help build the future of digital banking.',
+                type: 'FULL_TIME',
+                status: 'ACTIVE',
+                venture: {
+                    id: 'venture-1',
+                    name: 'FinTech Innovations',
+                    logo: 'https://via.placeholder.com/60'
+                },
+                location: 'Toronto, ON',
+                remote: true,
+                compensation: {
+                    type: 'SALARY',
+                    min: 120000,
+                    max: 150000,
+                    currency: 'CAD'
+                },
+                skills_required: ['React', 'Node.js', 'TypeScript', 'PostgreSQL'],
+                created_at: '2025-01-15T00:00:00Z',
+                expires_at: '2025-02-15T00:00:00Z',
+                applications_count: 12
+            }, {
+                id: 'opp-2',
+                title: 'UI/UX Designer',
+                description: 'Create beautiful and intuitive user experiences for our mobile applications. Work closely with product and engineering teams.',
+                type: 'CONTRACT',
+                status: 'ACTIVE',
+                venture: {
+                    id: 'venture-2',
+                    name: 'HealthTech Solutions',
+                    logo: 'https://via.placeholder.com/60'
+                },
+                location: 'Vancouver, BC',
+                remote: true,
+                compensation: {
+                    type: 'HOURLY',
+                    min: 75,
+                    max: 100,
+                    currency: 'CAD'
+                },
+                skills_required: ['Figma', 'Adobe Creative Suite', 'User Research', 'Prototyping'],
+                created_at: '2025-01-14T00:00:00Z',
+                expires_at: '2025-02-14T00:00:00Z',
+                applications_count: 8
+            }, {
+                id: 'opp-3',
+                title: 'Marketing Specialist',
+                description: 'Drive growth and brand awareness for our B2B SaaS platform. Develop and execute marketing campaigns across multiple channels.',
+                type: 'PART_TIME',
+                status: 'ACTIVE',
+                venture: {
+                    id: 'venture-3',
+                    name: 'SaaS Solutions Inc',
+                    logo: 'https://via.placeholder.com/60'
+                },
+                location: 'Montreal, QC',
+                remote: true,
+                compensation: {
+                    type: 'SALARY',
+                    min: 60000,
+                    max: 80000,
+                    currency: 'CAD'
+                },
+                skills_required: ['Digital Marketing', 'Content Creation', 'Analytics', 'Social Media'],
+                created_at: '2025-01-13T00:00:00Z',
+                expires_at: '2025-02-13T00:00:00Z',
+                applications_count: 15
+            }],
+            pagination: {
+                page: parseInt(page),
+                limit: parseInt(limit),
+                total: 3,
+                pages: 1
+            },
+            filters: {
+                applied: {},
+                available: {
+                    types: ['FULL_TIME', 'PART_TIME', 'CONTRACT', 'INTERNSHIP'],
+                    locations: ['Toronto, ON', 'Vancouver, BC', 'Montreal, QC'],
+                    compensation_types: ['SALARY', 'HOURLY', 'EQUITY', 'HYBRID']
+                }
+            }
+        }
+    });
+});
+
+app.get('/api/opportunities/user/:userId/applications', (req, res) => {
+    const { userId } = req.params;
+    console.log(`📋 User applications request for: ${userId}`);
+    
+    res.json({
+        success: true,
+        data: {
+            applications: [{
+                id: 'app-1',
+                opportunity: {
+                    id: 'opp-1',
+                    title: 'Senior Full-Stack Developer',
+                    venture: {
+                        id: 'venture-1',
+                        name: 'FinTech Innovations'
+                    }
+                },
+                status: 'PENDING',
+                applied_at: '2025-01-16T00:00:00Z',
+                cover_letter: 'I am excited about this opportunity to contribute to your innovative fintech platform...',
+                relevant_skills: ['React', 'Node.js', 'TypeScript'],
+                experience: '5+ years in full-stack development',
+                availability: 'Immediate',
+                motivation: 'Passionate about fintech and building scalable solutions'
+            }, {
+                id: 'app-2',
+                opportunity: {
+                    id: 'opp-2',
+                    title: 'UI/UX Designer',
+                    venture: {
+                        id: 'venture-2',
+                        name: 'HealthTech Solutions'
+                    }
+                },
+                status: 'ACCEPTED',
+                applied_at: '2025-01-15T00:00:00Z',
+                cover_letter: 'I have extensive experience in healthcare UX design...',
+                relevant_skills: ['Figma', 'User Research', 'Prototyping'],
+                experience: '3+ years in healthcare design',
+                availability: '2 weeks notice',
+                motivation: 'Want to make healthcare more accessible through design'
+            }],
+            opportunities: [{
+                id: 'opp-1',
+                title: 'Senior Full-Stack Developer',
+                venture: {
+                    id: 'venture-1',
+                    name: 'FinTech Innovations'
+                }
+            }, {
+                id: 'opp-2',
+                title: 'UI/UX Designer',
+                venture: {
+                    id: 'venture-2',
+                    name: 'HealthTech Solutions'
+                }
+            }],
+            summary: {
+                total: 2,
+                pending: 1,
+                accepted: 1,
+                rejected: 0
+            }
         }
     });
 });
