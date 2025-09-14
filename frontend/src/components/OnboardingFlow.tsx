@@ -165,7 +165,7 @@ export default function OnboardingFlow({ userId, onComplete, initialStep }: Onbo
           setJourneyStatus(journeyResponse.data)
           
           // Determine the correct starting step based on journey progress or initialStep prop
-          const completedStages = journeyResponse.data.progress.stages.filter(stage => stage.status === 'COMPLETED')
+          const completedStages = journeyResponse.data.stages.filter(stage => stage.completed === true)
           const completedStageNames = completedStages.map(stage => stage.name)
           
           // Use initialStep from URL if provided, otherwise determine from journey progress
@@ -212,7 +212,11 @@ export default function OnboardingFlow({ userId, onComplete, initialStep }: Onbo
           userStates: [],
           stages: [],
           recommendations: [],
-          progress: { completedStages: 0, totalStages: 4, percentage: 0, stages: [] },
+          completedStages: [],
+          journeyScore: 0,
+          milestonesAchieved: 0,
+          totalMilestones: 4,
+          estimatedCompletion: null,
           timestamp: new Date().toISOString()
         })
         

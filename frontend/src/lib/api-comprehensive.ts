@@ -409,12 +409,21 @@ export interface JourneyProgress {
 
 export interface JourneyStatus {
   userId: string
-  progress: JourneyProgress
-  currentStage: JourneyStage | null
-  nextStage: JourneyStage | null
+  currentStage: string | null
+  stageProgress: number
+  completedStages: string[]
+  stages: Array<{
+    name: string
+    completed: boolean
+    progress: number
+  }>
+  nextStage: string | null
+  journeyScore: number
+  milestonesAchieved: number
+  totalMilestones: number
+  estimatedCompletion: string | null
   isComplete: boolean
   userStates: UserJourneyState[]
-  stages: JourneyStage[]
   recommendations: OnboardingRecommendation[]
   timestamp: string
 }
