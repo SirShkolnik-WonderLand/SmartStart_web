@@ -418,6 +418,384 @@ app.get('/api/subscriptions/user/:userId', (req, res) => {
     });
 });
 
+// Legal Document Management API Endpoints
+app.get('/api/legal-documents/status', (req, res) => {
+    console.log(`⚖️ Legal documents status request`);
+    
+    res.json({
+        success: true,
+        data: {
+            user_id: 'udi-super-admin-001',
+            legal_pack_status: 'IN_PROGRESS',
+            documents_signed: 2,
+            documents_pending: 3,
+            documents_required: 5,
+            compliance_score: 40,
+            last_updated: new Date().toISOString(),
+            required_documents: [
+                { 
+                    id: 'doc-1',
+                    name: 'Terms of Service', 
+                    status: 'SIGNED',
+                    category: 'LEGAL',
+                    required_for: 'BASIC_ACCESS',
+                    signed_at: '2025-01-14T10:30:00Z'
+                },
+                { 
+                    id: 'doc-2',
+                    name: 'Privacy Policy', 
+                    status: 'SIGNED',
+                    category: 'LEGAL',
+                    required_for: 'BASIC_ACCESS',
+                    signed_at: '2025-01-14T10:35:00Z'
+                },
+                { 
+                    id: 'doc-3',
+                    name: 'Investment Agreement', 
+                    status: 'PENDING',
+                    category: 'INVESTMENT',
+                    required_for: 'VENTURE_CREATION',
+                    signed_at: null
+                },
+                { 
+                    id: 'doc-4',
+                    name: 'Non-Disclosure Agreement', 
+                    status: 'PENDING',
+                    category: 'CONFIDENTIALITY',
+                    required_for: 'TEAM_COLLABORATION',
+                    signed_at: null
+                },
+                { 
+                    id: 'doc-5',
+                    name: 'Partnership Agreement', 
+                    status: 'PENDING',
+                    category: 'PARTNERSHIP',
+                    required_for: 'ADVANCED_FEATURES',
+                    signed_at: null
+                }
+            ]
+        }
+    });
+});
+
+app.get('/api/legal-documents/documents', (req, res) => {
+    console.log(`📄 Available legal documents request`);
+    
+    res.json({
+        success: true,
+        data: [
+            {
+                id: 'doc-1',
+                name: 'Terms of Service',
+                description: 'Platform terms and conditions',
+                category: 'LEGAL',
+                version: '2.1',
+                required_for: 'BASIC_ACCESS',
+                status: 'ACTIVE',
+                created_at: '2025-01-01T00:00:00Z',
+                updated_at: '2025-01-10T00:00:00Z'
+            },
+            {
+                id: 'doc-2',
+                name: 'Privacy Policy',
+                description: 'Data protection and privacy policy',
+                category: 'LEGAL',
+                version: '1.8',
+                required_for: 'BASIC_ACCESS',
+                status: 'ACTIVE',
+                created_at: '2025-01-01T00:00:00Z',
+                updated_at: '2025-01-10T00:00:00Z'
+            },
+            {
+                id: 'doc-3',
+                name: 'Investment Agreement',
+                description: 'Standard investment terms and conditions',
+                category: 'INVESTMENT',
+                version: '3.0',
+                required_for: 'VENTURE_CREATION',
+                status: 'ACTIVE',
+                created_at: '2025-01-01T00:00:00Z',
+                updated_at: '2025-01-10T00:00:00Z'
+            },
+            {
+                id: 'doc-4',
+                name: 'Non-Disclosure Agreement',
+                description: 'Confidentiality and non-disclosure terms',
+                category: 'CONFIDENTIALITY',
+                version: '1.5',
+                required_for: 'TEAM_COLLABORATION',
+                status: 'ACTIVE',
+                created_at: '2025-01-01T00:00:00Z',
+                updated_at: '2025-01-10T00:00:00Z'
+            },
+            {
+                id: 'doc-5',
+                name: 'Partnership Agreement',
+                description: 'Partnership and collaboration terms',
+                category: 'PARTNERSHIP',
+                version: '2.0',
+                required_for: 'ADVANCED_FEATURES',
+                status: 'ACTIVE',
+                created_at: '2025-01-01T00:00:00Z',
+                updated_at: '2025-01-10T00:00:00Z'
+            }
+        ]
+    });
+});
+
+app.get('/api/legal-documents/documents/pending', (req, res) => {
+    console.log(`⏳ Pending legal documents request`);
+    
+    res.json({
+        success: true,
+        data: [
+            {
+                id: 'doc-3',
+                name: 'Investment Agreement',
+                description: 'Standard investment terms and conditions',
+                category: 'INVESTMENT',
+                version: '3.0',
+                required_for: 'VENTURE_CREATION',
+                status: 'PENDING',
+                priority: 'HIGH',
+                deadline: '2025-01-20T23:59:59Z',
+                created_at: '2025-01-01T00:00:00Z'
+            },
+            {
+                id: 'doc-4',
+                name: 'Non-Disclosure Agreement',
+                description: 'Confidentiality and non-disclosure terms',
+                category: 'CONFIDENTIALITY',
+                version: '1.5',
+                required_for: 'TEAM_COLLABORATION',
+                status: 'PENDING',
+                priority: 'MEDIUM',
+                deadline: '2025-01-25T23:59:59Z',
+                created_at: '2025-01-01T00:00:00Z'
+            },
+            {
+                id: 'doc-5',
+                name: 'Partnership Agreement',
+                description: 'Partnership and collaboration terms',
+                category: 'PARTNERSHIP',
+                version: '2.0',
+                required_for: 'ADVANCED_FEATURES',
+                status: 'PENDING',
+                priority: 'LOW',
+                deadline: '2025-01-30T23:59:59Z',
+                created_at: '2025-01-01T00:00:00Z'
+            }
+        ]
+    });
+});
+
+app.get('/api/legal-documents/documents/required', (req, res) => {
+    console.log(`📋 Required legal documents request`);
+    
+    res.json({
+        success: true,
+        data: [
+            {
+                id: 'doc-1',
+                name: 'Terms of Service',
+                description: 'Platform terms and conditions',
+                category: 'LEGAL',
+                version: '2.1',
+                required_for: 'BASIC_ACCESS',
+                status: 'SIGNED',
+                priority: 'CRITICAL',
+                signed_at: '2025-01-14T10:30:00Z'
+            },
+            {
+                id: 'doc-2',
+                name: 'Privacy Policy',
+                description: 'Data protection and privacy policy',
+                category: 'LEGAL',
+                version: '1.8',
+                required_for: 'BASIC_ACCESS',
+                status: 'SIGNED',
+                priority: 'CRITICAL',
+                signed_at: '2025-01-14T10:35:00Z'
+            },
+            {
+                id: 'doc-3',
+                name: 'Investment Agreement',
+                description: 'Standard investment terms and conditions',
+                category: 'INVESTMENT',
+                version: '3.0',
+                required_for: 'VENTURE_CREATION',
+                status: 'REQUIRED',
+                priority: 'HIGH',
+                signed_at: null
+            },
+            {
+                id: 'doc-4',
+                name: 'Non-Disclosure Agreement',
+                description: 'Confidentiality and non-disclosure terms',
+                category: 'CONFIDENTIALITY',
+                version: '1.5',
+                required_for: 'TEAM_COLLABORATION',
+                status: 'REQUIRED',
+                priority: 'MEDIUM',
+                signed_at: null
+            },
+            {
+                id: 'doc-5',
+                name: 'Partnership Agreement',
+                description: 'Partnership and collaboration terms',
+                category: 'PARTNERSHIP',
+                version: '2.0',
+                required_for: 'ADVANCED_FEATURES',
+                status: 'REQUIRED',
+                priority: 'LOW',
+                signed_at: null
+            }
+        ]
+    });
+});
+
+// Gamification API Endpoints
+app.get('/api/gamification/leaderboard', (req, res) => {
+    console.log(`🏆 Gamification leaderboard request`);
+    
+    res.json({
+        success: true,
+        data: {
+            leaderboard: [
+                {
+                    rank: 1,
+                    user_id: 'udi-super-admin-001',
+                    name: 'Udi Shkolnik',
+                    xp_points: 2500,
+                    level: 'EXPERT',
+                    badges: 8,
+                    ventures_created: 3,
+                    ventures_joined: 5,
+                    total_earnings: 50000
+                },
+                {
+                    rank: 2,
+                    user_id: 'user-002',
+                    name: 'Alex Johnson',
+                    xp_points: 2200,
+                    level: 'ADVANCED',
+                    badges: 6,
+                    ventures_created: 2,
+                    ventures_joined: 4,
+                    total_earnings: 35000
+                },
+                {
+                    rank: 3,
+                    user_id: 'user-003',
+                    name: 'Sarah Chen',
+                    xp_points: 1900,
+                    level: 'INTERMEDIATE',
+                    badges: 4,
+                    ventures_created: 1,
+                    ventures_joined: 3,
+                    total_earnings: 25000
+                },
+                {
+                    rank: 4,
+                    user_id: 'user-004',
+                    name: 'Mike Rodriguez',
+                    xp_points: 1600,
+                    level: 'INTERMEDIATE',
+                    badges: 3,
+                    ventures_created: 1,
+                    ventures_joined: 2,
+                    total_earnings: 18000
+                },
+                {
+                    rank: 5,
+                    user_id: 'user-005',
+                    name: 'Emma Wilson',
+                    xp_points: 1400,
+                    level: 'BEGINNER',
+                    badges: 2,
+                    ventures_created: 0,
+                    ventures_joined: 2,
+                    total_earnings: 12000
+                }
+            ],
+            total_participants: 5,
+            last_updated: new Date().toISOString()
+        }
+    });
+});
+
+app.get('/api/gamification/badges/:userId', (req, res) => {
+    const { userId } = req.params;
+    console.log(`🏅 User badges request for: ${userId}`);
+    
+    res.json({
+        success: true,
+        data: {
+            user_id: userId,
+            badges: [
+                {
+                    id: 'badge-1',
+                    name: 'First Steps',
+                    description: 'Complete your first venture',
+                    category: 'MILESTONE',
+                    rarity: 'COMMON',
+                    earned_at: '2025-01-10T00:00:00Z',
+                    icon: '🎯'
+                },
+                {
+                    id: 'badge-2',
+                    name: 'Team Player',
+                    description: 'Join 3 different ventures',
+                    category: 'COLLABORATION',
+                    rarity: 'COMMON',
+                    earned_at: '2025-01-12T00:00:00Z',
+                    icon: '👥'
+                },
+                {
+                    id: 'badge-3',
+                    name: 'Legal Eagle',
+                    description: 'Complete all legal documents',
+                    category: 'COMPLIANCE',
+                    rarity: 'RARE',
+                    earned_at: '2025-01-14T00:00:00Z',
+                    icon: '⚖️'
+                },
+                {
+                    id: 'badge-4',
+                    name: 'BUZ Master',
+                    description: 'Earn 10,000 BUZ tokens',
+                    category: 'ECONOMY',
+                    rarity: 'RARE',
+                    earned_at: '2025-01-15T00:00:00Z',
+                    icon: '💰'
+                },
+                {
+                    id: 'badge-5',
+                    name: 'Innovation Leader',
+                    description: 'Create a successful venture',
+                    category: 'LEADERSHIP',
+                    rarity: 'EPIC',
+                    earned_at: '2025-01-16T00:00:00Z',
+                    icon: '🚀'
+                }
+            ],
+            total_badges: 5,
+            recent_badges: [
+                {
+                    id: 'badge-5',
+                    name: 'Innovation Leader',
+                    earned_at: '2025-01-16T00:00:00Z'
+                },
+                {
+                    id: 'badge-4',
+                    name: 'BUZ Master',
+                    earned_at: '2025-01-15T00:00:00Z'
+                }
+            ]
+        }
+    });
+});
+
 // Proxy all API requests to Python Brain
 app.use('/api', createProxyMiddleware({
     target: PYTHON_BRAIN_URL,
