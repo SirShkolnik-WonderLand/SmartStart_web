@@ -103,15 +103,31 @@ class DatabaseConnector:
             return []
     
     def get_user_buz_tokens(self, user_id: str) -> Dict:
-        """Get user BUZ tokens - return mock data"""
+        """Get user BUZ tokens - return mock data with staking"""
         try:
-            # Return mock BUZ data with some staked tokens
+            # Check if user has staked tokens by calling staking endpoint
+            try:
+                staking_response = self.session.get(f"{self.api_base}/api/buz/stake", 
+                    params={"userId": user_id})
+                if staking_response.status_code == 200:
+                    staking_data = staking_response.json()
+                    staked_amount = staking_data.get('data', {}).get('amount', 0) if staking_data.get('success') else 0
+                else:
+                    staked_amount = 0
+            except:
+                staked_amount = 0
+            
+            # Return mock BUZ data with staked tokens
             if user_id == "udi-super-admin-001":
+                # Give this user some staked tokens
+                staked = 1000 + staked_amount
+                balance = 2350
+                available = balance - staked
                 return {
                     "user_id": user_id,
-                    "balance": 2350,
-                    "staked": 1000,  # Added some staked BUZ
-                    "available": 1350,  # Available = balance - staked
+                    "balance": balance,
+                    "staked": staked,
+                    "available": available,
                     "total_earned": 2500,
                     "total_spent": 150,
                     "currency": "BUZ",
@@ -119,11 +135,14 @@ class DatabaseConnector:
                     "next_level_buz": 5000
                 }
             else:
+                staked = 50 + staked_amount
+                balance = 100
+                available = balance - staked
                 return {
                     "user_id": user_id,
-                    "balance": 100,
-                    "staked": 50,
-                    "available": 50,
+                    "balance": balance,
+                    "staked": staked,
+                    "available": available,
                     "total_earned": 200,
                     "total_spent": 100,
                     "currency": "BUZ",
