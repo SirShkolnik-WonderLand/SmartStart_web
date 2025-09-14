@@ -61,6 +61,34 @@ class NodeJSConnector:
             logger.error(f"Error getting user data: {e}")
             return {}
     
+    def get_user_by_email(self, email: str) -> Dict[str, Any]:
+        """Get user data by email"""
+        try:
+            query = """
+            SELECT u.*, r.name as role_name, r.level as role_level
+            FROM "User" u
+            LEFT JOIN "Role" r ON u.role = r.name
+            WHERE u.email = %s
+            """
+            
+            result = self.query(query, [email])
+            if result:
+                return {
+                    "success": True,
+                    "data": dict(result[0])
+                }
+            else:
+                return {
+                    "success": False,
+                    "message": "User not found"
+                }
+        except Exception as e:
+            logger.error(f"Error getting user by email: {e}")
+            return {
+                "success": False,
+                "message": f"Database error: {str(e)}"
+            }
+    
     def test_connection(self) -> bool:
         """Test database connection"""
         try:

@@ -54,6 +54,8 @@ class DummyNodeJSConnector:
         pass
     def get_user_data(self, user_id):
         return {"success": True, "data": {"id": user_id}}
+    def get_user_by_email(self, email):
+        return {"success": False, "message": "Database connection not available"}
     def query(self, sql, params=None):
         return []
     def execute(self, sql, params=None):
