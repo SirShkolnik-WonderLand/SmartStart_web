@@ -189,6 +189,38 @@ app.get('/api/v1/buz/supply', (req, res) => {
     });
 });
 
+// BUZ Admin Analytics endpoint
+app.get('/api/v1/buz/admin/analytics', (req, res) => {
+    console.log(`📊 BUZ admin analytics request`);
+    
+    res.json({
+        success: true,
+        data: {
+            total_transactions: 15420,
+            total_volume: 25000000,
+            active_stakers: 1250,
+            average_stake_amount: 20000,
+            total_rewards_distributed: 5000000,
+            staking_apy: 12.5,
+            governance_participation: 78.3,
+            token_holders: 3400,
+            daily_active_users: 450,
+            weekly_growth: 15.2,
+            monthly_growth: 45.8,
+            top_stakers: [
+                { user_id: 'udi-super-admin-001', amount: 500000, percentage: 25.0 },
+                { user_id: 'user-002', amount: 300000, percentage: 15.0 },
+                { user_id: 'user-003', amount: 200000, percentage: 10.0 }
+            ],
+            recent_activities: [
+                { type: 'stake', amount: 50000, user: 'user-004', timestamp: new Date().toISOString() },
+                { type: 'unstake', amount: 25000, user: 'user-005', timestamp: new Date().toISOString() },
+                { type: 'reward', amount: 5000, user: 'user-006', timestamp: new Date().toISOString() }
+            ]
+        }
+    });
+});
+
 // Dashboard analytics endpoint
 app.get('/api/dashboard/', (req, res) => {
     console.log(`📈 Dashboard analytics request`);
@@ -323,6 +355,12 @@ app.get('/api/journey/status/:userId', (req, res) => {
             user_id: userId,
             current_stage: 'VENTURE_CREATION',
             stage_progress: 75,
+            completedStages: [
+                'REGISTRATION',
+                'PROFILE_SETUP',
+                'VERIFICATION',
+                'LEGAL_COMPLIANCE'
+            ],
             completed_stages: [
                 'REGISTRATION',
                 'PROFILE_SETUP',
@@ -333,7 +371,15 @@ app.get('/api/journey/status/:userId', (req, res) => {
             journey_score: 85,
             milestones_achieved: 8,
             total_milestones: 12,
-            estimated_completion: '2025-10-15T00:00:00Z'
+            estimated_completion: '2025-10-15T00:00:00Z',
+            stages: [
+                { name: 'REGISTRATION', completed: true, progress: 100 },
+                { name: 'PROFILE_SETUP', completed: true, progress: 100 },
+                { name: 'VERIFICATION', completed: true, progress: 100 },
+                { name: 'LEGAL_COMPLIANCE', completed: true, progress: 100 },
+                { name: 'VENTURE_CREATION', completed: false, progress: 75 },
+                { name: 'FUNDING', completed: false, progress: 0 }
+            ]
         }
     });
 });
