@@ -143,18 +143,18 @@ class DatabaseConnector:
     def get_umbrella_relationships(self, user_id: str) -> List[Dict]:
         """Get user's umbrella relationships"""
         try:
-            # Return mock umbrella relationships with full user objects
+            # Return mock umbrella relationships with frontend-compatible property names
             return [
                 {
                     "id": f"umbrella_{user_id}_001",
-                    "referrer_id": user_id,
-                    "referred_id": "user_002",
-                    "relationship_type": "PRIVATE_UMBRELLA",
+                    "referrerId": user_id,
+                    "referredId": "user_002",
+                    "relationshipType": "PRIVATE_UMBRELLA",
                     "status": "ACTIVE",
-                    "default_share_rate": 1.0,
-                    "is_active": True,
-                    "agreement_signed": True,
-                    "created_at": "2025-01-01T00:00:00Z",
+                    "defaultShareRate": 1.0,
+                    "isActive": True,
+                    "agreementSigned": True,
+                    "createdAt": "2025-01-01T00:00:00Z",
                     "referrer": {
                         "id": user_id,
                         "name": "Udi Shkolnik",
@@ -167,26 +167,26 @@ class DatabaseConnector:
                         "email": "sarah.johnson@example.com",
                         "level": "MEMBER"
                     },
-                    "revenue_shares": [
+                    "revenueShares": [
                         {
                             "id": f"revenue_{user_id}_001",
-                            "project_revenue": 10000.0,
-                            "share_amount": 100.0,
+                            "projectRevenue": 10000.0,
+                            "shareAmount": 100.0,
                             "status": "PENDING",
-                            "calculated_at": "2025-09-14T00:00:00Z"
+                            "calculatedAt": "2025-09-14T00:00:00Z"
                         }
                     ]
                 },
                 {
                     "id": f"umbrella_{user_id}_002",
-                    "referrer_id": "user_003",
-                    "referred_id": user_id,
-                    "relationship_type": "PRIVATE_UMBRELLA",
+                    "referrerId": "user_003",
+                    "referredId": user_id,
+                    "relationshipType": "PRIVATE_UMBRELLA",
                     "status": "ACTIVE",
-                    "default_share_rate": 1.2,
-                    "is_active": True,
-                    "agreement_signed": True,
-                    "created_at": "2025-02-01T00:00:00Z",
+                    "defaultShareRate": 1.2,
+                    "isActive": True,
+                    "agreementSigned": True,
+                    "createdAt": "2025-02-01T00:00:00Z",
                     "referrer": {
                         "id": "user_003",
                         "name": "Michael Chen",
@@ -199,13 +199,13 @@ class DatabaseConnector:
                         "email": "udi.admin@alicesolutionsgroup.com",
                         "level": "SUPER_ADMIN"
                     },
-                    "revenue_shares": [
+                    "revenueShares": [
                         {
                             "id": f"revenue_{user_id}_002",
-                            "project_revenue": 15000.0,
-                            "share_amount": 180.0,
+                            "projectRevenue": 15000.0,
+                            "shareAmount": 180.0,
                             "status": "COMPLETED",
-                            "calculated_at": "2025-09-10T00:00:00Z"
+                            "calculatedAt": "2025-09-10T00:00:00Z"
                         }
                     ]
                 }
@@ -217,20 +217,20 @@ class DatabaseConnector:
     def get_umbrella_revenue_shares(self, user_id: str) -> List[Dict]:
         """Get user's umbrella revenue shares"""
         try:
-            # Return mock revenue shares with full project and user objects
+            # Return mock revenue shares with frontend-compatible property names
             return [
                 {
                     "id": f"revenue_{user_id}_001",
-                    "umbrella_id": f"umbrella_{user_id}_001",
-                    "project_id": "project_001",
-                    "referrer_id": user_id,
-                    "referred_id": "user_002",
-                    "project_revenue": 10000.0,
-                    "share_percentage": 1.0,
-                    "share_amount": 100.0,
+                    "umbrellaId": f"umbrella_{user_id}_001",
+                    "projectId": "project_001",
+                    "referrerId": user_id,
+                    "referredId": "user_002",
+                    "projectRevenue": 10000.0,
+                    "sharePercentage": 1.0,
+                    "shareAmount": 100.0,
                     "currency": "USD",
                     "status": "PENDING",
-                    "calculated_at": "2025-09-14T00:00:00Z",
+                    "calculatedAt": "2025-09-14T00:00:00Z",
                     "project": {
                         "id": "project_001",
                         "name": "SmartStart Mobile App"
@@ -243,16 +243,16 @@ class DatabaseConnector:
                 },
                 {
                     "id": f"revenue_{user_id}_002",
-                    "umbrella_id": f"umbrella_{user_id}_002",
-                    "project_id": "project_002",
-                    "referrer_id": "user_003",
-                    "referred_id": user_id,
-                    "project_revenue": 15000.0,
-                    "share_percentage": 1.2,
-                    "share_amount": 180.0,
+                    "umbrellaId": f"umbrella_{user_id}_002",
+                    "projectId": "project_002",
+                    "referrerId": "user_003",
+                    "referredId": user_id,
+                    "projectRevenue": 15000.0,
+                    "sharePercentage": 1.2,
+                    "shareAmount": 180.0,
                     "currency": "USD",
                     "status": "COMPLETED",
-                    "calculated_at": "2025-09-10T00:00:00Z",
+                    "calculatedAt": "2025-09-10T00:00:00Z",
                     "project": {
                         "id": "project_002",
                         "name": "AI Analytics Platform"
