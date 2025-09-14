@@ -489,6 +489,71 @@ class ApiService {
       return { success: false, error: 'Health check failed' }
     }
   }
+
+  // Analytics methods
+  async getAnalytics(): Promise<ApiResponse<any>> {
+    try {
+      const response = await this.fetchWithAuth('/api/dashboard/')
+      return response
+    } catch (error) {
+      console.error('Analytics error:', error)
+      return { success: false, error: 'Failed to load analytics' }
+    }
+  }
+
+  // BUZ Token methods
+  async getBUZSupply(): Promise<ApiResponse<any>> {
+    try {
+      const response = await this.fetchWithAuth('/api/v1/buz/supply')
+      return response
+    } catch (error) {
+      console.error('BUZ supply error:', error)
+      return { success: false, error: 'Failed to load BUZ supply' }
+    }
+  }
+
+  async getBUZBalance(userId: string): Promise<ApiResponse<any>> {
+    try {
+      const response = await this.fetchWithAuth(`/api/v1/buz/balance/${userId}`)
+      return response
+    } catch (error) {
+      console.error('BUZ balance error:', error)
+      return { success: false, error: 'Failed to load BUZ balance' }
+    }
+  }
+
+  // Journey status method
+  async getJourneyStatus(userId: string): Promise<ApiResponse<any>> {
+    try {
+      const response = await this.fetchWithAuth(`/api/journey/status/${userId}`)
+      return response
+    } catch (error) {
+      console.error('Journey status error:', error)
+      return { success: false, error: 'Failed to load journey status' }
+    }
+  }
+
+  // Legal pack status method
+  async getLegalPackStatus(userId: string): Promise<ApiResponse<any>> {
+    try {
+      const response = await this.fetchWithAuth(`/api/legal-signing/status/${userId}`)
+      return response
+    } catch (error) {
+      console.error('Legal pack status error:', error)
+      return { success: false, error: 'Failed to load legal pack status' }
+    }
+  }
+
+  // Subscription status method
+  async getSubscriptionStatus(userId: string): Promise<ApiResponse<any>> {
+    try {
+      const response = await this.fetchWithAuth(`/api/subscriptions/user/${userId}`)
+      return response
+    } catch (error) {
+      console.error('Subscription status error:', error)
+      return { success: false, error: 'Failed to load subscription status' }
+    }
+  }
 }
 
 export const apiService = new ApiService()

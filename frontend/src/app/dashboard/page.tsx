@@ -23,7 +23,7 @@ import {
   Wallet,
   TrendingDown
 } from 'lucide-react'
-import { comprehensiveApiService as apiService, User, AnalyticsData, Venture, Offer } from '@/lib/api-comprehensive'
+import { apiService, User, AnalyticsData, Venture, Offer } from '@/lib/api'
 import RealtimeDashboard from '@/components/realtime/RealtimeDashboard'
 import Link from 'next/link'
 
