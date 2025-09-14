@@ -105,11 +105,13 @@ def get_buz_supply():
     try:
         return jsonify({
             "success": True,
-            "supply": {
+            "data": {
                 "total": 999999999,
                 "circulating": 500000000,
                 "price_usd": 0.02,
-                "market_cap": 10000000
+                "currentPrice": 0.02,
+                "market_cap": 10000000,
+                "currency": "USD"
             }
         }), 200
     except Exception as e:
@@ -174,6 +176,93 @@ def get_user_analytics(user_id):
         }), 200
     except Exception as e:
         logger.error(f"Error getting analytics for user {user_id}: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+@app.route('/api/legal-documents/status', methods=['GET'])
+def get_legal_documents_status():
+    """Get legal documents status"""
+    try:
+        # Mock legal documents status
+        status = {
+            "signed": 2,
+            "total": 5,
+            "documents": [
+                {"name": "Terms of Service", "signed": True},
+                {"name": "Privacy Policy", "signed": True},
+                {"name": "NDA Template", "signed": False},
+                {"name": "Contract Template", "signed": False},
+                {"name": "Data Agreement", "signed": False}
+            ]
+        }
+        
+        return jsonify({
+            "success": True,
+            "data": status
+        }), 200
+    except Exception as e:
+        logger.error(f"Error getting legal documents status: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+@app.route('/api/gamification/leaderboard', methods=['GET'])
+def get_leaderboard():
+    """Get gamification leaderboard"""
+    try:
+        # Mock leaderboard data
+        leaderboard = [
+            {"name": "Udi Shkolnik", "xp": 2500, "level": "SUPER_ADMIN", "rank": 1},
+            {"name": "Alice Johnson", "xp": 1800, "level": "ADMIN", "rank": 2},
+            {"name": "Bob Smith", "xp": 1200, "level": "MEMBER", "rank": 3},
+            {"name": "Carol Davis", "xp": 900, "level": "MEMBER", "rank": 4},
+            {"name": "David Wilson", "xp": 600, "level": "MEMBER", "rank": 5}
+        ]
+        
+        return jsonify({
+            "success": True,
+            "data": leaderboard
+        }), 200
+    except Exception as e:
+        logger.error(f"Error getting leaderboard: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+@app.route('/api/contracts', methods=['GET'])
+def get_contracts():
+    """Get contracts/offers"""
+    try:
+        # Mock contracts data
+        contracts = [
+            {
+                "id": "contract-001",
+                "title": "Frontend Developer",
+                "venture": "Tech Startup Alpha",
+                "status": "active",
+                "value": 5000,
+                "currency": "BUZ"
+            },
+            {
+                "id": "contract-002", 
+                "title": "Backend Engineer",
+                "venture": "Data Solutions Inc",
+                "status": "pending",
+                "value": 7500,
+                "currency": "BUZ"
+            }
+        ]
+        
+        return jsonify({
+            "success": True,
+            "data": contracts
+        }), 200
+    except Exception as e:
+        logger.error(f"Error getting contracts: {e}")
         return jsonify({
             "success": False,
             "error": str(e)
