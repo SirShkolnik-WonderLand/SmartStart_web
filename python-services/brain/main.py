@@ -56,7 +56,7 @@ UserBehaviorAnalyzer = DummyBrainModule
 
 # Import real NodeJSConnector
 try:
-    from nodejs_connector import NodeJSConnector
+    from services.nodejs_connector import NodeJSConnector
     print("✅ NodeJSConnector imported successfully")
 except ImportError as e:
     print(f"⚠️  NodeJSConnector import error: {e}")
@@ -83,6 +83,8 @@ try:
     from rbac_service import RBACService
     from crud_service import CRUDService
     from user_journey_service import UserJourneyService
+    from legal_audit_service import LegalAuditService
+    from legal_print_service import LegalPrintService
 except ImportError as e:
     print(f"Warning: Could not import Python services: {e}")
     # Create dummy services for now
@@ -222,6 +224,8 @@ class SmartStartBrain:
         self.rbac_service = RBACService()
         self.crud_service = CRUDService()
         self.user_journey_service = UserJourneyService()
+        self.legal_audit_service = LegalAuditService()
+        self.legal_print_service = LegalPrintService()
         
         logger.info("🧠 SmartStart Brain initialized successfully with all Python services")
     
@@ -1076,6 +1080,178 @@ def get_journey_analytics():
     result = brain.user_journey_service.get_journey_analytics()
     return jsonify({"success": True, "data": result})
 
+# Authentication Service Endpoints
+@app.route('/auth/register', methods=['POST'])
+def register_user():
+    """Register a new user"""
+    data = request.json
+    result = brain.authentication_service.register_user(data)
+    return jsonify(result)
+
+@app.route('/auth/login', methods=['POST'])
+def login_user():
+    """Login user"""
+    data = request.json
+    email = data.get('email')
+    password = data.get('password')
+    
+    if not email or not password:
+        return jsonify({"success": False, "error": "Email and password required"}), 400
+    
+    result = brain.authentication_service.login_user(email, password)
+    return jsonify(result)
+
+@app.route('/auth/verify', methods=['POST'])
+def verify_token():
+    """Verify JWT token"""
+    data = request.json
+    token = data.get('token')
+    
+    if not token:
+        return jsonify({"success": False, "error": "Token required"}), 400
+    
+    result = brain.authentication_service.verify_token(token)
+    return jsonify(result)
+
+@app.route('/auth/profile/<user_id>', methods=['PUT'])
+def update_user_profile(user_id):
+    """Update user profile"""
+    data = request.json
+    result = brain.authentication_service.update_user_profile(user_id, data)
+    return jsonify(result)
+
+@app.route('/auth/change-password/<user_id>', methods=['POST'])
+def change_password(user_id):
+    """Change user password"""
+    data = request.json
+    old_password = data.get('old_password')
+    new_password = data.get('new_password')
+    
+    if not old_password or not new_password:
+        return jsonify({"success": False, "error": "Old and new password required"}), 400
+    
+    result = brain.authentication_service.change_password(user_id, old_password, new_password)
+    return jsonify(result)
+
+# Legal Service Endpoints
+@app.route('/legal/user/<user_id>/documents', methods=['GET'])
+def get_user_legal_documents(user_id):
+    """Get legal documents for user"""
+    result = brain.legal_service.get_legal_documents_for_user(user_id)
+    return jsonify(result)
+
+@app.route('/legal/user/<user_id>/compliance', methods=['GET'])
+def check_user_legal_compliance(user_id):
+    """Check user legal compliance"""
+    result = brain.legal_service.check_user_legal_compliance(user_id)
+    return jsonify(result)
+
+@app.route('/legal/sign/<user_id>/<document_id>', methods=['POST'])
+def sign_legal_document(user_id, document_id):
+    """Sign legal document"""
+    data = request.json
+    result = brain.legal_service.sign_legal_document(user_id, document_id, data)
+    return jsonify(result)
+
+@app.route('/legal/templates', methods=['GET'])
+def get_legal_templates():
+    """Get all legal templates"""
+    result = brain.legal_service.get_all_legal_templates()
+    return jsonify(result)
+
+# Venture Service Endpoints
+@app.route('/venture/create', methods=['POST'])
+def create_venture():
+    """Create a new venture"""
+    data = request.json
+    result = brain.venture_service.create_venture(data)
+    return jsonify(result)
+
+@app.route('/venture/<venture_id>', methods=['GET'])
+def get_venture(venture_id):
+    """Get venture by ID"""
+    result = brain.venture_service.get_venture(venture_id)
+    return jsonify(result)
+
+@app.route('/venture/search', methods=['POST'])
+def search_ventures():
+    """Search ventures"""
+    data = request.json
+    result = brain.venture_service.search_ventures(data)
+    return jsonify(result)
+
+# Legal Audit Service Endpoints
+@app.route('/legal/audit/create-record', methods=['POST'])
+def create_legal_record():
+    """Create legal audit record"""
+    data = request.json
+    user_id = data.get('user_id')
+    document_id = data.get('document_id')
+    action = data.get('action')
+    record_data = data.get('data', {})
+    ip_address = request.remote_addr
+    user_agent = request.headers.get('User-Agent')
+    
+    result = brain.legal_audit_service.create_legal_record(
+        user_id, document_id, action, record_data, ip_address, user_agent
+    )
+    return jsonify(result)
+
+@app.route('/legal/audit/trail', methods=['GET'])
+def get_legal_audit_trail():
+    """Get legal audit trail"""
+    user_id = request.args.get('user_id')
+    document_id = request.args.get('document_id')
+    action = request.args.get('action')
+    limit = int(request.args.get('limit', 100))
+    
+    result = brain.legal_audit_service.get_legal_audit_trail(user_id, document_id, action, limit)
+    return jsonify(result)
+
+@app.route('/legal/audit/verify/<record_id>', methods=['GET'])
+def verify_legal_record(record_id):
+    """Verify legal record integrity"""
+    result = brain.legal_audit_service.verify_legal_record(record_id)
+    return jsonify(result)
+
+@app.route('/legal/user/<user_id>/history', methods=['GET'])
+def get_user_legal_history(user_id):
+    """Get user legal history"""
+    result = brain.legal_audit_service.get_user_legal_history(user_id)
+    return jsonify(result)
+
+@app.route('/legal/sign-with-audit/<user_id>/<document_id>', methods=['POST'])
+def sign_legal_document_with_audit(user_id, document_id):
+    """Sign legal document with complete audit trail"""
+    data = request.json
+    ip_address = request.remote_addr
+    user_agent = request.headers.get('User-Agent')
+    
+    result = brain.legal_audit_service.sign_legal_document(
+        user_id, document_id, data, ip_address, user_agent
+    )
+    return jsonify(result)
+
+@app.route('/legal/report/<user_id>', methods=['GET'])
+def generate_legal_report(user_id):
+    """Generate legal report for user"""
+    report_type = request.args.get('type', 'FULL')
+    result = brain.legal_audit_service.generate_legal_report(user_id, report_type)
+    return jsonify(result)
+
+# Legal Print Service Endpoints
+@app.route('/legal/print/document/<user_id>/<document_id>', methods=['GET'])
+def generate_document_pdf(user_id, document_id):
+    """Generate PDF of legal document"""
+    result = brain.legal_print_service.generate_legal_document_pdf(user_id, document_id)
+    return jsonify(result)
+
+@app.route('/legal/print/report/<user_id>', methods=['GET'])
+def generate_report_pdf(user_id):
+    """Generate legal report PDF"""
+    result = brain.legal_print_service.generate_user_legal_report_pdf(user_id)
+    return jsonify(result)
+
 # Health check endpoint
 @app.route('/health', methods=['GET'])
 def health_check():
@@ -1099,9 +1275,11 @@ def health_check():
             "state_machine_service": "active",
             "rbac_service": "active",
             "crud_service": "active",
-            "user_journey_service": "active"
+            "user_journey_service": "active",
+            "legal_audit_service": "active",
+            "legal_print_service": "active"
         },
-        "total_endpoints": 80,
+        "total_endpoints": 100,
         "python_brain": "operational"
     })
 
