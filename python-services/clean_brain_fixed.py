@@ -273,9 +273,15 @@ def get_buz_balance(user_id):
     """Get user BUZ balance"""
     try:
         buz_data = db.get_user_buz_tokens(user_id)
+        # Extract the actual data from the nested structure
+        if buz_data and 'data' in buz_data:
+            actual_data = buz_data['data']
+        else:
+            actual_data = buz_data
+            
         return jsonify({
             "success": True,
-            "data": buz_data
+            "data": actual_data
         }), 200
     except Exception as e:
         logger.error(f"Error getting BUZ balance for user {user_id}: {e}")
