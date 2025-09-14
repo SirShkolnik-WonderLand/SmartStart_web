@@ -1534,6 +1534,38 @@ def health_check():
         "python_brain": "operational"
     })
 
+@app.route('/debug/auth', methods=['POST'])
+def debug_auth():
+    """Debug authentication endpoint"""
+    try:
+        data = request.get_json()
+        email = data.get('email')
+        password = data.get('password')
+        
+        # Test database connection
+        user_result = brain.nodejs_connector.get_user_by_email(email)
+        
+        return jsonify({
+            "success": True,
+            "debug_info": {
+                "email": email,
+                "user_found": user_result.get('success', False),
+                "user_data": user_result.get('data', {}),
+                "connector_type": type(brain.nodejs_connector).__name__,
+                "password_hash": user_result.get('data', {}).get('password', '')[:20] + '...' if user_result.get('data', {}).get('password') else 'None',
+                "bcrypt_available": hasattr(brain.authentication_service, '_verify_password')
+            }
+        })
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": str(e),
+            "debug_info": {
+                "connector_type": type(brain.nodejs_connector).__name__,
+                "bcrypt_available": hasattr(brain.authentication_service, '_verify_password')
+            }
+        }), 500
+
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=True)
