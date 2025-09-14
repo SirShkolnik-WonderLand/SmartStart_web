@@ -51,21 +51,31 @@ app.get('/health', (req, res) => {
 app.use('/api', createProxyMiddleware({
     target: PYTHON_BRAIN_URL,
     changeOrigin: true,
-    timeout: 30000, // 30 second timeout
-    proxyTimeout: 30000, // 30 second proxy timeout
+    timeout: 60000, // 60 second timeout
+    proxyTimeout: 60000, // 60 second proxy timeout
     pathRewrite: {
         '^/api': '' // Remove the /api prefix since Python Brain doesn't use it
     },
-    onError: (err, req, res) => {
-        console.error('Proxy error:', err);
-        res.status(500).json({
-            success: false,
-            error: 'Python Brain service unavailable',
-            message: 'Please try again later'
-        });
-    },
     onProxyReq: (proxyReq, req, res) => {
         console.log(`🔄 Proxying ${req.method} ${req.path} to Python Brain`);
+        // Add timeout headers
+        proxyReq.setTimeout(60000);
+    },
+    onError: (err, req, res) => {
+        console.error('Proxy error:', err);
+        if (err.code === 'ECONNRESET' || err.code === 'ETIMEDOUT') {
+            res.status(504).json({
+                success: false,
+                error: 'Gateway Timeout',
+                message: 'Python Brain service took too long to respond'
+            });
+        } else {
+            res.status(500).json({
+                success: false,
+                error: 'Python Brain service unavailable',
+                message: 'Please try again later'
+            });
+        }
     },
     onProxyRes: (proxyRes, req, res) => {
         console.log(`✅ Python Brain responded with ${proxyRes.statusCode} for ${req.path}`);
