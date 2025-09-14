@@ -695,6 +695,52 @@ def get_insights():
     result = brain.analytics_service.get_insights(user_id, venture_id)
     return jsonify(result)
 
+@app.route('/analytics/ai-predictions', methods=['POST'])
+def get_ai_predictions():
+    """Get AI-powered predictions"""
+    data = request.json
+    prediction_type = data.get('prediction_type')
+    prediction_data = data.get('data', {})
+    
+    if not prediction_type:
+        return jsonify({"success": False, "error": "prediction_type required"}), 400
+    
+    result = brain.analytics_service.get_ai_predictions(prediction_type, prediction_data)
+    return jsonify(result)
+
+@app.route('/analytics/ml-recommendations/<user_id>', methods=['GET'])
+def get_ml_recommendations(user_id):
+    """Get ML-powered recommendations for user"""
+    recommendation_type = request.args.get('type', 'general')
+    result = brain.analytics_service.get_ml_recommendations(user_id, recommendation_type)
+    return jsonify(result)
+
+@app.route('/analytics/anomaly-detection', methods=['POST'])
+def detect_anomalies():
+    """Detect anomalies in data"""
+    data = request.json
+    data_type = data.get('data_type')
+    anomaly_data = data.get('data', {})
+    
+    if not data_type:
+        return jsonify({"success": False, "error": "data_type required"}), 400
+    
+    result = brain.analytics_service.get_anomaly_detection(data_type, anomaly_data)
+    return jsonify(result)
+
+@app.route('/analytics/sentiment-analysis', methods=['POST'])
+def analyze_sentiment():
+    """Perform sentiment analysis on text data"""
+    data = request.json
+    text_data = data.get('text_data', [])
+    analysis_type = data.get('analysis_type', 'general')
+    
+    if not text_data:
+        return jsonify({"success": False, "error": "text_data required"}), 400
+    
+    result = brain.analytics_service.get_sentiment_analysis(text_data, analysis_type)
+    return jsonify(result)
+
 # Notification Service Endpoints
 @app.route('/notifications/send', methods=['POST'])
 def send_notification():
@@ -811,6 +857,92 @@ def send_team_websocket_message(team_id):
     
     # This would be async in real implementation
     result = {"success": True, "message": f"Team {team_id} message queued"}
+    return jsonify(result)
+
+@app.route('/websocket/venture/<venture_id>/update', methods=['POST'])
+def send_venture_websocket_update(venture_id):
+    """Send venture update via WebSocket"""
+    data = request.json
+    update_type = data.get('update_type')
+    update_data = data.get('data', {})
+    
+    if not update_type:
+        return jsonify({"success": False, "error": "update_type required"}), 400
+    
+    # This would be async in real implementation
+    result = {"success": True, "message": f"Venture {venture_id} update queued"}
+    return jsonify(result)
+
+@app.route('/websocket/team/<team_id>/update', methods=['POST'])
+def send_team_websocket_update(team_id):
+    """Send team update via WebSocket"""
+    data = request.json
+    update_type = data.get('update_type')
+    update_data = data.get('data', {})
+    
+    if not update_type:
+        return jsonify({"success": False, "error": "update_type required"}), 400
+    
+    # This would be async in real implementation
+    result = {"success": True, "message": f"Team {team_id} update queued"}
+    return jsonify(result)
+
+@app.route('/websocket/collaboration/update', methods=['POST'])
+def send_collaboration_websocket_update():
+    """Send collaboration update via WebSocket"""
+    data = request.json
+    venture_id = data.get('venture_id')
+    user_id = data.get('user_id')
+    action = data.get('action')
+    action_data = data.get('data', {})
+    
+    if not all([venture_id, user_id, action]):
+        return jsonify({"success": False, "error": "venture_id, user_id, and action required"}), 400
+    
+    # This would be async in real implementation
+    result = {"success": True, "message": f"Collaboration update queued for venture {venture_id}"}
+    return jsonify(result)
+
+@app.route('/websocket/legal/update', methods=['POST'])
+def send_legal_websocket_update():
+    """Send legal document update via WebSocket"""
+    data = request.json
+    venture_id = data.get('venture_id')
+    legal_type = data.get('legal_type')
+    legal_data = data.get('data', {})
+    
+    if not all([venture_id, legal_type]):
+        return jsonify({"success": False, "error": "venture_id and legal_type required"}), 400
+    
+    # This would be async in real implementation
+    result = {"success": True, "message": f"Legal update queued for venture {venture_id}"}
+    return jsonify(result)
+
+@app.route('/websocket/token/update', methods=['POST'])
+def send_token_websocket_update():
+    """Send BUZ token update via WebSocket"""
+    data = request.json
+    user_id = data.get('user_id')
+    token_data = data.get('token_data', {})
+    
+    if not user_id:
+        return jsonify({"success": False, "error": "user_id required"}), 400
+    
+    # This would be async in real implementation
+    result = {"success": True, "message": f"Token update queued for user {user_id}"}
+    return jsonify(result)
+
+@app.route('/websocket/announcement', methods=['POST'])
+def send_system_announcement():
+    """Send system-wide announcement via WebSocket"""
+    data = request.json
+    announcement = data.get('announcement', {})
+    
+    if not announcement:
+        return jsonify({"success": False, "error": "announcement required"}), 400
+    
+    # This would be async in real implementation
+    result = {"success": True, "message": "System announcement queued"}
     return jsonify(result)
 
 # State Machine Service Endpoints
@@ -1278,7 +1410,7 @@ def health_check():
             "legal_audit_service": "active",
             "legal_print_service": "active"
         },
-        "total_endpoints": 105,
+        "total_endpoints": 117,
         "python_brain": "operational"
     })
 

@@ -212,6 +212,69 @@ class WebSocketService:
         }
         await self.send_to_user(recipient_id, message)
     
+    async def send_venture_update(self, venture_id: str, update_type: str, data: Dict[str, Any]):
+        """Send venture update to all subscribers"""
+        message = {
+            "type": "VENTURE_UPDATE",
+            "ventureId": venture_id,
+            "updateType": update_type,
+            "data": data,
+            "timestamp": datetime.now().isoformat()
+        }
+        await self.send_to_venture(venture_id, message)
+    
+    async def send_team_update(self, team_id: str, update_type: str, data: Dict[str, Any]):
+        """Send team update to all subscribers"""
+        message = {
+            "type": "TEAM_UPDATE",
+            "teamId": team_id,
+            "updateType": update_type,
+            "data": data,
+            "timestamp": datetime.now().isoformat()
+        }
+        await self.send_to_team(team_id, message)
+    
+    async def send_collaboration_update(self, venture_id: str, user_id: str, action: str, data: Dict[str, Any]):
+        """Send collaboration update (user is working on something)"""
+        message = {
+            "type": "COLLABORATION_UPDATE",
+            "ventureId": venture_id,
+            "userId": user_id,
+            "action": action,
+            "data": data,
+            "timestamp": datetime.now().isoformat()
+        }
+        await self.send_to_venture(venture_id, message)
+    
+    async def send_legal_update(self, venture_id: str, legal_type: str, data: Dict[str, Any]):
+        """Send legal document update to venture subscribers"""
+        message = {
+            "type": "LEGAL_UPDATE",
+            "ventureId": venture_id,
+            "legalType": legal_type,
+            "data": data,
+            "timestamp": datetime.now().isoformat()
+        }
+        await self.send_to_venture(venture_id, message)
+    
+    async def send_token_update(self, user_id: str, token_data: Dict[str, Any]):
+        """Send BUZ token balance/transaction update to user"""
+        message = {
+            "type": "TOKEN_UPDATE",
+            "data": token_data,
+            "timestamp": datetime.now().isoformat()
+        }
+        await self.send_to_user(user_id, message)
+    
+    async def send_system_announcement(self, announcement: Dict[str, Any]):
+        """Send system-wide announcement to all users"""
+        message = {
+            "type": "SYSTEM_ANNOUNCEMENT",
+            "data": announcement,
+            "timestamp": datetime.now().isoformat()
+        }
+        await self.broadcast_to_all(message)
+    
     async def cleanup_connection(self, connection_id: str, user_id: Optional[str]):
         """Clean up connection and remove from all subscriptions"""
         if connection_id in self.connections:
