@@ -7,6 +7,7 @@ Handles all authentication, JWT, login, registration, and security
 import logging
 import hashlib
 import secrets
+import bcrypt
 from datetime import datetime, timedelta
 from typing import Dict, List, Any, Optional
 
@@ -377,12 +378,28 @@ class AuthenticationService:
             }
 
     def _hash_password(self, password: str) -> str:
-        """Hash password using simple hash (for demo purposes)"""
-        return hashlib.sha256(password.encode('utf-8')).hexdigest()
+        """Hash password using bcrypt"""
+        try:
+            salt = bcrypt.gensalt()
+            hashed = bcrypt.hashpw(password.encode('utf-8'), salt)
+            return hashed.decode('utf-8')
+        except Exception as e:
+            logger.error(f"Error hashing password: {e}")
+            # Fallback to SHA256 for compatibility
+            return hashlib.sha256(password.encode('utf-8')).hexdigest()
 
     def _verify_password(self, password: str, password_hash: str) -> bool:
-        """Verify password against hash"""
-        return self._hash_password(password) == password_hash
+        """Verify password against hash using bcrypt"""
+        try:
+            # Try bcrypt verification first
+            if password_hash.startswith('$2a$') or password_hash.startswith('$2b$'):
+                return bcrypt.checkpw(password.encode('utf-8'), password_hash.encode('utf-8'))
+            else:
+                # Fallback to SHA256 for old hashes
+                return self._hash_password(password) == password_hash
+        except Exception as e:
+            logger.error(f"Error verifying password: {e}")
+            return False
 
     def _generate_user_id(self) -> str:
         """Generate unique user ID"""
