@@ -180,12 +180,12 @@ class SmartStartAIMatchingService {
             skills: this.extractSkills(user),
             interests: this.extractInterests(user),
             experience: this.calculateExperience(user),
-            location: user.userProfile ? .location || 'Unknown',
-            availability: user.userProfile ? .availability || 'Unknown',
+            location: user.userProfile?.location || 'Unknown',
+            availability: user.userProfile?.availability || 'Unknown',
             preferences: this.extractPreferences(user),
-            connections: user.userConnections ? .length || 0,
-            ventures: user.ventures ? .length || 0,
-            teams: user.teams ? .length || 0,
+            connections: user.userConnections?.length || 0,
+            ventures: user.ventures?.length || 0,
+            teams: user.teams?.length || 0,
             lastActivity: user.updatedAt,
             profileCompleteness: this.calculateProfileCompleteness(user)
         };
@@ -199,12 +199,12 @@ class SmartStartAIMatchingService {
             stage: venture.stage,
             industry: this.extractIndustry(venture),
             skillsNeeded: this.extractSkillsNeeded(venture),
-            teamSize: venture.ventureMembers ? .length || 0,
+            teamSize: venture.ventureMembers?.length || 0,
             funding: this.extractFunding(venture),
             location: venture.location || 'Unknown',
             timeline: this.extractTimeline(venture),
-            milestones: venture.ventureMilestones ? .length || 0,
-            documents: venture.ventureDocuments ? .length || 0,
+            milestones: venture.ventureMilestones?.length || 0,
+            documents: venture.ventureDocuments?.length || 0,
             lastActivity: venture.updatedAt
         };
     }
@@ -215,9 +215,9 @@ class SmartStartAIMatchingService {
             name: team.name,
             description: team.description,
             skills: this.extractTeamSkills(team),
-            goals: team.teamGoals ? .length || 0,
-            projects: team.teamProjects ? .length || 0,
-            size: team.teamMembers ? .length || 0,
+            goals: team.teamGoals?.length || 0,
+            projects: team.teamProjects?.length || 0,
+            size: team.teamMembers?.length || 0,
             collaborationStyle: this.extractCollaborationStyle(team),
             lastActivity: team.updatedAt
         };
@@ -241,7 +241,7 @@ class SmartStartAIMatchingService {
         // Extract skills from user profile, experience, etc.
         const skills = [];
 
-        if (user.userProfile ? .skills) {
+        if (user.userProfile?.skills) {
             skills.push(...user.userProfile.skills);
         }
 
@@ -259,12 +259,12 @@ class SmartStartAIMatchingService {
 
     extractInterests(user) {
         // Extract interests from user profile
-        return user.userProfile ? .interests || [];
+        return user.userProfile?.interests || [];
     }
 
     calculateExperience(user) {
         // Calculate years of experience
-        const startDate = user.userProfile ? .experienceStartDate;
+        const startDate = user.userProfile?.experienceStartDate;
         if (startDate) {
             const years = (new Date() - new Date(startDate)) / (1000 * 60 * 60 * 24 * 365);
             return Math.floor(years);
@@ -274,19 +274,19 @@ class SmartStartAIMatchingService {
 
     extractPreferences(user) {
         return {
-            workStyle: user.userProfile ? .workStyle || 'flexible',
-            communication: user.userProfile ? .communication || 'email',
-            timezone: user.userProfile ? .timezone || 'UTC',
-            remote: user.userProfile ? .remote || true
+            workStyle: user.userProfile?.workStyle || 'flexible',
+            communication: user.userProfile?.communication || 'email',
+            timezone: user.userProfile?.timezone || 'UTC',
+            remote: user.userProfile?.remote || true
         };
     }
 
     calculateProfileCompleteness(user) {
         let completeness = 0;
         const fields = [
-            user.name, user.email, user.userProfile ? .bio,
-            user.userProfile ? .skills, user.userProfile ? .location,
-            user.userProfile ? .experience, user.userProfile ? .interests
+            user.name, user.email, user.userProfile?.bio,
+            user.userProfile?.skills, user.userProfile?.location,
+            user.userProfile?.experience, user.userProfile?.interests
         ];
 
         const filledFields = fields.filter(field => field && field.length > 0).length;
@@ -635,7 +635,7 @@ class SmartStartAIMatchingService {
             reasons.push(`Skills complement team (${Math.round(skillComplement * 100)}%)`);
         }
 
-        if (userProfile.preferences ? .workStyle === teamProfile.collaborationStyle) {
+        if (userProfile.preferences?.workStyle === teamProfile.collaborationStyle) {
             reasons.push('Compatible work style');
         }
 
