@@ -226,18 +226,29 @@ class ApiService {
 
   async logout(): Promise<ApiResponse> {
     try {
-      const response = await this.fetchWithAuth('/api/auth/logout', {
-        method: 'POST',
-      })
+      // Try to call logout endpoint, but don't fail if it doesn't exist
+      try {
+        await this.fetchWithAuth('/api/auth/logout', {
+          method: 'POST',
+        })
+      } catch (error) {
+        // If logout endpoint doesn't exist (404), that's okay - just clear local storage
+        console.log('Logout endpoint not available, clearing local storage only')
+      }
       
+      // Always clear local storage regardless of API response
       localStorage.removeItem('user-id')
       localStorage.removeItem('user-data')
       localStorage.removeItem('auth-token')
       
-      return response
+      return { success: true, message: 'Logged out successfully' }
     } catch (error) {
       console.error('Logout error:', error)
-      return { success: false, error: 'Logout failed' }
+      // Even if there's an error, clear local storage
+      localStorage.removeItem('user-id')
+      localStorage.removeItem('user-data')
+      localStorage.removeItem('auth-token')
+      return { success: true, message: 'Logged out successfully' }
     }
   }
 
