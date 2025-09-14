@@ -113,8 +113,8 @@ export default function DashboardPage() {
 
   // Fun motivational messages based on user progress
   const getMotivationalMessage = () => {
-    const completedStages = journeyStatus?.progress.completedStages || 0
-    const totalStages = journeyStatus?.progress.totalStages || 4
+    const completedStages = journeyStatus?.progress?.completedStages || 0
+    const totalStages = journeyStatus?.progress?.totalStages || 4
     
     if (completedStages === 0) {
       return { message: "Ready to start your magical journey? ✨", icon: Sparkles, color: "text-primary" }
@@ -305,15 +305,11 @@ export default function DashboardPage() {
           apiService.getBUZSupply().catch(err => {
             console.warn('BUZ supply failed:', err)
             return { success: false, data: { currentPrice: 0.01 } }
-          }),
-          apiService.getBUZBalance(userId || user?.id || '').catch(err => {
-            console.warn('BUZ balance failed:', err)
-            return { success: false, data: { balance: 0, stakedBalance: 0 } }
           })
         ]
 
         // Wait for all data with timeout
-        const [analyticsResponse, venturesResponse, offersResponse, buzSupplyResponse, buzBalanceResponse] = await Promise.allSettled(
+        const [analyticsResponse, venturesResponse, offersResponse, buzSupplyResponse] = await Promise.allSettled(
           dataPromises.map(promise => Promise.race([
             promise,
             new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000))
@@ -334,10 +330,23 @@ export default function DashboardPage() {
           const supplyData = (buzSupplyResponse.value as { success: boolean; data: any }).data
           setBuzPrice(supplyData.currentPrice || 0.01)
         }
-        if (buzBalanceResponse.status === 'fulfilled' && buzBalanceResponse.value && (buzBalanceResponse.value as { success: boolean }).success) {
-          const balanceData = (buzBalanceResponse.value as { success: boolean; data: any }).data
-          setBuzBalance(balanceData.balance || 0)
-          setBuzStaked(balanceData.stakedBalance || 0)
+
+        // Load BUZ balance after user data is available
+        if (userResponse.success && userResponse.data) {
+          try {
+            const buzBalanceResponse = await apiService.getBUZBalance(userResponse.data.id).catch(err => {
+              console.warn('BUZ balance failed:', err)
+              return { success: false, data: { balance: 0, stakedBalance: 0 } }
+            })
+            
+            if (buzBalanceResponse.success) {
+              const balanceData = buzBalanceResponse.data
+              setBuzBalance(balanceData.balance || 0)
+              setBuzStaked(balanceData.stakedBalance || 0)
+            }
+          } catch (err) {
+            console.warn('BUZ balance failed:', err)
+          }
         }
 
         // Load user-specific data if user is available

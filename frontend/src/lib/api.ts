@@ -319,7 +319,7 @@ class ApiService {
   // Ventures
   async getVentures(): Promise<ApiResponse<Venture[]>> {
     try {
-      const response = await this.fetchWithAuth<Venture[]>('/api/ventures/list/all')
+      const response = await this.fetchWithAuth<Venture[]>('/api/v1/ventures/list/all')
       return { success: true, data: response.data || [] }
     } catch (error) {
       console.error('Error fetching ventures:', error)
@@ -378,7 +378,7 @@ class ApiService {
   // Offers
   async getOffers(): Promise<ApiResponse<Offer[]>> {
     try {
-      const response = await this.fetchWithAuth<Offer[]>('/api/offers')
+      const response = await this.fetchWithAuth<Offer[]>('/api/contracts')
       return { success: true, data: response.data || [] }
     } catch (error) {
       console.error('Error fetching offers:', error)
