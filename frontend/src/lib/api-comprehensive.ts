@@ -2855,6 +2855,73 @@ class ComprehensiveApiService {
     }
   }
 
+  async getBUZWallet(userId: string): Promise<ApiResponse<{balance: number, staked: number, available: number, total_earned: number, currency: string, next_level_buz: number}>> {
+    try {
+      let actualUserId = userId
+      
+      if (userId === 'current-user' || userId === '') {
+        const storedUserId = localStorage.getItem('user-id')
+        if (storedUserId) {
+          actualUserId = storedUserId
+        } else {
+          actualUserId = 'udi-super-admin-001'
+        }
+      }
+      
+      const response = await this.fetchWithAuth<{balance: number, staked: number, available: number, total_earned: number, currency: string, next_level_buz: number}>(`/api/v1/buz/wallet/${actualUserId}`)
+      return response
+    } catch (error) {
+      console.error('Get BUZ wallet error:', error)
+      return { success: false, error: 'Failed to get BUZ wallet' }
+    }
+  }
+
+  async awardBUZTokens(userId: string, amount: number, reason: string): Promise<ApiResponse<{success: boolean, new_balance: number}>> {
+    try {
+      const response = await this.fetchWithAuth<{success: boolean, new_balance: number}>('/api/v1/buz/award', {
+        method: 'POST',
+        body: JSON.stringify({ userId, amount, reason })
+      })
+      return response
+    } catch (error) {
+      console.error('Error awarding BUZ tokens:', error)
+      return { success: false, error: 'Failed to award BUZ tokens' }
+    }
+  }
+
+  async spendBUZTokens(userId: string, amount: number, reason: string): Promise<ApiResponse<{success: boolean, new_balance: number}>> {
+    try {
+      const response = await this.fetchWithAuth<{success: boolean, new_balance: number}>('/api/v1/buz/spend', {
+        method: 'POST',
+        body: JSON.stringify({ userId, amount, reason })
+      })
+      return response
+    } catch (error) {
+      console.error('Error spending BUZ tokens:', error)
+      return { success: false, error: 'Failed to spend BUZ tokens' }
+    }
+  }
+
+  async getBUZRules(): Promise<ApiResponse<{costs: any, rewards: any, levels: any}>> {
+    try {
+      const response = await this.fetchWithAuth<{costs: any, rewards: any, levels: any}>('/api/v1/buz/rules')
+      return response
+    } catch (error) {
+      console.error('Error fetching BUZ rules:', error)
+      return { success: false, error: 'Failed to fetch BUZ rules' }
+    }
+  }
+
+  async getBUZSupply(): Promise<ApiResponse<{total_supply: number, circulating_supply: number, staked_supply: number, burned_supply: number}>> {
+    try {
+      const response = await this.fetchWithAuth<{total_supply: number, circulating_supply: number, staked_supply: number, burned_supply: number}>('/api/v1/buz/supply')
+      return response
+    } catch (error) {
+      console.error('Error fetching BUZ supply:', error)
+      return { success: false, error: 'Failed to fetch BUZ supply' }
+    }
+  }
+
   async getBUZTransactions(userId: string, options: {
     page?: number
     limit?: number

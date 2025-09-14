@@ -242,6 +242,20 @@ export default function CreateVenturePage() {
           </div>
         </div>
 
+        {/* BUZ Token Cost Info */}
+        <div className="mb-6 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+          <div className="flex items-center space-x-2">
+            <div className="text-2xl">🪙</div>
+            <div>
+              <h3 className="font-semibold text-blue-400">BUZ Token Cost</h3>
+              <p className="text-sm text-gray-300">
+                Creating a venture costs <span className="font-mono text-green-400">100 BUZ</span> tokens, 
+                but you'll earn <span className="font-mono text-yellow-400">200 BUZ</span> tokens as a reward!
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* Content */}
         <motion.div
           key={currentStep}

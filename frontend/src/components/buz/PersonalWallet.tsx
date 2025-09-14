@@ -26,7 +26,7 @@ import {
   Star
 } from 'lucide-react';
 import { useAuthStore } from '@/store/useAuthStore';
-import { api } from '@/lib/api-comprehensive';
+import { apiService } from '@/lib/api-comprehensive';
 
 interface WalletData {
   balance: number;
@@ -96,13 +96,13 @@ export default function PersonalWallet() {
       setLoading(true);
       
       // Load wallet balance
-      const balanceResponse = await api.getBUZBalance(user!.id);
+      const balanceResponse = await apiService.getBUZBalance(user!.id);
       if (balanceResponse.success) {
         setWalletData(balanceResponse.data!);
       }
 
       // Load transactions
-      const transactionsResponse = await api.getBUZTransactions(user!.id, {
+      const transactionsResponse = await apiService.getBUZTransactions(user!.id, {
         page: 1,
         limit: 20
       });
@@ -111,7 +111,7 @@ export default function PersonalWallet() {
       }
 
       // Load staking positions
-      const stakingResponse = await api.getBUZStaking(user!.id);
+      const stakingResponse = await apiService.getBUZStaking(user!.id);
       if (stakingResponse.success) {
         setStakingPositions(stakingResponse.data!.stakingPositions);
       }

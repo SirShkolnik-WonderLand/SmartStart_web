@@ -69,6 +69,7 @@ export default function DashboardPage() {
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null)
   const [ventures, setVentures] = useState<Venture[]>([])
   const [offers, setOffers] = useState<Offer[]>([])
+  const [buzBalance, setBuzBalance] = useState<{balance: number, staked: number, available: number, total_earned: number} | null>(null)
   const [buzBalance, setBuzBalance] = useState<number>(0)
   const [buzStaked, setBuzStaked] = useState<number>(0)
   const [buzRewards, setBuzRewards] = useState<number>(0)

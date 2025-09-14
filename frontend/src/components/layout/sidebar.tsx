@@ -29,7 +29,8 @@ import { cn } from '@/lib/utils'
 import { useUIStore } from '@/store/useUIStore'
 
 const navigation = [
-  { name: 'Home', href: '/', icon: Home, current: true },
+  { name: 'Unified Dashboard', href: '/unified', icon: Activity, current: true, badge: 'NEW' },
+  { name: 'Home', href: '/', icon: Home, current: false },
   { name: 'Ventures', href: '/ventures', icon: Building2, current: false },
   { name: 'Companies', href: '/companies', icon: Building, current: false },
   { name: 'Teams', href: '/teams', icon: Users, current: false },
@@ -46,6 +47,7 @@ const navigation = [
   { name: 'Real-time', href: '/realtime', icon: Activity, current: false },
   { name: 'Search', href: '/search', icon: Search, current: false },
   { name: 'Approvals', href: '/approvals', icon: CheckCircle, current: false },
+  { name: 'BUZ Tokens', href: '/buz', icon: Wallet, current: false },
   { name: 'Admin', href: '/admin', icon: Settings, current: false },
   { name: 'Admin BUZ', href: '/admin/buz', icon: Wallet, current: false },
   { name: 'Settings', href: '/settings', icon: Settings, current: false },
