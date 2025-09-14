@@ -696,41 +696,7 @@ def get_team_analytics(team_id):
             "error": str(e)
         }), 500
 
-# ===== WALLET ENDPOINTS =====
-
-@app.route('/api/wallet/balance/<user_id>', methods=['GET'])
-def get_wallet_balance(user_id):
-    """Get comprehensive wallet balance"""
-    try:
-        # Get wallet balance from database
-        balance = db.get_wallet_balance(user_id)
-        return jsonify({
-            "success": True,
-            "data": balance
-        }), 200
-    except Exception as e:
-        logger.error(f"Error getting wallet balance for user {user_id}: {e}")
-        return jsonify({
-            "success": False,
-            "error": str(e)
-        }), 500
-
-@app.route('/api/wallet/transactions/<user_id>', methods=['GET'])
-def get_wallet_transactions(user_id):
-    """Get wallet transaction history"""
-    try:
-        # Get wallet transactions from database
-        transactions = db.get_wallet_transactions(user_id)
-        return jsonify({
-            "success": True,
-            "data": transactions
-        }), 200
-    except Exception as e:
-        logger.error(f"Error getting wallet transactions for user {user_id}: {e}")
-        return jsonify({
-            "success": False,
-            "error": str(e)
-        }), 500
+# ===== ADDITIONAL ENDPOINTS =====
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
