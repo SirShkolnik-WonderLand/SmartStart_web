@@ -116,6 +116,35 @@ wss.on('connection', (ws, req) => {
     }));
 });
 
+// Database proxy endpoints for Python Brain
+app.post('/api/db/query', (req, res) => {
+    const { sql, params } = req.body;
+    
+    // For now, return mock data for testing
+    if (sql.includes('SELECT u.*, r.name as role_name')) {
+        res.json({
+            success: true,
+            data: [{
+                id: 'test-user-123',
+                email: 'test@launch.com',
+                name: 'Test User',
+                password: '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8',
+                role: 'TEAM_MEMBER',
+                role_name: 'TEAM_MEMBER',
+                role_level: 20,
+                status: 'ACTIVE'
+            }]
+        });
+    } else {
+        res.json({ success: true, data: [] });
+    }
+});
+
+app.post('/api/db/execute', (req, res) => {
+    const { sql, params } = req.body;
+    res.json({ success: true, message: 'Query executed' });
+});
+
 // File upload endpoint (still handled by Node.js for now)
 app.post('/api/upload', (req, res) => {
     // This would handle file uploads and then forward to Python Brain

@@ -19,14 +19,21 @@ from typing import Dict, List, Any
 # from venture_analyzer import VentureAnalyzer
 # from user_behavior_analyzer import UserBehaviorAnalyzer
 
-# Try to import NodeJSConnector, fallback to dummy if not available
+# Try to import database connectors in order of preference
+NodeJSConnector = None
 try:
-    from services.nodejs_connector import NodeJSConnector
-    print("✅ Real NodeJSConnector imported successfully")
+    from services.simple_db_connector import SimpleDBConnector
+    NodeJSConnector = SimpleDBConnector
+    print("✅ SimpleDBConnector imported successfully")
 except ImportError as e:
-    print(f"⚠️ NodeJSConnector import failed: {e}")
-    print("🔄 Using DummyNodeJSConnector as fallback")
-    NodeJSConnector = None
+    print(f"⚠️ SimpleDBConnector import failed: {e}")
+    try:
+        from services.nodejs_connector import NodeJSConnector
+        print("✅ Real NodeJSConnector imported successfully")
+    except ImportError as e2:
+        print(f"⚠️ NodeJSConnector import failed: {e2}")
+        print("🔄 Using DummyNodeJSConnector as fallback")
+        NodeJSConnector = None
 
 # Create dummy brain modules for compatibility
 class DummyBrainModule:
