@@ -58,11 +58,11 @@ app.post('/api/auth/login', (req, res) => {
     console.log(`🔐 Direct auth attempt for: "${trimmedEmail}"`);
     console.log(`🔐 Password received: "${trimmedPassword}"`);
     console.log(`🔐 Email matches expected: ${trimmedEmail === 'udi.admin@alicesolutionsgroup.com'}`);
-    console.log(`🔐 Password matches expected: ${trimmedPassword === 'password'}`);
+    console.log(`🔐 Password matches expected: ${trimmedPassword === 'Id200633048!'}`);
     console.log(`🔐 Full request body:`, JSON.stringify(req.body, null, 2));
     
     // Simple authentication for testing (with trimmed values)
-    if (trimmedEmail === 'udi.admin@alicesolutionsgroup.com' && trimmedPassword === 'password') {
+    if (trimmedEmail === 'udi.admin@alicesolutionsgroup.com' && trimmedPassword === 'Id200633048!') {
         res.json({
             success: true,
             message: 'Login successful',
