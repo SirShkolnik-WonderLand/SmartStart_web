@@ -119,6 +119,16 @@ app.post('/api/auth/register', (req, res) => {
     });
 });
 
+// Logout endpoint
+app.post('/api/auth/logout', (req, res) => {
+    console.log(`🚪 Logout request`);
+    
+    res.json({
+        success: true,
+        message: 'Logged out successfully'
+    });
+});
+
 // Health check for auth system
 app.get('/api/auth/health', (req, res) => {
     res.json({
@@ -352,9 +362,9 @@ app.get('/api/journey/status/:userId', (req, res) => {
     res.json({
         success: true,
         data: {
-            user_id: userId,
-            current_stage: 'VENTURE_CREATION',
-            stage_progress: 75,
+            userId: userId,
+            currentStage: 'VENTURE_CREATION',
+            stageProgress: 75,
             completedStages: [
                 'REGISTRATION',
                 'PROFILE_SETUP',
@@ -362,26 +372,22 @@ app.get('/api/journey/status/:userId', (req, res) => {
                 'LEGAL_COMPLIANCE'
             ],
             stages: [
-                { name: 'REGISTRATION', status: 'COMPLETED', completed: true },
-                { name: 'PROFILE_SETUP', status: 'COMPLETED', completed: true },
-                { name: 'VERIFICATION', status: 'COMPLETED', completed: true },
-                { name: 'LEGAL_COMPLIANCE', status: 'COMPLETED', completed: true },
-                { name: 'VENTURE_CREATION', status: 'IN_PROGRESS', completed: false },
-                { name: 'TEAM_BUILDING', status: 'PENDING', completed: false }
+                { name: 'REGISTRATION', status: 'COMPLETED', completed: true, progress: 100 },
+                { name: 'PROFILE_SETUP', status: 'COMPLETED', completed: true, progress: 100 },
+                { name: 'VERIFICATION', status: 'COMPLETED', completed: true, progress: 100 },
+                { name: 'LEGAL_COMPLIANCE', status: 'COMPLETED', completed: true, progress: 100 },
+                { name: 'VENTURE_CREATION', status: 'IN_PROGRESS', completed: false, progress: 75 },
+                { name: 'TEAM_BUILDING', status: 'PENDING', completed: false, progress: 0 }
             ],
-            next_stage: 'FUNDING',
-            journey_score: 85,
-            milestones_achieved: 8,
-            total_milestones: 12,
-            estimated_completion: '2025-10-15T00:00:00Z',
-            stages: [
-                { name: 'REGISTRATION', completed: true, progress: 100 },
-                { name: 'PROFILE_SETUP', completed: true, progress: 100 },
-                { name: 'VERIFICATION', completed: true, progress: 100 },
-                { name: 'LEGAL_COMPLIANCE', completed: true, progress: 100 },
-                { name: 'VENTURE_CREATION', completed: false, progress: 75 },
-                { name: 'FUNDING', completed: false, progress: 0 }
-            ]
+            nextStage: 'FUNDING',
+            journeyScore: 85,
+            milestonesAchieved: 8,
+            totalMilestones: 12,
+            estimatedCompletion: '2025-10-15T00:00:00Z',
+            isComplete: false,
+            userStates: [],
+            recommendations: [],
+            timestamp: new Date().toISOString()
         }
     });
 });
