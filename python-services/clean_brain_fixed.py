@@ -268,6 +268,111 @@ def get_contracts():
             "error": str(e)
         }), 500
 
+@app.route('/api/v1/buz/balance/<user_id>', methods=['GET'])
+def get_buz_balance(user_id):
+    """Get user BUZ balance"""
+    try:
+        buz_data = db.get_user_buz_tokens(user_id)
+        return jsonify({
+            "success": True,
+            "data": buz_data
+        }), 200
+    except Exception as e:
+        logger.error(f"Error getting BUZ balance for user {user_id}: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+@app.route('/api/journey/status/<user_id>', methods=['GET'])
+def get_journey_status(user_id):
+    """Get user journey status"""
+    try:
+        # Mock journey status
+        journey_data = {
+            "current_stage": "VENTURE_CREATION",
+            "progress": 75,
+            "completed_steps": [
+                "Account Setup",
+                "Profile Creation",
+                "Initial Onboarding"
+            ],
+            "next_steps": [
+                "Create First Venture",
+                "Complete Legal Pack",
+                "Set Up Subscription"
+            ]
+        }
+        
+        return jsonify({
+            "success": True,
+            "data": journey_data
+        }), 200
+    except Exception as e:
+        logger.error(f"Error getting journey status for user {user_id}: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+@app.route('/api/legal-signing/status/<user_id>', methods=['GET'])
+def get_legal_signing_status(user_id):
+    """Get legal signing status"""
+    try:
+        # Mock legal signing status
+        legal_data = {
+            "signed_documents": 2,
+            "total_documents": 5,
+            "completion_percentage": 40,
+            "documents": [
+                {"name": "Terms of Service", "signed": True, "signed_at": "2025-01-01T00:00:00Z"},
+                {"name": "Privacy Policy", "signed": True, "signed_at": "2025-01-01T00:00:00Z"},
+                {"name": "NDA Template", "signed": False, "signed_at": None},
+                {"name": "Contract Template", "signed": False, "signed_at": None},
+                {"name": "Data Agreement", "signed": False, "signed_at": None}
+            ]
+        }
+        
+        return jsonify({
+            "success": True,
+            "data": legal_data
+        }), 200
+    except Exception as e:
+        logger.error(f"Error getting legal signing status for user {user_id}: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+@app.route('/api/subscriptions/user/<user_id>', methods=['GET'])
+def get_subscription_status(user_id):
+    """Get user subscription status"""
+    try:
+        # Mock subscription status
+        subscription_data = {
+            "active": False,
+            "plan": None,
+            "status": "pending",
+            "trial_available": True,
+            "trial_days_remaining": 30,
+            "features": [
+                "Basic venture creation",
+                "Limited team collaboration",
+                "Standard support"
+            ]
+        }
+        
+        return jsonify({
+            "success": True,
+            "data": subscription_data
+        }), 200
+    except Exception as e:
+        logger.error(f"Error getting subscription status for user {user_id}: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=False)
