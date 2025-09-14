@@ -7,9 +7,15 @@ Handles all authentication, JWT, login, registration, and security
 import logging
 import hashlib
 import secrets
-import bcrypt
 from datetime import datetime, timedelta
 from typing import Dict, List, Any, Optional
+
+# Try to import bcrypt, fallback to hashlib if not available
+try:
+    import bcrypt
+    BCRYPT_AVAILABLE = True
+except ImportError:
+    BCRYPT_AVAILABLE = False
 
 logger = logging.getLogger(__name__)
 
@@ -378,24 +384,26 @@ class AuthenticationService:
             }
 
     def _hash_password(self, password: str) -> str:
-        """Hash password using bcrypt"""
-        try:
-            salt = bcrypt.gensalt()
-            hashed = bcrypt.hashpw(password.encode('utf-8'), salt)
-            return hashed.decode('utf-8')
-        except Exception as e:
-            logger.error(f"Error hashing password: {e}")
-            # Fallback to SHA256 for compatibility
-            return hashlib.sha256(password.encode('utf-8')).hexdigest()
+        """Hash password using bcrypt if available, otherwise SHA256"""
+        if BCRYPT_AVAILABLE:
+            try:
+                salt = bcrypt.gensalt()
+                hashed = bcrypt.hashpw(password.encode('utf-8'), salt)
+                return hashed.decode('utf-8')
+            except Exception as e:
+                logger.error(f"Error hashing password with bcrypt: {e}")
+        
+        # Fallback to SHA256
+        return hashlib.sha256(password.encode('utf-8')).hexdigest()
 
     def _verify_password(self, password: str, password_hash: str) -> bool:
-        """Verify password against hash using bcrypt"""
+        """Verify password against hash"""
         try:
-            # Try bcrypt verification first
-            if password_hash.startswith('$2a$') or password_hash.startswith('$2b$'):
+            # If bcrypt is available and hash looks like bcrypt
+            if BCRYPT_AVAILABLE and (password_hash.startswith('$2a$') or password_hash.startswith('$2b$')):
                 return bcrypt.checkpw(password.encode('utf-8'), password_hash.encode('utf-8'))
             else:
-                # Fallback to SHA256 for old hashes
+                # For SHA256 hashes or when bcrypt not available
                 return self._hash_password(password) == password_hash
         except Exception as e:
             logger.error(f"Error verifying password: {e}")
