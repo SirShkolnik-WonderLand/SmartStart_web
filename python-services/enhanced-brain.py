@@ -790,10 +790,11 @@ if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     debug = os.environ.get('DEBUG', 'False').lower() == 'true'
     
-    logger.info(f"🚀 Starting Enhanced Python Brain on port {port}")
+    logger.info(f"🚀 Starting Enhanced Python Brain v2.0.0 on port {port}")
     logger.info(f"🔧 Debug mode: {debug}")
     logger.info(f"🌐 CORS enabled for frontend")
     logger.info(f"📊 Total endpoints: 150+")
     logger.info(f"🔌 Services initialized: 20")
+    logger.info(f"🏢 New services: Company, Team, Project, Subscription")
     
     app.run(host='0.0.0.0', port=port, debug=debug)
