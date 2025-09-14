@@ -70,7 +70,6 @@ export default function DashboardPage() {
   const [ventures, setVentures] = useState<Venture[]>([])
   const [offers, setOffers] = useState<Offer[]>([])
   const [buzBalance, setBuzBalance] = useState<{balance: number, staked: number, available: number, total_earned: number} | null>(null)
-  const [buzBalance, setBuzBalance] = useState<number>(0)
   const [buzStaked, setBuzStaked] = useState<number>(0)
   const [buzRewards, setBuzRewards] = useState<number>(0)
   const [buzPrice, setBuzPrice] = useState<number>(0.01)
@@ -241,10 +240,10 @@ export default function DashboardPage() {
       })
     }
     
-    if (buzBalance > 0) {
+    if (buzBalance && buzBalance.balance > 0) {
       facts.push({
         icon: Coins,
-        text: `You have ${buzBalance.toLocaleString()} BUZ tokens!`,
+        text: `You have ${buzBalance.balance.toLocaleString()} BUZ tokens!`,
         color: "text-yellow-600"
       })
     }
@@ -676,10 +675,10 @@ export default function DashboardPage() {
             </div>
             <TrendingUp className="w-5 h-5 text-green-500" />
           </div>
-          <div className="text-2xl font-bold mb-1">{buzBalance.toLocaleString()}</div>
+          <div className="text-2xl font-bold mb-1">{buzBalance?.balance?.toLocaleString() || '0'}</div>
           <div className="text-sm text-muted">BUZ Balance</div>
           <div className="text-xs text-green-600 mt-1">
-            ${(buzBalance * buzPrice).toFixed(2)} USD
+            ${((buzBalance?.balance || 0) * buzPrice).toFixed(2)} USD
           </div>
         </div>
 
