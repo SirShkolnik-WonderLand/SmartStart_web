@@ -577,41 +577,6 @@ def get_dashboard_data(user_id):
 
 # ===== NEW SERVICE API ENDPOINTS =====
 
-# Authentication Service Endpoints
-@app.route('/auth/register', methods=['POST'])
-def register_user():
-    """Register a new user"""
-    data = request.json
-    result = brain.authentication_service.register_user(data)
-    return jsonify(result)
-
-@app.route('/auth/login', methods=['POST'])
-def login_user():
-    """Login user"""
-    data = request.json
-    result = brain.authentication_service.login_user(data.get('email'), data.get('password'))
-    return jsonify(result)
-
-@app.route('/auth/verify', methods=['POST'])
-def verify_token():
-    """Verify JWT token"""
-    data = request.json
-    result = brain.authentication_service.verify_token(data.get('token'))
-    return jsonify(result)
-
-@app.route('/auth/refresh', methods=['POST'])
-def refresh_token():
-    """Refresh JWT token"""
-    data = request.json
-    result = brain.authentication_service.refresh_token(data.get('token'))
-    return jsonify(result)
-
-@app.route('/auth/logout', methods=['POST'])
-def logout_user():
-    """Logout user"""
-    data = request.json
-    result = brain.authentication_service.logout_user(data.get('token'))
-    return jsonify(result)
 
 # File Service Endpoints
 @app.route('/files/upload', methods=['POST'])
