@@ -52,7 +52,7 @@ app.use('/api', createProxyMiddleware({
     target: PYTHON_BRAIN_URL,
     changeOrigin: true,
     pathRewrite: {
-        '^/api': '/api' // Keep the /api prefix
+        '^/api': '' // Remove the /api prefix since Python Brain doesn't use it
     },
     onError: (err, req, res) => {
         console.error('Proxy error:', err);

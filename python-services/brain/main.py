@@ -46,6 +46,12 @@ class DummyNodeJSConnector:
         pass
     def get_user_data(self, user_id):
         return {"success": True, "data": {"id": user_id}}
+    def query(self, sql, params=None):
+        return []
+    def execute(self, sql, params=None):
+        return False
+    def test_connection(self):
+        return False
 
 # Use dummy modules
 MLEngine = DummyBrainModule
