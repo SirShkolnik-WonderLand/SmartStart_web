@@ -5,11 +5,12 @@
 This document provides a comprehensive reference for all Python Brain API endpoints. The Python Brain is the main intelligence engine of the SmartStart Platform, handling all business logic, AI processing, and advanced features.
 
 **🎯 Current Status: Python Brain V3.1.0 - Complete Intelligence Platform**
-- **Total Endpoints:** 50+ endpoints across 12 services
-- **Total Services:** 12 Python services with full functionality
+- **Total Endpoints:** 100+ endpoints across 15 services
+- **Total Services:** 15 Python services with full functionality
 - **Architecture:** Microservices with Flask and real-time capabilities
 - **Security:** Server-side validation and JWT authentication
 - **Real-time:** WebSocket support for live collaboration
+- **Legal System:** Immutable records, audit trails, and PDF generation
 
 ---
 
@@ -24,7 +25,8 @@ This document provides a comprehensive reference for all Python Brain API endpoi
 │  🎮 Gamification  💰 BUZ Token  🌂 Umbrella  📋 All APIs    │
 │  🔐 Authentication  📁 File Management  🔔 Notifications    │
 │  🔌 WebSocket  🤖 State Machines  📡 Real-time Features    │
-│  ✅ 12 Services Complete  ✅ 50+ API Endpoints  ✅ AI-Powered │
+│  📋 Legal Audit  🖨️ Legal Print  ⚖️ Immutable Records      │
+│  ✅ 15 Services Complete  ✅ 100+ API Endpoints  ✅ AI-Powered │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -283,6 +285,64 @@ POST   /api/state-machines/create     # Create state machine
 POST   /api/state-machines/:type/:id/event # Send event
 GET    /api/state-machines/:type/:id/state # Get current state
 GET    /api/state-machines/stats      # Get statistics
+```
+
+### **13. 📋 Legal Audit Service**
+**Base Path:** `/api/legal/audit`
+
+#### **Audit Record Management**
+```http
+POST   /api/legal/audit/create-record # Create legal audit record
+GET    /api/legal/audit/trail         # Get legal audit trail
+GET    /api/legal/audit/verify/:id    # Verify legal record integrity
+GET    /api/legal/user/:id/history    # Get user legal history
+POST   /api/legal/sign-with-audit/:user/:doc # Sign with audit trail
+GET    /api/legal/report/:id          # Generate legal report
+```
+
+### **14. 🖨️ Legal Print Service**
+**Base Path:** `/api/legal/print`
+
+#### **PDF Generation**
+```http
+GET    /api/legal/print/document/:user/:doc # Generate document PDF
+GET    /api/legal/print/report/:user        # Generate report PDF
+```
+
+### **15. 🔒 RBAC Service**
+**Base Path:** `/api/rbac`
+
+#### **Role-Based Access Control**
+```http
+GET    /api/rbac/user/:id/roles       # Get user roles
+GET    /api/rbac/user/:id/permission  # Check user permission
+GET    /api/rbac/roles                # Get all roles
+POST   /api/rbac/assign-role          # Assign role to user
+```
+
+### **16. 📊 CRUD Service**
+**Base Path:** `/api/crud`
+
+#### **Generic Database Operations**
+```http
+GET    /api/crud/:table               # Read table records
+POST   /api/crud/:table               # Create record
+GET    /api/crud/:table/:id           # Read record by ID
+PUT    /api/crud/:table/:id           # Update record
+DELETE /api/crud/:table/:id           # Delete record
+POST   /api/crud/query                # Execute raw query
+```
+
+### **17. 🛤️ User Journey Service**
+**Base Path:** `/api/journey`
+
+#### **Journey Management**
+```http
+GET    /api/journey/user/:id/state    # Get user journey state
+GET    /api/journey/user/:id/current-stage # Get current stage
+POST   /api/journey/user/:id/start    # Start journey stage
+POST   /api/journey/user/:id/complete # Complete journey stage
+GET    /api/journey/stages            # Get all journey stages
 ```
 
 ---

@@ -190,21 +190,41 @@ docs/08-legal/
 2. **Canonicalization** - Normalize text for consistent hashing
 3. **Hash Generation** - SHA-256 of canonicalized text
 4. **E-Signature Collection** - Signer info + IP + timestamp + hash
-5. **Storage** - Document + hash + signature evidence
-6. **Event Emission** - Document lifecycle events
+5. **Immutable Storage** - Document + hash + signature evidence (permanent, unchangeable)
+6. **Audit Trail Creation** - Complete legal audit record with timestamps
+7. **PDF Generation** - Printable legal documents for court/legal use
+8. **Event Emission** - Document lifecycle events
 
 ### **Validation Rules**
 - All required documents must be signed before access
-- Documents cannot be modified after signing
+- Documents cannot be modified after signing (immutable records)
 - Amendments require new document generation
 - Security clearances have expiration dates
 - Regular re-signing for sensitive access levels
+- All legal actions create permanent audit records
+- Cryptographic hashes ensure document integrity
+- Complete audit trail for all legal operations
 
 ### **Legal Compliance**
 - **Canadian Law**: PIPEDA, PHIPA, CASL, AODA compliance
 - **International**: GDPR, CCPA compatibility where applicable
 - **E-Signatures**: Ontario Electronic Commerce Act compliance
 - **Accessibility**: WCAG 2.1 AA compliance
+
+### **Legal Audit System (NEW)**
+- **Immutable Records**: All legal actions create permanent, unchangeable records
+- **Cryptographic Integrity**: SHA-256 hashes verify data hasn't been tampered with
+- **Complete Audit Trail**: Every action tracked with timestamps and metadata
+- **Legal Document Signing**: Digital signatures with full compliance
+- **PDF Generation**: Printable legal documents for court/legal use
+- **User Legal History**: Complete legal history for each user
+- **Compliance Tracking**: Real-time legal compliance status
+
+### **Legal Print System (NEW)**
+- **Document PDFs**: Generate PDFs of signed legal documents
+- **Legal Reports**: Comprehensive legal compliance reports
+- **Audit Documentation**: Printable audit trails for legal proceedings
+- **Court-Ready Documents**: All documents formatted for legal use
 
 ---
 
