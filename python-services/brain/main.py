@@ -80,6 +80,9 @@ try:
     from notification_service import NotificationService
     from websocket_service import WebSocketService
     from state_machine_service import StateMachineService
+    from rbac_service import RBACService
+    from crud_service import CRUDService
+    from user_journey_service import UserJourneyService
 except ImportError as e:
     print(f"Warning: Could not import Python services: {e}")
     # Create dummy services for now
@@ -216,6 +219,9 @@ class SmartStartBrain:
         self.notification_service = NotificationService(self.nodejs_connector)
         self.websocket_service = WebSocketService(self.nodejs_connector)
         self.state_machine_service = StateMachineService(self.nodejs_connector)
+        self.rbac_service = RBACService()
+        self.crud_service = CRUDService()
+        self.user_journey_service = UserJourneyService()
         
         logger.info("🧠 SmartStart Brain initialized successfully with all Python services")
     
@@ -847,6 +853,229 @@ def get_state_machine_stats():
     result = brain.state_machine_service.get_machine_stats()
     return jsonify(result)
 
+# RBAC Service Endpoints
+@app.route('/rbac/user/<user_id>/roles', methods=['GET'])
+def get_user_roles(user_id):
+    """Get user's roles and permissions"""
+    result = brain.rbac_service.get_user_roles(user_id)
+    return jsonify({"success": True, "data": result})
+
+@app.route('/rbac/user/<user_id>/permission', methods=['POST'])
+def check_user_permission(user_id):
+    """Check if user has specific permission"""
+    data = request.json
+    resource = data.get('resource')
+    action = data.get('action')
+    
+    if not resource or not action:
+        return jsonify({"success": False, "error": "Resource and action required"}), 400
+    
+    has_permission = brain.rbac_service.check_permission(user_id, resource, action)
+    return jsonify({"success": True, "has_permission": has_permission})
+
+@app.route('/rbac/user/<user_id>/role', methods=['POST'])
+def check_user_role(user_id):
+    """Check if user has specific role"""
+    data = request.json
+    required_roles = data.get('roles', [])
+    
+    if not required_roles:
+        return jsonify({"success": False, "error": "Roles required"}), 400
+    
+    has_role = brain.rbac_service.check_role(user_id, required_roles)
+    return jsonify({"success": True, "has_role": has_role})
+
+@app.route('/rbac/user/<user_id>/legal-gate', methods=['POST'])
+def enforce_legal_gate(user_id):
+    """Enforce legal gate for user action"""
+    data = request.json
+    action = data.get('action', 'access')
+    
+    result = brain.rbac_service.enforce_legal_gate(user_id, action)
+    return jsonify(result)
+
+@app.route('/rbac/roles', methods=['GET'])
+def get_all_roles():
+    """Get all available roles"""
+    result = brain.rbac_service.get_all_roles()
+    return jsonify({"success": True, "data": result})
+
+@app.route('/rbac/permissions', methods=['GET'])
+def get_all_permissions():
+    """Get all available permissions"""
+    result = brain.rbac_service.get_all_permissions()
+    return jsonify({"success": True, "data": result})
+
+@app.route('/rbac/stats', methods=['GET'])
+def get_rbac_stats():
+    """Get RBAC system statistics"""
+    result = brain.rbac_service.get_rbac_stats()
+    return jsonify({"success": True, "data": result})
+
+# CRUD Service Endpoints
+@app.route('/crud/<table>', methods=['POST'])
+def create_record(table):
+    """Create a new record in specified table"""
+    data = request.json
+    result = brain.crud_service.create(table, data)
+    return jsonify(result)
+
+@app.route('/crud/<table>', methods=['GET'])
+def read_records(table):
+    """Read records from specified table"""
+    filters = request.args.to_dict()
+    order_by = request.args.get('order_by')
+    limit = request.args.get('limit', type=int)
+    offset = request.args.get('offset', type=int)
+    
+    result = brain.crud_service.read(table, filters, order_by, limit, offset)
+    return jsonify(result)
+
+@app.route('/crud/<table>/<record_id>', methods=['GET'])
+def read_record_by_id(table, record_id):
+    """Read a single record by ID"""
+    result = brain.crud_service.read_by_id(table, record_id)
+    return jsonify(result)
+
+@app.route('/crud/<table>/<record_id>', methods=['PUT'])
+def update_record(table, record_id):
+    """Update a record in specified table"""
+    data = request.json
+    result = brain.crud_service.update(table, record_id, data)
+    return jsonify(result)
+
+@app.route('/crud/<table>/<record_id>', methods=['DELETE'])
+def delete_record(table, record_id):
+    """Delete a record from specified table"""
+    result = brain.crud_service.delete(table, record_id)
+    return jsonify(result)
+
+@app.route('/crud/<table>/<record_id>/soft-delete', methods=['PUT'])
+def soft_delete_record(table, record_id):
+    """Soft delete a record (set deletedAt timestamp)"""
+    result = brain.crud_service.soft_delete(table, record_id)
+    return jsonify(result)
+
+@app.route('/crud/<table>/count', methods=['GET'])
+def count_records(table):
+    """Count records in specified table"""
+    filters = request.args.to_dict()
+    result = brain.crud_service.count(table, filters)
+    return jsonify(result)
+
+@app.route('/crud/<table>/search', methods=['POST'])
+def search_records(table):
+    """Search records using LIKE queries"""
+    data = request.json
+    search_term = data.get('search_term')
+    search_columns = data.get('search_columns', [])
+    filters = data.get('filters', {})
+    limit = data.get('limit', 50)
+    
+    if not search_term or not search_columns:
+        return jsonify({"success": False, "error": "Search term and columns required"}), 400
+    
+    result = brain.crud_service.search(table, search_term, search_columns, filters, limit)
+    return jsonify(result)
+
+@app.route('/crud/query', methods=['POST'])
+def execute_raw_query():
+    """Execute a raw SQL query"""
+    data = request.json
+    query = data.get('query')
+    params = data.get('params', [])
+    
+    if not query:
+        return jsonify({"success": False, "error": "Query required"}), 400
+    
+    result = brain.crud_service.execute_raw_query(query, params)
+    return jsonify(result)
+
+@app.route('/crud/transaction', methods=['POST'])
+def execute_transaction():
+    """Execute multiple operations in a transaction"""
+    data = request.json
+    operations = data.get('operations', [])
+    
+    if not operations:
+        return jsonify({"success": False, "error": "Operations required"}), 400
+    
+    result = brain.crud_service.execute_transaction(operations)
+    return jsonify(result)
+
+@app.route('/crud/stats', methods=['GET'])
+def get_database_stats():
+    """Get database statistics"""
+    result = brain.crud_service.get_database_stats()
+    return jsonify({"success": True, "data": result})
+
+# User Journey Service Endpoints
+@app.route('/journey/user/<user_id>/state', methods=['GET'])
+def get_user_journey_state(user_id):
+    """Get user's journey state for all stages"""
+    result = brain.user_journey_service.get_user_journey_state(user_id)
+    return jsonify({"success": True, "data": result})
+
+@app.route('/journey/user/<user_id>/current-stage', methods=['GET'])
+def get_current_stage(user_id):
+    """Get user's current journey stage"""
+    result = brain.user_journey_service.get_current_stage(user_id)
+    return jsonify({"success": True, "data": result})
+
+@app.route('/journey/user/<user_id>/progress', methods=['GET'])
+def get_journey_progress(user_id):
+    """Get user's journey progress"""
+    result = brain.user_journey_service.get_journey_progress(user_id)
+    return jsonify({"success": True, "data": result})
+
+@app.route('/journey/user/<user_id>/stage/<stage_id>/start', methods=['POST'])
+def start_journey_stage(user_id, stage_id):
+    """Start a journey stage for a user"""
+    result = brain.user_journey_service.start_stage(user_id, stage_id)
+    return jsonify({"success": result})
+
+@app.route('/journey/user/<user_id>/stage/<stage_id>/complete', methods=['POST'])
+def complete_journey_stage(user_id, stage_id):
+    """Complete a journey stage for a user"""
+    data = request.json
+    metadata = data.get('metadata', {})
+    
+    result = brain.user_journey_service.complete_stage(user_id, stage_id, metadata)
+    return jsonify({"success": result})
+
+@app.route('/journey/user/<user_id>/stage/<stage_id>/block', methods=['POST'])
+def block_journey_stage(user_id, stage_id):
+    """Block a journey stage for a user"""
+    data = request.json
+    reason = data.get('reason', 'No reason provided')
+    
+    result = brain.user_journey_service.block_stage(user_id, stage_id, reason)
+    return jsonify({"success": result})
+
+@app.route('/journey/stages', methods=['GET'])
+def get_all_journey_stages():
+    """Get all journey stages"""
+    result = brain.user_journey_service.get_all_stages()
+    return jsonify({"success": True, "data": result})
+
+@app.route('/journey/stage/<stage_id>/gates', methods=['GET'])
+def get_stage_gates(stage_id):
+    """Get gates/requirements for a journey stage"""
+    result = brain.user_journey_service.get_stage_gates(stage_id)
+    return jsonify({"success": True, "data": result})
+
+@app.route('/journey/user/<user_id>/stage/<stage_id>/check-gates', methods=['POST'])
+def check_stage_gates(user_id, stage_id):
+    """Check if user meets all requirements for a stage"""
+    result = brain.user_journey_service.check_stage_gates(user_id, stage_id)
+    return jsonify(result)
+
+@app.route('/journey/analytics', methods=['GET'])
+def get_journey_analytics():
+    """Get journey analytics"""
+    result = brain.user_journey_service.get_journey_analytics()
+    return jsonify({"success": True, "data": result})
+
 # Health check endpoint
 @app.route('/health', methods=['GET'])
 def health_check():
@@ -867,9 +1096,12 @@ def health_check():
             "analytics_service": "active",
             "notification_service": "active",
             "websocket_service": "active",
-            "state_machine_service": "active"
+            "state_machine_service": "active",
+            "rbac_service": "active",
+            "crud_service": "active",
+            "user_journey_service": "active"
         },
-        "total_endpoints": 50,
+        "total_endpoints": 80,
         "python_brain": "operational"
     })
 
