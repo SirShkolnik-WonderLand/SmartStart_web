@@ -165,7 +165,211 @@ app.get('/api/auth/me', (req, res) => {
     }
 });
 
+// BUZ Token Economy System
+const BUZ_RULES = {
+    // Venture costs
+    VENTURE_CREATE: 100,
+    VENTURE_EDIT: 25,
+    VENTURE_DELETE: 50,
+    VENTURE_PUBLIC: 75,
+    TEAM_ADD: 15,
+    TEAM_REMOVE: 10,
+    
+    // Opportunity costs
+    OPPORTUNITY_POST: 25,
+    OPPORTUNITY_APPLY: 10,
+    SERVICE_OFFER: 15,
+    PROJECT_BID: 20,
+    OFFER_ACCEPT: 5,
+    
+    // Legal costs
+    LEGAL_SIGN: 5,
+    CONTRACT_GENERATE: 30,
+    LEGAL_REVIEW: 50,
+    DISPUTE_FILE: 100,
+    
+    // Premium features
+    PRIORITY_SUPPORT: 50,
+    ADVANCED_ANALYTICS: 100,
+    CUSTOM_BRANDING: 200,
+    API_ACCESS: 150,
+    WHITE_LABEL: 500
+};
+
+const BUZ_REWARDS = {
+    // Starting rewards
+    WELCOME_BONUS: 1000,
+    MONTHLY_SUBSCRIPTION: 500,
+    ANNUAL_BONUS: 1000,
+    REFERRAL_BONUS: 250,
+    
+    // Venture rewards
+    VENTURE_LAUNCH: 200,
+    FIRST_TEAM_MEMBER: 50,
+    TEAM_5_MEMBERS: 100,
+    LEGAL_COMPLETE: 75,
+    FIRST_REVENUE: 300,
+    MONTHLY_ACTIVE_USERS: 25,
+    
+    // Contribution rewards
+    PROFILE_COMPLETE: 25,
+    IDENTITY_VERIFY: 50,
+    SKILL_ADD: 5,
+    ONBOARDING_COMPLETE: 100,
+    REVIEW_WRITE: 10,
+    
+    // Quality rewards
+    HIGH_QUALITY_VENTURE: 150,
+    ACTIVE_TEAM_MEMBER: 50,
+    HELPFUL_COMMUNITY: 25,
+    BUG_REPORT: 15,
+    FEATURE_SUGGESTION: 20,
+    CONTENT_CREATION: 30,
+    
+    // Achievement rewards
+    FIRST_VENTURE: 100,
+    VENTURE_SUCCESS: 500,
+    TOP_PERFORMER: 200,
+    COMMUNITY_LEADER: 300,
+    INNOVATION_AWARD: 1000
+};
+
+const BUZ_LEVELS = {
+    'Novice': { min: 0, max: 999, benefits: ['Basic features'], monthly_allocation: 0 },
+    'Member': { min: 1000, max: 4999, benefits: ['Full platform access'], monthly_allocation: 500 },
+    'Contributor': { min: 5000, max: 9999, benefits: ['Priority support'], monthly_allocation: 750 },
+    'Expert': { min: 10000, max: 24999, benefits: ['Advanced analytics'], monthly_allocation: 1000 },
+    'Master': { min: 25000, max: 49999, benefits: ['Custom branding'], monthly_allocation: 1500 },
+    'Legend': { min: 50000, max: 999999, benefits: ['White-label access'], monthly_allocation: 2500 }
+};
+
 // BUZ Token endpoints
+app.get('/api/v1/buz/wallet/:userId', (req, res) => {
+    const { userId } = req.params;
+    console.log(`💰 BUZ wallet request for user: ${userId}`);
+    
+    // Mock user level and balance calculation
+    const userLevel = 'Member'; // This would be fetched from database
+    const baseBalance = 1000;
+    const monthlyAllocation = BUZ_LEVELS[userLevel].monthly_allocation;
+    const totalEarned = baseBalance + monthlyAllocation * 3; // 3 months of allocation
+    const totalSpent = 150; // Some spending
+    const currentBalance = totalEarned - totalSpent;
+    
+    res.json({
+        success: true,
+        data: {
+            user_id: userId,
+            balance: currentBalance,
+            staked: 0,
+            available: currentBalance,
+            total_earned: totalEarned,
+            total_spent: totalSpent,
+            currency: 'BUZ',
+            level: userLevel,
+            next_level_buz: BUZ_LEVELS[userLevel].max + 1
+        }
+    });
+});
+
+// Award BUZ tokens
+app.post('/api/v1/buz/award', (req, res) => {
+    const { userId, amount, reason, metadata } = req.body;
+    console.log(`💰 Awarding ${amount} BUZ tokens to user ${userId} for: ${reason}`);
+    
+    res.json({
+        success: true,
+        data: {
+            user_id: userId,
+            amount: amount,
+            reason: reason,
+            new_balance: 1000 + amount,
+            transaction_id: `tx_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+            timestamp: new Date().toISOString()
+        }
+    });
+});
+
+// Spend BUZ tokens
+app.post('/api/v1/buz/spend', (req, res) => {
+    const { userId, amount, reason, metadata } = req.body;
+    console.log(`💸 Spending ${amount} BUZ tokens from user ${userId} for: ${reason}`);
+    
+    // Check if user has enough balance
+    const currentBalance = 1000; // This would be fetched from database
+    if (currentBalance < amount) {
+        return res.status(400).json({
+            success: false,
+            error: 'Insufficient BUZ tokens',
+            required: amount,
+            available: currentBalance
+        });
+    }
+    
+    res.json({
+        success: true,
+        data: {
+            user_id: userId,
+            amount: amount,
+            reason: reason,
+            new_balance: currentBalance - amount,
+            transaction_id: `tx_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+            timestamp: new Date().toISOString()
+        }
+    });
+});
+
+// Get BUZ rules
+app.get('/api/v1/buz/rules', (req, res) => {
+    console.log(`📋 BUZ rules request`);
+    
+    res.json({
+        success: true,
+        data: {
+            costs: BUZ_RULES,
+            rewards: BUZ_REWARDS,
+            levels: BUZ_LEVELS
+        }
+    });
+});
+
+// Get BUZ transactions
+app.get('/api/v1/buz/transactions/:userId', (req, res) => {
+    const { userId } = req.params;
+    console.log(`📊 BUZ transactions request for user: ${userId}`);
+    
+    res.json({
+        success: true,
+        data: {
+            user_id: userId,
+            transactions: [
+                {
+                    id: 'tx_1',
+                    type: 'earn',
+                    amount: 1000,
+                    reason: 'Welcome bonus',
+                    timestamp: new Date(Date.now() - 86400000).toISOString()
+                },
+                {
+                    id: 'tx_2',
+                    type: 'spend',
+                    amount: 100,
+                    reason: 'Venture creation',
+                    timestamp: new Date(Date.now() - 3600000).toISOString()
+                },
+                {
+                    id: 'tx_3',
+                    type: 'earn',
+                    amount: 50,
+                    reason: 'Profile completion',
+                    timestamp: new Date(Date.now() - 1800000).toISOString()
+                }
+            ]
+        }
+    });
+});
+
+// Legacy balance endpoint for compatibility
 app.get('/api/v1/buz/balance/:userId', (req, res) => {
     const { userId } = req.params;
     console.log(`💰 BUZ balance request for user: ${userId}`);
@@ -298,6 +502,148 @@ app.get('/api/v1/ventures/list/all', (req, res) => {
     });
 });
 
+// Venture creation endpoint
+app.post('/api/ventures/create', (req, res) => {
+    console.log(`🚀 Creating venture with data:`, req.body);
+
+    try {
+        const { name, description, industry, stage, teamSize, tier, residency, lookingFor, requiredSkills, rewardType, equityPercentage, cashAmount, tags, website, socialMedia, timeline, budget, additionalNotes } = req.body;
+
+        // Validate required fields
+        if (!name || !description || !industry) {
+            return res.status(400).json({
+                success: false,
+                error: 'Missing required fields: name, description, industry'
+            });
+        }
+
+        // Generate venture ID
+        const ventureId = `venture_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+        // Create venture object
+        const newVenture = {
+            id: ventureId,
+            name: name,
+            description: description,
+            industry: industry,
+            stage: stage || 'idea',
+            teamSize: teamSize || 1,
+            tier: tier || 'T1',
+            residency: residency || 'US',
+            lookingFor: lookingFor || [],
+            requiredSkills: requiredSkills || [],
+            rewardType: rewardType || 'equity',
+            equityPercentage: equityPercentage || 0,
+            cashAmount: cashAmount || 0,
+            tags: tags || [],
+            website: website || '',
+            socialMedia: socialMedia || {},
+            timeline: timeline || {},
+            budget: budget || 0,
+            additionalNotes: additionalNotes || '',
+            status: 'DRAFT',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+            owner_id: 'udi-super-admin-001', // This should come from auth
+            legal_compliant: false,
+            funding_goal: 0,
+            current_funding: 0,
+            team_members: [],
+            projects: [],
+            ai_analysis: {
+                innovation_score: 75,
+                market_readiness: 60,
+                team_strength: 70,
+                overall_score: 67,
+                success_probability: 0.72
+            }
+        };
+
+        console.log(`✅ Venture created successfully: ${ventureId}`);
+
+        // Award BUZ tokens for venture creation
+        const buzReward = BUZ_REWARDS.VENTURE_LAUNCH; // 200 BUZ tokens for creating a venture
+        console.log(`💰 Awarding ${buzReward} BUZ tokens for venture creation`);
+
+        res.status(201).json({
+            success: true,
+            data: {
+                ...newVenture,
+                buzReward: buzReward,
+                legalStatus: {
+                    documents_signed: 5,
+                    compliance_percentage: 95,
+                    legal_risks: [],
+                    regulatory_status: 'COMPLIANT'
+                },
+                buzTokens: {
+                    awarded: buzReward,
+                    reason: 'Venture Creation',
+                    timestamp: new Date().toISOString()
+                }
+            },
+            message: 'Venture created successfully with BUZ token reward'
+        });
+
+    } catch (error) {
+        console.error('Error creating venture:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Internal server error',
+            message: 'Failed to create venture'
+        });
+    }
+});
+
+// Get venture by ID
+app.get('/api/ventures/:id', (req, res) => {
+    const { id } = req.params;
+    console.log(`🚀 Get venture request for ID: ${id}`);
+
+    // Mock venture data
+    const venture = {
+        id: id,
+        name: 'Test Venture',
+        description: 'A test venture for development',
+        industry: 'Technology',
+        stage: 'idea',
+        teamSize: 1,
+        tier: 'T1',
+        residency: 'US',
+        status: 'DRAFT',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+    };
+
+    res.json({
+        success: true,
+        data: venture
+    });
+});
+
+// Update venture
+app.put('/api/ventures/:id', (req, res) => {
+    const { id } = req.params;
+    console.log(`🚀 Update venture request for ID: ${id}`, req.body);
+
+    res.json({
+        success: true,
+        data: {...req.body, id: id, updated_at: new Date().toISOString() },
+        message: 'Venture updated successfully'
+    });
+});
+
+// Delete venture
+app.delete('/api/ventures/:id', (req, res) => {
+    const { id } = req.params;
+    console.log(`🚀 Delete venture request for ID: ${id}`);
+
+    res.json({
+        success: true,
+        message: 'Venture deleted successfully'
+    });
+});
+
 // Contracts/Offers endpoints
 app.get('/api/contracts', (req, res) => {
     console.log(`📋 Contracts request`);
@@ -412,6 +758,48 @@ app.get('/api/subscriptions/user/:userId', (req, res) => {
             amount: 99.99,
             currency: 'USD',
             auto_renew: true
+        }
+    });
+});
+
+// Legal Document Signing Endpoints
+app.post('/api/legal-signing/sign', (req, res) => {
+    const { documentId, userId, signature } = req.body;
+    console.log(`⚖️ Legal document signing request for document: ${documentId}, user: ${userId}`);
+
+    res.json({
+        success: true,
+        data: {
+            documentId: documentId,
+            userId: userId,
+            status: 'SIGNED',
+            signedAt: new Date().toISOString(),
+            signature: signature,
+            message: 'Document signed successfully'
+        }
+    });
+});
+
+app.get('/api/legal-signing/status/:userId', (req, res) => {
+    const { userId } = req.params;
+    console.log(`⚖️ Legal signing status request for user: ${userId}`);
+
+    res.json({
+        success: true,
+        data: {
+            user_id: userId,
+            legal_pack_status: 'COMPLETED',
+            documents_signed: 5,
+            documents_pending: 0,
+            compliance_score: 95,
+            last_updated: new Date().toISOString(),
+            required_documents: [
+                { name: 'Terms of Service', status: 'SIGNED' },
+                { name: 'Privacy Policy', status: 'SIGNED' },
+                { name: 'Investment Agreement', status: 'SIGNED' },
+                { name: 'NDA', status: 'SIGNED' },
+                { name: 'Partnership Agreement', status: 'SIGNED' }
+            ]
         }
     });
 });
@@ -790,7 +1178,7 @@ app.get('/api/gamification/badges/:userId', (req, res) => {
 // Umbrella API endpoints
 app.get('/api/umbrella/relationships', (req, res) => {
     console.log(`🌂 Umbrella relationships request`);
-    
+
     res.json({
         success: true,
         data: [{
@@ -848,7 +1236,7 @@ app.get('/api/umbrella/relationships', (req, res) => {
 
 app.get('/api/umbrella/revenue/shares', (req, res) => {
     console.log(`💰 Umbrella revenue shares request`);
-    
+
     res.json({
         success: true,
         data: [{
@@ -915,7 +1303,7 @@ app.get('/api/umbrella/revenue/shares', (req, res) => {
 app.get('/api/opportunities', (req, res) => {
     const { page = 1, limit = 50 } = req.query;
     console.log(`🎯 Opportunities request - page: ${page}, limit: ${limit}`);
-    
+
     res.json({
         success: true,
         data: {
@@ -1010,7 +1398,7 @@ app.get('/api/opportunities', (req, res) => {
 app.get('/api/opportunities/user/:userId/applications', (req, res) => {
     const { userId } = req.params;
     console.log(`📋 User applications request for: ${userId}`);
-    
+
     res.json({
         success: true,
         data: {

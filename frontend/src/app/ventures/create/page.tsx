@@ -56,18 +56,26 @@ export default function CreateVenturePage() {
     stage: 'idea' as 'idea' | 'mvp' | 'growth' | 'scale',
     teamSize: 1,
     tier: 'T1' as 'T1' | 'T2' | 'T3',
-    residency: '',
+    residency: 'US',
     
     // Step 3: Team & Skills
     lookingFor: [] as string[],
+    requiredSkills: [] as string[],
     newSkill: '',
     
     // Step 4: Rewards & Compensation
-    rewards: { type: 'equity' as 'equity' | 'cash' | 'hybrid', amount: '' },
+    rewardType: 'equity' as 'equity' | 'cash' | 'hybrid',
+    equityPercentage: 0,
+    cashAmount: 0,
     
     // Step 5: Tags & Final Details
     tags: [] as string[],
-    newTag: ''
+    newTag: '',
+    website: '',
+    socialMedia: {},
+    timeline: {},
+    budget: 0,
+    additionalNotes: ''
   })
 
   const totalSteps = 5
@@ -76,10 +84,10 @@ export default function CreateVenturePage() {
     setFormData(prev => ({ ...prev, [field]: value }))
   }
 
-  const handleNestedChange = (parent: string, field: string, value: string) => {
+  const handleNestedChange = (parent: string, field: string, value: string | number) => {
     setFormData(prev => ({
       ...prev,
-      [parent]: { ...(prev[parent as keyof typeof prev] as Record<string, string>), [field]: value }
+      [parent]: { ...(prev[parent as keyof typeof prev] as Record<string, any>), [field]: value }
     }))
   }
 
@@ -118,14 +126,22 @@ export default function CreateVenturePage() {
     try {
       const response = await apiService.createVenture(formData)
       if (response.success && response.data) {
+        console.log('✅ Venture created successfully:', response.data)
+        
+        // Show success message with BUZ token reward
+        if (response.data.buzTokens) {
+          console.log(`💰 BUZ Token Reward: ${response.data.buzTokens.awarded} tokens for ${response.data.buzTokens.reason}`)
+        }
+        
+        // Redirect to venture page
         router.push(`/ventures/${response.data.id}`)
       } else {
         console.error('Failed to create venture:', response.error)
-        // TODO: Show error message to user
+        alert(`Failed to create venture: ${response.error || 'Unknown error'}`)
       }
     } catch (error) {
       console.error('Error creating venture:', error)
-      // TODO: Show error message to user
+      alert(`Error creating venture: ${error.message || 'Unknown error'}`)
     } finally {
       setIsLoading(false)
     }
@@ -140,7 +156,7 @@ export default function CreateVenturePage() {
       case 3:
         return true // Optional step
       case 4:
-        return !!formData.rewards.type && formData.rewards.amount.trim() !== ''
+        return !!formData.rewardType && (formData.equityPercentage > 0 || formData.cashAmount > 0)
       case 5:
         return true // Optional step
       default:
@@ -453,8 +469,8 @@ export default function CreateVenturePage() {
                           type="radio"
                           name="rewardType"
                           value={reward.value}
-                          checked={formData.rewards.type === reward.value}
-                          onChange={(e) => handleNestedChange('rewards', 'type', e.target.value as 'equity' | 'cash' | 'hybrid')}
+                          checked={formData.rewardType === reward.value}
+                          onChange={(e) => handleInputChange('rewardType', e.target.value as 'equity' | 'cash' | 'hybrid')}
                           className="mt-1 mr-3"
                         />
                         <div>
@@ -475,8 +491,15 @@ export default function CreateVenturePage() {
                   </label>
                   <input
                     type="text"
-                    value={formData.rewards.amount}
-                    onChange={(e) => handleNestedChange('rewards', 'amount', e.target.value)}
+                    value={formData.rewardType === 'equity' ? formData.equityPercentage : formData.cashAmount}
+                    onChange={(e) => {
+                      const value = parseFloat(e.target.value) || 0
+                      if (formData.rewardType === 'equity') {
+                        handleInputChange('equityPercentage', value)
+                      } else {
+                        handleInputChange('cashAmount', value)
+                      }
+                    }}
                     placeholder="e.g., 5%, $50k, 2% + $30k"
                     className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-lg"
                   />
@@ -560,11 +583,11 @@ export default function CreateVenturePage() {
                     </div>
                     <div>
                       <p className="font-medium text-muted-foreground">Reward Type</p>
-                      <p className="text-lg">{rewardTypes.find(r => r.value === formData.rewards.type)?.label}</p>
+                      <p className="text-lg">{rewardTypes.find(r => r.value === formData.rewardType)?.label}</p>
                     </div>
                     <div>
                       <p className="font-medium text-muted-foreground">Amount</p>
-                      <p className="text-lg">{formData.rewards.amount}</p>
+                      <p className="text-lg">{formData.rewardType === 'equity' ? `${formData.equityPercentage}%` : `$${formData.cashAmount}`}</p>
                     </div>
                   </div>
                 </div>

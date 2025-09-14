@@ -992,11 +992,26 @@ class ComprehensiveApiService {
         return { success: false, error: 'User not authenticated' }
       }
 
-      // Transform frontend data to backend format
+      // Transform frontend data to backend format with all fields
       const backendData = {
         name: ventureData.name,
-        purpose: ventureData.description,
-        region: ventureData.residency || 'US',
+        description: ventureData.description,
+        industry: ventureData.industry,
+        stage: ventureData.stage,
+        teamSize: ventureData.teamSize,
+        tier: ventureData.tier,
+        residency: ventureData.residency || 'US',
+        lookingFor: ventureData.lookingFor || [],
+        requiredSkills: ventureData.requiredSkills || [],
+        rewardType: ventureData.rewardType || 'equity',
+        equityPercentage: ventureData.equityPercentage || 0,
+        cashAmount: ventureData.cashAmount || 0,
+        tags: ventureData.tags || [],
+        website: ventureData.website || '',
+        socialMedia: ventureData.socialMedia || {},
+        timeline: ventureData.timeline || {},
+        budget: ventureData.budget || 0,
+        additionalNotes: ventureData.additionalNotes || '',
         ownerUserId: currentUserResponse.data.id
       }
       
