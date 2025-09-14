@@ -77,7 +77,7 @@ app.post('/api/auth/login', (req, res) => {
                 email: 'udi.admin@alicesolutionsgroup.com',
                 name: 'Udi Shkolnik',
                 role: 'SUPER_ADMIN',
-                token: 'mock-jwt-token-' + Date.now()
+                token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ1ZGktc3VwZXItYWRtaW4tMDAxIiwiZW1haWwiOiJ1ZGkuYWRtaW5AYWxpY2Vzb2x1dGlvbnNncm91cC5jb20iLCJuYW1lIjoiVWRpIFNoa29sbmlrIiwicm9sZSI6IlNVUEVSX0FETUlOIiwiaWF0IjoxNzM2ODQ0MDAwLCJleHAiOjE3MzY5MzA0MDB9.mock-signature'
             }
         });
     } else if (email === 'test@launch.com' && password === 'password') {
@@ -89,7 +89,7 @@ app.post('/api/auth/login', (req, res) => {
                 email: 'test@launch.com',
                 name: 'Test User',
                 role: 'TEAM_MEMBER',
-                token: 'mock-jwt-token-' + Date.now()
+                token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ0ZXN0LXVzZXItMTIzIiwiZW1haWwiOiJ0ZXN0QGxhdW5jaC5jb20iLCJuYW1lIjoiVGVzdCBVc2VyIiwicm9sZSI6IlRFQU1fTUVNQkVSIiwiaWF0IjoxNzM2ODQ0MDAwLCJleHAiOjE3MzY5MzA0MDB9.mock-signature'
             }
         });
     } else {
@@ -114,7 +114,7 @@ app.post('/api/auth/register', (req, res) => {
             email: email,
             name: name || 'New User',
             role: 'MEMBER',
-            token: 'mock-jwt-token-' + Date.now()
+            token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJuZXctdXNlci0iLCJlbWFpbCI6Im5ld0B1c2VyLmNvbSIsIm5hbWUiOiJOZXcgVXNlciIsInJvbGUiOiJNRU1CRVIiLCJpYXQiOjE3MzY4NDQwMDAsImV4cCI6MTczNjkzMDQwMH0.mock-signature'
         }
     });
 });
@@ -136,7 +136,7 @@ app.get('/api/auth/me', (req, res) => {
     console.log(`👤 Auth me request with token: ${token ? token.substring(0, 20) + '...' : 'none'}`);
 
     // For now, return the admin user if token exists
-    if (token && token.startsWith('mock-jwt-token-')) {
+    if (token && (token.startsWith('mock-jwt-token-') || token.startsWith('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9'))) {
         res.json({
             success: true,
             user: {
@@ -361,11 +361,13 @@ app.get('/api/journey/status/:userId', (req, res) => {
                 'VERIFICATION',
                 'LEGAL_COMPLIANCE'
             ],
-            completed_stages: [
-                'REGISTRATION',
-                'PROFILE_SETUP',
-                'VERIFICATION',
-                'LEGAL_COMPLIANCE'
+            stages: [
+                { name: 'REGISTRATION', status: 'COMPLETED', completed: true },
+                { name: 'PROFILE_SETUP', status: 'COMPLETED', completed: true },
+                { name: 'VERIFICATION', status: 'COMPLETED', completed: true },
+                { name: 'LEGAL_COMPLIANCE', status: 'COMPLETED', completed: true },
+                { name: 'VENTURE_CREATION', status: 'IN_PROGRESS', completed: false },
+                { name: 'TEAM_BUILDING', status: 'PENDING', completed: false }
             ],
             next_stage: 'FUNDING',
             journey_score: 85,
