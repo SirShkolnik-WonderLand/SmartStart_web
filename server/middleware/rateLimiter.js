@@ -72,7 +72,7 @@ class RateLimiter {
         try {
             const clientIP = this.getClientIP(req);
             const path = req.path;
-            const userId = req.user ? .id || 'anonymous';
+            const userId = (req.user && req.user.id) || 'anonymous';
 
             // Check IP-based rate limiting
             const ipAllowed = await this.checkIPRateLimit(clientIP);
