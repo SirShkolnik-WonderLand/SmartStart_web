@@ -51,6 +51,8 @@ app.get('/health', (req, res) => {
 app.use('/api', createProxyMiddleware({
     target: PYTHON_BRAIN_URL,
     changeOrigin: true,
+    timeout: 30000, // 30 second timeout
+    proxyTimeout: 30000, // 30 second proxy timeout
     pathRewrite: {
         '^/api': '' // Remove the /api prefix since Python Brain doesn't use it
     },
