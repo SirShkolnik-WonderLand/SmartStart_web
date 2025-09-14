@@ -7,16 +7,19 @@ A revolutionary full-stack platform built with Python Brain architecture, featur
 ## 🏗️ Architecture
 
 ### **Python Brain (Main Intelligence Engine)**
-- **10 Python Services** - Complete business logic in secure Python environment
-- **40+ API Endpoints** - Comprehensive functionality coverage
+- **12 Python Services** - Complete business logic in secure Python environment
+- **50+ API Endpoints** - Comprehensive functionality coverage
 - **AI-Powered Intelligence** - ML and analytics throughout
 - **Server-Side Security** - All validation and processing in Python
+- **WebSocket Support** - Real-time communication and collaboration
+- **State Machine Engine** - Complete workflow automation
 
-### **Node.js Gateway (Lightweight Proxy)**
+### **Node.js Proxy (Lightweight Gateway)**
 - **API Routing** - Routes requests to Python Brain
-- **Real-time Features** - WebSockets and live updates
-- **Authentication** - JWT token handling
-- **Frontend Integration** - Serves Next.js frontend
+- **WebSocket Proxying** - Real-time communication forwarding
+- **File Upload Handling** - Basic file operations
+- **Frontend Serving** - Serves Next.js frontend
+- **Pure Proxy Mode** - No business logic, only routing
 
 ### **Frontend (Next.js)**
 - **Modern React** - Next.js 15 with TypeScript
@@ -42,11 +45,13 @@ A revolutionary full-stack platform built with Python Brain architecture, featur
 - **💰 BUZ Token Service** - Token economy & staking
 - **🌂 Umbrella Service** - Relationship management
 
-### **Advanced Services (4)**
+### **Advanced Services (6)**
 - **🔐 Authentication Service** - JWT, login, registration, security
 - **📁 File Service** - Upload/download, storage, management
 - **📊 Analytics Service** - Advanced analytics & reporting
 - **🔔 Notification Service** - Email, push, in-app notifications
+- **🔌 WebSocket Service** - Real-time communication
+- **🤖 State Machine Service** - Workflow automation
 
 ## 🚀 Features
 
@@ -171,26 +176,43 @@ SmartStart/
 │   │   └── styles/       # Global styles and themes
 │   ├── package.json      # Frontend dependencies
 │   └── next.config.ts    # Next.js configuration
-├── server/               # Backend API server
-│   ├── consolidated-server.js  # Production server
-│   ├── routes/           # API route handlers (41 files)
-│   ├── services/         # Business logic services
-│   ├── middleware/       # Express middleware
-│   └── utils/            # Utility functions
+├── python-services/      # Python Brain (Main Intelligence)
+│   ├── brain/            # Main Flask application
+│   │   └── main.py       # Python Brain orchestrator
+│   ├── services/         # Python business logic services
+│   │   ├── user_service.py
+│   │   ├── legal_service.py
+│   │   ├── venture_service.py
+│   │   ├── gamification_service.py
+│   │   ├── buz_token_service.py
+│   │   ├── umbrella_service.py
+│   │   ├── authentication_service.py
+│   │   ├── file_service.py
+│   │   ├── analytics_service.py
+│   │   ├── notification_service.py
+│   │   ├── websocket_service.py
+│   │   ├── state_machine_service.py
+│   │   └── nodejs_connector.py
+│   ├── requirements.txt  # Python dependencies
+│   └── start.py         # Python Brain startup script
+├── server/               # Node.js Proxy (Lightweight)
+│   ├── python-proxy-server.js  # Main proxy server
+│   └── middleware/       # Essential middleware only
 ├── prisma/               # Database schema and migrations
 │   ├── schema.prisma     # Main database schema (96 tables)
 │   ├── schema-extensions.prisma  # Extended schemas
 │   └── seed.js          # Database seeding
-├── package.json          # Root dependencies
+├── package.json          # Node.js proxy dependencies
 └── README.md            # This file
 ```
 
 ## 🛠️ Setup
 
 ### Prerequisites
-- Node.js 18+
-- PostgreSQL database
-- Git
+- **Python 3.13+** (for Python Brain)
+- **Node.js 18+** (for proxy server)
+- **PostgreSQL database**
+- **Git**
 
 ### Installation
 
@@ -200,26 +222,38 @@ SmartStart/
    cd SmartStart
    ```
 
-2. **Install dependencies**
+2. **Install Node.js dependencies (Proxy)**
    ```bash
    npm install
    ```
 
-3. **Environment setup**
+3. **Install Python dependencies (Brain)**
+   ```bash
+   cd python-services
+   pip install -r requirements.txt
+   cd ..
+   ```
+
+4. **Environment setup**
    ```bash
    cp env.example .env
    # Edit .env with your database credentials
    ```
 
-4. **Database setup**
+5. **Database setup**
    ```bash
    npm run db:generate
    npm run db:push
    npm run db:seed
    ```
 
-5. **Start the server**
+6. **Start the services**
    ```bash
+   # Start Python Brain (Terminal 1)
+   cd python-services
+   python brain/main.py
+   
+   # Start Node.js Proxy (Terminal 2)
    npm start
    ```
 
