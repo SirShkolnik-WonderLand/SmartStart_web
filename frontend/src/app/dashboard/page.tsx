@@ -109,6 +109,7 @@ export default function DashboardPage() {
     }
   } | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [loadingTimeout, setLoadingTimeout] = useState(false)
 
   // Fun motivational messages based on user progress
   const getMotivationalMessage = () => {
@@ -259,17 +260,31 @@ export default function DashboardPage() {
   useEffect(() => {
     const loadDashboardData = async () => {
       try {
+        console.log('🔄 Starting dashboard data load...')
+        
         // Set a timeout to prevent infinite loading
         const timeoutId = setTimeout(() => {
           console.warn('Dashboard loading timeout - showing with default data')
+          setLoadingTimeout(true)
           setIsLoading(false)
-        }, 10000) // 10 second timeout
+        }, 5000) // 5 second timeout
+        
+        // Set a shorter timeout to show loading message
+        const shortTimeoutId = setTimeout(() => {
+          setLoadingTimeout(true)
+        }, 3000) // 3 second timeout
 
         // Load user data first (most important)
+        console.log('👤 Loading user data...')
         const userResponse = await apiService.getCurrentUser()
+        console.log('👤 User response:', userResponse)
+        
         if (userResponse.success && userResponse.data) {
           setUser(userResponse.data)
           setUserId(userResponse.data.id)
+          console.log('✅ User data loaded successfully')
+        } else {
+          console.warn('⚠️ User data failed to load, continuing with default data')
         }
 
         // Load other data in parallel with timeout protection
@@ -367,9 +382,21 @@ export default function DashboardPage() {
         }
 
         clearTimeout(timeoutId)
+        clearTimeout(shortTimeoutId)
+        console.log('✅ Dashboard data load completed successfully')
       } catch (error) {
-        console.error('Error loading dashboard data:', error)
+        console.error('❌ Error loading dashboard data:', error)
+        // Set default values to prevent infinite loading
+        setUser({
+          id: 'default-user',
+          email: 'user@example.com',
+          name: 'User',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        })
+        setUserId('default-user')
       } finally {
+        console.log('🏁 Setting loading to false')
         setIsLoading(false)
       }
     }
@@ -383,6 +410,19 @@ export default function DashboardPage() {
         <div className="bg-white/80 backdrop-blur-sm rounded-xl p-8 text-center shadow-lg border border-purple-100">
           <div className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-muted">Loading your magical dashboard...</p>
+          {loadingTimeout && (
+            <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <p className="text-sm text-yellow-800">
+                Taking longer than expected... If this continues, please refresh the page.
+              </p>
+              <button 
+                onClick={() => window.location.reload()} 
+                className="mt-2 px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition-colors"
+              >
+                Refresh Page
+              </button>
+            </div>
+          )}
         </div>
       </div>
     )
