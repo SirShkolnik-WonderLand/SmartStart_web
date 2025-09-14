@@ -176,11 +176,11 @@ class BUZTokenService:
             recipient_wallet['transaction_count'] += 1
             recipient_wallet['last_transaction'] = datetime.now().isoformat()
             
-            # Save updated wallets
+            # Save updated wallets and transaction
             if self.nodejs_connector:
-                self.nodejs_connector.update_wallet(from_user_id, sender_wallet)
-                self.nodejs_connector.update_wallet(to_user_id, recipient_wallet)
-                self.nodejs_connector.save_transaction(transaction)
+                self._update_wallet_balance(from_user_id, sender_wallet)
+                self._update_wallet_balance(to_user_id, recipient_wallet)
+                self._save_transaction(transaction)
             
             # Update transaction status
             transaction['status'] = 'COMPLETED'
@@ -258,8 +258,8 @@ class BUZTokenService:
             
             # Save staking record and wallet
             if self.nodejs_connector:
-                self.nodejs_connector.create_staking_record(staking_record)
-                self.nodejs_connector.update_wallet(user_id, wallet)
+                self._create_staking_record(staking_record)
+                self._update_wallet_balance(user_id, wallet)
             
             return {
                 'success': True,
@@ -331,8 +331,8 @@ class BUZTokenService:
             
             # Save updated records
             if self.nodejs_connector:
-                self.nodejs_connector.update_staking_record(staking_id, staking_record)
-                self.nodejs_connector.update_wallet(user_id, wallet)
+                self._update_staking_record(staking_id, staking_record)
+                self._update_wallet_balance(user_id, wallet)
             
             return {
                 'success': True,
@@ -419,8 +419,8 @@ class BUZTokenService:
             
             # Save investment record and wallet
             if self.nodejs_connector:
-                self.nodejs_connector.create_investment_record(investment_record)
-                self.nodejs_connector.update_wallet(user_id, wallet)
+                self._create_investment_record(investment_record)
+                self._update_wallet_balance(user_id, wallet)
             
             return {
                 'success': True,
@@ -517,33 +517,107 @@ class BUZTokenService:
     
     def _get_user_data(self, user_id: str) -> Optional[Dict[str, Any]]:
         """Get user data by ID"""
-        # This would typically query the database via Node.js connector
-        return None
+        try:
+            if self.nodejs_connector:
+                result = self.nodejs_connector.query(
+                    "SELECT id, email, username, name, firstName, lastName, role, level, xp, reputation FROM \"User\" WHERE id = %s",
+                    (user_id,)
+                )
+                if result:
+                    return dict(result[0])
+            return None
+        except Exception as e:
+            logger.error(f"Error getting user data: {e}")
+            return None
     
     def _get_wallet_data(self, user_id: str) -> Optional[Dict[str, Any]]:
         """Get wallet data by user ID"""
-        # This would typically query the database via Node.js connector
-        return None
+        try:
+            if self.nodejs_connector:
+                # Get BUZ token data
+                buz_result = self.nodejs_connector.query(
+                    "SELECT * FROM \"BUZToken\" WHERE userId = %s",
+                    (user_id,)
+                )
+                
+                if buz_result:
+                    buz_data = dict(buz_result[0])
+                    return {
+                        'user_id': user_id,
+                        'wallet_address': buz_data.get('walletAddress'),
+                        'available_balance': buz_data.get('buzBalance', 0),
+                        'staked_balance': buz_data.get('stakedBalance', 0),
+                        'pending_balance': buz_data.get('pendingBalance', 0),
+                        'locked_balance': buz_data.get('lockedBalance', 0),
+                        'invested_balance': buz_data.get('investedBalance', 0),
+                        'transaction_count': buz_data.get('transactionCount', 0),
+                        'last_transaction': buz_data.get('lastTransaction'),
+                        'created_at': buz_data.get('createdAt'),
+                        'updated_at': buz_data.get('updatedAt')
+                    }
+            return None
+        except Exception as e:
+            logger.error(f"Error getting wallet data: {e}")
+            return None
     
     def _get_venture_data(self, venture_id: str) -> Optional[Dict[str, Any]]:
         """Get venture data by ID"""
-        # This would typically query the database via Node.js connector
-        return None
+        try:
+            if self.nodejs_connector:
+                result = self.nodejs_connector.query(
+                    "SELECT id, name, description, status, valuation, equityCap FROM \"Venture\" WHERE id = %s",
+                    (venture_id,)
+                )
+                if result:
+                    return dict(result[0])
+            return None
+        except Exception as e:
+            logger.error(f"Error getting venture data: {e}")
+            return None
     
     def _create_wallet(self, user_id: str) -> Dict[str, Any]:
         """Create new wallet for user"""
-        return {
-            'user_id': user_id,
-            'wallet_address': self._generate_wallet_address(),
-            'available_balance': self.initial_user_balance,
-            'staked_balance': 0,
-            'pending_balance': 0,
-            'locked_balance': 0,
-            'invested_balance': 0,
-            'transaction_count': 0,
-            'created_at': datetime.now().isoformat(),
-            'updated_at': datetime.now().isoformat()
-        }
+        try:
+            wallet_address = self._generate_wallet_address()
+            now = datetime.now()
+            
+            if self.nodejs_connector:
+                # Create BUZ token record in database
+                self.nodejs_connector.execute(
+                    """INSERT INTO "BUZToken" 
+                       (id, "userId", "walletAddress", "buzBalance", "stakedBalance", "pendingBalance", 
+                        "lockedBalance", "investedBalance", "transactionCount", "createdAt", "updatedAt")
+                       VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+                    (
+                        f"buz_{secrets.token_hex(8)}",
+                        user_id,
+                        wallet_address,
+                        self.initial_user_balance,
+                        0,  # staked_balance
+                        0,  # pending_balance
+                        0,  # locked_balance
+                        0,  # invested_balance
+                        0,  # transaction_count
+                        now,
+                        now
+                    )
+                )
+            
+            return {
+                'user_id': user_id,
+                'wallet_address': wallet_address,
+                'available_balance': self.initial_user_balance,
+                'staked_balance': 0,
+                'pending_balance': 0,
+                'locked_balance': 0,
+                'invested_balance': 0,
+                'transaction_count': 0,
+                'created_at': now.isoformat(),
+                'updated_at': now.isoformat()
+            }
+        except Exception as e:
+            logger.error(f"Error creating wallet: {e}")
+            return None
     
     def _generate_wallet_address(self) -> str:
         """Generate unique wallet address"""
@@ -653,8 +727,18 @@ class BUZTokenService:
     
     def _get_staking_record(self, staking_id: str) -> Optional[Dict[str, Any]]:
         """Get staking record by ID"""
-        # This would query the database
-        return None
+        try:
+            if self.nodejs_connector:
+                result = self.nodejs_connector.query(
+                    "SELECT * FROM \"BUZStaking\" WHERE id = %s",
+                    (staking_id,)
+                )
+                if result:
+                    return dict(result[0])
+            return None
+        except Exception as e:
+            logger.error(f"Error getting staking record: {e}")
+            return None
     
     def _calculate_unstaking_rewards(self, staking_record: Dict[str, Any]) -> Dict[str, Any]:
         """Calculate unstaking rewards"""
@@ -775,5 +859,154 @@ class BUZTokenService:
     
     def _get_user_transactions(self, user_id: str, limit: int, offset: int) -> List[Dict[str, Any]]:
         """Get user transactions"""
-        # This would query the transaction database
-        return []
+        try:
+            if self.nodejs_connector:
+                result = self.nodejs_connector.query(
+                    """SELECT * FROM "BUZTransaction" 
+                       WHERE "fromUserId" = %s OR "toUserId" = %s 
+                       ORDER BY "createdAt" DESC 
+                       LIMIT %s OFFSET %s""",
+                    (user_id, user_id, limit, offset)
+                )
+                return [dict(row) for row in result]
+            return []
+        except Exception as e:
+            logger.error(f"Error getting user transactions: {e}")
+            return []
+    
+    def _save_transaction(self, transaction: Dict[str, Any]) -> bool:
+        """Save transaction to database"""
+        try:
+            if self.nodejs_connector:
+                self.nodejs_connector.execute(
+                    """INSERT INTO "BUZTransaction" 
+                       (id, "fromUserId", "toUserId", amount, "transactionType", status, 
+                        "transactionFee", metadata, "createdAt", "updatedAt")
+                       VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+                    (
+                        transaction['id'],
+                        transaction.get('from_user_id'),
+                        transaction.get('to_user_id'),
+                        transaction['amount'],
+                        transaction['transaction_type'],
+                        transaction['status'],
+                        transaction.get('transaction_fee', 0),
+                        json.dumps(transaction.get('metadata', {})),
+                        transaction['created_at'],
+                        transaction.get('completed_at', transaction['created_at'])
+                    )
+                )
+                return True
+            return False
+        except Exception as e:
+            logger.error(f"Error saving transaction: {e}")
+            return False
+    
+    def _update_wallet_balance(self, user_id: str, wallet_data: Dict[str, Any]) -> bool:
+        """Update wallet balance in database"""
+        try:
+            if self.nodejs_connector:
+                self.nodejs_connector.execute(
+                    """UPDATE "BUZToken" 
+                       SET "buzBalance" = %s, "stakedBalance" = %s, "pendingBalance" = %s,
+                           "lockedBalance" = %s, "investedBalance" = %s, "transactionCount" = %s,
+                           "lastTransaction" = %s, "updatedAt" = %s
+                       WHERE "userId" = %s""",
+                    (
+                        wallet_data.get('available_balance', 0),
+                        wallet_data.get('staked_balance', 0),
+                        wallet_data.get('pending_balance', 0),
+                        wallet_data.get('locked_balance', 0),
+                        wallet_data.get('invested_balance', 0),
+                        wallet_data.get('transaction_count', 0),
+                        wallet_data.get('last_transaction'),
+                        datetime.now(),
+                        user_id
+                    )
+                )
+                return True
+            return False
+        except Exception as e:
+            logger.error(f"Error updating wallet balance: {e}")
+            return False
+    
+    def _create_staking_record(self, staking_record: Dict[str, Any]) -> bool:
+        """Create staking record in database"""
+        try:
+            if self.nodejs_connector:
+                self.nodejs_connector.execute(
+                    """INSERT INTO "BUZStaking" 
+                       (id, "userId", amount, "stakingType", "stakingPeriod", "annualRewardRate",
+                        "expectedRewards", "startDate", "endDate", status, "createdAt", "updatedAt")
+                       VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+                    (
+                        staking_record['id'],
+                        staking_record['user_id'],
+                        staking_record['amount'],
+                        staking_record['staking_type'],
+                        staking_record['staking_period'],
+                        staking_record['annual_reward_rate'],
+                        staking_record['expected_rewards'],
+                        staking_record['start_date'],
+                        staking_record['end_date'],
+                        staking_record['status'],
+                        staking_record['created_at'],
+                        staking_record['created_at']
+                    )
+                )
+                return True
+            return False
+        except Exception as e:
+            logger.error(f"Error creating staking record: {e}")
+            return False
+    
+    def _update_staking_record(self, staking_id: str, staking_record: Dict[str, Any]) -> bool:
+        """Update staking record in database"""
+        try:
+            if self.nodejs_connector:
+                self.nodejs_connector.execute(
+                    """UPDATE "BUZStaking" 
+                       SET status = %s, "unstakedAt" = %s, "rewardsClaimed" = %s, "updatedAt" = %s
+                       WHERE id = %s""",
+                    (
+                        staking_record['status'],
+                        staking_record.get('unstaked_at'),
+                        staking_record.get('rewards_claimed', 0),
+                        datetime.now(),
+                        staking_id
+                    )
+                )
+                return True
+            return False
+        except Exception as e:
+            logger.error(f"Error updating staking record: {e}")
+            return False
+    
+    def _create_investment_record(self, investment_record: Dict[str, Any]) -> bool:
+        """Create investment record in database"""
+        try:
+            if self.nodejs_connector:
+                # For now, we'll store investment records in a generic way
+                # In a full implementation, you'd have a dedicated investment table
+                self.nodejs_connector.execute(
+                    """INSERT INTO "BUZTransaction" 
+                       (id, "fromUserId", "toUserId", amount, "transactionType", status, 
+                        metadata, "createdAt", "updatedAt")
+                       VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+                    (
+                        investment_record['id'],
+                        investment_record['user_id'],
+                        investment_record['venture_id'],
+                        investment_record['amount'],
+                        'INVESTMENT',
+                        investment_record['status'],
+                        json.dumps(investment_record.get('metadata', {})),
+                        investment_record['created_at'],
+                        investment_record['created_at']
+                    )
+                )
+                return True
+            return False
+        except Exception as e:
+            logger.error(f"Error creating investment record: {e}")
+            return False

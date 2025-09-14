@@ -492,6 +492,40 @@ def get_token_economy_stats():
     result = brain.buz_token_service.get_token_economy_stats()
     return jsonify(result)
 
+@app.route('/tokens/invest', methods=['POST'])
+def invest_tokens():
+    """Invest tokens in a venture"""
+    data = request.get_json()
+    user_id = data.get('user_id')
+    venture_id = data.get('venture_id')
+    amount = data.get('amount')
+    investment_type = data.get('investment_type', 'EQUITY')
+    result = brain.buz_token_service.invest_in_venture(user_id, venture_id, amount, investment_type)
+    return jsonify(result)
+
+@app.route('/tokens/history/<user_id>', methods=['GET'])
+def get_token_history(user_id):
+    """Get user's token transaction history"""
+    limit = request.args.get('limit', 50, type=int)
+    offset = request.args.get('offset', 0, type=int)
+    result = brain.buz_token_service.get_transaction_history(user_id, limit, offset)
+    return jsonify(result)
+
+@app.route('/tokens/utilities/<user_id>', methods=['GET'])
+def get_token_utilities(user_id):
+    """Get available token utilities for user"""
+    result = brain.buz_token_service.get_user_balance(user_id)
+    if result.get('success'):
+        utilities = result['data'].get('token_utilities', [])
+        return jsonify({
+            'success': True,
+            'data': {
+                'utilities': utilities,
+                'user_id': user_id
+            }
+        })
+    return jsonify(result)
+
 # Umbrella Service Endpoints
 @app.route('/umbrella/relationships/create', methods=['POST'])
 def create_umbrella_relationship():
@@ -1244,7 +1278,7 @@ def health_check():
             "legal_audit_service": "active",
             "legal_print_service": "active"
         },
-        "total_endpoints": 100,
+        "total_endpoints": 105,
         "python_brain": "operational"
     })
 
