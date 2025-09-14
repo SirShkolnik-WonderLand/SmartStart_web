@@ -52,6 +52,10 @@ app.post('/api/auth/login', (req, res) => {
     const { email, password } = req.body;
     
     console.log(`🔐 Direct auth attempt for: ${email}`);
+    console.log(`🔐 Password received: "${password}"`);
+    console.log(`🔐 Email matches expected: ${email === 'udi.admin@alicesolutionsgroup.com'}`);
+    console.log(`🔐 Password matches expected: ${password === 'password'}`);
+    console.log(`🔐 Full request body:`, JSON.stringify(req.body, null, 2));
     
     // Simple authentication for testing
     if (email === 'udi.admin@alicesolutionsgroup.com' && password === 'password') {
