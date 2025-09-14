@@ -23,7 +23,12 @@ const PORT = process.env.PORT || 3001;
 
 // Middleware
 app.use(helmet());
-app.use(cors());
+app.use(cors({
+    origin: ['https://smartstart-frontend.onrender.com', 'http://localhost:3000'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    credentials: true
+}));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
@@ -120,6 +125,33 @@ app.get('/api/auth/health', (req, res) => {
         message: 'Authentication system healthy',
         timestamp: new Date().toISOString()
     });
+});
+
+// Get current user endpoint
+app.get('/api/auth/me', (req, res) => {
+    const authHeader = req.headers.authorization;
+    const token = authHeader && authHeader.split(' ')[1];
+    
+    console.log(`👤 Auth me request with token: ${token ? token.substring(0, 20) + '...' : 'none'}`);
+    
+    // For now, return the admin user if token exists
+    if (token && token.startsWith('mock-jwt-token-')) {
+        res.json({
+            success: true,
+            user: {
+                id: 'udi-super-admin-001',
+                email: 'udi.admin@alicesolutionsgroup.com',
+                name: 'Udi Shkolnik',
+                role: 'SUPER_ADMIN',
+                token: token
+            }
+        });
+    } else {
+        res.status(401).json({
+            success: false,
+            error: 'Invalid or missing token'
+        });
+    }
 });
 
 // Proxy all API requests to Python Brain
