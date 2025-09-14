@@ -56,7 +56,7 @@ UserBehaviorAnalyzer = DummyBrainModule
 
 # Import real NodeJSConnector
 try:
-    from services.nodejs_connector import NodeJSConnector
+    from nodejs_connector import NodeJSConnector
     print("✅ NodeJSConnector imported successfully")
 except ImportError as e:
     print(f"⚠️  NodeJSConnector import error: {e}")
@@ -74,7 +74,7 @@ try:
     from gamification_service import GamificationService
     from buz_token_service import BUZTokenService
     from umbrella_service import UmbrellaService
-    from authentication_service import AuthenticationService
+    from auth_service import AuthService as AuthenticationService
     from file_service import FileService
     from analytics_service import AnalyticsService
     from notification_service import NotificationService

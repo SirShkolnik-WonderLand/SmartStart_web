@@ -25,8 +25,8 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 class LegalService:
-    def __init__(self):
-        self.connector = NodeJSConnector()
+    def __init__(self, nodejs_connector=None):
+        self.connector = nodejs_connector or NodeJSConnector()
         logger.info("⚖️ Legal Service initialized")
     
     def get_legal_documents_for_user(self, user_id: str) -> Dict[str, Any]:

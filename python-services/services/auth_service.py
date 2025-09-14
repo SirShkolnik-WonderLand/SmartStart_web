@@ -28,8 +28,8 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 class AuthService:
-    def __init__(self):
-        self.connector = NodeJSConnector()
+    def __init__(self, nodejs_connector=None):
+        self.connector = nodejs_connector or NodeJSConnector()
         self.jwt_secret = os.getenv('JWT_SECRET', 'your-secret-key')
         self.jwt_expiry = int(os.getenv('JWT_EXPIRY_HOURS', '24'))
         logger.info("🔐 Authentication Service initialized")
