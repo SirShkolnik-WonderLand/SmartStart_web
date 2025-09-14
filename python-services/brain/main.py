@@ -85,6 +85,8 @@ try:
     from user_journey_service import UserJourneyService
     from legal_audit_service import LegalAuditService
     from legal_print_service import LegalPrintService
+    from cache_service import CacheService
+    from performance_service import PerformanceService
 except ImportError as e:
     print(f"Warning: Could not import Python services: {e}")
     # Create dummy services for now
@@ -226,6 +228,11 @@ class SmartStartBrain:
         self.user_journey_service = UserJourneyService(self.nodejs_connector)
         self.legal_audit_service = LegalAuditService(self.nodejs_connector)
         self.legal_print_service = LegalPrintService(self.nodejs_connector)
+        self.cache_service = CacheService(self.nodejs_connector)
+        self.performance_service = PerformanceService(self.nodejs_connector)
+        
+        # Start performance monitoring
+        self.performance_service.start_monitoring()
         
         logger.info("🧠 SmartStart Brain initialized successfully with all Python services")
     
@@ -1383,6 +1390,96 @@ def generate_report_pdf(user_id):
     result = brain.legal_print_service.generate_user_legal_report_pdf(user_id)
     return jsonify(result)
 
+# Cache Service Endpoints
+@app.route('/cache/stats', methods=['GET'])
+def get_cache_stats():
+    """Get cache statistics"""
+    result = brain.cache_service.get_stats()
+    return jsonify(result)
+
+@app.route('/cache/clear', methods=['POST'])
+def clear_cache():
+    """Clear cache"""
+    data = request.json
+    category = data.get('category')
+    
+    if category:
+        count = brain.cache_service.clear_category(category)
+        return jsonify({"success": True, "cleared_items": count, "category": category})
+    else:
+        count = brain.cache_service.clear_all()
+        return jsonify({"success": True, "cleared_items": count})
+
+@app.route('/cache/warmup', methods=['POST'])
+def warmup_cache():
+    """Warm up cache with data"""
+    data = request.json
+    result = brain.cache_service.warm_cache(data)
+    return jsonify(result)
+
+@app.route('/cache/invalidate', methods=['POST'])
+def invalidate_cache():
+    """Invalidate cache items matching pattern"""
+    data = request.json
+    pattern = data.get('pattern')
+    category = data.get('category', 'general')
+    
+    if not pattern:
+        return jsonify({"success": False, "error": "pattern required"}), 400
+    
+    count = brain.cache_service.invalidate_pattern(pattern, category)
+    return jsonify({"success": True, "invalidated_items": count, "pattern": pattern})
+
+# Performance Service Endpoints
+@app.route('/performance/metrics', methods=['GET'])
+def get_performance_metrics():
+    """Get performance metrics"""
+    result = brain.performance_service.get_performance_metrics()
+    return jsonify(result)
+
+@app.route('/performance/endpoint/<endpoint>', methods=['GET'])
+def get_endpoint_performance(endpoint):
+    """Get performance metrics for specific endpoint"""
+    result = brain.performance_service.get_endpoint_performance(endpoint)
+    return jsonify(result)
+
+@app.route('/performance/slow-queries', methods=['GET'])
+def get_slow_queries():
+    """Get slowest API endpoints"""
+    limit = request.args.get('limit', 10, type=int)
+    result = brain.performance_service.get_slow_queries(limit)
+    return jsonify(result)
+
+@app.route('/performance/alerts', methods=['GET'])
+def get_performance_alerts():
+    """Get performance alerts"""
+    result = brain.performance_service.get_performance_alerts()
+    return jsonify(result)
+
+@app.route('/performance/optimize', methods=['POST'])
+def optimize_performance():
+    """Run performance optimization"""
+    result = brain.performance_service.optimize_performance()
+    return jsonify(result)
+
+@app.route('/performance/health', methods=['GET'])
+def get_health_score():
+    """Get system health score"""
+    result = brain.performance_service.get_health_score()
+    return jsonify(result)
+
+@app.route('/performance/monitoring/start', methods=['POST'])
+def start_performance_monitoring():
+    """Start performance monitoring"""
+    brain.performance_service.start_monitoring()
+    return jsonify({"success": True, "message": "Performance monitoring started"})
+
+@app.route('/performance/monitoring/stop', methods=['POST'])
+def stop_performance_monitoring():
+    """Stop performance monitoring"""
+    brain.performance_service.stop_monitoring()
+    return jsonify({"success": True, "message": "Performance monitoring stopped"})
+
 # Health check endpoint
 @app.route('/health', methods=['GET'])
 def health_check():
@@ -1408,9 +1505,11 @@ def health_check():
             "crud_service": "active",
             "user_journey_service": "active",
             "legal_audit_service": "active",
-            "legal_print_service": "active"
+            "legal_print_service": "active",
+            "cache_service": "active",
+            "performance_service": "active"
         },
-        "total_endpoints": 117,
+        "total_endpoints": 127,
         "python_brain": "operational"
     })
 
