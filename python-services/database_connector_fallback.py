@@ -29,8 +29,9 @@ class DatabaseConnector:
                     "email": "udi.admin@alicesolutionsgroup.com",
                     "level": "SUPER_ADMIN",
                     "xp": 2500,
-                    "created_at": "2025-01-01T00:00:00Z",
-                    "last_login": "2025-09-14T21:40:00Z",
+                    "createdAt": "2025-01-01T00:00:00Z",
+                    "updatedAt": "2025-09-14T21:40:00Z",
+                    "lastLogin": "2025-09-14T21:40:00Z",
                     "status": "active",
                     "profile": {
                         "bio": "Platform Administrator",
@@ -47,8 +48,9 @@ class DatabaseConnector:
                     "email": f"{user_id}@example.com",
                     "level": "MEMBER",
                     "xp": 100,
-                    "created_at": "2025-09-01T00:00:00Z",
-                    "last_login": "2025-09-14T21:40:00Z",
+                    "createdAt": "2025-09-01T00:00:00Z",
+                    "updatedAt": "2025-09-14T21:40:00Z",
+                    "lastLogin": "2025-09-14T21:40:00Z",
                     "status": "active",
                     "profile": {
                         "bio": "Platform User",
