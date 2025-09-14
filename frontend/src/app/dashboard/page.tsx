@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { 
   Users, 
   Clock, 
@@ -115,8 +115,8 @@ export default function DashboardPage() {
 
   // Fun motivational messages based on user progress
   const getMotivationalMessage = () => {
-    const completedStages = journeyStatus?.progress?.completedStages || 0
-    const totalStages = journeyStatus?.progress?.totalStages || 4
+    const completedStages = journeyStatus?.progress?.completedStages ?? 0
+    const totalStages = journeyStatus?.progress?.totalStages ?? 4
     
     if (completedStages === 0) {
       return { message: "Ready to start your magical journey? ✨", icon: Sparkles, color: "text-primary" }
@@ -470,7 +470,7 @@ export default function DashboardPage() {
             </h2>
             <p className="text-muted mb-3">Ready to continue your journey through Wonderland?</p>
             <div className="flex items-center gap-2">
-              <motivational.icon className={`w-5 h-5 ${motivational.color}`} />
+              {React.createElement(motivational.icon, { className: `w-5 h-5 ${motivational.color}` })}
               <span className={`font-medium ${motivational.color}`}>{motivational.message}</span>
             </div>
           </div>
