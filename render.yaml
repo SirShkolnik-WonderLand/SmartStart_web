@@ -32,6 +32,8 @@ services:
         value: https://smartstart-api.onrender.com
       - key: CORS_ORIGINS
         value: "https://smartstart-frontend.onrender.com,http://localhost:3000"
+      - key: PYTHON_BRAIN_VERSION
+        value: "2.1.0"
       # DATABASE_URL is set in Render dashboard; omit here to preserve secret
   - type: web
     name: smartstart-frontend
