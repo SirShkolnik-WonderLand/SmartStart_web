@@ -63,8 +63,8 @@ class JourneyProgress:
     blocked_reasons: List[str] = None
 
 class UserJourneyService:
-    def __init__(self):
-        self.connector = NodeJSConnector()
+    def __init__(self, nodejs_connector=None):
+        self.connector = nodejs_connector or NodeJSConnector()
         logger.info("🚀 User Journey Service initialized")
     
     def get_user_journey_state(self, user_id: str) -> List[UserJourneyState]:

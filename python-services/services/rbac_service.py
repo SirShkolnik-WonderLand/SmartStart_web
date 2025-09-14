@@ -53,8 +53,8 @@ class UserRole:
     permissions: List[str]
 
 class RBACService:
-    def __init__(self):
-        self.connector = NodeJSConnector()
+    def __init__(self, nodejs_connector=None):
+        self.connector = nodejs_connector or NodeJSConnector()
         logger.info("🔐 RBAC Service initialized")
     
     def get_user_roles(self, user_id: str) -> List[UserRole]:

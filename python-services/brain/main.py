@@ -56,7 +56,7 @@ UserBehaviorAnalyzer = DummyBrainModule
 
 # Import real NodeJSConnector
 try:
-    from nodejs_connector import NodeJSConnector
+    from services.nodejs_connector import NodeJSConnector
     print("✅ NodeJSConnector imported successfully")
 except ImportError as e:
     print(f"⚠️  NodeJSConnector import error: {e}")
@@ -221,11 +221,11 @@ class SmartStartBrain:
         self.notification_service = NotificationService(self.nodejs_connector)
         self.websocket_service = WebSocketService(self.nodejs_connector)
         self.state_machine_service = StateMachineService(self.nodejs_connector)
-        self.rbac_service = RBACService()
-        self.crud_service = CRUDService()
-        self.user_journey_service = UserJourneyService()
-        self.legal_audit_service = LegalAuditService()
-        self.legal_print_service = LegalPrintService()
+        self.rbac_service = RBACService(self.nodejs_connector)
+        self.crud_service = CRUDService(self.nodejs_connector)
+        self.user_journey_service = UserJourneyService(self.nodejs_connector)
+        self.legal_audit_service = LegalAuditService(self.nodejs_connector)
+        self.legal_print_service = LegalPrintService(self.nodejs_connector)
         
         logger.info("🧠 SmartStart Brain initialized successfully with all Python services")
     

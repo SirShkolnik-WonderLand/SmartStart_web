@@ -25,8 +25,8 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 class LegalPrintService:
-    def __init__(self):
-        self.connector = NodeJSConnector()
+    def __init__(self, nodejs_connector=None):
+        self.connector = nodejs_connector or NodeJSConnector()
         logger.info("🖨️ Legal Print Service initialized")
     
     def generate_legal_document_pdf(self, user_id: str, document_id: str) -> Dict[str, Any]:

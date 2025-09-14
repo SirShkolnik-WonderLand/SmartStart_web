@@ -29,8 +29,8 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 class LegalAuditService:
-    def __init__(self):
-        self.connector = NodeJSConnector()
+    def __init__(self, nodejs_connector=None):
+        self.connector = nodejs_connector or NodeJSConnector()
         logger.info("⚖️ Legal Audit Service initialized")
     
     def create_legal_record(self, user_id: str, document_id: str, action: str, 

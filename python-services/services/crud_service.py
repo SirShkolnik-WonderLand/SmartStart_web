@@ -38,8 +38,8 @@ class QueryResult:
     count: int = 0
 
 class CRUDService:
-    def __init__(self):
-        self.connector = NodeJSConnector()
+    def __init__(self, nodejs_connector=None):
+        self.connector = nodejs_connector or NodeJSConnector()
         logger.info("📊 CRUD Service initialized")
     
     def create(self, table: str, data: Dict[str, Any]) -> QueryResult:
