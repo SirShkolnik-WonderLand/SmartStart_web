@@ -456,6 +456,174 @@ class DatabaseConnector:
         except Exception as e:
             logger.error(f"Error getting BUZ economy stats: {e}")
             return {}
+    
+    # ===== TEAM MANAGEMENT METHODS =====
+    
+    def get_team(self, team_id: str) -> Dict:
+        """Get team details with members"""
+        try:
+            # Return mock team data with proper structure
+            return {
+                "id": team_id,
+                "name": "SmartStart Development Team",
+                "description": "Core development team for SmartStart platform",
+                "companyId": "company_001",
+                "ventureId": "venture_001",
+                "leaderId": "udi-super-admin-001",
+                "status": "ACTIVE",
+                "visibility": "PRIVATE",
+                "createdAt": "2025-01-01T00:00:00Z",
+                "updatedAt": "2025-09-14T00:00:00Z",
+                "members": [
+                    {
+                        "id": f"member_{team_id}_001",
+                        "teamId": team_id,
+                        "userId": "udi-super-admin-001",
+                        "role": "TEAM_LEAD",
+                        "permissions": ["MANAGE_TEAM", "MANAGE_MEMBERS", "VIEW_ANALYTICS"],
+                        "joinedAt": "2025-01-01T00:00:00Z",
+                        "user": {
+                            "id": "udi-super-admin-001",
+                            "name": "Udi Shkolnik",
+                            "email": "udi.admin@alicesolutionsgroup.com",
+                            "level": "SUPER_ADMIN",
+                            "avatar": None
+                        }
+                    },
+                    {
+                        "id": f"member_{team_id}_002",
+                        "teamId": team_id,
+                        "userId": "user_002",
+                        "role": "DEVELOPER",
+                        "permissions": ["VIEW_ANALYTICS", "MANAGE_TASKS"],
+                        "joinedAt": "2025-02-01T00:00:00Z",
+                        "user": {
+                            "id": "user_002",
+                            "name": "Sarah Johnson",
+                            "email": "sarah.johnson@example.com",
+                            "level": "MEMBER",
+                            "avatar": None
+                        }
+                    }
+                ]
+            }
+        except Exception as e:
+            logger.error(f"Error getting team {team_id}: {e}")
+            return {}
+    
+    def get_team_members(self, team_id: str) -> List[Dict]:
+        """Get team members"""
+        try:
+            # Return mock team members with proper structure
+            return [
+                {
+                    "id": f"member_{team_id}_001",
+                    "teamId": team_id,
+                    "userId": "udi-super-admin-001",
+                    "role": "TEAM_LEAD",
+                    "permissions": ["MANAGE_TEAM", "MANAGE_MEMBERS", "VIEW_ANALYTICS"],
+                    "joinedAt": "2025-01-01T00:00:00Z",
+                    "user": {
+                        "id": "udi-super-admin-001",
+                        "name": "Udi Shkolnik",
+                        "email": "udi.admin@alicesolutionsgroup.com",
+                        "level": "SUPER_ADMIN",
+                        "avatar": None
+                    }
+                },
+                {
+                    "id": f"member_{team_id}_002",
+                    "teamId": team_id,
+                    "userId": "user_002",
+                    "role": "DEVELOPER",
+                    "permissions": ["VIEW_ANALYTICS", "MANAGE_TASKS"],
+                    "joinedAt": "2025-02-01T00:00:00Z",
+                    "user": {
+                        "id": "user_002",
+                        "name": "Sarah Johnson",
+                        "email": "sarah.johnson@example.com",
+                        "level": "MEMBER",
+                        "avatar": None
+                    }
+                }
+            ]
+        except Exception as e:
+            logger.error(f"Error getting team members for team {team_id}: {e}")
+            return []
+    
+    def get_team_goals(self, team_id: str) -> Dict:
+        """Get team goals"""
+        try:
+            # Return mock team goals
+            return {
+                "goals": [
+                    {
+                        "id": f"goal_{team_id}_001",
+                        "teamId": team_id,
+                        "title": "Complete Platform MVP",
+                        "description": "Launch the minimum viable product for SmartStart platform",
+                        "priority": "HIGH",
+                        "status": "IN_PROGRESS",
+                        "dueDate": "2025-12-31T00:00:00Z",
+                        "createdAt": "2025-01-01T00:00:00Z",
+                        "updatedAt": "2025-09-14T00:00:00Z"
+                    },
+                    {
+                        "id": f"goal_{team_id}_002",
+                        "teamId": team_id,
+                        "title": "Implement User Authentication",
+                        "description": "Complete user authentication and authorization system",
+                        "priority": "HIGH",
+                        "status": "COMPLETED",
+                        "dueDate": "2025-06-30T00:00:00Z",
+                        "createdAt": "2025-01-01T00:00:00Z",
+                        "updatedAt": "2025-06-30T00:00:00Z"
+                    }
+                ]
+            }
+        except Exception as e:
+            logger.error(f"Error getting team goals for team {team_id}: {e}")
+            return {"goals": []}
+    
+    def get_team_analytics(self, team_id: str) -> Dict:
+        """Get team analytics"""
+        try:
+            # Return mock team analytics
+            return {
+                "performanceMetrics": [
+                    {
+                        "name": "Code Quality Score",
+                        "description": "Overall code quality metrics",
+                        "value": 85,
+                        "effectiveDate": "2025-09-14T00:00:00Z"
+                    },
+                    {
+                        "name": "Task Completion Rate",
+                        "description": "Percentage of tasks completed on time",
+                        "value": 92,
+                        "effectiveDate": "2025-09-14T00:00:00Z"
+                    },
+                    {
+                        "name": "Team Collaboration Index",
+                        "description": "Measure of team collaboration effectiveness",
+                        "value": 78,
+                        "effectiveDate": "2025-09-14T00:00:00Z"
+                    }
+                ],
+                "memberStats": {
+                    "totalMembers": 2,
+                    "activeMembers": 2,
+                    "newMembersThisMonth": 0
+                },
+                "goalStats": {
+                    "totalGoals": 2,
+                    "completedGoals": 1,
+                    "inProgressGoals": 1
+                }
+            }
+        except Exception as e:
+            logger.error(f"Error getting team analytics for team {team_id}: {e}")
+            return {"performanceMetrics": [], "memberStats": {}, "goalStats": {}}
 
 # Create global instance
 db = DatabaseConnector()

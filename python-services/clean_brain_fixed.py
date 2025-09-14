@@ -610,6 +610,76 @@ def get_buz_economy_stats():
             "error": str(e)
         }), 500
 
+# ===== TEAM MANAGEMENT ENDPOINTS =====
+
+@app.route('/api/teams/<team_id>', methods=['GET'])
+def get_team(team_id):
+    """Get team details with members"""
+    try:
+        # Get team data from database
+        team_data = db.get_team(team_id)
+        return jsonify({
+            "success": True,
+            "data": team_data
+        }), 200
+    except Exception as e:
+        logger.error(f"Error getting team {team_id}: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+@app.route('/api/teams/<team_id>/members', methods=['GET'])
+def get_team_members(team_id):
+    """Get team members"""
+    try:
+        # Get team members from database
+        members = db.get_team_members(team_id)
+        return jsonify({
+            "success": True,
+            "data": members
+        }), 200
+    except Exception as e:
+        logger.error(f"Error getting team members for team {team_id}: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+@app.route('/api/teams/<team_id>/goals', methods=['GET'])
+def get_team_goals(team_id):
+    """Get team goals"""
+    try:
+        # Get team goals from database
+        goals = db.get_team_goals(team_id)
+        return jsonify({
+            "success": True,
+            "data": goals
+        }), 200
+    except Exception as e:
+        logger.error(f"Error getting team goals for team {team_id}: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+@app.route('/api/teams/<team_id>/analytics', methods=['GET'])
+def get_team_analytics(team_id):
+    """Get team analytics"""
+    try:
+        # Get team analytics from database
+        analytics = db.get_team_analytics(team_id)
+        return jsonify({
+            "success": True,
+            "data": analytics
+        }), 200
+    except Exception as e:
+        logger.error(f"Error getting team analytics for team {team_id}: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=False)
