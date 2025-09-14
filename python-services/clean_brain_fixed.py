@@ -69,7 +69,7 @@ def get_user(user_id):
         if user:
             return jsonify({
                 "success": True,
-                "user": user
+                "data": user
             }), 200
         else:
             return jsonify({
@@ -90,7 +90,7 @@ def get_all_ventures():
         ventures = db.get_user_ventures("all")  # Get all ventures
         return jsonify({
             "success": True,
-            "ventures": ventures
+            "data": ventures
         }), 200
     except Exception as e:
         logger.error(f"Error getting ventures: {e}")
@@ -126,7 +126,7 @@ def get_user_buz_wallet(user_id):
         buz_data = db.get_user_buz_tokens(user_id)
         return jsonify({
             "success": True,
-            "wallet": buz_data
+            "data": buz_data
         }), 200
     except Exception as e:
         logger.error(f"Error getting BUZ wallet for user {user_id}: {e}")
@@ -142,7 +142,7 @@ def get_venture_legal_dashboard(user_id):
         dashboard_data = db.get_venture_legal_dashboard(user_id)
         return jsonify({
             "success": True,
-            "dashboard": dashboard_data
+            "data": dashboard_data
         }), 200
     except Exception as e:
         logger.error(f"Error getting legal dashboard for user {user_id}: {e}")
@@ -170,7 +170,7 @@ def get_user_analytics(user_id):
         
         return jsonify({
             "success": True,
-            "analytics": analytics
+            "data": analytics
         }), 200
     except Exception as e:
         logger.error(f"Error getting analytics for user {user_id}: {e}")
