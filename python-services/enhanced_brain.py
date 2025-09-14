@@ -796,6 +796,6 @@ if __name__ == '__main__':
     logger.info(f"📊 Total endpoints: 150+")
     logger.info(f"🔌 Services initialized: 20")
     logger.info(f"🏢 New services: Company, Team, Project, Subscription")
-    logger.info(f"🔧 Fixed deployment filename issue")
+    logger.info(f"🔧 Fixed deployment filename issue - Force redeploy v2.1.1")
     
     app.run(host='0.0.0.0', port=port, debug=debug)
