@@ -379,6 +379,237 @@ def get_subscription_status(user_id):
             "error": str(e)
         }), 500
 
+# ===== UMBRELLA SYSTEM ENDPOINTS =====
+
+@app.route('/api/umbrella/relationships/<user_id>', methods=['GET'])
+def get_umbrella_relationships(user_id):
+    """Get user's umbrella relationships"""
+    try:
+        # Get umbrella relationships from database
+        relationships = db.get_umbrella_relationships(user_id)
+        return jsonify({
+            "success": True,
+            "data": relationships
+        }), 200
+    except Exception as e:
+        logger.error(f"Error getting umbrella relationships for user {user_id}: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+@app.route('/api/umbrella/revenue-shares/<user_id>', methods=['GET'])
+def get_umbrella_revenue_shares(user_id):
+    """Get user's umbrella revenue shares"""
+    try:
+        # Get revenue shares from database
+        revenue_shares = db.get_umbrella_revenue_shares(user_id)
+        return jsonify({
+            "success": True,
+            "data": revenue_shares
+        }), 200
+    except Exception as e:
+        logger.error(f"Error getting umbrella revenue shares for user {user_id}: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+@app.route('/api/umbrella/analytics/<user_id>', methods=['GET'])
+def get_umbrella_analytics(user_id):
+    """Get user's umbrella analytics"""
+    try:
+        # Get umbrella analytics from database
+        analytics = db.get_umbrella_analytics(user_id)
+        return jsonify({
+            "success": True,
+            "data": analytics
+        }), 200
+    except Exception as e:
+        logger.error(f"Error getting umbrella analytics for user {user_id}: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+@app.route('/api/umbrella/create-relationship', methods=['POST'])
+def create_umbrella_relationship():
+    """Create new umbrella relationship"""
+    try:
+        data = request.get_json()
+        referrer_id = data.get('referrer_id')
+        referred_id = data.get('referred_id')
+        relationship_type = data.get('relationship_type', 'PRIVATE_UMBRELLA')
+        default_share_rate = data.get('default_share_rate', 1.0)
+        
+        # Create umbrella relationship in database
+        relationship = db.create_umbrella_relationship(
+            referrer_id, referred_id, relationship_type, default_share_rate
+        )
+        
+        return jsonify({
+            "success": True,
+            "data": relationship
+        }), 201
+    except Exception as e:
+        logger.error(f"Error creating umbrella relationship: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+# ===== ENHANCED WALLET SYSTEM ENDPOINTS =====
+
+@app.route('/api/wallet/balance/<user_id>', methods=['GET'])
+def get_wallet_balance(user_id):
+    """Get comprehensive wallet balance"""
+    try:
+        # Get wallet data from database
+        wallet_data = db.get_wallet_balance(user_id)
+        return jsonify({
+            "success": True,
+            "data": wallet_data
+        }), 200
+    except Exception as e:
+        logger.error(f"Error getting wallet balance for user {user_id}: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+@app.route('/api/wallet/transactions/<user_id>', methods=['GET'])
+def get_wallet_transactions(user_id):
+    """Get wallet transaction history"""
+    try:
+        limit = request.args.get('limit', 50, type=int)
+        offset = request.args.get('offset', 0, type=int)
+        
+        # Get transactions from database
+        transactions = db.get_wallet_transactions(user_id, limit, offset)
+        return jsonify({
+            "success": True,
+            "data": transactions
+        }), 200
+    except Exception as e:
+        logger.error(f"Error getting wallet transactions for user {user_id}: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+@app.route('/api/wallet/transfer', methods=['POST'])
+def transfer_tokens():
+    """Transfer tokens between wallets"""
+    try:
+        data = request.get_json()
+        from_user_id = data.get('from_user_id')
+        to_user_id = data.get('to_user_id')
+        amount = data.get('amount')
+        transaction_type = data.get('transaction_type', 'TRANSFER')
+        
+        # Process transfer in database
+        result = db.transfer_tokens(from_user_id, to_user_id, amount, transaction_type)
+        
+        return jsonify({
+            "success": True,
+            "data": result
+        }), 200
+    except Exception as e:
+        logger.error(f"Error transferring tokens: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+# ===== ENHANCED BUZ TOKEN SYSTEM ENDPOINTS =====
+
+@app.route('/api/buz/stake', methods=['POST'])
+def stake_buz_tokens():
+    """Stake BUZ tokens"""
+    try:
+        data = request.get_json()
+        user_id = data.get('user_id')
+        amount = data.get('amount')
+        staking_period = data.get('staking_period', 30)
+        staking_type = data.get('staking_type', 'STANDARD')
+        
+        # Process staking in database
+        result = db.stake_buz_tokens(user_id, amount, staking_period, staking_type)
+        
+        return jsonify({
+            "success": True,
+            "data": result
+        }), 200
+    except Exception as e:
+        logger.error(f"Error staking BUZ tokens: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+@app.route('/api/buz/unstake', methods=['POST'])
+def unstake_buz_tokens():
+    """Unstake BUZ tokens"""
+    try:
+        data = request.get_json()
+        user_id = data.get('user_id')
+        staking_id = data.get('staking_id')
+        
+        # Process unstaking in database
+        result = db.unstake_buz_tokens(user_id, staking_id)
+        
+        return jsonify({
+            "success": True,
+            "data": result
+        }), 200
+    except Exception as e:
+        logger.error(f"Error unstaking BUZ tokens: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+@app.route('/api/buz/invest', methods=['POST'])
+def invest_buz_tokens():
+    """Invest BUZ tokens in venture"""
+    try:
+        data = request.get_json()
+        user_id = data.get('user_id')
+        venture_id = data.get('venture_id')
+        amount = data.get('amount')
+        investment_type = data.get('investment_type', 'EQUITY')
+        
+        # Process investment in database
+        result = db.invest_buz_tokens(user_id, venture_id, amount, investment_type)
+        
+        return jsonify({
+            "success": True,
+            "data": result
+        }), 200
+    except Exception as e:
+        logger.error(f"Error investing BUZ tokens: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+@app.route('/api/buz/economy-stats', methods=['GET'])
+def get_buz_economy_stats():
+    """Get BUZ token economy statistics"""
+    try:
+        # Get economy stats from database
+        stats = db.get_buz_economy_stats()
+        return jsonify({
+            "success": True,
+            "data": stats
+        }), 200
+    except Exception as e:
+        logger.error(f"Error getting BUZ economy stats: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=False)

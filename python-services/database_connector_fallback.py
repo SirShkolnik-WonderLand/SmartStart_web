@@ -7,7 +7,7 @@ Uses requests to connect to the API instead of direct database connection
 import requests
 import logging
 from typing import Dict, List, Any, Optional
-from datetime import datetime
+from datetime import datetime, timedelta
 
 logger = logging.getLogger(__name__)
 
@@ -137,6 +137,250 @@ class DatabaseConnector:
         except Exception as e:
             logger.error(f"Error getting legal dashboard for user {user_id}: {e}")
             return {"legal_packs": [], "signatures_needed": 0, "completion_percentage": 0}
+    
+    # ===== UMBRELLA SYSTEM METHODS =====
+    
+    def get_umbrella_relationships(self, user_id: str) -> List[Dict]:
+        """Get user's umbrella relationships"""
+        try:
+            # Return mock umbrella relationships
+            return [
+                {
+                    "id": f"umbrella_{user_id}_001",
+                    "referrer_id": user_id,
+                    "referred_id": "user_002",
+                    "relationship_type": "PRIVATE_UMBRELLA",
+                    "status": "ACTIVE",
+                    "default_share_rate": 1.0,
+                    "is_active": True,
+                    "agreement_signed": True,
+                    "created_at": "2025-01-01T00:00:00Z"
+                },
+                {
+                    "id": f"umbrella_{user_id}_002",
+                    "referrer_id": "user_003",
+                    "referred_id": user_id,
+                    "relationship_type": "PRIVATE_UMBRELLA",
+                    "status": "ACTIVE",
+                    "default_share_rate": 1.2,
+                    "is_active": True,
+                    "agreement_signed": True,
+                    "created_at": "2025-02-01T00:00:00Z"
+                }
+            ]
+        except Exception as e:
+            logger.error(f"Error getting umbrella relationships for user {user_id}: {e}")
+            return []
+    
+    def get_umbrella_revenue_shares(self, user_id: str) -> List[Dict]:
+        """Get user's umbrella revenue shares"""
+        try:
+            # Return mock revenue shares
+            return [
+                {
+                    "id": f"revenue_{user_id}_001",
+                    "umbrella_id": f"umbrella_{user_id}_001",
+                    "project_id": "project_001",
+                    "referrer_id": user_id,
+                    "referred_id": "user_002",
+                    "project_revenue": 10000.0,
+                    "share_percentage": 1.0,
+                    "share_amount": 100.0,
+                    "currency": "USD",
+                    "status": "PENDING",
+                    "calculated_at": "2025-09-14T00:00:00Z"
+                }
+            ]
+        except Exception as e:
+            logger.error(f"Error getting umbrella revenue shares for user {user_id}: {e}")
+            return []
+    
+    def get_umbrella_analytics(self, user_id: str) -> Dict:
+        """Get user's umbrella analytics"""
+        try:
+            # Return mock analytics
+            return {
+                "total_referrals": 5,
+                "active_referrals": 3,
+                "total_revenue": 50000.0,
+                "total_shares": 500.0,
+                "average_share_rate": 1.0,
+                "monthly_revenue": 5000.0,
+                "quarterly_revenue": 15000.0,
+                "yearly_revenue": 50000.0
+            }
+        except Exception as e:
+            logger.error(f"Error getting umbrella analytics for user {user_id}: {e}")
+            return {}
+    
+    def create_umbrella_relationship(self, referrer_id: str, referred_id: str, relationship_type: str, default_share_rate: float) -> Dict:
+        """Create new umbrella relationship"""
+        try:
+            # Return mock created relationship
+            return {
+                "id": f"umbrella_{referrer_id}_{referred_id}",
+                "referrer_id": referrer_id,
+                "referred_id": referred_id,
+                "relationship_type": relationship_type,
+                "status": "PENDING_AGREEMENT",
+                "default_share_rate": default_share_rate,
+                "is_active": True,
+                "agreement_signed": False,
+                "created_at": datetime.now().isoformat()
+            }
+        except Exception as e:
+            logger.error(f"Error creating umbrella relationship: {e}")
+            return {}
+    
+    # ===== ENHANCED WALLET SYSTEM METHODS =====
+    
+    def get_wallet_balance(self, user_id: str) -> Dict:
+        """Get comprehensive wallet balance"""
+        try:
+            # Return mock wallet balance
+            return {
+                "user_id": user_id,
+                "available_balance": 2350.0,
+                "staked_balance": 500.0,
+                "pending_balance": 100.0,
+                "locked_balance": 0.0,
+                "invested_balance": 1000.0,
+                "total_balance": 3950.0,
+                "wallet_address": f"buz_{user_id}",
+                "transaction_count": 25,
+                "last_transaction": "2025-09-14T20:30:00Z",
+                "created_at": "2025-01-01T00:00:00Z"
+            }
+        except Exception as e:
+            logger.error(f"Error getting wallet balance for user {user_id}: {e}")
+            return {}
+    
+    def get_wallet_transactions(self, user_id: str, limit: int = 50, offset: int = 0) -> List[Dict]:
+        """Get wallet transaction history"""
+        try:
+            # Return mock transactions
+            return [
+                {
+                    "id": f"tx_{user_id}_001",
+                    "from_user_id": user_id,
+                    "to_user_id": "user_002",
+                    "amount": 100.0,
+                    "transaction_type": "TRANSFER",
+                    "status": "COMPLETED",
+                    "transaction_fee": 0.1,
+                    "created_at": "2025-09-14T20:30:00Z"
+                },
+                {
+                    "id": f"tx_{user_id}_002",
+                    "from_user_id": "system",
+                    "to_user_id": user_id,
+                    "amount": 50.0,
+                    "transaction_type": "REWARD",
+                    "status": "COMPLETED",
+                    "transaction_fee": 0.0,
+                    "created_at": "2025-09-14T19:00:00Z"
+                }
+            ]
+        except Exception as e:
+            logger.error(f"Error getting wallet transactions for user {user_id}: {e}")
+            return []
+    
+    def transfer_tokens(self, from_user_id: str, to_user_id: str, amount: float, transaction_type: str) -> Dict:
+        """Transfer tokens between wallets"""
+        try:
+            # Return mock transfer result
+            return {
+                "transaction_id": f"tx_{from_user_id}_{to_user_id}_{int(datetime.now().timestamp())}",
+                "from_user_id": from_user_id,
+                "to_user_id": to_user_id,
+                "amount": amount,
+                "transaction_type": transaction_type,
+                "status": "COMPLETED",
+                "transaction_fee": amount * 0.001,
+                "created_at": datetime.now().isoformat()
+            }
+        except Exception as e:
+            logger.error(f"Error transferring tokens: {e}")
+            return {}
+    
+    # ===== ENHANCED BUZ TOKEN SYSTEM METHODS =====
+    
+    def stake_buz_tokens(self, user_id: str, amount: float, staking_period: int, staking_type: str) -> Dict:
+        """Stake BUZ tokens"""
+        try:
+            # Return mock staking result
+            return {
+                "staking_id": f"stake_{user_id}_{int(datetime.now().timestamp())}",
+                "user_id": user_id,
+                "amount": amount,
+                "staking_type": staking_type,
+                "staking_period": staking_period,
+                "annual_reward_rate": 0.05,
+                "expected_rewards": amount * 0.05 * (staking_period / 365),
+                "start_date": datetime.now().isoformat(),
+                "end_date": (datetime.now() + timedelta(days=staking_period)).isoformat(),
+                "status": "ACTIVE"
+            }
+        except Exception as e:
+            logger.error(f"Error staking BUZ tokens: {e}")
+            return {}
+    
+    def unstake_buz_tokens(self, user_id: str, staking_id: str) -> Dict:
+        """Unstake BUZ tokens"""
+        try:
+            # Return mock unstaking result
+            return {
+                "staking_id": staking_id,
+                "user_id": user_id,
+                "amount": 1000.0,
+                "rewards_claimed": 50.0,
+                "total_returned": 1050.0,
+                "unstaked_at": datetime.now().isoformat(),
+                "status": "COMPLETED"
+            }
+        except Exception as e:
+            logger.error(f"Error unstaking BUZ tokens: {e}")
+            return {}
+    
+    def invest_buz_tokens(self, user_id: str, venture_id: str, amount: float, investment_type: str) -> Dict:
+        """Invest BUZ tokens in venture"""
+        try:
+            # Return mock investment result
+            return {
+                "investment_id": f"inv_{user_id}_{venture_id}_{int(datetime.now().timestamp())}",
+                "user_id": user_id,
+                "venture_id": venture_id,
+                "amount": amount,
+                "investment_type": investment_type,
+                "equity_percentage": (amount / 1000000) * 100,
+                "status": "PENDING",
+                "created_at": datetime.now().isoformat()
+            }
+        except Exception as e:
+            logger.error(f"Error investing BUZ tokens: {e}")
+            return {}
+    
+    def get_buz_economy_stats(self) -> Dict:
+        """Get BUZ token economy statistics"""
+        try:
+            # Return mock economy stats
+            return {
+                "total_supply": 999999999,
+                "circulating_supply": 500000000,
+                "staked_supply": 100000000,
+                "burned_supply": 50000000,
+                "active_wallets": 10000,
+                "total_transactions": 1000000,
+                "transaction_volume_24h": 1000000,
+                "transaction_volume_7d": 7000000,
+                "transaction_volume_30d": 30000000,
+                "average_transaction_size": 1000,
+                "current_price_usd": 0.02,
+                "market_cap": 10000000
+            }
+        except Exception as e:
+            logger.error(f"Error getting BUZ economy stats: {e}")
+            return {}
 
 # Create global instance
 db = DatabaseConnector()
