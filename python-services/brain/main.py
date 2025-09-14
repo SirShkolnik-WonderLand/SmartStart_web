@@ -1126,21 +1126,21 @@ def get_legal_templates():
 
 # Venture Service Endpoints
 @app.route('/venture/create', methods=['POST'])
-def create_venture():
-    """Create a new venture"""
+def create_venture_single():
+    """Create a new venture (single)"""
     data = request.json
     result = brain.venture_service.create_venture(data)
     return jsonify(result)
 
 @app.route('/venture/<venture_id>', methods=['GET'])
-def get_venture(venture_id):
-    """Get venture by ID"""
+def get_venture_single(venture_id):
+    """Get venture by ID (single)"""
     result = brain.venture_service.get_venture(venture_id)
     return jsonify(result)
 
 @app.route('/venture/search', methods=['POST'])
-def search_ventures():
-    """Search ventures"""
+def search_ventures_single():
+    """Search ventures (single)"""
     data = request.json
     result = brain.venture_service.search_ventures(data)
     return jsonify(result)
