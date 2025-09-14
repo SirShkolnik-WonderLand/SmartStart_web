@@ -51,14 +51,18 @@ app.get('/health', (req, res) => {
 app.post('/api/auth/login', (req, res) => {
     const { email, password } = req.body;
     
-    console.log(`🔐 Direct auth attempt for: ${email}`);
-    console.log(`🔐 Password received: "${password}"`);
-    console.log(`🔐 Email matches expected: ${email === 'udi.admin@alicesolutionsgroup.com'}`);
-    console.log(`🔐 Password matches expected: ${password === 'password'}`);
+    // Trim whitespace from email and password
+    const trimmedEmail = email ? email.trim() : '';
+    const trimmedPassword = password ? password.trim() : '';
+    
+    console.log(`🔐 Direct auth attempt for: "${trimmedEmail}"`);
+    console.log(`🔐 Password received: "${trimmedPassword}"`);
+    console.log(`🔐 Email matches expected: ${trimmedEmail === 'udi.admin@alicesolutionsgroup.com'}`);
+    console.log(`🔐 Password matches expected: ${trimmedPassword === 'password'}`);
     console.log(`🔐 Full request body:`, JSON.stringify(req.body, null, 2));
     
-    // Simple authentication for testing
-    if (email === 'udi.admin@alicesolutionsgroup.com' && password === 'password') {
+    // Simple authentication for testing (with trimmed values)
+    if (trimmedEmail === 'udi.admin@alicesolutionsgroup.com' && trimmedPassword === 'password') {
         res.json({
             success: true,
             message: 'Login successful',
