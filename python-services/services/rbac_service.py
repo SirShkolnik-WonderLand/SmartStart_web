@@ -13,10 +13,10 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 try:
-    from .nodejs_connector import NodeJSConnector
+    from nodejs_connector import NodeJSConnector
 except ImportError:
     try:
-        from .nodejs_connector import NodeJSConnector
+        from nodejs_connector import NodeJSConnector
     except ImportError:
         # Fallback for when NodeJSConnector is not available
         class NodeJSConnector:
@@ -24,6 +24,8 @@ except ImportError:
                 pass
             def query(self, sql, params=None):
                 return []
+            def execute(self, sql, params=None):
+                return False
 
 logger = logging.getLogger(__name__)
 
