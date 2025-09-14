@@ -15,10 +15,14 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 try:
     from nodejs_connector import NodeJSConnector
-except ImportError:
+    print("✅ CRUD Service: NodeJSConnector imported successfully")
+except ImportError as e:
+    print(f"❌ CRUD Service: NodeJSConnector import failed: {e}")
     try:
         from nodejs_connector import NodeJSConnector
-    except ImportError:
+        print("✅ CRUD Service: NodeJSConnector imported on second try")
+    except ImportError as e2:
+        print(f"❌ CRUD Service: NodeJSConnector import failed on second try: {e2}")
         # Fallback for when NodeJSConnector is not available
         class NodeJSConnector:
             def __init__(self):
