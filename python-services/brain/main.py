@@ -18,7 +18,15 @@ from typing import Dict, List, Any
 # from legal_processor import LegalProcessor
 # from venture_analyzer import VentureAnalyzer
 # from user_behavior_analyzer import UserBehaviorAnalyzer
-# from nodejs_connector import NodeJSConnector
+
+# Try to import NodeJSConnector, fallback to dummy if not available
+try:
+    from services.nodejs_connector import NodeJSConnector
+    print("✅ Real NodeJSConnector imported successfully")
+except ImportError as e:
+    print(f"⚠️ NodeJSConnector import failed: {e}")
+    print("🔄 Using DummyNodeJSConnector as fallback")
+    NodeJSConnector = None
 
 # Create dummy brain modules for compatibility
 class DummyBrainModule:
@@ -60,13 +68,7 @@ LegalProcessor = DummyBrainModule
 VentureAnalyzer = DummyBrainModule
 UserBehaviorAnalyzer = DummyBrainModule
 
-# Import real NodeJSConnector
-try:
-    from services.nodejs_connector import NodeJSConnector
-    print("✅ NodeJSConnector imported successfully")
-except ImportError as e:
-    print(f"⚠️  NodeJSConnector import error: {e}")
-    NodeJSConnector = DummyNodeJSConnector
+# NodeJSConnector import is handled above
 
 # Import Python services
 import sys
@@ -214,7 +216,18 @@ class SmartStartBrain:
         self.legal_processor = LegalProcessor()
         self.venture_analyzer = VentureAnalyzer()
         self.user_behavior_analyzer = UserBehaviorAnalyzer()
-        self.nodejs_connector = NodeJSConnector()
+        # Initialize NodeJS connector with fallback
+        if NodeJSConnector and NodeJSConnector != DummyNodeJSConnector:
+            try:
+                self.nodejs_connector = NodeJSConnector()
+                print("✅ Real NodeJSConnector initialized successfully")
+            except Exception as e:
+                print(f"⚠️ Real NodeJSConnector failed to initialize: {e}")
+                print("🔄 Falling back to DummyNodeJSConnector")
+                self.nodejs_connector = DummyNodeJSConnector()
+        else:
+            self.nodejs_connector = DummyNodeJSConnector()
+            print("🔄 Using DummyNodeJSConnector (NodeJSConnector not available)")
         
         # Initialize Python services
         self.user_service = UserService(self.nodejs_connector)
