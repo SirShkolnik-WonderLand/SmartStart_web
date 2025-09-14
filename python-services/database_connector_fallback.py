@@ -103,12 +103,33 @@ class DatabaseConnector:
             return []
     
     def get_user_buz_tokens(self, user_id: str) -> Dict:
-        """Get user BUZ tokens via API"""
+        """Get user BUZ tokens - return mock data"""
         try:
-            response = self.session.get(f"{self.api_base}/api/v1/buz/wallet/{user_id}")
-            if response.status_code == 200:
-                return response.json()
-            return {"balance": 0, "staked": 0, "total": 0}
+            # Return mock BUZ data with some staked tokens
+            if user_id == "udi-super-admin-001":
+                return {
+                    "user_id": user_id,
+                    "balance": 2350,
+                    "staked": 1000,  # Added some staked BUZ
+                    "available": 1350,  # Available = balance - staked
+                    "total_earned": 2500,
+                    "total_spent": 150,
+                    "currency": "BUZ",
+                    "level": "Member",
+                    "next_level_buz": 5000
+                }
+            else:
+                return {
+                    "user_id": user_id,
+                    "balance": 100,
+                    "staked": 50,
+                    "available": 50,
+                    "total_earned": 200,
+                    "total_spent": 100,
+                    "currency": "BUZ",
+                    "level": "Member",
+                    "next_level_buz": 5000
+                }
         except Exception as e:
             logger.error(f"Error getting BUZ tokens for user {user_id}: {e}")
             return {"balance": 0, "staked": 0, "total": 0}

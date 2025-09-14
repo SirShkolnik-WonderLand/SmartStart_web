@@ -680,6 +680,96 @@ def get_team_analytics(team_id):
             "error": str(e)
         }), 500
 
+# ===== BUZ STAKING AND WALLET ENDPOINTS =====
+
+@app.route('/api/buz/stake', methods=['POST'])
+def stake_buz_tokens():
+    """Stake BUZ tokens"""
+    try:
+        data = request.get_json()
+        user_id = data.get('userId')
+        amount = data.get('amount', 0)
+        
+        if not user_id or amount <= 0:
+            return jsonify({
+                "success": False,
+                "error": "Invalid user ID or amount"
+            }), 400
+        
+        # Stake tokens via database
+        result = db.stake_buz_tokens(user_id, amount)
+        return jsonify({
+            "success": True,
+            "data": result
+        }), 200
+    except Exception as e:
+        logger.error(f"Error staking BUZ tokens: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+@app.route('/api/buz/unstake', methods=['POST'])
+def unstake_buz_tokens():
+    """Unstake BUZ tokens"""
+    try:
+        data = request.get_json()
+        user_id = data.get('userId')
+        amount = data.get('amount', 0)
+        
+        if not user_id or amount <= 0:
+            return jsonify({
+                "success": False,
+                "error": "Invalid user ID or amount"
+            }), 400
+        
+        # Unstake tokens via database
+        result = db.unstake_buz_tokens(user_id, amount)
+        return jsonify({
+            "success": True,
+            "data": result
+        }), 200
+    except Exception as e:
+        logger.error(f"Error unstaking BUZ tokens: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+@app.route('/api/wallet/balance/<user_id>', methods=['GET'])
+def get_wallet_balance(user_id):
+    """Get comprehensive wallet balance"""
+    try:
+        # Get wallet balance from database
+        balance = db.get_wallet_balance(user_id)
+        return jsonify({
+            "success": True,
+            "data": balance
+        }), 200
+    except Exception as e:
+        logger.error(f"Error getting wallet balance for user {user_id}: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+@app.route('/api/wallet/transactions/<user_id>', methods=['GET'])
+def get_wallet_transactions(user_id):
+    """Get wallet transaction history"""
+    try:
+        # Get wallet transactions from database
+        transactions = db.get_wallet_transactions(user_id)
+        return jsonify({
+            "success": True,
+            "data": transactions
+        }), 200
+    except Exception as e:
+        logger.error(f"Error getting wallet transactions for user {user_id}: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=False)

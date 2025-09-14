@@ -359,8 +359,13 @@ export default function DashboardPage() {
             
             if (buzBalanceResponse.success) {
               const balanceData = buzBalanceResponse.data
-              setBuzBalance(balanceData.balance || 0)
-              setBuzStaked(balanceData.stakedBalance || 0)
+              setBuzBalance({
+                balance: balanceData.balance || 0,
+                staked: balanceData.staked || 0,
+                available: balanceData.available || 0,
+                total_earned: balanceData.total_earned || 0
+              })
+              setBuzStaked(balanceData.staked || 0)
             }
           } catch (err) {
             console.warn('BUZ balance failed:', err)
