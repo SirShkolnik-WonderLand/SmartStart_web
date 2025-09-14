@@ -1,46 +1,42 @@
 """
 NodeJS Database Connector
-Direct PostgreSQL connection for Python services
+HTTP-based database access through Node.js API
 """
 
 import logging
-import os
+import requests
 from typing import List, Dict, Any, Optional
-import psycopg2
-from psycopg2.extras import RealDictCursor
 
 logger = logging.getLogger(__name__)
 
 class NodeJSConnector:
     def __init__(self):
-        self.connection_params = {
-            'host': 'dpg-d2uaqd6r433s73e56vfg-a.oregon-postgres.render.com',
-            'port': 5432,
-            'database': 'smartstart_db_4ahd',
-            'user': 'smartstart_db_4ahd_user',
-            'password': 'LYcgYXd9w9pBB4HPuNretjMOOlKxWP48'
-        }
-        logger.info("🔗 NodeJS Connector initialized with direct PostgreSQL connection")
+        self.nodejs_url = "https://smartstart-api.onrender.com"
+        self.timeout = 30
+        logger.info("🔗 NodeJS Connector initialized with HTTP requests")
     
     def query(self, sql: str, params: Optional[List] = None) -> List[Dict[str, Any]]:
-        """Execute SELECT query and return results"""
+        """Execute SELECT query via HTTP"""
         try:
-            with psycopg2.connect(**self.connection_params) as conn:
-                with conn.cursor(cursor_factory=RealDictCursor) as cursor:
-                    cursor.execute(sql, params or [])
-                    return cursor.fetchall()
+            response = requests.post(f"{self.nodejs_url}/api/db/query", 
+                                  json={"sql": sql, "params": params or []}, 
+                                  timeout=self.timeout)
+            if response.status_code == 200:
+                return response.json().get('data', [])
+            else:
+                logger.error(f"Database query failed: {response.status_code}")
+                return []
         except Exception as e:
             logger.error(f"Database query error: {e}")
             return []
     
     def execute(self, sql: str, params: Optional[List] = None) -> bool:
-        """Execute INSERT/UPDATE/DELETE query"""
+        """Execute INSERT/UPDATE/DELETE query via HTTP"""
         try:
-            with psycopg2.connect(**self.connection_params) as conn:
-                with conn.cursor() as cursor:
-                    cursor.execute(sql, params or [])
-                    conn.commit()
-                    return True
+            response = requests.post(f"{self.nodejs_url}/api/db/execute", 
+                                  json={"sql": sql, "params": params or []}, 
+                                  timeout=self.timeout)
+            return response.status_code == 200
         except Exception as e:
             logger.error(f"Database execute error: {e}")
             return False
