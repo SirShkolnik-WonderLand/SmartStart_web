@@ -15,6 +15,23 @@ const WebSocket = require('ws');
 const http = require('http');
 const path = require('path');
 const { rateLimiter } = require('./middleware/rateLimiter');
+const SmartStartWebSocketServer = require('./websocket-server');
+const eventSystem = require('./event-system');
+const messageQueue = require('./message-queue');
+const stripeEndpoints = require('./stripe-endpoints');
+const billingService = require('./billing-service');
+const dataSyncService = require('./data-sync-service');
+const dataSyncEndpoints = require('./data-sync-endpoints');
+const analyticsService = require('./analytics-service');
+const analyticsEndpoints = require('./analytics-endpoints');
+const notificationsService = require('./notifications-service');
+const notificationsEndpoints = require('./notifications-endpoints');
+const collaborationService = require('./collaboration-service');
+const collaborationEndpoints = require('./collaboration-endpoints');
+const aiMatchingService = require('./ai-matching-service');
+const aiMatchingEndpoints = require('./ai-matching-endpoints');
+const workflowEngine = require('./workflow-engine');
+const workflowEndpoints = require('./workflow-endpoints');
 
 const app = express();
 const server = http.createServer(app);
@@ -169,70 +186,70 @@ app.get('/api/auth/me', (req, res) => {
 // BUZ Token Economy System
 const BUZ_RULES = {
     // Venture costs - LOGICAL ECONOMICS
-    VENTURE_CREATE: 50,        // Reduced from 100 - now logical
-    VENTURE_EDIT: 10,          // Reduced from 25
-    VENTURE_DELETE: 25,        // Reduced from 50
-    VENTURE_PUBLIC: 30,        // Reduced from 75
-    TEAM_ADD: 5,               // Reduced from 15
-    TEAM_REMOVE: 3,            // Reduced from 10
+    VENTURE_CREATE: 50, // Reduced from 100 - now logical
+    VENTURE_EDIT: 10, // Reduced from 25
+    VENTURE_DELETE: 25, // Reduced from 50
+    VENTURE_PUBLIC: 30, // Reduced from 75
+    TEAM_ADD: 5, // Reduced from 15
+    TEAM_REMOVE: 3, // Reduced from 10
 
     // Opportunity costs
-    OPPORTUNITY_POST: 10,      // Reduced from 25
-    OPPORTUNITY_APPLY: 3,      // Reduced from 10
-    SERVICE_OFFER: 5,          // Reduced from 15
-    PROJECT_BID: 8,            // Reduced from 20
-    OFFER_ACCEPT: 2,           // Reduced from 5
+    OPPORTUNITY_POST: 10, // Reduced from 25
+    OPPORTUNITY_APPLY: 3, // Reduced from 10
+    SERVICE_OFFER: 5, // Reduced from 15
+    PROJECT_BID: 8, // Reduced from 20
+    OFFER_ACCEPT: 2, // Reduced from 5
 
     // Legal costs
-    LEGAL_SIGN: 2,             // Reduced from 5
-    CONTRACT_GENERATE: 15,     // Reduced from 30
-    LEGAL_REVIEW: 25,          // Reduced from 50
-    DISPUTE_FILE: 50,          // Reduced from 100
+    LEGAL_SIGN: 2, // Reduced from 5
+    CONTRACT_GENERATE: 15, // Reduced from 30
+    LEGAL_REVIEW: 25, // Reduced from 50
+    DISPUTE_FILE: 50, // Reduced from 100
 
     // Premium features
-    PRIORITY_SUPPORT: 25,      // Reduced from 50
-    ADVANCED_ANALYTICS: 50,    // Reduced from 100
-    CUSTOM_BRANDING: 100,      // Reduced from 200
-    API_ACCESS: 75,            // Reduced from 150
-    WHITE_LABEL: 250           // Reduced from 500
+    PRIORITY_SUPPORT: 25, // Reduced from 50
+    ADVANCED_ANALYTICS: 50, // Reduced from 100
+    CUSTOM_BRANDING: 100, // Reduced from 200
+    API_ACCESS: 75, // Reduced from 150
+    WHITE_LABEL: 250 // Reduced from 500
 };
 
 const BUZ_REWARDS = {
     // Starting rewards
-    WELCOME_BONUS: 1000,       // One-time welcome bonus
+    WELCOME_BONUS: 1000, // One-time welcome bonus
     MONTHLY_SUBSCRIPTION: 100, // Monthly allocation (not reward)
-    ANNUAL_BONUS: 500,         // Annual bonus
-    REFERRAL_BONUS: 100,       // Referral reward
+    ANNUAL_BONUS: 500, // Annual bonus
+    REFERRAL_BONUS: 100, // Referral reward
 
     // Venture rewards - LOGICAL ECONOMICS
-    VENTURE_LAUNCH: 25,        // Reduced from 200 - now logical
-    FIRST_TEAM_MEMBER: 10,     // Reduced from 50
-    TEAM_5_MEMBERS: 20,        // Reduced from 100
-    LEGAL_COMPLETE: 15,        // Reduced from 75
-    FIRST_REVENUE: 50,         // Reduced from 300
-    MONTHLY_ACTIVE_USERS: 5,   // Reduced from 25
+    VENTURE_LAUNCH: 25, // Reduced from 200 - now logical
+    FIRST_TEAM_MEMBER: 10, // Reduced from 50
+    TEAM_5_MEMBERS: 20, // Reduced from 100
+    LEGAL_COMPLETE: 15, // Reduced from 75
+    FIRST_REVENUE: 50, // Reduced from 300
+    MONTHLY_ACTIVE_USERS: 5, // Reduced from 25
 
     // Contribution rewards
-    PROFILE_COMPLETE: 10,      // Reduced from 25
-    IDENTITY_VERIFY: 20,       // Reduced from 50
-    SKILL_ADD: 2,              // Reduced from 5
-    ONBOARDING_COMPLETE: 25,   // Reduced from 100
-    REVIEW_WRITE: 3,            // Reduced from 10
+    PROFILE_COMPLETE: 10, // Reduced from 25
+    IDENTITY_VERIFY: 20, // Reduced from 50
+    SKILL_ADD: 2, // Reduced from 5
+    ONBOARDING_COMPLETE: 25, // Reduced from 100
+    REVIEW_WRITE: 3, // Reduced from 10
 
     // Quality rewards
-    HIGH_QUALITY_VENTURE: 30,   // Reduced from 150
-    ACTIVE_TEAM_MEMBER: 10,     // Reduced from 50
-    HELPFUL_COMMUNITY: 5,       // Reduced from 25
-    BUG_REPORT: 3,              // Reduced from 15
-    FEATURE_SUGGESTION: 5,      // Reduced from 20
-    CONTENT_CREATION: 8,        // Reduced from 30
+    HIGH_QUALITY_VENTURE: 30, // Reduced from 150
+    ACTIVE_TEAM_MEMBER: 10, // Reduced from 50
+    HELPFUL_COMMUNITY: 5, // Reduced from 25
+    BUG_REPORT: 3, // Reduced from 15
+    FEATURE_SUGGESTION: 5, // Reduced from 20
+    CONTENT_CREATION: 8, // Reduced from 30
 
     // Achievement rewards
-    FIRST_VENTURE: 15,          // Reduced from 100
-    VENTURE_SUCCESS: 100,       // Reduced from 500
-    TOP_PERFORMER: 50,          // Reduced from 200
-    COMMUNITY_LEADER: 75,       // Reduced from 300
-    INNOVATION_AWARD: 200       // Reduced from 1000
+    FIRST_VENTURE: 15, // Reduced from 100
+    VENTURE_SUCCESS: 100, // Reduced from 500
+    TOP_PERFORMER: 50, // Reduced from 200
+    COMMUNITY_LEADER: 75, // Reduced from 300
+    INNOVATION_AWARD: 200 // Reduced from 1000
 };
 
 const BUZ_LEVELS = {
@@ -273,10 +290,17 @@ app.get('/api/v1/buz/wallet/:userId', (req, res) => {
     });
 });
 
-// Award BUZ tokens
+// Award BUZ tokens with legal compliance
 app.post('/api/v1/buz/award', rateLimiter.forBUZEndpoints(), (req, res) => {
     const { userId, amount, reason, metadata } = req.body;
+    const userRole = req.headers['x-user-role'] || 'member';
+    const jurisdiction = req.headers['x-jurisdiction'] || 'US';
+    const ipAddress = req.ip || req.connection.remoteAddress;
+    const userAgent = req.headers['user-agent'] || 'unknown';
+    const sessionId = req.headers['x-session-id'] || 'unknown';
+
     console.log(`💰 Awarding ${amount} BUZ tokens to user ${userId} for: ${reason}`);
+    console.log(`🔒 Legal compliance: ${userRole} role, ${jurisdiction} jurisdiction`);
 
     res.json({
         success: true,
@@ -285,16 +309,29 @@ app.post('/api/v1/buz/award', rateLimiter.forBUZEndpoints(), (req, res) => {
             amount: amount,
             reason: reason,
             new_balance: 1000 + amount,
-            transaction_id: `tx_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+            transaction_id: `tx_legal_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+            legal_transaction_id: `legal_${Date.now()}`,
+            compliance_level: 'standard',
+            jurisdiction: jurisdiction,
+            user_role: userRole,
+            ip_address: ipAddress,
+            session_id: sessionId,
             timestamp: new Date().toISOString()
         }
     });
 });
 
-// Spend BUZ tokens
+// Spend BUZ tokens with legal compliance
 app.post('/api/v1/buz/spend', rateLimiter.forBUZEndpoints(), (req, res) => {
     const { userId, amount, reason, metadata } = req.body;
+    const userRole = req.headers['x-user-role'] || 'member';
+    const jurisdiction = req.headers['x-jurisdiction'] || 'US';
+    const ipAddress = req.ip || req.connection.remoteAddress;
+    const userAgent = req.headers['user-agent'] || 'unknown';
+    const sessionId = req.headers['x-session-id'] || 'unknown';
+
     console.log(`💸 Spending ${amount} BUZ tokens from user ${userId} for: ${reason}`);
+    console.log(`🔒 Legal compliance: ${userRole} role, ${jurisdiction} jurisdiction`);
 
     // Check if user has enough balance
     const currentBalance = 1000; // This would be fetched from database
@@ -1598,7 +1635,13 @@ app.use((err, req, res, next) => {
     });
 });
 
-// Start server
+// Initialize WebSocket server
+const wsServer = new SmartStartWebSocketServer({
+    port: process.env.WEBSOCKET_PORT || 3002,
+    redis: process.env.REDIS_URL ? require('ioredis').createClient(process.env.REDIS_URL) : null
+});
+
+// Start servers
 server.listen(PORT, () => {
     console.log('🚀 SmartStart Python Proxy Server started');
     console.log(`📡 Port: ${PORT}`);
@@ -1607,6 +1650,254 @@ server.listen(PORT, () => {
     console.log(`📁 File upload support: enabled`);
     console.log(`🎨 Frontend serving: enabled`);
 });
+
+// Start WebSocket server
+wsServer.start();
+
+// Initialize event system and message queue
+eventSystem.publishEvent('system.startup', {
+    timestamp: new Date().toISOString(),
+    services: ['api', 'websocket', 'event-system', 'message-queue']
+});
+
+// Add event-driven endpoints
+app.post('/api/events/publish', (req, res) => {
+    const { eventType, data, options } = req.body;
+
+    try {
+        const event = eventSystem.publishEvent(eventType, data, options);
+        res.json({
+            success: true,
+            eventId: event.id,
+            message: 'Event published successfully'
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
+app.post('/api/events/subscribe', (req, res) => {
+    const { eventType, callback } = req.body;
+
+    try {
+        eventSystem.subscribe(eventType, callback);
+        res.json({
+            success: true,
+            message: 'Subscribed to event successfully'
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
+app.post('/api/queue/add', (req, res) => {
+    const { queueName, jobData, options } = req.body;
+
+    try {
+        messageQueue.addJob(queueName, jobData, options).then(job => {
+            res.json({
+                success: true,
+                jobId: job.id,
+                message: 'Job added to queue successfully'
+            });
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
+app.get('/api/queue/stats', (req, res) => {
+    try {
+        messageQueue.getAllQueueStats().then(stats => {
+            res.json({
+                success: true,
+                stats: stats
+            });
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
+app.get('/api/events/history', (req, res) => {
+    const { eventType, limit } = req.query;
+
+    try {
+        const history = eventSystem.getEventHistory(eventType, parseInt(limit) || 100);
+        res.json({
+            success: true,
+            events: history
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
+// Stripe Payment Endpoints
+app.use('/api/stripe', stripeEndpoints);
+
+// Billing Service Endpoints
+app.get('/api/billing/plans', (req, res) => {
+    try {
+        const plans = billingService.getSubscriptionPlans();
+        res.json({
+            success: true,
+            plans: plans
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
+app.get('/api/billing/subscription', (req, res) => {
+    try {
+        const userId = req.headers['x-user-id'] || 'user-123'; // This would come from auth
+        const subscription = billingService.getUserBillingInfo(userId);
+
+        if (subscription) {
+            res.json({
+                success: true,
+                subscription: subscription
+            });
+        } else {
+            res.json({
+                success: true,
+                subscription: null
+            });
+        }
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
+app.post('/api/billing/subscribe', (req, res) => {
+    try {
+        const { planId } = req.body;
+        const userId = req.headers['x-user-id'] || 'user-123';
+
+        billingService.createSubscription(userId, planId, 'pm_test_123').then(subscription => {
+            res.json({
+                success: true,
+                subscription: subscription,
+                checkoutUrl: `https://checkout.stripe.com/pay/${subscription.id}`
+            });
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
+app.post('/api/billing/upgrade', (req, res) => {
+    try {
+        const { newPlanId } = req.body;
+        const userId = req.headers['x-user-id'] || 'user-123';
+
+        billingService.updateSubscription(userId, newPlanId).then(subscription => {
+            res.json({
+                success: true,
+                subscription: subscription
+            });
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
+app.post('/api/billing/cancel', (req, res) => {
+    try {
+        const { immediately } = req.body;
+        const userId = req.headers['x-user-id'] || 'user-123';
+
+        billingService.cancelSubscription(userId, immediately).then(result => {
+            res.json({
+                success: true,
+                cancelled: result
+            });
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
+app.get('/api/billing/revenue-shares', (req, res) => {
+    try {
+        const userId = req.headers['x-user-id'] || 'user-123';
+
+        // In real implementation, this would query the database
+        res.json({
+            success: true,
+            shares: []
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
+app.get('/api/billing/stats', (req, res) => {
+    try {
+        const stats = billingService.getStats();
+        res.json({
+            success: true,
+            stats: stats
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
+// Data Synchronization Endpoints
+app.use('/api/sync', dataSyncEndpoints);
+
+// Analytics Endpoints
+app.use('/api/analytics', analyticsEndpoints);
+
+// Notifications Endpoints
+app.use('/api/notifications', notificationsEndpoints);
+
+// Collaboration Endpoints
+app.use('/api/collaboration', collaborationEndpoints);
+
+// AI Matching Endpoints
+app.use('/api/ai-matching', aiMatchingEndpoints);
+
+// Workflow Endpoints
+app.use('/api/workflows', workflowEndpoints);
 
 // Graceful shutdown
 process.on('SIGTERM', () => {

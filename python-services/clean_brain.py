@@ -14,7 +14,9 @@ from database_connector import db
 
 # Initialize Flask app
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins=["https://smartstart-frontend.onrender.com", "https://smartstart-api.onrender.com"], 
+     allow_headers=["Content-Type", "Authorization"], 
+     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

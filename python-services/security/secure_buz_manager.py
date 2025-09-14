@@ -13,6 +13,7 @@ from cryptography.fernet import Fernet
 import redis
 import threading
 from decimal import Decimal, getcontext
+from legal_buz_integration import LegalBUZManager, UserRole, BUZOperationType, LegalComplianceLevel
 
 # Set precision for decimal calculations
 getcontext().prec = 28
@@ -28,6 +29,9 @@ class SecureBUZTokenManager:
         self.hmac_secret = self._get_hmac_secret()
         self.redis_client = redis.Redis(host='localhost', port=6379, db=2)
         self.transaction_lock = threading.Lock()
+        
+        # Initialize legal integration
+        self.legal_manager = LegalBUZManager()
         
     def _get_encryption_key(self) -> bytes:
         """Get or generate encryption key for token security"""
@@ -112,15 +116,39 @@ class SecureBUZTokenManager:
         except Exception as e:
             return False, {'error': f'Transaction verification failed: {str(e)}'}
     
-    def process_transaction(self, transaction_id: str, encrypted_transaction: str) -> Tuple[bool, Optional[Dict]]:
+    def process_transaction(self, transaction_id: str, encrypted_transaction: str, 
+                          user_role: UserRole = UserRole.MEMBER,
+                          jurisdiction: str = 'US',
+                          ip_address: str = 'unknown',
+                          user_agent: str = 'unknown',
+                          session_id: str = 'unknown') -> Tuple[bool, Optional[Dict]]:
         """
-        Process BUZ transaction with double-spending prevention
+        Process BUZ transaction with legal compliance, RBAC, and double-spending prevention
         """
         with self.transaction_lock:
             # Verify transaction
             is_valid, transaction_data = self.verify_transaction(encrypted_transaction)
             if not is_valid:
                 return False, transaction_data
+            
+            # Check RBAC permissions
+            operation_type = transaction_data.get('type', 'transfer')
+            has_permission, permission_message = self.legal_manager.check_rbac_permission(
+                transaction_data.get('from_user', 'unknown'),
+                f"buz.{operation_type}",
+                user_role
+            )
+            
+            if not has_permission:
+                return False, {'error': f'Permission denied: {permission_message}'}
+            
+            # Check legal compliance
+            is_compliant, compliance_issues = self.legal_manager.validate_legal_compliance(
+                transaction_data, jurisdiction
+            )
+            
+            if not is_compliant:
+                return False, {'error': f'Legal compliance failed: {", ".join(compliance_issues)}'}
             
             # Check for double spending
             if self._is_double_spend(transaction_id):
@@ -148,12 +176,28 @@ class SecureBUZTokenManager:
                 # Mark transaction as processed
                 self._mark_transaction_processed(transaction_id)
                 
-                # Log transaction
+                # Create legal transaction record
+                legal_transaction = self.legal_manager.create_legal_transaction_record(
+                    transaction_data=transaction_data,
+                    user_role=user_role,
+                    jurisdiction=jurisdiction,
+                    ip_address=ip_address,
+                    user_agent=user_agent,
+                    session_id=session_id
+                )
+                
+                # Log legal transaction
+                self.legal_manager.log_legal_transaction(legal_transaction)
+                
+                # Log regular transaction
                 self._log_transaction(transaction_data)
                 
                 return True, {
                     'transaction_id': transaction_id,
+                    'legal_transaction_id': legal_transaction.transaction_id,
                     'status': 'completed',
+                    'compliance_level': legal_transaction.compliance_level.value,
+                    'jurisdiction': jurisdiction,
                     'timestamp': datetime.utcnow().isoformat()
                 }
                 
@@ -170,9 +214,14 @@ class SecureBUZTokenManager:
         except Exception:
             return 0
     
-    def award_tokens(self, user_id: str, amount: int, reason: str) -> Tuple[bool, Optional[Dict]]:
+    def award_tokens(self, user_id: str, amount: int, reason: str, 
+                    user_role: UserRole = UserRole.MEMBER,
+                    jurisdiction: str = 'US',
+                    ip_address: str = 'unknown',
+                    user_agent: str = 'unknown',
+                    session_id: str = 'unknown') -> Tuple[bool, Optional[Dict]]:
         """
-        Award BUZ tokens to user with security validation
+        Award BUZ tokens to user with legal compliance and RBAC validation
         """
         if amount <= 0:
             return False, {'error': 'Invalid amount'}
@@ -189,17 +238,27 @@ class SecureBUZTokenManager:
             transaction_type='award'
         )
         
-        # Process transaction
+        # Process transaction with legal compliance
         success, result = self.process_transaction(
             transaction['transaction_id'],
-            transaction['encrypted_transaction']
+            transaction['encrypted_transaction'],
+            user_role=user_role,
+            jurisdiction=jurisdiction,
+            ip_address=ip_address,
+            user_agent=user_agent,
+            session_id=session_id
         )
         
         return success, result
     
-    def spend_tokens(self, user_id: str, amount: int, reason: str) -> Tuple[bool, Optional[Dict]]:
+    def spend_tokens(self, user_id: str, amount: int, reason: str,
+                    user_role: UserRole = UserRole.MEMBER,
+                    jurisdiction: str = 'US',
+                    ip_address: str = 'unknown',
+                    user_agent: str = 'unknown',
+                    session_id: str = 'unknown') -> Tuple[bool, Optional[Dict]]:
         """
-        Spend BUZ tokens from user with security validation
+        Spend BUZ tokens from user with legal compliance and RBAC validation
         """
         if amount <= 0:
             return False, {'error': 'Invalid amount'}
@@ -218,10 +277,15 @@ class SecureBUZTokenManager:
             transaction_type='spend'
         )
         
-        # Process transaction
+        # Process transaction with legal compliance
         success, result = self.process_transaction(
             transaction['transaction_id'],
-            transaction['encrypted_transaction']
+            transaction['encrypted_transaction'],
+            user_role=user_role,
+            jurisdiction=jurisdiction,
+            ip_address=ip_address,
+            user_agent=user_agent,
+            session_id=session_id
         )
         
         return success, result

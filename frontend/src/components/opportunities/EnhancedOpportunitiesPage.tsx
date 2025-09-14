@@ -485,7 +485,7 @@ export default function EnhancedOpportunitiesPage() {
                   
                   <div className="flex items-center text-sm text-gray-600">
                     <Users className="w-4 h-4 mr-2" />
-                    {opportunity._count.applications} applications
+                    {opportunity._count?.applications || 0} applications
                   </div>
                 </div>
                 
