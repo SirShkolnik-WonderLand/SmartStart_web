@@ -1,0 +1,820 @@
+// Unified SmartStart Database Schema
+// Integrates: BUZ Tokens, Umbrella Network, Venture Management, Legal System, Opportunities, Analytics
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ===== CORE USER SYSTEM =====
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  username  String?  @unique
+  password  String?
+  name      String?
+  firstName String?
+  lastName  String?
+  role      String?  @default("TEAM_MEMBER")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Privacy and tenancy
+  profile Privacy? @default(PUBLIC)
+  tenantId String? @default("default")
+
+  // Gamification
+  level      UserLevel  @default(OWLET)
+  xp         Int        @default(0)
+  reputation Int        @default(0)
+  status     UserStatus @default(ACTIVE)
+  lastActive DateTime   @default(now())
+
+  // Portfolio metrics
+  totalPortfolioValue Float @default(0)
+  activeProjectsCount Int   @default(0)
+  totalContributions  Int   @default(0)
+  totalEquityOwned    Float @default(0)
+  averageEquityPerProject Float @default(0)
+  portfolioDiversity  Int   @default(0)
+  lastEquityEarned    DateTime?
+
+  // BUZ Token Integration
+  buzBalance    Float @default(0)
+  buzStaked     Float @default(0)
+  buzEarned     Float @default(0)
+  buzSpent      Float @default(0)
+  buzRewards    Float @default(0)
+
+  // Umbrella Network Integration
+  umbrellaReferrals     UmbrellaRelationship[] @relation("UmbrellaReferrer")
+  umbrellaReferred      UmbrellaRelationship[] @relation("UmbrellaReferred")
+  revenueSharesReceived RevenueShare[] @relation("RevenueShareReferrer")
+  revenueSharesGenerated RevenueShare[] @relation("RevenueShareReferred")
+
+  // Venture Management Integration
+  venturesOwned    Venture[] @relation("VentureOwner")
+  ventureMemberships VentureMember[]
+  ventureContributions VentureContribution[]
+
+  // Legal System Integration
+  legalDocuments   LegalDocument[]
+  documentSignatures DocumentSignature[]
+  umbrellaDocumentSignatures UmbrellaDocumentSignature[]
+
+  // Opportunities Integration
+  opportunityApplications Application[]
+  opportunityMatches OpportunityMatch[]
+  opportunityCollaborations Collaboration[]
+
+  // Analytics Integration
+  userAnalytics    UserAnalytics[]
+  platformAnalytics PlatformAnalytics[]
+
+  // Relations
+  projectsOwned    Project[]         @relation("ProjectOwner")
+  contributions    Contribution[]
+  messages         Message[]         @relation("UserMessages")
+  connections      UserConnection[]  @relation("ConnectionRequester")
+  connectionsTarget UserConnection[] @relation("ConnectionTarget")
+  profile          UserProfile?
+  subscriptions    Subscription[]
+  invoices         Invoice[]
+  payments         Payment[]
+  platformLegalPacks PlatformLegalPack[]
+  platformNDAs       PlatformNDA[]
+  eSignatureConsents ESignatureConsent[]
+  journeyStates      UserJourneyState[]
+  onboardingAuditLogs OnboardingAuditLog[]
+  kycVerifications   KycVerification[]
+  mfaSetup          MfaSetup?
+
+  @@index([email])
+  @@index([username])
+  @@index([role])
+  @@index([status])
+  @@index([buzBalance])
+  @@index([lastActive])
+}
+
+// ===== BUZ TOKEN SYSTEM =====
+
+model BUZTransaction {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  
+  // Transaction details
+  type        BUZTransactionType
+  amount      Float
+  balance     Float // Balance after transaction
+  description String?
+  
+  // Integration context
+  sourceSystem String? // 'venture', 'umbrella', 'legal', 'opportunity'
+  sourceId     String? // ID of the source entity
+  sourceType   String? // Type of the source entity
+  
+  // Metadata
+  metadata    Json?
+  createdAt   DateTime @default(now())
+  
+  @@index([userId])
+  @@index([type])
+  @@index([sourceSystem])
+  @@index([createdAt])
+}
+
+model BUZStaking {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  
+  // Staking details
+  amount      Float
+  tier        StakingTier
+  apy         Float
+  duration    Int // Days
+  startDate   DateTime @default(now())
+  endDate     DateTime
+  isActive    Boolean  @default(true)
+  
+  // Rewards
+  totalRewards Float @default(0)
+  lastReward   DateTime?
+  
+  // Integration
+  sourceSystem String? // 'venture', 'umbrella', 'legal', 'opportunity'
+  sourceId     String?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([userId])
+  @@index([tier])
+  @@index([isActive])
+  @@index([endDate])
+}
+
+model BUZReward {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  
+  // Reward details
+  type        RewardType
+  amount      Float
+  reason      String
+  sourceSystem String? // 'venture', 'umbrella', 'legal', 'opportunity'
+  sourceId     String?
+  
+  // Status
+  status      RewardStatus @default(PENDING)
+  claimedAt   DateTime?
+  expiresAt   DateTime?
+  
+  createdAt   DateTime @default(now())
+  
+  @@index([userId])
+  @@index([type])
+  @@index([status])
+  @@index([expiresAt])
+}
+
+// ===== UMBRELLA NETWORK SYSTEM =====
+
+model UmbrellaRelationship {
+  id                String   @id @default(cuid())
+  referrerId        String
+  referredId        String
+  relationshipType  UmbrellaType @default(PRIVATE_UMBRELLA)
+  status            UmbrellaStatus @default(PENDING_AGREEMENT)
+  defaultShareRate  Float    @default(1.0)
+  isActive          Boolean  @default(true)
+  agreementSigned   Boolean  @default(false)
+  agreementVersion  String   @default("v1.0")
+  signedAt          DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  // Integration with other systems
+  ventureId         String? // Associated venture
+  opportunityId     String? // Associated opportunity
+  legalDocumentId   String? // Associated legal document
+  
+  // Relations
+  referrer          User     @relation("UmbrellaReferrer", fields: [referrerId], references: [id])
+  referred          User     @relation("UmbrellaReferred", fields: [referredId], references: [id])
+  revenueShares     RevenueShare[]
+  umbrellaDocuments UmbrellaDocument[]
+  umbrellaAnalytics UmbrellaAnalytics[]
+  
+  @@unique([referrerId, referredId])
+  @@index([referrerId])
+  @@index([referredId])
+  @@index([status])
+  @@index([ventureId])
+  @@index([opportunityId])
+}
+
+model RevenueShare {
+  id                String   @id @default(cuid())
+  umbrellaId        String
+  projectId         String?
+  ventureId         String?
+  opportunityId     String?
+  referrerId        String
+  referredId        String
+  
+  // Revenue details
+  projectRevenue    Float
+  sharePercentage   Float
+  shareAmount       Float
+  currency          String   @default("USD")
+  
+  // Payment tracking
+  status            PaymentStatus @default(PENDING)
+  paidAt            DateTime?
+  paymentMethod     String?
+  transactionId     String?
+  
+  // BUZ Token Integration
+  buzAmount         Float? // BUZ tokens earned
+  buzTransactionId  String? // Reference to BUZ transaction
+  
+  // Audit trail
+  calculatedAt      DateTime @default(now())
+  
+  // Relations
+  umbrella          UmbrellaRelationship @relation(fields: [umbrellaId], references: [id])
+  project           Project? @relation(fields: [projectId], references: [id])
+  venture           Venture? @relation(fields: [ventureId], references: [id])
+  opportunity       Opportunity? @relation(fields: [opportunityId], references: [id])
+  referrer          User @relation("RevenueShareReferrer", fields: [referrerId], references: [id])
+  referred          User @relation("RevenueShareReferred", fields: [referredId], references: [id])
+  
+  @@index([umbrellaId])
+  @@index([projectId])
+  @@index([ventureId])
+  @@index([opportunityId])
+  @@index([referrerId])
+  @@index([status])
+}
+
+// ===== VENTURE MANAGEMENT SYSTEM =====
+
+model Venture {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  ownerId     String
+  status      VentureStatus @default(PLANNING)
+  
+  // 30-day timeline
+  startDate   DateTime?
+  endDate     DateTime?
+  currentPhase VenturePhase @default(FOUNDATION)
+  
+  // BUZ Token Integration
+  buzBudget   Float @default(0)
+  buzSpent    Float @default(0)
+  buzEarned   Float @default(0)
+  
+  // Umbrella Integration
+  umbrellaRelationships UmbrellaRelationship[]
+  revenueShares RevenueShare[]
+  
+  // Legal Integration
+  legalDocuments LegalDocument[]
+  
+  // Opportunities Integration
+  opportunities Opportunity[]
+  collaborations Collaboration[]
+  
+  // Analytics
+  ventureAnalytics VentureAnalytics[]
+  
+  // Relations
+  owner       User @relation("VentureOwner", fields: [ownerId], references: [id])
+  members     VentureMember[]
+  contributions VentureContribution[]
+  timeline    VentureTimeline[]
+  sprints     VentureSprint[]
+  risks       VentureRisk[]
+  meetings    Meeting[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([ownerId])
+  @@index([status])
+  @@index([currentPhase])
+  @@index([startDate])
+  @@index([endDate])
+}
+
+model VentureTimeline {
+  id          String   @id @default(cuid())
+  ventureId   String
+  phase       VenturePhase
+  startDate   DateTime
+  endDate     DateTime
+  status      TimelineStatus @default(PLANNED)
+  progress    Float    @default(0)
+  
+  // BUZ Token Integration
+  buzBudget   Float @default(0)
+  buzSpent    Float @default(0)
+  
+  // Relations
+  venture     Venture @relation(fields: [ventureId], references: [id])
+  milestones  VentureMilestone[]
+  
+  @@index([ventureId])
+  @@index([phase])
+  @@index([status])
+}
+
+model VentureSprint {
+  id          String   @id @default(cuid())
+  ventureId   String
+  name        String
+  startDate   DateTime
+  endDate     DateTime
+  status      SprintStatus @default(PLANNED)
+  progress    Float    @default(0)
+  
+  // BUZ Token Integration
+  buzBudget   Float @default(0)
+  buzSpent    Float @default(0)
+  
+  // Relations
+  venture     Venture @relation(fields: [ventureId], references: [id])
+  tasks       VentureTask[]
+  
+  @@index([ventureId])
+  @@index([status])
+  @@index([startDate])
+}
+
+model VentureRisk {
+  id          String   @id @default(cuid())
+  ventureId   String
+  title       String
+  description String
+  category    RiskCategory
+  impact      Int      // 1-5 scale
+  probability Int      // 1-5 scale
+  riskScore   Float    // Calculated impact * probability
+  status      RiskStatus @default(IDENTIFIED)
+  
+  // Mitigation
+  mitigationPlan String?
+  mitigationActions String[]
+  responsibleUserId String?
+  
+  // BUZ Token Integration
+  buzCost     Float @default(0) // Cost to mitigate
+  
+  // Relations
+  venture     Venture @relation(fields: [ventureId], references: [id])
+  responsible User? @relation(fields: [responsibleUserId], references: [id])
+  
+  @@index([ventureId])
+  @@index([category])
+  @@index([riskScore])
+  @@index([status])
+}
+
+// ===== LEGAL SYSTEM =====
+
+model LegalDocument {
+  id          String   @id @default(cuid())
+  title       String
+  content     String
+  type        DocumentType
+  status      DocumentStatus @default(DRAFT)
+  version     String   @default("v1.0")
+  
+  // Integration
+  userId      String?
+  ventureId   String?
+  umbrellaId  String?
+  opportunityId String?
+  
+  // BUZ Token Integration
+  buzCost     Float @default(0)
+  buzPaid     Float @default(0)
+  
+  // Relations
+  user        User? @relation(fields: [userId], references: [id])
+  venture     Venture? @relation(fields: [ventureId], references: [id])
+  umbrella    UmbrellaRelationship? @relation(fields: [umbrellaId], references: [id])
+  opportunity Opportunity? @relation(fields: [opportunityId], references: [id])
+  signatures  DocumentSignature[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([userId])
+  @@index([ventureId])
+  @@index([umbrellaId])
+  @@index([opportunityId])
+  @@index([type])
+  @@index([status])
+}
+
+model DocumentSignature {
+  id          String   @id @default(cuid())
+  documentId  String
+  signerId    String
+  signatureHash String
+  signedAt    DateTime @default(now())
+  ipAddress   String?
+  userAgent   String?
+  
+  // BUZ Token Integration
+  buzReward   Float @default(0) // Reward for signing
+  
+  // Relations
+  document    LegalDocument @relation(fields: [documentId], references: [id])
+  signer      User @relation(fields: [signerId], references: [id])
+  
+  @@index([documentId])
+  @@index([signerId])
+  @@index([signedAt])
+}
+
+// ===== OPPORTUNITIES SYSTEM =====
+
+model Opportunity {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  type        OpportunityType
+  status      OpportunityStatus @default(DRAFT)
+  
+  // Requirements
+  skills      String[]
+  experience  String?
+  location    String?
+  timeCommitment String?
+  
+  // BUZ Token Integration
+  buzReward   Float @default(0)
+  buzCost     Float @default(0)
+  
+  // Integration
+  ventureId   String?
+  umbrellaId  String?
+  legalDocumentId String?
+  
+  // Relations
+  venture     Venture? @relation(fields: [ventureId], references: [id])
+  umbrella    UmbrellaRelationship? @relation(fields: [umbrellaId], references: [id])
+  legalDocument LegalDocument? @relation(fields: [legalDocumentId], references: [id])
+  applications Application[]
+  matches     OpportunityMatch[]
+  collaborations Collaboration[]
+  revenueShares RevenueShare[]
+  analytics   OpportunityAnalytics[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([type])
+  @@index([status])
+  @@index([ventureId])
+  @@index([umbrellaId])
+}
+
+model Application {
+  id            String   @id @default(cuid())
+  opportunityId String
+  userId        String
+  status        ApplicationStatus @default(PENDING)
+  message       String?
+  
+  // BUZ Token Integration
+  buzReward     Float @default(0)
+  
+  // Relations
+  opportunity   Opportunity @relation(fields: [opportunityId], references: [id])
+  user          User @relation(fields: [userId], references: [id])
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@unique([opportunityId, userId])
+  @@index([opportunityId])
+  @@index([userId])
+  @@index([status])
+}
+
+model OpportunityMatch {
+  id            String   @id @default(cuid())
+  opportunityId String
+  userId        String
+  matchScore    Float
+  matchReasons  String[]
+  
+  // Match details
+  skillMatch    Float
+  experienceMatch Float
+  locationMatch Float
+  timeMatch     Float
+  legalMatch    Float
+  
+  // Status
+  status        MatchStatus @default(SUGGESTED)
+  viewedAt      DateTime?
+  appliedAt     DateTime?
+  
+  // BUZ Token Integration
+  buzReward     Float @default(0)
+  
+  // Relations
+  opportunity   Opportunity @relation(fields: [opportunityId], references: [id])
+  user          User @relation(fields: [userId], references: [id])
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@unique([opportunityId, userId])
+  @@index([opportunityId])
+  @@index([userId])
+  @@index([matchScore])
+}
+
+// ===== ANALYTICS SYSTEM =====
+
+model UserAnalytics {
+  id          String   @id @default(cuid())
+  userId      String
+  period      String   // "daily", "weekly", "monthly", "yearly"
+  periodStart DateTime
+  periodEnd   DateTime
+  
+  // BUZ Token Analytics
+  buzEarned   Float @default(0)
+  buzSpent    Float @default(0)
+  buzStaked   Float @default(0)
+  buzRewards  Float @default(0)
+  
+  // Umbrella Analytics
+  umbrellaReferrals Int @default(0)
+  umbrellaRevenue   Float @default(0)
+  umbrellaShares    Float @default(0)
+  
+  // Venture Analytics
+  venturesCreated   Int @default(0)
+  venturesCompleted Int @default(0)
+  ventureRevenue    Float @default(0)
+  
+  // Legal Analytics
+  documentsSigned   Int @default(0)
+  legalCosts        Float @default(0)
+  
+  // Opportunity Analytics
+  opportunitiesApplied Int @default(0)
+  opportunitiesMatched Int @default(0)
+  collaborationsStarted Int @default(0)
+  
+  // Relations
+  user        User @relation(fields: [userId], references: [id])
+  
+  @@unique([userId, period, periodStart])
+  @@index([userId])
+  @@index([period])
+  @@index([periodStart])
+}
+
+model PlatformAnalytics {
+  id          String   @id @default(cuid())
+  period      String   // "daily", "weekly", "monthly", "yearly"
+  periodStart DateTime
+  periodEnd   DateTime
+  
+  // User Metrics
+  totalUsers      Int @default(0)
+  activeUsers     Int @default(0)
+  newUsers        Int @default(0)
+  
+  // BUZ Token Metrics
+  totalBuzSupply  Float @default(0)
+  buzInCirculation Float @default(0)
+  buzStaked       Float @default(0)
+  buzTransactions Int @default(0)
+  
+  // Umbrella Metrics
+  umbrellaRelationships Int @default(0)
+  revenueSharesGenerated Float @default(0)
+  
+  // Venture Metrics
+  totalVentures   Int @default(0)
+  activeVentures  Int @default(0)
+  completedVentures Int @default(0)
+  
+  // Legal Metrics
+  documentsGenerated Int @default(0)
+  documentsSigned    Int @default(0)
+  
+  // Opportunity Metrics
+  opportunitiesPosted Int @default(0)
+  applicationsReceived Int @default(0)
+  matchesGenerated    Int @default(0)
+  
+  @@unique([period, periodStart])
+  @@index([period])
+  @@index([periodStart])
+}
+
+// ===== ENUMS =====
+
+enum Privacy {
+  PUBLIC
+  PRIVATE
+  FRIENDS
+}
+
+enum UserLevel {
+  OWLET
+  EAGLE
+  PHOENIX
+  DRAGON
+  LEGEND
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  BANNED
+}
+
+enum BUZTransactionType {
+  EARN
+  SPEND
+  STAKE
+  UNSTAKE
+  REWARD
+  TRANSFER
+  REFUND
+}
+
+enum StakingTier {
+  BRONZE
+  SILVER
+  GOLD
+  PLATINUM
+}
+
+enum RewardType {
+  DAILY_LOGIN
+  PROFILE_COMPLETION
+  PROJECT_COMPLETION
+  VENTURE_MILESTONE
+  UMBRELLA_REFERRAL
+  OPPORTUNITY_MATCH
+  LEGAL_DOCUMENT_SIGNING
+  COLLABORATION
+  ACHIEVEMENT
+  BONUS
+}
+
+enum RewardStatus {
+  PENDING
+  CLAIMED
+  EXPIRED
+  CANCELLED
+}
+
+enum UmbrellaType {
+  ALICE_SOLUTIONS_UMBRELLA
+  PRIVATE_UMBRELLA
+  CORPORATE_UMBRELLA
+  AFFILIATE_UMBRELLA
+}
+
+enum UmbrellaStatus {
+  PENDING_AGREEMENT
+  ACTIVE
+  SUSPENDED
+  TERMINATED
+  EXPIRED
+}
+
+enum PaymentStatus {
+  PENDING
+  CALCULATED
+  APPROVED
+  PAID
+  FAILED
+  DISPUTED
+}
+
+enum VentureStatus {
+  PLANNING
+  ACTIVE
+  COMPLETED
+  CANCELLED
+  SUSPENDED
+}
+
+enum VenturePhase {
+  FOUNDATION
+  SPRINT_1
+  SPRINT_2
+  LAUNCH_PREP
+  LAUNCHED
+}
+
+enum TimelineStatus {
+  PLANNED
+  IN_PROGRESS
+  COMPLETED
+  DELAYED
+  CANCELLED
+}
+
+enum SprintStatus {
+  PLANNED
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum RiskCategory {
+  TECHNICAL
+  MARKET
+  TEAM
+  FINANCIAL
+  LEGAL
+  OPERATIONAL
+}
+
+enum RiskStatus {
+  IDENTIFIED
+  ASSESSED
+  MITIGATED
+  MONITORED
+  RESOLVED
+}
+
+enum DocumentType {
+  NDA
+  COLLABORATION_AGREEMENT
+  IP_ASSIGNMENT
+  UMBRELLA_AGREEMENT
+  REVENUE_SHARING_TERMS
+  VENTURE_AGREEMENT
+  OPPORTUNITY_AGREEMENT
+}
+
+enum DocumentStatus {
+  DRAFT
+  PENDING_REVIEW
+  PENDING_SIGNATURE
+  SIGNED
+  ARCHIVED
+}
+
+enum OpportunityType {
+  VENTURE_COLLABORATION
+  SKILL_SHARING
+  IDEA_COLLABORATION
+  MENTORSHIP
+  LEGAL_PARTNERSHIP
+  UMBRELLA_NETWORK
+  PROJECT_CONSULTING
+  EQUITY_PARTNERSHIP
+}
+
+enum OpportunityStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+  FILLED
+  EXPIRED
+  CANCELLED
+}
+
+enum ApplicationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  WITHDRAWN
+}
+
+enum MatchStatus {
+  SUGGESTED
+  VIEWED
+  APPLIED
+  ACCEPTED
+  REJECTED
+}
