@@ -1,5 +1,5 @@
 const API_BASE = (process as any).env.NODE_ENV === 'production' 
-  ? 'https://smartstart-api.onrender.com' 
+  ? 'https://smartstart-python-brain.onrender.com' 
   : 'http://localhost:3001'
 
 export interface ApiResponse<T = unknown> {
@@ -114,6 +114,20 @@ export interface JourneyState {
 }
 
 class ApiService {
+  private getUserIdFromToken(): string | null {
+    try {
+      const token = localStorage.getItem('auth-token')
+      if (!token) return null
+      
+      const payload = token.split('.')[1]
+      const decoded = JSON.parse(atob(payload))
+      return decoded.userId || null
+    } catch (error) {
+      console.error('Error decoding JWT token:', error)
+      return null
+    }
+  }
+
   private async fetchWithAuth<T = unknown>(
     endpoint: string, 
     options: RequestInit = {}
@@ -201,19 +215,20 @@ class ApiService {
 
   async getCurrentUser(): Promise<ApiResponse<User>> {
     try {
-      const response = await this.fetchWithAuth<{ user: User }>('/api/auth/me')
+      // Get user ID from token
+      const userId = this.getUserIdFromToken()
+      if (!userId) {
+        return { success: false, error: 'No user ID found in token' }
+      }
       
-      // Handle both response formats: { success: true, user: {...} } and { success: true, data: { user: {...} } }
-      // Type assertion to handle the actual backend response format
-      const responseData = response as ApiResponse<{ user: User }> & { user?: User }
-      const user = responseData.user || response.data?.user
+      const response = await this.fetchWithAuth<User>(`/api/v1/user/${userId}`)
       
-      if (response.success && user) {
-        localStorage.setItem('user-id', user.id)
-        localStorage.setItem('user-data', JSON.stringify(user))
-        return { success: true, data: user }
+      if (response.success && response.data) {
+        localStorage.setItem('user-id', response.data.id)
+        localStorage.setItem('user-data', JSON.stringify(response.data))
+        return { success: true, data: response.data }
       } else {
-        throw new Error('Invalid response from /api/auth/me')
+        throw new Error('Invalid response from user API')
       }
     } catch (error) {
       console.error('Error getting current user:', error)
@@ -493,7 +508,12 @@ class ApiService {
   // Analytics methods
   async getAnalytics(): Promise<ApiResponse<any>> {
     try {
-      const response = await this.fetchWithAuth('/api/dashboard/')
+      const userId = this.getUserIdFromToken()
+      if (!userId) {
+        return { success: false, error: 'No user ID found in token' }
+      }
+      
+      const response = await this.fetchWithAuth(`/api/v1/analytics/user/${userId}`)
       return response
     } catch (error) {
       console.error('Analytics error:', error)

@@ -10,6 +10,7 @@ from flask_cors import CORS
 import os
 from datetime import datetime
 import json
+from database_connector import db
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -46,6 +47,232 @@ def health_check():
             "success": False,
             "status": "unhealthy",
             "error": str(e)
+        }), 500
+
+# Ventures API Endpoints
+@app.route('/api/v1/ventures/list/all', methods=['GET'])
+def get_all_ventures():
+    """Get all ventures from database"""
+    try:
+        # Get all ventures from database
+        ventures = db.get_all_ventures()
+        
+        # Transform database data to frontend format
+        formatted_ventures = []
+        for venture in ventures:
+            formatted_venture = {
+                "id": venture['id'],
+                "name": venture['name'],
+                "description": venture['description'],
+                "stage": venture['status'],
+                "industry": "Technology",  # Default industry
+                "teamSize": 3,  # Default team size
+                "lookingFor": ["Developers", "Designers"],  # Default looking for
+                "rewards": {
+                    "type": "equity",
+                    "amount": "10%"
+                },
+                "owner": {
+                    "name": venture.get('owner_name', 'Unknown'),
+                    "avatar": f"/avatars/{venture['id']}.jpg"
+                },
+                "createdAt": venture['createdAt'].isoformat() if venture['createdAt'] else datetime.now().isoformat(),
+                "status": "active" if venture['status'] != 'DRAFT' else 'draft',
+                "tags": ["Startup"],  # Default tags
+                "tier": "T1",  # Default tier
+                "residency": venture.get('region', 'US')
+            }
+            formatted_ventures.append(formatted_venture)
+        
+        ventures_data = {
+            "success": True,
+            "data": {
+                "ventures": formatted_ventures,
+                "total_count": len(formatted_ventures),
+                "pagination": {
+                    "page": 1,
+                    "limit": 10,
+                    "total_pages": 1
+                }
+            }
+        }
+        return jsonify(ventures_data), 200
+    except Exception as e:
+        logger.error(f"Error getting ventures: {e}")
+        return jsonify({
+            "success": False,
+            "error": "Internal server error"
+        }), 500
+
+@app.route('/api/v1/ventures/user/<user_id>', methods=['GET'])
+def get_user_ventures(user_id):
+    """Get ventures for a specific user from database"""
+    try:
+        # Get user's ventures from database
+        ventures = db.get_user_ventures(user_id)
+        
+        # Transform database data to frontend format
+        formatted_ventures = []
+        for venture in ventures:
+            formatted_venture = {
+                "id": venture['id'],
+                "name": venture['name'],
+                "description": venture['description'],
+                "stage": venture['status'],
+                "industry": "Technology",  # Default industry
+                "teamSize": 3,  # Default team size
+                "lookingFor": ["Developers", "Designers"],  # Default looking for
+                "rewards": {
+                    "type": "equity",
+                    "amount": "10%"
+                },
+                "owner": {
+                    "name": "Udi Shkolnik",  # Get from user data
+                    "avatar": f"/avatars/{venture['id']}.jpg"
+                },
+                "createdAt": venture['createdAt'].isoformat() if venture['createdAt'] else datetime.now().isoformat(),
+                "status": "active" if venture['status'] != 'DRAFT' else 'draft',
+                "tags": ["Startup"],  # Default tags
+                "tier": "T1",  # Default tier
+                "residency": venture.get('region', 'US')
+            }
+            formatted_ventures.append(formatted_venture)
+        
+        ventures_data = {
+            "success": True,
+            "data": {
+                "ventures": formatted_ventures,
+                "total_count": len(formatted_ventures),
+                "pagination": {
+                    "page": 1,
+                    "limit": 10,
+                    "total_pages": 1
+                }
+            }
+        }
+        return jsonify(ventures_data), 200
+    except Exception as e:
+        logger.error(f"Error getting user ventures: {e}")
+        return jsonify({
+            "success": False,
+            "error": "Internal server error"
+        }), 500
+
+@app.route('/api/v1/opportunities', methods=['GET'])
+def get_opportunities():
+    """Get opportunities from database"""
+    try:
+        # Get opportunities from database
+        opportunities = db.get_opportunities()
+        
+        # Transform database data to frontend format
+        formatted_opportunities = []
+        for opp in opportunities:
+            formatted_opp = {
+                "id": opp['id'],
+                "title": opp['title'],
+                "description": opp['description'],
+                "venture": {
+                    "id": opp.get('venture_id', ''),
+                    "name": opp.get('venture_name', 'Unknown Venture')
+                },
+                "skills": ["React", "TypeScript", "Next.js"],  # Default skills
+                "commitment": "Part-time",  # Default commitment
+                "rewards": {
+                    "type": "equity",
+                    "amount": "5%"
+                },
+                "status": "open" if opp['status'] == 'OPEN' else 'closed',
+                "createdAt": opp['createdAt'].isoformat() if opp['createdAt'] else datetime.now().isoformat()
+            }
+            formatted_opportunities.append(formatted_opp)
+        
+        opportunities_data = {
+            "success": True,
+            "data": {
+                "opportunities": formatted_opportunities,
+                "total_count": len(formatted_opportunities),
+                "pagination": {
+                    "page": 1,
+                    "limit": 10,
+                    "total_pages": 1
+                }
+            }
+        }
+        return jsonify(opportunities_data), 200
+    except Exception as e:
+        logger.error(f"Error getting opportunities: {e}")
+        return jsonify({
+            "success": False,
+            "error": "Internal server error"
+        }), 500
+
+@app.route('/api/v1/analytics/user/<user_id>', methods=['GET'])
+def get_user_analytics(user_id):
+    """Get user analytics from database"""
+    try:
+        # Get user analytics from database
+        analytics = db.get_user_analytics(user_id)
+        
+        analytics_data = {
+            "success": True,
+            "data": {
+                "venture_count": analytics['venture_count'],
+                "buz_balance": analytics['buz_balance'],
+                "buz_staked": analytics['buz_staked'],
+                "xp": analytics['xp'],
+                "reputation": analytics['reputation'],
+                "level": analytics['level'],
+                "active_projects": analytics['venture_count'],
+                "team_members": analytics['venture_count'] * 3,  # Estimate
+                "open_roles": analytics['venture_count'] * 2,  # Estimate
+                "total_earned": analytics['buz_balance'] + analytics['buz_staked']
+            }
+        }
+        return jsonify(analytics_data), 200
+    except Exception as e:
+        logger.error(f"Error getting user analytics: {e}")
+        return jsonify({
+            "success": False,
+            "error": "Internal server error"
+        }), 500
+
+@app.route('/api/v1/user/<user_id>', methods=['GET'])
+def get_user(user_id):
+    """Get user data from database"""
+    try:
+        # Get user from database
+        user = db.get_user_by_id(user_id)
+        
+        if not user:
+            return jsonify({
+                "success": False,
+                "error": "User not found"
+            }), 404
+        
+        user_data = {
+            "success": True,
+            "data": {
+                "id": user['id'],
+                "email": user['email'],
+                "name": user['name'],
+                "username": user.get('username', ''),
+                "level": user.get('level', 'OWLET'),
+                "xp": user.get('xp', 0),
+                "reputation": user.get('reputation', 0),
+                "status": user.get('status', 'ACTIVE'),
+                "totalPortfolioValue": user.get('totalPortfolioValue', 0),
+                "activeProjectsCount": user.get('activeProjectsCount', 0),
+                "createdAt": user['createdAt'].isoformat() if user['createdAt'] else datetime.now().isoformat(),
+                "updatedAt": user['updatedAt'].isoformat() if user['updatedAt'] else datetime.now().isoformat()
+            }
+        }
+        return jsonify(user_data), 200
+    except Exception as e:
+        logger.error(f"Error getting user: {e}")
+        return jsonify({
+            "success": False,
+            "error": "Internal server error"
         }), 500
 
 # Venture Legal System Endpoints
