@@ -35,6 +35,12 @@ except ImportError as e:
         print("🔄 Using DummyNodeJSConnector as fallback")
         NodeJSConnector = None
 
+# Force use SimpleDBConnector if available
+if NodeJSConnector and NodeJSConnector != DummyNodeJSConnector:
+    print("✅ Using real database connector")
+else:
+    print("⚠️ Using DummyNodeJSConnector - database connection not available")
+
 # Create dummy brain modules for compatibility
 class DummyBrainModule:
     def __init__(self, *args, **kwargs):
@@ -229,7 +235,7 @@ class SmartStartBrain:
         if NodeJSConnector and NodeJSConnector != DummyNodeJSConnector:
             try:
                 self.nodejs_connector = NodeJSConnector()
-                print("✅ Real NodeJSConnector initialized successfully")
+                print(f"✅ {type(self.nodejs_connector).__name__} initialized successfully")
             except Exception as e:
                 print(f"⚠️ Real NodeJSConnector failed to initialize: {e}")
                 print("🔄 Falling back to DummyNodeJSConnector")
