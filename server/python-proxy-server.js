@@ -168,71 +168,71 @@ app.get('/api/auth/me', (req, res) => {
 
 // BUZ Token Economy System
 const BUZ_RULES = {
-    // Venture costs
-    VENTURE_CREATE: 100,
-    VENTURE_EDIT: 25,
-    VENTURE_DELETE: 50,
-    VENTURE_PUBLIC: 75,
-    TEAM_ADD: 15,
-    TEAM_REMOVE: 10,
-    
+    // Venture costs - LOGICAL ECONOMICS
+    VENTURE_CREATE: 50,        // Reduced from 100 - now logical
+    VENTURE_EDIT: 10,          // Reduced from 25
+    VENTURE_DELETE: 25,        // Reduced from 50
+    VENTURE_PUBLIC: 30,        // Reduced from 75
+    TEAM_ADD: 5,               // Reduced from 15
+    TEAM_REMOVE: 3,            // Reduced from 10
+
     // Opportunity costs
-    OPPORTUNITY_POST: 25,
-    OPPORTUNITY_APPLY: 10,
-    SERVICE_OFFER: 15,
-    PROJECT_BID: 20,
-    OFFER_ACCEPT: 5,
-    
+    OPPORTUNITY_POST: 10,      // Reduced from 25
+    OPPORTUNITY_APPLY: 3,      // Reduced from 10
+    SERVICE_OFFER: 5,          // Reduced from 15
+    PROJECT_BID: 8,            // Reduced from 20
+    OFFER_ACCEPT: 2,           // Reduced from 5
+
     // Legal costs
-    LEGAL_SIGN: 5,
-    CONTRACT_GENERATE: 30,
-    LEGAL_REVIEW: 50,
-    DISPUTE_FILE: 100,
-    
+    LEGAL_SIGN: 2,             // Reduced from 5
+    CONTRACT_GENERATE: 15,     // Reduced from 30
+    LEGAL_REVIEW: 25,          // Reduced from 50
+    DISPUTE_FILE: 50,          // Reduced from 100
+
     // Premium features
-    PRIORITY_SUPPORT: 50,
-    ADVANCED_ANALYTICS: 100,
-    CUSTOM_BRANDING: 200,
-    API_ACCESS: 150,
-    WHITE_LABEL: 500
+    PRIORITY_SUPPORT: 25,      // Reduced from 50
+    ADVANCED_ANALYTICS: 50,    // Reduced from 100
+    CUSTOM_BRANDING: 100,      // Reduced from 200
+    API_ACCESS: 75,            // Reduced from 150
+    WHITE_LABEL: 250           // Reduced from 500
 };
 
 const BUZ_REWARDS = {
     // Starting rewards
-    WELCOME_BONUS: 1000,
-    MONTHLY_SUBSCRIPTION: 500,
-    ANNUAL_BONUS: 1000,
-    REFERRAL_BONUS: 250,
-    
-    // Venture rewards
-    VENTURE_LAUNCH: 200,
-    FIRST_TEAM_MEMBER: 50,
-    TEAM_5_MEMBERS: 100,
-    LEGAL_COMPLETE: 75,
-    FIRST_REVENUE: 300,
-    MONTHLY_ACTIVE_USERS: 25,
-    
+    WELCOME_BONUS: 1000,       // One-time welcome bonus
+    MONTHLY_SUBSCRIPTION: 100, // Monthly allocation (not reward)
+    ANNUAL_BONUS: 500,         // Annual bonus
+    REFERRAL_BONUS: 100,       // Referral reward
+
+    // Venture rewards - LOGICAL ECONOMICS
+    VENTURE_LAUNCH: 25,        // Reduced from 200 - now logical
+    FIRST_TEAM_MEMBER: 10,     // Reduced from 50
+    TEAM_5_MEMBERS: 20,        // Reduced from 100
+    LEGAL_COMPLETE: 15,        // Reduced from 75
+    FIRST_REVENUE: 50,         // Reduced from 300
+    MONTHLY_ACTIVE_USERS: 5,   // Reduced from 25
+
     // Contribution rewards
-    PROFILE_COMPLETE: 25,
-    IDENTITY_VERIFY: 50,
-    SKILL_ADD: 5,
-    ONBOARDING_COMPLETE: 100,
-    REVIEW_WRITE: 10,
-    
+    PROFILE_COMPLETE: 10,      // Reduced from 25
+    IDENTITY_VERIFY: 20,       // Reduced from 50
+    SKILL_ADD: 2,              // Reduced from 5
+    ONBOARDING_COMPLETE: 25,   // Reduced from 100
+    REVIEW_WRITE: 3,            // Reduced from 10
+
     // Quality rewards
-    HIGH_QUALITY_VENTURE: 150,
-    ACTIVE_TEAM_MEMBER: 50,
-    HELPFUL_COMMUNITY: 25,
-    BUG_REPORT: 15,
-    FEATURE_SUGGESTION: 20,
-    CONTENT_CREATION: 30,
-    
+    HIGH_QUALITY_VENTURE: 30,   // Reduced from 150
+    ACTIVE_TEAM_MEMBER: 10,     // Reduced from 50
+    HELPFUL_COMMUNITY: 5,       // Reduced from 25
+    BUG_REPORT: 3,              // Reduced from 15
+    FEATURE_SUGGESTION: 5,      // Reduced from 20
+    CONTENT_CREATION: 8,        // Reduced from 30
+
     // Achievement rewards
-    FIRST_VENTURE: 100,
-    VENTURE_SUCCESS: 500,
-    TOP_PERFORMER: 200,
-    COMMUNITY_LEADER: 300,
-    INNOVATION_AWARD: 1000
+    FIRST_VENTURE: 15,          // Reduced from 100
+    VENTURE_SUCCESS: 100,       // Reduced from 500
+    TOP_PERFORMER: 50,          // Reduced from 200
+    COMMUNITY_LEADER: 75,       // Reduced from 300
+    INNOVATION_AWARD: 200       // Reduced from 1000
 };
 
 const BUZ_LEVELS = {
@@ -248,7 +248,7 @@ const BUZ_LEVELS = {
 app.get('/api/v1/buz/wallet/:userId', (req, res) => {
     const { userId } = req.params;
     console.log(`💰 BUZ wallet request for user: ${userId}`);
-    
+
     // Mock user level and balance calculation
     const userLevel = 'Member'; // This would be fetched from database
     const baseBalance = 1000;
@@ -256,7 +256,7 @@ app.get('/api/v1/buz/wallet/:userId', (req, res) => {
     const totalEarned = baseBalance + monthlyAllocation * 3; // 3 months of allocation
     const totalSpent = 150; // Some spending
     const currentBalance = totalEarned - totalSpent;
-    
+
     res.json({
         success: true,
         data: {
@@ -277,7 +277,7 @@ app.get('/api/v1/buz/wallet/:userId', (req, res) => {
 app.post('/api/v1/buz/award', rateLimiter.forBUZEndpoints(), (req, res) => {
     const { userId, amount, reason, metadata } = req.body;
     console.log(`💰 Awarding ${amount} BUZ tokens to user ${userId} for: ${reason}`);
-    
+
     res.json({
         success: true,
         data: {
@@ -295,7 +295,7 @@ app.post('/api/v1/buz/award', rateLimiter.forBUZEndpoints(), (req, res) => {
 app.post('/api/v1/buz/spend', rateLimiter.forBUZEndpoints(), (req, res) => {
     const { userId, amount, reason, metadata } = req.body;
     console.log(`💸 Spending ${amount} BUZ tokens from user ${userId} for: ${reason}`);
-    
+
     // Check if user has enough balance
     const currentBalance = 1000; // This would be fetched from database
     if (currentBalance < amount) {
@@ -306,7 +306,7 @@ app.post('/api/v1/buz/spend', rateLimiter.forBUZEndpoints(), (req, res) => {
             available: currentBalance
         });
     }
-    
+
     res.json({
         success: true,
         data: {
@@ -323,7 +323,7 @@ app.post('/api/v1/buz/spend', rateLimiter.forBUZEndpoints(), (req, res) => {
 // Get BUZ rules
 app.get('/api/v1/buz/rules', (req, res) => {
     console.log(`📋 BUZ rules request`);
-    
+
     res.json({
         success: true,
         data: {
@@ -338,13 +338,12 @@ app.get('/api/v1/buz/rules', (req, res) => {
 app.get('/api/v1/buz/transactions/:userId', (req, res) => {
     const { userId } = req.params;
     console.log(`📊 BUZ transactions request for user: ${userId}`);
-    
+
     res.json({
         success: true,
         data: {
             user_id: userId,
-            transactions: [
-                {
+            transactions: [{
                     id: 'tx_1',
                     type: 'earn',
                     amount: 1000,

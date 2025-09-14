@@ -248,10 +248,10 @@ export default function CreateVenturePage() {
             <div className="text-2xl">🪙</div>
             <div>
               <h3 className="font-semibold text-blue-400">BUZ Token Cost</h3>
-              <p className="text-sm text-gray-300">
-                Creating a venture costs <span className="font-mono text-green-400">100 BUZ</span> tokens, 
-                but you'll earn <span className="font-mono text-yellow-400">200 BUZ</span> tokens as a reward!
-              </p>
+                      <p className="text-sm text-gray-300">
+                        Creating a venture costs <span className="font-mono text-green-400">50 BUZ</span> tokens, 
+                        and you'll earn <span className="font-mono text-yellow-400">25 BUZ</span> tokens as a reward!
+                      </p>
             </div>
           </div>
         </div>

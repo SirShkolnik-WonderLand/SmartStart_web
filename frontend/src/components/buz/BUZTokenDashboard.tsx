@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { apiService } from '@/lib/api-comprehensive'
+import { comprehensiveApiService as apiService } from '@/lib/api-comprehensive'
 
 interface BUZWallet {
   balance: number

@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Progress } from '@/components/ui/progress'
 import { Shield, AlertTriangle, CheckCircle, XCircle, Eye, Download, FileText, Gavel, DollarSign, Lock } from 'lucide-react'
-import { apiService } from '@/lib/api-comprehensive'
+import { comprehensiveApiService as apiService } from '@/lib/api-comprehensive'
 
 interface LegalTemplate {
   id: string

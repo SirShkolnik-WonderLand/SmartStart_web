@@ -26,7 +26,7 @@ import {
   Star
 } from 'lucide-react';
 import { useAuthStore } from '@/store/useAuthStore';
-import { apiService } from '@/lib/api-comprehensive';
+import { comprehensiveApiService as apiService } from '@/lib/api-comprehensive';
 
 interface WalletData {
   balance: number;

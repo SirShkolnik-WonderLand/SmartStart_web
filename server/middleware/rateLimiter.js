@@ -13,28 +13,28 @@ const client = redis.createClient({
 // Rate limiting configuration
 const RATE_LIMITS = {
     // Authentication endpoints - strict limits
-    '/api/auth/login': { requests: 5, window: 60 },      // 5 per minute
-    '/api/auth/register': { requests: 3, window: 60 },    // 3 per minute
+    '/api/auth/login': { requests: 5, window: 60 }, // 5 per minute
+    '/api/auth/register': { requests: 3, window: 60 }, // 3 per minute
     '/api/auth/forgot-password': { requests: 3, window: 60 }, // 3 per minute
-    
+
     // BUZ token endpoints - moderate limits
-    '/api/v1/buz/award': { requests: 20, window: 60 },    // 20 per minute
-    '/api/v1/buz/spend': { requests: 20, window: 60 },    // 20 per minute
+    '/api/v1/buz/award': { requests: 20, window: 60 }, // 20 per minute
+    '/api/v1/buz/spend': { requests: 20, window: 60 }, // 20 per minute
     '/api/v1/buz/transfer': { requests: 30, window: 60 }, // 30 per minute
-    
+
     // General API endpoints
     '/api/ventures/create': { requests: 10, window: 60 }, // 10 per minute
-    '/api/ventures': { requests: 100, window: 60 },       // 100 per minute
-    '/api/users': { requests: 50, window: 60 },           // 50 per minute
-    
+    '/api/ventures': { requests: 100, window: 60 }, // 100 per minute
+    '/api/users': { requests: 50, window: 60 }, // 50 per minute
+
     // Default rate limit
-    'default': { requests: 100, window: 60 }              // 100 per minute
+    'default': { requests: 100, window: 60 } // 100 per minute
 };
 
 // IP-based rate limiting
 const IP_RATE_LIMITS = {
-    requests: 1000,  // 1000 requests per hour per IP
-    window: 3600     // 1 hour
+    requests: 1000, // 1000 requests per hour per IP
+    window: 3600 // 1 hour
 };
 
 class RateLimiter {
@@ -53,14 +53,14 @@ class RateLimiter {
         if (RATE_LIMITS[path]) {
             return RATE_LIMITS[path];
         }
-        
+
         // Find pattern match
         for (const pattern in RATE_LIMITS) {
             if (pattern !== 'default' && path.startsWith(pattern)) {
                 return RATE_LIMITS[pattern];
             }
         }
-        
+
         // Return default
         return RATE_LIMITS.default;
     }
@@ -72,27 +72,27 @@ class RateLimiter {
         try {
             const clientIP = this.getClientIP(req);
             const path = req.path;
-            const userId = req.user?.id || 'anonymous';
-            
+            const userId = req.user ? .id || 'anonymous';
+
             // Check IP-based rate limiting
             const ipAllowed = await this.checkIPRateLimit(clientIP);
             if (!ipAllowed) {
                 return this.sendRateLimitResponse(res, 'IP rate limit exceeded', 60);
             }
-            
+
             // Check endpoint-specific rate limiting
             const endpointAllowed = await this.checkEndpointRateLimit(userId, path);
             if (!endpointAllowed.allowed) {
                 return this.sendRateLimitResponse(res, 'Endpoint rate limit exceeded', endpointAllowed.retryAfter);
             }
-            
+
             // Add rate limit headers
             res.set({
                 'X-RateLimit-Limit': endpointAllowed.limit,
                 'X-RateLimit-Remaining': endpointAllowed.remaining,
                 'X-RateLimit-Reset': endpointAllowed.resetTime
             });
-            
+
             next();
         } catch (error) {
             console.error('Rate limiting error:', error);
@@ -107,11 +107,11 @@ class RateLimiter {
     async checkIPRateLimit(clientIP) {
         const key = `rate_limit:ip:${clientIP}`;
         const current = await this.client.incr(key);
-        
+
         if (current === 1) {
             await this.client.expire(key, IP_RATE_LIMITS.window);
         }
-        
+
         return current <= IP_RATE_LIMITS.requests;
     }
 
@@ -122,14 +122,14 @@ class RateLimiter {
         const config = this.getRateLimitConfig(path);
         const key = `rate_limit:user:${userId}:${path}`;
         const current = await this.client.incr(key);
-        
+
         if (current === 1) {
             await this.client.expire(key, config.window);
         }
-        
+
         const remaining = Math.max(0, config.requests - current);
         const resetTime = Math.ceil(Date.now() / 1000) + config.window;
-        
+
         return {
             allowed: current <= config.requests,
             limit: config.requests,
@@ -143,12 +143,12 @@ class RateLimiter {
      * Get client IP address
      */
     getClientIP(req) {
-        return req.ip || 
-               req.connection.remoteAddress || 
-               req.socket.remoteAddress ||
-               (req.connection.socket ? req.connection.socket.remoteAddress : null) ||
-               req.headers['x-forwarded-for']?.split(',')[0] ||
-               'unknown';
+        return req.ip ||
+            req.connection.remoteAddress ||
+            req.socket.remoteAddress ||
+            (req.connection.socket ? req.connection.socket.remoteAddress : null) ||
+            req.headers['x-forwarded-for'] ? .split(',')[0] ||
+            'unknown';
     }
 
     /**
@@ -209,7 +209,7 @@ class RateLimiter {
         const key = `rate_limit:user:${userId}:${path}`;
         const current = await this.client.get(key);
         const remaining = Math.max(0, config.requests - (parseInt(current) || 0));
-        
+
         return {
             limit: config.requests,
             remaining: remaining,
