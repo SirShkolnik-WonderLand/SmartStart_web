@@ -528,10 +528,16 @@ def stake_buz_tokens():
     """Stake BUZ tokens"""
     try:
         data = request.get_json()
-        user_id = data.get('user_id')
-        amount = data.get('amount')
+        user_id = data.get('userId') or data.get('user_id')
+        amount = data.get('amount', 0)
         staking_period = data.get('staking_period', 30)
         staking_type = data.get('staking_type', 'STANDARD')
+        
+        if not user_id or amount <= 0:
+            return jsonify({
+                "success": False,
+                "error": "Invalid user ID or amount"
+            }), 400
         
         # Process staking in database
         result = db.stake_buz_tokens(user_id, amount, staking_period, staking_type)
@@ -552,11 +558,21 @@ def unstake_buz_tokens():
     """Unstake BUZ tokens"""
     try:
         data = request.get_json()
-        user_id = data.get('user_id')
+        user_id = data.get('userId') or data.get('user_id')
         staking_id = data.get('staking_id')
+        amount = data.get('amount', 0)
+        
+        if not user_id:
+            return jsonify({
+                "success": False,
+                "error": "Invalid user ID"
+            }), 400
         
         # Process unstaking in database
-        result = db.unstake_buz_tokens(user_id, staking_id)
+        if staking_id:
+            result = db.unstake_buz_tokens(user_id, staking_id)
+        else:
+            result = db.unstake_buz_tokens(user_id, amount)
         
         return jsonify({
             "success": True,
@@ -680,61 +696,7 @@ def get_team_analytics(team_id):
             "error": str(e)
         }), 500
 
-# ===== BUZ STAKING AND WALLET ENDPOINTS =====
-
-@app.route('/api/buz/stake', methods=['POST'])
-def stake_buz_tokens():
-    """Stake BUZ tokens"""
-    try:
-        data = request.get_json()
-        user_id = data.get('userId')
-        amount = data.get('amount', 0)
-        
-        if not user_id or amount <= 0:
-            return jsonify({
-                "success": False,
-                "error": "Invalid user ID or amount"
-            }), 400
-        
-        # Stake tokens via database
-        result = db.stake_buz_tokens(user_id, amount)
-        return jsonify({
-            "success": True,
-            "data": result
-        }), 200
-    except Exception as e:
-        logger.error(f"Error staking BUZ tokens: {e}")
-        return jsonify({
-            "success": False,
-            "error": str(e)
-        }), 500
-
-@app.route('/api/buz/unstake', methods=['POST'])
-def unstake_buz_tokens():
-    """Unstake BUZ tokens"""
-    try:
-        data = request.get_json()
-        user_id = data.get('userId')
-        amount = data.get('amount', 0)
-        
-        if not user_id or amount <= 0:
-            return jsonify({
-                "success": False,
-                "error": "Invalid user ID or amount"
-            }), 400
-        
-        # Unstake tokens via database
-        result = db.unstake_buz_tokens(user_id, amount)
-        return jsonify({
-            "success": True,
-            "data": result
-        }), 200
-    except Exception as e:
-        logger.error(f"Error unstaking BUZ tokens: {e}")
-        return jsonify({
-            "success": False,
-            "error": str(e)
-        }), 500
+# ===== WALLET ENDPOINTS =====
 
 @app.route('/api/wallet/balance/<user_id>', methods=['GET'])
 def get_wallet_balance(user_id):
