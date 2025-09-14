@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+
 /**
  * SmartStart Python Proxy Server
  * Lightweight Node.js server that proxies all requests to Python Brain
@@ -55,17 +56,17 @@ app.get('/health', (req, res) => {
 // Direct authentication endpoints (BEFORE proxy middleware)
 app.post('/api/auth/login', (req, res) => {
     const { email, password } = req.body;
-    
+
     // Trim whitespace from email and password
     const trimmedEmail = email ? email.trim() : '';
     const trimmedPassword = password ? password.trim() : '';
-    
+
     console.log(`🔐 Direct auth attempt for: "${trimmedEmail}"`);
     console.log(`🔐 Password received: "${trimmedPassword}"`);
     console.log(`🔐 Email matches expected: ${trimmedEmail === 'udi.admin@alicesolutionsgroup.com'}`);
     console.log(`🔐 Password matches expected: ${trimmedPassword === 'Id200633048!'}`);
     console.log(`🔐 Full request body:`, JSON.stringify(req.body, null, 2));
-    
+
     // Simple authentication for testing (with trimmed values)
     if (trimmedEmail === 'udi.admin@alicesolutionsgroup.com' && trimmedPassword === 'Id200633048!') {
         res.json({
@@ -102,9 +103,9 @@ app.post('/api/auth/login', (req, res) => {
 // Direct registration endpoint
 app.post('/api/auth/register', (req, res) => {
     const { email, password, name } = req.body;
-    
+
     console.log(`📝 Direct registration attempt for: ${email}`);
-    
+
     res.json({
         success: true,
         message: 'Registration successful',
@@ -131,9 +132,9 @@ app.get('/api/auth/health', (req, res) => {
 app.get('/api/auth/me', (req, res) => {
     const authHeader = req.headers.authorization;
     const token = authHeader && authHeader.split(' ')[1];
-    
+
     console.log(`👤 Auth me request with token: ${token ? token.substring(0, 20) + '...' : 'none'}`);
-    
+
     // For now, return the admin user if token exists
     if (token && token.startsWith('mock-jwt-token-')) {
         res.json({
@@ -403,13 +404,13 @@ const wss = new WebSocket.Server({ server });
 
 wss.on('connection', (ws, req) => {
     console.log('🔌 WebSocket connection established');
-    
+
     // Forward WebSocket messages to Python Brain
     ws.on('message', (message) => {
         try {
             const data = JSON.parse(message);
             console.log('📡 WebSocket message received:', data.type);
-            
+
             // For now, echo back the message
             // In production, this would forward to Python Brain WebSocket
             ws.send(JSON.stringify({
@@ -425,15 +426,15 @@ wss.on('connection', (ws, req) => {
             }));
         }
     });
-    
+
     ws.on('close', () => {
         console.log('🔌 WebSocket connection closed');
     });
-    
+
     ws.on('error', (error) => {
         console.error('WebSocket error:', error);
     });
-    
+
     // Send welcome message
     ws.send(JSON.stringify({
         type: 'CONNECTION_ESTABLISHED',
@@ -445,7 +446,7 @@ wss.on('connection', (ws, req) => {
 // Database proxy endpoints for Python Brain
 app.post('/api/db/query', (req, res) => {
     const { sql, params } = req.body;
-    
+
     // For now, return mock data for testing
     if (sql.includes('SELECT u.*, r.name as role_name')) {
         res.json({
