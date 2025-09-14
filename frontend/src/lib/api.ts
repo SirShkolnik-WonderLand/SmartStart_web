@@ -554,6 +554,68 @@ class ApiService {
       return { success: false, error: 'Failed to load subscription status' }
     }
   }
+
+  // Legal Document Management methods
+  async getUserDocumentStatus(): Promise<ApiResponse<any>> {
+    try {
+      const response = await this.fetchWithAuth('/api/legal-documents/status')
+      return response
+    } catch (error) {
+      console.error('User document status error:', error)
+      return { success: false, error: 'Failed to load user document status' }
+    }
+  }
+
+  async getAvailableDocuments(): Promise<ApiResponse<any>> {
+    try {
+      const response = await this.fetchWithAuth('/api/legal-documents/documents')
+      return response
+    } catch (error) {
+      console.error('Available documents error:', error)
+      return { success: false, error: 'Failed to load available documents' }
+    }
+  }
+
+  async getPendingDocuments(): Promise<ApiResponse<any>> {
+    try {
+      const response = await this.fetchWithAuth('/api/legal-documents/documents/pending')
+      return response
+    } catch (error) {
+      console.error('Pending documents error:', error)
+      return { success: false, error: 'Failed to load pending documents' }
+    }
+  }
+
+  async getRequiredDocuments(): Promise<ApiResponse<any>> {
+    try {
+      const response = await this.fetchWithAuth('/api/legal-documents/documents/required')
+      return response
+    } catch (error) {
+      console.error('Required documents error:', error)
+      return { success: false, error: 'Failed to load required documents' }
+    }
+  }
+
+  // Gamification methods
+  async getLeaderboard(): Promise<ApiResponse<any>> {
+    try {
+      const response = await this.fetchWithAuth('/api/gamification/leaderboard')
+      return response
+    } catch (error) {
+      console.error('Leaderboard error:', error)
+      return { success: false, error: 'Failed to load leaderboard' }
+    }
+  }
+
+  async getUserBadges(userId: string): Promise<ApiResponse<any>> {
+    try {
+      const response = await this.fetchWithAuth(`/api/gamification/badges/${userId}`)
+      return response
+    } catch (error) {
+      console.error('User badges error:', error)
+      return { success: false, error: 'Failed to load user badges' }
+    }
+  }
 }
 
 export const apiService = new ApiService()

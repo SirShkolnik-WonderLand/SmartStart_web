@@ -108,6 +108,8 @@ export default function DashboardPage() {
       percentage: number
     }
   } | null>(null)
+  const [userDocumentStatus, setUserDocumentStatus] = useState<any>(null)
+  const [leaderboard, setLeaderboard] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [loadingTimeout, setLoadingTimeout] = useState(false)
 
@@ -305,11 +307,21 @@ export default function DashboardPage() {
           apiService.getBUZSupply().catch(err => {
             console.warn('BUZ supply failed:', err)
             return { success: false, data: { currentPrice: 0.01 } }
+          }),
+          // Load legal document data
+          apiService.getUserDocumentStatus().catch(err => {
+            console.warn('User document status failed:', err)
+            return { success: false, data: null }
+          }),
+          // Load gamification data
+          apiService.getLeaderboard().catch(err => {
+            console.warn('Leaderboard failed:', err)
+            return { success: false, data: null }
           })
         ]
 
         // Wait for all data with timeout
-        const [analyticsResponse, venturesResponse, offersResponse, buzSupplyResponse] = await Promise.allSettled(
+        const [analyticsResponse, venturesResponse, offersResponse, buzSupplyResponse, userDocumentStatusResponse, leaderboardResponse] = await Promise.allSettled(
           dataPromises.map(promise => Promise.race([
             promise,
             new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000))
@@ -329,6 +341,12 @@ export default function DashboardPage() {
         if (buzSupplyResponse.status === 'fulfilled' && buzSupplyResponse.value && (buzSupplyResponse.value as { success: boolean }).success) {
           const supplyData = (buzSupplyResponse.value as { success: boolean; data: any }).data
           setBuzPrice(supplyData.currentPrice || 0.01)
+        }
+        if (userDocumentStatusResponse.status === 'fulfilled' && userDocumentStatusResponse.value && (userDocumentStatusResponse.value as { success: boolean }).success) {
+          setUserDocumentStatus((userDocumentStatusResponse.value as { success: boolean; data: any }).data)
+        }
+        if (leaderboardResponse.status === 'fulfilled' && leaderboardResponse.value && (leaderboardResponse.value as { success: boolean }).success) {
+          setLeaderboard((leaderboardResponse.value as { success: boolean; data: any }).data)
         }
 
         // Load BUZ balance after user data is available
@@ -542,7 +560,7 @@ export default function DashboardPage() {
                 </div>
                 
                 <div className="flex items-center gap-3">
-                  {legalPackStatus?.signed ? (
+                  {userDocumentStatus?.legal_pack_status === 'COMPLETED' ? (
                     <CheckCircle className="w-5 h-5 text-green-600" />
                   ) : (
                     <div className="w-5 h-5 border-2 border-purple-500 rounded-full flex items-center justify-center">
@@ -550,8 +568,13 @@ export default function DashboardPage() {
                     </div>
                   )}
                   <span>
-                    {legalPackStatus?.signed ? 'Legal Pack Signed' : 'Legal Pack Pending'}
+                    {userDocumentStatus?.legal_pack_status === 'COMPLETED' ? 'Legal Pack Signed' : 'Legal Pack Pending'}
                   </span>
+                  {userDocumentStatus && (
+                    <span className="text-xs text-muted ml-auto">
+                      {userDocumentStatus.documents_signed}/{userDocumentStatus.documents_required} documents
+                    </span>
+                  )}
                 </div>
                 
                 <div className="flex items-center gap-3">
@@ -673,6 +696,33 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+
+      {/* Leaderboard Section */}
+      {leaderboard?.leaderboard && (
+        <div className="wonderland-card glass-surface p-6">
+          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <Trophy className="w-5 h-5 text-yellow-500" />
+            Community Leaderboard
+          </h3>
+          <div className="space-y-3">
+            {leaderboard.leaderboard.slice(0, 5).map((user: any, index: number) => (
+              <div key={user.user_id} className="flex items-center gap-4 p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg border border-purple-100">
+                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r from-yellow-400 to-orange-400 text-white font-bold text-sm">
+                  {user.rank}
+                </div>
+                <div className="flex-1">
+                  <div className="font-medium">{user.name}</div>
+                  <div className="text-sm text-muted">Level: {user.level} • {user.xp_points} XP</div>
+                </div>
+                <div className="text-right">
+                  <div className="text-sm font-medium">{user.badges} badges</div>
+                  <div className="text-xs text-muted">{user.ventures_created} ventures</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Activity Suggestions */}
       <div className="grid md:grid-cols-2 gap-6">
