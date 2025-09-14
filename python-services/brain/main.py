@@ -1106,14 +1106,14 @@ def get_user_legal_documents(user_id):
     return jsonify(result)
 
 @app.route('/legal/user/<user_id>/compliance', methods=['GET'])
-def check_user_legal_compliance(user_id):
-    """Check user legal compliance"""
+def check_user_legal_compliance_by_user(user_id):
+    """Check user legal compliance by user"""
     result = brain.legal_service.check_user_legal_compliance(user_id)
     return jsonify(result)
 
 @app.route('/legal/sign/<user_id>/<document_id>', methods=['POST'])
-def sign_legal_document(user_id, document_id):
-    """Sign legal document"""
+def sign_legal_document_by_user(user_id, document_id):
+    """Sign legal document by user"""
     data = request.json
     result = brain.legal_service.sign_legal_document(user_id, document_id, data)
     return jsonify(result)
