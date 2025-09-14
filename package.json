@@ -14,17 +14,20 @@
     "dependencies": {
         "@prisma/client": "^6.15.0",
         "cors": "^2.8.5",
+        "cors-anywhere": "^0.4.4",
         "dotenv": "^17.2.2",
         "express": "^4.21.1",
         "express-rate-limit": "^7.5.1",
         "helmet": "^8.1.0",
         "http-proxy-middleware": "^3.0.5",
+        "redis": "^5.8.2",
         "ws": "^8.14.2"
     },
     "devDependencies": {
         "@types/cors": "^2.8.17",
         "@types/express": "^5.0.0",
         "@types/node": "^20",
+        "@types/redis": "^4.0.10",
         "@types/ws": "^8.5.10",
         "prisma": "^6.15.0",
         "typescript": "^5"
