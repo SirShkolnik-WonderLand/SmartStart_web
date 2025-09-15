@@ -381,9 +381,10 @@ class UnifiedAPIService {
 
   // Auth
   async login(email: string, password: string): Promise<ApiResponse<{ user: User; token: string }>> {
+    const normalizedEmail = (email || '').trim().toLowerCase()
     const result = await this.request<{ user: User; token: string }>(`/api/auth/login`, {
       method: 'POST',
-      body: JSON.stringify({ email, password })
+      body: JSON.stringify({ email: normalizedEmail, password: (password || '').trim() })
     })
     if (result && (result as any).token) {
       this.setToken((result as any).token as unknown as string)
