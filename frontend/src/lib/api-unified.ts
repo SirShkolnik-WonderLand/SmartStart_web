@@ -753,6 +753,17 @@ class UnifiedAPIService {
     return { success: true, data: [], message: 'Not implemented in Python service yet', timestamp: new Date().toISOString(), requestId: 'offers-placeholder' }
   }
 
+  async updateOfferStatus(offerId: string, status: 'pending' | 'approved' | 'rejected'): Promise<ApiResponse<Offer>> {
+    // No dedicated Python route surfaced; return mock success for now
+    return { 
+      success: true, 
+      data: { id: offerId, status } as Offer, 
+      message: 'Offer status updated (mock)', 
+      timestamp: new Date().toISOString(), 
+      requestId: 'update-offer-status-placeholder' 
+    }
+  }
+
   async getUserDocumentStatus(): Promise<ApiResponse<LegalPackStatus>> {
     const me = await this.getCurrentUser()
     const userId = (me as any)?.data?.id
