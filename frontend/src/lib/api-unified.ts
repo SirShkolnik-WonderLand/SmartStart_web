@@ -441,8 +441,8 @@ class UnifiedAPIService {
       method: 'POST',
       body: JSON.stringify({ email: normalizedEmail, password: (password || '').trim() })
     })
-    if (result && (result as any).token) {
-      this.setToken((result as any).token as unknown as string)
+    if (result && result.data && result.data.token) {
+      this.setToken(result.data.token)
     }
     return result
   }
@@ -452,8 +452,8 @@ class UnifiedAPIService {
       method: 'POST',
       body: JSON.stringify(userData)
     })
-    if (result && (result as any).token) {
-      this.setToken((result as any).token as unknown as string)
+    if (result && result.data && result.data.token) {
+      this.setToken(result.data.token)
     }
     return result
   }
