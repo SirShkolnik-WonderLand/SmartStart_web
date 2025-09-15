@@ -1222,6 +1222,44 @@ def internal_error(error):
     )), 500
 
 # ============================================================================
+# JOURNEY MANAGEMENT ENDPOINTS
+# ============================================================================
+
+@app.route('/api/journey/initialize/<user_id>', methods=['POST'])
+def initialize_journey(user_id):
+    """Initialize user journey"""
+    try:
+        # Initialize user journey in database
+        journey_data = {
+            'user_id': user_id,
+            'current_stage': 'account_creation',
+            'progress_percentage': 0,
+            'completed_stages': [],
+            'created_at': datetime.now().isoformat(),
+            'updated_at': datetime.now().isoformat()
+        }
+        
+        result = db.create_user_journey_state(journey_data)
+        
+        return jsonify(create_response(
+            success=True,
+            data={
+                'journey_initialized': True,
+                'stages_created': 1,
+                'user_id': user_id,
+                'timestamp': datetime.now().isoformat()
+            },
+            message="Journey initialized successfully"
+        )), 200
+        
+    except Exception as e:
+        logger.error(f"Error initializing journey for user {user_id}: {e}")
+        return jsonify(create_response(
+            success=False,
+            error=str(e)
+        )), 500
+
+# ============================================================================
 # APPLICATION STARTUP
 # ============================================================================
 
