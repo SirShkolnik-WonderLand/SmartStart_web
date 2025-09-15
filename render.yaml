@@ -20,7 +20,7 @@ services:
     name: smartstart-python-brain
     env: python
     plan: starter
-    buildCommand: cd python-services && pip install --cache-dir .pip-cache -r requirements.txt
+    buildCommand: cd python-services && pip install --cache-dir .pip-cache --no-deps --upgrade -r requirements.txt
     startCommand: cd python-services && python start.py
     autoDeploy: true
     branch: main

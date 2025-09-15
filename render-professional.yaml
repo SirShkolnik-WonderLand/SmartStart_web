@@ -1,0 +1,104 @@
+# Render Professional Plan Configuration
+# HIPAA-compliant deployment for SmartStart Platform
+
+services:
+  - type: web
+    name: smartstart-api
+    env: node
+    plan: professional  # HIPAA-compliant plan
+    region: oregon      # HIPAA-compliant region
+    buildCommand: |
+      echo "🚀 Building Node API for Professional Plan..."
+      npm ci --cache .npm-cache --prefer-offline
+      npx prisma generate
+      npx prisma db push --accept-data-loss
+    startCommand: node server/python-proxy-server.js
+    autoDeploy: true
+    branch: main
+    healthCheckPath: /health
+    healthCheckGracePeriod: 300
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: HIPAA_COMPLIANCE
+        value: "true"
+      - key: ENCRYPTION_ENABLED
+        value: "true"
+      - key: DATABASE_URL
+        value: postgresql://smartstart_db_4ahd_user:LYcgYXd9w9pBB4HPuNretjMOOlKxWP48@dpg-d2uaqd6r433s73e56vfg-a.oregon-postgres.render.com:5432/smartstart_db_4ahd?sslmode=require
+      - key: PYTHON_BRAIN_URL
+        value: https://smartstart-python-brain.onrender.com
+
+  - type: web
+    name: smartstart-python-brain
+    env: python
+    plan: professional  # HIPAA-compliant plan
+    region: oregon      # HIPAA-compliant region
+    buildCommand: |
+      echo "🚀 Building Python Backend for Professional Plan..."
+      cd python-services
+      pip install --cache-dir .pip-cache --no-deps --upgrade -r requirements.txt
+      echo "✅ Python backend build complete"
+    startCommand: cd python-services && python start.py
+    autoDeploy: true
+    branch: main
+    healthCheckPath: /health
+    healthCheckGracePeriod: 300
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: HIPAA_COMPLIANCE
+        value: "true"
+      - key: ENCRYPTION_ENABLED
+        value: "true"
+      - key: PORT
+        value: "5000"
+      - key: NODEJS_API_URL
+        value: https://smartstart-api.onrender.com
+      - key: CORS_ORIGINS
+        value: "https://smartstart-frontend.onrender.com,http://localhost:3000"
+      - key: PYTHON_BRAIN_VERSION
+        value: "2.1.2"
+      - key: SECURITY_LEVEL
+        value: "high"
+
+  - type: web
+    name: smartstart-frontend
+    env: node
+    plan: professional  # HIPAA-compliant plan
+    region: oregon      # HIPAA-compliant region
+    buildCommand: |
+      echo "🚀 Building Frontend for Professional Plan..."
+      cd frontend
+      chmod +x build-simple.sh
+      ./build-simple.sh
+      echo "✅ Frontend build complete"
+    startCommand: cd frontend && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: HIPAA_COMPLIANCE
+        value: "true"
+      - key: ENCRYPTION_ENABLED
+        value: "true"
+      - key: NEXT_PUBLIC_API_URL
+        value: https://smartstart-python-brain.onrender.com
+      - key: NEXT_TELEMETRY_DISABLED
+        value: "1"
+      - key: NEXT_PUBLIC_APP_VERSION
+        value: "2.1.2"
+    healthCheckPath: /
+    healthCheckGracePeriod: 300
+    autoDeploy: true
+    branch: main
+
+# Professional plan features
+buildCache:
+  enabled: true
+  ttl: 86400  # 24 hours
+
+security:
+  hipaaCompliant: true
+  encryptionAtRest: true
+  encryptionInTransit: true
+  auditLogging: true
