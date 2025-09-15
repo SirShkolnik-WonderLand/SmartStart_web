@@ -15,13 +15,13 @@ rm -rf .next
 rm -rf out
 rm -rf node_modules/.cache
 
-# Install all dependencies
+# Install all dependencies with caching
 echo "📦 Installing dependencies..."
-npm ci --no-audit --no-fund --prefer-offline
+npm ci --no-audit --no-fund --prefer-offline --cache .npm-cache
 
-# Build the application (skip type checking)
+# Build the application (skip type checking and optimize)
 echo "🏗️ Building application..."
-NEXT_TELEMETRY_DISABLED=1 npm run build
+NEXT_TELEMETRY_DISABLED=1 npm run build -- --no-lint
 
 # Verify build was successful
 if [ ! -d ".next" ]; then
