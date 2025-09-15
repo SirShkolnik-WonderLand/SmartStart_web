@@ -1,0 +1,56 @@
+{
+  "timestamp": "2025-09-15T01:02:41.938Z",
+  "summary": {
+    "passed": 0,
+    "failed": 9,
+    "total": 9,
+    "successRate": 0
+  },
+  "details": [
+    {
+      "name": "Health Check",
+      "status": "FAILED",
+      "error": "Expected status 200, got 404"
+    },
+    {
+      "name": "Venture Creation with BUZ Tokens",
+      "status": "FAILED",
+      "error": "Expected status 200/201, got 404"
+    },
+    {
+      "name": "Venture Discovery",
+      "status": "FAILED",
+      "error": "Expected status 200, got 404"
+    },
+    {
+      "name": "Venture Details",
+      "status": "FAILED",
+      "error": "Expected status 200, got 404"
+    },
+    {
+      "name": "Venture Application",
+      "status": "FAILED",
+      "error": "Expected status 200/201, got 404"
+    },
+    {
+      "name": "File Upload",
+      "status": "FAILED",
+      "error": "Expected status 200/201, got 404"
+    },
+    {
+      "name": "BUZ Token Balance",
+      "status": "FAILED",
+      "error": "Expected status 200, got 404"
+    },
+    {
+      "name": "Venture Analytics",
+      "status": "FAILED",
+      "error": "Expected status 200, got 404"
+    },
+    {
+      "name": "Venture Like",
+      "status": "FAILED",
+      "error": "Expected status 200, got 404"
+    }
+  ]
+}

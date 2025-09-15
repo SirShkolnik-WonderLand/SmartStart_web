@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { ArrowLeft, Building2, Briefcase, Users, DollarSign, Tag, CheckCircle } from 'lucide-react'
+import { ArrowLeft, Building2, Briefcase, Users, DollarSign, Tag, CheckCircle, Upload, Image, FileText, Coins, Zap, Star, Trophy, Target } from 'lucide-react'
 import { comprehensiveApiService as apiService } from '@/lib/api-comprehensive'
 
 const industries = [
@@ -21,10 +21,10 @@ const stages = [
 ]
 
 const tiers = [
-  { value: 'T1', label: 'Tier 1 - High Priority', description: 'Premium support and resources', color: 'text-yellow-600' },
-  { value: 'T2', label: 'Tier 2 - Standard', description: 'Standard support and resources', color: 'text-blue-600' },
-  { value: 'T3', label: 'Tier 3 - Basic', description: 'Basic support and resources', color: 'text-green-600' },
-  { value: 'T1', label: '🤷‍♂️ Whatever works', description: 'I just want to get started', color: 'text-purple-600' }
+  { value: 'T1', label: 'Tier 1 - High Priority', description: 'Premium support and resources', color: 'text-yellow-600', buzCost: 500, features: ['Priority Support', 'Advanced Analytics', 'Custom Themes', 'File Uploads'] },
+  { value: 'T2', label: 'Tier 2 - Standard', description: 'Standard support and resources', color: 'text-blue-600', buzCost: 250, features: ['Standard Support', 'Basic Analytics', 'File Uploads'] },
+  { value: 'T3', label: 'Tier 3 - Basic', description: 'Basic support and resources', color: 'text-green-600', buzCost: 100, features: ['Basic Support', 'File Uploads'] },
+  { value: 'T1', label: '🤷‍♂️ Whatever works', description: 'I just want to get started', color: 'text-purple-600', buzCost: 100, features: ['Basic Support'] }
 ]
 
 const rewardTypes = [
@@ -44,8 +44,11 @@ const professions = [
 
 export default function CreateVenturePage() {
   const router = useRouter()
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [currentStep, setCurrentStep] = useState(1)
+  const [userBuzBalance, setUserBuzBalance] = useState(1000) // Mock BUZ balance
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
   const [formData, setFormData] = useState({
     // Step 1: Basic Information
     name: '',
@@ -67,6 +70,7 @@ export default function CreateVenturePage() {
     rewardType: 'equity' as 'equity' | 'cash' | 'hybrid',
     equityPercentage: 0,
     cashAmount: 0,
+    paymentSchedule: 'monthly' as 'monthly' | 'quarterly' | 'annually' | 'milestone',
     
     // Step 5: Tags & Final Details
     tags: [] as string[],
@@ -75,13 +79,46 @@ export default function CreateVenturePage() {
     socialMedia: {},
     timeline: {},
     budget: 0,
-    additionalNotes: ''
+    additionalNotes: '',
+    
+    // New fields for enhanced features
+    isPublic: true,
+    allowApplications: true,
+    maxTeamSize: 10,
+    equityVestingMonths: 48,
+    cliffMonths: 12
   })
 
-  const totalSteps = 5
+  const totalSteps = 6 // Added file upload step
+
+  // Calculate total BUZ cost
+  const calculateBuzCost = () => {
+    const selectedTier = tiers.find(t => t.value === formData.tier)
+    const baseCost = selectedTier?.buzCost || 100
+    const fileCost = uploadedFiles.length * 10 // 10 BUZ per file
+    const teamCost = formData.maxTeamSize * 5 // 5 BUZ per team member slot
+    return baseCost + fileCost + teamCost
+  }
+
+  const totalBuzCost = calculateBuzCost()
+  const canAfford = userBuzBalance >= totalBuzCost
 
   const handleInputChange = (field: string, value: string | number) => {
     setFormData(prev => ({ ...prev, [field]: value }))
+  }
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || [])
+    const validFiles = files.filter(file => {
+      const isValidType = file.type.startsWith('image/') || file.type.includes('pdf') || file.type.includes('document')
+      const isValidSize = file.size <= 10 * 1024 * 1024 // 10MB limit
+      return isValidType && isValidSize
+    })
+    setUploadedFiles(prev => [...prev, ...validFiles])
+  }
+
+  const removeFile = (index: number) => {
+    setUploadedFiles(prev => prev.filter((_, i) => i !== index))
   }
 
   const handleNestedChange = (parent: string, field: string, value: string | number) => {
@@ -152,13 +189,15 @@ export default function CreateVenturePage() {
       case 1:
         return formData.name.trim() !== '' && formData.industry !== '' && formData.description.trim() !== ''
       case 2:
-        return !!formData.stage && formData.teamSize > 0 && !!formData.tier
+        return !!formData.stage && formData.teamSize > 0 && !!formData.tier && canAfford
       case 3:
         return true // Optional step
       case 4:
         return !!formData.rewardType && (formData.equityPercentage > 0 || formData.cashAmount > 0)
       case 5:
         return true // Optional step
+      case 6:
+        return true // File upload is optional
       default:
         return false
     }
@@ -167,10 +206,11 @@ export default function CreateVenturePage() {
   const getStepIcon = (step: number) => {
     switch (step) {
       case 1: return <Building2 className="w-5 h-5" />
-      case 2: return <Briefcase className="w-5 h-5" />
+      case 2: return <Coins className="w-5 h-5" />
       case 3: return <Users className="w-5 h-5" />
       case 4: return <DollarSign className="w-5 h-5" />
       case 5: return <Tag className="w-5 h-5" />
+      case 6: return <Upload className="w-5 h-5" />
       default: return null
     }
   }
@@ -178,10 +218,11 @@ export default function CreateVenturePage() {
   const getStepTitle = (step: number) => {
     switch (step) {
       case 1: return 'Basic Information'
-      case 2: return 'Venture Details'
+      case 2: return 'BUZ Costs & Tier Selection'
       case 3: return 'Team & Skills'
       case 4: return 'Rewards & Compensation'
       case 5: return 'Tags & Final Details'
+      case 6: return 'Upload Files & Media'
       default: return ''
     }
   }
@@ -318,12 +359,35 @@ export default function CreateVenturePage() {
             </div>
           )}
 
-          {/* Step 2: Venture Details */}
+          {/* Step 2: BUZ Costs & Tier Selection */}
           {currentStep === 2 && (
             <div className="space-y-6">
               <div>
-                <h2 className="text-2xl font-bold mb-2">Venture Details</h2>
-                <p className="text-muted-foreground">Define your venture&apos;s current stage and structure</p>
+                <h2 className="text-2xl font-bold mb-2">BUZ Costs & Tier Selection</h2>
+                <p className="text-muted-foreground">Choose your venture tier and see the BUZ token costs</p>
+              </div>
+
+              {/* BUZ Balance Display */}
+              <div className="bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 rounded-lg p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Coins className="w-6 h-6 text-primary" />
+                    <span className="font-semibold">Your BUZ Balance:</span>
+                    <span className="text-2xl font-bold text-primary">{userBuzBalance.toLocaleString()}</span>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-sm text-muted-foreground">Total Cost:</div>
+                    <div className={`text-2xl font-bold ${canAfford ? 'text-green-600' : 'text-red-600'}`}>
+                      {totalBuzCost.toLocaleString()} BUZ
+                    </div>
+                  </div>
+                </div>
+                {!canAfford && (
+                  <div className="mt-2 text-sm text-red-600 flex items-center gap-1">
+                    <Zap className="w-4 h-4" />
+                    Insufficient BUZ balance. You need {totalBuzCost - userBuzBalance} more BUZ tokens.
+                  </div>
+                )}
               </div>
 
               <div className="space-y-6">
@@ -384,11 +448,11 @@ export default function CreateVenturePage() {
 
                 <div>
                   <label className="block text-sm font-medium mb-3">
-                    Tier *
+                    Venture Tier *
                   </label>
                   <div className="space-y-3">
                     {tiers.map(tier => (
-                      <label key={tier.value} className="flex items-start p-4 border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
+                      <label key={tier.value} className={`flex items-start p-4 border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors ${formData.tier === tier.value ? 'border-primary bg-primary/5' : ''}`}>
                         <input
                           type="radio"
                           name="tier"
@@ -397,12 +461,52 @@ export default function CreateVenturePage() {
                           onChange={(e) => handleInputChange('tier', e.target.value as 'T1' | 'T2' | 'T3')}
                           className="mt-1 mr-3"
                         />
-                        <div>
-                          <div className={`font-medium text-lg ${tier.color}`}>{tier.label}</div>
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between">
+                            <div className={`font-medium text-lg ${tier.color}`}>{tier.label}</div>
+                            <div className="flex items-center gap-2">
+                              <Coins className="w-5 h-5 text-primary" />
+                              <span className="font-bold text-primary">{tier.buzCost} BUZ</span>
+                            </div>
+                          </div>
                           <div className="text-muted-foreground mt-1">{tier.description}</div>
+                          <div className="mt-2">
+                            <div className="text-sm font-medium mb-1">Features included:</div>
+                            <div className="flex flex-wrap gap-1">
+                              {tier.features.map((feature, index) => (
+                                <span key={index} className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full">
+                                  {feature}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
                         </div>
                       </label>
                     ))}
+                  </div>
+                </div>
+
+                {/* Team Size Selection */}
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Maximum Team Size
+                  </label>
+                  <div className="flex items-center gap-4">
+                    <input
+                      type="range"
+                      min="1"
+                      max="50"
+                      value={formData.maxTeamSize}
+                      onChange={(e) => handleInputChange('maxTeamSize', parseInt(e.target.value))}
+                      className="flex-1"
+                    />
+                    <div className="flex items-center gap-2 min-w-[120px]">
+                      <Users className="w-5 h-5 text-primary" />
+                      <span className="font-bold">{formData.maxTeamSize} members</span>
+                    </div>
+                  </div>
+                  <div className="text-sm text-muted-foreground mt-1">
+                    Team slots cost 5 BUZ each (Total: {formData.maxTeamSize * 5} BUZ)
                   </div>
                 </div>
               </div>
@@ -602,6 +706,156 @@ export default function CreateVenturePage() {
                     <div>
                       <p className="font-medium text-muted-foreground">Amount</p>
                       <p className="text-lg">{formData.rewardType === 'equity' ? `${formData.equityPercentage}%` : `$${formData.cashAmount}`}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Step 6: Upload Files & Media */}
+          {currentStep === 6 && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-2xl font-bold mb-2">Upload Files & Media</h2>
+                <p className="text-muted-foreground">Add images, documents, and pitch materials to showcase your venture</p>
+              </div>
+
+              <div className="space-y-6">
+                {/* File Upload Area */}
+                <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center hover:border-primary/50 transition-colors">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    multiple
+                    accept="image/*,.pdf,.doc,.docx,.ppt,.pptx"
+                    onChange={handleFileUpload}
+                    className="hidden"
+                  />
+                  <div className="space-y-4">
+                    <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
+                      <Upload className="w-8 h-8 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold mb-2">Upload Files</h3>
+                      <p className="text-muted-foreground mb-4">
+                        Drag and drop files here, or click to browse
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 text-lg"
+                      >
+                        Choose Files
+                      </button>
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      Supported formats: Images (JPG, PNG, GIF), Documents (PDF, DOC, PPT)
+                      <br />
+                      Max file size: 10MB per file
+                    </div>
+                  </div>
+                </div>
+
+                {/* Uploaded Files Display */}
+                {uploadedFiles.length > 0 && (
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold">Uploaded Files ({uploadedFiles.length})</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {uploadedFiles.map((file, index) => (
+                        <div key={index} className="border rounded-lg p-4 hover:bg-muted/50 transition-colors">
+                          <div className="flex items-start gap-3">
+                            <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                              {file.type.startsWith('image/') ? (
+                                <Image className="w-5 h-5 text-primary" />
+                              ) : (
+                                <FileText className="w-5 h-5 text-primary" />
+                              )}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-sm truncate">{file.name}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {(file.size / 1024 / 1024).toFixed(2)} MB
+                              </p>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => removeFile(index)}
+                              className="text-destructive hover:bg-destructive/10 p-1 rounded transition-colors"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      File upload cost: {uploadedFiles.length * 10} BUZ tokens
+                    </div>
+                  </div>
+                )}
+
+                {/* Collaboration Settings */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold">Collaboration Settings</h3>
+                  <div className="space-y-3">
+                    <label className="flex items-center gap-3 p-4 border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
+                      <input
+                        type="checkbox"
+                        checked={formData.isPublic}
+                        onChange={(e) => handleInputChange('isPublic', e.target.checked)}
+                        className="w-5 h-5"
+                      />
+                      <div>
+                        <div className="font-medium">Make venture public</div>
+                        <div className="text-sm text-muted-foreground">
+                          Allow other users to discover and view your venture
+                        </div>
+                      </div>
+                    </label>
+                    <label className="flex items-center gap-3 p-4 border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
+                      <input
+                        type="checkbox"
+                        checked={formData.allowApplications}
+                        onChange={(e) => handleInputChange('allowApplications', e.target.checked)}
+                        className="w-5 h-5"
+                      />
+                      <div>
+                        <div className="font-medium">Allow team applications</div>
+                        <div className="text-sm text-muted-foreground">
+                          Let other users apply to join your venture team
+                        </div>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+
+                {/* Final Review */}
+                <div className="p-6 bg-gradient-to-r from-primary/5 to-accent/5 border border-primary/20 rounded-lg">
+                  <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                    <Trophy className="w-5 h-5 text-primary" />
+                    Venture Summary
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <p className="font-medium text-muted-foreground">Venture Name</p>
+                      <p className="text-lg font-semibold">{formData.name}</p>
+                    </div>
+                    <div>
+                      <p className="font-medium text-muted-foreground">Tier</p>
+                      <p className="text-lg font-semibold">{tiers.find(t => t.value === formData.tier)?.label}</p>
+                    </div>
+                    <div>
+                      <p className="font-medium text-muted-foreground">Team Size</p>
+                      <p className="text-lg font-semibold">{formData.maxTeamSize} members</p>
+                    </div>
+                    <div>
+                      <p className="font-medium text-muted-foreground">Files Uploaded</p>
+                      <p className="text-lg font-semibold">{uploadedFiles.length} files</p>
+                    </div>
+                    <div className="md:col-span-2">
+                      <p className="font-medium text-muted-foreground">Total BUZ Cost</p>
+                      <p className="text-2xl font-bold text-primary">{totalBuzCost.toLocaleString()} BUZ</p>
                     </div>
                   </div>
                 </div>
