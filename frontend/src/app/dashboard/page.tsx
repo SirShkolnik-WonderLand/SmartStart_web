@@ -23,7 +23,7 @@ import {
   Wallet,
   TrendingDown
 } from 'lucide-react'
-import { apiService, User, Venture } from '@/lib/api-unified'
+import { apiService, User, Venture, UserAnalytics } from '@/lib/api-unified'
 import RealtimeDashboard from '@/components/realtime/RealtimeDashboard'
 import Link from 'next/link'
 
@@ -66,7 +66,7 @@ import Link from 'next/link'
 export default function DashboardPage() {
   const [user, setUser] = useState<User | null>(null)
   const [userId, setUserId] = useState<string | null>(null)
-  const [analytics, setAnalytics] = useState<AnalyticsData | null>(null)
+  const [analytics, setAnalytics] = useState<UserAnalytics | null>(null)
   const [ventures, setVentures] = useState<Venture[]>([])
   const [offers, setOffers] = useState<Offer[]>([])
   const [buzBalance, setBuzBalance] = useState<{balance: number, staked: number, available: number, total_earned: number} | null>(null)
@@ -330,7 +330,7 @@ export default function DashboardPage() {
 
         // Process results
         if (analyticsResponse.status === 'fulfilled' && analyticsResponse.value && (analyticsResponse.value as { success: boolean }).success) {
-          setAnalytics((analyticsResponse.value as { success: boolean; data: AnalyticsData }).data)
+          setAnalytics((analyticsResponse.value as { success: boolean; data: UserAnalytics }).data)
         }
         if (venturesResponse.status === 'fulfilled' && venturesResponse.value && (venturesResponse.value as { success: boolean }).success) {
           setVentures((venturesResponse.value as { success: boolean; data: Venture[] }).data)

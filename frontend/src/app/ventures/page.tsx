@@ -18,13 +18,13 @@ import {
   Globe
 } from 'lucide-react'
 import Link from 'next/link'
-import { apiService, Venture, AnalyticsData } from '@/lib/api-unified'
+import { apiService, Venture, UserAnalytics } from '@/lib/api-unified'
 
 // Venture interface is now imported from api-comprehensive
 
 export default function VenturesPage() {
   const [ventures, setVentures] = useState<Venture[]>([])
-  const [analytics, setAnalytics] = useState<AnalyticsData | null>(null)
+  const [analytics, setAnalytics] = useState<UserAnalytics | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { apiService, AnalyticsData } from '@/lib/api-unified'
+import { apiService, UserAnalytics } from '@/lib/api-unified'
 import { 
   TrendingUp, 
   Users, 
@@ -21,7 +21,7 @@ interface AnalyticsDashboardProps {
 }
 
 export function AnalyticsDashboard({ timeRange = '30d' }: AnalyticsDashboardProps) {
-  const [analytics, setAnalytics] = useState<AnalyticsData | null>(null)
+  const [analytics, setAnalytics] = useState<UserAnalytics | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [selectedMetric, setSelectedMetric] = useState<'ventures' | 'users' | 'companies' | 'teams'>('ventures')
 

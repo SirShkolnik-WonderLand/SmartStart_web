@@ -1,14 +1,14 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { apiService, Team, AnalyticsData } from '@/lib/api-unified'
+import { apiService, Team, UserAnalytics } from '@/lib/api-unified'
 import { Users, Target, TrendingUp, Plus, Search, Calendar, Award, UserPlus, Crown, BarChart3, ArrowLeft } from 'lucide-react'
 import { TeamForm } from '@/components/team/TeamForm'
 import { TeamMemberManagement } from '@/components/team/collaboration'
 
 export default function TeamsPage() {
   const [teams, setTeams] = useState<Team[]>([])
-  const [analytics, setAnalytics] = useState<AnalyticsData | null>(null)
+  const [analytics, setAnalytics] = useState<UserAnalytics | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [showCreateModal, setShowCreateModal] = useState(false)
