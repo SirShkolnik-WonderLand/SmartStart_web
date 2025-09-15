@@ -3,9 +3,11 @@
  * Single source of truth for all API communications
  */
 
-const API_BASE = process.env.NODE_ENV === 'production' 
-  ? 'https://smartstart-python-brain.onrender.com' 
-  : 'http://localhost:5000'
+// Prefer the same API base as the Node API in production to avoid 401s from the Python service
+// You can override with NEXT_PUBLIC_API_URL if needed
+const API_BASE = process.env.NODE_ENV === 'production'
+  ? (process.env.NEXT_PUBLIC_API_URL || 'https://smartstart-api.onrender.com')
+  : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001')
 
 // ============================================================================
 // INTERFACES
