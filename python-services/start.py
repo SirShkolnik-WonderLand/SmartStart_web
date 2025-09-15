@@ -5,7 +5,7 @@ SmartStart Python Brain - Production Startup Script
 
 import os
 import sys
-from clean_brain_fixed import app
+from refactored_brain import app
 
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
