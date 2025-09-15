@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { comprehensiveApiService as apiService, LeaderboardEntry, Badge, User } from '@/lib/api-comprehensive'
+import { apiService, LeaderboardEntry, Badge, User } from '@/lib/api-unified'
 import { Trophy, Medal, Award, Star, Crown, Zap, Target, Filter } from 'lucide-react'
 
 export default function LeaderboardPage() {

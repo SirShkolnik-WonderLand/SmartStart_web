@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Search, Filter, Users, MapPin, Calendar, Star, Coins, Zap, Target, Building2, Briefcase, DollarSign, Clock, Eye, Heart, Share2, MessageCircle } from 'lucide-react'
-import { comprehensiveApiService as apiService } from '@/lib/api-comprehensive'
+import { apiService } from '@/lib/api-unified'
 
 interface Venture {
   id: string

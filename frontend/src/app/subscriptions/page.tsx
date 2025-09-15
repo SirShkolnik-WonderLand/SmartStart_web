@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { comprehensiveApiService as apiService, SubscriptionPlan, UserSubscription, Invoice } from '@/lib/api-comprehensive'
+import { apiService, SubscriptionPlan, UserSubscription, Invoice } from '@/lib/api-unified'
 import { 
   CreditCard, 
   CheckCircle, 

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { comprehensiveApiService as apiService, Team, User, Company, Venture } from '@/lib/api-comprehensive'
+import { apiService, Team, User, Company, Venture } from '@/lib/api-unified'
 import { Users, Target, UserPlus, Check, Building2 } from 'lucide-react'
 
 interface TeamFormProps {

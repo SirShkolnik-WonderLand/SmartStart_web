@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { comprehensiveApiService as apiService, Venture, User } from '@/lib/api-comprehensive'
+import { apiService, Venture, User } from '@/lib/api-unified'
 import { ArrowLeft, Building2, Users, TrendingUp, Briefcase, CheckCircle, AlertCircle, Save } from 'lucide-react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'

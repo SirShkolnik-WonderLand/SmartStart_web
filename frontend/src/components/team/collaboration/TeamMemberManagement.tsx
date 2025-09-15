@@ -17,7 +17,7 @@ import {
   Target,
   TrendingUp
 } from 'lucide-react'
-import { comprehensiveApiService as apiService, TeamMember, User, Team } from '@/lib/api-comprehensive'
+import { apiService, TeamMember, User, Team } from '@/lib/api-unified'
 import { TeamInvitation, TeamRole, TeamContribution, TeamGoal } from './types/team-collaboration.types'
 import { TEAM_ROLES, CONTRIBUTION_TYPES, GOAL_PRIORITIES, GOAL_STATUSES } from './constants/team-constants'
 import TeamInvitationModal from './invitations/TeamInvitationModal'

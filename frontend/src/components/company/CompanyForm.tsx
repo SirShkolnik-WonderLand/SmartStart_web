@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { comprehensiveApiService as apiService, Company } from '@/lib/api-comprehensive'
+import { apiService, Company } from '@/lib/api-unified'
 import { Building, Globe, MapPin, Calendar, Tag, X, Check } from 'lucide-react'
 
 interface CompanyFormProps {

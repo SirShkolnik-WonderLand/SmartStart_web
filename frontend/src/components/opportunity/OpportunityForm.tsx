@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { comprehensiveApiService as apiService, Role, Venture } from '@/lib/api-comprehensive'
+import { apiService, Role, Venture } from '@/lib/api-unified'
 import { Target, Users, DollarSign, CheckCircle, X, Check, Briefcase } from 'lucide-react'
 
 interface OpportunityFormProps {

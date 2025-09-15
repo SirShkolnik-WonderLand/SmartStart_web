@@ -14,7 +14,7 @@ import {
   Filter,
   Search
 } from 'lucide-react'
-import { comprehensiveApiService as apiService, Offer } from '@/lib/api-comprehensive'
+import { apiService, Offer } from '@/lib/api-unified'
 
 export default function ApprovalsPage() {
   const [offers, setOffers] = useState<Offer[]>([])

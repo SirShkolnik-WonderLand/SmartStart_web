@@ -325,6 +325,61 @@ export interface LegalPackStatus {
   documents?: Array<{ id: string; name: string; status: string; signedAt?: string }>
 }
 
+// Journey Management Interfaces
+export interface JourneyInitialization {
+  journey_initialized: boolean
+  stages_created: number
+  user_id: string
+  timestamp: string
+}
+
+export interface JourneyStatus {
+  userStates: Array<{
+    id: string
+    status: string
+    stage: {
+      id: string
+      name: string
+      description: string
+      order: number
+    }
+    startedAt?: string
+    completedAt?: string
+  }>
+  progress: {
+    completedStages: number
+    totalStages: number
+    percentage: number
+  }
+  currentStage?: {
+    id: string
+    name: string
+    order: number
+  }
+  nextStage?: {
+    id: string
+    name: string
+    order: number
+  }
+}
+
+export interface JourneyProgressUpdate {
+  success: boolean
+  stage_updated: boolean
+  progress_percentage: number
+  current_stage: string
+  next_stage?: string
+}
+
+export interface JourneyStageCompletion {
+  success: boolean
+  stage_completed: boolean
+  stage_id: string
+  stage_name: string
+  completion_data: Record<string, unknown>
+  progress_percentage: number
+}
+
 // ============================================================================
 // UNIFIED API SERVICE CLASS
 // ============================================================================
@@ -684,6 +739,64 @@ class UnifiedAPIService {
       return error
     }
     return 'An unexpected error occurred'
+  }
+
+  // ============================================================================
+  // JOURNEY MANAGEMENT
+  // ============================================================================
+
+  async initializeJourney(userId: string, token?: string): Promise<ApiResponse<JourneyInitialization>> {
+    try {
+      // Temporarily set the token if provided
+      if (token) {
+        localStorage.setItem('auth-token', token)
+        this.token = token
+      }
+      
+      const response = await this.request<JourneyInitialization>(`/api/journey/initialize/${userId}`, {
+        method: 'POST'
+      })
+      return { success: true, data: response.data }
+    } catch (error) {
+      console.error('Error initializing journey:', error)
+      return { success: false, data: undefined, error: 'Failed to initialize journey' }
+    }
+  }
+
+  async getJourneyStatus(userId: string): Promise<ApiResponse<JourneyStatus>> {
+    try {
+      const response = await this.request<JourneyStatus>(`/api/journey/status/${userId}`)
+      return { success: true, data: response.data }
+    } catch (error) {
+      console.error('Error fetching journey status:', error)
+      return { success: false, data: undefined, error: 'Failed to fetch journey status' }
+    }
+  }
+
+  async updateJourneyProgress(userId: string, action: string, data: Record<string, unknown> = {}): Promise<ApiResponse<JourneyProgressUpdate>> {
+    try {
+      const response = await this.request<JourneyProgressUpdate>(`/api/journey/progress/${userId}`, {
+        method: 'POST',
+        body: JSON.stringify({ action, data })
+      })
+      return { success: true, data: response.data }
+    } catch (error) {
+      console.error('Error updating journey progress:', error)
+      return { success: false, data: undefined, error: 'Failed to update journey progress' }
+    }
+  }
+
+  async completeJourneyStage(userId: string, stageId: string, data: Record<string, unknown> = {}): Promise<ApiResponse<JourneyStageCompletion>> {
+    try {
+      const response = await this.request<JourneyStageCompletion>(`/api/journey/complete/${userId}`, {
+        method: 'POST',
+        body: JSON.stringify({ stageId, data })
+      })
+      return { success: true, data: response.data }
+    } catch (error) {
+      console.error('Error completing journey stage:', error)
+      return { success: false, data: undefined, error: 'Failed to complete journey stage' }
+    }
   }
 
   // ============================================================================

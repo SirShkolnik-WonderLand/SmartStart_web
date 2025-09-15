@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { comprehensiveApiService as apiService, User, UserProfile as UserProfileType, Badge, LeaderboardEntry } from '@/lib/api-comprehensive'
+import { apiService, User, UserProfile as UserProfileType, Badge, LeaderboardEntry } from '@/lib/api-unified'
 import { 
   User as UserIcon, 
   Mail, 

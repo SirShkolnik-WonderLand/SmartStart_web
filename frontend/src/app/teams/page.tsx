@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { comprehensiveApiService as apiService, Team, AnalyticsData } from '@/lib/api-comprehensive'
+import { apiService, Team, AnalyticsData } from '@/lib/api-unified'
 import { Users, Target, TrendingUp, Plus, Search, Calendar, Award, UserPlus, Crown, BarChart3, ArrowLeft } from 'lucide-react'
 import { TeamForm } from '@/components/team/TeamForm'
 import { TeamMemberManagement } from '@/components/team/collaboration'

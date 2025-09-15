@@ -1,7 +1,7 @@
 'use client'
 
 import { VentureCreationProvider, VentureCreationForm } from './creation'
-import { Venture } from '@/lib/api-comprehensive'
+import { Venture } from '@/lib/api-unified'
 
 interface MultiStepVentureFormProps {
   isOpen: boolean

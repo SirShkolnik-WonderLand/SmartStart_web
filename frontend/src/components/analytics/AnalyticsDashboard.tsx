@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { comprehensiveApiService as apiService, AnalyticsData } from '@/lib/api-comprehensive'
+import { apiService, AnalyticsData } from '@/lib/api-unified'
 import { 
   TrendingUp, 
   Users, 

@@ -18,7 +18,7 @@ import {
   Globe
 } from 'lucide-react'
 import Link from 'next/link'
-import { comprehensiveApiService as apiService, Venture, AnalyticsData } from '@/lib/api-comprehensive'
+import { apiService, Venture, AnalyticsData } from '@/lib/api-unified'
 
 // Venture interface is now imported from api-comprehensive
 

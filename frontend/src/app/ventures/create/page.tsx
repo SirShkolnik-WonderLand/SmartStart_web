@@ -4,7 +4,7 @@ import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { ArrowLeft, Building2, Briefcase, Users, DollarSign, Tag, CheckCircle, Upload, Image, FileText, Coins, Zap, Star, Trophy, Target } from 'lucide-react'
-import { comprehensiveApiService as apiService } from '@/lib/api-comprehensive'
+import { apiService } from '@/lib/api-unified'
 
 const industries = [
   'Technology', 'Healthcare', 'Finance', 'Education', 'E-commerce', 'Manufacturing',

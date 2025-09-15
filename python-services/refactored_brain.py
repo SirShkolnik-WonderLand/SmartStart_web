@@ -1223,6 +1223,620 @@ def internal_error(error):
     )), 500
 
 # ============================================================================
+# AUTHENTICATION & REGISTRATION ENDPOINTS
+# ============================================================================
+
+@app.route('/api/auth/register', methods=['POST'])
+def register_user():
+    """Register a new user with comprehensive validation"""
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify(create_response(
+                success=False,
+                error="Request body required"
+            )), 400
+        
+        # Validate required fields
+        required_fields = ['firstName', 'lastName', 'email', 'password']
+        for field in required_fields:
+            if field not in data or not data[field]:
+                return jsonify(create_response(
+                    success=False,
+                    error=f"Missing required field: {field}"
+                )), 400
+        
+        # Validate email format
+        import re
+        email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        if not re.match(email_pattern, data['email']):
+            return jsonify(create_response(
+                success=False,
+                error="Invalid email format"
+            )), 400
+        
+        # Validate password strength
+        if len(data['password']) < 8:
+            return jsonify(create_response(
+                success=False,
+                error="Password must be at least 8 characters long"
+            )), 400
+        
+        # Check if user already exists
+        existing_user = db.get_user_by_email(data['email'])
+        if existing_user:
+            return jsonify(create_response(
+                success=False,
+                error="User with this email already exists"
+            )), 409
+        
+        # Hash password
+        import bcrypt
+        password_hash = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+        
+        # Create user data
+        user_data = {
+            'firstName': data['firstName'],
+            'lastName': data['lastName'],
+            'email': data['email'],
+            'password': password_hash,
+            'name': f"{data['firstName']} {data['lastName']}",
+            'role': 'TEAM_MEMBER',
+            'status': 'ACTIVE',
+            'created_at': datetime.now().isoformat()
+        }
+        
+        # Create user in database
+        user = db.create_user(user_data)
+        
+        if not user:
+            return jsonify(create_response(
+                success=False,
+                error="Failed to create user"
+            )), 500
+        
+        # Generate JWT token
+        token_payload = {
+            'id': user['id'],
+            'email': user['email'],
+            'role': user['role'],
+            'exp': datetime.now() + timedelta(days=7)
+        }
+        token = jwt.encode(token_payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
+        
+        # Initialize user journey
+        try:
+            journey_result = db.initialize_user_journey(user['id'])
+            if not journey_result['success']:
+                logger.warning(f"Failed to initialize journey for user {user['id']}: {journey_result.get('error')}")
+        except Exception as journey_error:
+            logger.warning(f"Journey initialization error for user {user['id']}: {journey_error}")
+        
+        return jsonify(create_response(
+            success=True,
+            data={
+                'user': {
+                    'id': user['id'],
+                    'email': user['email'],
+                    'firstName': user['firstName'],
+                    'lastName': user['lastName'],
+                    'name': user['name'],
+                    'role': user['role'],
+                    'createdAt': user['created_at']
+                },
+                'token': token
+            },
+            message="User registered successfully"
+        )), 201
+        
+    except Exception as e:
+        logger.error(f"Error registering user: {e}")
+        return jsonify(create_response(
+            success=False,
+            error="Internal server error"
+        )), 500
+
+@app.route('/api/auth/login', methods=['POST'])
+def login_user():
+    """Authenticate user and return JWT token"""
+    try:
+        data = request.get_json()
+        if not data or 'email' not in data or 'password' not in data:
+            return jsonify(create_response(
+                success=False,
+                error="Email and password required"
+            )), 400
+        
+        # Get user by email
+        user = db.get_user_by_email(data['email'])
+        if not user:
+            return jsonify(create_response(
+                success=False,
+                error="Invalid credentials"
+            )), 401
+        
+        # Verify password
+        import bcrypt
+        if not bcrypt.checkpw(data['password'].encode('utf-8'), user['password'].encode('utf-8')):
+            return jsonify(create_response(
+                success=False,
+                error="Invalid credentials"
+            )), 401
+        
+        # Generate JWT token
+        token_payload = {
+            'id': user['id'],
+            'email': user['email'],
+            'role': user['role'],
+            'exp': datetime.now() + timedelta(days=7)
+        }
+        token = jwt.encode(token_payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
+        
+        return jsonify(create_response(
+            success=True,
+            data={
+                'user': {
+                    'id': user['id'],
+                    'email': user['email'],
+                    'firstName': user['firstName'],
+                    'lastName': user['lastName'],
+                    'name': user['name'],
+                    'role': user['role'],
+                    'createdAt': user['created_at']
+                },
+                'token': token
+            },
+            message="Login successful"
+        )), 200
+        
+    except Exception as e:
+        logger.error(f"Error logging in user: {e}")
+        return jsonify(create_response(
+            success=False,
+            error="Internal server error"
+        )), 500
+
+@app.route('/api/auth/me', methods=['GET'])
+@require_auth
+def get_current_user():
+    """Get current authenticated user"""
+    try:
+        user_id = g.current_user['id']
+        user = db.get_user_by_id(user_id)
+        
+        if not user:
+            return jsonify(create_response(
+                success=False,
+                error="User not found"
+            )), 404
+        
+        return jsonify(create_response(
+            success=True,
+            data={
+                'id': user['id'],
+                'email': user['email'],
+                'firstName': user['firstName'],
+                'lastName': user['lastName'],
+                'name': user['name'],
+                'role': user['role'],
+                'status': user['status'],
+                'createdAt': user['created_at']
+            }
+        )), 200
+        
+    except Exception as e:
+        logger.error(f"Error getting current user: {e}")
+        return jsonify(create_response(
+            success=False,
+            error="Internal server error"
+        )), 500
+
+# ============================================================================
+# BUZ TOKEN MANAGEMENT ENDPOINTS
+# ============================================================================
+
+@app.route('/api/v1/buz/supply', methods=['GET'])
+def get_buz_supply():
+    """Get BUZ token supply information"""
+    try:
+        supply_data = db.get_buz_supply()
+        return jsonify(create_response(
+            success=True,
+            data=supply_data
+        )), 200
+    except Exception as e:
+        logger.error(f"Error getting BUZ supply: {e}")
+        return jsonify(create_response(success=False, error=str(e))), 500
+
+@app.route('/api/v1/buz/balance/<user_id>', methods=['GET'])
+@require_auth
+def get_buz_balance(user_id):
+    """Get user's BUZ token balance"""
+    try:
+        balance = db.get_user_buz_balance(user_id)
+        return jsonify(create_response(
+            success=True,
+            data=balance
+        )), 200
+    except Exception as e:
+        logger.error(f"Error getting BUZ balance for user {user_id}: {e}")
+        return jsonify(create_response(success=False, error=str(e))), 500
+
+@app.route('/api/v1/buz/transfer', methods=['POST'])
+@require_auth
+def transfer_buz_tokens():
+    """Transfer BUZ tokens between users"""
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify(create_response(
+                success=False,
+                error="Request body required"
+            )), 400
+        
+        required_fields = ['to_user_id', 'amount']
+        for field in required_fields:
+            if field not in data:
+                return jsonify(create_response(
+                    success=False,
+                    error=f"Missing required field: {field}"
+                )), 400
+        
+        from_user_id = g.current_user['id']
+        to_user_id = data['to_user_id']
+        amount = float(data['amount'])
+        
+        if amount <= 0:
+            return jsonify(create_response(
+                success=False,
+                error="Amount must be positive"
+            )), 400
+        
+        # Check if user has sufficient balance
+        sender_balance = db.get_user_buz_balance(from_user_id)
+        if sender_balance['balance'] < amount:
+            return jsonify(create_response(
+                success=False,
+                error="Insufficient BUZ token balance"
+            )), 400
+        
+        # Perform transfer
+        result = db.transfer_buz_tokens(from_user_id, to_user_id, amount)
+        
+        if result['success']:
+            return jsonify(create_response(
+                success=True,
+                data={
+                    'transfer_id': result['transfer_id'],
+                    'from_user_id': from_user_id,
+                    'to_user_id': to_user_id,
+                    'amount': amount,
+                    'new_balance': result['new_balance']
+                },
+                message="BUZ tokens transferred successfully"
+            )), 200
+        else:
+            return jsonify(create_response(
+                success=False,
+                error=result.get('error', 'Transfer failed')
+            )), 400
+            
+    except Exception as e:
+        logger.error(f"Error transferring BUZ tokens: {e}")
+        return jsonify(create_response(success=False, error=str(e))), 500
+
+@app.route('/api/v1/buz/stake', methods=['POST'])
+@require_auth
+def stake_buz_tokens():
+    """Stake BUZ tokens for rewards"""
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify(create_response(
+                success=False,
+                error="Request body required"
+            )), 400
+        
+        required_fields = ['amount', 'duration']
+        for field in required_fields:
+            if field not in data:
+                return jsonify(create_response(
+                    success=False,
+                    error=f"Missing required field: {field}"
+                )), 400
+        
+        user_id = g.current_user['id']
+        amount = float(data['amount'])
+        duration = int(data['duration'])  # in days
+        
+        if amount <= 0:
+            return jsonify(create_response(
+                success=False,
+                error="Amount must be positive"
+            )), 400
+        
+        if duration < 1:
+            return jsonify(create_response(
+                success=False,
+                error="Duration must be at least 1 day"
+            )), 400
+        
+        # Check if user has sufficient balance
+        user_balance = db.get_user_buz_balance(user_id)
+        if user_balance['balance'] < amount:
+            return jsonify(create_response(
+                success=False,
+                error="Insufficient BUZ token balance"
+            )), 400
+        
+        # Create staking record
+        result = db.stake_buz_tokens(user_id, amount, duration)
+        
+        if result['success']:
+            return jsonify(create_response(
+                success=True,
+                data={
+                    'stake_id': result['stake_id'],
+                    'user_id': user_id,
+                    'amount': amount,
+                    'duration': duration,
+                    'apy': result.get('apy', 0),
+                    'expected_rewards': result.get('expected_rewards', 0),
+                    'stake_date': result['stake_date'],
+                    'maturity_date': result['maturity_date']
+                },
+                message="BUZ tokens staked successfully"
+            )), 200
+        else:
+            return jsonify(create_response(
+                success=False,
+                error=result.get('error', 'Staking failed')
+            )), 400
+            
+    except Exception as e:
+        logger.error(f"Error staking BUZ tokens: {e}")
+        return jsonify(create_response(success=False, error=str(e))), 500
+
+@app.route('/api/v1/buz/earn', methods=['POST'])
+@require_auth
+def earn_buz_tokens():
+    """Earn BUZ tokens for platform activity"""
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify(create_response(
+                success=False,
+                error="Request body required"
+            )), 400
+        
+        required_fields = ['amount', 'activity']
+        for field in required_fields:
+            if field not in data:
+                return jsonify(create_response(
+                    success=False,
+                    error=f"Missing required field: {field}"
+                )), 400
+        
+        user_id = g.current_user['id']
+        amount = float(data['amount'])
+        activity = data['activity']
+        source_system = data.get('source_system', 'platform')
+        source_id = data.get('source_id')
+        
+        if amount <= 0:
+            return jsonify(create_response(
+                success=False,
+                error="Amount must be positive"
+            )), 400
+        
+        # Award BUZ tokens
+        result = db.earn_buz_tokens(user_id, amount, activity, source_system, source_id)
+        
+        if result['success']:
+            return jsonify(create_response(
+                success=True,
+                data={
+                    'transaction_id': result['transaction_id'],
+                    'user_id': user_id,
+                    'amount': amount,
+                    'activity': activity,
+                    'new_balance': result['new_balance'],
+                    'total_earned': result['total_earned']
+                },
+                message="BUZ tokens earned successfully"
+            )), 200
+        else:
+            return jsonify(create_response(
+                success=False,
+                error=result.get('error', 'Failed to earn BUZ tokens')
+            )), 400
+            
+    except Exception as e:
+        logger.error(f"Error earning BUZ tokens: {e}")
+        return jsonify(create_response(success=False, error=str(e))), 500
+
+# ============================================================================
+# JOURNEY MANAGEMENT ENDPOINTS
+# ============================================================================
+
+@app.route('/api/journey/status/<user_id>', methods=['GET'])
+@require_auth
+def get_journey_status(user_id):
+    """Get user's journey status and progress"""
+    try:
+        # Get user's journey states
+        user_states = db.get_user_journey_states(user_id)
+        
+        if not user_states:
+            # Create initial journey states if none exist
+            stages = db.get_all_journey_stages()
+            for stage in stages:
+                db.create_user_journey_state(user_id, stage['id'], 'NOT_STARTED')
+            user_states = db.get_user_journey_states(user_id)
+        
+        # Calculate progress
+        total_stages = len(user_states)
+        completed_stages = len([s for s in user_states if s['status'] == 'COMPLETED'])
+        percentage = round((completed_stages / total_stages) * 100) if total_stages > 0 else 0
+        
+        # Find current and next stages
+        current_stage = next((s for s in user_states if s['status'] == 'IN_PROGRESS'), None)
+        next_stage = next((s for s in user_states if s['status'] == 'NOT_STARTED'), None)
+        
+        return jsonify(create_response(
+            success=True,
+            data={
+                'userStates': user_states,
+                'progress': {
+                    'completedStages': completed_stages,
+                    'totalStages': total_stages,
+                    'percentage': percentage
+                },
+                'currentStage': current_stage,
+                'nextStage': next_stage
+            }
+        )), 200
+    except Exception as e:
+        logger.error(f"Error getting journey status for user {user_id}: {e}")
+        return jsonify(create_response(success=False, error=str(e))), 500
+
+@app.route('/api/journey/initialize/<user_id>', methods=['POST'])
+@require_auth
+def initialize_journey(user_id):
+    """Initialize user journey with all stages"""
+    try:
+        # Check if journey already exists
+        existing_states = db.get_user_journey_states(user_id)
+        if existing_states:
+            return jsonify(create_response(
+                success=True,
+                data={
+                    'journey_initialized': True,
+                    'stages_created': len(existing_states),
+                    'user_id': user_id,
+                    'timestamp': datetime.now().isoformat(),
+                    'message': 'Journey already initialized'
+                }
+            )), 200
+        
+        # Get all journey stages
+        stages = db.get_all_journey_stages()
+        if not stages:
+            return jsonify(create_response(
+                success=False,
+                error='No journey stages found in database'
+            )), 400
+        
+        # Create journey states for all stages
+        created_count = 0
+        for stage in stages:
+            try:
+                db.create_user_journey_state(
+                    user_id, 
+                    stage['id'], 
+                    'NOT_STARTED',
+                    {
+                        'stageName': stage['name'],
+                        'stageOrder': stage['order'],
+                        'initializedAt': datetime.now().isoformat()
+                    }
+                )
+                created_count += 1
+            except Exception as stage_error:
+                logger.warning(f"Failed to create journey state for stage {stage['id']}: {stage_error}")
+                continue
+        
+        return jsonify(create_response(
+            success=True,
+            data={
+                'journey_initialized': True,
+                'stages_created': created_count,
+                'user_id': user_id,
+                'timestamp': datetime.now().isoformat()
+            },
+            message=f'Journey initialized with {created_count} stages'
+        )), 200
+    except Exception as e:
+        logger.error(f"Error initializing journey for user {user_id}: {e}")
+        return jsonify(create_response(success=False, error=str(e))), 500
+
+@app.route('/api/journey/progress/<user_id>', methods=['POST'])
+@require_auth
+def update_journey_progress(user_id):
+    """Update user's journey progress"""
+    try:
+        data = request.get_json()
+        action = data.get('action')
+        progress_data = data.get('data', {})
+        
+        if not action:
+            return jsonify(create_response(
+                success=False,
+                error='Action is required'
+            )), 400
+        
+        # Update journey progress based on action
+        result = db.update_journey_progress(user_id, action, progress_data)
+        
+        if result['success']:
+            return jsonify(create_response(
+                success=True,
+                data={
+                    'stage_updated': True,
+                    'progress_percentage': result.get('percentage', 0),
+                    'current_stage': result.get('current_stage', ''),
+                    'next_stage': result.get('next_stage'),
+                    'action': action
+                }
+            )), 200
+        else:
+            return jsonify(create_response(
+                success=False,
+                error=result.get('error', 'Failed to update journey progress')
+            )), 400
+    except Exception as e:
+        logger.error(f"Error updating journey progress for user {user_id}: {e}")
+        return jsonify(create_response(success=False, error=str(e))), 500
+
+@app.route('/api/journey/complete/<user_id>', methods=['POST'])
+@require_auth
+def complete_journey_stage(user_id):
+    """Complete a specific journey stage"""
+    try:
+        data = request.get_json()
+        stage_id = data.get('stageId')
+        completion_data = data.get('data', {})
+        
+        if not stage_id:
+            return jsonify(create_response(
+                success=False,
+                error='Stage ID is required'
+            )), 400
+        
+        # Complete the journey stage
+        result = db.complete_journey_stage(user_id, stage_id, completion_data)
+        
+        if result['success']:
+            return jsonify(create_response(
+                success=True,
+                data={
+                    'stage_completed': True,
+                    'stage_id': stage_id,
+                    'stage_name': result.get('stage_name', ''),
+                    'completion_data': completion_data,
+                    'progress_percentage': result.get('percentage', 0)
+                }
+            )), 200
+        else:
+            return jsonify(create_response(
+                success=False,
+                error=result.get('error', 'Failed to complete journey stage')
+            )), 400
+    except Exception as e:
+        logger.error(f"Error completing journey stage for user {user_id}: {e}")
+        return jsonify(create_response(success=False, error=str(e))), 500
+
+# ============================================================================
 # APPLICATION STARTUP
 # ============================================================================
 

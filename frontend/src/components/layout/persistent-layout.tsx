@@ -25,7 +25,7 @@ import {
   Coins,
   Wallet
 } from 'lucide-react'
-import { comprehensiveApiService as apiService, User } from '@/lib/api-comprehensive'
+import { apiService, User } from '@/lib/api-unified'
 import { useThemeStore } from '@/store/useThemeStore'
 
 interface PersistentLayoutProps {

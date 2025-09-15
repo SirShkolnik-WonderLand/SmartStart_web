@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { comprehensiveApiService as apiService, Company, AnalyticsData } from '@/lib/api-comprehensive'
+import { apiService, Company, AnalyticsData } from '@/lib/api-unified'
 import { Building, Users, Calendar, TrendingUp, Plus, Search, Filter, Globe, MapPin } from 'lucide-react'
 import { CompanyForm } from '@/components/company/CompanyForm'
 

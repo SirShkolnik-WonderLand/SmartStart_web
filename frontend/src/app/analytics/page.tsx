@@ -12,7 +12,7 @@ import {
   Download,
   RefreshCw
 } from 'lucide-react'
-import { comprehensiveApiService as apiService, AnalyticsData } from '@/lib/api-comprehensive'
+import { apiService, AnalyticsData } from '@/lib/api-unified'
 
 export default function AnalyticsPage() {
   const [data, setData] = useState<AnalyticsData | null>(null)

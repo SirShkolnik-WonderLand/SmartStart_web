@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { comprehensiveApiService as apiService, JourneyStatus, SubscriptionPlan } from '@/lib/api-comprehensive'
+import { apiService, JourneyStatus, SubscriptionPlan } from '@/lib/api-unified'
 import { legalDocumentsApiService } from '@/lib/legal-documents-api'
 import { 
   CheckCircle, 

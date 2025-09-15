@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, ReactNode } from 'react'
 import { VentureCreationData, VentureCreationContextType, VentureCreationStep } from './types/venture-creation.types'
-import { comprehensiveApiService as apiService, Venture } from '@/lib/api-comprehensive'
+import { apiService, Venture } from '@/lib/api-unified'
 
 // Import step components
 import BasicInformationStep from './steps/BasicInformationStep'

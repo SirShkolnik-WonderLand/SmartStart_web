@@ -14,7 +14,7 @@ import {
   Clock,
   TrendingUp
 } from 'lucide-react'
-import { comprehensiveApiService as apiService, User as UserType } from '@/lib/api-comprehensive'
+import { apiService, User as UserType } from '@/lib/api-unified'
 
 // Extend User type to include bio property
 interface ExtendedUser extends UserType {

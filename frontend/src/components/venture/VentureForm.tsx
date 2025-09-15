@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { comprehensiveApiService as apiService, Venture } from '@/lib/api-comprehensive'
+import { apiService, Venture } from '@/lib/api-unified'
 import { Building2, Target, Users, DollarSign, Tag, X, Check, Sparkles } from 'lucide-react'
 
 interface VentureFormProps {

@@ -3,7 +3,7 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, ChevronLeft, ChevronRight, CheckCircle } from 'lucide-react'
 import { useVentureCreation } from './VentureCreationContext'
-import { Venture } from '@/lib/api-comprehensive'
+import { Venture } from '@/lib/api-unified'
 
 interface VentureCreationFormProps {
   isOpen: boolean

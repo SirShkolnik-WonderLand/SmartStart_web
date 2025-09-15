@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, UserPlus, Mail, Crown, Users, CheckCircle, AlertCircle } from 'lucide-react'
-import { comprehensiveApiService as apiService, User, Team, Venture } from '@/lib/api-comprehensive'
+import { apiService, User, Team, Venture } from '@/lib/api-unified'
 import { TeamInvitation, TeamRole } from '../types/team-collaboration.types'
 import { TEAM_ROLES, INVITATION_STATUSES } from '../constants/team-constants'
 
