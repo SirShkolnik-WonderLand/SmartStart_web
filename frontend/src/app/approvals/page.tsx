@@ -195,8 +195,8 @@ export default function ApprovalsPage() {
                         <Users className="w-5 h-5 text-primary" />
                       </div>
                       <div>
-                        <h3 className="font-medium text-foreground">{offer.user?.name || 'Unknown User'}</h3>
-                        <p className="text-sm text-foreground-muted">{offer.user?.email || 'No email'}</p>
+                        <h3 className="font-medium text-foreground">User {offer.userId}</h3>
+                        <p className="text-sm text-foreground-muted">Role ID: {offer.roleId}</p>
                       </div>
                       <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(offer.status)}`}>
                         {getStatusIcon(offer.status)}
