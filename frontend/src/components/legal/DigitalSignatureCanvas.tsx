@@ -24,7 +24,7 @@ interface DigitalSignatureCanvasProps {
   existingSignature?: string
 }
 
-export default function DigitalSignatureCanvas({
+export function DigitalSignatureCanvas({
   documentId,
   documentType,
   onSignatureComplete,
@@ -316,3 +316,5 @@ export default function DigitalSignatureCanvas({
     </div>
   )
 }
+
+export default DigitalSignatureCanvas

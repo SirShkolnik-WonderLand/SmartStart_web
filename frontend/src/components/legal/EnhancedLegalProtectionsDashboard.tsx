@@ -102,7 +102,7 @@ interface LegalStatus {
   riskLevel: 'MINIMAL' | 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL'
 }
 
-export default function EnhancedLegalProtectionsDashboard() {
+export function EnhancedLegalProtectionsDashboard() {
   const [templates, setTemplates] = useState<LegalTemplate[]>([])
   const [compliance, setCompliance] = useState<ComplianceStatus | null>(null)
   const [ipTheftDetections, setIpTheftDetections] = useState<IPTheftDetection[]>([])
@@ -569,3 +569,5 @@ export default function EnhancedLegalProtectionsDashboard() {
     </div>
   )
 }
+
+export default EnhancedLegalProtectionsDashboard

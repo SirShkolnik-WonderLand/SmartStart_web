@@ -81,7 +81,7 @@ interface RevenueSharingDashboardProps {
   onRefresh?: () => void
 }
 
-export default function RevenueSharingDashboard({ 
+export function RevenueSharingDashboard({ 
   ventureId, 
   userId, 
   onRefresh 
@@ -567,3 +567,5 @@ export default function RevenueSharingDashboard({
     </div>
   )
 }
+
+export default RevenueSharingDashboard

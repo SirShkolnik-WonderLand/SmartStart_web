@@ -25,7 +25,7 @@ interface StateMachineDashboardProps {
   className?: string;
 }
 
-const StateMachineDashboard: React.FC<StateMachineDashboardProps> = ({
+export const StateMachineDashboard: React.FC<StateMachineDashboardProps> = ({
   className = ''
 }) => {
   const [overview, setOverview] = useState<StateMachineOverview[]>([]);

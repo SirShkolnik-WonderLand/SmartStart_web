@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const authHeader = request.headers.get('authorization')
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -46,7 +46,8 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       }
     ]
 
-    const venture = ventures.find(v => v.id === params.id)
+    const { id } = await params
+    const venture = ventures.find(v => v.id === id)
     if (!venture) {
       return NextResponse.json({ success: false, error: 'Not Found' }, { status: 404 })
     }

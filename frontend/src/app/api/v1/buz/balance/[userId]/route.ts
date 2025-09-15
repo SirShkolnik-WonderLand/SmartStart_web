@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
     // Get authorization header
@@ -12,7 +12,7 @@ export async function GET(
     }
 
     const token = authHeader.split(' ')[1]
-    const { userId } = params
+    const { userId } = await params
 
     // Proxy to backend API
     const backendUrl = process.env.BACKEND_URL || 'https://smartstart-api.onrender.com'

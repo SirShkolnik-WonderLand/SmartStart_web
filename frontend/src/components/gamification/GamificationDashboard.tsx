@@ -62,7 +62,7 @@ interface GamificationDashboardProps {
   onRefresh?: () => void
 }
 
-export default function GamificationDashboard({ 
+export function GamificationDashboard({ 
   userId, 
   onRefresh 
 }: GamificationDashboardProps) {
@@ -474,3 +474,5 @@ export default function GamificationDashboard({
     </div>
   )
 }
+
+export default GamificationDashboard

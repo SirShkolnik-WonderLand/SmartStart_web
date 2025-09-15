@@ -40,7 +40,7 @@ interface RealtimeNotificationsProps {
   onDelete?: (notificationId: string) => void
 }
 
-export default function RealtimeNotifications({
+export function RealtimeNotifications({
   userId,
   onNotificationClick,
   onMarkAsRead,
@@ -431,3 +431,5 @@ export default function RealtimeNotifications({
     </div>
   )
 }
+
+export default RealtimeNotifications
