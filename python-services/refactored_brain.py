@@ -502,6 +502,63 @@ def logout_user():
             error=str(e)
         )), 500
 
+@app.route('/api/auth/reset-password', methods=['POST'])
+def reset_password():
+    """Reset password for a user (admin only for now)"""
+    try:
+        data = request.get_json()
+        email = data.get('email', '').strip().lower()
+        new_password = data.get('new_password', '')
+        
+        if not email or not new_password:
+            return jsonify(create_response(
+                success=False,
+                error="Email and new password are required"
+            )), 400
+        
+        if len(new_password) < 8:
+            return jsonify(create_response(
+                success=False,
+                error="Password must be at least 8 characters long"
+            )), 400
+        
+        # Get user by email
+        user = db.get_user_by_email(email)
+        if not user:
+            return jsonify(create_response(
+                success=False,
+                error="User not found"
+            )), 404
+        
+        # Hash new password
+        password_hash = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+        
+        # Update password in database
+        update_query = """
+            UPDATE "User" 
+            SET password = %s 
+            WHERE email = %s
+        """
+        
+        success = db._execute_query(update_query, (password_hash, email), fetch_one=False)
+        
+        if success:
+            return jsonify(create_response(
+                success=True,
+                message="Password updated successfully"
+            ))
+        else:
+            return jsonify(create_response(
+                success=False,
+                error="Failed to update password"
+            )), 500
+        
+    except Exception as e:
+        return jsonify(create_response(
+            success=False,
+            error=f"Failed to reset password: {str(e)}"
+        )), 500
+
 # ============================================================================
 # USER MANAGEMENT ENDPOINTS
 # ============================================================================
