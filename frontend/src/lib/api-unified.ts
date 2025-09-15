@@ -402,6 +402,47 @@ export interface Subscription {
   plan: BillingPlan
 }
 
+export interface AnalyticsData {
+  userStats: {
+    totalUsers: number
+    activeUsers: number
+    newUsers: number
+    userGrowth: number
+  }
+  ventureStats: {
+    totalVentures: number
+    activeVentures: number
+    newVentures: number
+    ventureGrowth: number
+  }
+  revenueStats: {
+    totalRevenue: number
+    monthlyRevenue: number
+    revenueGrowth: number
+    averageRevenuePerVenture: number
+  }
+  engagementStats: {
+    totalSessions: number
+    averageSessionDuration: number
+    pageViews: number
+    bounceRate: number
+  }
+  topVentures: Array<{
+    id: string
+    name: string
+    revenue: number
+    growth: number
+  }>
+  topUsers: Array<{
+    id: string
+    name: string
+    xp: number
+    ventures: number
+  }>
+  timeRange: string
+  lastUpdated: string
+}
+
 // ============================================================================
 // UNIFIED API SERVICE CLASS
 // ============================================================================
@@ -871,7 +912,7 @@ export default apiService
 // ============================================================================
 
 // Re-export commonly used types for backward compatibility
-export type { ApiResponse, User, Venture, BUZBalance, LegalDocument, SubscriptionPlan, Team, UmbrellaRelationship, BillingPlan, Subscription }
+export type { ApiResponse, User, Venture, BUZBalance, LegalDocument, SubscriptionPlan, Team, UmbrellaRelationship, BillingPlan, Subscription, AnalyticsData }
 
 // Legacy function exports for backward compatibility
 export const getCurrentUser = (userId: string) => apiService.getUser(userId)
