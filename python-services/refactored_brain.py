@@ -23,7 +23,8 @@ logger.info("Using direct database connection")
 app = Flask(__name__)
 CORS(app, origins=["https://smartstart-frontend.onrender.com", "https://smartstart-api.onrender.com"], 
      allow_headers=["Content-Type", "Authorization"], 
-     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
+     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+     supports_credentials=True)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
