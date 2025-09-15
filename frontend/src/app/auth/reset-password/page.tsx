@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { ArrowLeft, Lock, CheckCircle, AlertCircle, Eye, EyeOff } from 'lucide-react'
-import { comprehensiveApiService as apiService } from '@/lib/api-comprehensive'
+import { apiService } from '@/lib/api-unified'
 
 export default function ResetPasswordPage() {
   const [password, setPassword] = useState('')

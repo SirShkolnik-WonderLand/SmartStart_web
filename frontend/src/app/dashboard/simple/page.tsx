@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { apiService, User } from '@/lib/api'
+import { apiService, User } from '@/lib/api-unified'
 
 export default function SimpleDashboardPage() {
   const [user, setUser] = useState<User | null>(null)

@@ -47,7 +47,7 @@ services:
       - key: NODE_ENV
         value: production
       - key: NEXT_PUBLIC_API_URL
-        value: https://smartstart-api.onrender.com
+        value: https://smartstart-python-brain.onrender.com
       - key: NEXT_TELEMETRY_DISABLED
         value: "1"
     # Health check configuration
