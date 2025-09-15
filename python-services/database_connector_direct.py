@@ -142,7 +142,8 @@ class DirectDatabaseConnector:
     def update_user(self, user_id, data):
         """Update user in database"""
         # Build dynamic update query
-        set_clause = ', '.join([f"{col} = %s" for col in data.keys()])
+        # Quote identifiers to preserve case (e.g., "lastActive")
+        set_clause = ', '.join([f'"{col}" = %s' for col in data.keys()])
         values = list(data.values()) + [user_id]
         
         query = f"""
