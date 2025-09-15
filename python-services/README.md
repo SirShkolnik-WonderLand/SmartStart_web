@@ -33,9 +33,9 @@ python-services/
 │   ├── nodejs_connector.py        # Bridge to Node.js
 │   └── security_manager.py        # Security & validation
 ├── services/                       # Core Business Services
-│   ├── auth_service.py            # Authentication & authorization
+│   ├── authentication_service.py  # Enhanced authentication & authorization
 │   ├── user_service.py            # User management logic
-│   ├── venture_service.py         # Venture business logic
+│   ├── enhanced_venture_service.py # Enhanced venture business logic
 │   ├── legal_service.py           # Legal document logic
 │   ├── gamification_service.py    # Gamification logic
 │   ├── buz_token_service.py       # BUZ token logic
