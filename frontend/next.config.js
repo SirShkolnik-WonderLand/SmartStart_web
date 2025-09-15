@@ -40,12 +40,8 @@ const nextConfig = {
 
   // Build optimizations for Professional plan
   experimental: {
-    // Enable build caching
-    buildCache: true,
     // Optimize bundle size
     optimizeCss: true,
-    // Enable SWC minification
-    swcMinify: true
   },
 
   // Compiler optimizations
@@ -92,7 +88,6 @@ const nextConfig = {
   
   // Security
   reactStrictMode: true,
-  swcMinify: true,
 }
 
 module.exports = nextConfig

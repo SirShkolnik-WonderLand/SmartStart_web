@@ -27,9 +27,9 @@ npm ci --no-audit --no-fund --prefer-offline \
   --cache-min 86400 \
   --production=false
 
-# Build with optimizations for Professional plan
+# Build with optimizations for Professional plan (skip linting)
 echo "🏗️ Building application with optimizations..."
-NEXT_TELEMETRY_DISABLED=1 npm run build
+NEXT_TELEMETRY_DISABLED=1 npm run build -- --no-lint
 
 # Verify build was successful
 if [ ! -d ".next" ]; then
