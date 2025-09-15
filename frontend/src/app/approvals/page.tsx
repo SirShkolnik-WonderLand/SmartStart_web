@@ -206,34 +206,23 @@ export default function ApprovalsPage() {
                     
                     <div className="ml-13">
                       <p className="text-foreground-body mb-2">
-                        <strong>Role:</strong> {offer.role?.title || 'Unknown Role'}
+                        <strong>Role ID:</strong> {offer.roleId}
                       </p>
-                      {offer.notes && (
-                        <p className="text-foreground-muted text-sm mb-3">
-                          <strong>Notes:</strong> {offer.notes}
-                        </p>
-                      )}
-                      {offer.portfolioLink && (
-                        <a 
-                          href={offer.portfolioLink} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="text-primary hover:underline text-sm"
-                        >
-                          View Portfolio →
-                        </a>
-                      )}
+                      <p className="text-foreground-muted text-sm mb-3">
+                        <strong>Status:</strong> {offer.status}
+                      </p>
+                      <p className="text-foreground-muted text-sm mb-3">
+                        <strong>Created:</strong> {new Date(offer.createdAt).toLocaleDateString()}
+                      </p>
                       <div className="flex items-center gap-4 mt-3 text-xs text-foreground-muted">
                         <div className="flex items-center gap-1">
                           <Calendar className="w-3 h-3" />
                           {new Date(offer.createdAt).toLocaleDateString()}
                         </div>
-                        {offer.role?.ndaRequired && (
-                          <div className="flex items-center gap-1">
-                            <FileText className="w-3 h-3" />
-                            NDA Required
-                          </div>
-                        )}
+                        <div className="flex items-center gap-1">
+                          <FileText className="w-3 h-3" />
+                          Offer ID: {offer.id}
+                        </div>
                       </div>
                     </div>
                   </div>
