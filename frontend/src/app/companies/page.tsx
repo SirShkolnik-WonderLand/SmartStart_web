@@ -1,13 +1,13 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { apiService, Company, AnalyticsData } from '@/lib/api-unified'
+import { apiService, Company, UserAnalytics } from '@/lib/api-unified'
 import { Building, Users, Calendar, TrendingUp, Plus, Search, Filter, Globe, MapPin } from 'lucide-react'
 import { CompanyForm } from '@/components/company/CompanyForm'
 
 export default function CompaniesPage() {
   const [companies, setCompanies] = useState<Company[]>([])
-  const [analytics, setAnalytics] = useState<AnalyticsData | null>(null)
+  const [analytics, setAnalytics] = useState<UserAnalytics | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [filterIndustry, setFilterIndustry] = useState('all')
@@ -100,7 +100,7 @@ export default function CompaniesPage() {
           </div>
           <div className="text-2xl font-bold text-foreground mb-1">{companies.length}</div>
           <div className="text-sm text-foreground-muted">Total Companies</div>
-          <div className="text-xs text-success mt-1">+{analytics?.companyGrowth || 0}%</div>
+          <div className="text-xs text-success mt-1">+0%</div>
         </div>
 
         <div className="glass rounded-xl p-6 hover:glass-lg transition-all duration-200 group">
@@ -110,9 +110,9 @@ export default function CompaniesPage() {
             </div>
             <TrendingUp className="w-5 h-5 text-success" />
           </div>
-          <div className="text-2xl font-bold text-foreground mb-1">{analytics?.totalUsers || 0}</div>
-          <div className="text-sm text-foreground-muted">Active Members</div>
-          <div className="text-xs text-success mt-1">+{analytics?.userGrowth || 0}%</div>
+          <div className="text-2xl font-bold text-foreground mb-1">{analytics?.total_ventures || 0}</div>
+          <div className="text-sm text-foreground-muted">User Ventures</div>
+          <div className="text-xs text-success mt-1">+0%</div>
         </div>
 
         <div className="glass rounded-xl p-6 hover:glass-lg transition-all duration-200 group">
