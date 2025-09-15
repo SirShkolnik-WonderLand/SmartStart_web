@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { comprehensiveApiService as apiService } from '@/lib/api-comprehensive'
+import { apiService } from '@/lib/api-unified'
 import { 
   Eye, 
   EyeOff, 

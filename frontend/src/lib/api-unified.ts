@@ -3,10 +3,9 @@
  * Single source of truth for all API communications
  */
 
-// Prefer the same API base as the Node API in production to avoid 401s from the Python service
-// You can override with NEXT_PUBLIC_API_URL if needed
+// Prefer the Python service in production; override with NEXT_PUBLIC_API_URL if needed
 const API_BASE = process.env.NODE_ENV === 'production'
-  ? (process.env.NEXT_PUBLIC_API_URL || 'https://smartstart-api.onrender.com')
+  ? (process.env.NEXT_PUBLIC_API_URL || 'https://smartstart-python-brain.onrender.com')
   : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001')
 
 // ============================================================================
@@ -311,6 +310,21 @@ export interface VentureAnalytics {
   buzz_score: number
 }
 
+// Minimal interfaces used by dashboard helpers
+export interface Offer {
+  id: string
+  roleId: string
+  userId: string
+  status: string
+  createdAt: string
+}
+
+export interface LegalPackStatus {
+  signed: boolean
+  signedAt?: string
+  documents?: Array<{ id: string; name: string; status: string; signedAt?: string }>
+}
+
 // ============================================================================
 // UNIFIED API SERVICE CLASS
 // ============================================================================
@@ -364,6 +378,66 @@ class UnifiedAPIService {
   // ============================================================================
   // USER MANAGEMENT
   // ============================================================================
+
+  // Auth
+  async login(email: string, password: string): Promise<ApiResponse<{ user: User; token: string }>> {
+    const result = await this.request<{ user: User; token: string }>(`/api/auth/login`, {
+      method: 'POST',
+      body: JSON.stringify({ email, password })
+    })
+    if (result && (result as any).token) {
+      this.setToken((result as any).token as unknown as string)
+    }
+    return result
+  }
+
+  async register(userData: Record<string, unknown>): Promise<ApiResponse<{ user: User; token: string }>> {
+    const result = await this.request<{ user: User; token: string }>(`/api/auth/register`, {
+      method: 'POST',
+      body: JSON.stringify(userData)
+    })
+    if (result && (result as any).token) {
+      this.setToken((result as any).token as unknown as string)
+    }
+    return result
+  }
+
+  async forgotPassword(email: string): Promise<ApiResponse<any>> {
+    return this.request<any>(`/api/auth/forgot-password`, {
+      method: 'POST',
+      body: JSON.stringify({ email })
+    })
+  }
+
+  async validateResetToken(token: string): Promise<ApiResponse<any>> {
+    return this.request<any>(`/api/auth/validate-reset-token`, {
+      method: 'POST',
+      body: JSON.stringify({ token })
+    })
+  }
+
+  async resetPassword(token: string, password: string): Promise<ApiResponse<any>> {
+    return this.request<any>(`/api/auth/reset-password`, {
+      method: 'POST',
+      body: JSON.stringify({ token, password })
+    })
+  }
+
+  async logout(): Promise<ApiResponse<any>> {
+    try {
+      const resp = await this.request<any>(`/api/auth/logout`, { method: 'POST' })
+      this.clearToken()
+      return resp
+    } catch (e) {
+      this.clearToken()
+      return { success: true, message: 'Logged out' } as any
+    }
+  }
+
+  async getCurrentUser(): Promise<ApiResponse<User>> {
+    // If token encodes userId, callers may also use getUser(userId)
+    return this.request<User>(`/api/auth/me`)
+  }
 
   async getUser(userId: string): Promise<ApiResponse<User>> {
     return this.request<User>(`/api/v1/user/${userId}`)
@@ -539,6 +613,40 @@ class UnifiedAPIService {
 
   async getVentureAnalytics(ventureId: string): Promise<ApiResponse<VentureAnalytics>> {
     return this.request<VentureAnalytics>(`/api/v1/analytics/venture/${ventureId}`)
+  }
+
+  // Convenience for dashboard: derive userId from /api/auth/me
+  async getAnalytics(): Promise<ApiResponse<UserAnalytics>> {
+    const me = await this.getCurrentUser()
+    const userId = (me as any)?.data?.id
+    if (!userId) {
+      throw new Error('No user id available for analytics')
+    }
+    return this.getUserAnalytics(userId)
+  }
+
+  // ============================================================================
+  // DASHBOARD HELPERS (compatibility with legacy ApiService)
+  // ============================================================================
+
+  async getOffers(): Promise<ApiResponse<Offer[]>> {
+    // No dedicated Python route surfaced; return empty list for now
+    return { success: true, data: [], message: 'Not implemented in Python service yet', timestamp: new Date().toISOString(), requestId: 'offers-placeholder' }
+  }
+
+  async getUserDocumentStatus(): Promise<ApiResponse<LegalPackStatus>> {
+    const me = await this.getCurrentUser()
+    const userId = (me as any)?.data?.id
+    if (!userId) {
+      throw new Error('No user id available for legal status')
+    }
+    // Map to Python legal status endpoint
+    return this.request<LegalPackStatus>(`/api/v1/legal/status/${userId}`)
+  }
+
+  async getLeaderboard(): Promise<ApiResponse<any>> {
+    // Placeholder until Python endpoint exists
+    return { success: true, data: { entries: [] }, message: 'Not implemented in Python service yet', timestamp: new Date().toISOString(), requestId: 'leaderboard-placeholder' }
   }
 
   // ============================================================================

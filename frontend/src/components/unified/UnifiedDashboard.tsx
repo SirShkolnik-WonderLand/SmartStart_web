@@ -27,7 +27,7 @@ import {
 // Import existing components
 import UmbrellaDashboard from '@/components/umbrella/UmbrellaDashboard'
 import VentureManagementDashboard from '@/components/venture/VentureManagementDashboard'
-import { comprehensiveApiService as apiService } from '@/lib/api-comprehensive'
+import { apiService } from '@/lib/api-unified'
 
 interface UnifiedAnalytics {
   buz_summary: {
