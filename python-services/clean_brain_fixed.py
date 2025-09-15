@@ -28,6 +28,22 @@ CORS(app, origins=["https://smartstart-frontend.onrender.com", "https://smartsta
      allow_headers=["Content-Type", "Authorization"], 
      methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
 
+# Import and register enhanced registration routes
+try:
+    from routes.enhanced_registration_api import enhanced_registration_bp
+    app.register_blueprint(enhanced_registration_bp)
+    logger.info("✅ Enhanced registration routes registered")
+except ImportError as e:
+    logger.warning(f"⚠️ Could not import enhanced registration routes: {e}")
+
+# Import and register enhanced venture routes
+try:
+    from routes.enhanced_venture_api import enhanced_venture_bp
+    app.register_blueprint(enhanced_venture_bp)
+    logger.info("✅ Enhanced venture routes registered")
+except ImportError as e:
+    logger.warning(f"⚠️ Could not import enhanced venture routes: {e}")
+
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

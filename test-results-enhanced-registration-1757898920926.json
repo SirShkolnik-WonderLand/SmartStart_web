@@ -1,0 +1,65 @@
+{
+  "total": 11,
+  "passed": 2,
+  "failed": 9,
+  "tests": [
+    {
+      "name": "Health Check",
+      "status": "FAILED"
+    },
+    {
+      "name": "Create Registration State",
+      "status": "FAILED"
+    },
+    {
+      "name": "Update Step Progress",
+      "status": "FAILED"
+    },
+    {
+      "name": "Get Registration Progress",
+      "status": "FAILED"
+    },
+    {
+      "name": "Legal Agreement Signing",
+      "status": "FAILED"
+    },
+    {
+      "name": "Subscription Selection",
+      "status": "FAILED"
+    },
+    {
+      "name": "Complete Onboarding",
+      "status": "FAILED"
+    },
+    {
+      "name": "Get Available Steps",
+      "status": "FAILED"
+    },
+    {
+      "name": "Retry Failed Step",
+      "status": "FAILED"
+    },
+    {
+      "name": "Frontend Onboarding Page",
+      "status": "PASSED",
+      "result": {
+        "success": true,
+        "data": {
+          "status": 200,
+          "hasOnboarding": true
+        }
+      }
+    },
+    {
+      "name": "Frontend Registration Page",
+      "status": "PASSED",
+      "result": {
+        "success": true,
+        "data": {
+          "status": 200,
+          "hasRegister": true
+        }
+      }
+    }
+  ]
+}

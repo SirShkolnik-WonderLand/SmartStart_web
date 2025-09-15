@@ -983,44 +983,204 @@ export default function OnboardingFlow({ userId, onComplete, initialStep }: Onbo
           <div className="text-center mb-6">
             <Zap className="w-12 h-12 text-primary mx-auto mb-4" />
             <h3 className="text-lg font-semibold mb-2">Welcome to SmartStart!</h3>
-            <p className="text-muted-foreground">Let&apos;s explore what you can do on the platform</p>
+            <p className="text-muted-foreground">Discover the complete ecosystem of collaboration and innovation</p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="border border-border rounded-lg p-4">
-              <h4 className="font-semibold mb-2">🚀 Create Ventures</h4>
-              <p className="text-sm text-muted-foreground">
-                Start new ventures, invite team members, and manage your projects
-              </p>
+          <div className="space-y-6">
+            {/* Core Platform Features */}
+            <div className="bg-gradient-to-r from-blue-900/20 to-purple-900/20 rounded-xl p-6 border border-blue-500/20">
+              <h4 className="text-xl font-bold mb-4 flex items-center gap-2">
+                <Star className="w-6 h-6 text-blue-400" />
+                Core Platform Features
+              </h4>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3">
+                    <div className="w-2 h-2 bg-blue-400 rounded-full mt-2"></div>
+                    <div>
+                      <h5 className="font-semibold">Venture Management</h5>
+                      <p className="text-sm text-foreground-muted">Create, manage, and scale your business ventures with comprehensive tools</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-2 h-2 bg-blue-400 rounded-full mt-2"></div>
+                    <div>
+                      <h5 className="font-semibold">Team Collaboration</h5>
+                      <p className="text-sm text-foreground-muted">Find and work with talented collaborators from around the world</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-2 h-2 bg-blue-400 rounded-full mt-2"></div>
+                    <div>
+                      <h5 className="font-semibold">Legal Framework</h5>
+                      <p className="text-sm text-foreground-muted">Built-in legal protection with NDAs, contracts, and compliance tools</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3">
+                    <div className="w-2 h-2 bg-purple-400 rounded-full mt-2"></div>
+                    <div>
+                      <h5 className="font-semibold">Equity Management</h5>
+                      <p className="text-sm text-foreground-muted">Fair and transparent equity distribution with vesting schedules</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-2 h-2 bg-purple-400 rounded-full mt-2"></div>
+                    <div>
+                      <h5 className="font-semibold">Progress Tracking</h5>
+                      <p className="text-sm text-foreground-muted">Monitor milestones, analytics, and performance metrics</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-2 h-2 bg-purple-400 rounded-full mt-2"></div>
+                    <div>
+                      <h5 className="font-semibold">Gamification</h5>
+                      <p className="text-sm text-foreground-muted">Earn XP, unlock achievements, and climb leaderboards</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            
-            <div className="border border-border rounded-lg p-4">
-              <h4 className="font-semibold mb-2">👥 Find Collaborators</h4>
-              <p className="text-sm text-muted-foreground">
-                Connect with entrepreneurs, developers, and business experts
-              </p>
+
+            {/* BUZ Token Economy */}
+            <div className="bg-gradient-to-r from-yellow-900/20 to-orange-900/20 rounded-xl p-6 border border-yellow-500/20">
+              <h4 className="text-xl font-bold mb-4 flex items-center gap-2">
+                <Coins className="w-6 h-6 text-yellow-400" />
+                BUZ Token Economy
+              </h4>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3">
+                    <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2"></div>
+                    <div>
+                      <h5 className="font-semibold">Utility Currency</h5>
+                      <p className="text-sm text-foreground-muted">Use BUZ tokens to access premium features and services</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2"></div>
+                    <div>
+                      <h5 className="font-semibold">Earn Rewards</h5>
+                      <p className="text-sm text-foreground-muted">Get rewarded for contributions, milestones, and achievements</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3">
+                    <div className="w-2 h-2 bg-orange-400 rounded-full mt-2"></div>
+                    <div>
+                      <h5 className="font-semibold">Staking Program</h5>
+                      <p className="text-sm text-foreground-muted">Stake tokens to earn additional rewards and APY</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-2 h-2 bg-orange-400 rounded-full mt-2"></div>
+                    <div>
+                      <h5 className="font-semibold">Venture Costs</h5>
+                      <p className="text-sm text-foreground-muted">Pay for venture creation, team slots, and premium features</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            
-            <div className="border border-border rounded-lg p-4">
-              <h4 className="font-semibold mb-2">📊 Track Progress</h4>
-              <p className="text-sm text-muted-foreground">
-                Monitor your ventures with analytics and milestone tracking
-              </p>
+
+            {/* Getting Started Options */}
+            <div className="bg-gradient-to-r from-green-900/20 to-teal-900/20 rounded-xl p-6 border border-green-500/20">
+              <h4 className="text-xl font-bold mb-4 flex items-center gap-2">
+                <TrendingUp className="w-6 h-6 text-green-400" />
+                How to Get Started
+              </h4>
+              <div className="grid md:grid-cols-3 gap-4">
+                <div className="text-center p-4 bg-glass-surface rounded-lg">
+                  <div className="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <span className="text-2xl">🚀</span>
+                  </div>
+                  <h5 className="font-semibold mb-2">Create a Venture</h5>
+                  <p className="text-sm text-foreground-muted">Start your own business venture and invite collaborators</p>
+                </div>
+                <div className="text-center p-4 bg-glass-surface rounded-lg">
+                  <div className="w-12 h-12 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <span className="text-2xl">🔍</span>
+                  </div>
+                  <h5 className="font-semibold mb-2">Join Existing Ventures</h5>
+                  <p className="text-sm text-foreground-muted">Browse and apply to join exciting projects</p>
+                </div>
+                <div className="text-center p-4 bg-glass-surface rounded-lg">
+                  <div className="w-12 h-12 bg-purple-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <span className="text-2xl">👥</span>
+                  </div>
+                  <h5 className="font-semibold mb-2">Build Your Network</h5>
+                  <p className="text-sm text-foreground-muted">Connect with like-minded entrepreneurs and experts</p>
+                </div>
+              </div>
             </div>
-            
-            <div className="border border-border rounded-lg p-4">
-              <h4 className="font-semibold mb-2">🎮 Gamification</h4>
-              <p className="text-sm text-muted-foreground">
-                Earn XP, unlock achievements, and climb the leaderboard
-              </p>
+
+            {/* Platform Benefits */}
+            <div className="bg-gradient-to-r from-indigo-900/20 to-pink-900/20 rounded-xl p-6 border border-indigo-500/20">
+              <h4 className="text-xl font-bold mb-4 flex items-center gap-2">
+                <Shield className="w-6 h-6 text-indigo-400" />
+                Why Choose SmartStart?
+              </h4>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 bg-indigo-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Shield className="w-4 h-4 text-indigo-400" />
+                    </div>
+                    <div>
+                      <h5 className="font-semibold">Legal Protection</h5>
+                      <p className="text-sm text-foreground-muted">Built-in legal framework protects all participants with NDAs, contracts, and compliance tools</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 bg-pink-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Star className="w-4 h-4 text-pink-400" />
+                    </div>
+                    <div>
+                      <h5 className="font-semibold">Fair Equity Distribution</h5>
+                      <p className="text-sm text-foreground-muted">Transparent equity management with vesting schedules and fair contribution tracking</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Zap className="w-4 h-4 text-green-400" />
+                    </div>
+                    <div>
+                      <h5 className="font-semibold">AI-Powered Matching</h5>
+                      <p className="text-sm text-foreground-muted">Smart algorithms connect you with the right collaborators and opportunities</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 bg-yellow-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Coins className="w-4 h-4 text-yellow-400" />
+                    </div>
+                    <div>
+                      <h5 className="font-semibold">Token Economy</h5>
+                      <p className="text-sm text-foreground-muted">Earn and use BUZ tokens for platform services and rewards</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="bg-primary/10 rounded-lg p-4">
-            <h4 className="font-semibold mb-2">Ready to get started?</h4>
-            <p className="text-sm text-muted-foreground">
-              You&apos;re all set! Click &quot;Complete Setup&quot; to access your dashboard and start building amazing ventures.
+          <div className="bg-primary/10 rounded-lg p-6 text-center">
+            <h4 className="font-semibold mb-2 text-lg">🎉 You're Ready to Explore!</h4>
+            <p className="text-foreground-muted mb-4">
+              SmartStart offers a complete ecosystem for entrepreneurs, innovators, and collaborators. 
+              Whether you want to start your own venture, join existing projects, or build your professional network, 
+              you have all the tools you need to succeed.
             </p>
+            <div className="flex flex-wrap justify-center gap-2 text-sm">
+              <span className="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full">Venture Creation</span>
+              <span className="px-3 py-1 bg-green-500/20 text-green-300 rounded-full">Team Collaboration</span>
+              <span className="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full">Legal Protection</span>
+              <span className="px-3 py-1 bg-yellow-500/20 text-yellow-300 rounded-full">BUZ Tokens</span>
+              <span className="px-3 py-1 bg-pink-500/20 text-pink-300 rounded-full">Gamification</span>
+            </div>
           </div>
         </div>
       )
