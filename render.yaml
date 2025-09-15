@@ -11,6 +11,8 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
+      - key: DATABASE_URL
+        value: postgresql://smartstart_db_4ahd_user:LYcgYXd9w9pBB4HPuNretjMOOlKxWP48@dpg-d2uaqd6r433s73e56vfg-a.oregon-postgres.render.com:5432/smartstart_db_4ahd?sslmode=require
       - key: PYTHON_BRAIN_URL
         value: https://smartstart-python-brain.onrender.com
       # DATABASE_URL is set in Render dashboard; omit here to preserve secret
@@ -18,7 +20,7 @@ services:
     name: smartstart-python-brain
     env: python
     plan: starter
-    buildCommand: cd python-services && pip install -r requirements.txt && pip install flask-cors
+    buildCommand: cd python-services && pip install -r requirements.txt
     startCommand: cd python-services && python start.py
     autoDeploy: true
     branch: main
