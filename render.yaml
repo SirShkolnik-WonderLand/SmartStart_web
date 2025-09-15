@@ -56,3 +56,28 @@ services:
     autoDeploy: true
     # Branch configuration
     branch: main
+  - type: web
+    name: smartstart-landing
+    env: node
+    plan: starter
+    region: oregon
+    buildCommand: |
+      echo "🚀 Building SmartStart Landing Page..."
+      cd landing-page
+      npm ci --cache .npm-cache --prefer-offline
+      npm run build
+      echo "✅ Landing page build complete"
+    startCommand: cd landing-page && npm start
+    autoDeploy: true
+    branch: main
+    healthCheckPath: /
+    healthCheckGracePeriod: 300
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_PUBLIC_MAIN_APP_URL
+        value: https://smartstart-frontend.onrender.com
+      - key: NEXT_PUBLIC_API_URL
+        value: https://smartstart-python-brain.onrender.com
+      - key: NEXT_TELEMETRY_DISABLED
+        value: "1"
