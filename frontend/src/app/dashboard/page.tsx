@@ -463,6 +463,11 @@ export default function DashboardPage() {
   const motivational = getMotivationalMessage()
   const activitySuggestions = getActivitySuggestions()
   const funFacts = getFunFacts()
+  // Simple permission helper; default-allow if permissions unknown
+  const can = (perm: string): boolean => {
+    const perms = user?.permissions
+    return Array.isArray(perms) ? perms.includes(perm) : true
+  }
 
   return (
     <div className="space-y-8">
@@ -737,7 +742,16 @@ export default function DashboardPage() {
             Quick Actions
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {activitySuggestions.map((suggestion, index) => (
+            {activitySuggestions
+              .filter(s => {
+                if (s.href.startsWith('/ventures')) return can('project:read')
+                if (s.href.startsWith('/offers')) return can('project:write') || can('project:read')
+                if (s.href.startsWith('/documents')) return can('legal:read')
+                if (s.href.startsWith('/opportunities')) return can('project:read')
+                if (s.href.startsWith('/analytics')) return can('system:read') || can('project:read')
+                return true
+              })
+              .map((suggestion, index) => (
               <Link
                 key={index}
                 href={suggestion.href}
@@ -795,6 +809,7 @@ export default function DashboardPage() {
             Explore new opportunities, connect with amazing people, and build something incredible together!
           </p>
           <div className="flex flex-wrap justify-center gap-3">
+            {can('project:read') && (
             <Link
               href="/ventures"
               className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-3 rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-200 shadow-lg flex items-center gap-2"
@@ -802,6 +817,17 @@ export default function DashboardPage() {
               <Rocket className="w-4 h-4" />
               Explore Ventures
             </Link>
+            )}
+            {can('project:write') || can('project:read') && (
+            <Link
+              href="/offers/create"
+              className="bg-gradient-to-r from-secondary to-primary text-white px-6 py-3 rounded-lg hover:from-blue-600 hover:to-cyan-600 transition-all duration-200 shadow-lg flex items-center gap-2"
+            >
+              <Users className="w-4 h-4" />
+              Post Role
+            </Link>
+            )}
+            {can('project:read') && (
             <Link
               href="/opportunities"
               className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-6 py-3 rounded-lg hover:from-blue-600 hover:to-cyan-600 transition-all duration-200 shadow-lg flex items-center gap-2"
@@ -809,6 +835,8 @@ export default function DashboardPage() {
               <Target className="w-4 h-4" />
               Find Opportunities
             </Link>
+            )}
+            {(can('system:read') || can('project:read')) && (
             <Link
               href="/analytics"
               className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-3 rounded-lg hover:from-green-600 hover:to-emerald-600 transition-all duration-200 shadow-lg flex items-center gap-2"
@@ -816,6 +844,7 @@ export default function DashboardPage() {
               <TrendingUp className="w-4 h-4" />
               View Analytics
             </Link>
+            )}
             <Link
               href="/buz"
               className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-6 py-3 rounded-lg hover:from-yellow-600 hover:to-orange-600 transition-all duration-200 shadow-lg flex items-center gap-2"
