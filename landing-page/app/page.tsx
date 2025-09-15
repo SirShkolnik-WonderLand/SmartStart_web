@@ -169,14 +169,15 @@ export default function LandingPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.8 }}
         >
-          <motion.button
-            className="bg-gradient-to-r from-blue-500 to-purple-500 px-8 py-4 rounded-full text-lg font-semibold flex items-center space-x-2 hover:scale-105 transition-transform"
+          <motion.a
+            href="/subscription"
+            className="bg-gradient-to-r from-blue-500 to-purple-500 px-8 py-4 rounded-full text-lg font-semibold flex items-center space-x-2 hover:scale-105 transition-transform inline-block"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
             <span>Launch Your Venture</span>
             <ArrowRight className="w-5 h-5" />
-          </motion.button>
+          </motion.a>
           
           <motion.button
             className="border-2 border-blue-500 px-8 py-4 rounded-full text-lg font-semibold hover:bg-blue-500/10 transition-colors"
@@ -530,8 +531,9 @@ function PricingSection() {
                 ))}
               </ul>
 
-              <motion.button
-                className={`w-full py-3 px-6 rounded-xl font-semibold transition-all ${
+              <motion.a
+                href={plan.name === 'Enterprise' ? '#contact' : '/subscription'}
+                className={`w-full py-3 px-6 rounded-xl font-semibold transition-all flex items-center justify-center ${
                   plan.popular
                     ? 'bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600'
                     : 'border-2 border-white/20 hover:border-white/40 hover:bg-white/5'
@@ -540,7 +542,7 @@ function PricingSection() {
                 whileTap={{ scale: 0.98 }}
               >
                 {plan.name === 'Enterprise' ? 'Contact Sales' : 'Get Started'}
-              </motion.button>
+              </motion.a>
             </motion.div>
           ))}
         </div>
@@ -603,14 +605,15 @@ function CTASection() {
           transition={{ duration: 0.8, delay: 0.4 }}
           viewport={{ once: true }}
         >
-          <motion.button
-            className="bg-gradient-to-r from-blue-500 to-purple-500 px-8 py-4 rounded-full text-lg font-semibold flex items-center space-x-2 hover:scale-105 transition-transform"
+          <motion.a
+            href="/subscription"
+            className="bg-gradient-to-r from-blue-500 to-purple-500 px-8 py-4 rounded-full text-lg font-semibold flex items-center space-x-2 hover:scale-105 transition-transform inline-block"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
             <span>Start Building Now</span>
             <ArrowRight className="w-5 h-5" />
-          </motion.button>
+          </motion.a>
           
           <motion.button
             className="border-2 border-white/20 px-8 py-4 rounded-full text-lg font-semibold hover:border-white/40 hover:bg-white/5 transition-all"

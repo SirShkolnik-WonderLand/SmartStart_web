@@ -10,6 +10,7 @@ import json
 import jwt
 import bcrypt
 from datetime import datetime, timedelta, timezone
+import time
 from functools import wraps
 from flask import Flask, jsonify, request, g
 from flask_cors import CORS
@@ -558,6 +559,245 @@ def reset_password():
         return jsonify(create_response(
             success=False,
             error=f"Failed to reset password: {str(e)}"
+        )), 500
+
+# ============================================================================
+# SUBSCRIPTION MANAGEMENT ENDPOINTS
+# ============================================================================
+
+@app.route('/api/v1/subscriptions/plans', methods=['GET'])
+def get_billing_plans():
+    """Get all available billing plans"""
+    try:
+        query = """
+            SELECT id, name, description, price, currency, interval, features, isActive
+            FROM "BillingPlan" 
+            WHERE isActive = true
+            ORDER BY price ASC
+        """
+        plans = db._execute_query(query, (), fetch_one=False)
+        
+        if not plans:
+            return jsonify(create_response(
+                success=False,
+                error="No billing plans found"
+            )), 404
+        
+        # Convert to list of dictionaries
+        plans_list = []
+        for plan in plans:
+            plans_list.append({
+                'id': plan[0],
+                'name': plan[1],
+                'description': plan[2],
+                'price': float(plan[3]),
+                'currency': plan[4],
+                'interval': plan[5],
+                'features': plan[6] if plan[6] else [],
+                'isActive': plan[7]
+            })
+        
+        return jsonify(create_response(
+            success=True,
+            data=plans_list
+        ))
+        
+    except Exception as e:
+        logger.error(f"Error fetching billing plans: {e}")
+        return jsonify(create_response(
+            success=False,
+            error=f"Failed to fetch billing plans: {str(e)}"
+        )), 500
+
+@app.route('/api/v1/subscriptions/subscribe', methods=['POST'])
+def create_subscription():
+    """Create a new subscription for a user"""
+    try:
+        data = request.get_json()
+        user_id = data.get('userId')
+        plan_id = data.get('planId')
+        
+        if not user_id or not plan_id:
+            return jsonify(create_response(
+                success=False,
+                error="userId and planId are required"
+            )), 400
+        
+        # Check if user exists
+        user = db.get_user_by_id(user_id)
+        if not user:
+            return jsonify(create_response(
+                success=False,
+                error="User not found"
+            )), 404
+        
+        # Check if plan exists and is active
+        plan_query = """
+            SELECT id, name, price, currency, interval, features
+            FROM "BillingPlan" 
+            WHERE id = %s AND isActive = true
+        """
+        plan = db._execute_query(plan_query, (plan_id,), fetch_one=True)
+        if not plan:
+            return jsonify(create_response(
+                success=False,
+                error="Billing plan not found or inactive"
+            )), 404
+        
+        # Check if user already has an active subscription
+        existing_sub_query = """
+            SELECT id, status FROM "Subscription" 
+            WHERE "userId" = %s AND status = 'ACTIVE'
+        """
+        existing_sub = db._execute_query(existing_sub_query, (user_id,), fetch_one=True)
+        if existing_sub:
+            return jsonify(create_response(
+                success=False,
+                error="User already has an active subscription"
+            )), 409
+        
+        # Create subscription
+        subscription_id = f"sub_{user_id}_{int(time.time())}"
+        end_date = datetime.now() + timedelta(days=30)  # 30 days from now
+        
+        create_sub_query = """
+            INSERT INTO "Subscription" (id, "userId", "planId", status, "startDate", "endDate", "autoRenew", "createdAt", "updatedAt")
+            VALUES (%s, %s, %s, 'ACTIVE', %s, %s, true, %s, %s)
+        """
+        
+        now = datetime.now()
+        success = db._execute_query(create_sub_query, (
+            subscription_id, user_id, plan_id, now, end_date, now, now
+        ), fetch_one=False)
+        
+        if success:
+            # Get the created subscription
+            sub_query = """
+                SELECT s.id, s."userId", s."planId", s.status, s."startDate", s."endDate", s."autoRenew",
+                       bp.name, bp.description, bp.price, bp.currency, bp.interval, bp.features
+                FROM "Subscription" s
+                JOIN "BillingPlan" bp ON s."planId" = bp.id
+                WHERE s.id = %s
+            """
+            subscription = db._execute_query(sub_query, (subscription_id,), fetch_one=True)
+            
+            if subscription:
+                subscription_data = {
+                    'id': subscription[0],
+                    'userId': subscription[1],
+                    'planId': subscription[2],
+                    'status': subscription[3],
+                    'startDate': subscription[4].isoformat() if subscription[4] else None,
+                    'endDate': subscription[5].isoformat() if subscription[5] else None,
+                    'autoRenew': subscription[6],
+                    'plan': {
+                        'name': subscription[7],
+                        'description': subscription[8],
+                        'price': float(subscription[9]),
+                        'currency': subscription[10],
+                        'interval': subscription[11],
+                        'features': subscription[12] if subscription[12] else []
+                    }
+                }
+                
+                return jsonify(create_response(
+                    success=True,
+                    data=subscription_data,
+                    message="Subscription created successfully"
+                ))
+        
+        return jsonify(create_response(
+            success=False,
+            error="Failed to create subscription"
+        )), 500
+        
+    except Exception as e:
+        logger.error(f"Error creating subscription: {e}")
+        return jsonify(create_response(
+            success=False,
+            error=f"Failed to create subscription: {str(e)}"
+        )), 500
+
+@app.route('/api/v1/subscriptions/user/<user_id>', methods=['GET'])
+def get_user_subscription(user_id):
+    """Get user's current subscription"""
+    try:
+        query = """
+            SELECT s.id, s."userId", s."planId", s.status, s."startDate", s."endDate", s."autoRenew",
+                   bp.name, bp.description, bp.price, bp.currency, bp.interval, bp.features
+            FROM "Subscription" s
+            JOIN "BillingPlan" bp ON s."planId" = bp.id
+            WHERE s."userId" = %s AND s.status = 'ACTIVE'
+            ORDER BY s."createdAt" DESC
+            LIMIT 1
+        """
+        subscription = db._execute_query(query, (user_id,), fetch_one=True)
+        
+        if not subscription:
+            return jsonify(create_response(
+                success=False,
+                error="No active subscription found"
+            )), 404
+        
+        subscription_data = {
+            'id': subscription[0],
+            'userId': subscription[1],
+            'planId': subscription[2],
+            'status': subscription[3],
+            'startDate': subscription[4].isoformat() if subscription[4] else None,
+            'endDate': subscription[5].isoformat() if subscription[5] else None,
+            'autoRenew': subscription[6],
+            'plan': {
+                'name': subscription[7],
+                'description': subscription[8],
+                'price': float(subscription[9]),
+                'currency': subscription[10],
+                'interval': subscription[11],
+                'features': subscription[12] if subscription[12] else []
+            }
+        }
+        
+        return jsonify(create_response(
+            success=True,
+            data=subscription_data
+        ))
+        
+    except Exception as e:
+        logger.error(f"Error fetching user subscription: {e}")
+        return jsonify(create_response(
+            success=False,
+            error=f"Failed to fetch subscription: {str(e)}"
+        )), 500
+
+@app.route('/api/v1/subscriptions/cancel/<subscription_id>', methods=['POST'])
+def cancel_subscription(subscription_id):
+    """Cancel a subscription"""
+    try:
+        # Update subscription status to CANCELLED
+        update_query = """
+            UPDATE "Subscription" 
+            SET status = 'CANCELLED', "updatedAt" = %s
+            WHERE id = %s
+        """
+        
+        success = db._execute_query(update_query, (datetime.now(), subscription_id), fetch_one=False)
+        
+        if success:
+            return jsonify(create_response(
+                success=True,
+                message="Subscription cancelled successfully"
+            ))
+        else:
+            return jsonify(create_response(
+                success=False,
+                error="Failed to cancel subscription"
+            )), 500
+        
+    except Exception as e:
+        logger.error(f"Error cancelling subscription: {e}")
+        return jsonify(create_response(
+            success=False,
+            error=f"Failed to cancel subscription: {str(e)}"
         )), 500
 
 # ============================================================================

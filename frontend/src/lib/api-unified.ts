@@ -380,6 +380,28 @@ export interface JourneyStageCompletion {
   progress_percentage: number
 }
 
+export interface BillingPlan {
+  id: string
+  name: string
+  description: string
+  price: number
+  currency: string
+  interval: string
+  features: string[]
+  isActive: boolean
+}
+
+export interface Subscription {
+  id: string
+  userId: string
+  planId: string
+  status: string
+  startDate: string
+  endDate: string
+  autoRenew: boolean
+  plan: BillingPlan
+}
+
 // ============================================================================
 // UNIFIED API SERVICE CLASS
 // ============================================================================
@@ -800,6 +822,35 @@ class UnifiedAPIService {
   }
 
   // ============================================================================
+  // SUBSCRIPTION METHODS
+  // ============================================================================
+
+  async getBillingPlans(): Promise<ApiResponse<BillingPlan[]>> {
+    return this.request<BillingPlan[]>('/api/v1/subscriptions/plans', {
+      method: 'GET'
+    })
+  }
+
+  async createSubscription(userId: string, planId: string): Promise<ApiResponse<Subscription>> {
+    return this.request<Subscription>('/api/v1/subscriptions/subscribe', {
+      method: 'POST',
+      body: JSON.stringify({ userId, planId })
+    })
+  }
+
+  async getUserSubscription(userId: string): Promise<ApiResponse<Subscription>> {
+    return this.request<Subscription>(`/api/v1/subscriptions/user/${userId}`, {
+      method: 'GET'
+    })
+  }
+
+  async cancelSubscription(subscriptionId: string): Promise<ApiResponse<{ message: string }>> {
+    return this.request<{ message: string }>(`/api/v1/subscriptions/cancel/${subscriptionId}`, {
+      method: 'POST'
+    })
+  }
+
+  // ============================================================================
   // HEALTH CHECK
   // ============================================================================
 
@@ -820,7 +871,7 @@ export default apiService
 // ============================================================================
 
 // Re-export commonly used types for backward compatibility
-export type { ApiResponse, User, Venture, BUZBalance, LegalDocument, SubscriptionPlan, Team, UmbrellaRelationship }
+export type { ApiResponse, User, Venture, BUZBalance, LegalDocument, SubscriptionPlan, Team, UmbrellaRelationship, BillingPlan, Subscription }
 
 // Legacy function exports for backward compatibility
 export const getCurrentUser = (userId: string) => apiService.getUser(userId)
