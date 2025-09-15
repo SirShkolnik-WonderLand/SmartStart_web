@@ -443,6 +443,21 @@ export interface AnalyticsData {
   lastUpdated: string
 }
 
+export interface Company {
+  id: string
+  name: string
+  description: string
+  industry: string
+  stage: string
+  website?: string
+  headquarters?: string
+  foundedDate: string
+  tags?: string[]
+  size: string
+  createdAt: string
+  updatedAt: string
+}
+
 // ============================================================================
 // UNIFIED API SERVICE CLASS
 // ============================================================================
@@ -923,7 +938,7 @@ export default apiService
 // ============================================================================
 
 // Re-export commonly used types for backward compatibility
-export type { ApiResponse, User, Venture, BUZBalance, LegalDocument, SubscriptionPlan, Team, UmbrellaRelationship, BillingPlan, Subscription, AnalyticsData }
+export type { ApiResponse, User, Venture, BUZBalance, LegalDocument, SubscriptionPlan, Team, UmbrellaRelationship, BillingPlan, Subscription, AnalyticsData, Company }
 
 // Legacy function exports for backward compatibility
 export const getCurrentUser = (userId: string) => apiService.getUser(userId)
