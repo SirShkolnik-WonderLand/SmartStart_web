@@ -58,15 +58,21 @@ export default function RegisterPage() {
 
               if (registerResponse.success && registerResponse.data) {
                 // Store user data first. Token is already set by apiService.register()
-                // Do NOT overwrite it with undefined from data
-                localStorage.setItem('user', JSON.stringify(registerResponse.data))
+                // The user data is nested under registerResponse.data.user
+                const userData = registerResponse.data.user || registerResponse.data
+                localStorage.setItem('user', JSON.stringify(userData))
 
                 // Try to initialize user journey (but don't fail if it doesn't work)
                 // Use the token already stored by apiService.register
                 try {
                   const token = localStorage.getItem('auth-token') || undefined
-                  const journeyResponse = await apiService.initializeJourney(registerResponse.data.id, token)
-                  console.log('Journey initialization response:', journeyResponse)
+                  const userId = userData.id
+                  if (userId) {
+                    const journeyResponse = await apiService.initializeJourney(userId, token)
+                    console.log('Journey initialization response:', journeyResponse)
+                  } else {
+                    console.warn('No user ID found in registration response')
+                  }
                 } catch (journeyError) {
                   console.warn('Journey initialization failed, but continuing with onboarding:', journeyError)
                 }
@@ -75,8 +81,8 @@ export default function RegisterPage() {
                 
                 // Always redirect to onboarding after successful registration
                 setTimeout(() => {
-                  if (registerResponse.data) {
-                    router.push(`/onboarding?userId=${registerResponse.data.id}`)
+                  if (userData && userData.id) {
+                    router.push(`/onboarding?userId=${userData.id}`)
                   }
                 }, 2000)
               } else {
