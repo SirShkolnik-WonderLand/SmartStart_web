@@ -287,12 +287,12 @@ def register_user():
             'role': 'MEMBER',  # Default role for new users
             'level': 'OWLET',  # Default level
             'status': 'ACTIVE',
-            'createdAt': datetime.now().isoformat(),
-            'updatedAt': datetime.now().isoformat(),
+            'createdAt': datetime.now(timezone.utc).isoformat(),
+            'updatedAt': datetime.now(timezone.utc).isoformat(),
             'tenantId': 'default',
             'xp': 0,
             'reputation': 0,
-            'lastActive': datetime.now().isoformat(),
+            'lastActive': datetime.now(timezone.utc).isoformat(),
             'totalPortfolioValue': 0.0,
             'activeProjectsCount': 0,
             'totalContributions': 0,
@@ -316,34 +316,8 @@ def register_user():
             
             token = jwt.encode(token_payload, JWT_SECRET, algorithm='HS256')
             
-            # Initialize user journey
-            try:
-                journey_data = {
-                    'user_id': new_user['id'],
-                    'current_stage': 'account_creation',
-                    'progress_percentage': 0,
-                    'completed_stages': [],
-                    'created_at': datetime.now().isoformat(),
-                    'updated_at': datetime.now().isoformat()
-                }
-                db.create_user_journey_state(journey_data)
-            except Exception as journey_error:
-                logger.warning(f"Failed to initialize user journey: {journey_error}")
-            
-            # Create default subscription (free tier)
-            try:
-                subscription_data = {
-                    'user_id': new_user['id'],
-                    'plan_id': 'free_tier',  # Default free plan
-                    'status': 'ACTIVE',
-                    'start_date': datetime.now().isoformat(),
-                    'end_date': (datetime.now() + timedelta(days=30)).isoformat(),
-                    'auto_renew': False,
-                    'created_at': datetime.now().isoformat()
-                }
-                db.create_subscription(subscription_data)
-            except Exception as sub_error:
-                logger.warning(f"Failed to create default subscription: {sub_error}")
+            # Note: Journey and subscription initialization will be handled separately
+            # to avoid foreign key constraint issues during registration
             
             return jsonify(create_response(
                 success=True,

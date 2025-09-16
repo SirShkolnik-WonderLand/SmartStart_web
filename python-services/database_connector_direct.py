@@ -40,8 +40,13 @@ class DirectDatabaseConnector:
             raise e
     
     def _execute_query(self, query, params=None, fetch_one=False, fetch_all=False):
-        """Execute database query with proper error handling"""
+        """Execute database query with proper error handling and connection management"""
         try:
+            # Check if connection is still alive, reconnect if needed
+            if self.connection and self.connection.closed:
+                logger.info("Connection closed, reconnecting...")
+                self._establish_connection()
+            
             with self.connection.cursor(cursor_factory=RealDictCursor) as cur:
                 cur.execute(query, params)
                 
@@ -57,7 +62,13 @@ class DirectDatabaseConnector:
                     
         except Exception as e:
             logger.error(f"Database query error: {e}")
-            self.connection.rollback()
+            if self.connection:
+                self.connection.rollback()
+            # Try to reconnect on error
+            try:
+                self._establish_connection()
+            except:
+                pass
             raise e
     
     # ============================================================================
