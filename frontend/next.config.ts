@@ -17,6 +17,11 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  
+  // Disable strict mode for Docker builds
+  experimental: {
+    esmExternals: false,
+  },
 
   // Enable static optimization
   trailingSlash: false,
