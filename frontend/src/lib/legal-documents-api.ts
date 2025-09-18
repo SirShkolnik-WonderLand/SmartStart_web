@@ -112,7 +112,7 @@ class LegalDocumentsApiService {
 
     private documentsBaseUrl = (process as any).env.NODE_ENV === 'production'
         ? 'https://smartstart-api.onrender.com/api/legal-documents'
-        : '/api/legal-documents';
+        : 'http://localhost:3001/api/legal-documents';
 
     // Get available documents for user
     async getAvailableDocuments(): Promise<{ success: boolean; data: LegalDocument[] }> {

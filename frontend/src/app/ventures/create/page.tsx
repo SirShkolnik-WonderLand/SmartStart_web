@@ -17,21 +17,21 @@ const stages = [
   { value: 'mvp', label: 'MVP Stage', description: 'Minimum viable product', icon: '🚀' },
   { value: 'growth', label: 'Growth Stage', description: 'Scaling and expansion', icon: '📈' },
   { value: 'scale', label: 'Scale Stage', description: 'Market leadership', icon: '🏆' },
-  { value: 'idea', label: '🤷‍♂️ I have no clue', description: 'Just exploring possibilities', icon: '🤷‍♂️' }
+  { value: 'exploring', label: '🤷‍♂️ I have no clue', description: 'Just exploring possibilities', icon: '🤷‍♂️' }
 ]
 
 const tiers = [
   { value: 'T1', label: 'Tier 1 - High Priority', description: 'Premium support and resources', color: 'text-yellow-600', buzCost: 500, features: ['Priority Support', 'Advanced Analytics', 'Custom Themes', 'File Uploads'] },
   { value: 'T2', label: 'Tier 2 - Standard', description: 'Standard support and resources', color: 'text-blue-600', buzCost: 250, features: ['Standard Support', 'Basic Analytics', 'File Uploads'] },
   { value: 'T3', label: 'Tier 3 - Basic', description: 'Basic support and resources', color: 'text-green-600', buzCost: 100, features: ['Basic Support', 'File Uploads'] },
-  { value: 'T1', label: '🤷‍♂️ Whatever works', description: 'I just want to get started', color: 'text-purple-600', buzCost: 100, features: ['Basic Support'] }
+  { value: 'T0', label: '🤷‍♂️ Whatever works', description: 'I just want to get started', color: 'text-purple-600', buzCost: 100, features: ['Basic Support'] }
 ]
 
 const rewardTypes = [
   { value: 'equity', label: 'Equity Only', description: 'Company ownership shares', icon: '📊' },
   { value: 'cash', label: 'Cash/Salary Only', description: 'Monetary compensation', icon: '💰' },
   { value: 'hybrid', label: 'Equity + Cash', description: 'Combination of both', icon: '🎯' },
-  { value: 'equity', label: '🤷‍♂️ I have no idea', description: 'We\'ll figure it out later', icon: '🤷‍♂️' }
+  { value: 'unknown', label: '🤷‍♂️ I have no idea', description: 'We\'ll figure it out later', icon: '🤷‍♂️' }
 ]
 
 const professions = [
@@ -56,9 +56,9 @@ export default function CreateVenturePage() {
     description: '',
     
     // Step 2: Venture Details
-    stage: 'idea' as 'idea' | 'mvp' | 'growth' | 'scale',
+    stage: 'idea' as 'idea' | 'mvp' | 'growth' | 'scale' | 'exploring',
     teamSize: 1,
-    tier: 'T1' as 'T1' | 'T2' | 'T3',
+    tier: 'T1' as 'T1' | 'T2' | 'T3' | 'T0',
     residency: 'US',
     
     // Step 3: Team & Skills
@@ -67,7 +67,7 @@ export default function CreateVenturePage() {
     newSkill: '',
     
     // Step 4: Rewards & Compensation
-    rewardType: 'equity' as 'equity' | 'cash' | 'hybrid',
+    rewardType: 'equity' as 'equity' | 'cash' | 'hybrid' | 'unknown',
     equityPercentage: 0,
     cashAmount: 0,
     paymentSchedule: 'monthly' as 'monthly' | 'quarterly' | 'annually' | 'milestone',
@@ -403,7 +403,7 @@ export default function CreateVenturePage() {
                           name="stage"
                           value={stage.value}
                           checked={formData.stage === stage.value}
-                          onChange={(e) => handleInputChange('stage', e.target.value as 'idea' | 'mvp' | 'growth' | 'scale')}
+                          onChange={(e) => handleInputChange('stage', e.target.value as 'idea' | 'mvp' | 'growth' | 'scale' | 'exploring')}
                           className="mt-1 mr-3"
                         />
                         <div>
@@ -458,7 +458,7 @@ export default function CreateVenturePage() {
                           name="tier"
                           value={tier.value}
                           checked={formData.tier === tier.value}
-                          onChange={(e) => handleInputChange('tier', e.target.value as 'T1' | 'T2' | 'T3')}
+                          onChange={(e) => handleInputChange('tier', e.target.value as 'T1' | 'T2' | 'T3' | 'T0')}
                           className="mt-1 mr-3"
                         />
                         <div className="flex-1">
@@ -588,7 +588,7 @@ export default function CreateVenturePage() {
                           name="rewardType"
                           value={reward.value}
                           checked={formData.rewardType === reward.value}
-                          onChange={(e) => handleInputChange('rewardType', e.target.value as 'equity' | 'cash' | 'hybrid')}
+                          onChange={(e) => handleInputChange('rewardType', e.target.value as 'equity' | 'cash' | 'hybrid' | 'unknown')}
                           className="mt-1 mr-3"
                         />
                         <div>

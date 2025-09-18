@@ -908,10 +908,10 @@ export default function OnboardingFlow({ userId, onComplete, initialStep }: Onbo
               </div>
               
               <ul className="space-y-2">
-                {plan.features.map((feature, index) => (
+                {Object.entries(plan.features || {}).map(([key, value], index) => (
                   <li key={index} className="flex items-center space-x-2">
                     <CheckCircle className="w-4 h-4 text-green-500" />
-                    <span className="text-sm">{feature}</span>
+                    <span className="text-sm">{key}: {typeof value === 'boolean' ? (value ? 'Yes' : 'No') : value}</span>
                   </li>
                 ))}
               </ul>

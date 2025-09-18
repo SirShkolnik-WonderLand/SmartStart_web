@@ -1,0 +1,85 @@
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: smartstart-postgres-dev
+    environment:
+      POSTGRES_DB: smartstart_db
+      POSTGRES_USER: smartstart_user
+      POSTGRES_PASSWORD: smartstart_password
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+    networks:
+      - smartstart-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U smartstart_user -d smartstart_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Python Brain Service
+  python-brain:
+    build:
+      context: ./python-services
+      dockerfile: Dockerfile
+    container_name: smartstart-python-brain-dev
+    environment:
+      - NODE_ENV=development
+      - PORT=5000
+      - DATABASE_URL=postgresql://smartstart_user:smartstart_password@postgres:5432/smartstart_db
+      - JWT_SECRET=your-super-secret-jwt-key-change-in-production
+      - CORS_ORIGINS=http://localhost:3000,http://localhost:3001,http://localhost:3002
+    ports:
+      - "5002:5000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - smartstart-network
+    volumes:
+      - ./python-services:/app
+      - /app/__pycache__
+    restart: unless-stopped
+
+  # Node.js Proxy Service (for WebSocket and file uploads)
+  node-proxy:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: smartstart-node-proxy-dev
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+      - PYTHON_BRAIN_URL=http://python-brain:5000
+      - DATABASE_URL=postgresql://smartstart_user:smartstart_password@postgres:5432/smartstart_db
+    ports:
+      - "3001:3001"
+    depends_on:
+      - python-brain
+      - postgres
+    networks:
+      - smartstart-network
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    restart: unless-stopped
+
+  # Redis for caching and sessions
+  redis:
+    image: redis:7-alpine
+    container_name: smartstart-redis-dev
+    ports:
+      - "6379:6379"
+    networks:
+      - smartstart-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data_dev:
+
+networks:
+  smartstart-network:
+    driver: bridge

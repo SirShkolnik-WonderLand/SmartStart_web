@@ -7,9 +7,10 @@ Connects directly to PostgreSQL database without fallbacks
 import os
 import logging
 import psycopg2
+import time
+import json
 from psycopg2.extras import RealDictCursor
 from datetime import datetime
-import json
 
 logger = logging.getLogger(__name__)
 
@@ -236,18 +237,17 @@ class DirectDatabaseConnector:
             query = """
                 SELECT v.*, u.name as owner_name, u.email as owner_email
                 FROM "Venture" v
-                LEFT JOIN "User" u ON v.owner_user_id = u.id
-                WHERE v.is_deleted = false
-                ORDER BY v.created_at DESC
+                LEFT JOIN "User" u ON v."createdBy" = u.id
+                ORDER BY v."createdAt" DESC
             """
             return self._execute_query(query, fetch_all=True)
         else:
             query = """
                 SELECT v.*, u.name as owner_name, u.email as owner_email
                 FROM "Venture" v
-                LEFT JOIN "User" u ON v.owner_user_id = u.id
-                WHERE v.owner_user_id = %s AND v.is_deleted = false
-                ORDER BY v.created_at DESC
+                LEFT JOIN "User" u ON v."createdBy" = u.id
+                WHERE v."createdBy" = %s
+                ORDER BY v."createdAt" DESC
             """
             return self._execute_query(query, (user_id,), fetch_all=True)
     
@@ -256,19 +256,53 @@ class DirectDatabaseConnector:
         query = """
             SELECT v.*, u.name as owner_name, u.email as owner_email
             FROM "Venture" v
-            LEFT JOIN "User" u ON v.owner_user_id = u.id
-            WHERE v.id = %s AND v.is_deleted = false
+            LEFT JOIN "User" u ON v."createdBy" = u.id
+            WHERE v.id = %s
         """
         return self._execute_query(query, (venture_id,), fetch_one=True)
     
     def create_venture(self, data):
         """Create new venture"""
-        columns = list(data.keys())
-        values = list(data.values())
+        # Generate unique ID
+        import uuid
+        venture_id = f"venture_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{str(uuid.uuid4())[:8]}"
+        
+        # Map frontend data to database columns
+        mapped_data = {
+            'id': venture_id,
+            'name': data.get('name', ''),
+            'description': data.get('description', ''),
+            'status': 'ACTIVE',
+            'category': data.get('category', 'TECHNOLOGY'),
+            'industry': data.get('industry', 'TECHNOLOGY'),
+            'stage': data.get('tier', 'T1'),  # Map tier to stage
+            'fundingGoal': data.get('fundingGoal', 0),
+            'currentFunding': 0,
+            'equityOffered': data.get('equityOffered', 0),
+            'minInvestment': data.get('minInvestment', 0),
+            'maxInvestment': data.get('maxInvestment', 0),
+            'startDate': data.get('startDate'),
+            'endDate': data.get('endDate'),
+            'createdBy': data.get('createdBy', data.get('owner_id')),
+            'teamMembers': json.dumps(data.get('teamMembers', [])),
+            'tags': json.dumps(data.get('tags', [])),
+            'metadata': json.dumps({
+                'isPublic': data.get('isPublic', False),
+                'allowApplications': data.get('allowApplications', False),
+                'teamSize': data.get('teamSize', 1),
+                'originalData': data
+            })
+        }
+        
+        # Remove None values
+        mapped_data = {k: v for k, v in mapped_data.items() if v is not None}
+        
+        columns = list(mapped_data.keys())
+        values = list(mapped_data.values())
         placeholders = ['%s'] * len(values)
         
         query = f"""
-            INSERT INTO "Venture" ({', '.join(columns)})
+            INSERT INTO "Venture" ({', '.join([f'"{col}"' for col in columns])})
             VALUES ({', '.join(placeholders)})
             RETURNING *
         """
@@ -295,59 +329,52 @@ class DirectDatabaseConnector:
     
     def get_user_buz_tokens(self, user_id):
         """Get user BUZ token balance and staking info"""
-        # Get BUZ token balance
-        balance_query = """
-            SELECT COALESCE(SUM(amount), 0) as balance
+        # Get BUZ token balance from the new table structure
+        buz_query = """
+            SELECT balance, "stakedAmount", "totalEarned", "totalSpent"
             FROM "BUZToken"
-            WHERE user_id = %s AND transaction_type = 'EARNED'
+            WHERE "userId" = %s
         """
-        balance_result = self._execute_query(balance_query, (user_id,), fetch_one=True)
-        balance = balance_result['balance'] if balance_result else 0
+        buz_result = self._execute_query(buz_query, (user_id,), fetch_one=True)
         
-        # Get staked amount
-        staked_query = """
-            SELECT COALESCE(SUM(amount), 0) as staked
-            FROM "BUZStaking"
-            WHERE user_id = %s AND status = 'ACTIVE'
-        """
-        staked_result = self._execute_query(staked_query, (user_id,), fetch_one=True)
-        staked = staked_result['staked'] if staked_result else 0
-        
-        # Get total earned
-        earned_query = """
-            SELECT COALESCE(SUM(amount), 0) as total_earned
-            FROM "BUZToken"
-            WHERE user_id = %s AND transaction_type = 'EARNED'
-        """
-        earned_result = self._execute_query(earned_query, (user_id,), fetch_one=True)
-        total_earned = earned_result['total_earned'] if earned_result else 0
-        
-        # Get total spent
-        spent_query = """
-            SELECT COALESCE(SUM(amount), 0) as total_spent
-            FROM "BUZToken"
-            WHERE user_id = %s AND transaction_type = 'SPENT'
-        """
-        spent_result = self._execute_query(spent_query, (user_id,), fetch_one=True)
-        total_spent = spent_result['total_spent'] if spent_result else 0
+        if buz_result:
+            balance = float(buz_result['balance'])
+            staked = float(buz_result['stakedAmount'])
+            total_earned = float(buz_result['totalEarned'])
+            total_spent = float(buz_result['totalSpent'])
+        else:
+            # If no BUZ token record exists, create one with default values
+            balance = 0.0
+            staked = 0.0
+            total_earned = 0.0
+            total_spent = 0.0
+            
+            # Create default BUZ token record
+            create_buz_query = """
+                INSERT INTO "BUZToken" ("id", "userId", "balance", "stakedAmount", "totalEarned", "totalSpent")
+                VALUES (%s, %s, %s, %s, %s, %s)
+                ON CONFLICT ("userId") DO NOTHING
+            """
+            buz_id = f"buz_{user_id}"
+            self._execute_query(create_buz_query, (buz_id, user_id, balance, staked, total_earned, total_spent))
         
         # Check if user has limited time founder plan for monthly allocation
         subscription_query = """
-            SELECT bp.buz_tokens_monthly
+            SELECT bp."buzTokensMonthly"
             FROM "Subscription" s
-            JOIN "BillingPlan" bp ON s.plan_id = bp.id
-            WHERE s.user_id = %s AND s.status = 'ACTIVE'
+            JOIN "BillingPlan" bp ON s."planId" = bp."id"
+            WHERE s."userId" = %s AND s.status = 'ACTIVE'
         """
         subscription_result = self._execute_query(subscription_query, (user_id,), fetch_one=True)
-        monthly_allocation = subscription_result['buz_tokens_monthly'] if subscription_result else 0
+        monthly_allocation = subscription_result['buzTokensMonthly'] if subscription_result else 0
         
         return {
             "user_id": user_id,
-            "balance": float(balance),
-            "staked": float(staked),
-            "available": float(balance - staked),
-            "total_earned": float(total_earned),
-            "total_spent": float(total_spent),
+            "balance": balance,
+            "staked": staked,
+            "available": balance - staked,
+            "total_earned": total_earned,
+            "total_spent": total_spent,
             "monthly_allocation": monthly_allocation or 0,
             "currency": "BUZ",
             "level": "Member",
@@ -522,11 +549,11 @@ class DirectDatabaseConnector:
     def get_user_legal_documents(self, user_id):
         """Get user legal documents"""
         query = """
-            SELECT ld.*, ds.status, ds.signed_at
+            SELECT ld.*, ds."signedAt"
             FROM "LegalDocument" ld
-            LEFT JOIN "DocumentSignature" ds ON ld.id = ds.document_id AND ds.user_id = %s
-            WHERE ld.is_active = true
-            ORDER BY ld.required DESC, ld.created_at ASC
+            LEFT JOIN "LegalDocumentSignature" ds ON ld.id = ds."documentId" AND ds."userId" = %s
+            WHERE ld.status = 'APPROVED'
+            ORDER BY ld."requiresSignature" DESC, ld."createdAt" ASC
         """
         return self._execute_query(query, (user_id,), fetch_all=True)
     
@@ -546,7 +573,7 @@ class DirectDatabaseConnector:
             
             # Check if signature already exists
             check_query = """
-                SELECT id FROM "DocumentSignature"
+                SELECT id FROM "LegalDocumentSignature"
                 WHERE user_id = %s AND document_id = %s
             """
             existing = self._execute_query(check_query, (user_id, document_id), fetch_one=True)
@@ -554,7 +581,7 @@ class DirectDatabaseConnector:
             if existing:
                 # Update existing signature
                 update_query = """
-                    UPDATE "DocumentSignature"
+                    UPDATE "LegalDocumentSignature"
                     SET status = %s, signed_at = %s, signature_data = %s, ip_address = %s, user_agent = %s
                     WHERE user_id = %s AND document_id = %s
                 """
@@ -574,7 +601,7 @@ class DirectDatabaseConnector:
                 placeholders = ['%s'] * len(values)
                 
                 query = f"""
-                    INSERT INTO "DocumentSignature" ({', '.join(columns)})
+                    INSERT INTO "LegalDocumentSignature" ({', '.join(columns)})
                     VALUES ({', '.join(placeholders)})
                     RETURNING *
                 """
@@ -603,21 +630,21 @@ class DirectDatabaseConnector:
                     WHEN COUNT(ds.id) > 0 THEN 'PARTIAL'
                     ELSE 'NON_COMPLIANT'
                 END as compliance_level,
-                MAX(ds.signed_at) as last_signed
+                MAX(ds."signedAt") as last_signed
             FROM "LegalDocument" ld
-            LEFT JOIN "DocumentSignature" ds ON ld.id = ds.document_id AND ds.user_id = %s
-            WHERE ld.is_active = true
+            LEFT JOIN "LegalDocumentSignature" ds ON ld.id = ds."documentId" AND ds."userId" = %s
+            WHERE ld.status = 'APPROVED'
         """
         
         result = self._execute_query(query, (user_id,), fetch_one=True)
         
         # Get required documents
         required_docs_query = """
-            SELECT ld.*, ds.status, ds.signed_at
+            SELECT ld.*, ds."signedAt"
             FROM "LegalDocument" ld
-            LEFT JOIN "DocumentSignature" ds ON ld.id = ds.document_id AND ds.user_id = %s
-            WHERE ld.is_active = true AND ld.required = true
-            ORDER BY ld.created_at ASC
+            LEFT JOIN "LegalDocumentSignature" ds ON ld.id = ds."documentId" AND ds."userId" = %s
+            WHERE ld.status = 'APPROVED' AND ld."requiresSignature" = true
+            ORDER BY ld."createdAt" ASC
         """
         required_docs = self._execute_query(required_docs_query, (user_id,), fetch_all=True)
         
@@ -638,7 +665,7 @@ class DirectDatabaseConnector:
         """Get all subscription plans"""
         query = """
             SELECT * FROM "BillingPlan"
-            WHERE is_active = true
+            WHERE "isActive" = true
             ORDER BY price ASC
         """
         return self._execute_query(query, fetch_all=True)
@@ -649,7 +676,7 @@ class DirectDatabaseConnector:
             # Get plan details
             plan_query = """
                 SELECT * FROM "BillingPlan"
-                WHERE id = %s AND is_active = true
+                WHERE id = %s AND "isActive" = true
             """
             plan = self._execute_query(plan_query, (plan_id,), fetch_one=True)
             
@@ -694,9 +721,9 @@ class DirectDatabaseConnector:
         query = """
             SELECT s.*, bp.*
             FROM "Subscription" s
-            JOIN "BillingPlan" bp ON s.plan_id = bp.id
-            WHERE s.user_id = %s AND s.status = 'ACTIVE'
-            ORDER BY s.created_at DESC
+            JOIN "BillingPlan" bp ON s."planId" = bp.id
+            WHERE s."userId" = %s AND s.status = 'ACTIVE'
+            ORDER BY s."createdAt" DESC
             LIMIT 1
         """
         
@@ -714,26 +741,26 @@ class DirectDatabaseConnector:
         return {
             'user_id': user_id,
             'current_plan': {
-                'id': result['plan_id'],
+                'id': result['planId'],
                 'name': result['name'],
                 'description': result['description'],
                 'price': float(result['price']),
                 'currency': result['currency'],
                 'features': result.get('features', []),
-                'buz_tokens_monthly': result.get('buz_tokens_monthly', 0),
-                'email_included': result.get('email_included', False),
-                'microsoft_365_included': result.get('microsoft_365_included', False)
+                'buz_tokens_monthly': result.get('buzTokensMonthly', 0),
+                'email_included': result.get('emailIncluded', False),
+                'microsoft_365_included': result.get('microsoft365Included', False)
             },
             'subscription': {
                 'id': result['id'],
-                'user_id': result['user_id'],
-                'plan_id': result['plan_id'],
+                'user_id': result['userId'],
+                'plan_id': result['planId'],
                 'status': result['status'],
-                'start_date': result['start_date'],
-                'end_date': result['end_date'],
-                'auto_renew': result['auto_renew']
+                'start_date': result['startDate'],
+                'end_date': result['endDate'],
+                'auto_renew': result['autoRenew']
             },
-            'next_billing_date': result['end_date'],
+            'next_billing_date': result['endDate'],
             'payment_method': 'Credit Card'  # Default for now
         }
     
@@ -798,9 +825,9 @@ class DirectDatabaseConnector:
         query = """
             SELECT ujs.*, js.name as stage_name, js.description as stage_description
             FROM "UserJourneyState" ujs
-            LEFT JOIN "JourneyStage" js ON ujs.current_stage = js.id
-            WHERE ujs.user_id = %s
-            ORDER BY ujs.updated_at DESC
+            LEFT JOIN "JourneyStage" js ON ujs."stageId" = js.id
+            WHERE ujs."userId" = %s
+            ORDER BY ujs."updatedAt" DESC
             LIMIT 1
         """
         
@@ -809,15 +836,18 @@ class DirectDatabaseConnector:
         if not result:
             # Create initial journey state
             initial_data = {
-                'user_id': user_id,
-                'current_stage': 'account_creation',
-                'progress_percentage': 0,
-                'completed_stages': [],
-                'created_at': datetime.now().isoformat(),
-                'updated_at': datetime.now().isoformat()
+                'id': f"journey_{user_id}_{int(time.time())}",
+                'userId': user_id,
+                'stageId': 'account_creation',
+                'status': 'IN_PROGRESS',
+                'startedAt': datetime.now().isoformat(),
+                'completedAt': None,
+                'metadata': '{}',
+                'createdAt': datetime.now().isoformat(),
+                'updatedAt': datetime.now().isoformat()
             }
             
-            columns = list(initial_data.keys())
+            columns = [f'"{col}"' for col in initial_data.keys()]
             values = list(initial_data.values())
             placeholders = ['%s'] * len(values)
             
@@ -832,22 +862,22 @@ class DirectDatabaseConnector:
         # Get all available stages
         stages_query = """
             SELECT * FROM "JourneyStage"
-            WHERE is_active = true
-            ORDER BY stage_order ASC
+            WHERE "isActive" = true
+            ORDER BY "order" ASC
         """
         all_stages = self._execute_query(stages_query, fetch_all=True)
         
         # Calculate next stage
-        current_stage_order = next((s['stage_order'] for s in all_stages if s['id'] == result['current_stage']), 0)
-        next_stage = next((s for s in all_stages if s['stage_order'] == current_stage_order + 1), None)
+        current_stage_order = next((s['order'] for s in all_stages if s['id'] == result['stageId']), 0)
+        next_stage = next((s for s in all_stages if s['order'] == current_stage_order + 1), None)
         
         return {
             'user_id': user_id,
-            'current_stage': result['current_stage'],
-            'progress_percentage': result['progress_percentage'],
-            'completed_stages': result['completed_stages'] or [],
+            'current_stage': result['stageId'],
+            'progress_percentage': 0,  # Calculate based on completed stages
+            'completed_stages': [],  # Will be calculated based on status
             'next_stage': next_stage['id'] if next_stage else None,
-            'requirements': next_stage['requirements'] if next_stage else []
+            'requirements': []
         }
     
     def complete_journey_stage(self, user_id, stage):
@@ -894,6 +924,43 @@ class DirectDatabaseConnector:
             
         except Exception as e:
             logger.error(f"Error completing journey stage: {e}")
+            raise e
+    
+    def update_user_journey_status(self, user_id, data):
+        """Update user journey status"""
+        try:
+            # Get current journey state
+            current_state = self.get_user_journey_status(user_id)
+            
+            # Update with new data
+            update_data = {
+                'stageId': data.get('current_stage', current_state['current_stage']),
+                'status': 'IN_PROGRESS',
+                'updatedAt': datetime.now().isoformat(),
+                'metadata': json.dumps({
+                    'completed_stages': data.get('completed_stages', current_state['completed_stages']),
+                    'progress_percentage': data.get('progress_percentage', current_state['progress_percentage']),
+                    'requirements': data.get('requirements', current_state.get('requirements', []))
+                })
+            }
+            
+            set_clause = ', '.join([f'"{col}" = %s' for col in update_data.keys()])
+            values = list(update_data.values()) + [user_id]
+            
+            query = f"""
+                UPDATE "UserJourneyState"
+                SET {set_clause}
+                WHERE "userId" = %s
+                RETURNING *
+            """
+            
+            result = self._execute_query(query, values, fetch_one=True)
+            
+            # Return updated status
+            return self.get_user_journey_status(user_id)
+            
+        except Exception as e:
+            logger.error(f"Error updating journey status: {e}")
             raise e
     
     # ============================================================================
@@ -995,7 +1062,7 @@ class DirectDatabaseConnector:
             SELECT COUNT(*) as total_ventures,
                    COUNT(CASE WHEN status = 'ACTIVE' THEN 1 END) as active_ventures
             FROM "Venture"
-            WHERE owner_user_id = %s AND is_deleted = false
+            WHERE "createdBy" = %s
         """
         ventures_result = self._execute_query(ventures_query, (user_id,), fetch_one=True)
         

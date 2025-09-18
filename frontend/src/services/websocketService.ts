@@ -110,9 +110,10 @@ export class WebSocketService {
         };
 
         this.ws.onerror = (error) => {
-          console.error('❌ WebSocket error:', error);
+          console.warn('⚠️ WebSocket connection failed (proxy does not support WebSockets):', error);
           this.emit('error', error);
-          reject(error);
+          // Don't reject, just resolve with a warning since WebSocket is optional
+          resolve();
         };
 
       } catch (error) {
@@ -404,7 +405,7 @@ export class WebSocketService {
 
 // Default configuration
 export const defaultWebSocketConfig: WebSocketConfig = {
-  url: process.env.NEXT_PUBLIC_WEBSOCKET_URL || 'ws://localhost:3002',
+  url: process.env.NEXT_PUBLIC_WEBSOCKET_URL || 'ws://localhost:3001',
   reconnectInterval: 1000,
   maxReconnectAttempts: 5,
   heartbeatInterval: 30000

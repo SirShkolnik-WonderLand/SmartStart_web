@@ -209,7 +209,7 @@ export default function BUZTokenDashboard() {
         )}
 
         {/* BUZ Rules */}
-        {rules && (
+        {rules && rules.costs && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10">
               <h3 className="text-xl font-bold text-white mb-4">💸 Action Costs</h3>
@@ -226,7 +226,7 @@ export default function BUZTokenDashboard() {
             <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10">
               <h3 className="text-xl font-bold text-white mb-4">🎁 Rewards</h3>
               <div className="space-y-2">
-                {Object.entries(rules.rewards).slice(0, 8).map(([action, reward]) => (
+                {rules.rewards && Object.entries(rules.rewards).slice(0, 8).map(([action, reward]) => (
                   <div key={action} className="flex justify-between items-center">
                     <span className="text-gray-300 capitalize">{action.replace(/_/g, ' ')}</span>
                     <span className="text-blue-400 font-mono">+{reward} BUZ</span>

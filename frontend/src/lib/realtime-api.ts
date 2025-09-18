@@ -74,9 +74,10 @@ class RealtimeAPIService {
         }
         
         this.ws.onerror = (error) => {
-          console.error('WebSocket error:', error)
+          console.warn('WebSocket connection failed (proxy does not support WebSockets):', error)
           this.isConnected = false
-          reject(error)
+          // Don't reject, just resolve with a warning
+          resolve()
         }
         
       } catch (error) {

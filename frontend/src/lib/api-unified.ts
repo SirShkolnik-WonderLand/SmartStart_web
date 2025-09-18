@@ -54,12 +54,12 @@ export interface Venture {
   id: string
   name: string
   description: string
-  stage: 'idea' | 'mvp' | 'growth' | 'scale'
+  stage: 'idea' | 'mvp' | 'growth' | 'scale' | 'exploring'
   industry: string
   teamSize: number
   lookingFor: string[]
   rewards: {
-    type: 'equity' | 'cash' | 'hybrid'
+    type: 'equity' | 'cash' | 'hybrid' | 'unknown'
     amount: string
   }
   owner: {
@@ -69,7 +69,7 @@ export interface Venture {
   createdAt: string
   status: 'active' | 'paused' | 'completed'
   tags: string[]
-  tier: 'T1' | 'T2' | 'T3'
+  tier: 'T1' | 'T2' | 'T3' | 'T0'
   residency: string
 }
 
@@ -854,7 +854,7 @@ class UnifiedAPIService {
 
   async getJourneyStatus(userId: string): Promise<ApiResponse<JourneyStatus>> {
     try {
-      const response = await this.request<JourneyStatus>(`/api/journey/status/${userId}`)
+      const response = await this.request<JourneyStatus>(`/api/v1/journey/status/${userId}`)
       return { success: true, data: response.data }
     } catch (error) {
       console.error('Error fetching journey status:', error)

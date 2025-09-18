@@ -22,7 +22,7 @@ logger.info("Using direct database connection")
 
 # Initialize Flask app
 app = Flask(__name__)
-CORS(app, origins=["https://smartstart-frontend.onrender.com", "https://smartstart-api.onrender.com"], 
+CORS(app, origins=["https://smartstart-frontend.onrender.com", "https://smartstart-api.onrender.com", "http://localhost:3000", "http://localhost:3001", "http://localhost:3002", "http://localhost:3003"], 
      allow_headers=["Content-Type", "Authorization"], 
      methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
      supports_credentials=True)
@@ -78,7 +78,7 @@ PERMISSIONS = {
         'delete': ['LEGAL_ADMIN', 'SUPER_ADMIN']
     },
     'subscriptions': {
-        'read': ['SUBSCRIBER', 'SEAT_HOLDER', 'VENTURE_OWNER', 'VENTURE_PARTICIPANT', 'CONFIDENTIAL_ACCESS', 'RESTRICTED_ACCESS', 'HIGHLY_RESTRICTED_ACCESS', 'BILLING_ADMIN', 'SECURITY_ADMIN', 'LEGAL_ADMIN', 'SUPER_ADMIN'],
+        'read': ['MEMBER', 'SUBSCRIBER', 'SEAT_HOLDER', 'VENTURE_OWNER', 'VENTURE_PARTICIPANT', 'CONFIDENTIAL_ACCESS', 'RESTRICTED_ACCESS', 'HIGHLY_RESTRICTED_ACCESS', 'BILLING_ADMIN', 'SECURITY_ADMIN', 'LEGAL_ADMIN', 'SUPER_ADMIN'],
         'create': ['MEMBER', 'SUBSCRIBER', 'SEAT_HOLDER', 'VENTURE_OWNER', 'VENTURE_PARTICIPANT', 'CONFIDENTIAL_ACCESS', 'RESTRICTED_ACCESS', 'HIGHLY_RESTRICTED_ACCESS', 'BILLING_ADMIN', 'SECURITY_ADMIN', 'LEGAL_ADMIN', 'SUPER_ADMIN'],
         'update': ['BILLING_ADMIN', 'SUPER_ADMIN'],
         'delete': ['BILLING_ADMIN', 'SUPER_ADMIN']
@@ -544,12 +544,13 @@ def get_billing_plans():
     """Get all available billing plans"""
     try:
         query = """
-            SELECT id, name, description, price, currency, interval, features, isActive
+            SELECT id, name, description, price, currency, interval, features, "isActive"
             FROM "BillingPlan" 
-            WHERE isActive = true
+            WHERE "isActive" = true
             ORDER BY price ASC
         """
-        plans = db._execute_query(query, (), fetch_one=False)
+        plans = db._execute_query(query, (), fetch_all=True)
+        logger.info(f"Query returned {len(plans) if plans else 0} plans")
         
         if not plans:
             return jsonify(create_response(
@@ -561,14 +562,14 @@ def get_billing_plans():
         plans_list = []
         for plan in plans:
             plans_list.append({
-                'id': plan[0],
-                'name': plan[1],
-                'description': plan[2],
-                'price': float(plan[3]),
-                'currency': plan[4],
-                'interval': plan[5],
-                'features': plan[6] if plan[6] else [],
-                'isActive': plan[7]
+                'id': plan['id'],
+                'name': plan['name'],
+                'description': plan['description'],
+                'price': float(plan['price']),
+                'currency': plan['currency'],
+                'interval': plan['interval'],
+                'features': plan['features'] if plan['features'] else [],
+                'isActive': plan['isActive']
             })
         
         return jsonify(create_response(
@@ -609,7 +610,7 @@ def create_subscription():
         plan_query = """
             SELECT id, name, price, currency, interval, features
             FROM "BillingPlan" 
-            WHERE id = %s AND isActive = true
+            WHERE id = %s AND "isActive" = true
         """
         plan = db._execute_query(plan_query, (plan_id,), fetch_one=True)
         if not plan:
@@ -657,26 +658,53 @@ def create_subscription():
             
             if subscription:
                 subscription_data = {
-                    'id': subscription[0],
-                    'userId': subscription[1],
-                    'planId': subscription[2],
-                    'status': subscription[3],
-                    'startDate': subscription[4].isoformat() if subscription[4] else None,
-                    'endDate': subscription[5].isoformat() if subscription[5] else None,
-                    'autoRenew': subscription[6],
+                    'id': subscription['id'],
+                    'userId': subscription['userId'],
+                    'planId': subscription['planId'],
+                    'status': subscription['status'],
+                    'startDate': subscription['startDate'].isoformat() if subscription['startDate'] else None,
+                    'endDate': subscription['endDate'].isoformat() if subscription['endDate'] else None,
+                    'autoRenew': subscription['autoRenew'],
                     'plan': {
-                        'name': subscription[7],
-                        'description': subscription[8],
-                        'price': float(subscription[9]),
-                        'currency': subscription[10],
-                        'interval': subscription[11],
-                        'features': subscription[12] if subscription[12] else []
+                        'name': subscription['name'],
+                        'description': subscription['description'],
+                        'price': float(subscription['price']),
+                        'currency': subscription['currency'],
+                        'interval': subscription['interval'],
+                        'features': subscription['features'] if subscription['features'] else []
                     }
                 }
                 
+                # Auto-upgrade user role to SUBSCRIBER upon successful subscription
+                try:
+                    db._execute_query(
+                        'UPDATE "User" SET "role" = %s, "updatedAt" = %s WHERE id = %s',
+                        ('SUBSCRIBER', now, user_id)
+                    )
+                except Exception as role_err:
+                    logger.warning(f"Role upgrade to SUBSCRIBER failed for user {user_id}: {role_err}")
+
+                # Issue a fresh JWT token that reflects upgraded role so permissions apply immediately
+                try:
+                    new_token_payload = {
+                        'userId': user_id,
+                        'email': user.get('email') if isinstance(user, dict) else None,
+                        'role': 'SUBSCRIBER',
+                        'level': user.get('level') if isinstance(user, dict) else 'OWLET',
+                        'exp': int(time.time()) + 48 * 3600
+                    }
+                    new_token = jwt.encode(new_token_payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
+                except Exception as token_err:
+                    logger.warning(f"Failed to issue upgraded token for user {user_id}: {token_err}")
+                    new_token = None
+
                 return jsonify(create_response(
                     success=True,
-                    data=subscription_data,
+                    data={
+                        **subscription_data,
+                        'upgradedRole': 'SUBSCRIBER',
+                        'token': new_token
+                    },
                     message="Subscription created successfully"
                 ))
         
@@ -714,20 +742,20 @@ def get_user_subscription(user_id):
             )), 404
         
         subscription_data = {
-            'id': subscription[0],
-            'userId': subscription[1],
-            'planId': subscription[2],
-            'status': subscription[3],
-            'startDate': subscription[4].isoformat() if subscription[4] else None,
-            'endDate': subscription[5].isoformat() if subscription[5] else None,
-            'autoRenew': subscription[6],
+            'id': subscription['id'],
+            'userId': subscription['userId'],
+            'planId': subscription['planId'],
+            'status': subscription['status'],
+            'startDate': subscription['startDate'].isoformat() if subscription['startDate'] else None,
+            'endDate': subscription['endDate'].isoformat() if subscription['endDate'] else None,
+            'autoRenew': subscription['autoRenew'],
             'plan': {
-                'name': subscription[7],
-                'description': subscription[8],
-                'price': float(subscription[9]),
-                'currency': subscription[10],
-                'interval': subscription[11],
-                'features': subscription[12] if subscription[12] else []
+                'name': subscription['name'],
+                'description': subscription['description'],
+                'price': float(subscription['price']),
+                'currency': subscription['currency'],
+                'interval': subscription['interval'],
+                'features': subscription['features'] if subscription['features'] else []
             }
         }
         
@@ -1112,6 +1140,41 @@ def transfer_buz_tokens():
 # LEGAL DOCUMENT SYSTEM ENDPOINTS
 # ============================================================================
 
+@app.route('/api/legal-documents/documents', methods=['GET'])
+def get_legal_documents_frontend():
+    """Get legal documents for frontend (no user_id required)"""
+    try:
+        # Get user from token
+        token = request.headers.get('Authorization', '').replace('Bearer ', '')
+        if not token:
+            return jsonify(create_response(
+                success=False,
+                error="Authorization token required"
+            )), 401
+        
+        # Decode token to get user_id
+        try:
+            import jwt
+            payload = jwt.decode(token, os.getenv('JWT_SECRET', 'your-super-secret-jwt-key-change-in-production'), algorithms=['HS256'])
+            user_id = payload.get('user_id')
+        except Exception as e:
+            return jsonify(create_response(
+                success=False,
+                error="Invalid token"
+            )), 401
+        
+        documents = db.get_user_legal_documents(user_id)
+        return jsonify(create_response(
+            success=True,
+            data=documents
+        )), 200
+    except Exception as e:
+        logger.error(f"Error getting legal documents: {e}")
+        return jsonify(create_response(
+            success=False,
+            error=str(e)
+        )), 500
+
 @app.route('/api/v1/legal/documents/<user_id>', methods=['GET'])
 @require_permission('legal_documents', 'read')
 def get_legal_documents(user_id):
@@ -1259,6 +1322,39 @@ def get_subscription_status(user_id):
 # ============================================================================
 # JOURNEY SYSTEM ENDPOINTS
 # ============================================================================
+
+@app.route('/api/journey/progress/<user_id>', methods=['GET', 'POST'])
+def get_journey_progress_frontend(user_id):
+    """Get or update journey progress for frontend"""
+    try:
+        if request.method == 'GET':
+            status = db.get_user_journey_status(user_id)
+            return jsonify(create_response(
+                success=True,
+                data=status
+            )), 200
+        elif request.method == 'POST':
+            data = request.get_json()
+            if not data:
+                return jsonify(create_response(
+                    success=False,
+                    error="No data provided"
+                )), 400
+            
+            # Update journey progress
+            result = db.update_user_journey_status(user_id, data)
+            return jsonify(create_response(
+                success=True,
+                data=result,
+                message="Journey progress updated successfully"
+            )), 200
+            
+    except Exception as e:
+        logger.error(f"Error with journey progress for user {user_id}: {e}")
+        return jsonify(create_response(
+            success=False,
+            error=str(e)
+        )), 500
 
 @app.route('/api/v1/journey/status/<user_id>', methods=['GET'])
 @require_permission('user', 'read')
