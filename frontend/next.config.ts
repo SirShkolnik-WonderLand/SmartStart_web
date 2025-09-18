@@ -4,6 +4,9 @@ const nextConfig: NextConfig = {
   // Enable compression
   compress: true,
 
+  // Enable standalone output for Docker
+  output: 'standalone',
+
   // Fix workspace root inference in monorepo
   outputFileTracingRoot: process.cwd(),
 

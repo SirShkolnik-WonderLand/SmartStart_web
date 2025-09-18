@@ -23,16 +23,26 @@ class DirectDatabaseConnector:
     def _establish_connection(self):
         """Establish direct database connection"""
         try:
-            # Database connection parameters
-            db_config = {
-                'host': 'dpg-d2uaqd6r433s73e56vfg-a.oregon-postgres.render.com',
-                'database': 'smartstart_db_4ahd',
-                'user': 'smartstart_db_4ahd_user',
-                'password': 'LYcgYXd9w9pBB4HPuNretjMOOlKxWP48',
-                'port': 5432
-            }
+            # Get database URL from environment or use defaults
+            database_url = os.getenv('DATABASE_URL')
             
-            self.connection = psycopg2.connect(**db_config)
+            if database_url:
+                # Parse DATABASE_URL (e.g., postgresql://user:pass@host:port/db)
+                self.connection = psycopg2.connect(database_url)
+                logger.info("Connected using DATABASE_URL")
+            else:
+                # Fallback to individual parameters
+                db_config = {
+                    'host': os.getenv('DB_HOST', 'localhost'),
+                    'database': os.getenv('DB_NAME', 'smartstart_db'),
+                    'user': os.getenv('DB_USER', 'smartstart_user'),
+                    'password': os.getenv('DB_PASSWORD', 'smartstart_password'),
+                    'port': int(os.getenv('DB_PORT', 5432))
+                }
+                
+                self.connection = psycopg2.connect(**db_config)
+                logger.info("Connected using individual parameters")
+            
             logger.info("Direct database connection established successfully")
             
         except Exception as e:
@@ -70,6 +80,17 @@ class DirectDatabaseConnector:
             except:
                 pass
             raise e
+    
+    def test_connection(self):
+        """Test database connection"""
+        try:
+            with self.connection.cursor() as cur:
+                cur.execute("SELECT 1")
+                result = cur.fetchone()
+                return result[0] == 1
+        except Exception as e:
+            logger.error(f"Connection test failed: {e}")
+            return False
     
     # ============================================================================
     # USER MANAGEMENT
