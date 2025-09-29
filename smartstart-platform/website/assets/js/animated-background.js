@@ -207,10 +207,8 @@ class AnimatedBackground {
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    // Only add animated background to home page
-    if (window.location.pathname.endsWith('/') || window.location.pathname.endsWith('/index.html')) {
-        window.animatedBackground = new AnimatedBackground();
-    }
+    // Add animated background to all pages
+    window.animatedBackground = new AnimatedBackground();
 });
 
 // Export for potential use
