@@ -1,73 +1,46 @@
 services:
+  # SmartStart Backend API
   - type: web
-    name: smartstart-api
-    env: node
-    plan: starter
-    buildCommand: npm install --production && npx prisma generate && npx prisma db push --accept-data-loss
-    startCommand: node server/python-proxy-server.js
-    autoDeploy: true
-    branch: main
-    healthCheckPath: /health
-    envVars:
-      - key: NODE_ENV
-        value: production
-      - key: DATABASE_URL
-        value: postgresql://smartstart_db_4ahd_user:LYcgYXd9w9pBB4HPuNretjMOOlKxWP48@dpg-d2uaqd6r433s73e56vfg-a.oregon-postgres.render.com:5432/smartstart_db_4ahd?sslmode=require
-      - key: PYTHON_BRAIN_URL
-        value: https://smartstart-python-brain.onrender.com
-      # DATABASE_URL is set in Render dashboard; omit here to preserve secret
-  - type: web
-    name: smartstart-python-brain
-    env: python
-    plan: starter
-    buildCommand: cd python-services && pip install --cache-dir .pip-cache --no-deps --upgrade -r requirements.txt
-    startCommand: cd python-services && python start.py
-    autoDeploy: true
-    branch: main
-    healthCheckPath: /health
-    envVars:
-      - key: NODE_ENV
-        value: production
-      - key: PORT
-        value: "5000"
-      - key: NODEJS_API_URL
-        value: https://smartstart-api.onrender.com
-      - key: CORS_ORIGINS
-        value: "https://smartstart-frontend.onrender.com,http://localhost:3000"
-      - key: PYTHON_BRAIN_VERSION
-        value: "2.1.2"
-      # DATABASE_URL is set in Render dashboard; omit here to preserve secret
-  - type: web
-    name: smartstart-frontend
-    env: node
-    plan: starter
-    buildCommand: cd frontend && chmod +x build-simple.sh && ./build-simple.sh
-    startCommand: cd frontend && npm start
-    envVars:
-      - key: NODE_ENV
-        value: production
-      - key: NEXT_PUBLIC_API_URL
-        value: https://smartstart-python-brain.onrender.com
-      - key: NEXT_TELEMETRY_DISABLED
-        value: "1"
-    # Health check configuration
-    healthCheckPath: /
-    # Auto-deploy from main branch
-    autoDeploy: true
-    # Branch configuration
-    branch: main
-  - type: web
-    name: smartstart-landing
+    name: smartstart-backend
     env: node
     plan: starter
     region: oregon
     buildCommand: |
-      echo "🚀 Building SmartStart Landing Page..."
-      cd landing-page
+      echo "🚀 Building SmartStart Backend..."
+      cd smartstart-platform/backend
       npm ci --cache .npm-cache --prefer-offline
-      npm run build
-      echo "✅ Landing page build complete"
-    startCommand: cd landing-page && npm start
+      echo "✅ Backend build complete"
+    startCommand: cd smartstart-platform/backend && node src/server.js
+    autoDeploy: true
+    branch: main
+    healthCheckPath: /health
+    healthCheckGracePeriod: 300
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "3001"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: smartstart-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CORS_ORIGINS
+        value: "https://smartstart-website.onrender.com,https://smartstart-app.onrender.com,http://localhost:3000"
+
+  # SmartStart Website (Public-facing)
+  - type: web
+    name: smartstart-website
+    env: node
+    plan: starter
+    region: oregon
+    buildCommand: |
+      echo "🚀 Building SmartStart Website..."
+      cd smartstart-platform
+      npm ci --cache .npm-cache --prefer-offline
+      echo "✅ Website build complete"
+    startCommand: cd smartstart-platform && node website-server.js
     autoDeploy: true
     branch: main
     healthCheckPath: /
@@ -75,9 +48,58 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
-      - key: NEXT_PUBLIC_MAIN_APP_URL
-        value: https://smartstart-frontend.onrender.com
-      - key: NEXT_PUBLIC_API_URL
-        value: https://smartstart-python-brain.onrender.com
-      - key: NEXT_TELEMETRY_DISABLED
-        value: "1"
+      - key: PORT
+        value: "3000"
+      - key: BACKEND_URL
+        value: https://smartstart-backend.onrender.com
+
+  # SmartStart App (Private dashboard)
+  - type: web
+    name: smartstart-app
+    env: node
+    plan: starter
+    region: oregon
+    buildCommand: |
+      echo "🚀 Building SmartStart App..."
+      cd smartstart-platform
+      npm ci --cache .npm-cache --prefer-offline
+      echo "✅ App build complete"
+    startCommand: cd smartstart-platform && node server.js
+    autoDeploy: true
+    branch: main
+    healthCheckPath: /health
+    healthCheckGracePeriod: 300
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "3002"
+      - key: BACKEND_URL
+        value: https://smartstart-backend.onrender.com
+
+  # WonderLand App (Separate application)
+  - type: web
+    name: wonderland-app
+    env: node
+    plan: starter
+    region: oregon
+    buildCommand: |
+      echo "🚀 Building WonderLand App..."
+      cd WonderLand_app
+      npm ci --cache .npm-cache --prefer-offline
+      echo "✅ WonderLand build complete"
+    startCommand: cd WonderLand_app && node website-server.js
+    autoDeploy: true
+    branch: main
+    healthCheckPath: /
+    healthCheckGracePeriod: 300
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "3003"
+
+databases:
+  - name: smartstart-db
+    plan: starter
+    region: oregon
