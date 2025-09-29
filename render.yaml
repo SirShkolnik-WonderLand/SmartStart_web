@@ -1,33 +1,7 @@
-# SmartStart Platform - Render Blueprint Configuration
-# Following Render best practices for 2024
+# SmartStart Website - Render Blueprint Configuration
+# Simple deployment for the public website only
 
 services:
-  # SmartStart Backend API Service
-  - type: web
-    name: smartstart-backend
-    env: node
-    plan: starter
-    region: oregon
-    buildCommand: |
-      echo "🚀 Building SmartStart Backend API..."
-      cd smartstart-platform/backend
-      npm ci --production --cache .npm-cache --prefer-offline
-      echo "✅ Backend API build complete"
-    startCommand: cd smartstart-platform/backend && node src/server.js
-    autoDeploy: true
-    branch: main
-    healthCheckPath: /health
-    healthCheckGracePeriod: 300
-    envVars:
-      - key: NODE_ENV
-        value: production
-      - key: PORT
-        value: "10000"
-      - key: JWT_SECRET
-        generateValue: true
-      - key: CORS_ORIGINS
-        value: "https://smartstart-website.onrender.com,https://smartstart-app.onrender.com"
-
   # SmartStart Website (Public-facing)
   - type: web
     name: smartstart-website
@@ -40,54 +14,6 @@ services:
       npm ci --production --cache .npm-cache --prefer-offline
       echo "✅ Website build complete"
     startCommand: cd smartstart-platform && node website-server.js
-    autoDeploy: true
-    branch: main
-    healthCheckPath: /
-    healthCheckGracePeriod: 300
-    envVars:
-      - key: NODE_ENV
-        value: production
-      - key: PORT
-        value: "10000"
-      - key: BACKEND_URL
-        value: https://smartstart-backend.onrender.com
-
-  # SmartStart App (Private Dashboard)
-  - type: web
-    name: smartstart-app
-    env: node
-    plan: starter
-    region: oregon
-    buildCommand: |
-      echo "🚀 Building SmartStart App Dashboard..."
-      cd smartstart-platform
-      npm ci --production --cache .npm-cache --prefer-offline
-      echo "✅ App Dashboard build complete"
-    startCommand: cd smartstart-platform && node server.js
-    autoDeploy: true
-    branch: main
-    healthCheckPath: /health
-    healthCheckGracePeriod: 300
-    envVars:
-      - key: NODE_ENV
-        value: production
-      - key: PORT
-        value: "10000"
-      - key: BACKEND_URL
-        value: https://smartstart-backend.onrender.com
-
-  # WonderLand App (Separate Application)
-  - type: web
-    name: wonderland-app
-    env: node
-    plan: starter
-    region: oregon
-    buildCommand: |
-      echo "🚀 Building WonderLand App..."
-      cd WonderLand_app
-      npm ci --production --cache .npm-cache --prefer-offline
-      echo "✅ WonderLand App build complete"
-    startCommand: cd WonderLand_app && node website-server.js
     autoDeploy: true
     branch: main
     healthCheckPath: /
