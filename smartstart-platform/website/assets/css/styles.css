@@ -1838,6 +1838,24 @@ body {
     margin-bottom: 0.5rem;
 }
 
+/* Skip to Content Link */
+.skip-to-content {
+    position: absolute;
+    top: -40px;
+    left: 6px;
+    background: var(--color-neon-teal);
+    color: var(--bg-primary);
+    padding: 8px;
+    text-decoration: none;
+    border-radius: 4px;
+    z-index: 10000;
+    font-weight: 600;
+}
+
+.skip-to-content:focus {
+    top: 6px;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .container {
