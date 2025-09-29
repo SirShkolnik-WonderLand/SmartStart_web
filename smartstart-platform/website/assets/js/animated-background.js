@@ -16,11 +16,10 @@ class AnimatedBackground {
     }
     
     init() {
-        // Disabled animated background
-        // this.createCanvas();
-        // this.createParticles();
-        // this.bindEvents();
-        // this.animate();
+        this.createCanvas();
+        this.createParticles();
+        this.bindEvents();
+        this.animate();
     }
     
     createCanvas() {

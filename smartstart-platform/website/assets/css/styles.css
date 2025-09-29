@@ -291,7 +291,7 @@ main {
 .hero {
     padding: 6rem 0 8rem;
     text-align: center;
-    background: var(--gradient-hero);
+    background: transparent;
     position: relative;
     overflow: hidden;
     min-height: 80vh;
@@ -300,23 +300,6 @@ main {
     z-index: 10;
 }
 
-.hero::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.04) 0%, transparent 50%),
-                radial-gradient(circle at 75% 75%, rgba(6, 182, 212, 0.03) 0%, transparent 50%);
-    pointer-events: none;
-    animation: heroFloat 30s ease-in-out infinite;
-}
-
-@keyframes heroFloat {
-    0%, 100% { transform: translateY(0px) rotate(0deg); }
-    50% { transform: translateY(-20px) rotate(1deg); }
-}
 
 .hero-content {
     position: relative;
