@@ -848,6 +848,20 @@ main {
         border-bottom: 1px solid var(--glass-border);
     }
     
+    /* Mobile header improvements */
+    .header-content {
+        min-height: 80px;
+    }
+    
+    .logo {
+        font-size: 1rem;
+    }
+    
+    .logo-image {
+        width: 32px;
+        height: 32px;
+    }
+    
     .hero {
         padding: 2rem 0 4rem;
     }
@@ -866,20 +880,6 @@ main {
     .card-grid {
         grid-template-columns: 1fr;
         gap: 1.5rem;
-    }
-    
-    /* Mobile header improvements */
-    .header-content {
-        min-height: 80px;
-    }
-    
-    .logo {
-        font-size: 1rem;
-    }
-    
-    .logo-image {
-        width: 32px;
-        height: 32px;
     }
     
     .footer-content {
@@ -1442,26 +1442,6 @@ main {
     box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
 }
 
-/* Tablet Responsive */
-@media (max-width: 1024px) {
-    .nav-menu {
-        gap: 1.5rem;
-    }
-    
-    .nav-link {
-        font-size: 0.9rem;
-        padding: 0.6rem 0.8rem;
-    }
-    
-    .hero {
-        padding: 4rem 0 6rem;
-    }
-    
-    .section {
-        padding: 3rem 0;
-    }
-}
-
 /* Mobile Responsive for Knowledge Hub */
 @media (max-width: 768px) {
     .tab-buttons {
@@ -1492,6 +1472,26 @@ main {
     .cta-button {
         width: 100%;
         max-width: 300px;
+    }
+}
+
+/* Tablet Responsive */
+@media (max-width: 1024px) {
+    .nav-menu {
+        gap: 1.5rem;
+    }
+    
+    .nav-link {
+        font-size: 0.9rem;
+        padding: 0.6rem 0.8rem;
+    }
+    
+    .hero {
+        padding: 4rem 0 6rem;
+    }
+    
+    .section {
+        padding: 3rem 0;
     }
 }
 
