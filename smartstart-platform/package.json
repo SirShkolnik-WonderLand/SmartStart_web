@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node website-server.js",
     "dev": "nodemon website-server.js",
-    "build": "echo 'Build complete'",
+    "build": "echo 'Build complete - static site ready'",
+    "postinstall": "echo 'Dependencies installed successfully'",
     "test": "echo 'No tests specified'"
   },
   "keywords": [
