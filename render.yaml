@@ -1,15 +1,18 @@
+# SmartStart Platform - Render Blueprint Configuration
+# Following Render best practices for 2024
+
 services:
-  # SmartStart Backend API
+  # SmartStart Backend API Service
   - type: web
     name: smartstart-backend
     env: node
     plan: starter
     region: oregon
     buildCommand: |
-      echo "🚀 Building SmartStart Backend..."
+      echo "🚀 Building SmartStart Backend API..."
       cd smartstart-platform/backend
-      npm ci --cache .npm-cache --prefer-offline
-      echo "✅ Backend build complete"
+      npm ci --production --cache .npm-cache --prefer-offline
+      echo "✅ Backend API build complete"
     startCommand: cd smartstart-platform/backend && node src/server.js
     autoDeploy: true
     branch: main
@@ -19,15 +22,11 @@ services:
       - key: NODE_ENV
         value: production
       - key: PORT
-        value: "3001"
-      - key: DATABASE_URL
-        fromDatabase:
-          name: smartstart-db
-          property: connectionString
+        value: "10000"
       - key: JWT_SECRET
         generateValue: true
       - key: CORS_ORIGINS
-        value: "https://smartstart-website.onrender.com,https://smartstart-app.onrender.com,http://localhost:3000"
+        value: "https://smartstart-website.onrender.com,https://smartstart-app.onrender.com"
 
   # SmartStart Website (Public-facing)
   - type: web
@@ -38,7 +37,7 @@ services:
     buildCommand: |
       echo "🚀 Building SmartStart Website..."
       cd smartstart-platform
-      npm ci --cache .npm-cache --prefer-offline
+      npm ci --production --cache .npm-cache --prefer-offline
       echo "✅ Website build complete"
     startCommand: cd smartstart-platform && node website-server.js
     autoDeploy: true
@@ -49,21 +48,21 @@ services:
       - key: NODE_ENV
         value: production
       - key: PORT
-        value: "3000"
+        value: "10000"
       - key: BACKEND_URL
         value: https://smartstart-backend.onrender.com
 
-  # SmartStart App (Private dashboard)
+  # SmartStart App (Private Dashboard)
   - type: web
     name: smartstart-app
     env: node
     plan: starter
     region: oregon
     buildCommand: |
-      echo "🚀 Building SmartStart App..."
+      echo "🚀 Building SmartStart App Dashboard..."
       cd smartstart-platform
-      npm ci --cache .npm-cache --prefer-offline
-      echo "✅ App build complete"
+      npm ci --production --cache .npm-cache --prefer-offline
+      echo "✅ App Dashboard build complete"
     startCommand: cd smartstart-platform && node server.js
     autoDeploy: true
     branch: main
@@ -73,11 +72,11 @@ services:
       - key: NODE_ENV
         value: production
       - key: PORT
-        value: "3002"
+        value: "10000"
       - key: BACKEND_URL
         value: https://smartstart-backend.onrender.com
 
-  # WonderLand App (Separate application)
+  # WonderLand App (Separate Application)
   - type: web
     name: wonderland-app
     env: node
@@ -86,8 +85,8 @@ services:
     buildCommand: |
       echo "🚀 Building WonderLand App..."
       cd WonderLand_app
-      npm ci --cache .npm-cache --prefer-offline
-      echo "✅ WonderLand build complete"
+      npm ci --production --cache .npm-cache --prefer-offline
+      echo "✅ WonderLand App build complete"
     startCommand: cd WonderLand_app && node website-server.js
     autoDeploy: true
     branch: main
@@ -97,9 +96,4 @@ services:
       - key: NODE_ENV
         value: production
       - key: PORT
-        value: "3003"
-
-databases:
-  - name: smartstart-db
-    plan: starter
-    region: oregon
+        value: "10000"
