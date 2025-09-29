@@ -10,7 +10,7 @@ class TypewriterHero {
         this.currentIndex = 0;
         this.isAnimating = false;
         
-        // Hero content combinations without personal names
+        // Professional hero content combinations
         this.contentSets = [
             {
                 title: "Help people and businesses <span class='underline'>grow differently</span>",
@@ -33,20 +33,20 @@ class TypewriterHero {
                 tagline: "Where ISO audits meet venture building"
             },
             {
-                title: "Your CISO, Your CTO, Your Partner",
-                tagline: "Military-grade security and startup agility combined"
-            },
-            {
                 title: "Innovation With Integrity",
                 tagline: "We build businesses that last — because they start secure"
             },
             {
                 title: "Community. Security. Growth.",
-                tagline: "Helping people and businesses grow differently in the GTA and beyond"
+                tagline: "Helping people and businesses grow differently"
             },
             {
                 title: "Clarity Creates Confidence",
-                tagline: "Audit, automate, and accelerate — the AliceSolutionsGroup way"
+                tagline: "Audit, automate, and accelerate — the professional way"
+            },
+            {
+                title: "Where Technology Meets Trust",
+                tagline: "Building secure foundations for tomorrow's success"
             }
         ];
         
