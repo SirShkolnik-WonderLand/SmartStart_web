@@ -4,6 +4,12 @@
     box-sizing: border-box;
 }
 
+/* Force dark theme - prevent any white backgrounds */
+html, body {
+    background: linear-gradient(135deg, #0a0e13 0%, #1a1f2e 50%, #252b3d 100%) !important;
+    color: #f8fafc !important;
+}
+
 :root {
     /* Professional Cybersecurity/AI Theme */
     --bg-primary: #0a0e13;        /* Deep dark blue-black */
@@ -778,14 +784,20 @@ main {
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    body {
+    html, body {
         background: linear-gradient(135deg, #0a0e13 0%, #1a1f2e 50%, #252b3d 100%) !important;
         color: #f8fafc !important;
+        background-attachment: fixed !important;
     }
     
     .global-header {
         background: rgba(26, 31, 46, 0.8) !important;
         border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    }
+    
+    /* Force dark theme on all elements */
+    .hero, .section, .card, .content-text {
+        background: transparent !important;
     }
     
     .header-content {
@@ -907,6 +919,12 @@ main {
 }
 
 @media (max-width: 480px) {
+    /* Force dark theme on small mobile devices */
+    html, body {
+        background: linear-gradient(135deg, #0a0e13 0%, #1a1f2e 50%, #252b3d 100%) !important;
+        color: #f8fafc !important;
+    }
+    
     .hero-title {
         font-size: 2rem;
     }
@@ -917,6 +935,7 @@ main {
     
     .card {
         padding: 1.5rem;
+        background: rgba(26, 31, 46, 0.8) !important;
     }
 }
 
