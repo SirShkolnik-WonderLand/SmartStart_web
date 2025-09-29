@@ -279,6 +279,17 @@ body::before {
     font-size: 1.5rem;
     cursor: pointer;
     padding: 0.5rem;
+    border-radius: var(--border-radius-md);
+    transition: all var(--transition-fast);
+}
+
+.mobile-menu-toggle:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.mobile-menu-toggle.active {
+    background: var(--accent-primary);
+    color: white;
 }
 
 /* Main Content */
@@ -768,11 +779,73 @@ main {
     }
     
     .nav-menu {
-        display: none;
+        position: fixed;
+        top: 80px;
+        left: 0;
+        width: 100%;
+        height: calc(100vh - 80px);
+        background: var(--bg-primary);
+        backdrop-filter: var(--glass-backdrop);
+        border-top: 1px solid var(--glass-border);
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        padding: 2rem 0;
+        gap: 1rem;
+        transform: translateX(-100%);
+        transition: transform var(--transition-normal);
+        z-index: 1000;
+        overflow-y: auto;
+    }
+    
+    .nav-menu.active {
+        transform: translateX(0);
+        display: flex;
+    }
+    
+    .nav-item {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .nav-link {
+        display: block;
+        padding: 1rem 2rem;
+        font-size: 1.1rem;
+        border-bottom: 1px solid var(--glass-border);
+        width: 100%;
+    }
+    
+    .nav-link:hover {
+        background: rgba(59, 130, 246, 0.1);
+        border-bottom-color: var(--accent-primary);
     }
     
     .mobile-menu-toggle {
         display: block;
+    }
+    
+    /* Services dropdown mobile styles */
+    .services-dropdown {
+        width: 100%;
+    }
+    
+    .dropdown-content {
+        position: static;
+        background: var(--bg-secondary);
+        border: none;
+        box-shadow: none;
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+        width: 100%;
+        margin-top: 0.5rem;
+        border-radius: 0;
+    }
+    
+    .dropdown-link {
+        padding: 0.75rem 3rem;
+        border-bottom: 1px solid var(--glass-border);
     }
     
     .hero {
@@ -793,6 +866,20 @@ main {
     .card-grid {
         grid-template-columns: 1fr;
         gap: 1.5rem;
+    }
+    
+    /* Mobile header improvements */
+    .header-content {
+        min-height: 80px;
+    }
+    
+    .logo {
+        font-size: 1rem;
+    }
+    
+    .logo-image {
+        width: 32px;
+        height: 32px;
     }
     
     .footer-content {
@@ -1353,6 +1440,26 @@ main {
     color: var(--bg-primary);
     transform: translateY(-2px);
     box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+}
+
+/* Tablet Responsive */
+@media (max-width: 1024px) {
+    .nav-menu {
+        gap: 1.5rem;
+    }
+    
+    .nav-link {
+        font-size: 0.9rem;
+        padding: 0.6rem 0.8rem;
+    }
+    
+    .hero {
+        padding: 4rem 0 6rem;
+    }
+    
+    .section {
+        padding: 3rem 0;
+    }
 }
 
 /* Mobile Responsive for Knowledge Hub */
