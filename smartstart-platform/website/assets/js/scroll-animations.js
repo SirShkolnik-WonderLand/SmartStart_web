@@ -37,7 +37,7 @@ class ScrollAnimations {
         }, this.observerOptions);
         
         // Observe all sections and cards
-        const elementsToAnimate = document.querySelectorAll('.section, .card, .hero-content');
+        const elementsToAnimate = document.querySelectorAll('.section, .card, .hero-content, .resource-category, .resource-item');
         elementsToAnimate.forEach(el => {
             el.classList.add('scroll-reveal');
             observer.observe(el);
