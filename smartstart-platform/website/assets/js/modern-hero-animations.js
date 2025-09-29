@@ -14,15 +14,15 @@ class ModernHeroAnimations {
         this.isAnimating = false;
         this.animationSpeed = 10000; // 10 second intervals
         
-        // Modern title variations with enhanced styling
+        // Professional title variations
         this.titleVariations = [
-            "Help people and businesses <span class='underline neon-text'>grow differently</span>",
-            "Transform ideas into <span class='underline neon-text'>successful ventures</span>",
-            "Secure, build, and <span class='underline neon-text'>scale together</span>",
-            "Where innovation meets <span class='underline neon-text'>cybersecurity</span>",
-            "Building the future of <span class='underline neon-text'>smart business</span>",
-            "From concept to <span class='underline neon-text'>market leader</span>",
-            "Structured growth with <span class='underline neon-text'>military precision</span>"
+            "Help people and businesses <span class='underline'>grow differently</span>",
+            "Transform ideas into <span class='underline'>successful ventures</span>",
+            "Secure, build, and <span class='underline'>scale together</span>",
+            "Where innovation meets <span class='underline'>cybersecurity</span>",
+            "Building the future of <span class='underline'>smart business</span>",
+            "From concept to <span class='underline'>market leader</span>",
+            "Structured growth with <span class='underline'>military precision</span>"
         ];
         
         // Dynamic taglines with typewriter effect
@@ -53,8 +53,7 @@ class ModernHeroAnimations {
     init() {
         if (!this.heroTitle || !this.heroTagline || !this.heroDescription) return;
         
-        // Add CSS for neon text effects
-        this.addNeonTextStyles();
+        // Clean, professional styling
         
         // Start synchronized animations after initial load
         setTimeout(() => {
@@ -63,35 +62,6 @@ class ModernHeroAnimations {
         }, 3000);
     }
     
-    addNeonTextStyles() {
-        const style = document.createElement('style');
-        style.textContent = `
-            .neon-text {
-                color: var(--neon-green);
-                text-shadow: 0 0 10px var(--neon-green-glow), 0 0 20px var(--neon-green-glow);
-                animation: neonPulse 2s ease-in-out infinite alternate;
-            }
-            
-            @keyframes neonPulse {
-                from { 
-                    text-shadow: 0 0 10px var(--neon-green-glow), 0 0 20px var(--neon-green-glow);
-                }
-                to { 
-                    text-shadow: 0 0 20px rgba(0, 255, 136, 0.8), 0 0 30px rgba(0, 255, 136, 0.6);
-                }
-            }
-            
-            .floating-text {
-                animation: floatText 3s ease-in-out infinite;
-            }
-            
-            @keyframes floatText {
-                0%, 100% { transform: translateY(0px); }
-                50% { transform: translateY(-10px); }
-            }
-        `;
-        document.head.appendChild(style);
-    }
     
     async startSynchronizedAnimations() {
         // Start all animations in perfect sync
@@ -169,28 +139,14 @@ class ModernHeroAnimations {
         element.textContent = '';
         element.style.opacity = '1';
         
-        // Enhanced typewriter with neon cursor effect
+        // Professional typewriter effect
         for (let i = 0; i <= text.length; i++) {
-            const currentText = text.slice(0, i);
-            element.innerHTML = currentText + '<span class="typewriter-cursor">|</span>';
+            element.textContent = text.slice(0, i);
             
-            // Add neon glow to cursor
-            const cursor = element.querySelector('.typewriter-cursor');
-            if (cursor) {
-                cursor.style.color = 'var(--neon-green)';
-                cursor.style.textShadow = '0 0 10px var(--neon-green-glow)';
-                cursor.style.animation = 'blink 1s infinite';
-            }
-            
-            // Vary typing speed for natural feel
-            const delay = i === 0 ? 200 : (Math.random() * 80 + 40);
+            // Natural typing speed
+            const delay = i === 0 ? 200 : (Math.random() * 60 + 30);
             await this.delay(delay);
         }
-        
-        // Remove cursor after completion
-        setTimeout(() => {
-            element.textContent = text;
-        }, 500);
     }
     
     addParallaxEffects() {
