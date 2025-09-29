@@ -2,10 +2,10 @@
   "name": "smartstart-webapp",
   "version": "1.0.0",
   "description": "SmartStart Platform - Micro-venture studio webapp by AliceSolutionsGroup",
-  "main": "server.js",
+  "main": "website-server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js",
+    "start": "node website-server.js",
+    "dev": "nodemon website-server.js",
     "build": "echo 'Build complete'",
     "test": "echo 'No tests specified'"
   },

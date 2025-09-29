@@ -13,7 +13,7 @@ services:
       cd smartstart-platform
       npm ci --production --cache .npm-cache --prefer-offline
       echo "✅ Website build complete"
-    startCommand: cd smartstart-platform && node website-server.js
+    startCommand: cd smartstart-platform && npm start
     autoDeploy: true
     branch: main
     healthCheckPath: /
