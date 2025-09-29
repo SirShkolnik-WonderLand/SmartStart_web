@@ -7,47 +7,46 @@ class TypewriterHero {
     constructor() {
         this.heroTitle = document.querySelector('.hero-title');
         this.heroTagline = document.querySelector('.hero-tagline');
-        this.heroDescription = document.querySelector('.vision-description');
         this.currentIndex = 0;
         this.isAnimating = false;
         
-        // Your new hero content combinations
+        // Your personal brand hero content combinations
         this.contentSets = [
             {
-                title: "Help People and Businesses Grow Differently",
-                tagline: "Security, structure, and clarity — from startups to enterprises."
+                title: "Help people and businesses <span class='underline'>grow differently</span>",
+                tagline: "Sagi Ehud (Udi) Shkolnik — CTO, CISO, and founder of AliceSolutionsGroup"
             },
             {
                 title: "Build Smarter. Grow Safer.",
-                tagline: "Cybersecurity, compliance, and SaaS incubation under one roof."
+                tagline: "Cybersecurity, compliance, and SaaS incubation under one roof"
             },
             {
                 title: "From Vision to Secure Reality",
-                tagline: "We turn ideas into ventures with ISO-grade foundations."
+                tagline: "We turn ideas into ventures with ISO-grade foundations"
             },
             {
                 title: "Transparency Is Our Superpower",
-                tagline: "Making the invisible problems visible — and fixing them."
+                tagline: "Making the invisible problems visible — and fixing them"
             },
             {
                 title: "Secure Foundations for Bold Ideas",
-                tagline: "Where ISO audits meet venture building."
+                tagline: "Where ISO audits meet venture building"
             },
             {
                 title: "Your CISO, Your CTO, Your Partner",
-                tagline: "Military-grade security and startup agility combined."
+                tagline: "Military-grade security and startup agility combined"
             },
             {
                 title: "Innovation With Integrity",
-                tagline: "We build businesses that last — because they start secure."
+                tagline: "We build businesses that last — because they start secure"
             },
             {
                 title: "Community. Security. Growth.",
-                tagline: "Helping people and businesses grow differently in the GTA and beyond."
+                tagline: "Helping people and businesses grow differently in the GTA and beyond"
             },
             {
                 title: "Clarity Creates Confidence",
-                tagline: "Audit, automate, and accelerate — the AliceSolutionsGroup way."
+                tagline: "Audit, automate, and accelerate — the AliceSolutionsGroup way"
             }
         ];
         
@@ -77,11 +76,11 @@ class TypewriterHero {
         const content = this.contentSets[this.currentIndex];
         
         // Type out title
-        await this.typeText(this.heroTitle, content.title);
+        await this.typeText(this.heroTitle, content.title, true);
         await this.delay(500);
         
         // Type out tagline
-        await this.typeText(this.heroTagline, content.tagline);
+        await this.typeText(this.heroTagline, content.tagline, false);
         
         // Move to next content
         this.currentIndex = (this.currentIndex + 1) % this.contentSets.length;
@@ -89,14 +88,23 @@ class TypewriterHero {
         this.isAnimating = false;
     }
     
-    async typeText(element, text) {
+    async typeText(element, text, isHTML = false) {
         // Clear element
-        element.textContent = '';
+        if (isHTML) {
+            element.innerHTML = '';
+        } else {
+            element.textContent = '';
+        }
         element.style.opacity = '1';
         
         // Type out character by character
         for (let i = 0; i <= text.length; i++) {
-            element.textContent = text.slice(0, i);
+            const currentText = text.slice(0, i);
+            if (isHTML) {
+                element.innerHTML = currentText;
+            } else {
+                element.textContent = currentText;
+            }
             
             // Natural typing speed
             const delay = Math.random() * 50 + 25;
