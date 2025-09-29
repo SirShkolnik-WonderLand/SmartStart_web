@@ -1,6 +1,6 @@
 /**
- * Animated Background Particles
- * Creates floating particles and moving background effects
+ * Animated Background Particles - Fixed Version
+ * Creates smooth floating particles and moving background effects
  */
 
 class AnimatedBackground {
@@ -9,13 +9,23 @@ class AnimatedBackground {
         this.ctx = null;
         this.particles = [];
         this.animationId = null;
-        this.mouseX = 0;
-        this.mouseY = 0;
+        this.mouseX = window.innerWidth / 2;
+        this.mouseY = window.innerHeight / 2;
+        this.time = 0;
         
         this.init();
     }
     
     init() {
+        // Wait for DOM to be ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => this.setup());
+        } else {
+            this.setup();
+        }
+    }
+    
+    setup() {
         this.createCanvas();
         this.createParticles();
         this.bindEvents();
@@ -23,7 +33,13 @@ class AnimatedBackground {
     }
     
     createCanvas() {
-        // Create canvas element
+        // Remove existing canvas if it exists
+        const existingCanvas = document.getElementById('animated-bg');
+        if (existingCanvas) {
+            existingCanvas.remove();
+        }
+        
+        // Create new canvas element
         this.canvas = document.createElement('canvas');
         this.canvas.id = 'animated-bg';
         this.canvas.style.position = 'fixed';
@@ -33,7 +49,7 @@ class AnimatedBackground {
         this.canvas.style.height = '100%';
         this.canvas.style.pointerEvents = 'none';
         this.canvas.style.zIndex = '1';
-        this.canvas.style.opacity = '0.6';
+        this.canvas.style.opacity = '0.8';
         
         // Set canvas size
         this.resizeCanvas();
@@ -43,25 +59,34 @@ class AnimatedBackground {
         
         // Get context
         this.ctx = this.canvas.getContext('2d');
+        
+        // Enable smooth rendering
+        this.ctx.imageSmoothingEnabled = true;
     }
     
     resizeCanvas() {
-        this.canvas.width = window.innerWidth;
-        this.canvas.height = window.innerHeight;
+        const dpr = window.devicePixelRatio || 1;
+        this.canvas.width = window.innerWidth * dpr;
+        this.canvas.height = window.innerHeight * dpr;
+        this.ctx.scale(dpr, dpr);
+        this.canvas.style.width = window.innerWidth + 'px';
+        this.canvas.style.height = window.innerHeight + 'px';
     }
     
     createParticles() {
-        const particleCount = Math.floor((window.innerWidth * window.innerHeight) / 15000);
+        const particleCount = Math.min(Math.floor((window.innerWidth * window.innerHeight) / 8000), 150);
         
         for (let i = 0; i < particleCount; i++) {
             this.particles.push({
-                x: Math.random() * this.canvas.width,
-                y: Math.random() * this.canvas.height,
-                vx: (Math.random() - 0.5) * 0.5,
-                vy: (Math.random() - 0.5) * 0.5,
-                size: Math.random() * 2 + 1,
-                opacity: Math.random() * 0.5 + 0.1,
-                color: this.getRandomColor()
+                x: Math.random() * window.innerWidth,
+                y: Math.random() * window.innerHeight,
+                vx: (Math.random() - 0.5) * 0.8,
+                vy: (Math.random() - 0.5) * 0.8,
+                size: Math.random() * 3 + 1,
+                opacity: Math.random() * 0.6 + 0.2,
+                color: this.getRandomColor(),
+                life: Math.random() * 100,
+                maxLife: 100
             });
         }
     }
@@ -79,58 +104,84 @@ class AnimatedBackground {
     }
     
     bindEvents() {
+        // Handle window resize
         window.addEventListener('resize', () => {
             this.resizeCanvas();
             this.particles = [];
             this.createParticles();
         });
         
+        // Handle mouse movement
         document.addEventListener('mousemove', (e) => {
             this.mouseX = e.clientX;
             this.mouseY = e.clientY;
         });
+        
+        // Handle mouse leave
+        document.addEventListener('mouseleave', () => {
+            this.mouseX = window.innerWidth / 2;
+            this.mouseY = window.innerHeight / 2;
+        });
     }
     
     animate() {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.time += 0.01;
+        this.ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
         
         // Update and draw particles
         this.particles.forEach((particle, index) => {
-            // Update position
+            // Update position with smooth movement
             particle.x += particle.vx;
             particle.y += particle.vy;
+            
+            // Add subtle wave motion
+            particle.x += Math.sin(this.time + particle.y * 0.01) * 0.1;
+            particle.y += Math.cos(this.time + particle.x * 0.01) * 0.1;
             
             // Mouse interaction
             const dx = this.mouseX - particle.x;
             const dy = this.mouseY - particle.y;
             const distance = Math.sqrt(dx * dx + dy * dy);
             
-            if (distance < 100) {
-                const force = (100 - distance) / 100;
-                particle.x -= dx * force * 0.01;
-                particle.y -= dy * force * 0.01;
+            if (distance < 150) {
+                const force = (150 - distance) / 150;
+                particle.x -= dx * force * 0.02;
+                particle.y -= dy * force * 0.02;
             }
             
-            // Wrap around edges
-            if (particle.x < 0) particle.x = this.canvas.width;
-            if (particle.x > this.canvas.width) particle.x = 0;
-            if (particle.y < 0) particle.y = this.canvas.height;
-            if (particle.y > this.canvas.height) particle.y = 0;
+            // Wrap around edges smoothly
+            if (particle.x < -10) particle.x = window.innerWidth + 10;
+            if (particle.x > window.innerWidth + 10) particle.x = -10;
+            if (particle.y < -10) particle.y = window.innerHeight + 10;
+            if (particle.y > window.innerHeight + 10) particle.y = -10;
             
-            // Draw particle
-            this.ctx.beginPath();
-            this.ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-            this.ctx.fillStyle = particle.color + particle.opacity + ')';
-            this.ctx.fill();
+            // Update particle life for breathing effect
+            particle.life += 0.5;
+            if (particle.life > particle.maxLife) particle.life = 0;
             
-            // Add glow effect
-            this.ctx.shadowBlur = 10;
+            const lifeRatio = particle.life / particle.maxLife;
+            const pulseOpacity = particle.opacity * (0.5 + 0.5 * Math.sin(lifeRatio * Math.PI * 2));
+            
+            // Draw particle with glow
+            this.ctx.save();
+            
+            // Outer glow
+            this.ctx.shadowBlur = 15;
             this.ctx.shadowColor = particle.color + '0.3)';
             this.ctx.beginPath();
-            this.ctx.arc(particle.x, particle.y, particle.size * 0.5, 0, Math.PI * 2);
-            this.ctx.fillStyle = particle.color + '0.8)';
+            this.ctx.arc(particle.x, particle.y, particle.size * 2, 0, Math.PI * 2);
+            this.ctx.fillStyle = particle.color + '0.1)';
             this.ctx.fill();
-            this.ctx.shadowBlur = 0;
+            
+            // Main particle
+            this.ctx.shadowBlur = 8;
+            this.ctx.shadowColor = particle.color + '0.5)';
+            this.ctx.beginPath();
+            this.ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+            this.ctx.fillStyle = particle.color + pulseOpacity + ')';
+            this.ctx.fill();
+            
+            this.ctx.restore();
         });
         
         // Draw connections between nearby particles
@@ -147,8 +198,8 @@ class AnimatedBackground {
                 const dy = this.particles[i].y - this.particles[j].y;
                 const distance = Math.sqrt(dx * dx + dy * dy);
                 
-                if (distance < 100) {
-                    const opacity = (100 - distance) / 100 * 0.1;
+                if (distance < 120) {
+                    const opacity = (120 - distance) / 120 * 0.15;
                     this.ctx.beginPath();
                     this.ctx.moveTo(this.particles[i].x, this.particles[i].y);
                     this.ctx.lineTo(this.particles[j].x, this.particles[j].y);
@@ -174,7 +225,15 @@ class AnimatedBackground {
 document.addEventListener('DOMContentLoaded', () => {
     // Only add animated background to home page
     if (window.location.pathname.endsWith('/') || window.location.pathname.endsWith('/index.html')) {
-        window.animatedBackground = new AnimatedBackground();
+        // Small delay to ensure other scripts don't interfere
+        setTimeout(() => {
+            try {
+                window.animatedBackground = new AnimatedBackground();
+                console.log('✅ Animated background initialized successfully');
+            } catch (error) {
+                console.error('❌ Error initializing animated background:', error);
+            }
+        }, 100);
     }
 });
 
