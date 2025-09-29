@@ -10,11 +10,11 @@ class TypewriterHero {
         this.currentIndex = 0;
         this.isAnimating = false;
         
-        // Your personal brand hero content combinations
+        // Hero content combinations without personal names
         this.contentSets = [
             {
                 title: "Help people and businesses <span class='underline'>grow differently</span>",
-                tagline: "Sagi Ehud (Udi) Shkolnik — CTO, CISO, and founder of AliceSolutionsGroup"
+                tagline: "Secure. Build. Grow."
             },
             {
                 title: "Build Smarter. Grow Safer.",
