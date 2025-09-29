@@ -286,6 +286,7 @@ main {
     min-height: 80vh;
     display: flex;
     align-items: center;
+    z-index: 10;
 }
 
 .hero::before {
@@ -308,7 +309,7 @@ main {
 
 .hero-content {
     position: relative;
-    z-index: 2;
+    z-index: 15;
     max-width: 900px;
     margin: 0 auto;
     padding: 0 2rem;
