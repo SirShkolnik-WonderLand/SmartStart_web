@@ -16,7 +16,38 @@
     <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
 <body>
-    <div id="global-header"></div>
+    <a href="#main-content" class="skip-to-content">Skip to main content</a>
+    
+    <!-- Header -->
+    <header class="global-header" id="header">
+        <div class="header-content">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">ASG</div>
+                <span>AliceSolutionsGroup</span>
+            </a>
+            <nav>
+                <ul class="nav-menu">
+                    <li class="nav-item services-dropdown">
+                        <a href="services.html" class="nav-link">Services</a>
+                        <div class="dropdown-content">
+                            <a href="services.html#cybersecurity" class="dropdown-link">Cybersecurity & Compliance</a>
+                            <a href="automation-ai.html" class="dropdown-link">Automation & AI</a>
+                            <a href="services.html#advisory" class="dropdown-link">Advisory & Audits</a>
+                        </div>
+                    </li>
+                    <li class="nav-item"><a href="smartstart.html" class="nav-link">SmartStart</a></li>
+                    <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
+                    <li class="nav-item"><a href="resources.html" class="nav-link">Resources</a></li>
+                    <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
+                </ul>
+            </nav>
+            <button class="mobile-menu-toggle" aria-label="Toggle menu">☰</button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="main-content">
+    
 
     <!-- Hero Section -->
     <section class="hero">
@@ -288,7 +319,7 @@
         </div>
     </section>
 
-    <div id="global-footer"></div>
+    
 
     <script src="assets/js/components.js"></script>
     <script src="assets/js/scroll-animations.js"></script>
@@ -315,5 +346,44 @@
             alert('Thank you for subscribing! Your default email client will open with the subscription request pre-filled.');
         });
     </script>
+    </main>
+
+    <!-- Footer -->
+    <footer class="global-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>AliceSolutionsGroup</h3>
+                    <p>"Help people and businesses grow differently." — Cybersecurity, ISO certifications, and SmartStart venture incubator.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Services</h3>
+                    <p><a href="services.html#cybersecurity">Cybersecurity & Compliance</a></p>
+                    <p><a href="automation-ai.html">Automation & AI</a></p>
+                    <p><a href="services.html#advisory">Advisory & Audits</a></p>
+                    <p><a href="smartstart.html">SmartStart Incubator</a></p>
+                </div>
+                <div class="footer-section">
+                    <h3>Company</h3>
+                    <p><a href="about.html">About Us</a></p>
+                    <p><a href="resources.html">Resources</a></p>
+                    <p><a href="contact.html">Contact</a></p>
+                </div>
+                <div class="footer-section">
+                    <h3>Legal</h3>
+                    <p><a href="privacy.html">Privacy Policy</a></p>
+                    <p><a href="terms.html">Terms of Service</a></p>
+                    <p><a href="security.html">Security Policy</a></p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 AliceSolutionsGroup. All rights reserved. | "Help people and businesses grow differently."</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/components.js"></script>
+    <script src="assets/js/scroll-animations.js"></script>
+    <script src="assets/js/script.js"></script>
 </body>
 </html>
