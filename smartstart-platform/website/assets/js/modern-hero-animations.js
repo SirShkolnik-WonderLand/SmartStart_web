@@ -86,22 +86,22 @@ class ModernHeroAnimations {
     }
     
     async animateTitleChange() {
-        // Elegant fade out
-        this.heroTitle.style.transition = 'all 0.4s ease-in-out';
+        // Ultra-smooth fade out with easing
+        this.heroTitle.style.transition = 'all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
         this.heroTitle.style.opacity = '0';
-        this.heroTitle.style.transform = 'translateY(-10px)';
+        this.heroTitle.style.transform = 'translateY(-15px) scale(0.98)';
         
-        await this.delay(400);
+        await this.delay(800);
         
         // Change content
         this.currentTitleIndex = (this.currentTitleIndex + 1) % this.titleVariations.length;
         this.heroTitle.innerHTML = this.titleVariations[this.currentTitleIndex];
         
-        // Smooth fade in
+        // Ultra-smooth fade in with gentle bounce
         this.heroTitle.style.opacity = '1';
-        this.heroTitle.style.transform = 'translateY(0)';
+        this.heroTitle.style.transform = 'translateY(0) scale(1)';
         
-        await this.delay(400);
+        await this.delay(800);
     }
     
     async animateTaglineChange() {
@@ -114,39 +114,43 @@ class ModernHeroAnimations {
     async animateDescriptionChange() {
         this.currentDescriptionIndex = (this.currentDescriptionIndex + 1) % this.descriptionVariations.length;
         
-        // Simple fade transition
-        this.heroDescription.style.transition = 'all 0.4s ease-in-out';
+        // Ultra-smooth fade transition
+        this.heroDescription.style.transition = 'all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
         this.heroDescription.style.opacity = '0';
-        this.heroDescription.style.transform = 'translateY(10px)';
+        this.heroDescription.style.transform = 'translateY(20px) scale(0.98)';
         
-        await this.delay(400);
+        await this.delay(800);
         
         // Change content
         this.heroDescription.textContent = this.descriptionVariations[this.currentDescriptionIndex];
         
-        // Fade in
+        // Smooth fade in with gentle scale
         this.heroDescription.style.opacity = '1';
-        this.heroDescription.style.transform = 'translateY(0)';
+        this.heroDescription.style.transform = 'translateY(0) scale(1)';
         
-        await this.delay(400);
+        await this.delay(800);
     }
     
     async typewriterEffect(element, text) {
         // Clear and prepare for typewriter
+        element.style.transition = 'all 0.3s ease-in-out';
         element.style.opacity = '0';
-        await this.delay(200);
+        await this.delay(300);
         
         element.textContent = '';
         element.style.opacity = '1';
         
-        // Professional typewriter effect
+        // Ultra-smooth typewriter effect
         for (let i = 0; i <= text.length; i++) {
             element.textContent = text.slice(0, i);
             
-            // Natural typing speed
-            const delay = i === 0 ? 200 : (Math.random() * 60 + 30);
+            // Smoother, more natural typing speed
+            const delay = i === 0 ? 300 : (Math.random() * 40 + 25);
             await this.delay(delay);
         }
+        
+        // Gentle completion delay
+        await this.delay(500);
     }
     
     addParallaxEffects() {
