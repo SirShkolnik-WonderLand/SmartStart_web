@@ -255,7 +255,7 @@ class SmartStartDashboard {
       const ventureItem = document.createElement('div');
       ventureItem.className = 'venture-item';
       ventureItem.innerHTML = `
-        <div class="venture-icon">🚀</div>
+        <div class="venture-icon"></div>
         <div class="venture-content">
           <h4>${venture.name}</h4>
           <p>${venture.description || 'No description available'}</p>
@@ -298,7 +298,7 @@ class SmartStartDashboard {
       const activityItem = document.createElement('div');
       activityItem.className = 'progress-item';
       activityItem.innerHTML = `
-        <div class="progress-icon">📊</div>
+        <div class="progress-icon"></div>
         <div class="progress-content">
           <h4>${activity.event || activity.name || 'Activity'}</h4>
           <p>${new Date(activity.created_at || activity.updated_at).toLocaleDateString()}</p>
@@ -339,15 +339,15 @@ class SmartStartDashboard {
    */
   getStageIcon(stage) {
     const icons = {
-      discovery: '🔍',
-      problem_statement: '📝',
-      sprint_0: '⚡',
-      mvp_build: '🛠️',
-      beta_test: '🧪',
-      decision_gate: '🚪',
-      launch: '🚀'
+      discovery: '',
+      problem_statement: '',
+      sprint_0: '',
+      mvp_build: '',
+      beta_test: '',
+      decision_gate: '',
+      launch: ''
     };
-    return icons[stage] || '📊';
+    return icons[stage] || '';
   }
 
   /**
