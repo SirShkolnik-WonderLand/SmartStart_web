@@ -3,16 +3,8 @@ services:
     name: smartstart-website
     env: node
     plan: starter
-    region: oregon
-    rootDir: smartstart-platform
-    buildCommand: npm ci --production --cache .npm-cache --prefer-offline
-    startCommand: npm start
-    autoDeploy: true
-    branch: main
-    healthCheckPath: /
-    healthCheckGracePeriod: 300
+    buildCommand: cd smartstart-platform && npm install
+    startCommand: cd smartstart-platform && npm start
     envVars:
       - key: NODE_ENV
         value: production
-      - key: PORT
-        value: "10000"
