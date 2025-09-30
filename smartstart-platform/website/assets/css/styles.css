@@ -1746,6 +1746,124 @@ html {
     font-size: 0.875rem;
 }
 
+/* Certification Badges */
+.credentials-intro {
+    text-align: center;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    font-size: 0.9rem;
+}
+
+.credly-link {
+    color: var(--accent-primary);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.credly-link:hover {
+    color: var(--accent-secondary);
+}
+
+.certification-showcase {
+    margin-bottom: 3rem;
+}
+
+.certification-badges {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.cert-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem;
+    background: var(--glass-bg);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    transition: all 0.3s ease;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.cert-badge::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.cert-badge:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    border-color: var(--accent-primary);
+}
+
+.cert-badge:hover::before {
+    opacity: 1;
+}
+
+.cert-image {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    transition: transform 0.3s ease;
+}
+
+.cert-badge:hover .cert-image {
+    transform: scale(1.05);
+}
+
+.cert-name {
+    font-weight: 700;
+    color: var(--accent-primary);
+    font-size: 1.125rem;
+    margin-bottom: 0.5rem;
+}
+
+.cert-desc {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+    text-align: center;
+}
+
+/* Homepage specific certification styles */
+.founder-credentials .certification-badges {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.founder-credentials .cert-badge {
+    padding: 1rem;
+}
+
+.founder-credentials .cert-image {
+    width: 60px;
+    height: 60px;
+}
+
+.founder-credentials .cert-name {
+    font-size: 0.875rem;
+}
+
+.founder-credentials .cert-desc {
+    display: none;
+}
+
 /* Mobile responsive for new sections */
 @media (max-width: 768px) {
     .founder-content {
@@ -1764,6 +1882,45 @@ html {
     
     .founder-cta {
         justify-content: center;
+    }
+    
+    /* Mobile certification badges */
+    .certification-badges {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+    
+    .founder-credentials .certification-badges {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+    }
+    
+    .cert-badge {
+        padding: 1rem;
+    }
+    
+    .cert-image {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .cert-name {
+        font-size: 0.875rem;
+    }
+    
+    .cert-desc {
+        font-size: 0.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .certification-badges {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .founder-credentials .certification-badges {
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
