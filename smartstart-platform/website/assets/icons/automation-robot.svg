@@ -1,0 +1,65 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <linearGradient id="robotGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#06b6d4;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Robot head -->
+  <rect x="20" y="16" width="24" height="20" rx="4" 
+        stroke="url(#robotGradient)" 
+        stroke-width="2" 
+        fill="none" 
+        filter="url(#glow)"/>
+  
+  <!-- Robot body -->
+  <rect x="16" y="36" width="32" height="20" rx="4" 
+        stroke="url(#robotGradient)" 
+        stroke-width="2" 
+        fill="none" 
+        filter="url(#glow)"/>
+  
+  <!-- Eyes -->
+  <circle cx="28" cy="26" r="2" fill="url(#robotGradient)" filter="url(#glow)"/>
+  <circle cx="36" cy="26" r="2" fill="url(#robotGradient)" filter="url(#glow)"/>
+  
+  <!-- Antenna -->
+  <line x1="32" y1="16" x2="32" y2="8" 
+        stroke="url(#robotGradient)" 
+        stroke-width="2" 
+        stroke-linecap="round" 
+        filter="url(#glow)"/>
+  <circle cx="32" cy="8" r="2" fill="url(#robotGradient)" filter="url(#glow)"/>
+  
+  <!-- Arms -->
+  <line x1="16" y1="40" x2="8" y2="32" 
+        stroke="url(#robotGradient)" 
+        stroke-width="2" 
+        stroke-linecap="round" 
+        filter="url(#glow)"/>
+  <line x1="48" y1="40" x2="56" y2="32" 
+        stroke="url(#robotGradient)" 
+        stroke-width="2" 
+        stroke-linecap="round" 
+        filter="url(#glow)"/>
+  
+  <!-- Control panel on body -->
+  <rect x="24" y="42" width="16" height="8" rx="2" 
+        stroke="url(#robotGradient)" 
+        stroke-width="1" 
+        fill="none" 
+        opacity="0.7"/>
+  
+  <!-- Small control dots -->
+  <circle cx="28" cy="46" r="1" fill="url(#robotGradient)" opacity="0.8"/>
+  <circle cx="32" cy="46" r="1" fill="url(#robotGradient)" opacity="0.8"/>
+  <circle cx="36" cy="46" r="1" fill="url(#robotGradient)" opacity="0.8"/>
+</svg>

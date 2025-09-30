@@ -1,0 +1,63 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <linearGradient id="targetGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#06b6d4;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Outer target ring -->
+  <circle cx="32" cy="32" r="28" 
+          stroke="url(#targetGradient)" 
+          stroke-width="2" 
+          fill="none" 
+          filter="url(#glow)"/>
+  
+  <!-- Middle target ring -->
+  <circle cx="32" cy="32" r="20" 
+          stroke="url(#targetGradient)" 
+          stroke-width="2" 
+          fill="none" 
+          filter="url(#glow)"/>
+  
+  <!-- Inner target ring -->
+  <circle cx="32" cy="32" r="12" 
+          stroke="url(#targetGradient)" 
+          stroke-width="2" 
+          fill="none" 
+          filter="url(#glow)"/>
+  
+  <!-- Center bullseye -->
+  <circle cx="32" cy="32" r="4" 
+          fill="url(#targetGradient)" 
+          filter="url(#glow)"/>
+  
+  <!-- Crosshairs -->
+  <line x1="32" y1="8" x2="32" y2="16" 
+        stroke="url(#targetGradient)" 
+        stroke-width="2" 
+        stroke-linecap="round" 
+        filter="url(#glow)"/>
+  <line x1="32" y1="48" x2="32" y2="56" 
+        stroke="url(#targetGradient)" 
+        stroke-width="2" 
+        stroke-linecap="round" 
+        filter="url(#glow)"/>
+  <line x1="8" y1="32" x2="16" y2="32" 
+        stroke="url(#targetGradient)" 
+        stroke-width="2" 
+        stroke-linecap="round" 
+        filter="url(#glow)"/>
+  <line x1="48" y1="32" x2="56" y2="32" 
+        stroke="url(#targetGradient)" 
+        stroke-width="2" 
+        stroke-linecap="round" 
+        filter="url(#glow)"/>
+</svg>
