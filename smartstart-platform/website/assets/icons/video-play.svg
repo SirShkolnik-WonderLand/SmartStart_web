@@ -1,0 +1,55 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <linearGradient id="videoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#06b6d4;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Video screen -->
+  <rect x="16" y="12" width="32" height="24" rx="2" 
+        stroke="url(#videoGradient)" 
+        stroke-width="2" 
+        fill="none" 
+        filter="url(#glow)"/>
+  
+  <!-- Play button -->
+  <circle cx="32" cy="24" r="8" 
+          stroke="url(#videoGradient)" 
+          stroke-width="2" 
+          fill="none" 
+          filter="url(#glow)"/>
+  
+  <!-- Play triangle -->
+  <path d="M28 20L28 28L36 24Z" 
+        fill="url(#videoGradient)" 
+        filter="url(#glow)"/>
+  
+  <!-- Video controls -->
+  <rect x="20" y="40" width="4" height="2" 
+        fill="url(#videoGradient)" 
+        opacity="0.6"/>
+  <rect x="26" y="40" width="4" height="2" 
+        fill="url(#videoGradient)" 
+        opacity="0.6"/>
+  <rect x="32" y="40" width="4" height="2" 
+        fill="url(#videoGradient)" 
+        opacity="0.6"/>
+  <rect x="38" y="40" width="4" height="2" 
+        fill="url(#videoGradient)" 
+        opacity="0.6"/>
+  
+  <!-- Sound waves -->
+  <path d="M48 16L52 20M48 24L52 28M48 32L52 36" 
+        stroke="url(#videoGradient)" 
+        stroke-width="1.5" 
+        stroke-linecap="round" 
+        opacity="0.7"/>
+</svg>

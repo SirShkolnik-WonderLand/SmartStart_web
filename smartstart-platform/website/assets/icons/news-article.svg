@@ -1,0 +1,72 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <linearGradient id="newsGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#06b6d4;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Newspaper outline -->
+  <rect x="12" y="8" width="40" height="48" rx="2" 
+        stroke="url(#newsGradient)" 
+        stroke-width="2" 
+        fill="none" 
+        filter="url(#glow)"/>
+  
+  <!-- Newspaper fold -->
+  <path d="M44 8L52 16L44 16Z" 
+        stroke="url(#newsGradient)" 
+        stroke-width="2" 
+        fill="none" 
+        filter="url(#glow)"/>
+  
+  <!-- Headlines -->
+  <line x1="16" y1="16" x2="40" y2="16" 
+        stroke="url(#newsGradient)" 
+        stroke-width="2" 
+        filter="url(#glow)"/>
+  <line x1="16" y1="20" x2="36" y2="20" 
+        stroke="url(#newsGradient)" 
+        stroke-width="1.5" 
+        filter="url(#glow)"/>
+  
+  <!-- Article text lines -->
+  <line x1="16" y1="28" x2="40" y2="28" 
+        stroke="url(#newsGradient)" 
+        stroke-width="1" 
+        opacity="0.8"/>
+  <line x1="16" y1="32" x2="38" y2="32" 
+        stroke="url(#newsGradient)" 
+        stroke-width="1" 
+        opacity="0.8"/>
+  <line x1="16" y1="36" x2="42" y2="36" 
+        stroke="url(#newsGradient)" 
+        stroke-width="1" 
+        opacity="0.8"/>
+  <line x1="16" y1="40" x2="35" y2="40" 
+        stroke="url(#newsGradient)" 
+        stroke-width="1" 
+        opacity="0.8"/>
+  
+  <!-- News icon -->
+  <circle cx="48" cy="24" r="3" 
+          stroke="url(#newsGradient)" 
+          stroke-width="1.5" 
+          fill="none" 
+          filter="url(#glow)"/>
+  <line x1="46" y1="24" x2="50" y2="24" 
+        stroke="url(#newsGradient)" 
+        stroke-width="1" 
+        filter="url(#glow)"/>
+  <line x1="46" y1="26" x2="50" y2="26" 
+        stroke="url(#newsGradient)" 
+        stroke-width="1" 
+        filter="url(#glow)"/>
+</svg>

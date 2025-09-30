@@ -1,0 +1,68 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <linearGradient id="gradGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#06b6d4;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Graduation cap base -->
+  <rect x="20" y="24" width="24" height="8" 
+        stroke="url(#gradGradient)" 
+        stroke-width="2" 
+        fill="none" 
+        filter="url(#glow)"/>
+  
+  <!-- Cap top -->
+  <path d="M20 24L32 16L44 24" 
+        stroke="url(#gradGradient)" 
+        stroke-width="2" 
+        fill="none" 
+        filter="url(#glow)"/>
+  
+  <!-- Tassel -->
+  <line x1="44" y1="24" x2="48" y2="20" 
+        stroke="url(#gradGradient)" 
+        stroke-width="2" 
+        stroke-linecap="round" 
+        filter="url(#glow)"/>
+  
+  <!-- Tassel end -->
+  <circle cx="48" cy="20" r="2" 
+          fill="url(#gradGradient)" 
+          filter="url(#glow)"/>
+  
+  <!-- Book -->
+  <rect x="16" y="36" width="32" height="4" 
+        stroke="url(#gradGradient)" 
+        stroke-width="1.5" 
+        fill="none" 
+        filter="url(#glow)"/>
+  
+  <!-- Book pages -->
+  <line x1="20" y1="38" x2="44" y2="38" 
+        stroke="url(#gradGradient)" 
+        stroke-width="1" 
+        opacity="0.6"/>
+  
+  <!-- Knowledge sparkles -->
+  <circle cx="12" cy="20" r="1" 
+          fill="url(#gradGradient)" 
+          opacity="0.8"/>
+  <circle cx="52" cy="28" r="1" 
+          fill="url(#gradGradient)" 
+          opacity="0.8"/>
+  <circle cx="8" cy="32" r="1" 
+          fill="url(#gradGradient)" 
+          opacity="0.8"/>
+  <circle cx="56" cy="40" r="1" 
+          fill="url(#gradGradient)" 
+          opacity="0.8"/>
+</svg>
