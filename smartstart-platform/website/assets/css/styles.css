@@ -1590,6 +1590,183 @@ html {
     scroll-behavior: smooth;
 }
 
+/* New Homepage Styles */
+.card-highlights {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 1rem 0;
+}
+
+.highlight-tag {
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--accent-primary);
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.founder-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 3rem;
+    align-items: start;
+}
+
+.founder-intro {
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    font-weight: 500;
+}
+
+.founder-achievements {
+    display: grid;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.achievement-item h4 {
+    color: var(--accent-primary);
+    margin-bottom: 0.5rem;
+    font-size: 1.125rem;
+}
+
+.achievement-item p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.founder-cta {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.founder-credentials {
+    background: var(--glass-bg);
+    padding: 2rem;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+}
+
+.founder-credentials h3 {
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.credentials-grid {
+    display: grid;
+    gap: 1rem;
+}
+
+.credential-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.credential-name {
+    font-weight: 700;
+    color: var(--accent-primary);
+    font-size: 1.25rem;
+    margin-bottom: 0.25rem;
+}
+
+.credential-desc {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.ecosystem-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 3rem;
+    align-items: start;
+}
+
+.ecosystem-features {
+    display: grid;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.feature-item h4 {
+    color: var(--accent-primary);
+    margin-bottom: 0.5rem;
+    font-size: 1.125rem;
+}
+
+.feature-item p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.pricing-card {
+    background: var(--glass-bg);
+    padding: 2rem;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    text-align: center;
+    position: sticky;
+    top: 2rem;
+}
+
+.pricing-card h3 {
+    color: var(--accent-primary);
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+}
+
+.pricing-description {
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+}
+
+.pricing-features {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+    text-align: left;
+}
+
+.feature-check {
+    color: var(--text-primary);
+    font-size: 0.875rem;
+}
+
+/* Mobile responsive for new sections */
+@media (max-width: 768px) {
+    .founder-content {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    
+    .ecosystem-content {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    
+    .pricing-card {
+        position: static;
+    }
+    
+    .founder-cta {
+        justify-content: center;
+    }
+}
+
 /* Print Styles */
 @media print {
     .global-header,
