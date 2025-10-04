@@ -27,6 +27,26 @@
     
     <link rel="stylesheet" href="assets/css/styles.css">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    
+    <!-- Special SmartStart animations -->
+    <style>
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .smartstart-special {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(147, 51, 234, 0.1));
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        
+        .zoho-highlight {
+            background: linear-gradient(135deg, #3b82f6, #9333ea);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
     <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
 <body>
@@ -60,14 +80,27 @@
 
     <!-- Main Content -->
     <main id="main-content">
-    <section class="hero">
+    <section class="hero" style="position: relative; overflow: hidden;">
+        <!-- Special background elements -->
+        <div style="position: absolute; top: 10%; right: 10%; width: 100px; height: 100px; background: rgba(59, 130, 246, 0.1); border-radius: 50%; animation: float 6s ease-in-out infinite;"></div>
+        <div style="position: absolute; bottom: 20%; left: 5%; width: 60px; height: 60px; background: rgba(147, 51, 234, 0.1); border-radius: 50%; animation: float 4s ease-in-out infinite reverse;"></div>
+        <div style="position: absolute; top: 30%; left: 15%; width: 80px; height: 80px; background: rgba(59, 130, 246, 0.05); border-radius: 50%; animation: float 8s ease-in-out infinite;"></div>
+        
         <div class="hero-content">
-                <div class="hero-badge">SmartStart Community Hub</div>
-                <h1 class="hero-title">Where People and Businesses <span class="underline">Grow Differently</span></h1>
+                <div class="hero-badge" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(147, 51, 234, 0.2)); border: 1px solid rgba(59, 130, 246, 0.3);">🚀 SmartStart Community Hub</div>
+                <h1 class="hero-title">Where People and Businesses <span class="underline" style="background: linear-gradient(135deg, #3b82f6, #9333ea); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Grow Differently</span></h1>
                 <p class="hero-tagline">SmartStart isn't just another incubator or subscription. It's the living heart of AliceSolutionsGroup — a place where people meet, share knowledge, and build real things with support, mentorship, and secure tools.</p>
             <div class="hero-buttons">
-                    <button class="cta-button primary smart-glow" id="hero-full-program">Join SmartStart - $98.80 CAD/month</button>
-                    <button class="cta-button secondary" id="hero-discovery">Try Discovery - $1 CAD</button>
+                    <button class="cta-button primary smart-glow" id="hero-full-program" style="background: linear-gradient(135deg, #3b82f6, #9333ea); box-shadow: 0 8px 32px rgba(59, 130, 246, 0.3);">Join SmartStart - $98.80 CAD/month</button>
+                    <button class="cta-button secondary" id="hero-discovery" style="border: 2px solid rgba(59, 130, 246, 0.3);">Try Discovery - $1 CAD</button>
+            </div>
+        </div>
+        
+        <!-- Floating Zoho badge -->
+        <div style="position: absolute; bottom: 20px; right: 20px; background: rgba(59, 130, 246, 0.1); padding: 1rem; border-radius: 15px; border: 1px solid rgba(59, 130, 246, 0.2); backdrop-filter: blur(10px);">
+            <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--accent-primary); font-weight: 600;">
+                <span style="font-size: 1.2rem;">⚡</span>
+                <span>Powered by Zoho</span>
             </div>
         </div>
     </section>
@@ -414,52 +447,116 @@
     <section class="section" id="investment">
         <div class="container">
             <div class="section-header">
-                <h2 class="section-title">Ready to Join SmartStart?</h2>
-                <p class="section-subtitle">Join our community and start growing differently</p>
+                <h2 class="section-title">Choose Your SmartStart Journey</h2>
+                <p class="section-subtitle">Three ways to be part of our community, each designed for different stages of your growth</p>
             </div>
             
-            <div class="investment-options">
-                <div class="investment-card">
-                    <h3 class="investment-title">Discovery Session</h3>
+            <div class="investment-options" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2rem; max-width: 1200px; margin: 0 auto;">
+                <!-- Explorer Plan -->
+                <div class="investment-card" style="background: rgba(59, 130, 246, 0.05); border: 1px solid rgba(59, 130, 246, 0.2);">
+                    <h3 class="investment-title" style="color: var(--accent-primary);">🔍 SmartStart Explorer</h3>
                     <div class="investment-price">
                         <span class="currency">CAD</span>
-                        <span class="amount">$1</span>
+                        <span class="amount">$68.80</span>
+                        <span style="font-size: 0.8rem; color: var(--text-secondary);">/month</span>
                     </div>
-                    <p class="investment-description">Perfect for exploring the SmartStart community and understanding how it fits your growth journey</p>
-                    <ul class="investment-features">
-                        <li>1-hour consultation call</li>
-                        <li>Community overview and demo</li>
-                        <li>Growth path assessment</li>
-                        <li>Collaboration opportunities</li>
-                        <li>Next steps roadmap</li>
-                    </ul>
-                    <button class="investment-button" id="discovery-subscribe">
-                        Start with Discovery
+                    <p class="investment-description">Perfect for those who want to explore our community and see what SmartStart is all about before fully committing.</p>
+                    
+                    <div style="background: rgba(59, 130, 246, 0.1); padding: 1rem; border-radius: 10px; margin: 1rem 0;">
+                        <h4 style="color: var(--accent-primary); margin-bottom: 0.5rem; font-size: 1rem;">What You Get:</h4>
+                        <ul class="investment-features" style="list-style: none; padding: 0;">
+                            <li style="margin-bottom: 0.5rem;">👀 View-only access to community discussions</li>
+                            <li style="margin-bottom: 0.5rem;">📚 Browse projects, resources, and success stories</li>
+                            <li style="margin-bottom: 0.5rem;">🎯 Attend virtual events and workshops</li>
+                            <li style="margin-bottom: 0.5rem;">📧 Access to community newsletter and updates</li>
+                            <li style="margin-bottom: 0.5rem;">🔍 Explore the Zoho platform and tools</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="background: rgba(255, 193, 7, 0.1); padding: 1rem; border-radius: 10px; margin: 1rem 0; border-left: 4px solid #ffc107;">
+                        <p style="font-size: 0.9rem; margin: 0; color: var(--text-secondary);"><strong>Note:</strong> This is a 1-month exploration period. You can upgrade to full community access anytime.</p>
+                    </div>
+                    
+                    <button class="investment-button" style="background: linear-gradient(135deg, #3b82f6, #9333ea);" onclick="alert('Explorer plan - coming soon!')">
+                        Start Exploring
                     </button>
                 </div>
                 
-                <div class="investment-card featured">
-                    <h3 class="investment-title">SmartStart Community Access</h3>
+                <!-- Community Plan -->
+                <div class="investment-card featured" style="background: rgba(59, 130, 246, 0.1); border: 2px solid rgba(59, 130, 246, 0.3); position: relative;">
+                    <div style="position: absolute; top: -10px; right: 20px; background: linear-gradient(135deg, #3b82f6, #9333ea); color: white; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600;">
+                        Most Popular
+                    </div>
+                    <h3 class="investment-title" style="color: var(--accent-primary);">🤝 SmartStart Community</h3>
                     <div class="investment-price">
                         <span class="currency">CAD</span>
-                        <span class="amount">$98.80</span>
-                        <span style="font-size: 0.8rem; color: var(--text-secondary);">/month per user</span>
+                        <span class="amount">$99.80</span>
+                        <span style="font-size: 0.8rem; color: var(--text-secondary);">/month</span>
                     </div>
-                    <p class="investment-description">Complete access to the SmartStart community with all collaboration tools included</p>
-                    <ul class="investment-features">
-                        <li>Community events & mentorship</li>
-                        <li>Beer + Security nights & Launch & Learn sessions</li>
-                        <li>Global builder network access</li>
-                        <li>Pro-bono NGO support</li>
-                        <li>Zoho Enterprise Suite (Mail, Cliq, Projects, Vault, CRM)</li>
-                        <li>Acronis XDR & Backup protection</li>
-                        <li>Slack Pro collaboration</li>
-                        <li>Epaxlin integration & AliceSolutions App access</li>
-                    </ul>
-                    <button class="investment-button" id="full-program-subscribe">
-                        Join SmartStart
+                    <p class="investment-description">Full community membership for individuals who want to actively participate, collaborate, and grow with our community.</p>
+                    
+                    <div style="background: rgba(59, 130, 246, 0.1); padding: 1rem; border-radius: 10px; margin: 1rem 0;">
+                        <h4 style="color: var(--accent-primary); margin-bottom: 0.5rem; font-size: 1rem;">What You Get:</h4>
+                        <ul class="investment-features" style="list-style: none; padding: 0;">
+                            <li style="margin-bottom: 0.5rem;">💬 Full access to community chat and discussions</li>
+                            <li style="margin-bottom: 0.5rem;">🚀 Submit and participate in projects</li>
+                            <li style="margin-bottom: 0.5rem;">🍻 Join Beer + Security nights & Launch & Learn sessions</li>
+                            <li style="margin-bottom: 0.5rem;">👨‍🏫 Direct mentorship and collaboration opportunities</li>
+                            <li style="margin-bottom: 0.5rem;">🌍 Access to global builder network</li>
+                            <li style="margin-bottom: 0.5rem;">🛠️ Full Zoho Enterprise Suite access</li>
+                            <li style="margin-bottom: 0.5rem;">🛡️ Acronis XDR & Backup protection</li>
+                            <li style="margin-bottom: 0.5rem;">📄 Document management and project sign-ups</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="background: rgba(34, 197, 94, 0.1); padding: 1rem; border-radius: 10px; margin: 1rem 0; border-left: 4px solid #22c55e;">
+                        <p style="font-size: 0.9rem; margin: 0; color: var(--text-secondary);"><strong>Perfect for:</strong> Individual entrepreneurs, freelancers, and professionals who want to grow differently through community collaboration.</p>
+                    </div>
+                    
+                    <button class="investment-button" id="full-program-subscribe" style="background: linear-gradient(135deg, #3b82f6, #9333ea); box-shadow: 0 8px 32px rgba(59, 130, 246, 0.3);">
+                        Join Our Community
                     </button>
                 </div>
+                
+                <!-- Teams Plan -->
+                <div class="investment-card" style="background: rgba(147, 51, 234, 0.05); border: 1px solid rgba(147, 51, 234, 0.2);">
+                    <h3 class="investment-title" style="color: var(--accent-primary);">👥 SmartStart Teams</h3>
+                    <div class="investment-price">
+                        <span class="currency">CAD</span>
+                        <span class="amount">$88.80</span>
+                        <span style="font-size: 0.8rem; color: var(--text-secondary);">/month per user</span>
+                    </div>
+                    <p class="investment-description">For teams of 5+ people who want to grow together as a unified unit within our community.</p>
+                    
+                    <div style="background: rgba(147, 51, 234, 0.1); padding: 1rem; border-radius: 10px; margin: 1rem 0;">
+                        <h4 style="color: var(--accent-primary); margin-bottom: 0.5rem; font-size: 1rem;">What Your Team Gets:</h4>
+                        <ul class="investment-features" style="list-style: none; padding: 0;">
+                            <li style="margin-bottom: 0.5rem;">👥 Everything in Community plan for each team member</li>
+                            <li style="margin-bottom: 0.5rem;">📊 Team management dashboard and analytics</li>
+                            <li style="margin-bottom: 0.5rem;">🏢 Shared team workspace and collaboration tools</li>
+                            <li style="margin-bottom: 0.5rem;">👨‍💼 Bulk user management and unified billing</li>
+                            <li style="margin-bottom: 0.5rem;">🎯 Team-specific mentorship and support</li>
+                            <li style="margin-bottom: 0.5rem;">📈 Team performance tracking and insights</li>
+                            <li style="margin-bottom: 0.5rem;">🔗 Custom integrations for your team's workflow</li>
+                            <li style="margin-bottom: 0.5rem;">💼 Priority support for team-related issues</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="background: rgba(147, 51, 234, 0.1); padding: 1rem; border-radius: 10px; margin: 1rem 0; border-left: 4px solid #9333ea;">
+                        <p style="font-size: 0.9rem; margin: 0; color: var(--text-secondary);"><strong>Perfect for:</strong> Companies, startups, and organizations that want their entire team to be part of our community while maintaining team cohesion.</p>
+                    </div>
+                    
+                    <button class="investment-button" style="background: linear-gradient(135deg, #9333ea, #3b82f6);" onclick="alert('Teams plan - coming soon!')">
+                        Start Your Team Journey
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Community Philosophy -->
+            <div class="glass-card" style="margin: 3rem auto; max-width: 800px; padding: 2rem; text-align: center; background: rgba(59, 130, 246, 0.05); border: 1px solid rgba(59, 130, 246, 0.2);">
+                <h3 style="color: var(--accent-primary); margin-bottom: 1rem;">Why We Have Different Options</h3>
+                <p style="margin-bottom: 1.5rem; font-size: 1.1rem;">We believe everyone should have a way to be part of our community, regardless of where they are in their journey. Whether you're exploring, ready to dive in, or bringing your whole team along, there's a place for you here.</p>
+                <p style="font-size: 1.2rem; font-weight: 600; color: var(--accent-primary);">"SmartStart is about growing differently, together."</p>
             </div>
             
             <div class="glass-card" style="margin: 3rem auto; max-width: 800px; padding: 2rem; text-align: center;">
@@ -487,6 +584,166 @@
                 
                 <h3>Case Study: Healthcare Compliance Platform</h3>
                 <p>Developed a HIPAA-compliant platform for healthcare providers, streamlining patient data management while ensuring full regulatory compliance. The platform reduced administrative overhead by 50% and improved data security.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Complete Zoho Enterprise Platform -->
+    <section class="section" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(147, 51, 234, 0.1) 100%); border-top: 1px solid rgba(59, 130, 246, 0.2); border-bottom: 1px solid rgba(59, 130, 246, 0.2);">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title" style="color: var(--accent-primary);">🚀 Complete Zoho Enterprise Platform</h2>
+                <p class="section-subtitle">SmartStart runs on the same enterprise-grade platform trusted by Fortune 500 companies worldwide</p>
+            </div>
+            
+            <!-- Core Zoho Services -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin: 2rem 0;">
+                <div class="glass-card scroll-reveal" style="padding: 2rem; text-align: center; background: rgba(59, 130, 246, 0.05); border: 1px solid rgba(59, 130, 246, 0.2);">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">📧</div>
+                    <h3 style="color: var(--accent-primary); margin-bottom: 1rem;">Zoho Mail</h3>
+                    <p>HIPAA & ISO certified business email with enterprise-grade privacy and security</p>
+                </div>
+                <div class="glass-card scroll-reveal" style="padding: 2rem; text-align: center; background: rgba(59, 130, 246, 0.05); border: 1px solid rgba(59, 130, 246, 0.2);">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">💬</div>
+                    <h3 style="color: var(--accent-primary); margin-bottom: 1rem;">Zoho Cliq</h3>
+                    <p>Team chat & collaboration with advanced integrations and automation</p>
+                </div>
+                <div class="glass-card scroll-reveal" style="padding: 2rem; text-align: center; background: rgba(59, 130, 246, 0.05); border: 1px solid rgba(59, 130, 246, 0.2);">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">📋</div>
+                    <h3 style="color: var(--accent-primary); margin-bottom: 1rem;">Zoho Projects</h3>
+                    <p>Full project management & task tracking with Gantt charts and time tracking</p>
+                </div>
+                <div class="glass-card scroll-reveal" style="padding: 2rem; text-align: center; background: rgba(59, 130, 246, 0.05); border: 1px solid rgba(59, 130, 246, 0.2);">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">👥</div>
+                    <h3 style="color: var(--accent-primary); margin-bottom: 1rem;">Zoho People</h3>
+                    <p>User management, HR system, and team collaboration tools</p>
+                </div>
+                <div class="glass-card scroll-reveal" style="padding: 2rem; text-align: center; background: rgba(59, 130, 246, 0.05); border: 1px solid rgba(59, 130, 246, 0.2);">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🔐</div>
+                    <h3 style="color: var(--accent-primary); margin-bottom: 1rem;">Zoho Vault</h3>
+                    <p>Secure password & secrets manager with MFA and enterprise SSO</p>
+                </div>
+                <div class="glass-card scroll-reveal" style="padding: 2rem; text-align: center; background: rgba(59, 130, 246, 0.05); border: 1px solid rgba(59, 130, 246, 0.2);">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">📄</div>
+                    <h3 style="color: var(--accent-primary); margin-bottom: 1rem;">Zoho Docs</h3>
+                    <p>Document management system for amendments, sign-ups, and secure file sharing</p>
+                </div>
+            </div>
+            
+            <!-- Acronis Security Integration -->
+            <div class="glass-card" style="margin: 2rem 0; padding: 2rem; background: rgba(147, 51, 234, 0.05); border: 1px solid rgba(147, 51, 234, 0.2);">
+                <h3 style="color: var(--accent-primary); margin-bottom: 1.5rem; text-align: center;">🛡️ Acronis Endpoint Security & Protection</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 2.5rem; margin-bottom: 1rem;">🔍</div>
+                        <h4 style="color: var(--accent-primary); margin-bottom: 0.5rem;">Extended Detection & Response (XDR)</h4>
+                        <p style="font-size: 0.9rem;">Advanced threat detection and response across all endpoints</p>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 2.5rem; margin-bottom: 1rem;">💾</div>
+                        <h4 style="color: var(--accent-primary); margin-bottom: 0.5rem;">Secure Backups</h4>
+                        <p style="font-size: 0.9rem;">Automated, compliant, cloud-based data backup and recovery</p>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 2.5rem; margin-bottom: 1rem;">🔒</div>
+                        <h4 style="color: var(--accent-primary); margin-bottom: 0.5rem;">Device Monitoring</h4>
+                        <p style="font-size: 0.9rem;">Real-time monitoring and baseline hardening for all devices</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Document Management & Security -->
+            <div class="glass-card" style="margin: 2rem 0; padding: 2rem; background: rgba(59, 130, 246, 0.05); border: 1px solid rgba(59, 130, 246, 0.2);">
+                <h3 style="color: var(--accent-primary); margin-bottom: 1.5rem; text-align: center;">📋 Secure Document Management & Project Sign-ups</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center;">
+                    <div>
+                        <h4 style="color: var(--accent-primary); margin-bottom: 1rem;">🔐 Safe, Secure, and Compliant</h4>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="margin-bottom: 1rem; display: flex; align-items: center; gap: 1rem;">
+                                <span style="background: rgba(59, 130, 246, 0.2); padding: 0.5rem; border-radius: 50%; font-size: 1.2rem;">📝</span>
+                                <span><strong>Document Amendments:</strong> Secure document versioning and amendment tracking</span>
+                            </li>
+                            <li style="margin-bottom: 1rem; display: flex; align-items: center; gap: 1rem;">
+                                <span style="background: rgba(59, 130, 246, 0.2); padding: 0.5rem; border-radius: 50%; font-size: 1.2rem;">✍️</span>
+                                <span><strong>Digital Signatures:</strong> Legally binding e-signatures for project agreements</span>
+                            </li>
+                            <li style="margin-bottom: 1rem; display: flex; align-items: center; gap: 1rem;">
+                                <span style="background: rgba(59, 130, 246, 0.2); padding: 0.5rem; border-radius: 50%; font-size: 1.2rem;">👥</span>
+                                <span><strong>Project Sign-ups:</strong> Secure onboarding and project participation</span>
+                            </li>
+                            <li style="margin-bottom: 1rem; display: flex; align-items: center; gap: 1rem;">
+                                <span style="background: rgba(59, 130, 246, 0.2); padding: 0.5rem; border-radius: 50%; font-size: 1.2rem;">🔄</span>
+                                <span><strong>Work Together:</strong> Collaborative workspace for shared projects</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="background: rgba(59, 130, 246, 0.1); padding: 2rem; border-radius: 20px; border: 2px dashed rgba(59, 130, 246, 0.3);">
+                            <div style="font-size: 4rem; margin-bottom: 1rem;">🛡️</div>
+                            <h4 style="color: var(--accent-primary); margin-bottom: 1rem;">Enterprise-Grade Security</h4>
+                            <p style="margin-bottom: 1.5rem;">All documents and sign-ups are protected with bank-level security</p>
+                            <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+                                <span style="background: rgba(59, 130, 246, 0.2); padding: 0.3rem 0.8rem; border-radius: 15px; font-size: 0.8rem; font-weight: 600;">HIPAA</span>
+                                <span style="background: rgba(59, 130, 246, 0.2); padding: 0.3rem 0.8rem; border-radius: 15px; font-size: 0.8rem; font-weight: 600;">ISO 27001</span>
+                                <span style="background: rgba(59, 130, 246, 0.2); padding: 0.3rem 0.8rem; border-radius: 15px; font-size: 0.8rem; font-weight: 600;">GDPR</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Enterprise Compliance -->
+            <div class="glass-card" style="margin: 2rem 0; padding: 2rem; text-align: center; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3);">
+                <h3 style="color: var(--accent-primary); margin-bottom: 1rem;">🏆 Enterprise-Grade Security & Compliance</h3>
+                <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">Zoho + Acronis provide the same security standards used by banks, hospitals, and government agencies.</p>
+                <div style="display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; margin-top: 1.5rem;">
+                    <span style="background: rgba(59, 130, 246, 0.2); padding: 0.5rem 1rem; border-radius: 20px; font-weight: 600;">HIPAA Certified</span>
+                    <span style="background: rgba(59, 130, 246, 0.2); padding: 0.5rem 1rem; border-radius: 20px; font-weight: 600;">ISO 27001</span>
+                    <span style="background: rgba(59, 130, 246, 0.2); padding: 0.5rem 1rem; border-radius: 20px; font-weight: 600;">GDPR Compliant</span>
+                    <span style="background: rgba(59, 130, 246, 0.2); padding: 0.5rem 1rem; border-radius: 20px; font-weight: 600;">SOC 2 Type II</span>
+                    <span style="background: rgba(59, 130, 246, 0.2); padding: 0.5rem 1rem; border-radius: 20px; font-weight: 600;">Acronis XDR</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Special Final CTA -->
+    <section class="section" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(147, 51, 234, 0.1) 100%); border-top: 1px solid rgba(59, 130, 246, 0.2); border-bottom: 1px solid rgba(59, 130, 246, 0.2);">
+        <div class="container">
+            <div class="glass-card" style="padding: 3rem; text-align: center; background: rgba(59, 130, 246, 0.05); border: 1px solid rgba(59, 130, 246, 0.2); position: relative; overflow: hidden;">
+                <!-- Background decoration -->
+                <div style="position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; background: rgba(59, 130, 246, 0.05); border-radius: 50%; animation: float 10s ease-in-out infinite;"></div>
+                <div style="position: absolute; bottom: -30px; left: -30px; width: 150px; height: 150px; background: rgba(147, 51, 234, 0.05); border-radius: 50%; animation: float 8s ease-in-out infinite reverse;"></div>
+                
+                <div style="position: relative; z-index: 2;">
+                    <div style="font-size: 4rem; margin-bottom: 1rem;">🚀</div>
+                    <h2 style="color: var(--accent-primary); margin-bottom: 1rem; font-size: 2.5rem;">Ready to Join the SmartStart Community?</h2>
+                    <p style="font-size: 1.2rem; margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto;">Experience the power of Zoho's enterprise platform while being part of a community that grows differently. Join hundreds of professionals who are already building the future together.</p>
+                    
+                    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 2rem;">
+                        <button class="cta-button primary" style="background: linear-gradient(135deg, #3b82f6, #9333ea); box-shadow: 0 8px 32px rgba(59, 130, 246, 0.3); font-size: 1.1rem; padding: 1rem 2rem;" onclick="document.getElementById('hero-full-program').click()">
+                            🚀 Join SmartStart Now
+                        </button>
+                        <button class="cta-button secondary" style="border: 2px solid rgba(59, 130, 246, 0.3); font-size: 1.1rem; padding: 1rem 2rem;" onclick="document.getElementById('hero-discovery').click()">
+                            💡 Try Discovery First
+                        </button>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; margin-top: 2rem;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-secondary);">
+                            <span style="color: var(--accent-primary);">✓</span>
+                            <span>Instant Zoho Setup</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-secondary);">
+                            <span style="color: var(--accent-primary);">✓</span>
+                            <span>Community Access</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-secondary);">
+                            <span style="color: var(--accent-primary);">✓</span>
+                            <span>Enterprise Security</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
