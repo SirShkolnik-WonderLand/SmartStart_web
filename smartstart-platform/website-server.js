@@ -70,7 +70,10 @@ const analyticsStorage = {
     visitors: new Map(),
     pageViews: [],
     events: [],
-    sessions: new Map()
+    sessions: new Map(),
+    uniqueUsers: new Map(), // Track unique users by IP + fingerprint
+    ipAddresses: new Map(), // Track IP addresses and their usage
+    deviceFingerprints: new Map() // Track device fingerprints
 };
 
 // Process analytics data function
@@ -275,29 +278,121 @@ app.post('/api/admin/track', (req, res) => {
     try {
         const { event, data, timestamp, url } = req.body;
         
+        // Get client IP address
+        const clientIP = req.headers['x-forwarded-for'] || 
+                        req.headers['x-real-ip'] || 
+                        req.connection.remoteAddress || 
+                        req.socket.remoteAddress ||
+                        (req.connection.socket ? req.connection.socket.remoteAddress : null);
+        
         // Store the tracking data
         if (event === 'pageview') {
-            analyticsStorage.pageViews.push({
+            const trackingData = {
                 event,
-                data,
+                data: {
+                    ...data,
+                    clientIP: clientIP,
+                    serverTimestamp: new Date().toISOString()
+                },
                 timestamp,
                 url
-            });
+            };
             
-            // Track unique visitors
+            analyticsStorage.pageViews.push(trackingData);
+            
+            // Track unique visitors by session
             if (data.sessionId) {
                 analyticsStorage.visitors.set(data.sessionId, {
                     firstVisit: timestamp,
                     lastVisit: timestamp,
                     userAgent: data.userAgent,
                     country: data.country,
-                    city: data.city
+                    city: data.city,
+                    ip: clientIP,
+                    fingerprint: data.fingerprint
                 });
             }
+            
+            // Track unique users by IP + fingerprint combination
+            if (data.fingerprint && clientIP) {
+                const uniqueUserKey = `${clientIP}_${data.fingerprint}`;
+                if (!analyticsStorage.uniqueUsers.has(uniqueUserKey)) {
+                    analyticsStorage.uniqueUsers.set(uniqueUserKey, {
+                        firstSeen: timestamp,
+                        lastSeen: timestamp,
+                        ip: clientIP,
+                        fingerprint: data.fingerprint,
+                        country: data.country,
+                        city: data.city,
+                        userAgent: data.userAgent,
+                        sessionCount: 1
+                    });
+                } else {
+                    const user = analyticsStorage.uniqueUsers.get(uniqueUserKey);
+                    user.lastSeen = timestamp;
+                    user.sessionCount += 1;
+                }
+            }
+            
+            // Track IP addresses
+            if (clientIP) {
+                if (!analyticsStorage.ipAddresses.has(clientIP)) {
+                    analyticsStorage.ipAddresses.set(clientIP, {
+                        firstSeen: timestamp,
+                        lastSeen: timestamp,
+                        country: data.country,
+                        city: data.city,
+                        visitCount: 1,
+                        sessions: new Set([data.sessionId])
+                    });
+                } else {
+                    const ipData = analyticsStorage.ipAddresses.get(clientIP);
+                    ipData.lastSeen = timestamp;
+                    ipData.visitCount += 1;
+                    ipData.sessions.add(data.sessionId);
+                }
+            }
+            
+            // Track device fingerprints
+            if (data.fingerprint) {
+                if (!analyticsStorage.deviceFingerprints.has(data.fingerprint)) {
+                    analyticsStorage.deviceFingerprints.set(data.fingerprint, {
+                        firstSeen: timestamp,
+                        lastSeen: timestamp,
+                        userAgent: data.userAgent,
+                        platform: data.platform,
+                        screen: data.screen,
+                        visitCount: 1,
+                        ips: new Set([clientIP])
+                    });
+                } else {
+                    const deviceData = analyticsStorage.deviceFingerprints.get(data.fingerprint);
+                    deviceData.lastSeen = timestamp;
+                    deviceData.visitCount += 1;
+                    deviceData.ips.add(clientIP);
+                }
+            }
+            
+        } else if (event === 'userinfo') {
+            // Store detailed user information
+            analyticsStorage.events.push({
+                event,
+                data: {
+                    ...data,
+                    clientIP: clientIP,
+                    serverTimestamp: new Date().toISOString()
+                },
+                timestamp,
+                url
+            });
         } else {
             analyticsStorage.events.push({
                 event,
-                data,
+                data: {
+                    ...data,
+                    clientIP: clientIP,
+                    serverTimestamp: new Date().toISOString()
+                },
                 timestamp,
                 url
             });
@@ -316,6 +411,110 @@ app.post('/api/admin/track', (req, res) => {
         console.error('Tracking error:', error);
         res.status(500).json({ error: 'Tracking failed' });
     }
+});
+
+// Additional analytics endpoints for detailed tracking
+app.get('/api/admin/unique-users', (req, res) => {
+    const uniqueUsers = Array.from(analyticsStorage.uniqueUsers.entries()).map(([key, user]) => ({
+        key,
+        ...user,
+        ips: Array.from(user.ips || []),
+        sessions: Array.from(user.sessions || [])
+    }));
+    
+    res.json({
+        totalUniqueUsers: analyticsStorage.uniqueUsers.size,
+        uniqueUsers: uniqueUsers.slice(-50) // Last 50 unique users
+    });
+});
+
+app.get('/api/admin/ip-addresses', (req, res) => {
+    const ipAddresses = Array.from(analyticsStorage.ipAddresses.entries()).map(([ip, data]) => ({
+        ip,
+        ...data,
+        sessions: Array.from(data.sessions)
+    }));
+    
+    res.json({
+        totalIPs: analyticsStorage.ipAddresses.size,
+        ipAddresses: ipAddresses.slice(-50) // Last 50 IP addresses
+    });
+});
+
+app.get('/api/admin/detailed-analytics', (req, res) => {
+    const now = new Date();
+    const last24h = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    
+    // Get recent activity
+    const recentPageViews = analyticsStorage.pageViews.filter(pv => new Date(pv.timestamp) > last24h);
+    
+    // Process detailed analytics
+    const ipMap = new Map();
+    const fingerprintMap = new Map();
+    const countryMap = new Map();
+    const cityMap = new Map();
+    
+    recentPageViews.forEach(pv => {
+        const ip = pv.data.clientIP;
+        const fingerprint = pv.data.fingerprint;
+        const country = pv.data.country;
+        const city = pv.data.city;
+        
+        // Track IPs
+        if (ip) {
+            ipMap.set(ip, (ipMap.get(ip) || 0) + 1);
+        }
+        
+        // Track fingerprints
+        if (fingerprint) {
+            fingerprintMap.set(fingerprint, (fingerprintMap.get(fingerprint) || 0) + 1);
+        }
+        
+        // Track countries
+        if (country) {
+            countryMap.set(country, (countryMap.get(country) || 0) + 1);
+        }
+        
+        // Track cities
+        if (city) {
+            cityMap.set(city, (cityMap.get(city) || 0) + 1);
+        }
+    });
+    
+    res.json({
+        summary: {
+            totalVisitors: analyticsStorage.visitors.size,
+            totalUniqueUsers: analyticsStorage.uniqueUsers.size,
+            totalIPs: analyticsStorage.ipAddresses.size,
+            totalDevices: analyticsStorage.deviceFingerprints.size,
+            recentPageViews: recentPageViews.length
+        },
+        topIPs: Array.from(ipMap.entries())
+            .map(([ip, count]) => ({ ip, count }))
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 10),
+        topFingerprints: Array.from(fingerprintMap.entries())
+            .map(([fingerprint, count]) => ({ fingerprint, count }))
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 10),
+        topCountries: Array.from(countryMap.entries())
+            .map(([country, count]) => ({ country, count }))
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 10),
+        topCities: Array.from(cityMap.entries())
+            .map(([city, count]) => ({ city, count }))
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 10),
+        recentActivity: recentPageViews.slice(-10).map(pv => ({
+            timestamp: pv.timestamp,
+            ip: pv.data.clientIP,
+            fingerprint: pv.data.fingerprint,
+            country: pv.data.country,
+            city: pv.data.city,
+            page: pv.data.path,
+            userAgent: pv.data.userAgent
+        }))
+    });
 });
 
 // API proxy to backend for other endpoints

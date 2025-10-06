@@ -43,31 +43,85 @@ class AnalyticsTracker {
     }
 
     trackUserInfo() {
-        // Get IP and location info (this would be done server-side in production)
+        // Get comprehensive user and device information
+        const userInfo = {
+            sessionId: this.sessionId,
+            timestamp: new Date().toISOString(),
+            userAgent: navigator.userAgent,
+            language: navigator.language,
+            languages: navigator.languages,
+            platform: navigator.platform,
+            cookieEnabled: navigator.cookieEnabled,
+            doNotTrack: navigator.doNotTrack,
+            screen: {
+                width: screen.width,
+                height: screen.height,
+                colorDepth: screen.colorDepth,
+                pixelDepth: screen.pixelDepth
+            },
+            viewport: {
+                width: window.innerWidth,
+                height: window.innerHeight
+            },
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            timezoneOffset: new Date().getTimezoneOffset(),
+            deviceMemory: navigator.deviceMemory || 'unknown',
+            hardwareConcurrency: navigator.hardwareConcurrency || 'unknown',
+            connection: navigator.connection ? {
+                effectiveType: navigator.connection.effectiveType,
+                downlink: navigator.connection.downlink,
+                rtt: navigator.connection.rtt
+            } : 'unknown',
+            // Generate device fingerprint
+            fingerprint: this.generateDeviceFingerprint()
+        };
+
+        // Get IP and location info
         fetch('https://ipapi.co/json/')
             .then(response => response.json())
             .then(data => {
-                const userInfo = {
-                    ip: data.ip,
-                    country: data.country_name,
-                    city: data.city,
-                    region: data.region,
-                    timezone: data.timezone,
-                    isp: data.org,
-                    sessionId: this.sessionId,
-                    timestamp: new Date().toISOString()
-                };
+                userInfo.ip = data.ip;
+                userInfo.country = data.country_name;
+                userInfo.city = data.city;
+                userInfo.region = data.region;
+                userInfo.timezone = data.timezone;
+                userInfo.isp = data.org;
+                userInfo.asn = data.asn;
+                userInfo.org = data.org;
+                userInfo.postal = data.postal;
+                userInfo.latitude = data.latitude;
+                userInfo.longitude = data.longitude;
+                
                 this.sendAnalytics('userinfo', userInfo);
             })
             .catch(error => {
                 console.log('Could not fetch location data:', error);
-                // Fallback to basic tracking
-                this.sendAnalytics('userinfo', {
-                    sessionId: this.sessionId,
-                    timestamp: new Date().toISOString(),
-                    userAgent: navigator.userAgent
-                });
+                // Still send basic info without IP
+                this.sendAnalytics('userinfo', userInfo);
             });
+    }
+
+    generateDeviceFingerprint() {
+        // Create a unique device fingerprint
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        ctx.textBaseline = 'top';
+        ctx.font = '14px Arial';
+        ctx.fillText('Device fingerprint', 2, 2);
+        
+        const fingerprint = {
+            canvas: canvas.toDataURL(),
+            screen: `${screen.width}x${screen.height}x${screen.colorDepth}`,
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            language: navigator.language,
+            platform: navigator.platform,
+            userAgent: navigator.userAgent,
+            hardware: navigator.hardwareConcurrency || 'unknown',
+            memory: navigator.deviceMemory || 'unknown'
+        };
+        
+        // Create hash of fingerprint
+        return btoa(JSON.stringify(fingerprint)).substring(0, 16);
     }
 
     setupEventListeners() {
