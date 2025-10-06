@@ -329,7 +329,7 @@ class AdminDashboard {
 function exportData() {
     const data = {
         timestamp: new Date().toISOString(),
-        analytics: window.adminDashboard ? .analyticsData || {}
+        analytics: window.adminDashboard ? window.adminDashboard.analyticsData || {} : {}
     };
 
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
