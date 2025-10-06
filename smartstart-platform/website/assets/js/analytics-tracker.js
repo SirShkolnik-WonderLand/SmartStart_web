@@ -11,6 +11,14 @@ class AnalyticsTracker {
         this.trackPageView();
         this.setupEventListeners();
         this.trackUserInfo();
+        this.trackCoreWebVitals();
+        this.trackUserBehavior();
+        
+        // Track SEO metrics after page load
+        setTimeout(() => {
+            this.trackSEOMetrics();
+            this.trackMarketingMetrics();
+        }, 2000);
     }
 
     generateSessionId() {
@@ -217,15 +225,120 @@ class AnalyticsTracker {
             metaDescription: document.querySelector('meta[name="description"]')?.content,
             h1Count: document.querySelectorAll('h1').length,
             h2Count: document.querySelectorAll('h2').length,
+            h3Count: document.querySelectorAll('h3').length,
             imageCount: document.querySelectorAll('img').length,
             linkCount: document.querySelectorAll('a').length,
+            internalLinkCount: document.querySelectorAll('a[href^="/"], a[href*="alicesolutionsgroup.com"]').length,
+            externalLinkCount: document.querySelectorAll('a[href^="http"]:not([href*="alicesolutionsgroup.com"])').length,
             wordCount: document.body.textContent.split(/\s+/).length,
             loadTime: performance.timing.loadEventEnd - performance.timing.navigationStart,
+            domContentLoaded: performance.timing.domContentLoadedEventEnd - performance.timing.navigationStart,
+            firstPaint: performance.getEntriesByType('paint').find(entry => entry.name === 'first-paint')?.startTime || 0,
+            firstContentfulPaint: performance.getEntriesByType('paint').find(entry => entry.name === 'first-contentful-paint')?.startTime || 0,
             sessionId: this.sessionId,
             timestamp: new Date().toISOString()
         };
 
         this.sendAnalytics('seo_metrics', seoData);
+    }
+
+    // Core Web Vitals tracking
+    trackCoreWebVitals() {
+        // Largest Contentful Paint (LCP)
+        new PerformanceObserver((entryList) => {
+            const entries = entryList.getEntries();
+            const lastEntry = entries[entries.length - 1];
+            this.sendAnalytics('core_web_vitals', {
+                metric: 'LCP',
+                value: lastEntry.startTime,
+                sessionId: this.sessionId,
+                timestamp: new Date().toISOString()
+            });
+        }).observe({ entryTypes: ['largest-contentful-paint'] });
+
+        // First Input Delay (FID)
+        new PerformanceObserver((entryList) => {
+            const entries = entryList.getEntries();
+            entries.forEach(entry => {
+                this.sendAnalytics('core_web_vitals', {
+                    metric: 'FID',
+                    value: entry.processingStart - entry.startTime,
+                    sessionId: this.sessionId,
+                    timestamp: new Date().toISOString()
+                });
+            });
+        }).observe({ entryTypes: ['first-input'] });
+
+        // Cumulative Layout Shift (CLS)
+        let clsValue = 0;
+        new PerformanceObserver((entryList) => {
+            for (const entry of entryList.getEntries()) {
+                if (!entry.hadRecentInput) {
+                    clsValue += entry.value;
+                }
+            }
+            this.sendAnalytics('core_web_vitals', {
+                metric: 'CLS',
+                value: clsValue,
+                sessionId: this.sessionId,
+                timestamp: new Date().toISOString()
+            });
+        }).observe({ entryTypes: ['layout-shift'] });
+    }
+
+    // Advanced user behavior tracking
+    trackUserBehavior() {
+        // Mouse movement heatmap data
+        let mouseMovements = [];
+        let lastMouseTime = Date.now();
+        
+        document.addEventListener('mousemove', (e) => {
+            const now = Date.now();
+            if (now - lastMouseTime > 100) { // Throttle to every 100ms
+                mouseMovements.push({
+                    x: e.clientX,
+                    y: e.clientY,
+                    timestamp: now
+                });
+                lastMouseTime = now;
+            }
+        });
+
+        // Send mouse movement data every 30 seconds
+        setInterval(() => {
+            if (mouseMovements.length > 0) {
+                this.sendAnalytics('mouse_movements', {
+                    movements: mouseMovements.slice(-50), // Last 50 movements
+                    sessionId: this.sessionId,
+                    timestamp: new Date().toISOString()
+                });
+                mouseMovements = [];
+            }
+        }, 30000);
+
+        // Track focus events (accessibility)
+        document.addEventListener('focus', (e) => {
+            this.sendAnalytics('focus_event', {
+                element: e.target.tagName,
+                id: e.target.id,
+                className: e.target.className,
+                sessionId: this.sessionId,
+                timestamp: new Date().toISOString()
+            });
+        });
+
+        // Track form interactions
+        document.addEventListener('input', (e) => {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                this.sendAnalytics('form_interaction', {
+                    element: e.target.tagName,
+                    type: e.target.type,
+                    id: e.target.id,
+                    sessionId: this.sessionId,
+                    timestamp: new Date().toISOString()
+                });
+            }
+        });
     }
 
     trackMarketingMetrics() {

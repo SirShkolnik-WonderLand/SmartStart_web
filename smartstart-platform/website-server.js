@@ -554,6 +554,96 @@ app.get('/api/admin/debug', (req, res) => {
     });
 });
 
+// Advanced analytics endpoints
+app.get('/api/admin/core-web-vitals', (req, res) => {
+    const coreWebVitalsEvents = analyticsStorage.events.filter(ev => ev.event === 'core_web_vitals');
+    const vitals = {
+        LCP: coreWebVitalsEvents.filter(ev => ev.data.metric === 'LCP').map(ev => ev.data.value),
+        FID: coreWebVitalsEvents.filter(ev => ev.data.metric === 'FID').map(ev => ev.data.value),
+        CLS: coreWebVitalsEvents.filter(ev => ev.data.metric === 'CLS').map(ev => ev.data.value)
+    };
+    
+    res.json({
+        vitals: vitals,
+        averages: {
+            LCP: vitals.LCP.length > 0 ? (vitals.LCP.reduce((a, b) => a + b, 0) / vitals.LCP.length).toFixed(2) : 0,
+            FID: vitals.FID.length > 0 ? (vitals.FID.reduce((a, b) => a + b, 0) / vitals.FID.length).toFixed(2) : 0,
+            CLS: vitals.CLS.length > 0 ? (vitals.CLS.reduce((a, b) => a + b, 0) / vitals.CLS.length).toFixed(4) : 0
+        },
+        totalMeasurements: coreWebVitalsEvents.length
+    });
+});
+
+app.get('/api/admin/seo-metrics', (req, res) => {
+    const seoEvents = analyticsStorage.events.filter(ev => ev.event === 'seo_metrics');
+    const latestSeo = seoEvents[seoEvents.length - 1];
+    
+    res.json({
+        latestMetrics: latestSeo ? latestSeo.data : null,
+        totalMeasurements: seoEvents.length,
+        averageLoadTime: seoEvents.length > 0 ? 
+            (seoEvents.reduce((sum, ev) => sum + (ev.data.loadTime || 0), 0) / seoEvents.length).toFixed(2) : 0
+    });
+});
+
+app.get('/api/admin/user-behavior', (req, res) => {
+    const mouseEvents = analyticsStorage.events.filter(ev => ev.event === 'mouse_movements');
+    const focusEvents = analyticsStorage.events.filter(ev => ev.event === 'focus_event');
+    const formEvents = analyticsStorage.events.filter(ev => ev.event === 'form_interaction');
+    
+    res.json({
+        mouseMovements: mouseEvents.length,
+        focusEvents: focusEvents.length,
+        formInteractions: formEvents.length,
+        totalBehaviorEvents: mouseEvents.length + focusEvents.length + formEvents.length,
+        recentMouseMovements: mouseEvents.slice(-5).map(ev => ({
+            timestamp: ev.timestamp,
+            movementCount: ev.data.movements.length
+        }))
+    });
+});
+
+app.get('/api/admin/performance', (req, res) => {
+    const seoEvents = analyticsStorage.events.filter(ev => ev.event === 'seo_metrics');
+    const coreVitalsEvents = analyticsStorage.events.filter(ev => ev.event === 'core_web_vitals');
+    
+    const performanceData = {
+        pageLoadTimes: seoEvents.map(ev => ev.data.loadTime).filter(time => time > 0),
+        domContentLoaded: seoEvents.map(ev => ev.data.domContentLoaded).filter(time => time > 0),
+        firstPaint: seoEvents.map(ev => ev.data.firstPaint).filter(time => time > 0),
+        firstContentfulPaint: seoEvents.map(ev => ev.data.firstContentfulPaint).filter(time => time > 0),
+        coreWebVitals: {
+            LCP: coreVitalsEvents.filter(ev => ev.data.metric === 'LCP').map(ev => ev.data.value),
+            FID: coreVitalsEvents.filter(ev => ev.data.metric === 'FID').map(ev => ev.data.value),
+            CLS: coreVitalsEvents.filter(ev => ev.data.metric === 'CLS').map(ev => ev.data.value)
+        }
+    };
+    
+    // Calculate averages
+    const averages = {
+        pageLoadTime: performanceData.pageLoadTimes.length > 0 ? 
+            (performanceData.pageLoadTimes.reduce((a, b) => a + b, 0) / performanceData.pageLoadTimes.length).toFixed(2) : 0,
+        domContentLoaded: performanceData.domContentLoaded.length > 0 ? 
+            (performanceData.domContentLoaded.reduce((a, b) => a + b, 0) / performanceData.domContentLoaded.length).toFixed(2) : 0,
+        firstPaint: performanceData.firstPaint.length > 0 ? 
+            (performanceData.firstPaint.reduce((a, b) => a + b, 0) / performanceData.firstPaint.length).toFixed(2) : 0,
+        firstContentfulPaint: performanceData.firstContentfulPaint.length > 0 ? 
+            (performanceData.firstContentfulPaint.reduce((a, b) => a + b, 0) / performanceData.firstContentfulPaint.length).toFixed(2) : 0,
+        LCP: performanceData.coreWebVitals.LCP.length > 0 ? 
+            (performanceData.coreWebVitals.LCP.reduce((a, b) => a + b, 0) / performanceData.coreWebVitals.LCP.length).toFixed(2) : 0,
+        FID: performanceData.coreWebVitals.FID.length > 0 ? 
+            (performanceData.coreWebVitals.FID.reduce((a, b) => a + b, 0) / performanceData.coreWebVitals.FID.length).toFixed(2) : 0,
+        CLS: performanceData.coreWebVitals.CLS.length > 0 ? 
+            (performanceData.coreWebVitals.CLS.reduce((a, b) => a + b, 0) / performanceData.coreWebVitals.CLS.length).toFixed(4) : 0
+    };
+    
+    res.json({
+        performanceData,
+        averages,
+        totalMeasurements: seoEvents.length + coreVitalsEvents.length
+    });
+});
+
 // API proxy to backend for other endpoints
 app.use('/api', (req, res, next) => {
     // If it's an admin endpoint, we handle it above
