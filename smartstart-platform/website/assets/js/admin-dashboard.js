@@ -39,16 +39,22 @@ class AdminDashboard {
 
     async loadAnalyticsData() {
         try {
+            console.log('Loading analytics data...');
             // Load analytics data from server
             const response = await fetch('/api/admin/analytics');
+            console.log('Response status:', response.status);
+            
             if (response.ok) {
                 const data = await response.json();
+                console.log('Analytics data loaded:', data);
                 this.updateAnalyticsData(data);
             } else {
+                console.log('Response not ok, using mock data');
                 // Fallback to mock data for development
                 this.loadMockData();
             }
         } catch (error) {
+            console.error('Error loading analytics data:', error);
             console.log('Using mock data for development');
             this.loadMockData();
         }
@@ -127,11 +133,20 @@ class AdminDashboard {
     }
 
     updateAnalyticsData(data) {
+        console.log('Updating analytics data:', data);
+        
         // Update main stats
-        document.getElementById('totalVisitors').textContent = data.visitors.toLocaleString();
-        document.getElementById('uniqueCountries').textContent = data.countries.length;
-        document.getElementById('pageViews').textContent = data.pageViews.toLocaleString();
-        document.getElementById('avgSessionTime').textContent = `${data.avgSessionTime}m`;
+        const visitorsEl = document.getElementById('totalVisitors');
+        const countriesEl = document.getElementById('uniqueCountries');
+        const pageViewsEl = document.getElementById('pageViews');
+        const sessionTimeEl = document.getElementById('avgSessionTime');
+        
+        if (visitorsEl) visitorsEl.textContent = data.visitors.toLocaleString();
+        if (countriesEl) countriesEl.textContent = data.countries.length;
+        if (pageViewsEl) pageViewsEl.textContent = data.pageViews.toLocaleString();
+        if (sessionTimeEl) sessionTimeEl.textContent = `${data.avgSessionTime}m`;
+        
+        console.log('Updated main stats');
 
         // Update country list
         this.updateList('topCountries', data.countries, 'country');
@@ -349,7 +364,13 @@ function clearOldData() {
 
 // Initialize dashboard when page loads
 document.addEventListener('DOMContentLoaded', () => {
-    window.adminDashboard = new AdminDashboard();
+    console.log('Admin dashboard initializing...');
+    try {
+        window.adminDashboard = new AdminDashboard();
+        console.log('Admin dashboard initialized successfully');
+    } catch (error) {
+        console.error('Error initializing admin dashboard:', error);
+    }
 });
 
 // Add CSS animation for new items
