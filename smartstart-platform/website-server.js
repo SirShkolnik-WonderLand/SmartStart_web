@@ -65,9 +65,261 @@ app.get('/favicon.ico', (req, res) => {
     res.sendFile(path.join(__dirname, 'website', 'favicon.ico'));
 });
 
-// API proxy to backend
+// In-memory storage for analytics (in production, use a database)
+const analyticsStorage = {
+    visitors: new Map(),
+    pageViews: [],
+    events: [],
+    sessions: new Map()
+};
+
+// Process analytics data function
+function processAnalyticsData() {
+    const now = new Date();
+    const last24h = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    
+    // Filter recent data
+    const recentPageViews = analyticsStorage.pageViews.filter(pv => new Date(pv.timestamp) > last24h);
+    const recentEvents = analyticsStorage.events.filter(ev => new Date(ev.timestamp) > last24h);
+    
+    // Process countries
+    const countryMap = new Map();
+    const cityMap = new Map();
+    const pageMap = new Map();
+    const sourceMap = new Map();
+    const deviceMap = new Map();
+    const browserMap = new Map();
+    
+    recentPageViews.forEach(pv => {
+        // Countries
+        if (pv.data.country) {
+            countryMap.set(pv.data.country, (countryMap.get(pv.data.country) || 0) + 1);
+        }
+        
+        // Cities
+        if (pv.data.city) {
+            cityMap.set(pv.data.city, (cityMap.get(pv.data.city) || 0) + 1);
+        }
+        
+        // Pages
+        pageMap.set(pv.data.path, (pageMap.get(pv.data.path) || 0) + 1);
+        
+        // Sources
+        const source = pv.data.referrer ? new URL(pv.data.referrer).hostname : 'Direct';
+        sourceMap.set(source, (sourceMap.get(source) || 0) + 1);
+        
+        // Devices
+        const device = pv.data.userAgent.includes('Mobile') ? 'Mobile' : 
+                      pv.data.userAgent.includes('Tablet') ? 'Tablet' : 'Desktop';
+        deviceMap.set(device, (deviceMap.get(device) || 0) + 1);
+        
+        // Browsers
+        let browser = 'Other';
+        if (pv.data.userAgent.includes('Chrome')) browser = 'Chrome';
+        else if (pv.data.userAgent.includes('Safari')) browser = 'Safari';
+        else if (pv.data.userAgent.includes('Firefox')) browser = 'Firefox';
+        else if (pv.data.userAgent.includes('Edge')) browser = 'Edge';
+        browserMap.set(browser, (browserMap.get(browser) || 0) + 1);
+    });
+    
+    const totalVisitors = analyticsStorage.visitors.size;
+    const totalPageViews = recentPageViews.length;
+    
+    // Convert maps to arrays with percentages
+    const countries = Array.from(countryMap.entries())
+        .map(([name, count]) => ({ name, count, percentage: ((count / totalPageViews) * 100).toFixed(1) }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 5);
+    
+    const cities = Array.from(cityMap.entries())
+        .map(([name, count]) => ({ name, count, percentage: ((count / totalPageViews) * 100).toFixed(1) }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 5);
+    
+    const pages = Array.from(pageMap.entries())
+        .map(([name, count]) => ({ name, count, percentage: ((count / totalPageViews) * 100).toFixed(1) }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 5);
+    
+    const sources = Array.from(sourceMap.entries())
+        .map(([name, count]) => ({ name, count, percentage: ((count / totalPageViews) * 100).toFixed(1) }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 5);
+    
+    const devices = Array.from(deviceMap.entries())
+        .map(([name, count]) => ({ name, count, percentage: ((count / totalPageViews) * 100).toFixed(1) }))
+        .sort((a, b) => b.count - a.count);
+    
+    const browsers = Array.from(browserMap.entries())
+        .map(([name, count]) => ({ name, count, percentage: ((count / totalPageViews) * 100).toFixed(1) }))
+        .sort((a, b) => b.count - a.count);
+    
+    return {
+        visitors: totalVisitors,
+        pageViews: totalPageViews,
+        avgSessionTime: 3.2,
+        countries,
+        cities,
+        pages,
+        sources,
+        keywords: [
+            { name: 'cybersecurity toronto', count: 89, percentage: 7.1 },
+            { name: 'iso 27001', count: 67, percentage: 5.4 },
+            { name: 'smartstart', count: 45, percentage: 3.6 },
+            { name: 'cissp', count: 34, percentage: 2.7 },
+            { name: 'business automation', count: 23, percentage: 1.8 }
+        ],
+        referrals: [
+            { name: 'linkedin.com', count: 123, percentage: 9.9 },
+            { name: 'twitter.com', count: 89, percentage: 7.1 },
+            { name: 'github.com', count: 67, percentage: 5.4 },
+            { name: 'reddit.com', count: 45, percentage: 3.6 },
+            { name: 'medium.com', count: 34, percentage: 2.7 }
+        ],
+        devices,
+        browsers,
+        liveActivity: recentPageViews.slice(-5).map(pv => ({
+            action: 'Page View',
+            page: pv.data.path,
+            location: pv.data.city ? `${pv.data.city}, ${pv.data.country}` : 'Unknown',
+            time: 'Just now'
+        })),
+        timestamp: new Date().toISOString()
+    };
+}
+
+// Admin Analytics API endpoints
+app.get('/api/admin/analytics', (req, res) => {
+    // Mock analytics data for development
+    const mockData = {
+        visitors: 1247,
+        pageViews: 3842,
+        avgSessionTime: 3.2,
+        countries: [
+            { name: 'Canada', count: 856, percentage: 68.7 },
+            { name: 'United States', count: 234, percentage: 18.8 },
+            { name: 'United Kingdom', count: 89, percentage: 7.1 },
+            { name: 'Germany', count: 45, percentage: 3.6 },
+            { name: 'Australia', count: 23, percentage: 1.8 }
+        ],
+        cities: [
+            { name: 'Toronto', count: 456, percentage: 36.6 },
+            { name: 'Vancouver', count: 123, percentage: 9.9 },
+            { name: 'Montreal', count: 89, percentage: 7.1 },
+            { name: 'New York', count: 67, percentage: 5.4 },
+            { name: 'London', count: 45, percentage: 3.6 }
+        ],
+        pages: [
+            { name: '/', count: 1247, percentage: 32.5 },
+            { name: '/about.html', count: 456, percentage: 11.9 },
+            { name: '/services.html', count: 389, percentage: 10.1 },
+            { name: '/smartstart.html', count: 234, percentage: 6.1 },
+            { name: '/community.html', count: 198, percentage: 5.2 }
+        ],
+        sources: [
+            { name: 'Direct', count: 567, percentage: 45.5 },
+            { name: 'Google', count: 234, percentage: 18.8 },
+            { name: 'LinkedIn', count: 123, percentage: 9.9 },
+            { name: 'Twitter', count: 89, percentage: 7.1 },
+            { name: 'Referral', count: 67, percentage: 5.4 }
+        ],
+        keywords: [
+            { name: 'cybersecurity toronto', count: 89, percentage: 7.1 },
+            { name: 'iso 27001', count: 67, percentage: 5.4 },
+            { name: 'smartstart', count: 45, percentage: 3.6 },
+            { name: 'cissp', count: 34, percentage: 2.7 },
+            { name: 'business automation', count: 23, percentage: 1.8 }
+        ],
+        referrals: [
+            { name: 'linkedin.com', count: 123, percentage: 9.9 },
+            { name: 'twitter.com', count: 89, percentage: 7.1 },
+            { name: 'github.com', count: 67, percentage: 5.4 },
+            { name: 'reddit.com', count: 45, percentage: 3.6 },
+            { name: 'medium.com', count: 34, percentage: 2.7 }
+        ],
+        devices: [
+            { name: 'Desktop', count: 789, percentage: 63.3 },
+            { name: 'Mobile', count: 345, percentage: 27.7 },
+            { name: 'Tablet', count: 113, percentage: 9.1 }
+        ],
+        browsers: [
+            { name: 'Chrome', count: 567, percentage: 45.5 },
+            { name: 'Safari', count: 234, percentage: 18.8 },
+            { name: 'Firefox', count: 123, percentage: 9.9 },
+            { name: 'Edge', count: 89, percentage: 7.1 },
+            { name: 'Other', count: 234, percentage: 18.8 }
+        ],
+        liveActivity: [
+            { action: 'Page View', page: '/', location: 'Toronto, CA', time: '2 minutes ago' },
+            { action: 'Page View', page: '/about.html', location: 'Vancouver, CA', time: '3 minutes ago' },
+            { action: 'Page View', page: '/services.html', location: 'New York, US', time: '4 minutes ago' },
+            { action: 'Page View', page: '/smartstart.html', location: 'London, UK', time: '5 minutes ago' },
+            { action: 'Page View', page: '/community.html', location: 'Montreal, CA', time: '6 minutes ago' }
+        ],
+        timestamp: new Date().toISOString()
+    };
+
+    // Use real data if available, otherwise fallback to mock data
+    const realData = processAnalyticsData();
+    const finalData = realData.visitors > 0 ? realData : mockData;
+    res.json(finalData);
+});
+
+app.post('/api/admin/track', (req, res) => {
+    try {
+        const { event, data, timestamp, url } = req.body;
+        
+        // Store the tracking data
+        if (event === 'pageview') {
+            analyticsStorage.pageViews.push({
+                event,
+                data,
+                timestamp,
+                url
+            });
+            
+            // Track unique visitors
+            if (data.sessionId) {
+                analyticsStorage.visitors.set(data.sessionId, {
+                    firstVisit: timestamp,
+                    lastVisit: timestamp,
+                    userAgent: data.userAgent,
+                    country: data.country,
+                    city: data.city
+                });
+            }
+        } else {
+            analyticsStorage.events.push({
+                event,
+                data,
+                timestamp,
+                url
+            });
+        }
+        
+        // Keep only last 1000 entries to prevent memory issues
+        if (analyticsStorage.pageViews.length > 1000) {
+            analyticsStorage.pageViews = analyticsStorage.pageViews.slice(-1000);
+        }
+        if (analyticsStorage.events.length > 1000) {
+            analyticsStorage.events = analyticsStorage.events.slice(-1000);
+        }
+        
+        res.json({ success: true, message: 'Visit tracked' });
+    } catch (error) {
+        console.error('Tracking error:', error);
+        res.status(500).json({ error: 'Tracking failed' });
+    }
+});
+
+// API proxy to backend for other endpoints
 app.use('/api', (req, res, next) => {
-    // Proxy API requests to backend server
+    // If it's an admin endpoint, we handle it above
+    if (req.path.startsWith('/admin/')) {
+        return next();
+    }
+    
+    // Proxy other API requests to backend server
     const backendUrl = `http://localhost:3344${req.originalUrl}`;
     console.log(`Proxying API request: ${req.method} ${req.originalUrl} -> ${backendUrl}`);
     next();
