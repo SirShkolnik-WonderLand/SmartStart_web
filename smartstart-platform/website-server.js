@@ -127,31 +127,31 @@ function processAnalyticsData() {
     
     // Convert maps to arrays with percentages
     const countries = Array.from(countryMap.entries())
-        .map(([name, count]) => ({ name, count, percentage: ((count / totalPageViews) * 100).toFixed(1) }))
+        .map(([name, count]) => ({ name, count, percentage: totalPageViews > 0 ? ((count / totalPageViews) * 100).toFixed(1) : "0.0" }))
         .sort((a, b) => b.count - a.count)
         .slice(0, 5);
     
     const cities = Array.from(cityMap.entries())
-        .map(([name, count]) => ({ name, count, percentage: ((count / totalPageViews) * 100).toFixed(1) }))
+        .map(([name, count]) => ({ name, count, percentage: totalPageViews > 0 ? ((count / totalPageViews) * 100).toFixed(1) : "0.0" }))
         .sort((a, b) => b.count - a.count)
         .slice(0, 5);
     
     const pages = Array.from(pageMap.entries())
-        .map(([name, count]) => ({ name, count, percentage: ((count / totalPageViews) * 100).toFixed(1) }))
+        .map(([name, count]) => ({ name, count, percentage: totalPageViews > 0 ? ((count / totalPageViews) * 100).toFixed(1) : "0.0" }))
         .sort((a, b) => b.count - a.count)
         .slice(0, 5);
     
     const sources = Array.from(sourceMap.entries())
-        .map(([name, count]) => ({ name, count, percentage: ((count / totalPageViews) * 100).toFixed(1) }))
+        .map(([name, count]) => ({ name, count, percentage: totalPageViews > 0 ? ((count / totalPageViews) * 100).toFixed(1) : "0.0" }))
         .sort((a, b) => b.count - a.count)
         .slice(0, 5);
     
     const devices = Array.from(deviceMap.entries())
-        .map(([name, count]) => ({ name, count, percentage: ((count / totalPageViews) * 100).toFixed(1) }))
+        .map(([name, count]) => ({ name, count, percentage: totalPageViews > 0 ? ((count / totalPageViews) * 100).toFixed(1) : "0.0" }))
         .sort((a, b) => b.count - a.count);
     
     const browsers = Array.from(browserMap.entries())
-        .map(([name, count]) => ({ name, count, percentage: ((count / totalPageViews) * 100).toFixed(1) }))
+        .map(([name, count]) => ({ name, count, percentage: totalPageViews > 0 ? ((count / totalPageViews) * 100).toFixed(1) : "0.0" }))
         .sort((a, b) => b.count - a.count);
     
     return {
