@@ -79,11 +79,18 @@ const analyticsStorage = {
 // Process analytics data function
 function processAnalyticsData() {
     const now = new Date();
-    const last24h = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    const last7days = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000); // Use 7 days instead of 24 hours
     
-    // Filter recent data
-    const recentPageViews = analyticsStorage.pageViews.filter(pv => new Date(pv.timestamp) > last24h);
-    const recentEvents = analyticsStorage.events.filter(ev => new Date(ev.timestamp) > last24h);
+    console.log('Processing analytics data...');
+    console.log('Total page views in storage:', analyticsStorage.pageViews.length);
+    console.log('Total events in storage:', analyticsStorage.events.length);
+    
+    // Filter recent data (last 7 days)
+    const recentPageViews = analyticsStorage.pageViews.filter(pv => new Date(pv.timestamp) > last7days);
+    const recentEvents = analyticsStorage.events.filter(ev => new Date(ev.timestamp) > last7days);
+    
+    console.log('Recent page views (last 7 days):', recentPageViews.length);
+    console.log('Recent events (last 7 days):', recentEvents.length);
     
     // Process countries
     const countryMap = new Map();
@@ -127,6 +134,9 @@ function processAnalyticsData() {
     
     const totalVisitors = analyticsStorage.visitors.size;
     const totalPageViews = recentPageViews.length;
+    
+    console.log('Total visitors:', totalVisitors);
+    console.log('Total page views:', totalPageViews);
     
     // Convert maps to arrays with percentages
     const countries = Array.from(countryMap.entries())
@@ -513,6 +523,33 @@ app.get('/api/admin/detailed-analytics', (req, res) => {
             city: pv.data.city,
             page: pv.data.path,
             userAgent: pv.data.userAgent
+        }))
+    });
+});
+
+// Debug endpoint to see raw data
+app.get('/api/admin/debug', (req, res) => {
+    res.json({
+        storage: {
+            visitors: analyticsStorage.visitors.size,
+            pageViews: analyticsStorage.pageViews.length,
+            events: analyticsStorage.events.length,
+            uniqueUsers: analyticsStorage.uniqueUsers.size,
+            ipAddresses: analyticsStorage.ipAddresses.size,
+            deviceFingerprints: analyticsStorage.deviceFingerprints.size
+        },
+        recentPageViews: analyticsStorage.pageViews.slice(-5).map(pv => ({
+            timestamp: pv.timestamp,
+            path: pv.data.path,
+            country: pv.data.country,
+            city: pv.data.city,
+            ip: pv.data.clientIP,
+            fingerprint: pv.data.fingerprint
+        })),
+        recentEvents: analyticsStorage.events.slice(-5).map(ev => ({
+            timestamp: ev.timestamp,
+            event: ev.event,
+            ip: ev.data.clientIP
         }))
     });
 });
