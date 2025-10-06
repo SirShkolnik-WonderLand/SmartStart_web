@@ -261,7 +261,13 @@ app.get('/api/admin/analytics', (req, res) => {
 
     // Use real data if available, otherwise fallback to mock data
     const realData = processAnalyticsData();
+    console.log('Real data visitors:', realData.visitors);
+    console.log('Real data pageViews:', realData.pageViews);
+    console.log('Analytics storage size:', analyticsStorage.visitors.size);
+    console.log('Page views in storage:', analyticsStorage.pageViews.length);
+    
     const finalData = realData.visitors > 0 ? realData : mockData;
+    console.log('Using data:', finalData === realData ? 'REAL' : 'MOCK');
     res.json(finalData);
 });
 
