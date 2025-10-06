@@ -238,8 +238,16 @@ body::before {
     width: 80%;
 }
 
-/* Services Dropdown */
-.services-dropdown {
+/* Navigation Dropdowns */
+.nav-item {
+    position: relative;
+}
+
+.nav-item.about-dropdown,
+.nav-item.services-dropdown,
+.nav-item.smartstart-dropdown,
+.nav-item.resources-dropdown,
+.nav-item.contact-dropdown {
     position: relative;
 }
 
@@ -260,7 +268,11 @@ body::before {
     z-index: 1001;
 }
 
-.services-dropdown:hover .dropdown-content {
+.about-dropdown:hover .dropdown-content,
+.services-dropdown:hover .dropdown-content,
+.smartstart-dropdown:hover .dropdown-content,
+.resources-dropdown:hover .dropdown-content,
+.contact-dropdown:hover .dropdown-content {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
@@ -1106,8 +1118,12 @@ main {
         display: block;
     }
     
-    /* Services dropdown mobile styles */
-    .services-dropdown {
+    /* Navigation dropdown mobile styles */
+    .nav-item.about-dropdown,
+    .nav-item.services-dropdown,
+    .nav-item.smartstart-dropdown,
+    .nav-item.resources-dropdown,
+    .nav-item.contact-dropdown {
         width: 100%;
     }
     
