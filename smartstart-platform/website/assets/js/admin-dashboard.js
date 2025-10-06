@@ -43,7 +43,7 @@ class AdminDashboard {
             // Load analytics data from server
             const response = await fetch('/api/admin/analytics');
             console.log('Response status:', response.status);
-            
+
             if (response.ok) {
                 const data = await response.json();
                 console.log('Analytics data loaded:', data);
@@ -53,10 +53,49 @@ class AdminDashboard {
                 // Fallback to mock data for development
                 this.loadMockData();
             }
+            
+            // Load advanced analytics data
+            await this.loadAdvancedAnalytics();
+            
         } catch (error) {
             console.error('Error loading analytics data:', error);
             console.log('Using mock data for development');
             this.loadMockData();
+        }
+    }
+
+    async loadAdvancedAnalytics() {
+        try {
+            // Load Core Web Vitals
+            const vitalsResponse = await fetch('/api/admin/core-web-vitals');
+            if (vitalsResponse.ok) {
+                const vitalsData = await vitalsResponse.json();
+                this.updateCoreWebVitals(vitalsData);
+            }
+
+            // Load SEO metrics
+            const seoResponse = await fetch('/api/admin/seo-metrics');
+            if (seoResponse.ok) {
+                const seoData = await seoResponse.json();
+                this.updateSEOMetrics(seoData);
+            }
+
+            // Load user behavior
+            const behaviorResponse = await fetch('/api/admin/user-behavior');
+            if (behaviorResponse.ok) {
+                const behaviorData = await behaviorResponse.json();
+                this.updateUserBehavior(behaviorData);
+            }
+
+            // Load performance data
+            const performanceResponse = await fetch('/api/admin/performance');
+            if (performanceResponse.ok) {
+                const performanceData = await performanceResponse.json();
+                this.updatePerformanceMetrics(performanceData);
+            }
+
+        } catch (error) {
+            console.error('Error loading advanced analytics:', error);
         }
     }
 
@@ -322,6 +361,102 @@ class AdminDashboard {
         if (lastUpdatedElement) {
             lastUpdatedElement.textContent = timeString;
         }
+    }
+
+    updateCoreWebVitals(data) {
+        console.log('Updating Core Web Vitals:', data);
+        
+        const lcpEl = document.getElementById('lcpValue');
+        const fidEl = document.getElementById('fidValue');
+        const clsEl = document.getElementById('clsValue');
+        
+        if (lcpEl && data.averages.LCP) {
+            lcpEl.textContent = data.averages.LCP;
+            lcpEl.className = this.getPerformanceClass('LCP', parseFloat(data.averages.LCP));
+        }
+        
+        if (fidEl && data.averages.FID) {
+            fidEl.textContent = data.averages.FID;
+            fidEl.className = this.getPerformanceClass('FID', parseFloat(data.averages.FID));
+        }
+        
+        if (clsEl && data.averages.CLS) {
+            clsEl.textContent = data.averages.CLS;
+            clsEl.className = this.getPerformanceClass('CLS', parseFloat(data.averages.CLS));
+        }
+    }
+
+    updateSEOMetrics(data) {
+        console.log('Updating SEO metrics:', data);
+        
+        if (data.latestMetrics) {
+            const metrics = data.latestMetrics;
+            
+            const h1El = document.getElementById('h1Count');
+            const h2El = document.getElementById('h2Count');
+            const imageEl = document.getElementById('imageCount');
+            const wordEl = document.getElementById('wordCount');
+            const internalEl = document.getElementById('internalLinks');
+            const externalEl = document.getElementById('externalLinks');
+            const totalEl = document.getElementById('totalLinks');
+            
+            if (h1El) h1El.textContent = metrics.h1Count || 0;
+            if (h2El) h2El.textContent = metrics.h2Count || 0;
+            if (imageEl) imageEl.textContent = metrics.imageCount || 0;
+            if (wordEl) wordEl.textContent = metrics.wordCount || 0;
+            if (internalEl) internalEl.textContent = metrics.internalLinkCount || 0;
+            if (externalEl) externalEl.textContent = metrics.externalLinkCount || 0;
+            if (totalEl) totalEl.textContent = metrics.linkCount || 0;
+        }
+    }
+
+    updateUserBehavior(data) {
+        console.log('Updating user behavior:', data);
+        
+        const mouseEl = document.getElementById('mouseMovements');
+        const focusEl = document.getElementById('focusEvents');
+        const formEl = document.getElementById('formInteractions');
+        
+        if (mouseEl) mouseEl.textContent = data.mouseMovements || 0;
+        if (focusEl) focusEl.textContent = data.focusEvents || 0;
+        if (formEl) formEl.textContent = data.formInteractions || 0;
+    }
+
+    updatePerformanceMetrics(data) {
+        console.log('Updating performance metrics:', data);
+        
+        const loadEl = document.getElementById('loadTime');
+        const domEl = document.getElementById('domReady');
+        const paintEl = document.getElementById('firstPaint');
+        
+        if (loadEl && data.averages.pageLoadTime) {
+            loadEl.textContent = data.averages.pageLoadTime;
+            loadEl.className = this.getPerformanceClass('load', parseFloat(data.averages.pageLoadTime));
+        }
+        
+        if (domEl && data.averages.domContentLoaded) {
+            domEl.textContent = data.averages.domContentLoaded;
+        }
+        
+        if (paintEl && data.averages.firstPaint) {
+            paintEl.textContent = data.averages.firstPaint;
+        }
+    }
+
+    getPerformanceClass(metric, value) {
+        const thresholds = {
+            'LCP': { good: 2500, poor: 4000 },
+            'FID': { good: 100, poor: 300 },
+            'CLS': { good: 0.1, poor: 0.25 },
+            'load': { good: 2000, poor: 4000 }
+        };
+        
+        const threshold = thresholds[metric];
+        if (!threshold) return 'metric-value';
+        
+        if (value <= threshold.good) return 'metric-value good';
+        if (value <= threshold.poor) return 'metric-value warning';
+        return 'metric-value poor';
     }
 }
 
