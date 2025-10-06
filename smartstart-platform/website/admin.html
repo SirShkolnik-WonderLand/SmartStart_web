@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - AliceSolutionsGroup</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="assets/css/admin-dashboard.css">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+</head>
+
+<body>
+    <!-- Admin Header -->
+    <header class="admin-header">
+        <div class="admin-header-content">
+            <div class="admin-logo">
+                <img src="assets/images/AliceSolutionsGroup-logo-owl-rabbit-fox.png" alt="AliceSolutionsGroup" class="admin-logo-image">
+                <span>Admin Dashboard</span>
+            </div>
+            <div class="admin-nav">
+                <a href="index.html" class="admin-nav-link">← Back to Site</a>
+                <span class="admin-status" id="adminStatus">🟢 Live</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Admin Main Content -->
+    <main class="admin-main">
+        <!-- Dashboard Overview -->
+        <section class="admin-section">
+            <div class="admin-container">
+                <h1 class="admin-title">Website Analytics Dashboard</h1>
+                <p class="admin-subtitle">Real-time insights for AliceSolutionsGroup website performance</p>
+
+                <!-- Quick Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-content">
+                            <h3 class="stat-number" id="totalVisitors">0</h3>
+                            <p class="stat-label">Total Visitors</p>
+                            <span class="stat-change positive" id="visitorChange">+0%</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🌍</div>
+                        <div class="stat-content">
+                            <h3 class="stat-number" id="uniqueCountries">0</h3>
+                            <p class="stat-label">Countries</p>
+                            <span class="stat-change neutral" id="countryChange">+0</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📄</div>
+                        <div class="stat-content">
+                            <h3 class="stat-number" id="pageViews">0</h3>
+                            <p class="stat-label">Page Views</p>
+                            <span class="stat-change positive" id="pageViewChange">+0%</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⏱️</div>
+                        <div class="stat-content">
+                            <h3 class="stat-number" id="avgSessionTime">0m</h3>
+                            <p class="stat-label">Avg. Session</p>
+                            <span class="stat-change positive" id="sessionChange">+0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Geographic Analytics -->
+        <section class="admin-section">
+            <div class="admin-container">
+                <h2 class="section-title">Geographic Distribution</h2>
+                <div class="analytics-grid">
+                    <div class="analytics-card">
+                        <h3 class="card-title">Top Countries</h3>
+                        <div class="country-list" id="topCountries">
+                            <div class="loading">Loading country data...</div>
+                        </div>
+                    </div>
+                    <div class="analytics-card">
+                        <h3 class="card-title">Top Cities</h3>
+                        <div class="city-list" id="topCities">
+                            <div class="loading">Loading city data...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Page Analytics -->
+        <section class="admin-section">
+            <div class="admin-container">
+                <h2 class="section-title">Page Performance</h2>
+                <div class="analytics-grid">
+                    <div class="analytics-card">
+                        <h3 class="card-title">Most Visited Pages</h3>
+                        <div class="page-list" id="topPages">
+                            <div class="loading">Loading page data...</div>
+                        </div>
+                    </div>
+                    <div class="analytics-card">
+                        <h3 class="card-title">Traffic Sources</h3>
+                        <div class="source-list" id="trafficSources">
+                            <div class="loading">Loading source data...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEO Analytics -->
+        <section class="admin-section">
+            <div class="admin-container">
+                <h2 class="section-title">SEO & Search Analytics</h2>
+                <div class="analytics-grid">
+                    <div class="analytics-card">
+                        <h3 class="card-title">Search Keywords</h3>
+                        <div class="keyword-list" id="searchKeywords">
+                            <div class="loading">Loading keyword data...</div>
+                        </div>
+                    </div>
+                    <div class="analytics-card">
+                        <h3 class="card-title">Referral Sites</h3>
+                        <div class="referral-list" id="referralSites">
+                            <div class="loading">Loading referral data...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Device & Browser Analytics -->
+        <section class="admin-section">
+            <div class="admin-container">
+                <h2 class="section-title">Device & Browser Analytics</h2>
+                <div class="analytics-grid">
+                    <div class="analytics-card">
+                        <h3 class="card-title">Device Types</h3>
+                        <div class="device-list" id="deviceTypes">
+                            <div class="loading">Loading device data...</div>
+                        </div>
+                    </div>
+                    <div class="analytics-card">
+                        <h3 class="card-title">Browser Usage</h3>
+                        <div class="browser-list" id="browserUsage">
+                            <div class="loading">Loading browser data...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Real-time Activity -->
+        <section class="admin-section">
+            <div class="admin-container">
+                <h2 class="section-title">Real-time Activity</h2>
+                <div class="analytics-card full-width">
+                    <h3 class="card-title">Live Visitors</h3>
+                    <div class="live-activity" id="liveActivity">
+                        <div class="loading">Loading live activity...</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Export & Actions -->
+        <section class="admin-section">
+            <div class="admin-container">
+                <h2 class="section-title">Data Management</h2>
+                <div class="action-buttons">
+                    <button class="action-btn primary" onclick="exportData()">📊 Export Analytics</button>
+                    <button class="action-btn secondary" onclick="refreshData()">🔄 Refresh Data</button>
+                    <button class="action-btn secondary" onclick="clearOldData()">🗑️ Clear Old Data</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Admin Footer -->
+    <footer class="admin-footer">
+        <div class="admin-container">
+            <p>&copy; 2025 AliceSolutionsGroup Admin Dashboard | Last updated: <span id="lastUpdated">Loading...</span></p>
+        </div>
+    </footer>
+
+    <script src="assets/js/admin-dashboard.js"></script>
+</body>
+
+</html>

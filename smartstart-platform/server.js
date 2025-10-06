@@ -44,7 +44,7 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Static file serving
-app.use(express.static(path.join(__dirname, 'app'), {
+app.use(express.static(path.join(__dirname, 'website'), {
     maxAge: process.env.NODE_ENV === 'production' ? '1d' : '0',
     etag: true,
     lastModified: true,
@@ -118,24 +118,113 @@ app.post('/api/journeys', (req, res) => {
     res.json({ message: 'Journey creation endpoint - to be implemented' });
 });
 
+// Admin Analytics API endpoints
+app.get('/api/admin/analytics', (req, res) => {
+    // Mock analytics data for development
+    const analyticsData = {
+        visitors: 1247,
+        pageViews: 3842,
+        avgSessionTime: 3.2,
+        countries: [
+            { name: 'Canada', count: 856, percentage: 68.7 },
+            { name: 'United States', count: 234, percentage: 18.8 },
+            { name: 'United Kingdom', count: 89, percentage: 7.1 },
+            { name: 'Germany', count: 45, percentage: 3.6 },
+            { name: 'Australia', count: 23, percentage: 1.8 }
+        ],
+        cities: [
+            { name: 'Toronto', count: 456, percentage: 36.6 },
+            { name: 'Vancouver', count: 123, percentage: 9.9 },
+            { name: 'Montreal', count: 89, percentage: 7.1 },
+            { name: 'New York', count: 67, percentage: 5.4 },
+            { name: 'London', count: 45, percentage: 3.6 }
+        ],
+        pages: [
+            { name: '/', count: 1247, percentage: 32.5 },
+            { name: '/about.html', count: 456, percentage: 11.9 },
+            { name: '/services.html', count: 389, percentage: 10.1 },
+            { name: '/smartstart.html', count: 234, percentage: 6.1 },
+            { name: '/community.html', count: 198, percentage: 5.2 }
+        ],
+        sources: [
+            { name: 'Direct', count: 567, percentage: 45.5 },
+            { name: 'Google', count: 234, percentage: 18.8 },
+            { name: 'LinkedIn', count: 123, percentage: 9.9 },
+            { name: 'Twitter', count: 89, percentage: 7.1 },
+            { name: 'Referral', count: 67, percentage: 5.4 }
+        ],
+        keywords: [
+            { name: 'cybersecurity toronto', count: 89, percentage: 7.1 },
+            { name: 'iso 27001', count: 67, percentage: 5.4 },
+            { name: 'smartstart', count: 45, percentage: 3.6 },
+            { name: 'cissp', count: 34, percentage: 2.7 },
+            { name: 'business automation', count: 23, percentage: 1.8 }
+        ],
+        referrals: [
+            { name: 'linkedin.com', count: 123, percentage: 9.9 },
+            { name: 'twitter.com', count: 89, percentage: 7.1 },
+            { name: 'github.com', count: 67, percentage: 5.4 },
+            { name: 'reddit.com', count: 45, percentage: 3.6 },
+            { name: 'medium.com', count: 34, percentage: 2.7 }
+        ],
+        devices: [
+            { name: 'Desktop', count: 789, percentage: 63.3 },
+            { name: 'Mobile', count: 345, percentage: 27.7 },
+            { name: 'Tablet', count: 113, percentage: 9.1 }
+        ],
+        browsers: [
+            { name: 'Chrome', count: 567, percentage: 45.5 },
+            { name: 'Safari', count: 234, percentage: 18.8 },
+            { name: 'Firefox', count: 123, percentage: 9.9 },
+            { name: 'Edge', count: 89, percentage: 7.1 },
+            { name: 'Other', count: 234, percentage: 18.8 }
+        ],
+        liveActivity: [
+            { action: 'Page View', page: '/', location: 'Toronto, CA', time: '2 minutes ago' },
+            { action: 'Page View', page: '/about.html', location: 'Vancouver, CA', time: '3 minutes ago' },
+            { action: 'Page View', page: '/services.html', location: 'New York, US', time: '4 minutes ago' },
+            { action: 'Page View', page: '/smartstart.html', location: 'London, UK', time: '5 minutes ago' },
+            { action: 'Page View', page: '/community.html', location: 'Montreal, CA', time: '6 minutes ago' }
+        ],
+        timestamp: new Date().toISOString()
+    };
+
+    res.json(analyticsData);
+});
+
+app.get('/api/admin/visitors', (req, res) => {
+    // TODO: Implement real visitor tracking
+    res.json({
+        message: 'Visitor tracking endpoint - to be implemented',
+        currentVisitors: Math.floor(Math.random() * 10) + 1
+    });
+});
+
+app.post('/api/admin/track', (req, res) => {
+    // TODO: Implement visitor tracking
+    const { page, referrer, userAgent, ip } = req.body;
+    console.log('Tracking:', { page, referrer, userAgent, ip });
+    res.json({ success: true, message: 'Visit tracked' });
+});
+
 // Catch-all handler for SPA routing
 app.get('*', (req, res) => {
     // Check if the request is for an API endpoint
     if (req.path.startsWith('/api/')) {
         return res.status(404).json({ error: 'API endpoint not found' });
     }
-    
+
     // Serve the main HTML file for all other routes
-    res.sendFile(path.join(__dirname, 'app', 'index.html'));
+    res.sendFile(path.join(__dirname, 'website', 'index.html'));
 });
 
 // Error handling middleware
 app.use((err, req, res, next) => {
     console.error('Error:', err);
     res.status(500).json({
-        error: process.env.NODE_ENV === 'production' 
-            ? 'Internal server error' 
-            : err.message
+        error: process.env.NODE_ENV === 'production' ?
+            'Internal server error' :
+            err.message
     });
 });
 
