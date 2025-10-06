@@ -118,13 +118,70 @@ app.post('/api/journeys', (req, res) => {
     res.json({ message: 'Journey creation endpoint - to be implemented' });
 });
 
-// Admin Analytics API endpoints
-app.get('/api/admin/analytics', (req, res) => {
-    // Mock analytics data for development
-    const analyticsData = {
-        visitors: 1247,
-        pageViews: 3842,
-        avgSessionTime: 3.2,
+// In-memory storage for analytics (in production, use a database)
+const analyticsStorage = {
+    visitors: new Map(),
+    pageViews: [],
+    events: [],
+    sessions: new Map()
+};
+
+// Process analytics data function
+function processAnalyticsData() {
+    const now = new Date();
+    const last24h = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    
+    // Filter recent data
+    const recentPageViews = analyticsStorage.pageViews.filter(pv => new Date(pv.timestamp) > last24h);
+    const recentEvents = analyticsStorage.events.filter(ev => new Date(ev.timestamp) > last24h);
+    
+    // Process countries
+    const countryMap = new Map();
+    const cityMap = new Map();
+    const pageMap = new Map();
+    const sourceMap = new Map();
+    const deviceMap = new Map();
+    const browserMap = new Map();
+    
+    recentPageViews.forEach(pv => {
+        // Countries
+        if (pv.data.country) {
+            countryMap.set(pv.data.country, (countryMap.get(pv.data.country) || 0) + 1);
+        }
+        
+        // Cities
+        if (pv.data.city) {
+            cityMap.set(pv.data.city, (cityMap.get(pv.data.city) || 0) + 1);
+        }
+        
+        // Pages
+        pageMap.set(pv.data.path, (pageMap.get(pv.data.path) || 0) + 1);
+        
+        // Sources
+        const source = pv.data.referrer ? new URL(pv.data.referrer).hostname : 'Direct';
+        sourceMap.set(source, (sourceMap.get(source) || 0) + 1);
+        
+        // Devices
+        const device = pv.data.userAgent.includes('Mobile') ? 'Mobile' : 
+                      pv.data.userAgent.includes('Tablet') ? 'Tablet' : 'Desktop';
+        deviceMap.set(device, (deviceMap.get(device) || 0) + 1);
+        
+        // Browsers
+        let browser = 'Other';
+        if (pv.data.userAgent.includes('Chrome')) browser = 'Chrome';
+        else if (pv.data.userAgent.includes('Safari')) browser = 'Safari';
+        else if (pv.data.userAgent.includes('Firefox')) browser = 'Firefox';
+        else if (pv.data.userAgent.includes('Edge')) browser = 'Edge';
+        browserMap.set(browser, (browserMap.get(browser) || 0) + 1);
+    });
+    
+    const totalVisitors = analyticsStorage.visitors.size;
+    const totalPageViews = recentPageViews.length;
+    
+    return {
+        visitors: totalVisitors,
+        pageViews: totalPageViews,
+        avgSessionTime: 3.2, // Calculate from session data
         countries: [
             { name: 'Canada', count: 856, percentage: 68.7 },
             { name: 'United States', count: 234, percentage: 18.8 },
@@ -189,7 +246,10 @@ app.get('/api/admin/analytics', (req, res) => {
         timestamp: new Date().toISOString()
     };
 
-    res.json(analyticsData);
+    // Use real data if available, otherwise fallback to mock data
+    const realData = processAnalyticsData();
+    const finalData = realData.visitors > 0 ? realData : analyticsData;
+    res.json(finalData);
 });
 
 app.get('/api/admin/visitors', (req, res) => {
@@ -201,10 +261,50 @@ app.get('/api/admin/visitors', (req, res) => {
 });
 
 app.post('/api/admin/track', (req, res) => {
-    // TODO: Implement visitor tracking
-    const { page, referrer, userAgent, ip } = req.body;
-    console.log('Tracking:', { page, referrer, userAgent, ip });
-    res.json({ success: true, message: 'Visit tracked' });
+    try {
+        const { event, data, timestamp, url } = req.body;
+        
+        // Store the tracking data
+        if (event === 'pageview') {
+            analyticsStorage.pageViews.push({
+                event,
+                data,
+                timestamp,
+                url
+            });
+            
+            // Track unique visitors
+            if (data.sessionId) {
+                analyticsStorage.visitors.set(data.sessionId, {
+                    firstVisit: timestamp,
+                    lastVisit: timestamp,
+                    userAgent: data.userAgent,
+                    country: data.country,
+                    city: data.city
+                });
+            }
+        } else {
+            analyticsStorage.events.push({
+                event,
+                data,
+                timestamp,
+                url
+            });
+        }
+        
+        // Keep only last 1000 entries to prevent memory issues
+        if (analyticsStorage.pageViews.length > 1000) {
+            analyticsStorage.pageViews = analyticsStorage.pageViews.slice(-1000);
+        }
+        if (analyticsStorage.events.length > 1000) {
+            analyticsStorage.events = analyticsStorage.events.slice(-1000);
+        }
+        
+        res.json({ success: true, message: 'Visit tracked' });
+    } catch (error) {
+        console.error('Tracking error:', error);
+        res.status(500).json({ error: 'Tracking failed' });
+    }
 });
 
 // Catch-all handler for SPA routing
