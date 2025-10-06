@@ -466,6 +466,106 @@
                 </div>
             </div>
         </section>
+
+        <!-- Community Support Requests -->
+        <section class="section" id="request-support">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Request Community Support</h2>
+                    <p class="section-subtitle">SmartStart Community provides pro-bono services, guest lectures, and mentorship for schools, nonprofits, and community organizations across Ontario.</p>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; margin: 3rem 0;">
+                    <!-- Eligibility Guidelines -->
+                    <div>
+                        <h3 style="color: var(--accent-primary); margin-bottom: 2rem;">How to Get Help</h3>
+
+                        <div class="card" style="margin-bottom: 1.5rem;">
+                            <h4 class="card-title">🏫 Schools & Educational Institutions</h4>
+                            <p class="card-description">Cybersecurity awareness lectures, student entrepreneurship workshops, career guidance sessions, and curriculum development support.</p>
+                        </div>
+
+                        <div class="card" style="margin-bottom: 1.5rem;">
+                            <h4 class="card-title">🤝 Nonprofit Organizations</h4>
+                            <p class="card-description">Pro-bono cybersecurity consulting, digital resilience training, technology assessment, and process optimization guidance.</p>
+                        </div>
+
+                        <div class="card" style="margin-bottom: 1.5rem;">
+                            <h4 class="card-title">🚀 Student Groups & Startups</h4>
+                            <p class="card-description">Startup clinic sessions, mentorship connections, business plan reviews, and security-by-design guidance for early-stage ventures.</p>
+                        </div>
+
+                        <div class="card" style="margin-bottom: 1.5rem;">
+                            <h4 class="card-title">🏢 Community Organizations</h4>
+                            <p class="card-description">Chambers of commerce member education, industry association workshops, and regional innovation ecosystem support.</p>
+                        </div>
+
+                        <div class="glass-card" style="padding: 2rem; background: rgba(34, 197, 94, 0.05); border: 1px solid rgba(34, 197, 94, 0.2);">
+                            <h4 style="color: var(--accent-primary); margin-bottom: 1rem;">📋 Eligibility Criteria</h4>
+                            <ul style="list-style: none; padding: 0;">
+                                <li style="margin-bottom: 0.5rem;">✓ Ontario-based organizations</li>
+                                <li style="margin-bottom: 0.5rem;">✓ Educational or community benefit focus</li>
+                                <li style="margin-bottom: 0.5rem;">✓ Non-commercial use of services</li>
+                                <li style="margin-bottom: 0.5rem;">✓ Clear learning or social impact goals</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Support Request Form -->
+                    <div>
+                        <h3 style="color: var(--accent-primary); margin-bottom: 2rem;">Request Support</h3>
+
+                        <form class="glass-card" style="padding: 2rem; background: rgba(59, 130, 246, 0.05); border: 1px solid rgba(59, 130, 246, 0.2);">
+                            <div style="margin-bottom: 1.5rem;">
+                                <label for="name-org" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Name / Organization *</label>
+                                <input type="text" id="name-org" name="name-org" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--border-radius); background: var(--bg-primary);">
+                            </div>
+
+                            <div style="margin-bottom: 1.5rem;">
+                                <label for="email" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Email *</label>
+                                <input type="email" id="email" name="email" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--border-radius); background: var(--bg-primary);">
+                            </div>
+
+                            <div style="margin-bottom: 1.5rem;">
+                                <label for="support-type" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Type of Support Needed *</label>
+                                <select id="support-type" name="support-type" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--border-radius); background: var(--bg-primary);">
+                                    <option value="">Select support type...</option>
+                                    <option value="pro-bono-consulting">Pro-Bono Consulting</option>
+                                    <option value="school-lecture">School Lecture</option>
+                                    <option value="workshop">Workshop</option>
+                                    <option value="mentorship">Mentorship</option>
+                                    <option value="startup-clinic">Startup Clinic Session</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+
+                            <div style="margin-bottom: 1.5rem;">
+                                <label for="description" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Short Description of Request *</label>
+                                <textarea id="description" name="description" required rows="4" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--border-radius); background: var(--bg-primary); resize: vertical;" placeholder="Please describe what support you need, your organization's mission, and how this would benefit your community..."></textarea>
+                            </div>
+
+                            <div style="margin-bottom: 2rem;">
+                                <label for="timeline" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Preferred Timeline</label>
+                                <select id="timeline" name="timeline" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--border-radius); background: var(--bg-primary);">
+                                    <option value="">Select timeline...</option>
+                                    <option value="asap">ASAP</option>
+                                    <option value="1-month">Within 1 month</option>
+                                    <option value="3-months">Within 3 months</option>
+                                    <option value="6-months">Within 6 months</option>
+                                    <option value="flexible">Flexible</option>
+                                </select>
+                            </div>
+
+                            <button type="submit" class="cta-button primary" style="width: 100%; background: linear-gradient(135deg, #22c55e, #16a34a);">Submit Support Request</button>
+
+                            <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 1rem; text-align: center;">
+                                We'll review your request and respond within 5 business days. All support is provided on a pro-bono basis.
+                            </p>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
 
     <!-- Footer -->
