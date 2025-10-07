@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const fs = require('fs');
 const helmet = require('helmet');
 const compression = require('compression');
 const morgan = require('morgan');
@@ -75,6 +76,59 @@ const analyticsStorage = {
     ipAddresses: new Map(), // Track IP addresses and their usage
     deviceFingerprints: new Map() // Track device fingerprints
 };
+
+// Data persistence functions
+const DATA_FILE = path.join(__dirname, 'analytics-data.json');
+
+function saveAnalyticsData() {
+    try {
+        const dataToSave = {
+            visitors: Array.from(analyticsStorage.visitors.entries()),
+            pageViews: analyticsStorage.pageViews,
+            events: analyticsStorage.events,
+            uniqueUsers: Array.from(analyticsStorage.uniqueUsers.entries()),
+            ipAddresses: Array.from(analyticsStorage.ipAddresses.entries()),
+            deviceFingerprints: Array.from(analyticsStorage.deviceFingerprints.entries()),
+            lastSaved: new Date().toISOString()
+        };
+        fs.writeFileSync(DATA_FILE, JSON.stringify(dataToSave, null, 2));
+        console.log('Analytics data saved to file');
+    } catch (error) {
+        console.error('Error saving analytics data:', error);
+    }
+}
+
+function loadAnalyticsData() {
+    try {
+        if (fs.existsSync(DATA_FILE)) {
+            const data = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+            
+            // Restore Maps from arrays
+            analyticsStorage.visitors = new Map(data.visitors || []);
+            analyticsStorage.pageViews = data.pageViews || [];
+            analyticsStorage.events = data.events || [];
+            analyticsStorage.uniqueUsers = new Map(data.uniqueUsers || []);
+            analyticsStorage.ipAddresses = new Map(data.ipAddresses || []);
+            analyticsStorage.deviceFingerprints = new Map(data.deviceFingerprints || []);
+            
+            console.log('Analytics data loaded from file:', {
+                visitors: analyticsStorage.visitors.size,
+                pageViews: analyticsStorage.pageViews.length,
+                events: analyticsStorage.events.length,
+                uniqueUsers: analyticsStorage.uniqueUsers.size,
+                lastSaved: data.lastSaved
+            });
+        }
+    } catch (error) {
+        console.error('Error loading analytics data:', error);
+    }
+}
+
+// Load data on startup
+loadAnalyticsData();
+
+// Save data every 30 seconds
+setInterval(saveAnalyticsData, 30000);
 
 // Process analytics data function
 function processAnalyticsData() {
@@ -335,6 +389,9 @@ app.post('/api/admin/track', (req, res) => {
         if (analyticsStorage.events.length > 1000) {
             analyticsStorage.events = analyticsStorage.events.slice(-1000);
         }
+        
+        // Save data immediately after tracking
+        saveAnalyticsData();
         
         res.json({ success: true, message: 'Visit tracked' });
     } catch (error) {
