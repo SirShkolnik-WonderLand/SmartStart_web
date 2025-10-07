@@ -371,6 +371,26 @@ class AdminDashboard {
         if (mouseEl) mouseEl.textContent = data.mouseMovements || 0;
         if (focusEl) focusEl.textContent = data.focusEvents || 0;
         if (formEl) formEl.textContent = data.formInteractions || 0;
+        
+        // Update device information from the latest analytics data
+        this.updateDeviceInformation();
+    }
+    
+    updateDeviceInformation() {
+        // Get device info from the latest analytics data
+        const screenEl = document.getElementById('screenResolution');
+        const colorEl = document.getElementById('colorDepth');
+        const memoryEl = document.getElementById('deviceMemory');
+        
+        if (screenEl) {
+            screenEl.textContent = `${screen.width}x${screen.height}`;
+        }
+        if (colorEl) {
+            colorEl.textContent = `${screen.colorDepth}-bit`;
+        }
+        if (memoryEl) {
+            memoryEl.textContent = navigator.deviceMemory ? `${navigator.deviceMemory}GB` : 'Unknown';
+        }
     }
 
     updatePerformanceMetrics(data) {

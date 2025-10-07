@@ -74,7 +74,12 @@ const analyticsStorage = {
     sessions: new Map(),
     uniqueUsers: new Map(), // Track unique users by IP + fingerprint
     ipAddresses: new Map(), // Track IP addresses and their usage
-    deviceFingerprints: new Map() // Track device fingerprints
+    deviceFingerprints: new Map(), // Track device fingerprints
+    coreWebVitals: [], // Core Web Vitals data
+    seoMetrics: [], // SEO metrics data
+    userBehavior: [], // User behavior data
+    performanceMetrics: [], // Performance metrics data
+    marketingMetrics: [] // Marketing metrics data
 };
 
 // Data persistence functions
@@ -142,10 +147,10 @@ function processAnalyticsData() {
     // Use all data (no time filtering for now)
     const recentPageViews = analyticsStorage.pageViews;
     const recentEvents = analyticsStorage.events;
-    
+
     console.log('All page views (no time filter):', recentPageViews.length);
     console.log('All events (no time filter):', recentEvents.length);
-    
+
     // Debug: show sample of page views
     if (recentPageViews.length > 0) {
         console.log('Sample page view:', recentPageViews[0]);
@@ -375,7 +380,56 @@ app.post('/api/admin/track', (req, res) => {
                 timestamp,
                 url
             });
+        } else if (event === 'core_web_vitals') {
+            // Store Core Web Vitals data
+            analyticsStorage.coreWebVitals.push({
+                event,
+                data: {
+                    ...data,
+                    clientIP: clientIP,
+                    serverTimestamp: new Date().toISOString()
+                },
+                timestamp,
+                url
+            });
+        } else if (event === 'seo_metrics') {
+            // Store SEO metrics data
+            analyticsStorage.seoMetrics.push({
+                event,
+                data: {
+                    ...data,
+                    clientIP: clientIP,
+                    serverTimestamp: new Date().toISOString()
+                },
+                timestamp,
+                url
+            });
+        } else if (event === 'mouse_movements' || event === 'focus_event' || event === 'form_interaction' || event === 'scroll_depth') {
+            // Store user behavior data
+            analyticsStorage.userBehavior.push({
+                event,
+                data: {
+                    ...data,
+                    clientIP: clientIP,
+                    serverTimestamp: new Date().toISOString()
+                },
+                timestamp,
+                url
+            });
+        } else if (event === 'marketing_metrics') {
+            // Store marketing metrics data
+            analyticsStorage.marketingMetrics.push({
+                event,
+                data: {
+                    ...data,
+                    clientIP: clientIP,
+                    serverTimestamp: new Date().toISOString()
+                },
+                timestamp,
+                url
+            });
         } else {
+            // Store other events
             analyticsStorage.events.push({
                 event,
                 data: {
@@ -394,6 +448,18 @@ app.post('/api/admin/track', (req, res) => {
         }
         if (analyticsStorage.events.length > 1000) {
             analyticsStorage.events = analyticsStorage.events.slice(-1000);
+        }
+        if (analyticsStorage.coreWebVitals.length > 1000) {
+            analyticsStorage.coreWebVitals = analyticsStorage.coreWebVitals.slice(-1000);
+        }
+        if (analyticsStorage.seoMetrics.length > 1000) {
+            analyticsStorage.seoMetrics = analyticsStorage.seoMetrics.slice(-1000);
+        }
+        if (analyticsStorage.userBehavior.length > 1000) {
+            analyticsStorage.userBehavior = analyticsStorage.userBehavior.slice(-1000);
+        }
+        if (analyticsStorage.marketingMetrics.length > 1000) {
+            analyticsStorage.marketingMetrics = analyticsStorage.marketingMetrics.slice(-1000);
         }
 
         // Save data immediately after tracking
@@ -539,7 +605,7 @@ app.get('/api/admin/debug', (req, res) => {
 
 // Advanced analytics endpoints
 app.get('/api/admin/core-web-vitals', (req, res) => {
-    const coreWebVitalsEvents = analyticsStorage.events.filter(ev => ev.event === 'core_web_vitals');
+    const coreWebVitalsEvents = analyticsStorage.coreWebVitals;
     const vitals = {
         LCP: coreWebVitalsEvents.filter(ev => ev.data.metric === 'LCP').map(ev => ev.data.value),
         FID: coreWebVitalsEvents.filter(ev => ev.data.metric === 'FID').map(ev => ev.data.value),
@@ -558,37 +624,56 @@ app.get('/api/admin/core-web-vitals', (req, res) => {
 });
 
 app.get('/api/admin/seo-metrics', (req, res) => {
-    const seoEvents = analyticsStorage.events.filter(ev => ev.event === 'seo_metrics');
+    const seoEvents = analyticsStorage.seoMetrics;
     const latestSeo = seoEvents[seoEvents.length - 1];
 
     res.json({
         latestMetrics: latestSeo ? latestSeo.data : null,
         totalMeasurements: seoEvents.length,
         averageLoadTime: seoEvents.length > 0 ?
-            (seoEvents.reduce((sum, ev) => sum + (ev.data.loadTime || 0), 0) / seoEvents.length).toFixed(2) : 0
+            (seoEvents.reduce((sum, ev) => sum + (ev.data.loadTime || 0), 0) / seoEvents.length).toFixed(2) : 0,
+        averageWordCount: seoEvents.length > 0 ?
+            (seoEvents.reduce((sum, ev) => sum + (ev.data.wordCount || 0), 0) / seoEvents.length).toFixed(0) : 0,
+        averageH1Count: seoEvents.length > 0 ?
+            (seoEvents.reduce((sum, ev) => sum + (ev.data.h1Count || 0), 0) / seoEvents.length).toFixed(1) : 0,
+        averageH2Count: seoEvents.length > 0 ?
+            (seoEvents.reduce((sum, ev) => sum + (ev.data.h2Count || 0), 0) / seoEvents.length).toFixed(1) : 0,
+        averageImageCount: seoEvents.length > 0 ?
+            (seoEvents.reduce((sum, ev) => sum + (ev.data.imageCount || 0), 0) / seoEvents.length).toFixed(1) : 0,
+        averageLinkCount: seoEvents.length > 0 ?
+            (seoEvents.reduce((sum, ev) => sum + (ev.data.linkCount || 0), 0) / seoEvents.length).toFixed(1) : 0
     });
 });
 
 app.get('/api/admin/user-behavior', (req, res) => {
-    const mouseEvents = analyticsStorage.events.filter(ev => ev.event === 'mouse_movements');
-    const focusEvents = analyticsStorage.events.filter(ev => ev.event === 'focus_event');
-    const formEvents = analyticsStorage.events.filter(ev => ev.event === 'form_interaction');
+    const behaviorEvents = analyticsStorage.userBehavior;
+    const mouseEvents = behaviorEvents.filter(ev => ev.event === 'mouse_movements');
+    const focusEvents = behaviorEvents.filter(ev => ev.event === 'focus_event');
+    const formEvents = behaviorEvents.filter(ev => ev.event === 'form_interaction');
+    const scrollEvents = behaviorEvents.filter(ev => ev.event === 'scroll_depth');
 
     res.json({
         mouseMovements: mouseEvents.length,
         focusEvents: focusEvents.length,
         formInteractions: formEvents.length,
-        totalBehaviorEvents: mouseEvents.length + focusEvents.length + formEvents.length,
+        scrollDepthEvents: scrollEvents.length,
+        totalBehaviorEvents: behaviorEvents.length,
         recentMouseMovements: mouseEvents.slice(-5).map(ev => ({
             timestamp: ev.timestamp,
-            movementCount: ev.data.movements.length
-        }))
+            movementCount: ev.data.movements ? ev.data.movements.length : 0
+        })),
+        recentScrollDepths: scrollEvents.slice(-10).map(ev => ({
+            timestamp: ev.timestamp,
+            depth: ev.data.depth
+        })),
+        averageScrollDepth: scrollEvents.length > 0 ?
+            (scrollEvents.reduce((sum, ev) => sum + (ev.data.depth || 0), 0) / scrollEvents.length).toFixed(1) : 0
     });
 });
 
 app.get('/api/admin/performance', (req, res) => {
-    const seoEvents = analyticsStorage.events.filter(ev => ev.event === 'seo_metrics');
-    const coreVitalsEvents = analyticsStorage.events.filter(ev => ev.event === 'core_web_vitals');
+    const seoEvents = analyticsStorage.seoMetrics;
+    const coreVitalsEvents = analyticsStorage.coreWebVitals;
 
     const performanceData = {
         pageLoadTimes: seoEvents.map(ev => ev.data.loadTime).filter(time => time > 0),
@@ -646,11 +731,11 @@ app.get('*', (req, res) => {
     if (req.path.startsWith('/api/')) {
         return res.status(404).json({ error: 'API endpoint not found on website server' });
     }
-
+    
     // Try to serve the specific file first
     const filePath = path.join(__dirname, 'website', req.path);
     const indexPath = path.join(__dirname, 'website', 'index.html');
-
+    
     // Check if the requested file exists
     if (require('fs').existsSync(filePath) && require('fs').statSync(filePath).isFile()) {
         res.sendFile(filePath);
@@ -663,7 +748,7 @@ app.get('*', (req, res) => {
 // Error handling middleware
 app.use((err, req, res, next) => {
     console.error('Website server error:', err);
-    res.status(500).json({
+    res.status(500).json({ 
         error: 'Internal server error',
         message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong'
     });
