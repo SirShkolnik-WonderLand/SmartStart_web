@@ -79,18 +79,18 @@ const analyticsStorage = {
 // Process analytics data function
 function processAnalyticsData() {
     const now = new Date();
-    const last7days = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000); // Use 7 days instead of 24 hours
+    const last30days = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000); // Use 30 days to include all recent data
     
     console.log('Processing analytics data...');
     console.log('Total page views in storage:', analyticsStorage.pageViews.length);
     console.log('Total events in storage:', analyticsStorage.events.length);
     
-    // Filter recent data (last 7 days)
-    const recentPageViews = analyticsStorage.pageViews.filter(pv => new Date(pv.timestamp) > last7days);
-    const recentEvents = analyticsStorage.events.filter(ev => new Date(ev.timestamp) > last7days);
+    // Filter recent data (last 30 days)
+    const recentPageViews = analyticsStorage.pageViews.filter(pv => new Date(pv.timestamp) > last30days);
+    const recentEvents = analyticsStorage.events.filter(ev => new Date(ev.timestamp) > last30days);
     
-    console.log('Recent page views (last 7 days):', recentPageViews.length);
-    console.log('Recent events (last 7 days):', recentEvents.length);
+    console.log('Recent page views (last 30 days):', recentPageViews.length);
+    console.log('Recent events (last 30 days):', recentEvents.length);
     
     // Process countries
     const countryMap = new Map();
