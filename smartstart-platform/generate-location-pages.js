@@ -354,8 +354,8 @@ function generateLocationPage(cityKey, locationData) {
                     </ul>
                 </div>
                 <div class="service-card">
-                    <div class="service-icon">🤖</div>
-                    <h3>AI Automation</h3>
+                    <div class="service-icon">⚙️</div>
+                    <h3>Process Automation</h3>
                     <p>Streamline operations with intelligent automation solutions.</p>
                     <ul class="service-features">
                         <li>Process automation</li>
