@@ -334,46 +334,8 @@
     </main>
 
     <!-- Footer -->
-    <footer class="global-footer">
-        <div class="footer-content">
-            <div class="footer-section">
-                <h3>Mississauga Services</h3>
-                <p>Building partnerships with Mississauga's tech community</p>
-                <div class="social-links">
-                    <a href="#" aria-label="LinkedIn">LinkedIn</a>
-                    <a href="#" aria-label="Twitter">Twitter</a>
-                    <a href="#" aria-label="GitHub">GitHub</a>
-                </div>
-            </div>
-            <div class="footer-section">
-                <h4>Mississauga Focus</h4>
-                <ul>
-                    <li><a href="#why-mississauga">Why Mississauga</a></li>
-                    <li><a href="#how-we-help">Our Services</a></li>
-                    <li><a href="#community-partnerships">Community</a></li>
-                    <li><a href="#get-involved">Get Involved</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h4>Key Locations</h4>
-                <ul>
-                    <li>Square One District</li>
-                    <li>IDEA Mississauga</li>
-                    <li>Port Credit</li>
-                    <li>Hurontario Corridor</li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h4>Contact</h4>
-                <p>info@alicesolutionsgroup.com</p>
-                <p>(416) XXX-XXXX</p>
-                <p>Mississauga, ON, Canada</p>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2025 AliceSolutionsGroup. All rights reserved. | <a href="privacy.html">Privacy Policy</a> | <a href="terms.html">Terms of Service</a></p>
-        </div>
-    </footer>
+    <!-- Include shared footer -->
+    <div id="footer-container"></div>
 
     <!-- Analytics -->
     <script src="assets/js/analytics-tracker.js"></script>
@@ -392,6 +354,16 @@
                 }
             })
             .catch(error => console.error('Error loading navigation:', error));
+    </script>
+
+    <!-- Load shared footer -->
+    <script>
+        fetch('includes/footer.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('footer-container').innerHTML = data;
+            })
+            .catch(error => console.error('Error loading footer:', error));
     </script>
 </body>
 

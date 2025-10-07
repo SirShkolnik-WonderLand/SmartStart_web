@@ -447,46 +447,8 @@
     </main>
 
     <!-- Footer -->
-    <footer class="global-footer">
-        <div class="footer-content">
-            <div class="footer-section">
-                <h3>Vaughan SmartStart</h3>
-                <p>Building trustworthy, resilient infrastructure through community-powered innovation</p>
-                <div class="social-links">
-                    <a href="#" aria-label="LinkedIn">LinkedIn</a>
-                    <a href="#" aria-label="Twitter">Twitter</a>
-                    <a href="#" aria-label="GitHub">GitHub</a>
-                </div>
-            </div>
-            <div class="footer-section">
-                <h4>Vaughan Focus</h4>
-                <ul>
-                    <li><a href="#current-strengths">Current Strengths</a></li>
-                    <li><a href="#gap-analysis">Gap Analysis</a></li>
-                    <li><a href="#programs">Programs</a></li>
-                    <li><a href="#join-movement">Join Movement</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h4>Key Locations</h4>
-                <ul>
-                    <li>Vaughan Metropolitan Centre</li>
-                    <li>Cortellucci Vaughan Hospital</li>
-                    <li>Vaughan Healthcare Centre Precinct</li>
-                    <li>Woodbridge & Thornhill</li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h4>Contact</h4>
-                <p>info@alicesolutionsgroup.com</p>
-                <p>(416) XXX-XXXX</p>
-                <p>Vaughan, ON, Canada</p>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2025 AliceSolutionsGroup. All rights reserved. | <a href="privacy.html">Privacy Policy</a> | <a href="terms.html">Terms of Service</a></p>
-        </div>
-    </footer>
+    <!-- Include shared footer -->
+    <div id="footer-container"></div>
 
     <!-- Analytics -->
     <script src="assets/js/analytics-tracker.js"></script>
@@ -505,6 +467,16 @@
                 }
             })
             .catch(error => console.error('Error loading navigation:', error));
+    </script>
+
+    <!-- Load shared footer -->
+    <script>
+        fetch('includes/footer.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('footer-container').innerHTML = data;
+            })
+            .catch(error => console.error('Error loading footer:', error));
     </script>
 </body>
 

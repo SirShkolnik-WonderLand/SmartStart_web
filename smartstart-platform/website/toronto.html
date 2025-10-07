@@ -153,9 +153,9 @@
                     <a href="community.html" class="cta-button secondary">Join Toronto Tech Community</a>
                 </div>
                 <div class="local-badges">
-                    <span class="local-badge">🏢 Expanding to Toronto</span>
-                    <span class="local-badge">🚀 GTA Startup Focus</span>
-                    <span class="local-badge">🔒 Cybersecurity Expertise</span>
+                    <span class="local-badge">Expanding to Toronto</span>
+                    <span class="local-badge">GTA Startup Focus</span>
+                    <span class="local-badge">Cybersecurity Expertise</span>
                 </div>
             </div>
         </section>
@@ -180,7 +180,6 @@
                     </div>
 
                     <div class="service-card">
-                        <div class="service-icon">🤖</div>
                         <h3>AI Automation for GTA Businesses</h3>
                         <p>Streamline operations with cutting-edge AI solutions. Expanding our automation services across the Greater Toronto Area.</p>
                         <ul class="service-features">
@@ -192,7 +191,6 @@
                     </div>
 
                     <div class="service-card">
-                        <div class="service-icon">📋</div>
                         <h3>Compliance Consulting Ontario</h3>
                         <p>Navigate complex regulations with confidence. Expert guidance for PIPEDA, PHIPA, and industry standards.</p>
                         <ul class="service-features">
@@ -212,7 +210,7 @@
                 <h2 class="section-title">Serving the Greater Toronto Area</h2>
                 <div class="locations-grid">
                     <div class="location-card">
-                        <h3>🏙️ Toronto Core</h3>
+                        <h3>Toronto Core</h3>
                         <p>Financial District, Entertainment District, King West</p>
                         <span class="distance">0-5 km</span>
                     </div>
@@ -241,7 +239,7 @@
                 <h2 class="section-title">Toronto Tech Community Partners</h2>
                 <div class="community-grid">
                     <div class="community-card">
-                        <h3>🚀 Startup Ecosystem</h3>
+                        <h3>Startup Ecosystem</h3>
                         <ul>
                             <li>MaRS Discovery District</li>
                             <li>Communitech (Waterloo-Toronto)</li>
@@ -251,7 +249,7 @@
                         </ul>
                     </div>
                     <div class="community-card">
-                        <h3>🎓 Academic Partners</h3>
+                        <h3>Academic Partners</h3>
                         <ul>
                             <li>University of Toronto</li>
                             <li>Ryerson University</li>
@@ -261,7 +259,7 @@
                         </ul>
                     </div>
                     <div class="community-card">
-                        <h3>🏢 Corporate Partners</h3>
+                        <h3>Corporate Partners</h3>
                         <ul>
                             <li>Toronto Board of Trade</li>
                             <li>Ontario Tech Association</li>
@@ -280,7 +278,6 @@
                 <h2 class="section-title">Our Toronto Expansion Plans</h2>
                 <div class="plans-grid">
                     <div class="plan-card">
-                        <div class="plan-icon">🎯</div>
                         <h3>Phase 1: Market Research</h3>
                         <p>Understanding Toronto's unique cybersecurity and AI needs through community engagement and market analysis.</p>
                         <ul>
@@ -291,7 +288,6 @@
                     </div>
 
                     <div class="plan-card">
-                        <div class="plan-icon">🤝</div>
                         <h3>Phase 2: Community Building</h3>
                         <p>Building relationships with Toronto's tech ecosystem through events, workshops, and networking.</p>
                         <ul>
@@ -302,7 +298,6 @@
                     </div>
 
                     <div class="plan-card">
-                        <div class="plan-icon">🚀</div>
                         <h3>Phase 3: Service Launch</h3>
                         <p>Launching dedicated Toronto services based on local market needs and community feedback.</p>
                         <ul>
@@ -385,46 +380,8 @@
     </main>
 
     <!-- Footer -->
-    <footer class="global-footer">
-        <div class="footer-content">
-            <div class="footer-section">
-                <h3>AliceSolutionsGroup</h3>
-                <p>Cybersecurity & AI solutions for Toronto's tech community</p>
-                <div class="social-links">
-                    <a href="#" aria-label="LinkedIn">LinkedIn</a>
-                    <a href="#" aria-label="Twitter">Twitter</a>
-                    <a href="#" aria-label="GitHub">GitHub</a>
-                </div>
-            </div>
-            <div class="footer-section">
-                <h4>Toronto Services</h4>
-                <ul>
-                    <li><a href="cybersecurity-compliance.html">Cybersecurity Consulting</a></li>
-                    <li><a href="automation-ai.html">AI Automation</a></li>
-                    <li><a href="advisory-audits.html">Compliance Auditing</a></li>
-                    <li><a href="teaching-training.html">Training & Certification</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h4>GTA Locations</h4>
-                <ul>
-                    <li>Toronto Financial District</li>
-                    <li>Mississauga Business Park</li>
-                    <li>Markham Tech Hub</li>
-                    <li>Vaughan Corporate Centre</li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h4>Contact</h4>
-                <p>📧 info@alicesolutionsgroup.com</p>
-                <p>📞 (416) XXX-XXXX</p>
-                <p>📍 Toronto, ON, Canada</p>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2025 AliceSolutionsGroup. All rights reserved. | <a href="privacy.html">Privacy Policy</a> | <a href="terms.html">Terms of Service</a></p>
-        </div>
-    </footer>
+    <!-- Include shared footer -->
+    <div id="footer-container"></div>
 
     <!-- Analytics -->
     <script src="assets/js/analytics-tracker.js"></script>
@@ -443,6 +400,16 @@
                 }
             })
             .catch(error => console.error('Error loading navigation:', error));
+    </script>
+
+    <!-- Load shared footer -->
+    <script>
+        fetch('includes/footer.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('footer-container').innerHTML = data;
+            })
+            .catch(error => console.error('Error loading footer:', error));
     </script>
 </body>
 

@@ -433,46 +433,8 @@
     </main>
 
     <!-- Footer -->
-    <footer class="global-footer">
-        <div class="footer-content">
-            <div class="footer-section">
-                <h3>Toronto Events</h3>
-                <p>Connecting Toronto's cybersecurity and AI community through events, workshops, and networking.</p>
-                <div class="social-links">
-                    <a href="#" aria-label="LinkedIn">LinkedIn</a>
-                    <a href="#" aria-label="Twitter">Twitter</a>
-                    <a href="#" aria-label="Meetup">Meetup</a>
-                </div>
-            </div>
-            <div class="footer-section">
-                <h4>Event Categories</h4>
-                <ul>
-                    <li><a href="#event-categories">Cybersecurity</a></li>
-                    <li><a href="#event-categories">AI & Automation</a></li>
-                    <li><a href="#event-categories">Compliance</a></li>
-                    <li><a href="#event-categories">Networking</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h4>Event Locations</h4>
-                <ul>
-                    <li>MaRS Discovery District</li>
-                    <li>Mississauga Innovation Hub</li>
-                    <li>University of Toronto</li>
-                    <li>Ryerson DMZ</li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h4>Contact</h4>
-                <p>📧 events@alicesolutionsgroup.com</p>
-                <p>📞 (416) XXX-XXXX</p>
-                <p>📍 Toronto, ON, Canada</p>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2025 AliceSolutionsGroup. All rights reserved. | <a href="privacy.html">Privacy Policy</a> | <a href="terms.html">Terms of Service</a></p>
-        </div>
-    </footer>
+    <!-- Include shared footer -->
+    <div id="footer-container"></div>
 
     <!-- Analytics -->
     <script src="assets/js/analytics-tracker.js"></script>
@@ -486,6 +448,16 @@
                 document.getElementById('navbar-container').innerHTML = data;
             })
             .catch(error => console.error('Error loading navigation:', error));
+    </script>
+
+    <!-- Load shared footer -->
+    <script>
+        fetch('includes/footer.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('footer-container').innerHTML = data;
+            })
+            .catch(error => console.error('Error loading footer:', error));
     </script>
 </body>
 </html>

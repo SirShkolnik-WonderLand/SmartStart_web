@@ -272,6 +272,7 @@ body::before {
 .services-dropdown:hover .dropdown-content,
 .smartstart-dropdown:hover .dropdown-content,
 .resources-dropdown:hover .dropdown-content,
+.locations-dropdown:hover .dropdown-content,
 .contact-dropdown:hover .dropdown-content {
     opacity: 1;
     visibility: visible;

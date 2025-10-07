@@ -183,47 +183,8 @@
     </main>
 
     <!-- Footer -->
-    <footer class="global-footer">
-        <div class="footer-content">
-            <div class="footer-section footer-brand">
-                <div class="footer-logo">
-                    <img src="assets/images/AliceSolutionsGroup-logo-owl-rabbit-fox.png" alt="AliceSolutionsGroup" class="footer-logo-image">
-                    <span>AliceSolutionsGroup</span>
-                </div>
-                <p class="footer-description">"Help people and businesses grow differently." — Cybersecurity, ISO certifications, and SmartStart venture incubator.</p>
-            </div>
-            <div class="footer-section">
-                <h3>Services</h3>
-                <ul>
-                    <li><a href="cybersecurity-compliance.html">Cybersecurity & Compliance</a></li>
-                    <li><a href="automation-ai.html">Automation & AI</a></li>
-                    <li><a href="advisory-audits.html">Advisory & Audits</a></li>
-                    <li><a href="smartstart.html">SmartStart Incubator</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h3>Company</h3>
-                <ul>
-                    <li><a href="about.html">About Us</a></li>
-                    <li><a href="community.html">Community & Mission</a></li>
-                    <li><a href="resources.html">Resources</a></li>
-                    <li><a href="contact.html">Contact</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h3>Legal</h3>
-                <ul>
-                    <li><a href="privacy.html">Privacy Policy</a></li>
-                    <li><a href="terms.html">Terms of Service</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <div class="container">
-                <p>&copy; 2025 AliceSolutionsGroup. All rights reserved. | "Help people and businesses grow differently."</p>
-            </div>
-        </div>
-    </footer>
+    <!-- Include shared footer -->
+    <div id="footer-container"></div>
 
     <script src="assets/js/components.js"></script>
     <script src="assets/js/animated-background.js"></script>
@@ -238,6 +199,16 @@
                 document.getElementById('navbar-container').innerHTML = data;
             })
             .catch(error => console.error('Error loading navigation:', error));
+    </script>
+
+    <!-- Load shared footer -->
+    <script>
+        fetch('includes/footer.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('footer-container').innerHTML = data;
+            })
+            .catch(error => console.error('Error loading footer:', error));
     </script>
 </body>
 
