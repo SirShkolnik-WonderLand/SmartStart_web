@@ -256,16 +256,16 @@ function generateLocationPage(cityKey, locationData) {
 </head>
 
 <body>
-    <!-- Navigation -->
-    <header class="header">
-        <div class="nav-container">
-            <div class="nav-brand">
-                <a href="../index.html" class="brand-link">
-                    <img src="../assets/images/AliceSolutionsGroup-logo-owl-rabbit-fox.png" alt="AliceSolutionsGroup" class="brand-logo">
-                    <span class="brand-text">AliceSolutionsGroup</span>
-                </a>
-            </div>
+    <!-- Header -->
+    <header class="global-header" id="header">
+        <div class="header-content">
+            <a href="../index.html" class="logo">
+                <img src="../assets/images/AliceSolutionsGroup-logo-owl-rabbit-fox.png" alt="AliceSolutionsGroup" class="logo-image">
+                <span>AliceSolutionsGroup</span>
+            </a>
+            <!-- Include shared navigation -->
             <div id="navbar-container"></div>
+            <button class="mobile-menu-toggle" aria-label="Toggle menu">☰</button>
         </div>
     </header>
 
@@ -427,6 +427,19 @@ function generateLocationPage(cityKey, locationData) {
             .then(data => {
                 document.getElementById('footer-container').innerHTML = data;
             });
+
+        // Initialize mobile menu toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+            const navbarContainer = document.getElementById('navbar-container');
+            
+            if (mobileMenuToggle && navbarContainer) {
+                mobileMenuToggle.addEventListener('click', function() {
+                    navbarContainer.classList.toggle('mobile-menu-open');
+                    mobileMenuToggle.classList.toggle('active');
+                });
+            }
+        });
     </script>
 </body>
 
