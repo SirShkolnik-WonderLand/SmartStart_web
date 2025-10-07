@@ -102,7 +102,7 @@ function loadAnalyticsData() {
     try {
         if (fs.existsSync(DATA_FILE)) {
             const data = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
-            
+
             // Restore Maps from arrays
             analyticsStorage.visitors = new Map(data.visitors || []);
             analyticsStorage.pageViews = data.pageViews || [];
@@ -110,7 +110,7 @@ function loadAnalyticsData() {
             analyticsStorage.uniqueUsers = new Map(data.uniqueUsers || []);
             analyticsStorage.ipAddresses = new Map(data.ipAddresses || []);
             analyticsStorage.deviceFingerprints = new Map(data.deviceFingerprints || []);
-            
+
             console.log('Analytics data loaded from file:', {
                 visitors: analyticsStorage.visitors.size,
                 pageViews: analyticsStorage.pageViews.length,
@@ -134,23 +134,23 @@ setInterval(saveAnalyticsData, 30000);
 function processAnalyticsData() {
     const now = new Date();
     const last30days = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000); // Use 30 days to include all recent data
-    
+
     console.log('Processing analytics data...');
     console.log('Total page views in storage:', analyticsStorage.pageViews.length);
     console.log('Total events in storage:', analyticsStorage.events.length);
+
+    // Use all data (no time filtering for now)
+    const recentPageViews = analyticsStorage.pageViews;
+    const recentEvents = analyticsStorage.events;
     
-    // Filter recent data (last 30 days)
-    const recentPageViews = analyticsStorage.pageViews.filter(pv => new Date(pv.timestamp) > last30days);
-    const recentEvents = analyticsStorage.events.filter(ev => new Date(ev.timestamp) > last30days);
+    console.log('All page views (no time filter):', recentPageViews.length);
+    console.log('All events (no time filter):', recentEvents.length);
     
-    console.log('Recent page views (last 30 days):', recentPageViews.length);
-    console.log('Recent events (last 30 days):', recentEvents.length);
-    
-    // Debug: show sample of recent page views
+    // Debug: show sample of page views
     if (recentPageViews.length > 0) {
-        console.log('Sample recent page view:', recentPageViews[0]);
+        console.log('Sample page view:', recentPageViews[0]);
     }
-    
+
     // Process countries
     const countryMap = new Map();
     const cityMap = new Map();
@@ -158,31 +158,31 @@ function processAnalyticsData() {
     const sourceMap = new Map();
     const deviceMap = new Map();
     const browserMap = new Map();
-    
+
     recentPageViews.forEach(pv => {
         // Countries
         if (pv.data.country) {
             countryMap.set(pv.data.country, (countryMap.get(pv.data.country) || 0) + 1);
             console.log('Processing country:', pv.data.country);
         }
-        
+
         // Cities
         if (pv.data.city) {
             cityMap.set(pv.data.city, (cityMap.get(pv.data.city) || 0) + 1);
         }
-        
+
         // Pages
         pageMap.set(pv.data.path, (pageMap.get(pv.data.path) || 0) + 1);
-        
+
         // Sources
         const source = pv.data.referrer ? new URL(pv.data.referrer).hostname : 'Direct';
         sourceMap.set(source, (sourceMap.get(source) || 0) + 1);
-        
+
         // Devices
-        const device = pv.data.userAgent.includes('Mobile') ? 'Mobile' : 
-                      pv.data.userAgent.includes('Tablet') ? 'Tablet' : 'Desktop';
+        const device = pv.data.userAgent.includes('Mobile') ? 'Mobile' :
+            pv.data.userAgent.includes('Tablet') ? 'Tablet' : 'Desktop';
         deviceMap.set(device, (deviceMap.get(device) || 0) + 1);
-        
+
         // Browsers
         let browser = 'Other';
         if (pv.data.userAgent.includes('Chrome')) browser = 'Chrome';
@@ -191,42 +191,42 @@ function processAnalyticsData() {
         else if (pv.data.userAgent.includes('Edge')) browser = 'Edge';
         browserMap.set(browser, (browserMap.get(browser) || 0) + 1);
     });
-    
+
     const totalVisitors = analyticsStorage.visitors.size;
     const totalPageViews = recentPageViews.length;
-    
+
     console.log('Total visitors:', totalVisitors);
     console.log('Total page views:', totalPageViews);
-    
+
     // Convert maps to arrays with percentages
     const countries = Array.from(countryMap.entries())
         .map(([name, count]) => ({ name, count, percentage: totalPageViews > 0 ? ((count / totalPageViews) * 100).toFixed(1) : "0.0" }))
         .sort((a, b) => b.count - a.count)
         .slice(0, 5);
-    
+
     const cities = Array.from(cityMap.entries())
         .map(([name, count]) => ({ name, count, percentage: totalPageViews > 0 ? ((count / totalPageViews) * 100).toFixed(1) : "0.0" }))
         .sort((a, b) => b.count - a.count)
         .slice(0, 5);
-    
+
     const pages = Array.from(pageMap.entries())
         .map(([name, count]) => ({ name, count, percentage: totalPageViews > 0 ? ((count / totalPageViews) * 100).toFixed(1) : "0.0" }))
         .sort((a, b) => b.count - a.count)
         .slice(0, 5);
-    
+
     const sources = Array.from(sourceMap.entries())
         .map(([name, count]) => ({ name, count, percentage: totalPageViews > 0 ? ((count / totalPageViews) * 100).toFixed(1) : "0.0" }))
         .sort((a, b) => b.count - a.count)
         .slice(0, 5);
-    
+
     const devices = Array.from(deviceMap.entries())
         .map(([name, count]) => ({ name, count, percentage: totalPageViews > 0 ? ((count / totalPageViews) * 100).toFixed(1) : "0.0" }))
         .sort((a, b) => b.count - a.count);
-    
+
     const browsers = Array.from(browserMap.entries())
         .map(([name, count]) => ({ name, count, percentage: totalPageViews > 0 ? ((count / totalPageViews) * 100).toFixed(1) : "0.0" }))
         .sort((a, b) => b.count - a.count);
-    
+
     return {
         visitors: totalVisitors,
         pageViews: totalPageViews,
@@ -267,14 +267,14 @@ app.get('/api/admin/analytics', (req, res) => {
 app.post('/api/admin/track', (req, res) => {
     try {
         const { event, data, timestamp, url } = req.body;
-        
+
         // Get client IP address
-        const clientIP = req.headers['x-forwarded-for'] || 
-                        req.headers['x-real-ip'] || 
-                        req.connection.remoteAddress || 
-                        req.socket.remoteAddress ||
-                        (req.connection.socket ? req.connection.socket.remoteAddress : null);
-        
+        const clientIP = req.headers['x-forwarded-for'] ||
+            req.headers['x-real-ip'] ||
+            req.connection.remoteAddress ||
+            req.socket.remoteAddress ||
+            (req.connection.socket ? req.connection.socket.remoteAddress : null);
+
         // Store the tracking data
         if (event === 'pageview') {
             const trackingData = {
@@ -287,9 +287,9 @@ app.post('/api/admin/track', (req, res) => {
                 timestamp,
                 url
             };
-            
+
             analyticsStorage.pageViews.push(trackingData);
-            
+
             // Track unique visitors by session
             if (data.sessionId) {
                 analyticsStorage.visitors.set(data.sessionId, {
@@ -302,7 +302,7 @@ app.post('/api/admin/track', (req, res) => {
                     fingerprint: data.fingerprint
                 });
             }
-            
+
             // Track unique users by IP + fingerprint combination
             if (data.fingerprint && clientIP) {
                 const uniqueUserKey = `${clientIP}_${data.fingerprint}`;
@@ -323,7 +323,7 @@ app.post('/api/admin/track', (req, res) => {
                     user.sessionCount += 1;
                 }
             }
-            
+
             // Track IP addresses
             if (clientIP) {
                 if (!analyticsStorage.ipAddresses.has(clientIP)) {
@@ -342,7 +342,7 @@ app.post('/api/admin/track', (req, res) => {
                     ipData.sessions.add(data.sessionId);
                 }
             }
-            
+
             // Track device fingerprints
             if (data.fingerprint) {
                 if (!analyticsStorage.deviceFingerprints.has(data.fingerprint)) {
@@ -362,7 +362,7 @@ app.post('/api/admin/track', (req, res) => {
                     deviceData.ips.add(clientIP);
                 }
             }
-            
+
         } else if (event === 'userinfo') {
             // Store detailed user information
             analyticsStorage.events.push({
@@ -387,7 +387,7 @@ app.post('/api/admin/track', (req, res) => {
                 url
             });
         }
-        
+
         // Keep only last 1000 entries to prevent memory issues
         if (analyticsStorage.pageViews.length > 1000) {
             analyticsStorage.pageViews = analyticsStorage.pageViews.slice(-1000);
@@ -395,10 +395,10 @@ app.post('/api/admin/track', (req, res) => {
         if (analyticsStorage.events.length > 1000) {
             analyticsStorage.events = analyticsStorage.events.slice(-1000);
         }
-        
+
         // Save data immediately after tracking
         saveAnalyticsData();
-        
+
         res.json({ success: true, message: 'Visit tracked' });
     } catch (error) {
         console.error('Tracking error:', error);
@@ -414,7 +414,7 @@ app.get('/api/admin/unique-users', (req, res) => {
         ips: Array.from(user.ips || []),
         sessions: Array.from(user.sessions || [])
     }));
-    
+
     res.json({
         totalUniqueUsers: analyticsStorage.uniqueUsers.size,
         uniqueUsers: uniqueUsers.slice(-50) // Last 50 unique users
@@ -427,7 +427,7 @@ app.get('/api/admin/ip-addresses', (req, res) => {
         ...data,
         sessions: Array.from(data.sessions)
     }));
-    
+
     res.json({
         totalIPs: analyticsStorage.ipAddresses.size,
         ipAddresses: ipAddresses.slice(-50) // Last 50 IP addresses
@@ -437,43 +437,43 @@ app.get('/api/admin/ip-addresses', (req, res) => {
 app.get('/api/admin/detailed-analytics', (req, res) => {
     const now = new Date();
     const last24h = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-    
+
     // Get recent activity
     const recentPageViews = analyticsStorage.pageViews.filter(pv => new Date(pv.timestamp) > last24h);
-    
+
     // Process detailed analytics
     const ipMap = new Map();
     const fingerprintMap = new Map();
     const countryMap = new Map();
     const cityMap = new Map();
-    
+
     recentPageViews.forEach(pv => {
         const ip = pv.data.clientIP;
         const fingerprint = pv.data.fingerprint;
         const country = pv.data.country;
         const city = pv.data.city;
-        
+
         // Track IPs
         if (ip) {
             ipMap.set(ip, (ipMap.get(ip) || 0) + 1);
         }
-        
+
         // Track fingerprints
         if (fingerprint) {
             fingerprintMap.set(fingerprint, (fingerprintMap.get(fingerprint) || 0) + 1);
         }
-        
+
         // Track countries
         if (country) {
             countryMap.set(country, (countryMap.get(country) || 0) + 1);
         }
-        
+
         // Track cities
         if (city) {
             cityMap.set(city, (cityMap.get(city) || 0) + 1);
         }
     });
-    
+
     res.json({
         summary: {
             totalVisitors: analyticsStorage.visitors.size,
@@ -545,7 +545,7 @@ app.get('/api/admin/core-web-vitals', (req, res) => {
         FID: coreWebVitalsEvents.filter(ev => ev.data.metric === 'FID').map(ev => ev.data.value),
         CLS: coreWebVitalsEvents.filter(ev => ev.data.metric === 'CLS').map(ev => ev.data.value)
     };
-    
+
     res.json({
         vitals: vitals,
         averages: {
@@ -560,11 +560,11 @@ app.get('/api/admin/core-web-vitals', (req, res) => {
 app.get('/api/admin/seo-metrics', (req, res) => {
     const seoEvents = analyticsStorage.events.filter(ev => ev.event === 'seo_metrics');
     const latestSeo = seoEvents[seoEvents.length - 1];
-    
+
     res.json({
         latestMetrics: latestSeo ? latestSeo.data : null,
         totalMeasurements: seoEvents.length,
-        averageLoadTime: seoEvents.length > 0 ? 
+        averageLoadTime: seoEvents.length > 0 ?
             (seoEvents.reduce((sum, ev) => sum + (ev.data.loadTime || 0), 0) / seoEvents.length).toFixed(2) : 0
     });
 });
@@ -573,7 +573,7 @@ app.get('/api/admin/user-behavior', (req, res) => {
     const mouseEvents = analyticsStorage.events.filter(ev => ev.event === 'mouse_movements');
     const focusEvents = analyticsStorage.events.filter(ev => ev.event === 'focus_event');
     const formEvents = analyticsStorage.events.filter(ev => ev.event === 'form_interaction');
-    
+
     res.json({
         mouseMovements: mouseEvents.length,
         focusEvents: focusEvents.length,
@@ -589,7 +589,7 @@ app.get('/api/admin/user-behavior', (req, res) => {
 app.get('/api/admin/performance', (req, res) => {
     const seoEvents = analyticsStorage.events.filter(ev => ev.event === 'seo_metrics');
     const coreVitalsEvents = analyticsStorage.events.filter(ev => ev.event === 'core_web_vitals');
-    
+
     const performanceData = {
         pageLoadTimes: seoEvents.map(ev => ev.data.loadTime).filter(time => time > 0),
         domContentLoaded: seoEvents.map(ev => ev.data.domContentLoaded).filter(time => time > 0),
@@ -601,25 +601,25 @@ app.get('/api/admin/performance', (req, res) => {
             CLS: coreVitalsEvents.filter(ev => ev.data.metric === 'CLS').map(ev => ev.data.value)
         }
     };
-    
+
     // Calculate averages
     const averages = {
-        pageLoadTime: performanceData.pageLoadTimes.length > 0 ? 
+        pageLoadTime: performanceData.pageLoadTimes.length > 0 ?
             (performanceData.pageLoadTimes.reduce((a, b) => a + b, 0) / performanceData.pageLoadTimes.length).toFixed(2) : 0,
-        domContentLoaded: performanceData.domContentLoaded.length > 0 ? 
+        domContentLoaded: performanceData.domContentLoaded.length > 0 ?
             (performanceData.domContentLoaded.reduce((a, b) => a + b, 0) / performanceData.domContentLoaded.length).toFixed(2) : 0,
-        firstPaint: performanceData.firstPaint.length > 0 ? 
+        firstPaint: performanceData.firstPaint.length > 0 ?
             (performanceData.firstPaint.reduce((a, b) => a + b, 0) / performanceData.firstPaint.length).toFixed(2) : 0,
-        firstContentfulPaint: performanceData.firstContentfulPaint.length > 0 ? 
+        firstContentfulPaint: performanceData.firstContentfulPaint.length > 0 ?
             (performanceData.firstContentfulPaint.reduce((a, b) => a + b, 0) / performanceData.firstContentfulPaint.length).toFixed(2) : 0,
-        LCP: performanceData.coreWebVitals.LCP.length > 0 ? 
+        LCP: performanceData.coreWebVitals.LCP.length > 0 ?
             (performanceData.coreWebVitals.LCP.reduce((a, b) => a + b, 0) / performanceData.coreWebVitals.LCP.length).toFixed(2) : 0,
-        FID: performanceData.coreWebVitals.FID.length > 0 ? 
+        FID: performanceData.coreWebVitals.FID.length > 0 ?
             (performanceData.coreWebVitals.FID.reduce((a, b) => a + b, 0) / performanceData.coreWebVitals.FID.length).toFixed(2) : 0,
-        CLS: performanceData.coreWebVitals.CLS.length > 0 ? 
+        CLS: performanceData.coreWebVitals.CLS.length > 0 ?
             (performanceData.coreWebVitals.CLS.reduce((a, b) => a + b, 0) / performanceData.coreWebVitals.CLS.length).toFixed(4) : 0
     };
-    
+
     res.json({
         performanceData,
         averages,
@@ -633,7 +633,7 @@ app.use('/api', (req, res, next) => {
     if (req.path.startsWith('/admin/')) {
         return next();
     }
-    
+
     // Proxy other API requests to backend server
     const backendUrl = `http://localhost:3344${req.originalUrl}`;
     console.log(`Proxying API request: ${req.method} ${req.originalUrl} -> ${backendUrl}`);
@@ -646,11 +646,11 @@ app.get('*', (req, res) => {
     if (req.path.startsWith('/api/')) {
         return res.status(404).json({ error: 'API endpoint not found on website server' });
     }
-    
+
     // Try to serve the specific file first
     const filePath = path.join(__dirname, 'website', req.path);
     const indexPath = path.join(__dirname, 'website', 'index.html');
-    
+
     // Check if the requested file exists
     if (require('fs').existsSync(filePath) && require('fs').statSync(filePath).isFile()) {
         res.sendFile(filePath);
@@ -663,7 +663,7 @@ app.get('*', (req, res) => {
 // Error handling middleware
 app.use((err, req, res, next) => {
     console.error('Website server error:', err);
-    res.status(500).json({ 
+    res.status(500).json({
         error: 'Internal server error',
         message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong'
     });
