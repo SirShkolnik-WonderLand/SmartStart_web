@@ -203,85 +203,17 @@ function processAnalyticsData() {
 
 // Admin Analytics API endpoints
 app.get('/api/admin/analytics', (req, res) => {
-    // Mock analytics data for development
-    const mockData = {
-        visitors: 1247,
-        pageViews: 3842,
-        avgSessionTime: 3.2,
-        countries: [
-            { name: 'Canada', count: 856, percentage: 68.7 },
-            { name: 'United States', count: 234, percentage: 18.8 },
-            { name: 'United Kingdom', count: 89, percentage: 7.1 },
-            { name: 'Germany', count: 45, percentage: 3.6 },
-            { name: 'Australia', count: 23, percentage: 1.8 }
-        ],
-        cities: [
-            { name: 'Toronto', count: 456, percentage: 36.6 },
-            { name: 'Vancouver', count: 123, percentage: 9.9 },
-            { name: 'Montreal', count: 89, percentage: 7.1 },
-            { name: 'New York', count: 67, percentage: 5.4 },
-            { name: 'London', count: 45, percentage: 3.6 }
-        ],
-        pages: [
-            { name: '/', count: 1247, percentage: 32.5 },
-            { name: '/about.html', count: 456, percentage: 11.9 },
-            { name: '/services.html', count: 389, percentage: 10.1 },
-            { name: '/smartstart.html', count: 234, percentage: 6.1 },
-            { name: '/community.html', count: 198, percentage: 5.2 }
-        ],
-        sources: [
-            { name: 'Direct', count: 567, percentage: 45.5 },
-            { name: 'Google', count: 234, percentage: 18.8 },
-            { name: 'LinkedIn', count: 123, percentage: 9.9 },
-            { name: 'Twitter', count: 89, percentage: 7.1 },
-            { name: 'Referral', count: 67, percentage: 5.4 }
-        ],
-        keywords: [
-            { name: 'cybersecurity toronto', count: 89, percentage: 7.1 },
-            { name: 'iso 27001', count: 67, percentage: 5.4 },
-            { name: 'smartstart', count: 45, percentage: 3.6 },
-            { name: 'cissp', count: 34, percentage: 2.7 },
-            { name: 'business automation', count: 23, percentage: 1.8 }
-        ],
-        referrals: [
-            { name: 'linkedin.com', count: 123, percentage: 9.9 },
-            { name: 'twitter.com', count: 89, percentage: 7.1 },
-            { name: 'github.com', count: 67, percentage: 5.4 },
-            { name: 'reddit.com', count: 45, percentage: 3.6 },
-            { name: 'medium.com', count: 34, percentage: 2.7 }
-        ],
-        devices: [
-            { name: 'Desktop', count: 789, percentage: 63.3 },
-            { name: 'Mobile', count: 345, percentage: 27.7 },
-            { name: 'Tablet', count: 113, percentage: 9.1 }
-        ],
-        browsers: [
-            { name: 'Chrome', count: 567, percentage: 45.5 },
-            { name: 'Safari', count: 234, percentage: 18.8 },
-            { name: 'Firefox', count: 123, percentage: 9.9 },
-            { name: 'Edge', count: 89, percentage: 7.1 },
-            { name: 'Other', count: 234, percentage: 18.8 }
-        ],
-        liveActivity: [
-            { action: 'Page View', page: '/', location: 'Toronto, CA', time: '2 minutes ago' },
-            { action: 'Page View', page: '/about.html', location: 'Vancouver, CA', time: '3 minutes ago' },
-            { action: 'Page View', page: '/services.html', location: 'New York, US', time: '4 minutes ago' },
-            { action: 'Page View', page: '/smartstart.html', location: 'London, UK', time: '5 minutes ago' },
-            { action: 'Page View', page: '/community.html', location: 'Montreal, CA', time: '6 minutes ago' }
-        ],
-        timestamp: new Date().toISOString()
-    };
 
-    // Use real data if available, otherwise fallback to mock data
+    // Use only real data - no mock data fallback
     const realData = processAnalyticsData();
     console.log('Real data visitors:', realData.visitors);
     console.log('Real data pageViews:', realData.pageViews);
     console.log('Analytics storage size:', analyticsStorage.visitors.size);
     console.log('Page views in storage:', analyticsStorage.pageViews.length);
-    
-    const finalData = realData.visitors > 0 ? realData : mockData;
-    console.log('Using data:', finalData === realData ? 'REAL' : 'MOCK');
-    res.json(finalData);
+
+    // Always return real data, even if empty
+    console.log('Using REAL data only - no mock data');
+    res.json(realData);
 });
 
 app.post('/api/admin/track', (req, res) => {

@@ -49,9 +49,9 @@ class AdminDashboard {
                 console.log('Analytics data loaded:', data);
                 this.updateAnalyticsData(data);
             } else {
-                console.log('Response not ok, using mock data');
-                // Fallback to mock data for development
-                this.loadMockData();
+                console.log('Response not ok, showing empty state');
+                // Show empty state instead of mock data
+                this.loadRealDataOnly();
             }
             
             // Load advanced analytics data
@@ -59,8 +59,8 @@ class AdminDashboard {
             
         } catch (error) {
             console.error('Error loading analytics data:', error);
-            console.log('Using mock data for development');
-            this.loadMockData();
+            console.log('Showing empty state - no real data available');
+            this.loadRealDataOnly();
         }
     }
 
@@ -99,76 +99,27 @@ class AdminDashboard {
         }
     }
 
-    loadMockData() {
-        // Mock data for development/demo purposes
-        const mockData = {
-            visitors: 1247,
-            pageViews: 3842,
-            avgSessionTime: 3.2,
-            countries: [
-                { name: 'Canada', count: 856, percentage: 68.7 },
-                { name: 'United States', count: 234, percentage: 18.8 },
-                { name: 'United Kingdom', count: 89, percentage: 7.1 },
-                { name: 'Germany', count: 45, percentage: 3.6 },
-                { name: 'Australia', count: 23, percentage: 1.8 }
-            ],
-            cities: [
-                { name: 'Toronto', count: 456, percentage: 36.6 },
-                { name: 'Vancouver', count: 123, percentage: 9.9 },
-                { name: 'Montreal', count: 89, percentage: 7.1 },
-                { name: 'New York', count: 67, percentage: 5.4 },
-                { name: 'London', count: 45, percentage: 3.6 }
-            ],
-            pages: [
-                { name: '/', count: 1247, percentage: 32.5 },
-                { name: '/about.html', count: 456, percentage: 11.9 },
-                { name: '/services.html', count: 389, percentage: 10.1 },
-                { name: '/smartstart.html', count: 234, percentage: 6.1 },
-                { name: '/community.html', count: 198, percentage: 5.2 }
-            ],
-            sources: [
-                { name: 'Direct', count: 567, percentage: 45.5 },
-                { name: 'Google', count: 234, percentage: 18.8 },
-                { name: 'LinkedIn', count: 123, percentage: 9.9 },
-                { name: 'Twitter', count: 89, percentage: 7.1 },
-                { name: 'Referral', count: 67, percentage: 5.4 }
-            ],
-            keywords: [
-                { name: 'cybersecurity toronto', count: 89, percentage: 7.1 },
-                { name: 'iso 27001', count: 67, percentage: 5.4 },
-                { name: 'smartstart', count: 45, percentage: 3.6 },
-                { name: 'cissp', count: 34, percentage: 2.7 },
-                { name: 'business automation', count: 23, percentage: 1.8 }
-            ],
-            referrals: [
-                { name: 'linkedin.com', count: 123, percentage: 9.9 },
-                { name: 'twitter.com', count: 89, percentage: 7.1 },
-                { name: 'github.com', count: 67, percentage: 5.4 },
-                { name: 'reddit.com', count: 45, percentage: 3.6 },
-                { name: 'medium.com', count: 34, percentage: 2.7 }
-            ],
-            devices: [
-                { name: 'Desktop', count: 789, percentage: 63.3 },
-                { name: 'Mobile', count: 345, percentage: 27.7 },
-                { name: 'Tablet', count: 113, percentage: 9.1 }
-            ],
-            browsers: [
-                { name: 'Chrome', count: 567, percentage: 45.5 },
-                { name: 'Safari', count: 234, percentage: 18.8 },
-                { name: 'Firefox', count: 123, percentage: 9.9 },
-                { name: 'Edge', count: 89, percentage: 7.1 },
-                { name: 'Other', count: 234, percentage: 18.8 }
-            ],
-            liveActivity: [
-                { action: 'Page View', page: '/', location: 'Toronto, CA', time: '2 minutes ago' },
-                { action: 'Page View', page: '/about.html', location: 'Vancouver, CA', time: '3 minutes ago' },
-                { action: 'Page View', page: '/services.html', location: 'New York, US', time: '4 minutes ago' },
-                { action: 'Page View', page: '/smartstart.html', location: 'London, UK', time: '5 minutes ago' },
-                { action: 'Page View', page: '/community.html', location: 'Montreal, CA', time: '6 minutes ago' }
-            ]
-        };
-
-        this.updateAnalyticsData(mockData);
+    loadRealDataOnly() {
+        // Only show real data - no fallback to mock data
+        console.log('No real data available - showing empty state');
+        
+        // Show empty state with real data indicators
+        this.updateAnalyticsData({
+            visitors: 0,
+            pageViews: 0,
+            avgSessionTime: 0,
+            countries: [],
+            cities: [],
+            pages: [],
+            sources: [],
+            keywords: [],
+            referrals: [],
+            devices: [],
+            browsers: [],
+            liveActivity: [],
+            timestamp: new Date().toISOString(),
+            isRealData: true
+        });
     }
 
     updateAnalyticsData(data) {
