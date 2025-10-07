@@ -836,30 +836,16 @@ main {
 /* Modern Professional Footer */
 
 .global-footer {
-    background: linear-gradient(135deg, rgba(10, 14, 19, 0.95) 0%, rgba(26, 31, 46, 0.95) 50%, rgba(37, 43, 61, 0.95) 100%);
-    backdrop-filter: blur(20px);
-    border-top: 1px solid rgba(59, 130, 246, 0.2);
+    background: #1a1f2e; /* Solid flat background */
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
     padding: 1.5rem 0 0;
     margin-top: 4rem;
     position: relative;
-    overflow: hidden;
     width: 100%;
 }
 
 
-/* Subtle background pattern */
-
-.global-footer::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.05) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(6, 182, 212, 0.05) 0%, transparent 50%);
-    pointer-events: none;
-    z-index: 1;
-}
+/* Removed background pattern for flatter design */
 
 .footer-container {
     max-width: 100%;
@@ -922,9 +908,9 @@ main {
 /* Newsletter CTA */
 
 .footer-cta {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
+    background: transparent; /* Flattened - no background */
+    border: none; /* Flattened - no border */
+    border-radius: 0; /* Flattened - no rounded corners */
     padding: 1rem;
     margin-top: 0.5rem;
 }
@@ -1093,7 +1079,7 @@ main {
 .footer-bottom {
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     padding: 1rem 0;
-    background: rgba(0, 0, 0, 0.2);
+    background: transparent; /* Flattened - no background */
     margin-top: 1rem;
 }
 

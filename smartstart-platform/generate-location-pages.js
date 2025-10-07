@@ -169,6 +169,39 @@ const locations = {
             { icon: '🏭', title: 'Industrial Areas', desc: 'Manufacturing and distribution companies requiring robust cybersecurity infrastructure.' },
             { icon: '🏪', title: 'Retail & Services', desc: 'Local businesses and service providers needing compliance and data protection.' }
         ]
+    },
+    'milton': {
+        name: 'Milton',
+        coordinates: '43.5183;-79.8774',
+        postalCode: 'L9T 2N4',
+        description: 'Let\'s discuss how we can help protect your business in Milton\'s growing community, whether you\'re in the downtown area, near the industrial zones, or anywhere in the city.',
+        businessAreas: [
+            { icon: '🏢', title: 'Downtown Milton', desc: 'Professional services, retail, and growing tech companies in Milton\'s core business district.' },
+            { icon: '🏭', title: 'Industrial Areas', desc: 'Manufacturing and distribution companies requiring robust cybersecurity infrastructure.' },
+            { icon: '🏪', title: 'Retail & Services', desc: 'Local businesses and service providers needing compliance and data protection.' }
+        ]
+    },
+    'caledon': {
+        name: 'Caledon',
+        coordinates: '43.8668;-79.8579',
+        postalCode: 'L7C 1A1',
+        description: 'Let\'s discuss how we can help protect your business in Caledon\'s diverse environment, whether you\'re in the urban areas, near the industrial zones, or anywhere in the municipality.',
+        businessAreas: [
+            { icon: '🏢', title: 'Urban Areas', desc: 'Professional services, retail, and growing tech companies in Caledon\'s urban centers.' },
+            { icon: '🏭', title: 'Industrial Areas', desc: 'Manufacturing and distribution companies requiring robust cybersecurity infrastructure.' },
+            { icon: '🏪', title: 'Retail & Services', desc: 'Local businesses and service providers needing compliance and data protection.' }
+        ]
+    },
+    'georgina': {
+        name: 'Georgina',
+        coordinates: '44.3001;-79.4333',
+        postalCode: 'L4P 1A1',
+        description: 'Let\'s discuss how we can help protect your business in Georgina\'s lakeside community, whether you\'re in the downtown area, near the waterfront, or anywhere in the municipality.',
+        businessAreas: [
+            { icon: '🏢', title: 'Downtown Georgina', desc: 'Professional services, retail, and growing tech companies in Georgina\'s core business district.' },
+            { icon: '🏭', title: 'Industrial Areas', desc: 'Manufacturing and distribution companies requiring robust cybersecurity infrastructure.' },
+            { icon: '🏪', title: 'Retail & Services', desc: 'Local businesses and service providers needing compliance and data protection.' }
+        ]
     }
 };
 
