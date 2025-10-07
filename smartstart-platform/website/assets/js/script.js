@@ -1,4 +1,20 @@
 // Professional AliceSolutionsGroup Website Scripts
+
+// Load analytics tracker on all pages
+document.addEventListener('DOMContentLoaded', function() {
+    // Load analytics tracker script if not already loaded
+    if (!document.querySelector('script[src*="analytics-tracker.js"]')) {
+        const script = document.createElement('script');
+        script.src = 'assets/js/analytics-tracker.js';
+        script.onload = function() {
+            if (typeof AnalyticsTracker !== 'undefined') {
+                window.analyticsTracker = new AnalyticsTracker();
+            }
+        };
+        document.head.appendChild(script);
+    }
+});
+
 document.addEventListener('DOMContentLoaded', function() {
     
     // Header scroll effect

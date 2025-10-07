@@ -725,11 +725,11 @@ app.use('/api', (req, res, next) => {
     next();
 });
 
-// Serve website pages
+// Serve website pages (but not API routes)
 app.get('*', (req, res) => {
-    // Check if it's an API request
+    // Skip API routes - they should be handled above
     if (req.path.startsWith('/api/')) {
-        return res.status(404).json({ error: 'API endpoint not found on website server' });
+        return res.status(404).json({ error: 'API endpoint not found' });
     }
 
     // Try to serve the specific file first
