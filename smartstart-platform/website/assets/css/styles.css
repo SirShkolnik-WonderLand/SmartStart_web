@@ -939,19 +939,19 @@ main {
     flex: 1;
     min-width: 200px;
     padding: 0.75rem 1rem;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 8px;
+    background: transparent; /* Flattened - no background */
+    border: 1px solid rgba(255, 255, 255, 0.3); /* Flattened - simple border */
+    border-radius: 0; /* Flattened - no rounded corners */
     color: var(--text-primary);
     font-size: 0.9rem;
-    transition: all 0.3s ease;
+    transition: none; /* Flattened - no transitions */
 }
 
 .newsletter-input:focus {
     outline: none;
     border-color: var(--accent-primary);
-    background: rgba(255, 255, 255, 0.15);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    background: transparent; /* Flattened - no background change */
+    box-shadow: none; /* Flattened - no shadow */
 }
 
 .newsletter-input::placeholder {
@@ -960,20 +960,21 @@ main {
 
 .newsletter-btn {
     padding: 0.75rem 1.5rem;
-    background: var(--gradient-primary);
-    border: none;
-    border-radius: 8px;
+    background: var(--accent-primary); /* Flattened - solid color instead of gradient */
+    border: 1px solid var(--accent-primary); /* Flattened - simple border */
+    border-radius: 0; /* Flattened - no rounded corners */
     color: white;
     font-weight: 600;
     font-size: 0.9rem;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: none; /* Flattened - no transitions */
     white-space: nowrap;
 }
 
 .newsletter-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+    transform: none; /* Flattened - no transform */
+    box-shadow: none; /* Flattened - no shadow */
+    background: var(--accent-secondary); /* Flattened - simple color change */
 }
 
 
@@ -1018,15 +1019,15 @@ main {
     color: var(--text-secondary);
     text-decoration: none;
     font-size: 0.9rem;
-    transition: all 0.3s ease;
+    transition: none; /* Flattened - no transitions */
     display: block;
     padding: 0.2rem 0;
 }
 
 .footer-column a:hover {
     color: var(--accent-primary);
-    transform: translateX(5px);
-    text-shadow: 0 0 8px rgba(59, 130, 246, 0.4);
+    transform: none; /* Flattened - no transform */
+    text-shadow: none; /* Flattened - no shadow */
 }
 
 
@@ -1060,17 +1061,17 @@ main {
     color: var(--text-secondary);
     text-decoration: none;
     font-size: 0.9rem;
-    transition: all 0.3s ease;
+    transition: none; /* Flattened - no transitions */
     padding: 0.5rem 0.75rem;
-    border-radius: 6px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0; /* Flattened - no rounded corners */
+    background: transparent; /* Flattened - no background */
+    border: 1px solid rgba(255, 255, 255, 0.2); /* Flattened - simple border */
 }
 
 .social-link:hover {
     color: var(--accent-primary);
-    background: rgba(59, 130, 246, 0.1);
-    transform: translateY(-2px);
+    background: transparent; /* Flattened - no background change */
+    transform: none; /* Flattened - no transform */
 }
 
 
