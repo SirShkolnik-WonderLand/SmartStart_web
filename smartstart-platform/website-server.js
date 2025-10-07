@@ -146,6 +146,11 @@ function processAnalyticsData() {
     console.log('Recent page views (last 30 days):', recentPageViews.length);
     console.log('Recent events (last 30 days):', recentEvents.length);
     
+    // Debug: show sample of recent page views
+    if (recentPageViews.length > 0) {
+        console.log('Sample recent page view:', recentPageViews[0]);
+    }
+    
     // Process countries
     const countryMap = new Map();
     const cityMap = new Map();
@@ -158,6 +163,7 @@ function processAnalyticsData() {
         // Countries
         if (pv.data.country) {
             countryMap.set(pv.data.country, (countryMap.get(pv.data.country) || 0) + 1);
+            console.log('Processing country:', pv.data.country);
         }
         
         // Cities
