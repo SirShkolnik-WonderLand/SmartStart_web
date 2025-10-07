@@ -731,11 +731,11 @@ app.get('*', (req, res) => {
     if (req.path.startsWith('/api/')) {
         return res.status(404).json({ error: 'API endpoint not found on website server' });
     }
-    
+
     // Try to serve the specific file first
     const filePath = path.join(__dirname, 'website', req.path);
     const indexPath = path.join(__dirname, 'website', 'index.html');
-    
+
     // Check if the requested file exists
     if (require('fs').existsSync(filePath) && require('fs').statSync(filePath).isFile()) {
         res.sendFile(filePath);
@@ -748,7 +748,7 @@ app.get('*', (req, res) => {
 // Error handling middleware
 app.use((err, req, res, next) => {
     console.error('Website server error:', err);
-    res.status(500).json({ 
+    res.status(500).json({
         error: 'Internal server error',
         message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong'
     });

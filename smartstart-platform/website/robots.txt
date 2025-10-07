@@ -17,6 +17,8 @@ Allow: /automation-ai.html
 Allow: /advisory-audits.html
 Allow: /smartstart.html
 Allow: /community.html
+Allow: /toronto.html
+Allow: /toronto-events.html
 Allow: /innovation.html
 Allow: /news.html
 Allow: /resources.html
