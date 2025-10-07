@@ -494,3 +494,26 @@
 .metric-value.poor {
     color: #ff4444;
 }
+
+/* Data Status Indicator */
+.data-status-indicator {
+    margin: 1rem 0;
+    text-align: center;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(135deg, #00ff88, #00cc6a);
+    color: #1e293b;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(0, 255, 136, 0.3);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
