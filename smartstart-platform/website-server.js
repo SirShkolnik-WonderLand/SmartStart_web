@@ -175,20 +175,8 @@ function processAnalyticsData() {
         cities,
         pages,
         sources,
-        keywords: [
-            { name: 'cybersecurity toronto', count: 89, percentage: 7.1 },
-            { name: 'iso 27001', count: 67, percentage: 5.4 },
-            { name: 'smartstart', count: 45, percentage: 3.6 },
-            { name: 'cissp', count: 34, percentage: 2.7 },
-            { name: 'business automation', count: 23, percentage: 1.8 }
-        ],
-        referrals: [
-            { name: 'linkedin.com', count: 123, percentage: 9.9 },
-            { name: 'twitter.com', count: 89, percentage: 7.1 },
-            { name: 'github.com', count: 67, percentage: 5.4 },
-            { name: 'reddit.com', count: 45, percentage: 3.6 },
-            { name: 'medium.com', count: 34, percentage: 2.7 }
-        ],
+        keywords: [], // Only real keyword data when available
+        referrals: [], // Only real referral data when available
         devices,
         browsers,
         liveActivity: recentPageViews.slice(-5).map(pv => ({
