@@ -12,22 +12,23 @@
     <!-- Open Graph Meta Tags -->
     <meta property="og:title" content="News & Updates — AliceSolutionsGroup">
     <meta property="og:description" content="Stay updated with the latest news and announcements from AliceSolutions Inc. including product releases, project updates, and company milestones.">
-    <meta property="og:image" content="assets/images/AliceSolutionsGroup-logo-owl-rabbit-fox.png">
-    <meta property="og:url" content="https://alicesolutionsgroup.com/news.html">
+    <meta property="og:image" content="../assets/images/AliceSolutionsGroup-logo-owl-rabbit-fox.png">
+    <meta property="og:url" content="https://alicesolutionsgroup.com/community/news.html">
     <meta property="og:type" content="website">
 
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="News & Updates — AliceSolutionsGroup">
     <meta name="twitter:description" content="Stay updated with the latest news and announcements from AliceSolutions Inc. including product releases, project updates, and company milestones.">
-    <meta name="twitter:image" content="assets/images/AliceSolutionsGroup-logo-owl-rabbit-fox.png">
+    <meta name="twitter:image" content="../assets/images/AliceSolutionsGroup-logo-owl-rabbit-fox.png">
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="icon" type="image/x-icon" href="../favicon.ico">
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
 
     <!-- Stylesheets -->
-    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="stylesheet" href="../assets/css/community-pages.css">
 
     <!-- Structured Data -->
     <script type="application/ld+json">
@@ -231,14 +232,14 @@
     <!-- Include shared footer -->
     <div id="footer-container"></div>
 
-    <script src="assets/js/components.js"></script>
-    <script src="assets/js/animated-background.js"></script>
-    <script src="assets/js/scroll-animations.js"></script>
-    <script src="assets/js/script.js"></script>
+    <script src="../assets/js/components.js"></script>
+    <script src="../assets/js/animated-background.js"></script>
+    <script src="../assets/js/scroll-animations.js"></script>
+    <script src="../assets/js/script.js"></script>
 
     <!-- Load shared navigation -->
     <script>
-        fetch('includes/navbar.html')
+        fetch('../includes/navbar.html')
             .then(response => response.text())
             .then(data => {
                 document.getElementById('navbar-container').innerHTML = data;
@@ -248,7 +249,7 @@
 
     <!-- Load shared footer -->
     <script>
-        fetch('includes/footer.html')
+        fetch('../includes/footer.html')
             .then(response => response.text())
             .then(data => {
                 document.getElementById('footer-container').innerHTML = data;

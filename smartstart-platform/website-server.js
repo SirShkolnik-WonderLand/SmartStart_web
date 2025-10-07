@@ -738,9 +738,39 @@ app.get('*', (req, res) => {
 
     // Check if the requested file exists
     if (require('fs').existsSync(filePath) && require('fs').statSync(filePath).isFile()) {
+        // Set correct MIME type based on file extension
+        if (filePath.endsWith('.css')) {
+            res.setHeader('Content-Type', 'text/css');
+        } else if (filePath.endsWith('.js')) {
+            res.setHeader('Content-Type', 'application/javascript');
+        } else if (filePath.endsWith('.wasm')) {
+            res.setHeader('Content-Type', 'application/wasm');
+        } else if (filePath.endsWith('.ico')) {
+            res.setHeader('Content-Type', 'image/x-icon');
+        } else if (filePath.endsWith('.svg')) {
+            res.setHeader('Content-Type', 'image/svg+xml');
+        } else if (filePath.endsWith('.png')) {
+            res.setHeader('Content-Type', 'image/png');
+        } else if (filePath.endsWith('.jpg') || filePath.endsWith('.jpeg')) {
+            res.setHeader('Content-Type', 'image/jpeg');
+        } else if (filePath.endsWith('.gif')) {
+            res.setHeader('Content-Type', 'image/gif');
+        } else if (filePath.endsWith('.webp')) {
+            res.setHeader('Content-Type', 'image/webp');
+        } else if (filePath.endsWith('.html')) {
+            res.setHeader('Content-Type', 'text/html');
+        } else if (filePath.endsWith('.json')) {
+            res.setHeader('Content-Type', 'application/json');
+        } else if (filePath.endsWith('.xml')) {
+            res.setHeader('Content-Type', 'application/xml');
+        } else if (filePath.endsWith('.txt')) {
+            res.setHeader('Content-Type', 'text/plain');
+        }
+
         res.sendFile(filePath);
     } else {
         // Fallback to index.html for SPA routing
+        res.setHeader('Content-Type', 'text/html');
         res.sendFile(indexPath);
     }
 });

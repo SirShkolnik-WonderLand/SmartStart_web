@@ -54,17 +54,18 @@
     </script>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="stylesheet" href="../assets/css/city-pages.css">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/x-icon" href="../favicon.ico">
 </head>
 
 <body>
     <!-- Header -->
     <header class="global-header" id="header">
         <div class="header-content">
-            <a href="index.html" class="logo">
-                <img src="assets/images/AliceSolutionsGroup-logo-owl-rabbit-fox.png" alt="AliceSolutionsGroup" class="logo-image">
+            <a href="../index.html" class="logo">
+                <img src="../assets/images/AliceSolutionsGroup-logo-owl-rabbit-fox.png" alt="AliceSolutionsGroup" class="logo-image">
                 <span>AliceSolutionsGroup</span>
             </a>
             <!-- Include shared navigation -->
@@ -102,9 +103,11 @@
                 </div>
 
                 <div class="content-text">
-                    <p><strong>North York</strong> is one of Toronto's six administrative districts, home to approximately <strong>683,511 people</strong> across <strong>176.87 km²</strong> (population density: 3,864.5 per km²). The area features North York City Centre, a high-density business district with numerous office towers along Yonge Street, plus major retail centers like Yorkdale Mall and Fairview Mall.</p>
+                    <p><strong>North York</strong> is one of Toronto's six administrative districts, home to approximately <strong>683,511 people</strong> across <strong>176.87 km²</strong> (population density: 3,864.5 per km²). The area features North York
+                        City Centre, a high-density business district with numerous office towers along Yonge Street, plus major retail centers like Yorkdale Mall and Fairview Mall.</p>
 
-                    <p>The healthcare sector is particularly prominent, with North York General Hospital and numerous medical clinics and offices throughout the area. This concentration of healthcare facilities creates specific compliance requirements around patient data protection and PHIPA regulations.</p>
+                    <p>The healthcare sector is particularly prominent, with North York General Hospital and numerous medical clinics and offices throughout the area. This concentration of healthcare facilities creates specific compliance requirements around
+                        patient data protection and PHIPA regulations.</p>
 
                     <p>North York's excellent connectivity—served by TTC subway lines (Line 1 Yonge-University, Line 4 Sheppard) and major highways (401, 404, Highway 400)—makes it a hub for businesses that need reliable, secure infrastructure.</p>
                 </div>
@@ -226,18 +229,18 @@
         <section class="section" id="our-approach">
             <div class="container">
                 <h2 class="section-title">Our Approach to North York</h2>
-                
+
                 <div class="approach-grid">
                     <div class="approach-card">
                         <h3>Understanding Local Infrastructure</h3>
                         <p>We're studying North York's unique business density and shared infrastructure challenges. Our goal is to understand how cybersecurity can protect businesses operating in high-density office environments and shared spaces.</p>
                     </div>
-                    
+
                     <div class="approach-card">
                         <h3>Healthcare Compliance Focus</h3>
                         <p>With North York General Hospital and numerous medical facilities, we're developing specialized expertise in healthcare data protection, PHIPA compliance, and medical privacy requirements.</p>
                     </div>
-                    
+
                     <div class="approach-card">
                         <h3>Community Engagement</h3>
                         <p>We're connecting with North York business associations, medical professionals, and tech meetups to understand the community's specific cybersecurity needs and challenges.</p>
@@ -266,14 +269,14 @@
     <!-- Include shared footer -->
     <div id="footer-container"></div>
 
-    <script src="assets/js/components.js"></script>
-    <script src="assets/js/animated-background.js"></script>
-    <script src="assets/js/scroll-animations.js"></script>
-    <script src="assets/js/script.js"></script>
-    
+    <script src="../assets/js/components.js"></script>
+    <script src="../assets/js/animated-background.js"></script>
+    <script src="../assets/js/scroll-animations.js"></script>
+    <script src="../assets/js/script.js"></script>
+
     <!-- Load shared navigation -->
     <script>
-        fetch('includes/navbar.html')
+        fetch('../includes/navbar.html')
             .then(response => response.text())
             .then(data => {
                 document.getElementById('navbar-container').innerHTML = data;
@@ -288,7 +291,7 @@
 
     <!-- Load shared footer -->
     <script>
-        fetch('includes/footer.html')
+        fetch('../includes/footer.html')
             .then(response => response.text())
             .then(data => {
                 document.getElementById('footer-container').innerHTML = data;

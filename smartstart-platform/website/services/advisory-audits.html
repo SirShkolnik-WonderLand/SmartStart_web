@@ -39,9 +39,10 @@
         }
     </script>
 
-    <link rel="stylesheet" href="assets/css/styles.css">
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="stylesheet" href="../assets/css/services-pages.css">
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="icon" type="image/x-icon" href="../favicon.ico">
     <link rel="shortcut icon" href="favicon.ico">
 </head>
 
@@ -49,8 +50,8 @@
     <!-- Header -->
     <header class="global-header" id="header">
         <div class="header-content">
-            <a href="index.html" class="logo">
-                <img src="assets/images/AliceSolutionsGroup-logo-owl-rabbit-fox.png" alt="AliceSolutionsGroup" class="logo-image">
+            <a href="../index.html" class="logo">
+                <img src="../assets/images/AliceSolutionsGroup-logo-owl-rabbit-fox.png" alt="AliceSolutionsGroup" class="logo-image">
                 <span>AliceSolutionsGroup</span>
             </a>
             <!-- Include shared navigation -->
@@ -342,14 +343,14 @@
     <!-- Include shared footer -->
     <div id="footer-container"></div>
 
-    <script src="assets/js/components.js"></script>
-    <script src="assets/js/animated-background.js"></script>
-    <script src="assets/js/scroll-animations.js"></script>
-    <script src="assets/js/script.js"></script>
+    <script src="../assets/js/components.js"></script>
+    <script src="../assets/js/animated-background.js"></script>
+    <script src="../assets/js/scroll-animations.js"></script>
+    <script src="../assets/js/script.js"></script>
 
     <!-- Load shared navigation -->
     <script>
-        fetch('includes/navbar.html')
+        fetch('../includes/navbar.html')
             .then(response => response.text())
             .then(data => {
                 document.getElementById('navbar-container').innerHTML = data;
@@ -359,7 +360,7 @@
 
     <!-- Load shared footer -->
     <script>
-        fetch('includes/footer.html')
+        fetch('../includes/footer.html')
             .then(response => response.text())
             .then(data => {
                 document.getElementById('footer-container').innerHTML = data;

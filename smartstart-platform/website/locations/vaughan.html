@@ -111,17 +111,18 @@
     </script>
 
     <!-- CSS -->
-    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="stylesheet" href="../assets/css/city-pages.css">
     <link rel="stylesheet" href="assets/css/wonderland-neon-theme.css">
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/x-icon" href="../favicon.ico">
 </head>
 
 <body>
     <!-- Header -->
     <header class="global-header" id="header">
         <div class="header-content">
-            <a href="index.html" class="logo">
-                <img src="assets/images/AliceSolutionsGroup-logo-owl-rabbit-fox.png" alt="AliceSolutionsGroup" class="logo-image">
+            <a href="../index.html" class="logo">
+                <img src="../assets/images/AliceSolutionsGroup-logo-owl-rabbit-fox.png" alt="AliceSolutionsGroup" class="logo-image">
                 <span>AliceSolutionsGroup</span>
             </a>
             <!-- Include shared navigation -->
@@ -134,11 +135,12 @@
     <main id="main-content">
         <section class="hero">
             <div class="hero-content">
-                <h1 class="hero-title">Vaughan SmartStart: <span class="underline">People-Powered Innovation</span></h1>
-                <p class="hero-tagline">Supporting Vaughan's smart city momentum with cybersecurity, AI governance, and community-powered innovation. Building trustworthy, resilient infrastructure for healthtech, ICT, and municipal systems.</p>
+                <h1 class="hero-title">Cybersecurity & CISO Services for <span class="underline">Vaughan's Smart City</span></h1>
+                <p class="hero-tagline">Vaughan is pioneering smart city initiatives with ISO 37122 certification, smart hospital development, and 1,200+ ICT companies. As the city becomes more connected, Vaughan businesses need expert CISO guidance to protect infrastructure
+                    and citizen data.</p>
                 <div class="hero-buttons">
-                    <a href="#join-movement" class="cta-button primary smart-glow">Join the SmartStart Movement</a>
-                    <a href="#programs" class="cta-button secondary">View Programs</a>
+                    <a href="../contact.html" class="cta-button primary smart-glow">Get Vaughan Consultation</a>
+                    <a href="../community/community.html" class="cta-button secondary">Join SmartStart Community</a>
                 </div>
                 <div class="local-badges">
                     <span class="local-badge">Smart Hospital</span>
@@ -315,18 +317,18 @@
         <section class="section" id="our-approach">
             <div class="container">
                 <h2 class="section-title">Our Approach to Vaughan</h2>
-                
+
                 <div class="approach-grid">
                     <div class="approach-card">
                         <h3>Understanding Smart City Needs</h3>
                         <p>We're studying Vaughan's smart city initiatives, from the Cortellucci Vaughan Hospital to the Healthcare Centre Precinct, to understand where cybersecurity and AI governance can support these innovations.</p>
                     </div>
-                    
+
                     <div class="approach-card">
                         <h3>Building Local Partnerships</h3>
                         <p>We're connecting with ventureLAB, local ICT companies, and municipal teams to understand Vaughan's unique challenges and opportunities in smart city development.</p>
                     </div>
-                    
+
                     <div class="approach-card">
                         <h3>Developing Solutions</h3>
                         <p>Based on our research, we're developing cybersecurity and AI governance frameworks that can support Vaughan's smart city and healthtech initiatives.</p>
@@ -390,19 +392,19 @@
                         <p>Share your smart city and healthtech cybersecurity challenges with us</p>
                         <a href="contact.html" class="cta-button primary">Request Consultation</a>
                     </div>
-                    
+
                     <div class="cta-card">
                         <h3>Municipal & Health Teams</h3>
                         <p>Connect with us to explore cybersecurity and AI governance solutions</p>
                         <a href="contact.html" class="cta-button secondary">Connect</a>
                     </div>
-                    
+
                     <div class="cta-card">
                         <h3>Community Members</h3>
                         <p>Help us understand Vaughan's smart city needs and priorities</p>
                         <a href="contact.html" class="cta-button secondary">Get Involved</a>
                     </div>
-                    
+
                     <div class="cta-card">
                         <h3>Local Organizations</h3>
                         <p>Explore potential collaboration opportunities in smart city development</p>
@@ -451,12 +453,12 @@
     <div id="footer-container"></div>
 
     <!-- Analytics -->
-    <script src="assets/js/analytics-tracker.js"></script>
-    <script src="assets/js/script.js"></script>
-    
+    <script src="../assets/js/analytics-tracker.js"></script>
+    <script src="../assets/js/script.js"></script>
+
     <!-- Load shared navigation -->
     <script>
-        fetch('includes/navbar.html')
+        fetch('../includes/navbar.html')
             .then(response => response.text())
             .then(data => {
                 document.getElementById('navbar-container').innerHTML = data;
@@ -471,7 +473,7 @@
 
     <!-- Load shared footer -->
     <script>
-        fetch('includes/footer.html')
+        fetch('../includes/footer.html')
             .then(response => response.text())
             .then(data => {
                 document.getElementById('footer-container').innerHTML = data;

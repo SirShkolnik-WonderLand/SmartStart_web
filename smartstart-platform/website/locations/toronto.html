@@ -123,17 +123,17 @@
     </script>
 
     <!-- CSS -->
-    <link rel="stylesheet" href="assets/css/styles.css">
-    <link rel="stylesheet" href="assets/css/wonderland-neon-theme.css">
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="stylesheet" href="../assets/css/city-pages.css">
+    <link rel="icon" type="image/x-icon" href="../favicon.ico">
 </head>
 
 <body>
     <!-- Header -->
     <header class="global-header" id="header">
         <div class="header-content">
-            <a href="index.html" class="logo">
-                <img src="assets/images/AliceSolutionsGroup-logo-owl-rabbit-fox.png" alt="AliceSolutionsGroup" class="logo-image">
+            <a href="../index.html" class="logo">
+                <img src="../assets/images/AliceSolutionsGroup-logo-owl-rabbit-fox.png" alt="AliceSolutionsGroup" class="logo-image">
                 <span>AliceSolutionsGroup</span>
             </a>
             <!-- Include shared navigation -->
@@ -146,16 +146,47 @@
     <main id="main-content">
         <section class="hero">
             <div class="hero-content">
-                <h1 class="hero-title">Expanding Cybersecurity & AI Services to <span class="underline">Toronto & GTA</span></h1>
-                <p class="hero-tagline">Building our presence in Ontario's thriving startup ecosystem</p>
+                <h1 class="hero-title">Cybersecurity & CISO Services for <span class="underline">Toronto's Business Hub</span></h1>
+                <p class="hero-tagline">Toronto is Canada's largest business center with 2.9M people and 200,000+ businesses. As the financial capital and tech hub, Toronto companies face sophisticated cyber threats that require expert CISO guidance.</p>
                 <div class="hero-buttons">
                     <a href="contact.html" class="cta-button primary smart-glow">Get Toronto Consultation</a>
                     <a href="community.html" class="cta-button secondary">Join Toronto Tech Community</a>
                 </div>
                 <div class="local-badges">
-                    <span class="local-badge">Expanding to Toronto</span>
-                    <span class="local-badge">GTA Startup Focus</span>
-                    <span class="local-badge">Cybersecurity Expertise</span>
+                    <span class="local-badge">2.9M Population</span>
+                    <span class="local-badge">200,000+ Businesses</span>
+                    <span class="local-badge">Financial Capital</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Trust & Credibility Section -->
+        <section class="section" id="trust-credibility">
+            <div class="container">
+                <h2 class="section-title">Why Toronto Businesses Trust AliceSolutionsGroup</h2>
+                <p class="section-subtitle">Real expertise, proven results, community-focused approach</p>
+
+                <div class="credibility-grid">
+                    <div class="credibility-card">
+                        <h3>About Udi Shkolnik</h3>
+                        <p><strong>CISO-as-a-Service & Cybersecurity Expert</strong></p>
+                        <ul>
+                            <li>15+ years in IT and cybersecurity</li>
+                            <li><strong>CISSP, CISM, ISO 27001 Lead Auditor</strong> certified</li>
+                            <li>Performed ISO 27001, 9001, and 27799 audits for companies in Canada and Israel</li>
+                            <li>CEO & CTO of LGM, saving ~$150K per month in inefficiencies</li>
+                            <li>Founder of AliceSolutions Group: "Help people and businesses grow differently"</li>
+                        </ul>
+                    </div>
+                    <div class="credibility-card">
+                        <h3>Proven Track Record</h3>
+                        <ul>
+                            <li>✅ Secured healthcare, finance, logistics, and startup companies</li>
+                            <li>✅ Built and scaled multiple SaaS products (Trakkit, Syncary, SmartStart Hub)</li>
+                            <li>✅ Integrated IT, cybersecurity, and business operations for real-world impact</li>
+                            <li>✅ Community builder focused on practical, affordable security guidance</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </section>
@@ -384,12 +415,12 @@
     <div id="footer-container"></div>
 
     <!-- Analytics -->
-    <script src="assets/js/analytics-tracker.js"></script>
-    <script src="assets/js/script.js"></script>
-    
+    <script src="../assets/js/analytics-tracker.js"></script>
+    <script src="../assets/js/script.js"></script>
+
     <!-- Load shared navigation -->
     <script>
-        fetch('includes/navbar.html')
+        fetch('../includes/navbar.html')
             .then(response => response.text())
             .then(data => {
                 document.getElementById('navbar-container').innerHTML = data;
@@ -404,7 +435,7 @@
 
     <!-- Load shared footer -->
     <script>
-        fetch('includes/footer.html')
+        fetch('../includes/footer.html')
             .then(response => response.text())
             .then(data => {
                 document.getElementById('footer-container').innerHTML = data;

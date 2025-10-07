@@ -13,7 +13,7 @@ class AnalyticsTracker {
         this.trackUserInfo();
         this.trackCoreWebVitals();
         this.trackUserBehavior();
-        
+
         // Track SEO metrics after page load
         setTimeout(() => {
             this.trackSEOMetrics();
@@ -84,9 +84,12 @@ class AnalyticsTracker {
             fingerprint: this.generateDeviceFingerprint()
         };
 
-        // Get IP and location info
+        // Get IP and location info (with error handling)
         fetch('https://ipapi.co/json/')
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) throw new Error('Location API unavailable');
+                return response.json();
+            })
             .then(data => {
                 userInfo.ip = data.ip;
                 userInfo.country = data.country_name;
@@ -99,11 +102,11 @@ class AnalyticsTracker {
                 userInfo.postal = data.postal;
                 userInfo.latitude = data.latitude;
                 userInfo.longitude = data.longitude;
-                
+
                 this.sendAnalytics('userinfo', userInfo);
             })
             .catch(error => {
-                console.log('Could not fetch location data:', error);
+                console.debug('Location data unavailable in development mode');
                 // Still send basic info without IP
                 this.sendAnalytics('userinfo', userInfo);
             });
@@ -116,7 +119,7 @@ class AnalyticsTracker {
         ctx.textBaseline = 'top';
         ctx.font = '14px Arial';
         ctx.fillText('Device fingerprint', 2, 2);
-        
+
         const fingerprint = {
             canvas: canvas.toDataURL(),
             screen: `${screen.width}x${screen.height}x${screen.colorDepth}`,
@@ -127,7 +130,7 @@ class AnalyticsTracker {
             hardware: navigator.hardwareConcurrency || 'unknown',
             memory: navigator.deviceMemory || 'unknown'
         };
-        
+
         // Create hash of fingerprint
         return btoa(JSON.stringify(fingerprint)).substring(0, 16);
     }
@@ -139,7 +142,7 @@ class AnalyticsTracker {
             if (target.matches('a[href], button, .cta-button, .nav-link')) {
                 this.trackEvent('click', {
                     element: target.tagName,
-                    text: target.textContent?.trim(),
+                    text: target.textContent ? target.textContent.trim() : '',
                     href: target.href,
                     className: target.className,
                     sessionId: this.sessionId,
@@ -200,13 +203,18 @@ class AnalyticsTracker {
             };
 
             // Send to your analytics endpoint
-            await fetch('/api/admin/track', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(payload)
-            });
+            try {
+                await fetch('/api/admin/track', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload)
+                });
+            } catch (error) {
+                // Silently handle analytics errors in development
+                console.debug('Analytics tracking disabled in development mode');
+            }
 
             // Also send to Google Analytics if available
             if (typeof gtag !== 'undefined') {
@@ -222,7 +230,7 @@ class AnalyticsTracker {
     trackSEOMetrics() {
         const seoData = {
             pageTitle: document.title,
-            metaDescription: document.querySelector('meta[name="description"]')?.content,
+            metaDescription: document.querySelector('meta[name="description"]') ? .content,
             h1Count: document.querySelectorAll('h1').length,
             h2Count: document.querySelectorAll('h2').length,
             h3Count: document.querySelectorAll('h3').length,
@@ -233,8 +241,8 @@ class AnalyticsTracker {
             wordCount: document.body.textContent.split(/\s+/).length,
             loadTime: performance.timing.loadEventEnd - performance.timing.navigationStart,
             domContentLoaded: performance.timing.domContentLoadedEventEnd - performance.timing.navigationStart,
-            firstPaint: performance.getEntriesByType('paint').find(entry => entry.name === 'first-paint')?.startTime || 0,
-            firstContentfulPaint: performance.getEntriesByType('paint').find(entry => entry.name === 'first-contentful-paint')?.startTime || 0,
+            firstPaint: performance.getEntriesByType('paint').find(entry => entry.name === 'first-paint') ? .startTime || 0,
+            firstContentfulPaint: performance.getEntriesByType('paint').find(entry => entry.name === 'first-contentful-paint') ? .startTime || 0,
             sessionId: this.sessionId,
             timestamp: new Date().toISOString()
         };
@@ -291,7 +299,7 @@ class AnalyticsTracker {
         // Mouse movement heatmap data
         let mouseMovements = [];
         let lastMouseTime = Date.now();
-        
+
         document.addEventListener('mousemove', (e) => {
             const now = Date.now();
             if (now - lastMouseTime > 100) { // Throttle to every 100ms
@@ -365,7 +373,7 @@ class AnalyticsTracker {
 // Initialize analytics when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     window.analyticsTracker = new AnalyticsTracker();
-    
+
     // Track SEO metrics after page load
     setTimeout(() => {
         window.analyticsTracker.trackSEOMetrics();
