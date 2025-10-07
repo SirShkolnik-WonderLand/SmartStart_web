@@ -270,20 +270,20 @@ function generateLocationPage(cityKey, locationData) {
     </header>
 
     <!-- Hero Section -->
-    <section class="hero-section">
-        <div class="hero-content">
-            <h1 class="hero-title">Ready to Secure Your <span class="gradient-text">${cityName} Business</span>?</h1>
-            <p class="hero-description">${description}</p>
-            <div class="hero-actions">
-                <a href="#consultation" class="btn btn-primary">Get ${cityName} Consultation</a>
-                <a href="../services/cybersecurity-compliance.html" class="btn btn-secondary">View Security Services</a>
+    <section class="hero-section" style="padding-top: 100px; min-height: 80vh; display: flex; align-items: center;">
+        <div class="hero-content" style="max-width: 900px; margin: 0 auto; padding: 0 2rem; text-align: center;">
+            <h1 class="hero-title" style="font-size: clamp(2.5rem, 6vw, 4rem); font-weight: 700; line-height: 1.1; margin-bottom: 1.5rem; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Ready to Secure Your <span class="gradient-text">${cityName} Business</span>?</h1>
+            <p class="hero-description" style="font-size: clamp(1.2rem, 3vw, 1.8rem); font-weight: 500; color: #cbd5e1; margin-bottom: 2rem; line-height: 1.4;">${description}</p>
+            <div class="hero-actions" style="display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; margin-bottom: 2rem;">
+                <a href="#consultation" class="btn btn-primary" style="padding: 1rem 2rem; background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: 600; transition: all 0.3s ease;">Get ${cityName} Consultation</a>
+                <a href="../services/cybersecurity-compliance.html" class="btn btn-secondary" style="padding: 1rem 2rem; background: transparent; color: #3b82f6; text-decoration: none; border: 2px solid #3b82f6; border-radius: 8px; font-weight: 600; transition: all 0.3s ease;">View Security Services</a>
             </div>
         </div>
     </section>
 
     <!-- Local Business Section -->
-    <section class="local-business-section">
-        <div class="container">
+    <section class="local-business-section" style="padding: 4rem 0;">
+        <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
             <div class="section-header">
                 <h2>Serving ${cityName}'s Business Community</h2>
                 <p>From the ${cityName} business district to the surrounding areas, we understand the unique cybersecurity needs of ${cityName} businesses.</p>
@@ -302,8 +302,8 @@ function generateLocationPage(cityKey, locationData) {
     </section>
 
     <!-- Services Section -->
-    <section class="services-section">
-        <div class="container">
+    <section class="services-section" style="padding: 4rem 0;">
+        <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
             <div class="section-header">
                 <h2>Cybersecurity Services for ${cityName}</h2>
                 <p>Comprehensive security solutions tailored to ${cityName}'s business landscape.</p>
@@ -345,8 +345,8 @@ function generateLocationPage(cityKey, locationData) {
     </section>
 
     <!-- Local Expertise Section -->
-    <section class="expertise-section">
-        <div class="container">
+    <section class="expertise-section" style="padding: 4rem 0;">
+        <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
             <div class="expertise-content">
                 <div class="expertise-text">
                     <h2>Why Choose AliceSolutionsGroup for ${cityName}?</h2>
@@ -395,8 +395,8 @@ function generateLocationPage(cityKey, locationData) {
     </section>
 
     <!-- CTA Section -->
-    <section id="consultation" class="cta-section">
-        <div class="container">
+    <section id="consultation" class="cta-section" style="padding: 4rem 0;">
+        <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
             <div class="cta-content">
                 <h2>Ready to Secure Your ${cityName} Business?</h2>
                 <p>Contact us today for a free consultation and discover how we can help protect your business.</p>
