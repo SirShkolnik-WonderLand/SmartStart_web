@@ -22,54 +22,8 @@
                 <img src="assets/images/AliceSolutionsGroup-logo-owl-rabbit-fox.png" alt="AliceSolutionsGroup" class="logo-image">
                 <span>AliceSolutionsGroup</span>
             </a>
-            <nav>
-                <ul class="nav-menu">
-                    <li class="nav-item about-dropdown">
-                        <a href="about.html" class="nav-link">About</a>
-                        <div class="dropdown-content">
-                            <a href="about.html" class="dropdown-link">Our Story</a>
-                            <a href="about.html#founder" class="dropdown-link">Founder</a>
-                            <a href="about.html#vision-mission" class="dropdown-link">Vision & Mission</a>
-                            <a href="about.html#governance" class="dropdown-link">Governance</a>
-                        </div>
-                    </li>
-                    <li class="nav-item services-dropdown">
-                        <a href="services.html" class="nav-link">Services</a>
-                        <div class="dropdown-content">
-                            <a href="cybersecurity-compliance.html" class="dropdown-link">Cybersecurity & Compliance</a>
-                            <a href="automation-ai.html" class="dropdown-link">Automation & AI</a>
-                            <a href="advisory-audits.html" class="dropdown-link">Advisory & Audits</a>
-                            <a href="teaching-training.html" class="dropdown-link">Teaching & Training</a>
-                        </div>
-                    </li>
-                    <li class="nav-item smartstart-dropdown">
-                        <a href="smartstart.html" class="nav-link">SmartStart</a>
-                        <div class="dropdown-content">
-                            <a href="smartstart.html" class="dropdown-link">SmartStart Platform</a>
-                            <a href="community.html" class="dropdown-link">SmartStart Community</a>
-                            <a href="impact-metrics.html" class="dropdown-link">Impact & Metrics</a>
-                            <a href="community.html#request-support" class="dropdown-link">Request Support</a>
-                        </div>
-                    </li>
-                    <li class="nav-item resources-dropdown">
-                        <a href="resources.html" class="nav-link">Resources</a>
-                        <div class="dropdown-content">
-                            <a href="resources.html#templates" class="dropdown-link">Templates</a>
-                            <a href="resources.html#case-studies" class="dropdown-link">Case Studies</a>
-                            <a href="resources.html#learning" class="dropdown-link">Learning</a>
-                        </div>
-                    </li>
-                    <li class="nav-item contact-dropdown">
-                        <a href="contact.html" class="nav-link">Contact</a>
-                        <div class="dropdown-content">
-                            <a href="contact.html#consultation" class="dropdown-link">Book Consultation</a>
-                            <a href="community.html#request-support" class="dropdown-link">Request Support</a>
-                            <a href="contact.html#general" class="dropdown-link">General Inquiries</a>
-                            <a href="contact.html#service-area" class="dropdown-link">Service Area</a>
-                        </div>
-                    </li>
-                </ul>
-            </nav>
+            <!-- Include shared navigation -->
+            <div id="navbar-container"></div>
             <button class="mobile-menu-toggle" aria-label="Toggle menu">☰</button>
         </div>
     </header>
@@ -269,6 +223,16 @@
     <script src="assets/js/animated-background.js"></script>
     <script src="assets/js/scroll-animations.js"></script>
     <script src="assets/js/script.js"></script>
+
+    <!-- Load shared navigation -->
+    <script>
+        fetch('includes/navbar.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('navbar-container').innerHTML = data;
+            })
+            .catch(error => console.error('Error loading navigation:', error));
+    </script>
 </body>
 
 </html>
