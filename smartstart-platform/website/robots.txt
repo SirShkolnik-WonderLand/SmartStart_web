@@ -1,36 +1,6 @@
 User-agent: *
-Allow: /
-
-# Sitemap
-Sitemap: https://alicesolutionsgroup.com/sitemap.xml
-
-# Disallow admin or private areas (if any)
 Disallow: /admin/
 Disallow: /private/
 Disallow: /temp/
 
-# Allow all main pages
-Allow: /about.html
-Allow: /services.html
-Allow: /cybersecurity-compliance.html
-Allow: /automation-ai.html
-Allow: /advisory-audits.html
-Allow: /smartstart.html
-Allow: /community.html
-Allow: /toronto.html
-Allow: /toronto-events.html
-Allow: /mississauga.html
-Allow: /vaughan.html
-Allow: /innovation.html
-Allow: /news.html
-Allow: /resources.html
-Allow: /contact.html
-Allow: /privacy.html
-Allow: /terms.html
-Allow: /security.html
-
-# Allow assets
-Allow: /assets/
-Allow: /assets/css/
-Allow: /assets/js/
-Allow: /assets/images/
+Sitemap: https://alicesolutionsgroup.com/sitemap.xml

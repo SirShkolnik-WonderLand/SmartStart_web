@@ -264,18 +264,21 @@ class AnalyticsTracker {
             });
         }).observe({ entryTypes: ['largest-contentful-paint'] });
 
-        // First Input Delay (FID)
+        // Interaction to Next Paint (INP) - replaced FID on March 12, 2024
+        // Target: INP < 200ms
         new PerformanceObserver((entryList) => {
             const entries = entryList.getEntries();
             entries.forEach(entry => {
+                // INP measures responsiveness - time from user interaction to next paint
+                const inpValue = entry.processingStart - entry.startTime + entry.duration;
                 this.sendAnalytics('core_web_vitals', {
-                    metric: 'FID',
-                    value: entry.processingStart - entry.startTime,
+                    metric: 'INP',
+                    value: inpValue,
                     sessionId: this.sessionId,
                     timestamp: new Date().toISOString()
                 });
             });
-        }).observe({ entryTypes: ['first-input'] });
+        }).observe({ type: 'event', buffered: true, durationThreshold: 40 });
 
         // Cumulative Layout Shift (CLS)
         let clsValue = 0;
