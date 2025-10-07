@@ -19,6 +19,8 @@ Allow: /smartstart.html
 Allow: /community.html
 Allow: /toronto.html
 Allow: /toronto-events.html
+Allow: /mississauga.html
+Allow: /vaughan.html
 Allow: /innovation.html
 Allow: /news.html
 Allow: /resources.html

@@ -81,6 +81,22 @@
         <priority>0.8</priority>
     </url>
 
+    <!-- Mississauga Local SEO Page -->
+    <url>
+        <loc>https://alicesolutionsgroup.com/mississauga.html</loc>
+        <lastmod>2025-01-15</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+
+    <!-- Vaughan Local SEO Page -->
+    <url>
+        <loc>https://alicesolutionsgroup.com/vaughan.html</loc>
+        <lastmod>2025-01-15</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+
     <!-- Innovation -->
     <url>
         <loc>https://alicesolutionsgroup.com/innovation.html</loc>
