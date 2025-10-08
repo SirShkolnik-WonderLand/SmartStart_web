@@ -1,6 +1,17 @@
 User-agent: *
+Disallow: /admin.html
 Disallow: /admin/
 Disallow: /private/
 Disallow: /temp/
+Disallow: /assets/js/analytics-tracker.js
+Disallow: /api/
+Disallow: /bookings/
+Allow: /assets/css/
+Allow: /assets/images/
+Allow: /assets/icons/
 
+# Sitemap
 Sitemap: https://alicesolutionsgroup.com/sitemap.xml
+
+# Crawl delay for respectful crawling
+Crawl-delay: 1

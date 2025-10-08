@@ -65,7 +65,7 @@
 
     <!-- CSS -->
     <link rel="stylesheet" href="../assets/css/styles.css">
-    <link rel="stylesheet" href="../assets/css/city-pages.css">
+    
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -236,18 +236,11 @@
     <script src="../assets/js/load-components.js"></script>
     <script src="../assets/js/script.js"></script>
     <script>
-        // Initialize mobile menu toggle
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', () => {
             loadNavbar();
             loadFooter();
-            const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
-            const navbarContainer = document.getElementById('navbar-container');
-
-            if (mobileMenuToggle && navbarContainer) {
-                mobileMenuToggle.addEventListener('click', function() {
-                    navbarContainer.classList.toggle('mobile-menu-open');
-                    mobileMenuToggle.classList.toggle('active');
-                });
+        });
+    </script>
             }
         });
     </script>

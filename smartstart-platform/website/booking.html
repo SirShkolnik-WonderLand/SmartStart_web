@@ -4,282 +4,871 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Book Training Session Toronto | AliceSolutionsGroup</title>
-    <meta name="description" content="Book professional cybersecurity training sessions with certified instructors. CISSP, CISM, ISO 27001, and corporate training available across Toronto and GTA.">
+    <title>Book Free 15-Min Consultation | AliceSolutionsGroup</title>
+    <meta name="description" content="Book a free 15-minute cybersecurity consultation with a CISSP/CISM/ISO Lead Auditor. Quick assessment and guidance for your organization.">
+    <meta name="keywords" content="free cybersecurity consultation, CISSP consultation, ISO audit consultation, Toronto, GTA">
+    <meta name="author" content="Udi Shkolnik, AliceSolutionsGroup">
     <meta name="robots" content="index, follow">
 
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://alicesolutionsgroup.com/booking.html">
+    <meta property="og:title" content="Book Free 15-Min Consultation | AliceSolutionsGroup">
+    <meta property="og:description" content="Book a free 15-minute cybersecurity consultation with a CISSP/CISM/ISO Lead Auditor.">
+    <meta property="og:image" content="https://alicesolutionsgroup.com/assets/images/SmartStart-logo-with-slogan-full.png">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Book Free 15-Min Consultation | AliceSolutionsGroup">
+    <meta name="twitter:description" content="Book a free 15-minute cybersecurity consultation with a CISSP/CISM/ISO Lead Auditor.">
+    <meta name="twitter:image" content="https://alicesolutionsgroup.com/assets/images/SmartStart-logo-with-slogan-full.png">
+
+    <!-- Canonical URL -->
     <link rel="canonical" href="https://alicesolutionsgroup.com/booking.html">
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+
+    <!-- CSS -->
     <link rel="stylesheet" href="assets/css/styles.css">
     <link rel="stylesheet" href="assets/css/footer-lean.css">
+    <link rel="stylesheet" href="assets/css/main-pages.css">
     <link rel="stylesheet" href="assets/css/booking.css">
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Roboto+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <!-- Schema.org Markup -->
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "LocalBusiness",
+            "name": "AliceSolutionsGroup",
+            "areaServed": ["Toronto", "Ontario", "GTA"],
+            "address": {
+                "@type": "PostalAddress",
+                "addressLocality": "Toronto",
+                "addressRegion": "ON",
+                "addressCountry": "CA"
+            },
+            "url": "https://alicesolutionsgroup.com",
+            "telephone": "+1-XXX-XXX-XXXX",
+            "sameAs": ["https://www.linkedin.com/in/udishkolnik"]
+        }
+    </script>
 </head>
 
 <body>
     <!-- Header -->
     <div id="header"></div>
 
-    <!-- Main Content -->
-    <main id="main-content">
-        <!-- Hero Section -->
-        <section class="hero-section">
-            <div class="container">
-                <h1 class="hero-title">Book Your <span class="underline">Training Session</span></h1>
-                <p class="hero-subtitle">Professional cybersecurity training with certified instructors across Toronto and GTA</p>
+    <!-- Main Booking Section -->
+    <section class="section" style="padding: 2rem 0; min-height: 100vh; background: var(--bg-primary);">
+        <div class="container" style="max-width: 900px; margin: 0 auto; padding: 0 2rem;">
+
+            <!-- Page Title -->
+            <div class="section-header" style="text-align: center; margin-bottom: 3rem;">
+                <h1 class="section-title" style="font-size: 2.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1rem;">
+                    Book Free 15-Min Consultation
+                </h1>
+                <p class="section-subtitle" style="font-size: 1.2rem; color: var(--text-secondary);">
+                    Quick cybersecurity assessment with a CISSP, CISM, and ISO 27001 Lead Auditor
+                </p>
+                <p style="color: #94a3b8; font-size: 1rem; margin-top: 1rem; font-style: italic;">
+                    Note: This is a free consultation to understand your needs. No promises or guarantees are made.
+                </p>
             </div>
-        </section>
 
-        <!-- Booking Form Section -->
-        <section class="booking-section">
-            <div class="container">
-                <div class="booking-container">
-                    <!-- Service Selection -->
-                    <div class="booking-step active" id="step-1">
-                        <h2>Select Training Service</h2>
-                        <div class="service-grid">
-                            <div class="service-card" data-service="cissp">
-                                <div class="service-icon">🏆</div>
-                                <h3>CISSP Training</h3>
-                                <p>Comprehensive CISSP preparation courses</p>
-                                <div class="service-tags">
-                                    <span class="tag">Certified Instructor</span>
-                                    <span class="tag">8 Domains</span>
-                                </div>
-                                <div class="service-price">$2,500 CAD</div>
-                            </div>
-
-                            <div class="service-card" data-service="cism">
-                                <div class="service-icon">🛡️</div>
-                                <h3>CISM Training</h3>
-                                <p>Information Security Management training</p>
-                                <div class="service-tags">
-                                    <span class="tag">Governance Focus</span>
-                                    <span class="tag">Risk Management</span>
-                                </div>
-                                <div class="service-price">$2,200 CAD</div>
-                            </div>
-
-                            <div class="service-card" data-service="iso27001">
-                                <div class="service-icon">📋</div>
-                                <h3>ISO 27001 Lead Auditor</h3>
-                                <p>ISO 27001 Lead Auditor certification training</p>
-                                <div class="service-tags">
-                                    <span class="tag">Audit Methodology</span>
-                                    <span class="tag">Compliance Focus</span>
-                                </div>
-                                <div class="service-price">$2,800 CAD</div>
-                            </div>
-
-                            <div class="service-card" data-service="corporate">
-                                <div class="service-icon">🏢</div>
-                                <h3>Corporate Security Awareness</h3>
-                                <p>Tailored security awareness programs</p>
-                                <div class="service-tags">
-                                    <span class="tag">Customized Content</span>
-                                    <span class="tag">Interactive Sessions</span>
-                                </div>
-                                <div class="service-price">Custom Quote</div>
-                            </div>
-
-                            <div class="service-card" data-service="privacy">
-                                <div class="service-icon">🔒</div>
-                                <h3>PHIPA/PIPEDA Privacy Training</h3>
-                                <p>Specialized privacy training for organizations</p>
-                                <div class="service-tags">
-                                    <span class="tag">PHIPA Training</span>
-                                    <span class="tag">PIPEDA Compliance</span>
-                                </div>
-                                <div class="service-price">$1,800 CAD</div>
-                            </div>
-
-                            <div class="service-card" data-service="tabletop">
-                                <div class="service-icon">🎯</div>
-                                <h3>Executive Tabletop Exercises</h3>
-                                <p>Incident simulation exercises for executive teams</p>
-                                <div class="service-tags">
-                                    <span class="tag">Executive Focus</span>
-                                    <span class="tag">Incident Simulation</span>
-                                </div>
-                                <div class="service-price">Custom Quote</div>
-                            </div>
-
-                            <div class="service-card" data-service="ai-security">
-                                <div class="service-icon">🤖</div>
-                                <h3>AI Security Training</h3>
-                                <p>Secure AI implementation and data handling practices</p>
-                                <div class="service-tags">
-                                    <span class="tag">AI Security</span>
-                                    <span class="tag">Data Handling</span>
-                                </div>
-                                <div class="service-price">$2,000 CAD</div>
-                            </div>
-
-                            <div class="service-card" data-service="educational">
-                                <div class="service-icon">🎓</div>
-                                <h3>Student & Educational Programs</h3>
-                                <p>Free and low-cost cybersecurity education</p>
-                                <div class="service-tags">
-                                    <span class="tag">Free Programs</span>
-                                    <span class="tag">Student Focus</span>
-                                </div>
-                                <div class="service-price">Free</div>
-                            </div>
-                        </div>
-                        <button class="btn-primary" id="next-step-1" disabled>Next: Select Date & Time</button>
+            <!-- Progress Indicator -->
+            <div class="progress-indicator" style="display: flex; justify-content: center; margin-bottom: 3rem;">
+                <div class="progress-steps" style="display: flex; gap: 1rem; align-items: center;">
+                    <div class="step-indicator active" data-step="1" style="display: flex; align-items: center; gap: 0.5rem;">
+                        <div class="step-number" style="width: 30px; height: 30px; border-radius: 50%; background: var(--accent-primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600;">1</div>
+                        <span style="color: var(--text-primary); font-weight: 500;">Your Needs</span>
                     </div>
-
-                    <!-- Date & Time Selection -->
-                    <div class="booking-step" id="step-2">
-                        <h2>Select Date & Time</h2>
-                        <div class="datetime-selection">
-                            <div class="calendar-container">
-                                <div class="calendar-header">
-                                    <button class="calendar-nav" id="prev-month">‹</button>
-                                    <h3 id="current-month">October 2025</h3>
-                                    <button class="calendar-nav" id="next-month">›</button>
-                                </div>
-                                <div class="calendar-grid" id="calendar-grid">
-                                    <!-- Calendar will be populated by JavaScript -->
-                                </div>
-                            </div>
-
-                            <div class="time-slots">
-                                <h4>Available Times</h4>
-                                <div class="time-grid" id="time-slots">
-                                    <!-- Time slots will be populated by JavaScript -->
-                                </div>
-                            </div>
-                        </div>
-                        <div class="step-navigation">
-                            <button class="btn-secondary" id="back-step-2">Back</button>
-                            <button class="btn-primary" id="next-step-2" disabled>Next: Contact Information</button>
-                        </div>
+                    <div class="step-arrow" style="color: var(--text-secondary);">→</div>
+                    <div class="step-indicator" data-step="2" style="display: flex; align-items: center; gap: 0.5rem;">
+                        <div class="step-number" style="width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,0.1); color: var(--text-secondary); display: flex; align-items: center; justify-content: center; font-weight: 600;">2</div>
+                        <span style="color: var(--text-secondary); font-weight: 500;">Date & Time</span>
                     </div>
-
-                    <!-- Contact Information -->
-                    <div class="booking-step" id="step-3">
-                        <h2>Contact Information</h2>
-                        <form class="contact-form" id="booking-form">
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="first-name">First Name *</label>
-                                    <input type="text" id="first-name" name="firstName" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="last-name">Last Name *</label>
-                                    <input type="text" id="last-name" name="lastName" required>
-                                </div>
-                            </div>
-
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="email">Email Address *</label>
-                                    <input type="email" id="email" name="email" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="phone">Phone Number *</label>
-                                    <input type="tel" id="phone" name="phone" required>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="company">Company/Organization</label>
-                                <input type="text" id="company" name="company">
-                            </div>
-
-                            <div class="form-group">
-                                <label for="location">Preferred Location</label>
-                                <select id="location" name="location">
-                                    <option value="">Select Location</option>
-                                    <option value="toronto">Toronto (Downtown)</option>
-                                    <option value="mississauga">Mississauga</option>
-                                    <option value="vaughan">Vaughan</option>
-                                    <option value="markham">Markham</option>
-                                    <option value="brampton">Brampton</option>
-                                    <option value="oakville">Oakville</option>
-                                    <option value="online">Online (Virtual)</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="participants">Number of Participants</label>
-                                <select id="participants" name="participants">
-                                    <option value="1">1 Person</option>
-                                    <option value="2-5">2-5 People</option>
-                                    <option value="6-10">6-10 People</option>
-                                    <option value="11-20">11-20 People</option>
-                                    <option value="20+">20+ People</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="notes">Additional Notes or Requirements</label>
-                                <textarea id="notes" name="notes" rows="4" placeholder="Any specific requirements, accessibility needs, or questions..."></textarea>
-                            </div>
-
-                            <div class="form-group checkbox-group">
-                                <label class="checkbox-label">
-                                    <input type="checkbox" id="terms" name="terms" required>
-                                    <span class="checkmark"></span>
-                                    I agree to the <a href="legal/terms.html" target="_blank">Terms of Service</a> and <a href="legal/privacy.html" target="_blank">Privacy Policy</a>
-                                </label>
-                            </div>
-
-                            <div class="form-group checkbox-group">
-                                <label class="checkbox-label">
-                                    <input type="checkbox" id="newsletter" name="newsletter">
-                                    <span class="checkmark"></span>
-                                    Subscribe to cybersecurity insights and training updates
-                                </label>
-                            </div>
-                        </form>
-
-                        <div class="step-navigation">
-                            <button class="btn-secondary" id="back-step-3">Back</button>
-                            <button class="btn-primary" id="submit-booking">Book Training Session</button>
-                        </div>
+                    <div class="step-arrow" style="color: var(--text-secondary);">→</div>
+                    <div class="step-indicator" data-step="3" style="display: flex; align-items: center; gap: 0.5rem;">
+                        <div class="step-number" style="width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,0.1); color: var(--text-secondary); display: flex; align-items: center; justify-content: center; font-weight: 600;">3</div>
+                        <span style="color: var(--text-secondary); font-weight: 500;">Services & Pricing</span>
                     </div>
-
-                    <!-- Confirmation -->
-                    <div class="booking-step" id="step-4">
-                        <div class="confirmation-container">
-                            <div class="success-icon">✅</div>
-                            <h2>Booking Confirmed!</h2>
-                            <p>Your training session has been successfully booked. You will receive a confirmation email shortly.</p>
-
-                            <div class="booking-details" id="booking-details">
-                                <!-- Booking details will be populated by JavaScript -->
-                            </div>
-
-                            <div class="confirmation-actions">
-                                <button class="btn-primary" onclick="window.location.href='index.html'">Return to Home</button>
-                                <button class="btn-secondary" onclick="window.print()">Print Confirmation</button>
-                            </div>
-                        </div>
+                    <div class="step-arrow" style="color: var(--text-secondary);">→</div>
+                    <div class="step-indicator" data-step="4" style="display: flex; align-items: center; gap: 0.5rem;">
+                        <div class="step-number" style="width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,0.1); color: var(--text-secondary); display: flex; align-items: center; justify-content: center; font-weight: 600;">4</div>
+                        <span style="color: var(--text-secondary); font-weight: 500;">Contact Info</span>
                     </div>
                 </div>
             </div>
-        </section>
-    </main>
+
+            <!-- Step 1: Select Consultation Type -->
+            <div class="booking-step active" id="step-1">
+                <div class="step-header" style="text-align: center; margin-bottom: 2rem;">
+                    <h2 style="font-size: 1.8rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem;">What do you need help with?</h2>
+                </div>
+
+                <div class="consultation-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+                    <div class="consultation-card" data-type="security" data-hints="Current security tools, recent incidents, compliance gaps, risk assessment needs, security policies, incident response planning" style="background: var(--glass-bg); border: 2px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; cursor: pointer; transition: all 0.3s ease;">
+                        <h3 style="font-size: 1.3rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem;">🔒 Security Assessment</h3>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">Quick security posture review and recommendations</p>
+                    </div>
+
+                    <div class="consultation-card" data-type="compliance" data-hints="ISO 27001 certification plans, PHIPA/PIPEDA compliance, audit preparation, documentation gaps, policy development, regulatory requirements" style="background: var(--glass-bg); border: 2px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; cursor: pointer; transition: all 0.3s ease;">
+                        <h3 style="font-size: 1.3rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem;">📋 Compliance Review</h3>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">ISO 27001, PHIPA/PIPEDA readiness check</p>
+                    </div>
+
+                    <div class="consultation-card" data-type="training" data-hints="Team security awareness, phishing training, incident response training, compliance training, executive briefings, staff education programs" style="background: var(--glass-bg); border: 2px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; cursor: pointer; transition: all 0.3s ease;">
+                        <h3 style="font-size: 1.3rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem;">🎓 Training Needs</h3>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">Team training and awareness program guidance</p>
+                    </div>
+
+                    <div class="consultation-card" data-type="automation" data-hints="AI security concerns, automation risks, data privacy in AI systems, secure AI implementation, automation governance, AI compliance" style="background: var(--glass-bg); border: 2px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; cursor: pointer; transition: all 0.3s ease;">
+                        <h3 style="font-size: 1.3rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem;">🤖 AI & Automation Security</h3>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">Secure AI implementation and automation governance</p>
+                    </div>
+
+                    <div class="consultation-card" data-type="services" data-hints="Full cybersecurity services, ongoing support, CISO services, audit services, implementation projects, strategic advisory" style="background: var(--glass-bg); border: 2px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; cursor: pointer; transition: all 0.3s ease;">
+                        <h3 style="font-size: 1.3rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem;">💼 Full Services</h3>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">Comprehensive cybersecurity services and ongoing support</p>
+                    </div>
+
+                    <div class="consultation-card" data-type="general" data-hints="Cybersecurity strategy, best practices, risk management, security roadmap, budget planning, vendor selection" style="background: var(--glass-bg); border: 2px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; cursor: pointer; transition: all 0.3s ease;">
+                        <h3 style="font-size: 1.3rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem;">💬 General Questions</h3>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">Cybersecurity strategy and best practices</p>
+                    </div>
+                </div>
+
+                <!-- Needs Description (appears after selection) -->
+                <div id="needs-section" style="display: none; margin-top: 2rem;">
+                    <div class="needs-container" style="background: var(--glass-bg); border: 2px solid var(--glass-border); border-radius: 12px; padding: 2rem;">
+                        <h3 style="font-size: 1.3rem; font-weight: 600; color: var(--text-primary); margin-bottom: 1rem;">Tell us more about your needs:</h3>
+                        <p id="needs-hints" style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem; font-style: italic;"></p>
+                        <textarea id="needs-description" placeholder="Describe your current situation, challenges, and what you hope to achieve..." rows="4" style="width: 100%; padding: 0.75rem; background: rgba(255,255,255,0.1); border: 1px solid var(--glass-border); border-radius: 8px; color: var(--text-primary); font-size: 1rem; resize: vertical;"></textarea>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 2rem;">
+                    <button id="next-step-1" disabled style="padding: 1rem 2rem; background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%); color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.3s ease; opacity: 0.5;">Continue to Date & Time</button>
+                </div>
+            </div>
+
+            <!-- Step 2: Date & Time Selection -->
+            <div class="booking-step" id="step-2">
+                <div class="step-header" style="text-align: center; margin-bottom: 2rem;">
+                    <h2 style="font-size: 1.8rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem;">Choose Your Date & Time</h2>
+                    <p style="color: var(--text-secondary); font-size: 1rem;">Select your preferred 15-minute consultation slot</p>
+                </div>
+
+                <!-- Consultation Type Reminder -->
+                <div class="consultation-reminder" style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;">
+                    <h3 style="font-size: 1.1rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem;">📋 Consultation Type</h3>
+                    <p id="consultation-type-reminder" style="color: var(--text-secondary); margin: 0; font-size: 0.95rem;">-</p>
+                </div>
+
+                <div class="datetime-selection" style="background: var(--glass-bg); border: 2px solid var(--glass-border); border-radius: 12px; padding: 2rem;">
+                    <!-- Calendar View -->
+                    <div class="calendar-section" style="margin-bottom: 2rem;">
+                        <h3 style="font-size: 1.3rem; font-weight: 600; color: var(--text-primary); margin-bottom: 1rem; text-align: center;">📅 Available Dates</h3>
+                        <div class="calendar-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 0.75rem;">
+                            <!-- Calendar dates will be generated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Time Slots -->
+                    <div class="timeslots-section">
+                        <h3 style="font-size: 1.3rem; font-weight: 600; color: var(--text-primary); margin-bottom: 1rem; text-align: center;">🕐 Available Times</h3>
+                        <div class="timeslots-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 0.75rem;">
+                            <!-- Time slots will be generated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Selected Summary -->
+                    <div id="selection-summary" style="display: none; background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(6, 182, 212, 0.2) 100%); border: 2px solid var(--accent-primary); border-radius: 12px; padding: 1.5rem; margin-top: 2rem; text-align: center;">
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                            <span style="font-size: 1.5rem;">✅</span>
+                            <h4 style="font-size: 1.1rem; font-weight: 600; color: var(--text-primary); margin: 0;">Selected Consultation Slot</h4>
+                        </div>
+                        <p style="color: var(--text-primary); margin: 0; font-size: 1.1rem; font-weight: 500;">
+                            <span id="selected-date"></span> at <span id="selected-time"></span>
+                        </p>
+                        <p style="color: var(--text-secondary); margin: 0.5rem 0 0 0; font-size: 0.9rem;">
+                            Duration: 15 minutes • Free consultation
+                        </p>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 2rem; display: flex; gap: 1rem; justify-content: center;">
+                    <button id="back-step-2" style="padding: 1rem 2rem; background: transparent; color: #3b82f6; border: 2px solid #3b82f6; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer;">← Back</button>
+                    <button id="next-step-2" disabled style="padding: 1rem 2rem; background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%); color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; opacity: 0.5;">Continue to Services</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Services & Pricing -->
+            <div class="booking-step" id="step-3">
+                <div class="step-header" style="text-align: center; margin-bottom: 2rem;">
+                    <h2 style="font-size: 1.8rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem;">Recommended Services for You</h2>
+                    <p style="color: var(--text-secondary); font-size: 1rem;">Based on your consultation type, here are our most relevant services</p>
+                </div>
+
+                <!-- Consultation Context -->
+                <div class="consultation-context" style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;">
+                    <h3 style="font-size: 1.1rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem;">🎯 Your Consultation Focus</h3>
+                    <p id="consultation-focus" style="color: var(--text-secondary); margin: 0; font-size: 0.95rem;">-</p>
+                </div>
+
+                <div class="services-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+                    <!-- Cybersecurity & Compliance -->
+                    <div class="service-card" style="background: var(--glass-bg); border: 2px solid var(--glass-border); border-radius: 12px; padding: 1.5rem;">
+                        <h4 style="font-size: 1.2rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem;">🔒 Cybersecurity & Compliance</h4>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">CISO services, ISO 27001, SOC 2, PHIPA/PIPEDA compliance</p>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 1.1rem; font-weight: 700; color: var(--accent-primary);">Starting at $3,500/month</span>
+                            <a href="services/cybersecurity-compliance.html" style="color: #3b82f6; text-decoration: none; font-size: 0.9rem;">Learn More →</a>
+                        </div>
+                    </div>
+
+                    <!-- Advisory & Audits -->
+                    <div class="service-card" style="background: var(--glass-bg); border: 2px solid var(--glass-border); border-radius: 12px; padding: 1.5rem;">
+                        <h4 style="font-size: 1.2rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem;">📊 Advisory & Audits</h4>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">Strategic advisory, gap assessments, audit preparation</p>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 1.1rem; font-weight: 700; color: var(--accent-primary);">Starting at $2,800/day</span>
+                            <a href="services/advisory-audits.html" style="color: #3b82f6; text-decoration: none; font-size: 0.9rem;">Learn More →</a>
+                        </div>
+                    </div>
+
+                    <!-- Automation & AI -->
+                    <div class="service-card" style="background: var(--glass-bg); border: 2px solid var(--glass-border); border-radius: 12px; padding: 1.5rem;">
+                        <h4 style="font-size: 1.2rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem;">🤖 Automation & AI</h4>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">Secure AI implementation, RPA, business intelligence</p>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 1.1rem; font-weight: 700; color: var(--accent-primary);">Starting at $4,200/project</span>
+                            <a href="services/automation-ai.html" style="color: #3b82f6; text-decoration: none; font-size: 0.9rem;">Learn More →</a>
+                        </div>
+                    </div>
+
+                    <!-- Training & Education -->
+                    <div class="service-card" style="background: var(--glass-bg); border: 2px solid var(--glass-border); border-radius: 12px; padding: 1.5rem;">
+                        <h4 style="font-size: 1.2rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem;">🎓 Training & Education</h4>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">CISSP mentorship, ISO training, awareness programs</p>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 1.1rem; font-weight: 700; color: var(--accent-primary);">Starting at $1,200/session</span>
+                            <a href="services/teaching-training.html" style="color: #3b82f6; text-decoration: none; font-size: 0.9rem;">Learn More →</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Consultation Summary -->
+                <div class="consultation-summary" style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;">
+                    <h3 style="font-size: 1.2rem; font-weight: 600; color: var(--text-primary); margin-bottom: 1rem;">Your Free Consultation</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                        <div>
+                            <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0;">Type:</p>
+                            <p style="color: var(--text-primary); font-weight: 500; margin: 0;" id="summary-type">-</p>
+                        </div>
+                        <div>
+                            <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0;">Date:</p>
+                            <p style="color: var(--text-primary); font-weight: 500; margin: 0;" id="summary-date">-</p>
+                        </div>
+                        <div>
+                            <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0;">Time:</p>
+                            <p style="color: var(--text-primary); font-weight: 500; margin: 0;" id="summary-time">-</p>
+                        </div>
+                        <div>
+                            <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0;">Duration:</p>
+                            <p style="color: var(--text-primary); font-weight: 500; margin: 0;">15 minutes</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 2rem; display: flex; gap: 1rem; justify-content: center;">
+                    <button id="back-step-3" style="padding: 1rem 2rem; background: transparent; color: #3b82f6; border: 2px solid #3b82f6; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer;">← Back</button>
+                    <button id="next-step-3" disabled style="padding: 1rem 2rem; background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%); color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; opacity: 0.5;">Continue to Contact Info</button>
+                </div>
+            </div>
+
+            <!-- Step 4: Contact Information -->
+            <div class="booking-step" id="step-4">
+                <div class="step-header" style="text-align: center; margin-bottom: 2rem;">
+                    <h2 style="font-size: 1.8rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem;">Your Contact Information</h2>
+                    <p style="color: var(--text-secondary); font-size: 1rem;">We'll use this to confirm your free consultation</p>
+                </div>
+
+                <div class="contact-form" style="background: var(--glass-bg); border: 2px solid var(--glass-border); border-radius: 12px; padding: 2rem;">
+                    <form id="booking-form">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                            <input type="text" id="first-name" placeholder="First Name *" required style="padding: 0.75rem; background: rgba(255,255,255,0.1); border: 1px solid var(--glass-border); border-radius: 8px; color: var(--text-primary); font-size: 1rem;">
+                            <input type="text" id="last-name" placeholder="Last Name *" required style="padding: 0.75rem; background: rgba(255,255,255,0.1); border: 1px solid var(--glass-border); border-radius: 8px; color: var(--text-primary); font-size: 1rem;">
+                        </div>
+
+                        <input type="email" id="email" placeholder="Email Address *" required style="width: 100%; padding: 0.75rem; background: rgba(255,255,255,0.1); border: 1px solid var(--glass-border); border-radius: 8px; color: var(--text-primary); font-size: 1rem; margin-bottom: 1rem;">
+
+                        <input type="tel" id="phone" placeholder="Phone Number *" required style="width: 100%; padding: 0.75rem; background: rgba(255,255,255,0.1); border: 1px solid var(--glass-border); border-radius: 8px; color: var(--text-primary); font-size: 1rem; margin-bottom: 1rem;">
+
+                        <input type="text" id="company" placeholder="Company/Organization" style="width: 100%; padding: 0.75rem; background: rgba(255,255,255,0.1); border: 1px solid var(--glass-border); border-radius: 8px; color: var(--text-primary); font-size: 1rem; margin-bottom: 1rem;">
+
+                        <textarea id="notes" placeholder="What specific questions do you have? (optional)" rows="3" style="width: 100%; padding: 0.75rem; background: rgba(255,255,255,0.1); border: 1px solid var(--glass-border); border-radius: 8px; color: var(--text-primary); font-size: 1rem; margin-bottom: 1.5rem; resize: vertical;"></textarea>
+
+                        <!-- Required Checkboxes -->
+                        <div style="margin-bottom: 1.5rem;">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">
+                                <input type="checkbox" id="subscribe" required style="margin: 0;">
+                                <span>I want to receive cybersecurity tips, updates, and service information via email <strong style="color: var(--accent-primary);">(Required)</strong></span>
+                            </label>
+
+                            <label style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">
+                                <input type="checkbox" id="privacy-agree" required style="margin: 0;">
+                                <span>I agree to the <a href="legal/privacy.html" target="_blank" style="color: #3b82f6; text-decoration: underline;">Privacy Policy</a> and consent to data processing <strong style="color: var(--accent-primary);">(Required)</strong></span>
+                            </label>
+                        </div>
+
+                        <!-- Additional Info -->
+                        <div style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem;">
+                            <p style="color: var(--text-secondary); font-size: 0.85rem; margin: 0; line-height: 1.4;">
+                                <strong>Note:</strong> By providing your email, you agree to receive consultation confirmations, follow-ups, and cybersecurity insights. You can unsubscribe at any time. Your information is protected under our Privacy Policy.
+                            </p>
+                        </div>
+                    </form>
+                </div>
+
+                <div style="text-align: center; margin-top: 2rem; display: flex; gap: 1rem; justify-content: center;">
+                    <button id="back-step-4" style="padding: 1rem 2rem; background: transparent; color: #3b82f6; border: 2px solid #3b82f6; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer;">← Back</button>
+                    <button id="submit-booking" disabled style="padding: 1rem 2rem; background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%); color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; opacity: 0.5;">Confirm Free Consultation</button>
+                </div>
+            </div>
+
+            <!-- Step 5: Confirmation -->
+            <div class="booking-step" id="step-5">
+                <div style="text-align: center; max-width: 600px; margin: 0 auto;">
+                    <div style="font-size: 4rem; margin-bottom: 2rem;">✅</div>
+                    <h2 style="font-size: 2rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1rem;">Free Consultation Booked!</h2>
+                    <p style="color: var(--text-secondary); font-size: 1.1rem; margin-bottom: 2rem;">Thank you for booking your free 15-minute consultation. You'll receive a confirmation email shortly with meeting details.</p>
+                    <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 3rem; font-style: italic;">
+                        Remember: This is a free consultation to understand your needs. No promises or guarantees are made.
+                    </p>
+                    <div style="display: flex; gap: 1rem; justify-content: center;">
+                        <a href="index.html" style="padding: 1rem 2rem; background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: 600;">Back to Home</a>
+                        <a href="contact.html" style="padding: 1rem 2rem; background: transparent; color: #3b82f6; border: 2px solid #3b82f6; text-decoration: none; border-radius: 8px; font-weight: 600;">Contact Us</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
 
     <!-- Footer -->
     <div id="footer"></div>
 
     <!-- Scripts -->
-    <script src="assets/js/booking.js"></script>
+    <script src="assets/js/animated-background.js"></script>
+    <script src="assets/js/scroll-animations.js"></script>
     <script src="assets/js/analytics-tracker.js"></script>
     <script src="assets/js/load-components.js"></script>
     <script src="assets/js/script.js"></script>
 
+    <!-- Enhanced Booking System -->
     <script>
+        class EnhancedBookingSystem {
+            constructor() {
+                this.currentStep = 1;
+                this.selectedType = null;
+                this.selectedDate = null;
+                this.selectedTime = null;
+                this.bookingData = {};
+                this.init();
+            }
+
+            init() {
+                this.setupEventListeners();
+                this.generateDateOptions();
+                this.generateTimeOptions();
+            }
+
+            setupEventListeners() {
+                // Consultation type selection
+                document.querySelectorAll('.consultation-card').forEach(card => {
+                    card.addEventListener('click', (e) => this.selectType(e.currentTarget));
+                });
+
+                // Step navigation
+                document.getElementById('next-step-1').addEventListener('click', () => this.nextStep());
+                document.getElementById('back-step-2').addEventListener('click', () => this.prevStep());
+                document.getElementById('next-step-2').addEventListener('click', () => this.nextStep());
+                document.getElementById('back-step-3').addEventListener('click', () => this.prevStep());
+                document.getElementById('next-step-3').addEventListener('click', () => this.nextStep());
+                document.getElementById('back-step-4').addEventListener('click', () => this.prevStep());
+                document.getElementById('submit-booking').addEventListener('click', () => this.submitBooking());
+
+                // Form validation
+                document.getElementById('booking-form').addEventListener('input', () => this.validateForm());
+            }
+
+            selectType(card) {
+                document.querySelectorAll('.consultation-card').forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                this.selectedType = card.dataset.type;
+
+                // Show needs section with hints
+                const needsSection = document.getElementById('needs-section');
+                const needsHints = document.getElementById('needs-hints');
+                const hints = card.dataset.hints;
+
+                needsSection.style.display = 'block';
+                needsHints.textContent = `Consider mentioning: ${hints}`;
+
+                // Update consultation type reminder for Step 2
+                this.updateConsultationTypeReminder();
+
+                const nextButton = document.getElementById('next-step-1');
+                nextButton.disabled = false;
+                nextButton.style.opacity = '1';
+                nextButton.style.cursor = 'pointer';
+            }
+
+            updateConsultationTypeReminder() {
+                const typeNames = {
+                    'security-review': 'Security Review',
+                    'compliance-audit': 'Compliance Audit',
+                    'automation-planning': 'Automation Planning',
+                    'training-needs': 'Training Needs'
+                };
+
+                const reminderElement = document.getElementById('consultation-type-reminder');
+                if (reminderElement && this.selectedType) {
+                    reminderElement.textContent = typeNames[this.selectedType] || this.selectedType;
+                }
+            }
+
+            generateDateOptions() {
+                const container = document.querySelector('.calendar-grid');
+                const dates = [];
+
+                // Generate next 7 weekdays
+                for (let day = 0; day < 14; day++) {
+                    const date = new Date();
+                    date.setDate(date.getDate() + day);
+
+                    // Skip weekends
+                    if (date.getDay() === 0 || date.getDay() === 6) continue;
+
+                    const isUnavailable = Math.random() < 0.2; // 20% chance of being unavailable
+
+                    const dateOption = document.createElement('div');
+                    dateOption.className = `date-option ${isUnavailable ? 'unavailable' : ''}`;
+                    dateOption.dataset.date = date.toISOString().split('T')[0];
+                    dateOption.innerHTML = `
+                        <span style="font-weight: 500;">${date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</span>
+                        ${isUnavailable ? '<span style="color: #ef4444; font-size: 0.8rem;">Unavailable</span>' : ''}
+                    `;
+
+                    if (!isUnavailable) {
+                        dateOption.addEventListener('click', () => this.selectDate(dateOption));
+                    }
+
+                    container.appendChild(dateOption);
+                }
+            }
+
+            generateTimeOptions() {
+                const container = document.querySelector('.timeslots-grid');
+
+                // Generate time slots (9 AM to 5 PM)
+                for (let hour = 9; hour <= 17; hour++) {
+                    const timeString = `${hour.toString().padStart(2, '0')}:00`;
+                    const isUnavailable = Math.random() < 0.3; // 30% chance of being unavailable
+
+                    const timeOption = document.createElement('div');
+                    timeOption.className = `time-option ${isUnavailable ? 'unavailable' : ''}`;
+                    timeOption.dataset.time = timeString;
+                    timeOption.innerHTML = `
+                        <span style="font-weight: 500;">${timeString}</span>
+                        ${isUnavailable ? '<span style="color: #ef4444; font-size: 0.8rem;">Unavailable</span>' : ''}
+                    `;
+
+                    if (!isUnavailable) {
+                        timeOption.addEventListener('click', () => this.selectTime(timeOption));
+                    }
+
+                    container.appendChild(timeOption);
+                }
+            }
+
+            selectDate(dateOption) {
+                document.querySelectorAll('.date-option').forEach(option => option.classList.remove('selected'));
+                dateOption.classList.add('selected');
+                this.selectedDate = dateOption.dataset.date;
+                this.updateSummary();
+                this.checkStep2Completion();
+            }
+
+            selectTime(timeOption) {
+                document.querySelectorAll('.time-option').forEach(option => option.classList.remove('selected'));
+                timeOption.classList.add('selected');
+                this.selectedTime = timeOption.dataset.time;
+                this.updateSummary();
+                this.checkStep2Completion();
+            }
+
+            updateSummary() {
+                const summary = document.getElementById('selection-summary');
+                const selectedDateEl = document.getElementById('selected-date');
+                const selectedTimeEl = document.getElementById('selected-time');
+
+                if (this.selectedDate && this.selectedTime) {
+                    const date = new Date(this.selectedDate);
+                    const dateString = date.toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+                    selectedDateEl.textContent = dateString;
+                    selectedTimeEl.textContent = this.selectedTime;
+                    summary.style.display = 'block';
+                } else {
+                    summary.style.display = 'none';
+                }
+            }
+
+            checkStep2Completion() {
+                const nextButton = document.getElementById('next-step-2');
+                if (this.selectedDate && this.selectedTime) {
+                    nextButton.disabled = false;
+                    nextButton.style.opacity = '1';
+                    nextButton.style.cursor = 'pointer';
+                } else {
+                    nextButton.disabled = true;
+                    nextButton.style.opacity = '0.5';
+                    nextButton.style.cursor = 'not-allowed';
+                }
+            }
+
+            nextStep() {
+                if (this.currentStep < 5) {
+                    this.currentStep++;
+                    this.updateStepDisplay();
+                    this.updateProgressIndicator();
+
+                    // Update summary in step 3
+                    if (this.currentStep === 3) {
+                        this.updateConsultationSummary();
+                        // Enable the next button for step 3
+                        this.enableStep3Button();
+                    }
+                }
+            }
+
+            enableStep3Button() {
+                const nextButton = document.getElementById('next-step-3');
+                nextButton.disabled = false;
+                nextButton.style.opacity = '1';
+                nextButton.style.cursor = 'pointer';
+            }
+
+            prevStep() {
+                if (this.currentStep > 1) {
+                    this.currentStep--;
+                    this.updateStepDisplay();
+                    this.updateProgressIndicator();
+                }
+            }
+
+            updateStepDisplay() {
+                document.querySelectorAll('.booking-step').forEach(step => {
+                    step.classList.remove('active');
+                });
+                document.getElementById(`step-${this.currentStep}`).classList.add('active');
+
+                // Enable appropriate buttons based on current step
+                if (this.currentStep === 2) {
+                    this.updateConsultationTypeReminder();
+                }
+                if (this.currentStep === 3) {
+                    this.enableStep3Button();
+                }
+            }
+
+            updateProgressIndicator() {
+                document.querySelectorAll('.step-indicator').forEach((indicator, index) => {
+                    const stepNumber = indicator.querySelector('.step-number');
+                    const stepText = indicator.querySelector('span');
+
+                    if (index + 1 <= this.currentStep) {
+                        stepNumber.style.background = 'var(--accent-primary)';
+                        stepNumber.style.color = 'white';
+                        stepText.style.color = 'var(--text-primary)';
+                        stepText.style.fontWeight = '600';
+                    } else {
+                        stepNumber.style.background = 'rgba(255,255,255,0.1)';
+                        stepNumber.style.color = 'var(--text-secondary)';
+                        stepText.style.color = 'var(--text-secondary)';
+                        stepText.style.fontWeight = '500';
+                    }
+                });
+            }
+
+            updateConsultationSummary() {
+                const typeNames = {
+                    'security-review': 'Security Review',
+                    'compliance-audit': 'Compliance Audit',
+                    'automation-planning': 'Automation Planning',
+                    'training-needs': 'Training Needs'
+                };
+
+                document.getElementById('summary-type').textContent = typeNames[this.selectedType] || this.selectedType;
+
+                if (this.selectedDate) {
+                    const date = new Date(this.selectedDate);
+                    document.getElementById('summary-date').textContent = date.toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+                }
+
+                if (this.selectedTime) {
+                    document.getElementById('summary-time').textContent = this.selectedTime;
+                }
+
+                // Update consultation focus for Step 3
+                this.updateConsultationFocus();
+            }
+
+            updateConsultationFocus() {
+                const focusTexts = {
+                    'security-review': 'We\'ll discuss your current security posture, compliance requirements, and recommend specific improvements for your infrastructure.',
+                    'compliance-audit': 'We\'ll review your current compliance status and create a roadmap for ISO 27001, SOC 2, or industry-specific requirements.',
+                    'automation-planning': 'We\'ll analyze your current processes and design automation solutions that reduce manual work while maintaining security.',
+                    'training-needs': 'We\'ll assess your team\'s current knowledge and create a training plan tailored to your specific cybersecurity needs.'
+                };
+
+                const focusElement = document.getElementById('consultation-focus');
+                if (focusElement && this.selectedType) {
+                    focusElement.textContent = focusTexts[this.selectedType] || 'We\'ll discuss your specific needs and create a customized plan for your organization.';
+                }
+            }
+
+            validateForm() {
+                const firstName = document.getElementById('first-name').value.trim();
+                const lastName = document.getElementById('last-name').value.trim();
+                const email = document.getElementById('email').value.trim();
+                const phone = document.getElementById('phone').value.trim();
+                const subscribe = document.getElementById('subscribe').checked;
+                const privacyAgree = document.getElementById('privacy-agree').checked;
+
+                const isValid = firstName && lastName && email && phone && subscribe && privacyAgree;
+                const submitButton = document.getElementById('submit-booking');
+
+                submitButton.disabled = !isValid;
+                submitButton.style.opacity = isValid ? '1' : '0.5';
+                submitButton.style.cursor = isValid ? 'pointer' : 'not-allowed';
+            }
+
+            async submitBooking() {
+                const formData = {
+                    type: this.selectedType,
+                    needsDescription: document.getElementById('needs-description').value,
+                    date: this.selectedDate,
+                    time: this.selectedTime,
+                    firstName: document.getElementById('first-name').value,
+                    lastName: document.getElementById('last-name').value,
+                    email: document.getElementById('email').value,
+                    phone: document.getElementById('phone').value,
+                    company: document.getElementById('company').value,
+                    notes: document.getElementById('notes').value,
+                    subscribe: document.getElementById('subscribe').checked,
+                    privacyAgree: document.getElementById('privacy-agree').checked,
+                    timestamp: new Date().toISOString(),
+                    source: 'free-consultation-booking'
+                };
+
+                try {
+                    const response = await fetch('/api/book-consultation', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(formData)
+                    });
+
+                    if (response.ok) {
+                        this.nextStep();
+                    } else {
+                        alert('There was an error booking your consultation. Please try again.');
+                    }
+                } catch (error) {
+                    console.error('Booking error:', error);
+                    alert('There was an error booking your consultation. Please try again.');
+                }
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             loadNavbar();
             loadFooter();
+            window.bookingSystem = new EnhancedBookingSystem();
         });
     </script>
+
+    <style>
+        .consultation-card:hover {
+            border-color: var(--accent-primary);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.2);
+        }
+        
+        .consultation-card.selected {
+            border-color: var(--accent-primary);
+            background: rgba(59, 130, 246, 0.1);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+        }
+        
+        .date-option,
+        .time-option {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .date-option:hover:not(.unavailable),
+        .time-option:hover:not(.unavailable) {
+            border-color: var(--accent-primary);
+            background: rgba(59, 130, 246, 0.1);
+        }
+        
+        .date-option.selected,
+        .time-option.selected {
+            border-color: var(--accent-primary);
+            background: rgba(59, 130, 246, 0.2);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+        }
+        
+        .date-option.unavailable,
+        .time-option.unavailable {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+        
+        .booking-step {
+            display: none;
+        }
+        
+        .booking-step.active {
+            display: block;
+        }
+        
+        input,
+        textarea {
+            color: var(--text-primary) !important;
+        }
+        
+        input::placeholder,
+        textarea::placeholder {
+            color: var(--text-secondary) !important;
+        }
+        
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent-primary) !important;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+        }
+        
+        .progress-steps {
+            flex-wrap: wrap;
+        }
+        
+        @media (max-width: 768px) {
+            .progress-steps {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            .step-arrow {
+                display: none;
+            }
+            .datetime-selection>div {
+                grid-template-columns: 1fr !important;
+            }
+            .consultation-grid {
+                grid-template-columns: 1fr !important;
+            }
+            .services-grid {
+                grid-template-columns: 1fr !important;
+            }
+            .container {
+                padding: 0 1rem !important;
+            }
+            .section-header h1 {
+                font-size: 2rem !important;
+            }
+            .step-header h2 {
+                font-size: 1.5rem !important;
+            }
+            .consultation-card {
+                padding: 1rem !important;
+            }
+            .service-card {
+                padding: 1rem !important;
+            }
+            .contact-form {
+                padding: 1rem !important;
+            }
+            .datetime-selection {
+                padding: 1rem !important;
+            }
+            .date-option,
+            .time-option {
+                padding: 0.75rem !important;
+                font-size: 0.9rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .section-header h1 {
+                font-size: 1.8rem !important;
+            }
+            .step-header h2 {
+                font-size: 1.3rem !important;
+            }
+            .consultation-card h3 {
+                font-size: 1.1rem !important;
+            }
+            .service-card h4 {
+                font-size: 1.1rem !important;
+            }
+            .consultation-card p {
+                font-size: 0.85rem !important;
+            }
+            .service-card p {
+                font-size: 0.85rem !important;
+            }
+            .date-option,
+            .time-option {
+                padding: 0.5rem !important;
+                font-size: 0.85rem;
+            }
+            .consultation-summary>div {
+                grid-template-columns: 1fr !important;
+            }
+            .needs-container {
+                padding: 1rem !important;
+            }
+        }
+    </style>
 </body>
 
 </html>

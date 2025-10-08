@@ -7,7 +7,7 @@ function loadNavbar() {
     let navbarPath = '/includes/navbar.html';
     let logoPath = '/assets/images/AliceSolutionsGroup-logo-owl-rabbit-fox.png';
     let homePath = '/index.html';
-    
+
     if (currentPath.includes('/locations/')) {
         navbarPath = '../includes/navbar-subdir.html';
         logoPath = '../assets/images/AliceSolutionsGroup-logo-owl-rabbit-fox.png';
@@ -17,7 +17,7 @@ function loadNavbar() {
         logoPath = '../assets/images/AliceSolutionsGroup-logo-owl-rabbit-fox.png';
         homePath = '../index.html';
     }
-    
+
     fetch(navbarPath)
         .then(response => response.text())
         .then(data => {
@@ -37,6 +37,17 @@ function loadNavbar() {
                         </div>
                     </header>
                 `;
+
+                // Initialize mobile menu toggle after navbar is loaded
+                const mobileToggle = document.querySelector('.mobile-menu-toggle');
+                const navMenu = document.querySelector('.nav-menu');
+
+                if (mobileToggle && navMenu) {
+                    mobileToggle.addEventListener('click', function() {
+                        navMenu.classList.toggle('active');
+                        mobileToggle.classList.toggle('active');
+                    });
+                }
             }
         })
         .catch(error => console.error('Error loading navbar:', error));

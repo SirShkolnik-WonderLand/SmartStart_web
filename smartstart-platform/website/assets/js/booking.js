@@ -12,10 +12,12 @@ class BookingSystem {
     }
     
     init() {
+        console.log('BookingSystem init started');
         this.setupEventListeners();
         this.handleUrlParameters();
         this.generateCalendar();
         this.generateTimeSlots();
+        console.log('BookingSystem init completed');
     }
     
     handleUrlParameters() {
@@ -32,13 +34,23 @@ class BookingSystem {
     }
     
     setupEventListeners() {
+        console.log('Setting up event listeners...');
+        
         // Service selection
-        document.querySelectorAll('.service-card').forEach(card => {
-            card.addEventListener('click', (e) => this.selectService(e.currentTarget));
+        const serviceCards = document.querySelectorAll('.service-card');
+        console.log('Found service cards:', serviceCards.length);
+        serviceCards.forEach(card => {
+            card.addEventListener('click', (e) => {
+                console.log('Service card clicked:', e.currentTarget.dataset.service);
+                this.selectService(e.currentTarget);
+            });
         });
         
         // Step navigation
-        document.getElementById('next-step-1')?.addEventListener('click', () => this.nextStep());
+        const nextButton1 = document.getElementById('next-step-1');
+        console.log('Next button 1 found:', !!nextButton1);
+        nextButton1?.addEventListener('click', () => this.nextStep());
+        
         document.getElementById('back-step-2')?.addEventListener('click', () => this.prevStep());
         document.getElementById('next-step-2')?.addEventListener('click', () => this.nextStep());
         document.getElementById('back-step-3')?.addEventListener('click', () => this.prevStep());
@@ -50,6 +62,8 @@ class BookingSystem {
         
         // Form validation
         document.getElementById('booking-form')?.addEventListener('input', () => this.validateForm());
+        
+        console.log('Event listeners setup complete');
     }
     
     selectService(card) {
@@ -60,8 +74,11 @@ class BookingSystem {
         card.classList.add('selected');
         this.selectedService = card.dataset.service;
         
-        // Enable next button
-        document.getElementById('next-step-1').disabled = false;
+        // Enable next button and update styling
+        const nextButton = document.getElementById('next-step-1');
+        nextButton.disabled = false;
+        nextButton.style.opacity = '1';
+        nextButton.style.cursor = 'pointer';
         
         // Store service data
         this.bookingData.service = {
@@ -69,12 +86,16 @@ class BookingSystem {
             name: card.querySelector('h3').textContent,
             price: card.querySelector('.service-price').textContent
         };
+        
+        console.log('Service selected:', this.bookingData.service);
     }
     
     nextStep() {
+        console.log('Next step clicked, current step:', this.currentStep);
         if (this.currentStep < 4) {
             this.currentStep++;
             this.updateStepDisplay();
+            console.log('Moved to step:', this.currentStep);
         }
     }
     

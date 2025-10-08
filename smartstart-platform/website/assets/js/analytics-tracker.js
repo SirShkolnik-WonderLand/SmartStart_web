@@ -4,6 +4,10 @@ class AnalyticsTracker {
         this.sessionId = this.generateSessionId();
         this.startTime = Date.now();
         this.pageViews = [];
+        this.requestQueue = [];
+        this.isProcessingQueue = false;
+        this.lastRequestTime = 0;
+        this.requestThrottle = 1000; // 1 second between requests
         this.init();
     }
 
@@ -183,43 +187,72 @@ class AnalyticsTracker {
     }
 
     async sendAnalytics(eventType, data) {
-        try {
-            const payload = {
-                event: eventType,
-                data: data,
-                timestamp: new Date().toISOString(),
-                url: window.location.href
-            };
+        // Add to queue for throttled processing
+        this.requestQueue.push({
+            eventType,
+            data,
+            timestamp: new Date().toISOString(),
+            url: window.location.href
+        });
 
-            // Send to your analytics endpoint
-            try {
-                await fetch('/api/admin/track', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(payload)
-                });
-            } catch (error) {
-                // Silently handle analytics errors in development
-                console.debug('Analytics tracking disabled in development mode');
-            }
-
-            // Also send to Google Analytics if available
-            if (typeof gtag !== 'undefined') {
-                gtag('event', eventType, data);
-            }
-
-        } catch (error) {
-            console.log('Analytics tracking error:', error);
+        // Process queue if not already processing
+        if (!this.isProcessingQueue) {
+            this.processQueue();
         }
+    }
+
+    async processQueue() {
+        if (this.isProcessingQueue || this.requestQueue.length === 0) {
+            return;
+        }
+
+        this.isProcessingQueue = true;
+
+        while (this.requestQueue.length > 0) {
+            const now = Date.now();
+            const timeSinceLastRequest = now - this.lastRequestTime;
+
+            // Throttle requests - wait if too soon
+            if (timeSinceLastRequest < this.requestThrottle) {
+                await new Promise(resolve => setTimeout(resolve, this.requestThrottle - timeSinceLastRequest));
+            }
+
+            const payload = this.requestQueue.shift();
+            this.lastRequestTime = Date.now();
+
+            try {
+                // Send to your analytics endpoint
+                try {
+                    await fetch('/api/admin/track', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(payload)
+                    });
+                } catch (error) {
+                    // Silently handle analytics errors in development
+                    console.debug('Analytics tracking disabled in development mode');
+                }
+
+                // Also send to Google Analytics if available
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', payload.eventType, payload.data);
+                }
+
+            } catch (error) {
+                console.log('Analytics tracking error:', error);
+            }
+        }
+
+        this.isProcessingQueue = false;
     }
 
     // SEO and Marketing specific tracking
     trackSEOMetrics() {
         const seoData = {
             pageTitle: document.title,
-            metaDescription: document.querySelector('meta[name="description"]')?.content,
+            metaDescription: document.querySelector('meta[name="description"]') ? .content,
             h1Count: document.querySelectorAll('h1').length,
             h2Count: document.querySelectorAll('h2').length,
             h3Count: document.querySelectorAll('h3').length,
@@ -230,8 +263,8 @@ class AnalyticsTracker {
             wordCount: document.body.textContent.split(/\s+/).length,
             loadTime: performance.timing.loadEventEnd - performance.timing.navigationStart,
             domContentLoaded: performance.timing.domContentLoadedEventEnd - performance.timing.navigationStart,
-            firstPaint: performance.getEntriesByType('paint').find(entry => entry.name === 'first-paint')?.startTime || 0,
-            firstContentfulPaint: performance.getEntriesByType('paint').find(entry => entry.name === 'first-contentful-paint')?.startTime || 0,
+            firstPaint: performance.getEntriesByType('paint').find(entry => entry.name === 'first-paint') ? .startTime || 0,
+            firstContentfulPaint: performance.getEntriesByType('paint').find(entry => entry.name === 'first-contentful-paint') ? .startTime || 0,
             sessionId: this.sessionId,
             timestamp: new Date().toISOString()
         };
@@ -241,6 +274,9 @@ class AnalyticsTracker {
 
     // Core Web Vitals tracking
     trackCoreWebVitals() {
+        // Track only once per session to prevent spam
+        if (this.coreWebVitalsTracked) return;
+
         // Largest Contentful Paint (LCP)
         new PerformanceObserver((entryList) => {
             const entries = entryList.getEntries();
@@ -251,11 +287,14 @@ class AnalyticsTracker {
                 sessionId: this.sessionId,
                 timestamp: new Date().toISOString()
             });
+            this.coreWebVitalsTracked = true;
         }).observe({ entryTypes: ['largest-contentful-paint'] });
 
         // Interaction to Next Paint (INP) - replaced FID on March 12, 2024
         // Target: INP < 200ms
+        let inpTracked = false;
         new PerformanceObserver((entryList) => {
+            if (inpTracked) return;
             const entries = entryList.getEntries();
             entries.forEach(entry => {
                 // INP measures responsiveness - time from user interaction to next paint
@@ -266,12 +305,15 @@ class AnalyticsTracker {
                     sessionId: this.sessionId,
                     timestamp: new Date().toISOString()
                 });
+                inpTracked = true;
             });
         }).observe({ type: 'event', buffered: true, durationThreshold: 40 });
 
         // Cumulative Layout Shift (CLS)
         let clsValue = 0;
+        let clsTracked = false;
         new PerformanceObserver((entryList) => {
+            if (clsTracked) return;
             for (const entry of entryList.getEntries()) {
                 if (!entry.hadRecentInput) {
                     clsValue += entry.value;
@@ -283,6 +325,7 @@ class AnalyticsTracker {
                 sessionId: this.sessionId,
                 timestamp: new Date().toISOString()
             });
+            clsTracked = true;
         }).observe({ entryTypes: ['layout-shift'] });
     }
 

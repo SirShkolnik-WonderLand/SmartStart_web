@@ -23,7 +23,7 @@ const GTA_LOCATIONS = {
 // Service-specific email routing
 const serviceEmails = {
     'cissp': 'training@alicesolutionsgroup.com',
-    'cism': 'training@alicesolutionsgroup.com', 
+    'cism': 'training@alicesolutionsgroup.com',
     'iso27001': 'training@alicesolutionsgroup.com',
     'corporate': 'corporate@alicesolutionsgroup.com',
     'privacy': 'privacy@alicesolutionsgroup.com',
@@ -195,23 +195,23 @@ const replaceTemplate = (template, data) => {
 };
 
 // Save booking to file
-const saveBooking = async (bookingData) => {
+const saveBooking = async(bookingData) => {
     try {
         const bookingsDir = path.join(__dirname, 'bookings');
         await fs.mkdir(bookingsDir, { recursive: true });
-        
+
         const filename = `${bookingData.bookingId}.json`;
         const filepath = path.join(bookingsDir, filename);
-        
+
         await fs.writeFile(filepath, JSON.stringify(bookingData, null, 2));
-        
+
         // Also append to daily log
         const today = new Date().toISOString().split('T')[0];
         const logFile = path.join(bookingsDir, `${today}.log`);
         const logEntry = `${new Date().toISOString()} - ${bookingData.bookingId} - ${bookingData.service.name} - ${bookingData.contact.email}\n`;
-        
+
         await fs.appendFile(logFile, logEntry);
-        
+
         return true;
     } catch (error) {
         console.error('Error saving booking:', error);
@@ -220,9 +220,9 @@ const saveBooking = async (bookingData) => {
 };
 
 // Send confirmation emails
-const sendEmails = async (bookingData) => {
+const sendEmails = async(bookingData) => {
     const transporter = createTransporter();
-    
+
     try {
         // Prepare email data
         const emailData = {
@@ -244,7 +244,7 @@ const sendEmails = async (bookingData) => {
             company: bookingData.contact.company || 'N/A',
             notes: bookingData.contact.notes || 'None'
         };
-        
+
         // Send customer confirmation
         const customerEmail = {
             from: process.env.SMTP_USER || 'udi.shkolnik@alicesolutionsgroup.com',
@@ -252,9 +252,9 @@ const sendEmails = async (bookingData) => {
             subject: emailTemplates.customer.subject,
             html: replaceTemplate(emailTemplates.customer.template, emailData)
         };
-        
+
         await transporter.sendMail(customerEmail);
-        
+
         // Send admin notification
         const adminEmail = {
             from: process.env.SMTP_USER || 'udi.shkolnik@alicesolutionsgroup.com',
@@ -262,9 +262,9 @@ const sendEmails = async (bookingData) => {
             subject: replaceTemplate(emailTemplates.admin.subject, emailData),
             html: replaceTemplate(emailTemplates.admin.template, emailData)
         };
-        
+
         await transporter.sendMail(adminEmail);
-        
+
         return true;
     } catch (error) {
         console.error('Error sending emails:', error);
@@ -275,10 +275,10 @@ const sendEmails = async (bookingData) => {
 // API Routes
 
 // Create new booking
-router.post('/bookings', async (req, res) => {
+router.post('/bookings', async(req, res) => {
     try {
         const bookingData = req.body;
-        
+
         // Validate required fields
         const requiredFields = ['service', 'date', 'time', 'contact'];
         for (const field of requiredFields) {
@@ -288,7 +288,7 @@ router.post('/bookings', async (req, res) => {
                 });
             }
         }
-        
+
         // Save booking
         const saved = await saveBooking(bookingData);
         if (!saved) {
@@ -296,16 +296,16 @@ router.post('/bookings', async (req, res) => {
                 error: 'Failed to save booking'
             });
         }
-        
+
         // Send emails
         const emailsSent = await sendEmails(bookingData);
         if (!emailsSent) {
             console.warn('Emails failed to send for booking:', bookingData.bookingId);
         }
-        
+
         // Execute service-specific workflow
         await executeServiceWorkflow(bookingData.service.type, bookingData);
-        
+
         // Track analytics
         if (req.analyticsTracker) {
             req.analyticsTracker.trackEvent('booking_created', {
@@ -314,13 +314,13 @@ router.post('/bookings', async (req, res) => {
                 bookingId: bookingData.bookingId
             });
         }
-        
+
         res.json({
             success: true,
             bookingId: bookingData.bookingId,
             message: 'Booking created successfully'
         });
-        
+
     } catch (error) {
         console.error('Booking API error:', error);
         res.status(500).json({
@@ -330,14 +330,14 @@ router.post('/bookings', async (req, res) => {
 });
 
 // Get booking by ID
-router.get('/bookings/:bookingId', async (req, res) => {
+router.get('/bookings/:bookingId', async(req, res) => {
     try {
         const { bookingId } = req.params;
         const filepath = path.join(__dirname, 'bookings', `${bookingId}.json`);
-        
+
         const bookingData = await fs.readFile(filepath, 'utf8');
         res.json(JSON.parse(bookingData));
-        
+
     } catch (error) {
         if (error.code === 'ENOENT') {
             res.status(404).json({ error: 'Booking not found' });
@@ -349,11 +349,11 @@ router.get('/bookings/:bookingId', async (req, res) => {
 });
 
 // Get all bookings (admin only)
-router.get('/admin/bookings', async (req, res) => {
+router.get('/admin/bookings', async(req, res) => {
     try {
         const bookingsDir = path.join(__dirname, 'bookings');
         const files = await fs.readdir(bookingsDir);
-        
+
         const bookings = [];
         for (const file of files) {
             if (file.endsWith('.json')) {
@@ -362,12 +362,12 @@ router.get('/admin/bookings', async (req, res) => {
                 bookings.push(JSON.parse(bookingData));
             }
         }
-        
+
         // Sort by date (newest first)
         bookings.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-        
+
         res.json(bookings);
-        
+
     } catch (error) {
         console.error('Error retrieving bookings:', error);
         res.status(500).json({ error: 'Internal server error' });
@@ -375,22 +375,22 @@ router.get('/admin/bookings', async (req, res) => {
 });
 
 // Update booking status
-router.put('/bookings/:bookingId/status', async (req, res) => {
+router.put('/bookings/:bookingId/status', async(req, res) => {
     try {
         const { bookingId } = req.params;
         const { status, notes } = req.body;
-        
+
         const filepath = path.join(__dirname, 'bookings', `${bookingId}.json`);
         const bookingData = JSON.parse(await fs.readFile(filepath, 'utf8'));
-        
+
         bookingData.status = status;
         bookingData.statusNotes = notes;
         bookingData.updatedAt = new Date().toISOString();
-        
+
         await fs.writeFile(filepath, JSON.stringify(bookingData, null, 2));
-        
+
         res.json({ success: true, message: 'Booking status updated' });
-        
+
     } catch (error) {
         console.error('Error updating booking status:', error);
         res.status(500).json({ error: 'Internal server error' });
@@ -398,41 +398,41 @@ router.put('/bookings/:bookingId/status', async (req, res) => {
 });
 
 // Get booking statistics
-router.get('/admin/stats', async (req, res) => {
+router.get('/admin/stats', async(req, res) => {
     try {
         const bookingsDir = path.join(__dirname, 'bookings');
         const files = await fs.readdir(bookingsDir);
-        
+
         const stats = {
             total: 0,
             byService: {},
             byMonth: {},
             byStatus: {}
         };
-        
+
         for (const file of files) {
             if (file.endsWith('.json')) {
                 const filepath = path.join(bookingsDir, file);
                 const bookingData = JSON.parse(await fs.readFile(filepath, 'utf8'));
-                
+
                 stats.total++;
-                
+
                 // By service
                 const service = bookingData.service.type;
                 stats.byService[service] = (stats.byService[service] || 0) + 1;
-                
+
                 // By month
                 const month = new Date(bookingData.timestamp).toISOString().substr(0, 7);
                 stats.byMonth[month] = (stats.byMonth[month] || 0) + 1;
-                
+
                 // By status
                 const status = bookingData.status || 'pending';
                 stats.byStatus[status] = (stats.byStatus[status] || 0) + 1;
             }
         }
-        
+
         res.json(stats);
-        
+
     } catch (error) {
         console.error('Error retrieving stats:', error);
         res.status(500).json({ error: 'Internal server error' });
@@ -440,21 +440,21 @@ router.get('/admin/stats', async (req, res) => {
 });
 
 // Customer portal endpoints
-router.get('/customer/bookings', async (req, res) => {
+router.get('/customer/bookings', async(req, res) => {
     try {
         const { email } = req.query;
-        
+
         if (!email) {
             return res.status(400).json({ error: 'Email parameter is required' });
         }
-        
+
         const bookingsData = await fs.readFile(BOOKINGS_FILE, 'utf8');
         const { bookings } = JSON.parse(bookingsData);
-        
-        const customerBookings = bookings.filter(booking => 
+
+        const customerBookings = bookings.filter(booking =>
             booking.email.toLowerCase() === email.toLowerCase()
         );
-        
+
         res.json({ bookings: customerBookings });
     } catch (error) {
         console.error('Error fetching customer bookings:', error);
@@ -462,32 +462,32 @@ router.get('/customer/bookings', async (req, res) => {
     }
 });
 
-router.post('/customer/bookings/:id/confirm', async (req, res) => {
+router.post('/customer/bookings/:id/confirm', async(req, res) => {
     try {
         const { id } = req.params;
         const { email } = req.body;
-        
+
         const bookingsData = await fs.readFile(BOOKINGS_FILE, 'utf8');
         const data = JSON.parse(bookingsData);
-        
+
         const booking = data.bookings.find(b => b.id === id && b.email.toLowerCase() === email.toLowerCase());
-        
+
         if (!booking) {
             return res.status(404).json({ error: 'Booking not found' });
         }
-        
+
         if (booking.status !== 'pending') {
             return res.status(400).json({ error: 'Only pending bookings can be confirmed' });
         }
-        
+
         booking.status = 'confirmed';
         booking.confirmedAt = new Date().toISOString();
-        
+
         await fs.writeFile(BOOKINGS_FILE, JSON.stringify(data, null, 2));
-        
+
         // Send confirmation email
         await sendBookingConfirmation(booking);
-        
+
         res.json({ success: true, message: 'Booking confirmed successfully' });
     } catch (error) {
         console.error('Error confirming booking:', error);
@@ -495,32 +495,32 @@ router.post('/customer/bookings/:id/confirm', async (req, res) => {
     }
 });
 
-router.post('/customer/bookings/:id/cancel', async (req, res) => {
+router.post('/customer/bookings/:id/cancel', async(req, res) => {
     try {
         const { id } = req.params;
         const { email } = req.body;
-        
+
         const bookingsData = await fs.readFile(BOOKINGS_FILE, 'utf8');
         const data = JSON.parse(bookingsData);
-        
+
         const booking = data.bookings.find(b => b.id === id && b.email.toLowerCase() === email.toLowerCase());
-        
+
         if (!booking) {
             return res.status(404).json({ error: 'Booking not found' });
         }
-        
+
         if (booking.status === 'completed') {
             return res.status(400).json({ error: 'Completed bookings cannot be cancelled' });
         }
-        
+
         booking.status = 'cancelled';
         booking.cancelledAt = new Date().toISOString();
-        
+
         await fs.writeFile(BOOKINGS_FILE, JSON.stringify(data, null, 2));
-        
+
         // Send cancellation email
         await sendBookingCancellation(booking);
-        
+
         res.json({ success: true, message: 'Booking cancelled successfully' });
     } catch (error) {
         console.error('Error cancelling booking:', error);
@@ -531,7 +531,7 @@ router.post('/customer/bookings/:id/cancel', async (req, res) => {
 // Email functions for customer actions
 async function sendBookingConfirmation(booking) {
     const serviceEmail = serviceEmails[booking.service];
-    
+
     const customerHtml = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <div style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 20px; text-align: center;">
@@ -561,7 +561,7 @@ async function sendBookingConfirmation(booking) {
             </div>
         </div>
     `;
-    
+
     try {
         await transporter.sendMail({
             from: 'noreply@alicesolutionsgroup.com',
@@ -576,7 +576,7 @@ async function sendBookingConfirmation(booking) {
 
 async function sendBookingCancellation(booking) {
     const serviceEmail = serviceEmails[booking.service];
-    
+
     const customerHtml = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <div style="background: linear-gradient(135deg, #dc2626, #b91c1c); color: white; padding: 20px; text-align: center;">
@@ -608,7 +608,7 @@ async function sendBookingCancellation(booking) {
             </div>
         </div>
     `;
-    
+
     try {
         await transporter.sendMail({
             from: 'noreply@alicesolutionsgroup.com',
@@ -632,7 +632,7 @@ function getServiceName(serviceKey) {
         'ai-security': 'AI Security Training',
         'educational': 'Student & Educational Programs'
     };
-    
+
     return serviceNames[serviceKey] || serviceKey;
 }
 
@@ -644,9 +644,9 @@ async function executeServiceWorkflow(serviceType, bookingData) {
             console.warn(`No workflow defined for service: ${serviceType}`);
             return;
         }
-        
+
         console.log(`Executing workflow for ${workflow.name}:`);
-        
+
         // Log workflow actions for admin tracking
         const workflowLog = {
             service: serviceType,
@@ -656,17 +656,17 @@ async function executeServiceWorkflow(serviceType, bookingData) {
             executedAt: new Date().toISOString(),
             status: 'initiated'
         };
-        
+
         // Save workflow log
         await saveWorkflowLog(workflowLog);
-        
+
         // Execute follow-up actions based on service type
         for (const action of workflow.followUpActions) {
             await executeWorkflowAction(action, workflow, bookingData);
         }
-        
+
         console.log(`Workflow completed for ${workflow.name}`);
-        
+
     } catch (error) {
         console.error(`Error executing workflow for ${serviceType}:`, error);
     }
@@ -676,7 +676,7 @@ async function executeServiceWorkflow(serviceType, bookingData) {
 async function executeWorkflowAction(action, workflow, bookingData) {
     try {
         console.log(`Executing action: ${action}`);
-        
+
         // Action-specific logic
         if (action.includes('Send')) {
             await scheduleMaterialDelivery(workflow.materials, bookingData);
@@ -689,10 +689,10 @@ async function executeWorkflowAction(action, workflow, bookingData) {
         } else if (action.includes('Provide')) {
             await provideTemplates(workflow.materials, bookingData);
         }
-        
+
         // Log action completion
         await logWorkflowAction(action, bookingData.bookingId, 'completed');
-        
+
     } catch (error) {
         console.error(`Error executing action ${action}:`, error);
         await logWorkflowAction(action, bookingData.bookingId, 'failed');
@@ -704,7 +704,7 @@ async function scheduleMaterialDelivery(materials, bookingData) {
     // Schedule material delivery based on preparation time
     const workflow = serviceWorkflows[bookingData.service.type];
     const preparationDays = parseInt(workflow.preparationTime);
-    
+
     console.log(`Scheduling delivery of ${materials.join(', ')} for ${bookingData.contact.email}`);
     // In a real implementation, this would integrate with email scheduling or task management
 }
@@ -734,19 +734,19 @@ async function saveWorkflowLog(workflowLog) {
     try {
         const logFile = path.join(__dirname, 'workflow-logs.json');
         let logs = [];
-        
+
         try {
             const existingLogs = await fs.readFile(logFile, 'utf8');
             logs = JSON.parse(existingLogs);
         } catch (error) {
             // File doesn't exist yet, start with empty array
         }
-        
+
         logs.push(workflowLog);
-        
+
         await fs.writeFile(logFile, JSON.stringify(logs, null, 2));
         console.log(`Workflow log saved for ${workflowLog.service}`);
-        
+
     } catch (error) {
         console.error('Error saving workflow log:', error);
     }
@@ -756,48 +756,69 @@ async function logWorkflowAction(action, bookingId, status) {
     try {
         const logFile = path.join(__dirname, 'workflow-logs.json');
         let logs = [];
-        
+
         try {
             const existingLogs = await fs.readFile(logFile, 'utf8');
             logs = JSON.parse(existingLogs);
         } catch (error) {
             // File doesn't exist yet
         }
-        
+
         // Find the latest log for this booking
         const bookingLog = logs.find(log => log.bookingId === bookingId);
         if (bookingLog) {
             if (!bookingLog.actions) {
                 bookingLog.actions = [];
             }
-            
+
             bookingLog.actions.push({
                 action: action,
                 status: status,
                 timestamp: new Date().toISOString()
             });
-            
+
             // Update the log
             const logIndex = logs.findIndex(log => log.bookingId === bookingId);
             logs[logIndex] = bookingLog;
-            
+
             await fs.writeFile(logFile, JSON.stringify(logs, null, 2));
         }
-        
+
     } catch (error) {
         console.error('Error logging workflow action:', error);
     }
 }
 
 // Advanced reporting and analytics endpoints
-router.get('/analytics/overview', async (req, res) => {
+// Get recent bookings for admin dashboard
+router.get('/recent', async(req, res) => {
     try {
         const bookingsData = await fs.readFile(BOOKINGS_FILE, 'utf8');
         const { bookings } = JSON.parse(bookingsData);
-        
+
+        // Sort by creation date (newest first) and limit to 20
+        const recentBookings = bookings
+            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+            .slice(0, 20);
+
+        res.json(recentBookings);
+    } catch (error) {
+        console.error('Error fetching recent bookings:', error);
+        res.status(500).json({ error: 'Failed to fetch recent bookings' });
+    }
+});
+
+router.get('/analytics/overview', async(req, res) => {
+    try {
+        const bookingsData = await fs.readFile(BOOKINGS_FILE, 'utf8');
+        const { bookings } = JSON.parse(bookingsData);
+
         // Calculate comprehensive analytics
         const analytics = {
             totalBookings: bookings.length,
+            confirmedBookings: bookings.filter(b => b.status === 'confirmed').length,
+            pendingBookings: bookings.filter(b => !b.status || b.status === 'pending').length,
+            conversionRate: bookings.length > 0 ? Math.round((bookings.filter(b => b.status === 'confirmed').length / bookings.length) * 100) + '%' : '0%',
             bookingsByMonth: getBookingsByMonth(bookings),
             bookingsByService: getBookingsByService(bookings),
             bookingsByStatus: getBookingsByStatus(bookings),
@@ -808,9 +829,9 @@ router.get('/analytics/overview', async (req, res) => {
             trends: getBookingTrends(bookings),
             topCustomers: getTopCustomers(bookings)
         };
-        
+
         res.json(analytics);
-        
+
     } catch (error) {
         console.error('Error generating analytics:', error);
         res.status(500).json({ error: 'Failed to generate analytics' });
@@ -847,7 +868,7 @@ function getConversionRates(bookings) {
     const totalBookings = bookings.length;
     const confirmedBookings = bookings.filter(b => b.status === 'confirmed').length;
     const completedBookings = bookings.filter(b => b.status === 'completed').length;
-    
+
     return {
         confirmationRate: totalBookings > 0 ? (confirmedBookings / totalBookings * 100).toFixed(2) : 0,
         completionRate: totalBookings > 0 ? (completedBookings / totalBookings * 100).toFixed(2) : 0,
@@ -860,9 +881,9 @@ function getPopularTimeSlots(bookings) {
     bookings.forEach(booking => {
         timeSlotData[booking.time] = (timeSlotData[booking.time] || 0) + 1;
     });
-    
+
     return Object.entries(timeSlotData)
-        .sort(([,a], [,b]) => b - a)
+        .sort(([, a], [, b]) => b - a)
         .slice(0, 5)
         .reduce((obj, [time, count]) => {
             obj[time] = count;
@@ -878,10 +899,10 @@ function getCustomerRetention(bookings) {
         }
         customerBookings[booking.email]++;
     });
-    
+
     const totalCustomers = Object.keys(customerBookings).length;
     const returningCustomers = Object.values(customerBookings).filter(count => count > 1).length;
-    
+
     return {
         totalCustomers,
         returningCustomers,
@@ -891,13 +912,19 @@ function getCustomerRetention(bookings) {
 
 function getRevenueProjections(bookings) {
     const servicePrices = {
-        'cissp': 2500, 'cism': 2200, 'iso27001': 2800, 'corporate': 1500,
-        'privacy': 1800, 'tabletop': 2000, 'ai-security': 2000, 'educational': 0
+        'cissp': 2500,
+        'cism': 2200,
+        'iso27001': 2800,
+        'corporate': 1500,
+        'privacy': 1800,
+        'tabletop': 2000,
+        'ai-security': 2000,
+        'educational': 0
     };
-    
+
     let totalRevenue = 0;
     const revenueByService = {};
-    
+
     bookings.forEach(booking => {
         const price = servicePrices[booking.service] || 0;
         if (booking.status === 'confirmed' || booking.status === 'completed') {
@@ -905,7 +932,7 @@ function getRevenueProjections(bookings) {
             revenueByService[booking.service] = (revenueByService[booking.service] || 0) + price;
         }
     });
-    
+
     return {
         totalRevenue,
         revenueByService,
@@ -920,7 +947,7 @@ function getBookingTrends(bookings) {
         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
         return bookingDate >= thirtyDaysAgo;
     });
-    
+
     const previous30Days = bookings.filter(booking => {
         const bookingDate = new Date(booking.date);
         const sixtyDaysAgo = new Date();
@@ -929,10 +956,10 @@ function getBookingTrends(bookings) {
         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
         return bookingDate >= sixtyDaysAgo && bookingDate < thirtyDaysAgo;
     });
-    
-    const growthRate = previous30Days.length > 0 ? 
+
+    const growthRate = previous30Days.length > 0 ?
         (((last30Days.length - previous30Days.length) / previous30Days.length) * 100).toFixed(2) : 0;
-    
+
     return {
         last30Days: last30Days.length,
         previous30Days: previous30Days.length,
@@ -953,7 +980,7 @@ function getTopCustomers(bookings) {
         }
         customerBookings[booking.email].bookings++;
     });
-    
+
     return Object.values(customerBookings)
         .sort((a, b) => b.bookings - a.bookings)
         .slice(0, 10);
@@ -965,7 +992,7 @@ function convertToGTATime(date, time, fromTimezone = 'UTC') {
         // Create date object in the specified timezone
         const dateTimeString = `${date}T${time}:00`;
         const dateObj = new Date(dateTimeString);
-        
+
         // Convert to GTA timezone
         const gtaTime = new Intl.DateTimeFormat('en-CA', {
             timeZone: GTA_TIMEZONE,
@@ -976,7 +1003,7 @@ function convertToGTATime(date, time, fromTimezone = 'UTC') {
             minute: '2-digit',
             hour12: false
         }).formatToParts(dateObj);
-        
+
         return {
             date: `${gtaTime.find(part => part.type === 'year').value}-${gtaTime.find(part => part.type === 'month').value}-${gtaTime.find(part => part.type === 'day').value}`,
             time: `${gtaTime.find(part => part.type === 'hour').value}:${gtaTime.find(part => part.type === 'minute').value}`,
@@ -1000,7 +1027,7 @@ function getGTATimeInfo() {
         minute: '2-digit',
         hour12: true
     }).format(now);
-    
+
     return {
         currentTime: gtaTime,
         timezone: GTA_TIMEZONE,
@@ -1011,7 +1038,7 @@ function getGTATimeInfo() {
 function getTimezoneOffset() {
     const now = new Date();
     const utc = new Date(now.getTime() + (now.getTimezoneOffset() * 60000));
-    const gta = new Date(utc.toLocaleString("en-US", {timeZone: GTA_TIMEZONE}));
+    const gta = new Date(utc.toLocaleString("en-US", { timeZone: GTA_TIMEZONE }));
     const offset = (gta.getTime() - utc.getTime()) / (1000 * 60 * 60);
     return offset;
 }
@@ -1020,11 +1047,11 @@ function validateGTABusinessHours(date, time) {
     const bookingDateTime = new Date(`${date}T${time}:00`);
     const dayOfWeek = bookingDateTime.getDay(); // 0 = Sunday, 6 = Saturday
     const hour = bookingDateTime.getHours();
-    
+
     // Business hours: Monday-Friday, 8 AM - 6 PM
     const isWeekday = dayOfWeek >= 1 && dayOfWeek <= 5;
     const isBusinessHour = hour >= 8 && hour < 18;
-    
+
     return {
         isValid: isWeekday && isBusinessHour,
         reason: !isWeekday ? 'Weekend bookings not available' : !isBusinessHour ? 'Outside business hours (8 AM - 6 PM)' : 'Valid time slot'
@@ -1035,15 +1062,15 @@ function validateGTABusinessHours(date, time) {
 router.get('/timezone/validate', (req, res) => {
     try {
         const { date, time, location } = req.query;
-        
+
         if (!date || !time) {
             return res.status(400).json({ error: 'Date and time are required' });
         }
-        
+
         const validation = validateGTABusinessHours(date, time);
         const gtaTime = convertToGTATime(date, time);
         const timeInfo = getGTATimeInfo();
-        
+
         res.json({
             isValid: validation.isValid,
             reason: validation.reason,
@@ -1051,7 +1078,7 @@ router.get('/timezone/validate', (req, res) => {
             currentGTAInfo: timeInfo,
             location: GTA_LOCATIONS[location] || GTA_LOCATIONS.toronto
         });
-        
+
     } catch (error) {
         console.error('Error validating timezone:', error);
         res.status(500).json({ error: 'Failed to validate timezone' });
@@ -1062,24 +1089,24 @@ router.get('/timezone/validate', (req, res) => {
 router.get('/availability/timezone', (req, res) => {
     try {
         const { date, location = 'toronto' } = req.query;
-        
+
         if (!date) {
             return res.status(400).json({ error: 'Date is required' });
         }
-        
+
         const timeInfo = getGTATimeInfo();
         const locationInfo = GTA_LOCATIONS[location];
-        
+
         // Generate available time slots for GTA business hours
         const availableSlots = generateGTATimeSlots(date, location);
-        
+
         res.json({
             date: date,
             location: locationInfo,
             timezone: timeInfo,
             availableSlots: availableSlots
         });
-        
+
     } catch (error) {
         console.error('Error getting timezone availability:', error);
         res.status(500).json({ error: 'Failed to get availability' });
@@ -1089,12 +1116,12 @@ router.get('/availability/timezone', (req, res) => {
 function generateGTATimeSlots(date, location) {
     const slots = [];
     const locationInfo = GTA_LOCATIONS[location];
-    
+
     // Business hours: 8 AM to 6 PM, hourly slots
     for (let hour = 8; hour < 18; hour++) {
         const timeString = `${hour.toString().padStart(2, '0')}:00`;
         const validation = validateGTABusinessHours(date, timeString);
-        
+
         slots.push({
             time: timeString,
             available: validation.isValid,
@@ -1102,7 +1129,7 @@ function generateGTATimeSlots(date, location) {
             location: locationInfo.name
         });
     }
-    
+
     return slots;
 }
 
@@ -1110,14 +1137,14 @@ function generateGTATimeSlots(date, location) {
 const WAITLIST_FILE = path.join(__dirname, 'waitlist-data.json');
 
 // Add to waitlist endpoint
-router.post('/waitlist', async (req, res) => {
+router.post('/waitlist', async(req, res) => {
     try {
         const { service, email, name, phone, preferredDates, notes } = req.body;
-        
+
         if (!service || !email || !name) {
             return res.status(400).json({ error: 'Service, email, and name are required' });
         }
-        
+
         const waitlistEntry = {
             id: `waitlist_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
             service,
@@ -1130,19 +1157,19 @@ router.post('/waitlist', async (req, res) => {
             status: 'waiting',
             priority: calculateWaitlistPriority(service, email)
         };
-        
+
         await saveToWaitlist(waitlistEntry);
-        
+
         // Send waitlist confirmation email
         await sendWaitlistConfirmation(waitlistEntry);
-        
+
         res.json({
             success: true,
             waitlistId: waitlistEntry.id,
             message: 'Added to waitlist successfully',
             estimatedWaitTime: getEstimatedWaitTime(service)
         });
-        
+
     } catch (error) {
         console.error('Error adding to waitlist:', error);
         res.status(500).json({ error: 'Failed to add to waitlist' });
@@ -1150,19 +1177,19 @@ router.post('/waitlist', async (req, res) => {
 });
 
 // Get waitlist status
-router.get('/waitlist/status/:email', async (req, res) => {
+router.get('/waitlist/status/:email', async(req, res) => {
     try {
         const { email } = req.params;
         const waitlistEntries = await getWaitlistEntries();
         const userEntries = waitlistEntries.filter(entry => entry.email === email);
-        
+
         res.json({
             email,
             entries: userEntries,
             totalEntries: userEntries.length,
             activeEntries: userEntries.filter(e => e.status === 'waiting').length
         });
-        
+
     } catch (error) {
         console.error('Error getting waitlist status:', error);
         res.status(500).json({ error: 'Failed to get waitlist status' });
@@ -1170,7 +1197,7 @@ router.get('/waitlist/status/:email', async (req, res) => {
 });
 
 // Admin waitlist management
-router.get('/admin/waitlist', async (req, res) => {
+router.get('/admin/waitlist', async(req, res) => {
     try {
         const waitlistEntries = await getWaitlistEntries();
         const waitlistStats = {
@@ -1179,18 +1206,18 @@ router.get('/admin/waitlist', async (req, res) => {
             entriesByStatus: {},
             averageWaitTime: calculateAverageWaitTime(waitlistEntries)
         };
-        
+
         // Calculate stats
         waitlistEntries.forEach(entry => {
             waitlistStats.entriesByService[entry.service] = (waitlistStats.entriesByService[entry.service] || 0) + 1;
             waitlistStats.entriesByStatus[entry.status] = (waitlistStats.entriesByStatus[entry.status] || 0) + 1;
         });
-        
+
         res.json({
             entries: waitlistEntries,
             stats: waitlistStats
         });
-        
+
     } catch (error) {
         console.error('Error getting admin waitlist:', error);
         res.status(500).json({ error: 'Failed to get waitlist data' });
@@ -1207,15 +1234,15 @@ async function saveToWaitlist(waitlistEntry) {
         } catch (error) {
             // File doesn't exist yet
         }
-        
+
         waitlist.push(waitlistEntry);
-        
+
         // Sort by priority (higher priority first)
         waitlist.sort((a, b) => b.priority - a.priority);
-        
+
         await fs.writeFile(WAITLIST_FILE, JSON.stringify(waitlist, null, 2));
         console.log(`Waitlist entry saved for ${waitlistEntry.email}`);
-        
+
     } catch (error) {
         console.error('Error saving to waitlist:', error);
         throw error;
@@ -1243,7 +1270,7 @@ function calculateWaitlistPriority(service, email) {
         'privacy': 4,
         'educational': 3
     };
-    
+
     return servicePriority[service] || 1;
 }
 
@@ -1258,7 +1285,7 @@ function getEstimatedWaitTime(service) {
         'privacy': '1-2 weeks',
         'educational': '1 week'
     };
-    
+
     return waitTimes[service] || '1-2 weeks';
 }
 
@@ -1270,7 +1297,7 @@ function calculateAverageWaitTime(waitlistEntries) {
 async function sendWaitlistConfirmation(waitlistEntry) {
     try {
         const transporter = createTransporter();
-        
+
         const mailOptions = {
             from: process.env.SMTP_USER || 'udi.shkolnik@alicesolutionsgroup.com',
             to: waitlistEntry.email,
@@ -1291,10 +1318,10 @@ async function sendWaitlistConfirmation(waitlistEntry) {
                 </div>
             `
         };
-        
+
         await transporter.sendMail(mailOptions);
         console.log(`Waitlist confirmation sent to ${waitlistEntry.email}`);
-        
+
     } catch (error) {
         console.error('Error sending waitlist confirmation:', error);
     }
@@ -1308,31 +1335,31 @@ function rateLimit(req, res, next) {
     const now = Date.now();
     const windowMs = 15 * 60 * 1000; // 15 minutes
     const maxRequests = 100; // Max requests per window
-    
+
     if (!rateLimitMap.has(clientId)) {
         rateLimitMap.set(clientId, { count: 1, resetTime: now + windowMs });
     } else {
         const clientData = rateLimitMap.get(clientId);
-        
+
         if (now > clientData.resetTime) {
             clientData.count = 1;
             clientData.resetTime = now + windowMs;
         } else {
             clientData.count++;
         }
-        
+
         if (clientData.count > maxRequests) {
             return res.status(429).json({ error: 'Too many requests, please try again later' });
         }
     }
-    
+
     next();
 }
 
 // Input sanitization
 function sanitizeInput(input) {
     if (typeof input !== 'string') return input;
-    
+
     return input
         .trim()
         .replace(/[<>]/g, '') // Remove potential HTML tags
@@ -1368,7 +1395,7 @@ router.get('/mobile/validate', (req, res) => {
         performanceOptimized: true,
         mobileSEO: true
     };
-    
+
     res.json({
         mobileReady: true,
         features: mobileFeatures,
@@ -1395,7 +1422,7 @@ router.get('/accessibility/validate', (req, res) => {
         formLabels: true,
         errorHandling: true
     };
-    
+
     res.json({
         accessible: true,
         features: accessibilityFeatures,
@@ -1408,5 +1435,229 @@ router.get('/accessibility/validate', (req, res) => {
         ]
     });
 });
+
+// Free Consultation Booking Endpoint
+router.post('/book-consultation', async(req, res) => {
+    try {
+        const {
+            type,
+            needsDescription,
+            time,
+            firstName,
+            lastName,
+            email,
+            phone,
+            company,
+            notes,
+            subscribe,
+            privacyAgree,
+            timestamp,
+            source
+        } = req.body;
+
+        // Validate required fields
+        if (!type || !time || !firstName || !lastName || !email || !phone || !subscribe || !privacyAgree) {
+            return res.status(400).json({
+                success: false,
+                error: 'Missing required fields'
+            });
+        }
+
+        // Create consultation booking record
+        const consultationData = {
+            id: `CONS-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+            type: 'free-consultation',
+            consultationType: type,
+            needsDescription: needsDescription || '',
+            time: time,
+            client: {
+                firstName,
+                lastName,
+                email,
+                phone,
+                company: company || ''
+            },
+            notes: notes || '',
+            preferences: {
+                subscribe,
+                privacyAgree
+            },
+            status: 'pending',
+            source: source || 'free-consultation-booking',
+            timestamp: timestamp || new Date().toISOString(),
+            created: new Date().toISOString()
+        };
+
+        // Save to bookings file
+        let bookings = [];
+        try {
+            const data = await fs.readFile(BOOKINGS_FILE, 'utf8');
+            bookings = JSON.parse(data);
+        } catch (error) {
+            // File doesn't exist, start with empty array
+        }
+
+        bookings.push(consultationData);
+        await fs.writeFile(BOOKINGS_FILE, JSON.stringify(bookings, null, 2));
+
+        // Send confirmation email
+        await sendConsultationConfirmation(consultationData);
+
+        // Send notification to admin
+        await sendConsultationNotification(consultationData);
+
+        res.json({
+            success: true,
+            message: 'Free consultation booked successfully',
+            bookingId: consultationData.id
+        });
+
+    } catch (error) {
+        console.error('Consultation booking error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to book consultation'
+        });
+    }
+});
+
+// Send consultation confirmation email
+async function sendConsultationConfirmation(data) {
+    const transporter = nodemailer.createTransporter({
+        host: process.env.SMTP_HOST || 'smtp.gmail.com',
+        port: 587,
+        secure: false,
+        auth: {
+            user: process.env.SMTP_USER,
+            pass: process.env.SMTP_PASS
+        }
+    });
+
+    const mailOptions = {
+            from: process.env.SMTP_FROM || 'noreply@alicesolutionsgroup.com',
+            to: data.client.email,
+            subject: 'Free Cybersecurity Consultation Confirmed - AliceSolutionsGroup',
+            html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h2 style="color: #3b82f6;">Free Consultation Confirmed!</h2>
+                <p>Hi ${data.client.firstName},</p>
+                <p>Thank you for booking your free 15-minute cybersecurity consultation with AliceSolutionsGroup.</p>
+                
+                <h3>Consultation Details:</h3>
+                <ul>
+                    <li><strong>Type:</strong> ${getConsultationTypeName(data.consultationType)}</li>
+                    <li><strong>Time:</strong> ${data.time}</li>
+                    <li><strong>Duration:</strong> 15 minutes</li>
+                    <li><strong>Booking ID:</strong> ${data.id}</li>
+                </ul>
+                
+                ${data.needsDescription ? `
+                <h3>Your Needs:</h3>
+                <p style="background: #f8f9fa; padding: 15px; border-radius: 5px;">${data.needsDescription}</p>
+                ` : ''}
+                
+                <h3>What to Expect:</h3>
+                <ul>
+                    <li>Quick assessment of your cybersecurity needs</li>
+                    <li>Recommendations for next steps</li>
+                    <li>Overview of our services</li>
+                    <li>Q&A session</li>
+                </ul>
+                
+                <p><strong>Note:</strong> This is a free consultation to understand your needs. No promises or guarantees are made.</p>
+                
+                <p>We'll send you a calendar invite shortly with meeting details.</p>
+                
+                <p>Best regards,<br>
+                Udi Shkolnik<br>
+                AliceSolutionsGroup</p>
+            </div>
+        `
+    };
+
+    try {
+        await transporter.sendMail(mailOptions);
+        console.log(`Consultation confirmation sent to ${data.client.email}`);
+    } catch (error) {
+        console.error('Failed to send consultation confirmation:', error);
+    }
+}
+
+// Send consultation notification to admin
+async function sendConsultationNotification(data) {
+    const transporter = nodemailer.createTransporter({
+        host: process.env.SMTP_HOST || 'smtp.gmail.com',
+        port: 587,
+        secure: false,
+        auth: {
+            user: process.env.SMTP_USER,
+            pass: process.env.SMTP_PASS
+        }
+    });
+
+    const mailOptions = {
+        from: process.env.SMTP_FROM || 'noreply@alicesolutionsgroup.com',
+        to: process.env.ADMIN_EMAIL || 'udi@alicesolutionsgroup.com',
+        subject: `New Free Consultation Booking - ${data.client.firstName} ${data.client.lastName}`,
+        html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h2 style="color: #3b82f6;">New Free Consultation Booking</h2>
+                
+                <h3>Client Information:</h3>
+                <ul>
+                    <li><strong>Name:</strong> ${data.client.firstName} ${data.client.lastName}</li>
+                    <li><strong>Email:</strong> ${data.client.email}</li>
+                    <li><strong>Phone:</strong> ${data.client.phone}</li>
+                    <li><strong>Company:</strong> ${data.client.company || 'Not provided'}</li>
+                </ul>
+                
+                <h3>Consultation Details:</h3>
+                <ul>
+                    <li><strong>Type:</strong> ${getConsultationTypeName(data.consultationType)}</li>
+                    <li><strong>Time:</strong> ${data.time}</li>
+                    <li><strong>Booking ID:</strong> ${data.id}</li>
+                </ul>
+                
+                ${data.needsDescription ? `
+                <h3>Client Needs:</h3>
+                <p style="background: #f8f9fa; padding: 15px; border-radius: 5px;">${data.needsDescription}</p>
+                ` : ''}
+                
+                ${data.notes ? `
+                <h3>Additional Notes:</h3>
+                <p style="background: #f8f9fa; padding: 15px; border-radius: 5px;">${data.notes}</p>
+                ` : ''}
+                
+                <h3>Preferences:</h3>
+                <ul>
+                    <li><strong>Newsletter:</strong> ${data.preferences.subscribe ? 'Yes' : 'No'}</li>
+                    <li><strong>Privacy Agreed:</strong> ${data.preferences.privacyAgree ? 'Yes' : 'No'}</li>
+                </ul>
+                
+                <p><strong>Action Required:</strong> Schedule the consultation and send calendar invite.</p>
+            </div>
+        `
+    };
+
+    try {
+        await transporter.sendMail(mailOptions);
+        console.log(`Consultation notification sent to admin`);
+    } catch (error) {
+        console.error('Failed to send consultation notification:', error);
+    }
+}
+
+// Helper function to get consultation type name
+function getConsultationTypeName(type) {
+    const typeNames = {
+        'security': 'Security Assessment',
+        'compliance': 'Compliance Review',
+        'training': 'Training Needs',
+        'automation': 'AI & Automation Security',
+        'services': 'Full Services',
+        'general': 'General Questions'
+    };
+    return typeNames[type] || type;
+}
 
 module.exports = router;

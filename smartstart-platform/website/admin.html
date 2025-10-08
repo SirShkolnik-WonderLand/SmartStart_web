@@ -9,6 +9,133 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/styles.css">
     <link rel="stylesheet" href="assets/css/admin-dashboard.css">
+    <style>
+        /* Booking Analytics Styles */
+        
+        .booking-stat {
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .admin-section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .refresh-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.3s ease;
+        }
+        
+        .refresh-btn:hover {
+            background: #2563eb;
+        }
+        
+        .bookings-container {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+        }
+        
+        .bookings-table-container {
+            overflow-x: auto;
+        }
+        
+        .bookings-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        
+        .bookings-table th {
+            background: rgba(59, 130, 246, 0.1);
+            padding: 1rem 0.75rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-primary);
+            border-bottom: 2px solid var(--glass-border);
+        }
+        
+        .bookings-table td {
+            padding: 1rem 0.75rem;
+            border-bottom: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+        }
+        
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .status-confirmed {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+        
+        .status-pending {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+        }
+        
+        .status-cancelled {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+        
+        .action-btn {
+            background: none;
+            border: 1px solid var(--glass-border);
+            padding: 0.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 0 0.25rem;
+            transition: all 0.3s ease;
+        }
+        
+        .action-btn:hover {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: #3b82f6;
+        }
+        
+        .loading-cell,
+        .error-cell,
+        .empty-cell {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+        
+        .error-cell {
+            color: #ef4444;
+        }
+        
+        @media (max-width: 768px) {
+            .bookings-table {
+                font-size: 0.8rem;
+            }
+            .bookings-table th,
+            .bookings-table td {
+                padding: 0.75rem 0.5rem;
+            }
+            .admin-section-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+        }
+    </style>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="stylesheet" href="assets/css/footer-lean.css">
 </head>
@@ -75,6 +202,73 @@
                             <p class="stat-label">Avg. Session</p>
                             <span class="stat-change positive" id="sessionChange">+0%</span>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Booking Analytics -->
+        <section class="admin-section">
+            <div class="admin-container">
+                <h2 class="section-title">📅 Booking Analytics</h2>
+                <p class="section-subtitle">Consultation bookings and conversion metrics</p>
+
+                <div class="stats-grid">
+                    <div class="stat-card booking-stat">
+                        <div class="stat-icon">📅</div>
+                        <div class="stat-content">
+                            <h3 class="stat-number" id="totalBookings">0</h3>
+                            <p class="stat-label">Total Bookings</p>
+                        </div>
+                    </div>
+                    <div class="stat-card booking-stat">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-content">
+                            <h3 class="stat-number" id="confirmedBookings">0</h3>
+                            <p class="stat-label">Confirmed</p>
+                        </div>
+                    </div>
+                    <div class="stat-card booking-stat">
+                        <div class="stat-icon">🔄</div>
+                        <div class="stat-content">
+                            <h3 class="stat-number" id="pendingBookings">0</h3>
+                            <p class="stat-label">Pending</p>
+                        </div>
+                    </div>
+                    <div class="stat-card booking-stat">
+                        <div class="stat-icon">📊</div>
+                        <div class="stat-content">
+                            <h3 class="stat-number" id="conversionRate">0%</h3>
+                            <p class="stat-label">Conversion Rate</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Bookings -->
+                <div class="admin-section-header">
+                    <h3 class="admin-section-title">📋 Recent Bookings</h3>
+                    <button class="refresh-btn" onclick="loadBookingData()">🔄 Refresh</button>
+                </div>
+
+                <div class="bookings-container">
+                    <div class="bookings-table-container">
+                        <table class="bookings-table" id="bookingsTable">
+                            <thead>
+                                <tr>
+                                    <th>Date & Time</th>
+                                    <th>Type</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bookingsTableBody">
+                                <tr>
+                                    <td colspan="6" class="loading-cell">Loading bookings...</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -394,6 +588,105 @@
     <script src="assets/js/admin-dashboard.js"></script>
     <script src="assets/js/load-components.js"></script>
     <script src="assets/js/script.js"></script>
+
+    <!-- Booking Analytics Script -->
+    <script>
+        // Load booking data from the API
+        async function loadBookingData() {
+            try {
+                const response = await fetch('/api/booking/analytics/overview');
+                const data = await response.json();
+
+                // Update booking stats
+                document.getElementById('totalBookings').textContent = data.totalBookings || 0;
+                document.getElementById('confirmedBookings').textContent = data.confirmedBookings || 0;
+                document.getElementById('pendingBookings').textContent = data.pendingBookings || 0;
+                document.getElementById('conversionRate').textContent = data.conversionRate || '0%';
+
+                // Load recent bookings
+                await loadRecentBookings();
+
+            } catch (error) {
+                console.error('Error loading booking data:', error);
+                // Show error state
+                document.getElementById('bookingsTableBody').innerHTML =
+                    '<tr><td colspan="6" class="error-cell">Error loading bookings. Please try again.</td></tr>';
+            }
+        }
+
+        // Load recent bookings
+        async function loadRecentBookings() {
+            try {
+                const response = await fetch('/api/booking/recent');
+                const bookings = await response.json();
+
+                const tableBody = document.getElementById('bookingsTableBody');
+
+                if (bookings.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="6" class="empty-cell">No bookings found.</td></tr>';
+                    return;
+                }
+
+                tableBody.innerHTML = bookings.map(booking => {
+                    const date = new Date(booking.consultationTime);
+                    const statusClass = booking.status === 'confirmed' ? 'status-confirmed' :
+                        booking.status === 'cancelled' ? 'status-cancelled' : 'status-pending';
+
+                    return `
+                        <tr>
+                            <td>${date.toLocaleDateString()} ${date.toLocaleTimeString()}</td>
+                            <td>${booking.type || 'Consultation'}</td>
+                            <td>${booking.firstName} ${booking.lastName}</td>
+                            <td>${booking.email}</td>
+                            <td><span class="status-badge ${statusClass}">${booking.status || 'pending'}</span></td>
+                            <td>
+                                <button class="action-btn view-btn" onclick="viewBooking('${booking.id}')">👁️</button>
+                                <button class="action-btn confirm-btn" onclick="confirmBooking('${booking.id}')">✅</button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+
+            } catch (error) {
+                console.error('Error loading recent bookings:', error);
+                document.getElementById('bookingsTableBody').innerHTML =
+                    '<tr><td colspan="6" class="error-cell">Error loading bookings.</td></tr>';
+            }
+        }
+
+        // View booking details
+        function viewBooking(bookingId) {
+            // Implement booking details modal
+            alert(`View booking details for ID: ${bookingId}`);
+        }
+
+        // Confirm booking
+        async function confirmBooking(bookingId) {
+            try {
+                const response = await fetch(`/api/booking/confirm/${bookingId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    alert('Booking confirmed successfully!');
+                    loadBookingData(); // Refresh data
+                } else {
+                    alert('Error confirming booking');
+                }
+            } catch (error) {
+                console.error('Error confirming booking:', error);
+                alert('Error confirming booking');
+            }
+        }
+
+        // Load booking data when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            loadBookingData();
+        });
+    </script>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
