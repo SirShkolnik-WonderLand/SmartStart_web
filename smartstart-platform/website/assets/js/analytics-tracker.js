@@ -252,7 +252,7 @@ class AnalyticsTracker {
     trackSEOMetrics() {
         const seoData = {
             pageTitle: document.title,
-            metaDescription: document.querySelector('meta[name="description"]')?.content,
+            metaDescription: document.querySelector('meta[name="description"]') ? .content,
             h1Count: document.querySelectorAll('h1').length,
             h2Count: document.querySelectorAll('h2').length,
             h3Count: document.querySelectorAll('h3').length,
@@ -263,8 +263,8 @@ class AnalyticsTracker {
             wordCount: document.body.textContent.split(/\s+/).length,
             loadTime: performance.timing.loadEventEnd - performance.timing.navigationStart,
             domContentLoaded: performance.timing.domContentLoadedEventEnd - performance.timing.navigationStart,
-            firstPaint: performance.getEntriesByType('paint').find(entry => entry.name === 'first-paint')?.startTime || 0,
-            firstContentfulPaint: performance.getEntriesByType('paint').find(entry => entry.name === 'first-contentful-paint')?.startTime || 0,
+            firstPaint: performance.getEntriesByType('paint').find(entry => entry.name === 'first-paint') ? .startTime || 0,
+            firstContentfulPaint: performance.getEntriesByType('paint').find(entry => entry.name === 'first-contentful-paint') ? .startTime || 0,
             sessionId: this.sessionId,
             timestamp: new Date().toISOString()
         };
