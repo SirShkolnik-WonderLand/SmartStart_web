@@ -146,6 +146,29 @@ body::before {
     margin: 0 auto;
 }
 
+.header-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.mobile-menu-toggle {
+    display: none;
+    flex-direction: column;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+}
+
+.mobile-menu-toggle span {
+    width: 25px;
+    height: 3px;
+    background: var(--text-primary);
+    margin: 3px 0;
+    transition: 0.3s;
+}
+
 .logo {
     display: flex;
     align-items: center;
@@ -1675,6 +1698,18 @@ main {
         border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
+    }
+    
+    .mobile-menu-toggle {
+        display: flex !important;
+    }
+    
+    .nav-menu {
+        display: none;
+    }
+    
+    .header-actions {
+        display: none;
     }
     /* Force dark theme on all elements */
     .hero,

@@ -7,24 +7,22 @@ function loadNavbar() {
         .then(data => {
             const headerContainer = document.getElementById('header');
             if (headerContainer) {
-                // Create header structure
+                // Create header structure that matches existing CSS
                 headerContainer.innerHTML = `
-                    <header class="header">
-                        <div class="header-container">
-                            <div class="header-left">
-                                <a href="/index.html" class="logo">
-                                    <img src="/assets/images/AliceSolutionsGroup-logo-owl-rabbit-fox.png" alt="AliceSolutionsGroup" class="logo-img">
-                                    <span class="logo-text">AliceSolutionsGroup</span>
+                    <header class="global-header">
+                        <div class="header-content">
+                            <div class="logo">
+                                <a href="/index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 1rem;">
+                                    <img src="/assets/images/AliceSolutionsGroup-logo-owl-rabbit-fox.png" alt="AliceSolutionsGroup" style="height: 50px; width: auto;">
+                                    <span style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary);">AliceSolutionsGroup</span>
                                 </a>
                             </div>
-                            <div class="header-center">
-                                ${data}
+                            ${data}
+                            <div class="header-actions" style="display: flex; gap: 1rem; align-items: center;">
+                                <a href="/booking.html" class="cta-button primary">Book Training</a>
+                                <a href="/customer-portal.html" class="cta-button secondary">Portal</a>
                             </div>
-                            <div class="header-right">
-                                <a href="/booking.html" class="btn btn-primary">Book Training</a>
-                                <a href="/customer-portal.html" class="btn btn-secondary">Portal</a>
-                            </div>
-                            <button class="mobile-menu-toggle" aria-label="Toggle menu">
+                            <button class="mobile-menu-toggle" aria-label="Toggle menu" style="display: none;">
                                 <span></span>
                                 <span></span>
                                 <span></span>
