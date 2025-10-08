@@ -13,6 +13,8 @@ const serviceEmails = {
     'iso27001': 'training@alicesolutionsgroup.com',
     'corporate': 'corporate@alicesolutionsgroup.com',
     'privacy': 'privacy@alicesolutionsgroup.com',
+    'tabletop': 'corporate@alicesolutionsgroup.com',
+    'ai-security': 'corporate@alicesolutionsgroup.com',
     'educational': 'education@alicesolutionsgroup.com'
 };
 
