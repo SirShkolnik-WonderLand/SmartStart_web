@@ -275,7 +275,7 @@ app.get('/api/admin/analytics', (req, res) => {
 });
 
 // Admin bookings endpoint
-app.get('/api/admin/bookings', async (req, res) => {
+app.get('/api/admin/bookings', async(req, res) => {
     try {
         const bookingsData = await fs.readFile(BOOKINGS_FILE, 'utf8');
         const bookings = JSON.parse(bookingsData);
