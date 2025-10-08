@@ -1,5 +1,5 @@
-// Component Loader for Navbar and Footer
-// This file loads the shared navbar and footer on all pages
+// Component Loader for Header and Footer
+// This file loads the shared header and footer on all pages
 
 function loadNavbar() {
     fetch('/includes/navbar.html')
@@ -7,26 +7,17 @@ function loadNavbar() {
         .then(data => {
             const headerContainer = document.getElementById('header');
             if (headerContainer) {
-                // Create header structure that matches existing CSS
+                // Create thin header structure
                 headerContainer.innerHTML = `
                     <header class="global-header">
                         <div class="header-content">
                             <div class="logo">
                                 <a href="/index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 1rem;">
-                                    <img src="/assets/images/AliceSolutionsGroup-logo-owl-rabbit-fox.png" alt="AliceSolutionsGroup" style="height: 50px; width: auto;">
-                                    <span style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary);">AliceSolutionsGroup</span>
+                                    <img src="/assets/images/AliceSolutionsGroup-logo-owl-rabbit-fox.png" alt="AliceSolutionsGroup" style="height: 40px; width: auto;">
+                                    <span style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary);">AliceSolutionsGroup</span>
                                 </a>
                             </div>
                             ${data}
-                            <div class="header-actions" style="display: flex; gap: 1rem; align-items: center;">
-                                <a href="/booking.html" class="cta-button primary">Book Training</a>
-                                <a href="/customer-portal.html" class="cta-button secondary">Portal</a>
-                            </div>
-                            <button class="mobile-menu-toggle" aria-label="Toggle menu" style="display: none;">
-                                <span></span>
-                                <span></span>
-                                <span></span>
-                            </button>
                         </div>
                     </header>
                 `;
