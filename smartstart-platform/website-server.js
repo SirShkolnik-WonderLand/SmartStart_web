@@ -85,6 +85,7 @@ const analyticsStorage = {
 
 // Data persistence functions
 const DATA_FILE = path.join(__dirname, 'analytics-data.json');
+const BOOKINGS_FILE = path.join(__dirname, 'bookings-data.json');
 
 function saveAnalyticsData() {
     try {
@@ -271,6 +272,18 @@ app.get('/api/admin/analytics', (req, res) => {
     // Always return real data, even if empty
     console.log('Using REAL data only - no mock data');
     res.json(realData);
+});
+
+// Admin bookings endpoint
+app.get('/api/admin/bookings', async (req, res) => {
+    try {
+        const bookingsData = await fs.readFile(BOOKINGS_FILE, 'utf8');
+        const bookings = JSON.parse(bookingsData);
+        res.json({ bookings });
+    } catch (error) {
+        console.error('Error loading bookings:', error);
+        res.json({ bookings: [] });
+    }
 });
 
 app.post('/api/admin/track', (req, res) => {

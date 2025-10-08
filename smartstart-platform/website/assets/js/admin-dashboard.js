@@ -12,7 +12,8 @@ class AdminDashboard {
             referrals: new Map(),
             devices: new Map(),
             browsers: new Map(),
-            liveActivity: []
+            liveActivity: [],
+            bookings: []
         };
 
         this.init();
@@ -20,6 +21,7 @@ class AdminDashboard {
 
     init() {
         this.loadAnalyticsData();
+        this.loadBookingData();
         this.setupEventListeners();
         this.startRealTimeUpdates();
         this.updateLastUpdated();
@@ -429,6 +431,82 @@ class AdminDashboard {
         if (value <= threshold.poor) return 'metric-value warning';
         return 'metric-value poor';
     }
+    
+    async loadBookingData() {
+        try {
+            const response = await fetch('/api/admin/bookings');
+            if (response.ok) {
+                const data = await response.json();
+                this.analyticsData.bookings = data.bookings || [];
+                this.updateBookingDisplay();
+            }
+        } catch (error) {
+            console.error('Error loading booking data:', error);
+        }
+    }
+
+    updateBookingDisplay() {
+        const bookings = this.analyticsData.bookings;
+        
+        // Update booking statistics
+        const totalBookingsEl = document.getElementById('totalBookings');
+        const pendingBookingsEl = document.getElementById('pendingBookings');
+        const confirmedBookingsEl = document.getElementById('confirmedBookings');
+        const monthlyBookingsEl = document.getElementById('monthlyBookings');
+        
+        if (totalBookingsEl) totalBookingsEl.textContent = bookings.length;
+        if (pendingBookingsEl) pendingBookingsEl.textContent = bookings.filter(b => b.status === 'pending').length;
+        if (confirmedBookingsEl) confirmedBookingsEl.textContent = bookings.filter(b => b.status === 'confirmed').length;
+        
+        // Monthly bookings
+        const currentMonth = new Date().toISOString().slice(0, 7);
+        const monthlyBookings = bookings.filter(b => b.createdAt && b.createdAt.startsWith(currentMonth)).length;
+        if (monthlyBookingsEl) monthlyBookingsEl.textContent = monthlyBookings;
+        
+        // Recent bookings list
+        const recentBookings = bookings.slice(-5).reverse();
+        const bookingList = document.getElementById('recentBookings');
+        if (bookingList) {
+            if (recentBookings.length === 0) {
+                bookingList.innerHTML = '<div class="no-data">No bookings yet</div>';
+            } else {
+                bookingList.innerHTML = recentBookings.map(booking => `
+                    <div class="booking-item">
+                        <div class="booking-info">
+                            <strong>${booking.service}</strong>
+                            <span class="booking-date">${new Date(booking.createdAt).toLocaleDateString()}</span>
+                        </div>
+                        <div class="booking-details">
+                            <span class="booking-name">${booking.name}</span>
+                            <span class="booking-status ${booking.status}">${booking.status}</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+        
+        // Service statistics
+        const serviceStats = {};
+        bookings.forEach(booking => {
+            serviceStats[booking.service] = (serviceStats[booking.service] || 0) + 1;
+        });
+        
+        const serviceStatsContainer = document.getElementById('serviceStats');
+        if (serviceStatsContainer) {
+            if (Object.keys(serviceStats).length === 0) {
+                serviceStatsContainer.innerHTML = '<div class="no-data">No service data yet</div>';
+            } else {
+                serviceStatsContainer.innerHTML = Object.entries(serviceStats)
+                    .sort((a, b) => b[1] - a[1])
+                    .map(([service, count]) => `
+                        <div class="service-stat-item">
+                            <span class="service-name">${service}</span>
+                            <span class="service-count">${count} bookings</span>
+                        </div>
+                    `).join('');
+            }
+        }
+    }
 }
 
 // Global functions for action buttons
@@ -486,5 +564,114 @@ style.textContent = `
         from { opacity: 0; transform: translateY(-10px); }
         to { opacity: 1; transform: translateY(0); }
     }
+    
+    .booking-item {
+        padding: 12px;
+        border: 1px solid #333;
+        border-radius: 8px;
+        margin-bottom: 8px;
+        background: rgba(255, 255, 255, 0.05);
+    }
+    
+    .booking-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+    
+    .booking-details {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .booking-status {
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+    
+    .booking-status.pending {
+        background: #fbbf24;
+        color: #000;
+    }
+    
+    .booking-status.confirmed {
+        background: #10b981;
+        color: #000;
+    }
+    
+    .service-stat-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid #333;
+    }
+    
+    .service-name {
+        text-transform: capitalize;
+        font-weight: 500;
+    }
+    
+    .service-count {
+        color: var(--accent-primary);
+        font-weight: 600;
+    }
+    
+    .booking-actions {
+        margin-top: 16px;
+        display: flex;
+        gap: 8px;
+    }
+    
+    .management-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
 `;
 document.head.appendChild(style);
+
+// Booking management functions
+async function loadBookingData() {
+    if (window.adminDashboard) {
+        await window.adminDashboard.loadBookingData();
+    }
+}
+
+function refreshBookings() {
+    if (window.adminDashboard) {
+        window.adminDashboard.loadBookingData();
+    }
+}
+
+function exportBookings() {
+    const bookings = window.adminDashboard?.analyticsData.bookings || [];
+    const csvContent = "data:text/csv;charset=utf-8," + 
+        "Service,Name,Email,Phone,Date,Time,Status,Created\n" +
+        bookings.map(booking => 
+            `${booking.service},${booking.name},${booking.email},${booking.phone},${booking.date},${booking.time},${booking.status},${booking.createdAt}`
+        ).join("\n");
+    
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "bookings.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+function viewAllBookings() {
+    alert('Full booking management interface coming soon!');
+}
+
+function manageAvailability() {
+    alert('Availability management coming soon!');
+}
+
+function sendReminders() {
+    alert('Reminder system coming soon!');
+}
