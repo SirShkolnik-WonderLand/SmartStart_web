@@ -84,32 +84,21 @@ class AnalyticsTracker {
             fingerprint: this.generateDeviceFingerprint()
         };
 
-        // Get IP and location info (with error handling)
-        fetch('https://ipapi.co/json/')
-            .then(response => {
-                if (!response.ok) throw new Error('Location API unavailable');
-                return response.json();
-            })
-            .then(data => {
-                userInfo.ip = data.ip;
-                userInfo.country = data.country_name;
-                userInfo.city = data.city;
-                userInfo.region = data.region;
-                userInfo.timezone = data.timezone;
-                userInfo.isp = data.org;
-                userInfo.asn = data.asn;
-                userInfo.org = data.org;
-                userInfo.postal = data.postal;
-                userInfo.latitude = data.latitude;
-                userInfo.longitude = data.longitude;
+        // Send basic user info without external IP tracking (CSP compliant)
+        // Note: IP and location tracking disabled for privacy and CSP compliance
+        userInfo.ip = 'privacy-protected';
+        userInfo.country = 'unknown';
+        userInfo.city = 'unknown';
+        userInfo.region = 'unknown';
+        userInfo.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        userInfo.isp = 'unknown';
+        userInfo.asn = 'unknown';
+        userInfo.org = 'unknown';
+        userInfo.postal = 'unknown';
+        userInfo.latitude = 'unknown';
+        userInfo.longitude = 'unknown';
 
-                this.sendAnalytics('userinfo', userInfo);
-            })
-            .catch(error => {
-                console.debug('Location data unavailable in development mode');
-                // Still send basic info without IP
-                this.sendAnalytics('userinfo', userInfo);
-            });
+        this.sendAnalytics('userinfo', userInfo);
     }
 
     generateDeviceFingerprint() {
