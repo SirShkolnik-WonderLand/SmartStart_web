@@ -385,20 +385,12 @@
     </main>
 
     <!-- Admin Footer -->
-    <!-- Include shared footer -->
-    <div id="footer-container"></div>
+    <!-- Footer -->
+    <div id="footer"></div>
 
     <script src="assets/js/admin-dashboard.js"></script>
 
-    <!-- Load shared footer -->
-    <script>
-        fetch('includes/footer.html')
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById('footer-container').innerHTML = data;
-            })
-            .catch(error => console.error('Error loading footer:', error));
-    </script>
+    
     <script src="assets/js/script.js"></script>
 
     <script>

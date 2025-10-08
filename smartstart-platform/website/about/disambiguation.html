@@ -66,17 +66,8 @@
 
 <body>
     <!-- Header -->
-    <header class="global-header" id="header">
-        <div class="header-content">
-            <a href="../index.html" class="logo">
-                <img src="../assets/images/AliceSolutionsGroup-logo-owl-rabbit-fox.png" alt="AliceSolutionsGroup" class="logo-image">
-                <span>AliceSolutionsGroup</span>
-            </a>
-            <!-- Include shared navigation -->
-            <div id="navbar-container"></div>
-            <button class="mobile-menu-toggle" aria-label="Toggle menu">☰</button>
-        </div>
-    </header>
+    <!-- Header -->
+    <div id="header"></div>
 
     <!-- Main Content -->
     <main id="main-content">
@@ -301,7 +292,7 @@
     </main>
 
     <!-- Footer -->
-    <div id="footer-container"></div>
+    <div id="footer"></div>
 
     <script src="../assets/js/components.js"></script>
     <script src="../assets/js/scroll-animations.js"></script>
@@ -323,7 +314,7 @@
         fetch('../includes/footer.html')
             .then(response => response.text())
             .then(data => {
-                document.getElementById('footer-container').innerHTML = data;
+                document.getElementById('footer').innerHTML = data;
             })
             .catch(error => console.error('Error loading footer:', error));
     </script>

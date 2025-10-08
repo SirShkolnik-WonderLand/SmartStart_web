@@ -65,17 +65,8 @@
 
 <body>
     <!-- Header -->
-    <header class="global-header" id="header">
-        <div class="header-content">
-            <a href="index.html" class="logo">
-                <img src="assets/images/AliceSolutionsGroup-logo-owl-rabbit-fox.png" alt="AliceSolutionsGroup" class="logo-image">
-                <span>AliceSolutionsGroup</span>
-            </a>
-            <!-- Include shared navigation -->
-            <div id="navbar-container"></div>
-            <button class="mobile-menu-toggle" aria-label="Toggle menu">☰</button>
-        </div>
-    </header>
+    <!-- Header -->
+    <div id="header"></div>
 
     <!-- Hero Section -->
     <main id="main-content">
@@ -435,32 +426,16 @@
     </main>
 
     <!-- Footer -->
-    <!-- Include shared footer -->
-    <div id="footer-container"></div>
+    <!-- Footer -->
+    <div id="footer"></div>
 
     <!-- Analytics -->
     <script src="assets/js/analytics-tracker.js"></script>
     <script src="assets/js/script.js"></script>
 
-    <!-- Load shared navigation -->
-    <script>
-        fetch('includes/navbar.html')
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById('navbar-container').innerHTML = data;
-            })
-            .catch(error => console.error('Error loading navigation:', error));
-    </script>
+    
 
-    <!-- Load shared footer -->
-    <script>
-        fetch('includes/footer.html')
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById('footer-container').innerHTML = data;
-            })
-            .catch(error => console.error('Error loading footer:', error));
-    </script>
+    
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {

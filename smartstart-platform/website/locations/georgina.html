@@ -76,17 +76,8 @@
 
 <body>
     <!-- Header -->
-    <header class="global-header" id="header">
-        <div class="header-content">
-            <a href="../index.html" class="logo">
-                <img src="../assets/images/AliceSolutionsGroup-logo-owl-rabbit-fox.png" alt="AliceSolutionsGroup" class="logo-image">
-                <span>AliceSolutionsGroup</span>
-            </a>
-            <!-- Include shared navigation -->
-            <div id="navbar-container"></div>
-            <button class="mobile-menu-toggle" aria-label="Toggle menu">☰</button>
-        </div>
-    </header>
+    <!-- Header -->
+    <div id="header"></div>
 
     <!-- Hero Section -->
     <section class="hero-section" style="padding-top: 100px; min-height: 80vh; display: flex; align-items: center;">
@@ -240,7 +231,7 @@
     </section>
 
     <!-- Footer -->
-    <div id="footer-container"></div>
+    <div id="footer"></div>
 
     <!-- Scripts -->
     <script src="../assets/js/script.js"></script>
@@ -256,7 +247,7 @@
         fetch('../includes/footer.html')
             .then(response => response.text())
             .then(data => {
-                document.getElementById('footer-container').innerHTML = data;
+                document.getElementById('footer').innerHTML = data;
             });
 
         // Initialize mobile menu toggle

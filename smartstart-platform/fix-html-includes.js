@@ -12,11 +12,11 @@ const WEBSITE_DIR = path.join(__dirname, 'website');
 async function findAllHtmlFiles(dir, relativePath = '') {
     const files = [];
     const entries = await fs.readdir(dir, { withFileTypes: true });
-    
+
     for (const entry of entries) {
         const fullPath = path.join(dir, entry.name);
         const relPath = path.join(relativePath, entry.name);
-        
+
         if (entry.isDirectory() && entry.name !== 'node_modules' && entry.name !== 'includes') {
             const subFiles = await findAllHtmlFiles(fullPath, relPath);
             files.push(...subFiles);
@@ -24,7 +24,7 @@ async function findAllHtmlFiles(dir, relativePath = '') {
             files.push({ path: fullPath, relativePath: relPath });
         }
     }
-    
+
     return files;
 }
 
@@ -42,10 +42,10 @@ async function fixHtmlFile(filePath, relativePath) {
     let content = await fs.readFile(filePath, 'utf8');
     let modified = false;
     const changes = [];
-    
+
     const footerCssPath = getCorrectFooterCssPath(relativePath);
     const scriptPath = getCorrectScriptPath(relativePath, 'script.js');
-    
+
     // Fix 1: Add footer-lean.css if missing
     if (!content.includes('footer-lean.css')) {
         // Find the </head> tag and add before it
@@ -57,7 +57,7 @@ async function fixHtmlFile(filePath, relativePath) {
             changes.push('✅ Added footer-lean.css');
         }
     }
-    
+
     // Fix 2: Ensure script.js is loaded
     if (!content.includes('script.js')) {
         // Add before </body>
@@ -69,12 +69,12 @@ async function fixHtmlFile(filePath, relativePath) {
             changes.push('✅ Added script.js');
         }
     }
-    
+
     // Fix 3: Add loadNavbar() and loadFooter() calls if missing
     if (!content.includes('loadNavbar()') || !content.includes('loadFooter()')) {
         // Find existing script tag or add one
         const scriptMatch = content.match(/<script>[\s\S]*?document\.addEventListener\('DOMContentLoaded'[\s\S]*?<\/script>/);
-        
+
         if (scriptMatch) {
             // Add to existing DOMContentLoaded
             let scriptContent = scriptMatch[0];
@@ -112,11 +112,11 @@ async function fixHtmlFile(filePath, relativePath) {
             }
         }
     }
-    
+
     if (modified) {
         await fs.writeFile(filePath, content, 'utf8');
     }
-    
+
     return {
         path: relativePath,
         modified,
@@ -126,17 +126,17 @@ async function fixHtmlFile(filePath, relativePath) {
 
 async function main() {
     console.log('🔧 Fixing all HTML files with correct footer and header includes...\n');
-    
+
     const htmlFiles = await findAllHtmlFiles(WEBSITE_DIR);
     console.log(`Found ${htmlFiles.length} HTML files to fix\n`);
-    
+
     let fixedCount = 0;
     const results = [];
-    
+
     for (const file of htmlFiles) {
         const result = await fixHtmlFile(file.path, file.relativePath);
         results.push(result);
-        
+
         if (result.modified) {
             fixedCount++;
             console.log(`📄 ${result.path}`);
@@ -144,7 +144,7 @@ async function main() {
             console.log();
         }
     }
-    
+
     console.log('═══════════════════════════════════════════════════');
     console.log('📊 FIX SUMMARY');
     console.log('═══════════════════════════════════════════════════');
