@@ -6,6 +6,9 @@ const path = require('path');
 
 const router = express.Router();
 
+// File paths
+const BOOKINGS_FILE = path.join(__dirname, 'bookings-data.json');
+
 // Service-specific email routing
 const serviceEmails = {
     'cissp': 'training@alicesolutionsgroup.com',
@@ -361,5 +364,202 @@ router.get('/admin/stats', async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+
+// Customer portal endpoints
+router.get('/customer/bookings', async (req, res) => {
+    try {
+        const { email } = req.query;
+        
+        if (!email) {
+            return res.status(400).json({ error: 'Email parameter is required' });
+        }
+        
+        const bookingsData = await fs.readFile(BOOKINGS_FILE, 'utf8');
+        const { bookings } = JSON.parse(bookingsData);
+        
+        const customerBookings = bookings.filter(booking => 
+            booking.email.toLowerCase() === email.toLowerCase()
+        );
+        
+        res.json({ bookings: customerBookings });
+    } catch (error) {
+        console.error('Error fetching customer bookings:', error);
+        res.status(404).json({ error: 'No bookings found for this email' });
+    }
+});
+
+router.post('/customer/bookings/:id/confirm', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { email } = req.body;
+        
+        const bookingsData = await fs.readFile(BOOKINGS_FILE, 'utf8');
+        const data = JSON.parse(bookingsData);
+        
+        const booking = data.bookings.find(b => b.id === id && b.email.toLowerCase() === email.toLowerCase());
+        
+        if (!booking) {
+            return res.status(404).json({ error: 'Booking not found' });
+        }
+        
+        if (booking.status !== 'pending') {
+            return res.status(400).json({ error: 'Only pending bookings can be confirmed' });
+        }
+        
+        booking.status = 'confirmed';
+        booking.confirmedAt = new Date().toISOString();
+        
+        await fs.writeFile(BOOKINGS_FILE, JSON.stringify(data, null, 2));
+        
+        // Send confirmation email
+        await sendBookingConfirmation(booking);
+        
+        res.json({ success: true, message: 'Booking confirmed successfully' });
+    } catch (error) {
+        console.error('Error confirming booking:', error);
+        res.status(500).json({ error: 'Failed to confirm booking' });
+    }
+});
+
+router.post('/customer/bookings/:id/cancel', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { email } = req.body;
+        
+        const bookingsData = await fs.readFile(BOOKINGS_FILE, 'utf8');
+        const data = JSON.parse(bookingsData);
+        
+        const booking = data.bookings.find(b => b.id === id && b.email.toLowerCase() === email.toLowerCase());
+        
+        if (!booking) {
+            return res.status(404).json({ error: 'Booking not found' });
+        }
+        
+        if (booking.status === 'completed') {
+            return res.status(400).json({ error: 'Completed bookings cannot be cancelled' });
+        }
+        
+        booking.status = 'cancelled';
+        booking.cancelledAt = new Date().toISOString();
+        
+        await fs.writeFile(BOOKINGS_FILE, JSON.stringify(data, null, 2));
+        
+        // Send cancellation email
+        await sendBookingCancellation(booking);
+        
+        res.json({ success: true, message: 'Booking cancelled successfully' });
+    } catch (error) {
+        console.error('Error cancelling booking:', error);
+        res.status(500).json({ error: 'Failed to cancel booking' });
+    }
+});
+
+// Email functions for customer actions
+async function sendBookingConfirmation(booking) {
+    const serviceEmail = serviceEmails[booking.service];
+    
+    const customerHtml = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <div style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 20px; text-align: center;">
+                <h1>Booking Confirmed</h1>
+                <p>AliceSolutionsGroup</p>
+            </div>
+            
+            <div style="padding: 20px; background: #f8fafc;">
+                <h2>Your Training Session is Confirmed!</h2>
+                <p>Thank you for confirming your training session. Here are the details:</p>
+                
+                <div style="background: white; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                    <p><strong>Service:</strong> ${getServiceName(booking.service)}</p>
+                    <p><strong>Date:</strong> ${new Date(booking.date).toLocaleDateString()}</p>
+                    <p><strong>Time:</strong> ${booking.time}</p>
+                    <p><strong>Booking ID:</strong> ${booking.id}</p>
+                </div>
+                
+                <h3>What's Next?</h3>
+                <p>You will receive additional preparation materials and session details via email within 24 hours.</p>
+                
+                <h3>Need to Make Changes?</h3>
+                <p>Visit your <a href="https://alicesolutionsgroup.com/customer-portal.html?email=${booking.email}">Customer Portal</a> to manage your booking.</p>
+                
+                <h3>Contact Information</h3>
+                <p>For questions, contact: ${serviceEmail}</p>
+            </div>
+        </div>
+    `;
+    
+    try {
+        await transporter.sendMail({
+            from: 'noreply@alicesolutionsgroup.com',
+            to: booking.email,
+            subject: 'Training Session Confirmed - AliceSolutionsGroup',
+            html: customerHtml
+        });
+    } catch (error) {
+        console.error('Error sending confirmation email:', error);
+    }
+}
+
+async function sendBookingCancellation(booking) {
+    const serviceEmail = serviceEmails[booking.service];
+    
+    const customerHtml = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <div style="background: linear-gradient(135deg, #dc2626, #b91c1c); color: white; padding: 20px; text-align: center;">
+                <h1>Booking Cancelled</h1>
+                <p>AliceSolutionsGroup</p>
+            </div>
+            
+            <div style="padding: 20px; background: #f8fafc;">
+                <h2>Your Training Session Has Been Cancelled</h2>
+                <p>Your booking has been successfully cancelled. Here are the details:</p>
+                
+                <div style="background: white; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                    <p><strong>Service:</strong> ${getServiceName(booking.service)}</p>
+                    <p><strong>Date:</strong> ${new Date(booking.date).toLocaleDateString()}</p>
+                    <p><strong>Time:</strong> ${booking.time}</p>
+                    <p><strong>Booking ID:</strong> ${booking.id}</p>
+                    <p><strong>Cancelled:</strong> ${new Date(booking.cancelledAt).toLocaleString()}</p>
+                </div>
+                
+                <h3>Need to Reschedule?</h3>
+                <p>We'd be happy to help you reschedule your training session. Visit our <a href="https://alicesolutionsgroup.com/booking.html">booking page</a> to schedule a new session.</p>
+                
+                <h3>Contact Information</h3>
+                <p>For questions or to reschedule, contact: ${serviceEmail}</p>
+                
+                <p style="margin-top: 20px; color: #64748b; font-size: 0.9rem;">
+                    Thank you for considering AliceSolutionsGroup for your cybersecurity training needs.
+                </p>
+            </div>
+        </div>
+    `;
+    
+    try {
+        await transporter.sendMail({
+            from: 'noreply@alicesolutionsgroup.com',
+            to: booking.email,
+            subject: 'Training Session Cancelled - AliceSolutionsGroup',
+            html: customerHtml
+        });
+    } catch (error) {
+        console.error('Error sending cancellation email:', error);
+    }
+}
+
+function getServiceName(serviceKey) {
+    const serviceNames = {
+        'cissp': 'CISSP Training',
+        'cism': 'CISM Training',
+        'iso27001': 'ISO 27001 Lead Auditor',
+        'corporate': 'Corporate Security Awareness',
+        'privacy': 'PHIPA/PIPEDA Privacy Training',
+        'tabletop': 'Executive Tabletop Exercises',
+        'ai-security': 'AI Security Training',
+        'educational': 'Student & Educational Programs'
+    };
+    
+    return serviceNames[serviceKey] || serviceKey;
+}
 
 module.exports = router;

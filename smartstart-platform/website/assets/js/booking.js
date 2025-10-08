@@ -345,6 +345,10 @@ class BookingSystem {
                     <span class="detail-label">Booking ID:</span>
                     <span class="detail-value">${this.bookingData.bookingId}</span>
                 </div>
+                <div class="customer-portal-link">
+                    <h4>Manage Your Booking</h4>
+                    <p>Visit your <a href="customer-portal.html?email=${this.bookingData.contact.email}" class="portal-link">Customer Portal</a> to view and manage your training sessions.</p>
+                </div>
             `;
         }
         

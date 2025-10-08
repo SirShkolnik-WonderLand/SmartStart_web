@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Portal - AliceSolutionsGroup</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="assets/css/customer-portal.css">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+</head>
+
+<body>
+    <!-- Customer Portal Header -->
+    <header class="portal-header">
+        <div class="portal-header-content">
+            <div class="portal-logo">
+                <img src="assets/images/AliceSolutionsGroup-logo-owl-rabbit-fox.png" alt="AliceSolutionsGroup" class="portal-logo-image">
+                <span>Customer Portal</span>
+            </div>
+            <div class="portal-nav">
+                <a href="index.html" class="portal-nav-link">← Back to Site</a>
+                <a href="booking.html" class="portal-nav-link">New Booking</a>
+                <span class="portal-status" id="portalStatus">🟢 Active</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Customer Portal Main Content -->
+    <main class="portal-main">
+        <!-- Welcome Section -->
+        <section class="portal-section">
+            <div class="portal-container">
+                <h1 class="portal-title">Welcome to Your Training Portal</h1>
+                <p class="portal-subtitle">Manage your training sessions and track your cybersecurity learning journey</p>
+                
+                <!-- Customer Search -->
+                <div class="customer-search">
+                    <div class="search-container">
+                        <input type="email" id="customerEmail" placeholder="Enter your email address" class="search-input">
+                        <button id="searchBookings" class="search-button">Find My Bookings</button>
+                    </div>
+                    <p class="search-help">Enter the email address you used for booking to view your training sessions</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Customer Bookings -->
+        <section class="portal-section" id="bookingsSection" style="display: none;">
+            <div class="portal-container">
+                <h2 class="section-title">Your Training Sessions</h2>
+                
+                <!-- Booking Summary -->
+                <div class="booking-summary">
+                    <div class="summary-card">
+                        <div class="summary-icon">📅</div>
+                        <div class="summary-content">
+                            <h3 class="summary-number" id="totalBookings">0</h3>
+                            <p class="summary-label">Total Sessions</p>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-icon">✅</div>
+                        <div class="summary-content">
+                            <h3 class="summary-number" id="confirmedBookings">0</h3>
+                            <p class="summary-label">Confirmed</p>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-icon">⏳</div>
+                        <div class="summary-content">
+                            <h3 class="summary-number" id="pendingBookings">0</h3>
+                            <p class="summary-label">Pending</p>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-icon">📚</div>
+                        <div class="summary-content">
+                            <h3 class="summary-number" id="completedSessions">0</h3>
+                            <p class="summary-label">Completed</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bookings List -->
+                <div class="bookings-container">
+                    <div class="bookings-header">
+                        <h3>Recent Bookings</h3>
+                        <div class="booking-filters">
+                            <select id="statusFilter" class="filter-select">
+                                <option value="all">All Status</option>
+                                <option value="confirmed">Confirmed</option>
+                                <option value="pending">Pending</option>
+                                <option value="completed">Completed</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
+                            <select id="serviceFilter" class="filter-select">
+                                <option value="all">All Services</option>
+                                <option value="cissp">CISSP Training</option>
+                                <option value="cism">CISM Training</option>
+                                <option value="iso27001">ISO 27001</option>
+                                <option value="corporate">Corporate Training</option>
+                                <option value="privacy">Privacy Training</option>
+                                <option value="tabletop">Tabletop Exercises</option>
+                                <option value="ai-security">AI Security</option>
+                                <option value="educational">Educational Programs</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="bookings-list" id="bookingsList">
+                        <div class="loading">Loading your bookings...</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Training Resources -->
+        <section class="portal-section" id="resourcesSection" style="display: none;">
+            <div class="portal-container">
+                <h2 class="section-title">Training Resources</h2>
+                <div class="resources-grid">
+                    <div class="resource-card">
+                        <div class="resource-icon">📖</div>
+                        <h3>Training Materials</h3>
+                        <p>Access your course materials, handouts, and reference guides</p>
+                        <button class="resource-button">View Materials</button>
+                    </div>
+                    <div class="resource-card">
+                        <div class="resource-icon">🎯</div>
+                        <h3>Practice Tests</h3>
+                        <p>Take practice exams to prepare for your certification</p>
+                        <button class="resource-button">Start Practice</button>
+                    </div>
+                    <div class="resource-card">
+                        <div class="resource-icon">💬</div>
+                        <h3>Support Forum</h3>
+                        <p>Connect with other students and get help from instructors</p>
+                        <button class="resource-button">Join Forum</button>
+                    </div>
+                    <div class="resource-card">
+                        <div class="resource-icon">📊</div>
+                        <h3>Progress Tracking</h3>
+                        <p>Monitor your learning progress and certification readiness</p>
+                        <button class="resource-button">View Progress</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Support -->
+        <section class="portal-section">
+            <div class="portal-container">
+                <h2 class="section-title">Need Help?</h2>
+                <div class="support-options">
+                    <div class="support-card">
+                        <div class="support-icon">📧</div>
+                        <h3>Email Support</h3>
+                        <p>Get help via email from our training team</p>
+                        <a href="mailto:support@alicesolutionsgroup.com" class="support-button">Email Support</a>
+                    </div>
+                    <div class="support-card">
+                        <div class="support-icon">📞</div>
+                        <h3>Phone Support</h3>
+                        <p>Speak directly with our training coordinators</p>
+                        <a href="tel:+1-416-555-0123" class="support-button">Call Support</a>
+                    </div>
+                    <div class="support-card">
+                        <div class="support-icon">💬</div>
+                        <h3>Live Chat</h3>
+                        <p>Chat with our support team in real-time</p>
+                        <button class="support-button" onclick="openLiveChat()">Start Chat</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Customer Portal Footer -->
+    <footer class="portal-footer">
+        <div class="portal-container">
+            <div class="footer-content">
+                <p>&copy; 2025 AliceSolutionsGroup. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="legal/privacy.html">Privacy Policy</a>
+                    <a href="legal/terms.html">Terms of Service</a>
+                    <a href="contact.html">Contact Us</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/customer-portal.js"></script>
+</body>
+
+</html>
