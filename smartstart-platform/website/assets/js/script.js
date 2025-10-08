@@ -5,7 +5,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Load analytics tracker script if not already loaded
     if (!document.querySelector('script[src*="analytics-tracker.js"]')) {
         const script = document.createElement('script');
-        script.src = 'assets/js/analytics-tracker.js';
+        // Determine correct path based on current directory
+        const currentPath = window.location.pathname;
+        const depth = currentPath.split('/').length - 2; // Subtract 2 for filename and empty first element
+        const prefix = depth > 0 ? '../'.repeat(depth) : '';
+        script.src = prefix + 'assets/js/analytics-tracker.js';
         script.onload = function() {
             if (typeof AnalyticsTracker !== 'undefined') {
                 window.analyticsTracker = new AnalyticsTracker();
