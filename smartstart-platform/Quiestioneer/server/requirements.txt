@@ -1,0 +1,31 @@
+# Core FastAPI dependencies
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+python-multipart==0.0.6
+
+# Database
+sqlite3  # Built into Python
+
+# PDF Generation
+weasyprint==60.2
+cffi==1.16.0
+
+# Security & Validation
+pydantic[email]==2.5.0
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+
+# CORS and middleware
+python-cors==1.7.0
+
+# Environment and configuration
+python-dotenv==1.0.0
+
+# Logging and monitoring
+structlog==23.2.0
+
+# Production server
+gunicorn==21.2.0
+
+# Security headers
+secure==0.3.0

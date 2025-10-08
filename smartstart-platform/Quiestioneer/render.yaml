@@ -1,0 +1,58 @@
+services:
+  - type: web
+    name: smb-cyber-health-check
+    env: docker
+    dockerfilePath: ./Dockerfile
+    plan: starter
+    region: oregon
+    branch: main
+    
+    # Environment variables
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 8000
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        value: sqlite:///./smb_health_check.db
+      - key: MAX_ASSESSMENTS_PER_IP
+        value: 10
+      - key: RATE_LIMIT_WINDOW
+        value: 3600
+    
+    # Health check
+    healthCheckPath: /health
+    
+    # Auto-deploy
+    autoDeploy: true
+    
+    # Build settings
+    buildCommand: echo "Using Docker build"
+    
+    # Security headers
+    headers:
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: X-XSS-Protection
+        value: 1; mode=block
+      - path: /*
+        name: Strict-Transport-Security
+        value: max-age=31536000; includeSubDomains
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+      - path: /*
+        name: Content-Security-Policy
+        value: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self';
+    
+    # Custom domains (configure as needed)
+    # customDomains:
+    #   - smbcybercheck.com
+    #   - www.smbcybercheck.com

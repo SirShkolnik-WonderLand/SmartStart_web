@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Book Training Session - AliceSolutionsGroup</title>
     <meta name="description" content="Book professional cybersecurity training sessions with certified instructors. CISSP, CISM, ISO 27001, and corporate training available across Toronto and GTA.">
     <meta name="robots" content="index, follow">
-    
+
     <link rel="canonical" href="https://alicesolutionsgroup.com/booking.html">
-    
+
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/styles.css">
     <link rel="stylesheet" href="assets/css/footer-lean.css">
@@ -18,7 +19,6 @@
 </head>
 
 <body>
-    <!-- Header -->
     <!-- Header -->
     <div id="header"></div>
 
@@ -50,7 +50,7 @@
                                 </div>
                                 <div class="service-price">$2,500 CAD</div>
                             </div>
-                            
+
                             <div class="service-card" data-service="cism">
                                 <div class="service-icon">🛡️</div>
                                 <h3>CISM Training</h3>
@@ -61,7 +61,7 @@
                                 </div>
                                 <div class="service-price">$2,200 CAD</div>
                             </div>
-                            
+
                             <div class="service-card" data-service="iso27001">
                                 <div class="service-icon">📋</div>
                                 <h3>ISO 27001 Lead Auditor</h3>
@@ -72,7 +72,7 @@
                                 </div>
                                 <div class="service-price">$2,800 CAD</div>
                             </div>
-                            
+
                             <div class="service-card" data-service="corporate">
                                 <div class="service-icon">🏢</div>
                                 <h3>Corporate Security Awareness</h3>
@@ -83,7 +83,7 @@
                                 </div>
                                 <div class="service-price">Custom Quote</div>
                             </div>
-                            
+
                             <div class="service-card" data-service="privacy">
                                 <div class="service-icon">🔒</div>
                                 <h3>PHIPA/PIPEDA Privacy Training</h3>
@@ -94,7 +94,7 @@
                                 </div>
                                 <div class="service-price">$1,800 CAD</div>
                             </div>
-                            
+
                             <div class="service-card" data-service="tabletop">
                                 <div class="service-icon">🎯</div>
                                 <h3>Executive Tabletop Exercises</h3>
@@ -105,7 +105,7 @@
                                 </div>
                                 <div class="service-price">Custom Quote</div>
                             </div>
-                            
+
                             <div class="service-card" data-service="ai-security">
                                 <div class="service-icon">🤖</div>
                                 <h3>AI Security Training</h3>
@@ -116,7 +116,7 @@
                                 </div>
                                 <div class="service-price">$2,000 CAD</div>
                             </div>
-                            
+
                             <div class="service-card" data-service="educational">
                                 <div class="service-icon">🎓</div>
                                 <h3>Student & Educational Programs</h3>
@@ -145,7 +145,7 @@
                                     <!-- Calendar will be populated by JavaScript -->
                                 </div>
                             </div>
-                            
+
                             <div class="time-slots">
                                 <h4>Available Times</h4>
                                 <div class="time-grid" id="time-slots">
@@ -173,7 +173,7 @@
                                     <input type="text" id="last-name" name="lastName" required>
                                 </div>
                             </div>
-                            
+
                             <div class="form-row">
                                 <div class="form-group">
                                     <label for="email">Email Address *</label>
@@ -184,12 +184,12 @@
                                     <input type="tel" id="phone" name="phone" required>
                                 </div>
                             </div>
-                            
+
                             <div class="form-group">
                                 <label for="company">Company/Organization</label>
                                 <input type="text" id="company" name="company">
                             </div>
-                            
+
                             <div class="form-group">
                                 <label for="location">Preferred Location</label>
                                 <select id="location" name="location">
@@ -203,7 +203,7 @@
                                     <option value="online">Online (Virtual)</option>
                                 </select>
                             </div>
-                            
+
                             <div class="form-group">
                                 <label for="participants">Number of Participants</label>
                                 <select id="participants" name="participants">
@@ -214,12 +214,12 @@
                                     <option value="20+">20+ People</option>
                                 </select>
                             </div>
-                            
+
                             <div class="form-group">
                                 <label for="notes">Additional Notes or Requirements</label>
                                 <textarea id="notes" name="notes" rows="4" placeholder="Any specific requirements, accessibility needs, or questions..."></textarea>
                             </div>
-                            
+
                             <div class="form-group checkbox-group">
                                 <label class="checkbox-label">
                                     <input type="checkbox" id="terms" name="terms" required>
@@ -227,7 +227,7 @@
                                     I agree to the <a href="legal/terms.html" target="_blank">Terms of Service</a> and <a href="legal/privacy.html" target="_blank">Privacy Policy</a>
                                 </label>
                             </div>
-                            
+
                             <div class="form-group checkbox-group">
                                 <label class="checkbox-label">
                                     <input type="checkbox" id="newsletter" name="newsletter">
@@ -236,7 +236,7 @@
                                 </label>
                             </div>
                         </form>
-                        
+
                         <div class="step-navigation">
                             <button class="btn-secondary" id="back-step-3">Back</button>
                             <button class="btn-primary" id="submit-booking">Book Training Session</button>
@@ -249,11 +249,11 @@
                             <div class="success-icon">✅</div>
                             <h2>Booking Confirmed!</h2>
                             <p>Your training session has been successfully booked. You will receive a confirmation email shortly.</p>
-                            
+
                             <div class="booking-details" id="booking-details">
                                 <!-- Booking details will be populated by JavaScript -->
                             </div>
-                            
+
                             <div class="confirmation-actions">
                                 <button class="btn-primary" onclick="window.location.href='index.html'">Return to Home</button>
                                 <button class="btn-secondary" onclick="window.print()">Print Confirmation</button>
@@ -282,4 +282,5 @@
         });
     </script>
 </body>
+
 </html>
