@@ -4,6 +4,7 @@ const fs = require('fs');
 const helmet = require('helmet');
 const compression = require('compression');
 const morgan = require('morgan');
+const bookingApi = require('./booking-api');
 const path = require('path');
 
 const app = express();
@@ -255,6 +256,9 @@ function processAnalyticsData() {
 }
 
 // Admin Analytics API endpoints
+// Booking API routes
+app.use('/api', bookingApi);
+
 app.get('/api/admin/analytics', (req, res) => {
 
     // Use only real data - no mock data fallback

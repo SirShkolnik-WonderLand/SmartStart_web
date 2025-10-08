@@ -22,13 +22,14 @@
     ],
     "author": "Udi Shkolnik <info@alicesolutionsgroup.com>",
     "license": "MIT",
-    "dependencies": {
-        "express": "^4.18.2",
-        "cors": "^2.8.5",
-        "helmet": "^7.1.0",
-        "compression": "^1.7.4",
-        "morgan": "^1.10.0"
-    },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "compression": "^1.7.4",
+    "morgan": "^1.10.0",
+    "nodemailer": "^6.9.7"
+  },
     "devDependencies": {
         "nodemon": "^3.0.2"
     },
