@@ -237,20 +237,6 @@
     <script src="../assets/js/load-components.js"></script>
     <script src="../assets/js/script.js"></script>
     <script>
-        // Load navigation
-        fetch('../includes/navbar.html')
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById('navbar-container').innerHTML = data;
-            });
-
-        // Load footer
-        fetch('../includes/footer.html')
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById('footer').innerHTML = data;
-            });
-
         // Initialize mobile menu toggle
         document.addEventListener('DOMContentLoaded', function() {
             loadNavbar();
