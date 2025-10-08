@@ -1,0 +1,16 @@
+{
+  "service": {
+    "type": "cissp",
+    "name": "CISSP Training",
+    "price": "$2,500 CAD"
+  },
+  "date": "2025-01-20",
+  "time": "10:00",
+  "contact": {
+    "name": "Test User",
+    "email": "test@alicesolutionsgroup.com",
+    "phone": "416-555-0123",
+    "company": "Test Company"
+  },
+  "notes": "Test booking for system validation"
+}

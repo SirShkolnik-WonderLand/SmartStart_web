@@ -71,6 +71,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Roboto+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/footer-lean.css">
 </head>
 
 <body>
@@ -260,6 +261,8 @@
 
         // Initialize mobile menu toggle
         document.addEventListener('DOMContentLoaded', function() {
+            loadNavbar();
+            loadFooter();
             const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
             const navbarContainer = document.getElementById('navbar-container');
             

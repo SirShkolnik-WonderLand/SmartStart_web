@@ -8,7 +8,7 @@
 const https = require('https');
 const http = require('http');
 
-const BASE_URL = 'https://smartstart-webapp.onrender.com';
+const BASE_URL = 'http://localhost:3346';
 const LOCAL_URL = 'http://localhost:3346';
 
 // Test configuration

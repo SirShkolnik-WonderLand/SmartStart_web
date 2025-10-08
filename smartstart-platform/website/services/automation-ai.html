@@ -46,6 +46,7 @@
     <link rel="icon" type="image/svg+xml" href="../favicon.svg">
     <link rel="icon" type="image/x-icon" href="../favicon.ico">
     <link rel="shortcut icon" href="favicon.ico">
+    <link rel="stylesheet" href="../assets/css/footer-lean.css">
 </head>
 
 <body>
@@ -449,6 +450,13 @@
                 document.getElementById('footer-container').innerHTML = data;
             })
             .catch(error => console.error('Error loading footer:', error));
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            loadNavbar();
+            loadFooter();
+        });
     </script>
 </body>
 

@@ -1,0 +1,42 @@
+[
+  {
+    "service": "cissp",
+    "customerEmail": "test@alicesolutionsgroup.com",
+    "workflow": {
+      "name": "CISSP Training",
+      "preparationTime": "7 days",
+      "materials": [
+        "CISSP Study Guide",
+        "Practice Tests",
+        "Domain Checklists"
+      ],
+      "prerequisites": [
+        "5+ years security experience"
+      ],
+      "followUpActions": [
+        "Send study materials",
+        "Schedule pre-assessment",
+        "Assign study buddy"
+      ]
+    },
+    "executedAt": "2025-10-08T00:58:40.505Z",
+    "status": "initiated",
+    "actions": [
+      {
+        "action": "Send study materials",
+        "status": "completed",
+        "timestamp": "2025-10-08T00:58:40.507Z"
+      },
+      {
+        "action": "Schedule pre-assessment",
+        "status": "completed",
+        "timestamp": "2025-10-08T00:58:40.508Z"
+      },
+      {
+        "action": "Assign study buddy",
+        "status": "completed",
+        "timestamp": "2025-10-08T00:58:40.508Z"
+      }
+    ]
+  }
+]

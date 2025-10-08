@@ -95,6 +95,7 @@
             }
         }
     </script>
+    <link rel="stylesheet" href="../assets/css/footer-lean.css">
 </head>
 
 <body>
@@ -583,6 +584,13 @@
                 document.getElementById('footer-container').innerHTML = data;
             })
             .catch(error => console.error('Error loading footer:', error));
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            loadNavbar();
+            loadFooter();
+        });
     </script>
 </body>
 

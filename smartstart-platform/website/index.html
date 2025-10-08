@@ -479,6 +479,13 @@
             })
             .catch(error => console.error('Error loading footer:', error));
     </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            loadNavbar();
+            loadFooter();
+        });
+    </script>
 </body>
 
 </html>
