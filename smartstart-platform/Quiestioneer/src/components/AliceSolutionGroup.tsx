@@ -64,7 +64,11 @@ export function AliceSolutionGroup({
           className={styles.logoIcon}
           variants={animated ? glowVariants : undefined}
         >
-          ASG
+          <img 
+            src="/Quiestioneer/assets/alice-solution-logo.png?v=2025-10-09" 
+            alt="AliceSolutionsGroup" 
+            className={styles.logoImage}
+          />
         </motion.div>
       </motion.div>
     );
@@ -96,7 +100,11 @@ export function AliceSolutionGroup({
         className={styles.logoIcon}
         variants={animated ? glowVariants : undefined}
       >
-        ASG
+        <img 
+          src="/Quiestioneer/assets/alice-solution-logo.png?v=2025-10-09" 
+          alt="AliceSolutionsGroup" 
+          className={styles.logoImage}
+        />
       </motion.div>
       
       <motion.div 

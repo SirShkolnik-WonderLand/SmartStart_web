@@ -39,6 +39,7 @@ export const logoIcon = style({
   boxShadow: `0 4px 20px rgba(123, 97, 255, 0.3)`,
   border: `2px solid rgba(123, 97, 255, 0.2)`,
   position: 'relative',
+  padding: '4px',
   
   '::before': {
     content: '""',
@@ -50,6 +51,13 @@ export const logoIcon = style({
     opacity: 0.3,
     filter: 'blur(8px)',
   }
+});
+
+export const logoImage = style({
+  width: '100%',
+  height: '100%',
+  objectFit: 'contain',
+  // No filter needed for PNG logo with colors
 });
 
 export const brandText = style({

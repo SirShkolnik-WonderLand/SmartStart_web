@@ -8,11 +8,20 @@ yarn-error.log*
 .env
 .env.local
 .env.production
+.env.*.local
 
 # Analytics and monitoring data
 smartstart-platform/analytics-data.json
+smartstart-platform/workflow-logs.json
 smartstart-platform/seo-reports/
+smartstart-platform/bookings/*.json
+smartstart-platform/bookings/*.log
 *.log
+
+# Quiestioneer specific
+smartstart-platform/Quiestioneer/.env
+smartstart-platform/Quiestioneer/smb_health_check.db
+smartstart-platform/Quiestioneer/smb_health_check.db-*
 
 # Image backups
 *.backup
@@ -32,9 +41,35 @@ Thumbs.db
 dist/
 build/
 .cache/
+smartstart-platform/Quiestioneer/dist/
+smartstart-platform/Quiestioneer/build/
 
 # Temp files
 *.tmp
 temp/
 tmp/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
