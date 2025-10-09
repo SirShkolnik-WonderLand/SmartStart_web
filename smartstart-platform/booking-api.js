@@ -851,7 +851,7 @@ function getBookingsByMonth(bookings) {
 function getBookingsByService(bookings) {
     const serviceData = {};
     bookings.forEach(booking => {
-        const serviceName = booking.service ? .name || booking.service ? .type || 'Unknown Service';
+        const serviceName = booking.service?.name || booking.service?.type || 'Unknown Service';
         serviceData[serviceName] = (serviceData[serviceName] || 0) + 1;
     });
     return serviceData;
