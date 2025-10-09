@@ -46,55 +46,105 @@
     <div id="header"></div>
 
     <!-- Hero Section -->
-    <section class="hero" style="padding-top: 120px; min-height: 60vh; display: flex; align-items: center; position: relative;">
+    <section class="hero" style="padding-top: 120px; min-height: 80vh; display: flex; align-items: center; position: relative;">
         <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 2rem; position: relative; z-index: 2;">
             <div class="hero-content" style="text-align: center; max-width: 900px; margin: 0 auto;">
                 <div class="hero-badge" style="display: inline-block; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); padding: 0.5rem 1.5rem; border-radius: 50px; color: #3b82f6; font-size: 0.9rem; font-weight: 600; margin-bottom: 2rem;">Get In Touch</div>
 
-                <h1 class="hero-title" style="font-size: clamp(2.5rem, 6vw, 3.5rem); font-weight: 700; line-height: 1.1; margin-bottom: 1.5rem; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                <h1 class="hero-title" style="font-size: clamp(2.5rem, 6vw, 4rem); font-weight: 700; line-height: 1.1; margin-bottom: 1.5rem; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
                     Let's Start a <span style="background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Conversation</span>
                 </h1>
 
-                <p style="text-align: center; color: #cbd5e1; font-size: 1.2rem; margin-bottom: 3rem; line-height: 1.6;">
-                    Whether you need advisory services, automation projects, security assessments, or general information — we're here to help.
+                <p class="hero-tagline" style="font-size: clamp(1.2rem, 3vw, 1.8rem); font-weight: 500; color: #cbd5e1; margin-bottom: 2rem; line-height: 1.4;">
+                    Expert Guidance. Real Solutions. Ontario-Focused.
                 </p>
+
+                <p style="text-align: center; color: #94a3b8; font-size: 1.1rem; margin-bottom: 3rem; line-height: 1.6;">
+                    Whether you need <strong style="color: #3b82f6;">advisory services</strong>, <strong style="color: #3b82f6;">automation projects</strong>, <strong style="color: #3b82f6;">security assessments</strong>, or <strong style="color: #3b82f6;">training programs</strong> — we're here to help you grow securely and efficiently.
+                </p>
+
+                <div class="hero-buttons" style="display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap;">
+                    <a href="booking.html" class="cta-button primary" style="padding: 1rem 2rem; background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);">Book Free Consultation</a>
+                    <a href="#contact-form" class="cta-button secondary" style="padding: 1rem 2rem; background: transparent; color: #3b82f6; text-decoration: none; border: 2px solid #3b82f6; border-radius: 8px; font-weight: 600; transition: all 0.3s ease;">Send Message</a>
+                </div>
+                </div>
+            </div>
+        </section>
+
+    <!-- About Udi Section -->
+    <section class="section" style="padding: 5rem 0; background: var(--bg-primary);">
+        <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
+            <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 4rem; align-items: center;">
+                <div>
+                    <div style="width: 200px; height: 200px; background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                        <span style="font-size: 4rem; color: white;">👨‍💼</span>
+                    </div>
+                </div>
+                <div>
+                    <h2 style="font-size: 2.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1rem;">Meet Udi Shkolnik</h2>
+                    <p style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 2rem; line-height: 1.6;">
+                        <strong style="color: #3b82f6;">CISSP, CISM, ISO 27001 Lead Auditor</strong> with 15+ years of enterprise security experience. 
+                        Udi has helped organizations across Ontario build secure, compliant, and efficient operations.
+                    </p>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 2rem;">
+                        <div style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 8px; padding: 1rem; text-align: center;">
+                            <div style="font-size: 1.5rem; font-weight: 700; color: #3b82f6;">15+</div>
+                            <div style="font-size: 0.9rem; color: var(--text-secondary);">Years Experience</div>
+                        </div>
+                        <div style="background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); border-radius: 8px; padding: 1rem; text-align: center;">
+                            <div style="font-size: 1.5rem; font-weight: 700; color: #22c55e;">100+</div>
+                            <div style="font-size: 0.9rem; color: var(--text-secondary);">Projects Completed</div>
+                    </div>
+                    </div>
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                        <a href="booking.html" style="padding: 0.75rem 1.5rem; background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: 600;">Book Consultation</a>
+                        <a href="https://linkedin.com/in/udishkolnik" target="_blank" style="padding: 0.75rem 1.5rem; background: transparent; color: #3b82f6; text-decoration: none; border: 2px solid #3b82f6; border-radius: 8px; font-weight: 600;">View LinkedIn</a>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
     <!-- Contact Options -->
-    <section class="section" style="padding: 3rem 0; background: var(--bg-primary);">
+    <section class="section" style="padding: 5rem 0; background: rgba(59, 130, 246, 0.05);">
         <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-bottom: 4rem;">
-                <div style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 2rem; text-align: center;">
+            <div class="section-header" style="text-align: center; margin-bottom: 4rem;">
+                <h2 class="section-title" style="font-size: 2.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1rem;">Get In Touch</h2>
+                <p class="section-subtitle" style="font-size: 1.2rem; color: var(--text-secondary);">Choose the best way to reach us</p>
+                </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+                <div style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 2rem; text-align: center; transition: transform 0.3s ease;">
                     <div style="font-size: 2.5rem; margin-bottom: 1rem;">📧</div>
                     <h3 style="color: var(--text-primary); font-weight: 700; margin-bottom: 0.5rem;">Email</h3>
-                    <a href="mailto:udi.shkolnik@alicesolutionsgroup.com" style="color: var(--accent-primary); text-decoration: none;">udi.shkolnik@alicesolutionsgroup.com</a>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem; font-size: 0.9rem;">For general inquiries and detailed discussions</p>
+                    <a href="mailto:udi.shkolnik@alicesolutionsgroup.com" style="color: var(--accent-primary); text-decoration: none; font-weight: 600;">udi.shkolnik@alicesolutionsgroup.com</a>
                 </div>
-                <div style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 2rem; text-align: center;">
-                    <div style="font-size: 2.5rem; margin-bottom: 1rem;">🏢</div>
-                    <h3 style="color: var(--text-primary); font-weight: 700; margin-bottom: 0.5rem;">Office</h3>
-                    <p style="color: var(--text-secondary); margin: 0;">Toronto, Ontario</p>
-                    <p style="color: var(--text-secondary); margin: 0;">Serving the GTA</p>
-                </div>
-                <div style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 2rem; text-align: center;">
+                <div style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 2rem; text-align: center; transition: transform 0.3s ease;">
                     <div style="font-size: 2.5rem; margin-bottom: 1rem;">🎓</div>
-                    <h3 style="color: var(--text-primary); font-weight: 700; margin-bottom: 0.5rem;">Training Bookings</h3>
-                    <a href="booking.html" style="color: var(--accent-primary); text-decoration: none;">Book Training Session →</a>
+                    <h3 style="color: var(--text-primary); font-weight: 700; margin-bottom: 0.5rem;">Training & Consultation</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem; font-size: 0.9rem;">Book a free 15-minute consultation</p>
+                    <a href="booking.html" style="color: var(--accent-primary); text-decoration: none; font-weight: 600;">Book Free Consultation →</a>
+                </div>
+                <div style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 2rem; text-align: center; transition: transform 0.3s ease;">
+                    <div style="font-size: 2.5rem; margin-bottom: 1rem;">🏢</div>
+                    <h3 style="color: var(--text-primary); font-weight: 700; margin-bottom: 0.5rem;">Location</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem; font-size: 0.9rem;">Serving Ontario & GTA</p>
+                    <p style="color: var(--text-primary); font-weight: 600;">Toronto, Ontario</p>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Contact Form -->
-    <section class="section" style="padding: 3rem 0 5rem 0; background: rgba(59, 130, 246, 0.05);">
+    <section id="contact-form" class="section" style="padding: 5rem 0; background: var(--bg-primary);">
         <div class="container" style="max-width: 800px; margin: 0 auto; padding: 0 2rem;">
-            <div class="section-header" style="text-align: center; margin-bottom: 3rem;">
+            <div class="section-header" style="text-align: center; margin-bottom: 4rem;">
                 <h2 class="section-title" style="font-size: 2.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1rem;">Send Us a Message</h2>
                 <p class="section-subtitle" style="font-size: 1.2rem; color: var(--text-secondary);">We'll respond within 24 hours</p>
             </div>
 
-            <form id="contact-form" style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 3rem;">
+            <form style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 3rem; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);">
                 <div style="display: grid; gap: 1.5rem;">
                     <!-- Service Type -->
                     <div>
@@ -231,9 +281,9 @@
                     <h4 style="color: var(--text-primary); font-weight: 700; margin-bottom: 0.5rem;">Customer Portal</h4>
                     <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0;">View your bookings</p>
                 </a>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
 
     <!-- Footer -->
     <div id="footer"></div>

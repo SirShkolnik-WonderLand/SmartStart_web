@@ -381,6 +381,10 @@ app.post('/api/admin/track', (req, res) => {
                     const ipData = analyticsStorage.ipAddresses.get(clientIP);
                     ipData.lastSeen = timestamp;
                     ipData.visitCount += 1;
+                    // Ensure sessions is a Set
+                    if (!(ipData.sessions instanceof Set)) {
+                        ipData.sessions = new Set(ipData.sessions || []);
+                    }
                     ipData.sessions.add(data.sessionId);
                 }
             }
@@ -401,6 +405,10 @@ app.post('/api/admin/track', (req, res) => {
                     const deviceData = analyticsStorage.deviceFingerprints.get(data.fingerprint);
                     deviceData.lastSeen = timestamp;
                     deviceData.visitCount += 1;
+                    // Ensure ips is a Set
+                    if (!(deviceData.ips instanceof Set)) {
+                        deviceData.ips = new Set(deviceData.ips || []);
+                    }
                     deviceData.ips.add(clientIP);
                 }
             }

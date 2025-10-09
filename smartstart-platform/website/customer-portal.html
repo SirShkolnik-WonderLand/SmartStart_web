@@ -14,47 +14,54 @@
 </head>
 
 <body>
-    <!-- Unified Header -->
+    <!-- Header -->
     <div id="header"></div>
 
-    <!-- Customer Portal Header -->
-    <header class="portal-header">
-        <div class="portal-header-content">
-            <div class="portal-logo">
-                <img src="assets/images/AliceSolutionsGroup-logo-owl-rabbit-fox.png" alt="AliceSolutionsGroup" class="portal-logo-image">
-                <span>Customer Portal</span>
-            </div>
-            <div class="portal-nav">
-                <a href="index.html" class="portal-nav-link">← Back to Site</a>
-                <a href="booking.html" class="portal-nav-link">New Booking</a>
-                <span class="portal-status" id="portalStatus">🟢 Active</span>
+    <!-- Hero Section -->
+    <section class="hero" style="padding-top: 120px; min-height: 70vh; display: flex; align-items: center; position: relative;">
+        <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 2rem; position: relative; z-index: 2;">
+            <div class="hero-content" style="text-align: center; max-width: 900px; margin: 0 auto;">
+                <div class="hero-badge" style="display: inline-block; background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); padding: 0.5rem 1.5rem; border-radius: 50px; color: #22c55e; font-size: 0.9rem; font-weight: 600; margin-bottom: 2rem;">Customer Portal</div>
+
+                <h1 class="hero-title" style="font-size: clamp(2.5rem, 6vw, 4rem); font-weight: 700; line-height: 1.1; margin-bottom: 1.5rem; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                    Your <span style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Training Portal</span>
+                </h1>
+
+                <p class="hero-tagline" style="font-size: clamp(1.2rem, 3vw, 1.8rem); font-weight: 500; color: #cbd5e1; margin-bottom: 2rem; line-height: 1.4;">
+                    Manage Sessions. Track Progress. Access Resources.
+                </p>
+
+                <p style="text-align: center; color: #94a3b8; font-size: 1.1rem; margin-bottom: 3rem; line-height: 1.6;">
+                    Access your training sessions, view progress, download materials, and manage your cybersecurity learning journey with <strong style="color: #22c55e;">AliceSolutionsGroup</strong>.
+                </p>
+
+                <!-- Customer Search -->
+                <div class="customer-search" style="max-width: 600px; margin: 0 auto 3rem;">
+                    <div class="search-container" style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                        <input type="email" id="customerEmail" placeholder="Enter your email address" style="flex: 1; padding: 1rem 1.5rem; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 8px; color: var(--text-primary); font-size: 1rem;">
+                        <button id="searchBookings" style="padding: 1rem 2rem; background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">Find My Bookings</button>
+                    </div>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0;">Enter the email address you used for booking to view your training sessions</p>
+                </div>
+
+                <div class="hero-buttons" style="display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap;">
+                    <a href="booking.html" class="cta-button primary" style="padding: 1rem 2rem; background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);">Book New Session</a>
+                    <a href="index.html" class="cta-button secondary" style="padding: 1rem 2rem; background: transparent; color: #3b82f6; text-decoration: none; border: 2px solid #3b82f6; border-radius: 8px; font-weight: 600; transition: all 0.3s ease;">← Back to Site</a>
+                </div>
             </div>
         </div>
-    </header>
+    </section>
 
     <!-- Customer Portal Main Content -->
     <main class="portal-main">
-        <!-- Welcome Section -->
-        <section class="portal-section">
-            <div class="portal-container">
-                <h1 class="portal-title">Welcome to Your Training Portal</h1>
-                <p class="portal-subtitle">Manage your training sessions and track your cybersecurity learning journey</p>
-
-                <!-- Customer Search -->
-                <div class="customer-search">
-                    <div class="search-container">
-                        <input type="email" id="customerEmail" placeholder="Enter your email address" class="search-input">
-                        <button id="searchBookings" class="search-button">Find My Bookings</button>
-                    </div>
-                    <p class="search-help">Enter the email address you used for booking to view your training sessions</p>
-                </div>
-            </div>
-        </section>
 
         <!-- Customer Bookings -->
-        <section class="portal-section" id="bookingsSection" style="display: none;">
-            <div class="portal-container">
-                <h2 class="section-title">Your Training Sessions</h2>
+        <section class="section" id="bookingsSection" style="display: none; padding: 5rem 0; background: var(--bg-primary);">
+            <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
+                <div class="section-header" style="text-align: center; margin-bottom: 4rem;">
+                    <h2 class="section-title" style="font-size: 2.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1rem;">Your Training Sessions</h2>
+                    <p class="section-subtitle" style="font-size: 1.2rem; color: var(--text-secondary);">Manage and track your cybersecurity training progress</p>
+                </div>
 
                 <!-- Booking Summary -->
                 <div class="booking-summary">
@@ -122,9 +129,12 @@
         </section>
 
         <!-- Training Resources -->
-        <section class="portal-section" id="resourcesSection" style="display: none;">
-            <div class="portal-container">
-                <h2 class="section-title">Training Resources</h2>
+        <section class="section" id="resourcesSection" style="display: none; padding: 5rem 0; background: rgba(34, 197, 94, 0.05);">
+            <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
+                <div class="section-header" style="text-align: center; margin-bottom: 4rem;">
+                    <h2 class="section-title" style="font-size: 2.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1rem;">Training Resources</h2>
+                    <p class="section-subtitle" style="font-size: 1.2rem; color: var(--text-secondary);">Access your learning materials and track your progress</p>
+                </div>
                 <div class="resources-grid">
                     <div class="resource-card">
                         <div class="resource-icon">📖</div>
@@ -155,9 +165,12 @@
         </section>
 
         <!-- Contact Support -->
-        <section class="portal-section">
-            <div class="portal-container">
-                <h2 class="section-title">Need Help?</h2>
+        <section class="section" style="padding: 5rem 0; background: var(--bg-primary);">
+            <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
+                <div class="section-header" style="text-align: center; margin-bottom: 4rem;">
+                    <h2 class="section-title" style="font-size: 2.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1rem;">Need Help?</h2>
+                    <p class="section-subtitle" style="font-size: 1.2rem; color: var(--text-secondary);">Get support from our training team</p>
+                </div>
                 <div class="support-options">
                     <div class="support-card">
                         <div class="support-icon">📧</div>

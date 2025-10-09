@@ -4,62 +4,62 @@ class CustomerPortal {
         this.customerEmail = null;
         this.bookings = [];
         this.filteredBookings = [];
-        
+
         this.init();
     }
-    
+
     init() {
         this.setupEventListeners();
         this.checkUrlParameters();
     }
-    
+
     setupEventListeners() {
         // Search button
         document.getElementById('searchBookings').addEventListener('click', () => {
             this.searchCustomerBookings();
         });
-        
+
         // Enter key on email input
         document.getElementById('customerEmail').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 this.searchCustomerBookings();
             }
         });
-        
+
         // Filter controls
         document.getElementById('statusFilter').addEventListener('change', () => {
             this.applyFilters();
         });
-        
+
         document.getElementById('serviceFilter').addEventListener('change', () => {
             this.applyFilters();
         });
     }
-    
+
     checkUrlParameters() {
         const urlParams = new URLSearchParams(window.location.search);
         const emailParam = urlParams.get('email');
-        
+
         if (emailParam) {
             document.getElementById('customerEmail').value = emailParam;
             this.searchCustomerBookings();
         }
     }
-    
+
     async searchCustomerBookings() {
         const email = document.getElementById('customerEmail').value.trim();
-        
+
         if (!email || !this.isValidEmail(email)) {
             this.showError('Please enter a valid email address');
             return;
         }
-        
+
         this.customerEmail = email;
         this.showLoading();
-        
+
         try {
             const response = await fetch(`/api/customer/bookings?email=${encodeURIComponent(email)}`);
-            
+
             if (response.ok) {
                 const data = await response.json();
                 this.bookings = data.bookings || [];
@@ -77,29 +77,29 @@ class CustomerPortal {
             this.showError('Failed to load bookings. Please try again.');
         }
     }
-    
+
     displayBookings() {
         const bookingsList = document.getElementById('bookingsList');
-        
+
         if (this.filteredBookings.length === 0) {
             bookingsList.innerHTML = '<div class="no-data">No bookings found with current filters</div>';
             return;
         }
-        
+
         bookingsList.innerHTML = this.filteredBookings.map(booking => this.createBookingItem(booking)).join('');
     }
-    
+
     createBookingItem(booking) {
         const status = booking.status || 'pending';
         const statusClass = status.toLowerCase();
-        const serviceName = this.getServiceName(booking.service?.type || booking.service);
+        const serviceName = this.getServiceName(booking.service ? .type || booking.service);
         const formattedDate = new Date(booking.date).toLocaleDateString('en-US', {
             weekday: 'long',
             year: 'numeric',
             month: 'long',
             day: 'numeric'
         });
-        
+
         return `
             <div class="booking-item">
                 <div class="booking-info">
@@ -118,12 +118,12 @@ class CustomerPortal {
             </div>
         `;
     }
-    
+
     getActionButtons(booking) {
         const buttons = [];
         const status = booking.status || 'pending';
         const bookingId = booking.bookingId;
-        
+
         if (status === 'pending') {
             buttons.push(`<button class="action-button primary" onclick="customerPortal.confirmBooking('${bookingId}')">Confirm</button>`);
             buttons.push(`<button class="action-button" onclick="customerPortal.cancelBooking('${bookingId}')">Cancel</button>`);
@@ -133,12 +133,12 @@ class CustomerPortal {
         } else if (status === 'completed') {
             buttons.push(`<button class="action-button" onclick="customerPortal.downloadCertificate('${bookingId}')">Certificate</button>`);
         }
-        
+
         buttons.push(`<button class="action-button" onclick="customerPortal.viewDetails('${bookingId}')">Details</button>`);
-        
+
         return buttons.join('');
     }
-    
+
     getServiceName(serviceKey) {
         const serviceNames = {
             'cissp': 'CISSP Training',
@@ -150,48 +150,48 @@ class CustomerPortal {
             'ai-security': 'AI Security Training',
             'educational': 'Student & Educational Programs'
         };
-        
+
         return serviceNames[serviceKey] || serviceKey;
     }
-    
+
     applyFilters() {
         const statusFilter = document.getElementById('statusFilter').value;
         const serviceFilter = document.getElementById('serviceFilter').value;
-        
+
         this.filteredBookings = this.bookings.filter(booking => {
             const status = booking.status || 'pending';
-            const serviceType = booking.service?.type || booking.service;
+            const serviceType = booking.service ? .type || booking.service;
             const statusMatch = statusFilter === 'all' || status === statusFilter;
             const serviceMatch = serviceFilter === 'all' || serviceType === serviceFilter;
-            
+
             return statusMatch && serviceMatch;
         });
-        
+
         this.displayBookings();
     }
-    
+
     updateSummary() {
         const totalBookings = this.bookings.length;
         const confirmedBookings = this.bookings.filter(b => (b.status || 'pending') === 'confirmed').length;
         const pendingBookings = this.bookings.filter(b => (b.status || 'pending') === 'pending').length;
         const completedSessions = this.bookings.filter(b => (b.status || 'pending') === 'completed').length;
-        
+
         document.getElementById('totalBookings').textContent = totalBookings;
         document.getElementById('confirmedBookings').textContent = confirmedBookings;
         document.getElementById('pendingBookings').textContent = pendingBookings;
         document.getElementById('completedSessions').textContent = completedSessions;
     }
-    
+
     showBookingsSection() {
         document.getElementById('bookingsSection').style.display = 'block';
         document.getElementById('resourcesSection').style.display = 'block';
-        
+
         // Scroll to bookings section
-        document.getElementById('bookingsSection').scrollIntoView({ 
-            behavior: 'smooth' 
+        document.getElementById('bookingsSection').scrollIntoView({
+            behavior: 'smooth'
         });
     }
-    
+
     showNoBookings() {
         const bookingsList = document.getElementById('bookingsList');
         bookingsList.innerHTML = `
@@ -201,10 +201,10 @@ class CustomerPortal {
                 <p>Please check your email address or <a href="booking.html">make a new booking</a>.</p>
             </div>
         `;
-        
+
         this.showBookingsSection();
     }
-    
+
     showError(message) {
         const bookingsList = document.getElementById('bookingsList');
         bookingsList.innerHTML = `
@@ -214,17 +214,17 @@ class CustomerPortal {
             </div>
         `;
     }
-    
+
     showLoading() {
         const bookingsList = document.getElementById('bookingsList');
         bookingsList.innerHTML = '<div class="loading">Searching for your bookings...</div>';
     }
-    
+
     isValidEmail(email) {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(email);
     }
-    
+
     // Booking Actions
     async confirmBooking(bookingId) {
         try {
@@ -235,7 +235,7 @@ class CustomerPortal {
                 },
                 body: JSON.stringify({ email: this.customerEmail })
             });
-            
+
             if (response.ok) {
                 this.showSuccess('Booking confirmed successfully!');
                 this.searchCustomerBookings(); // Refresh the list
@@ -246,12 +246,12 @@ class CustomerPortal {
             this.showError('Failed to confirm booking. Please contact support.');
         }
     }
-    
+
     async cancelBooking(bookingId) {
         if (!confirm('Are you sure you want to cancel this booking?')) {
             return;
         }
-        
+
         try {
             const response = await fetch(`/api/customer/bookings/${bookingId}/cancel`, {
                 method: 'POST',
@@ -260,7 +260,7 @@ class CustomerPortal {
                 },
                 body: JSON.stringify({ email: this.customerEmail })
             });
-            
+
             if (response.ok) {
                 this.showSuccess('Booking cancelled successfully!');
                 this.searchCustomerBookings(); // Refresh the list
@@ -271,7 +271,7 @@ class CustomerPortal {
             this.showError('Failed to cancel booking. Please contact support.');
         }
     }
-    
+
     rescheduleBooking(bookingId) {
         const booking = this.bookings.find(b => b.id === bookingId);
         if (booking) {
@@ -284,16 +284,16 @@ class CustomerPortal {
             window.location.href = `booking.html?${params.toString()}`;
         }
     }
-    
+
     downloadCertificate(bookingId) {
         // Placeholder for certificate download
         alert('Certificate download feature coming soon!');
     }
-    
+
     viewDetails(bookingId) {
-        const booking = this.bookings.find(b => b.id === bookingId);
-        if (booking) {
-            const details = `
+            const booking = this.bookings.find(b => b.id === bookingId);
+            if (booking) {
+                const details = `
                 Booking ID: ${booking.id}
                 Service: ${this.getServiceName(booking.service)}
                 Date: ${new Date(booking.date).toLocaleDateString()}
