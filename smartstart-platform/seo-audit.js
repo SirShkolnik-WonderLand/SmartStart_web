@@ -116,7 +116,7 @@ async function checkTechnicalSEO(content, results) {
     }
 
     // H1 tags
-    const h1Matches = content.match(/<h1[^>]*>.*?<\/h1>/gi);
+    const h1Matches = content.match(/<h1[^>]*>[\s\S]*?<\/h1>/gi);
     if (h1Matches && h1Matches.length === 1) {
         results.passed.push("✅ Single H1 tag present");
     } else if (h1Matches && h1Matches.length > 1) {
