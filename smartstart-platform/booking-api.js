@@ -851,7 +851,8 @@ function getBookingsByMonth(bookings) {
 function getBookingsByService(bookings) {
     const serviceData = {};
     bookings.forEach(booking => {
-        serviceData[booking.service] = (serviceData[booking.service] || 0) + 1;
+        const serviceName = booking.service?.name || booking.service?.type || 'Unknown Service';
+        serviceData[serviceName] = (serviceData[serviceName] || 0) + 1;
     });
     return serviceData;
 }
@@ -859,7 +860,8 @@ function getBookingsByService(bookings) {
 function getBookingsByStatus(bookings) {
     const statusData = {};
     bookings.forEach(booking => {
-        statusData[booking.status] = (statusData[booking.status] || 0) + 1;
+        const status = booking.status || 'pending';
+        statusData[status] = (statusData[status] || 0) + 1;
     });
     return statusData;
 }

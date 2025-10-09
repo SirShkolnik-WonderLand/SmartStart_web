@@ -594,7 +594,7 @@
         // Load booking data from the API
         async function loadBookingData() {
             try {
-                const response = await fetch('/api/booking/analytics/overview');
+                const response = await fetch('/api/analytics/overview');
                 const data = await response.json();
 
                 // Update booking stats
@@ -617,7 +617,7 @@
         // Load recent bookings
         async function loadRecentBookings() {
             try {
-                const response = await fetch('/api/booking/recent');
+                const response = await fetch('/api/recent');
                 const bookings = await response.json();
 
                 const tableBody = document.getElementById('bookingsTableBody');

@@ -307,7 +307,8 @@ app.get('/api/admin/bookings', async(req, res) => {
 
 app.post('/api/admin/track', (req, res) => {
     try {
-        const { event, data, timestamp, url } = req.body;
+        const { event, eventType, data, timestamp, url } = req.body;
+        const eventName = event || eventType; // Support both event and eventType
 
         // Get client IP address
         const clientIP = req.headers['x-forwarded-for'] ||
@@ -317,9 +318,9 @@ app.post('/api/admin/track', (req, res) => {
             (req.connection.socket ? req.connection.socket.remoteAddress : null);
 
         // Store the tracking data
-        if (event === 'pageview') {
+        if (eventName === 'pageview') {
             const trackingData = {
-                event,
+                event: eventName,
                 data: {
                     ...data,
                     clientIP: clientIP,
@@ -404,10 +405,10 @@ app.post('/api/admin/track', (req, res) => {
                 }
             }
 
-        } else if (event === 'userinfo') {
+        } else if (eventName === 'userinfo') {
             // Store detailed user information
             analyticsStorage.events.push({
-                event,
+                event: eventName,
                 data: {
                     ...data,
                     clientIP: clientIP,
@@ -416,10 +417,10 @@ app.post('/api/admin/track', (req, res) => {
                 timestamp,
                 url
             });
-        } else if (event === 'core_web_vitals') {
+        } else if (eventName === 'core_web_vitals') {
             // Store Core Web Vitals data
             analyticsStorage.coreWebVitals.push({
-                event,
+                event: eventName,
                 data: {
                     ...data,
                     clientIP: clientIP,
@@ -428,10 +429,10 @@ app.post('/api/admin/track', (req, res) => {
                 timestamp,
                 url
             });
-        } else if (event === 'seo_metrics') {
+        } else if (eventName === 'seo_metrics') {
             // Store SEO metrics data
             analyticsStorage.seoMetrics.push({
-                event,
+                event: eventName,
                 data: {
                     ...data,
                     clientIP: clientIP,
@@ -440,10 +441,10 @@ app.post('/api/admin/track', (req, res) => {
                 timestamp,
                 url
             });
-        } else if (event === 'mouse_movements' || event === 'focus_event' || event === 'form_interaction' || event === 'scroll_depth') {
+        } else if (eventName === 'mouse_movements' || eventName === 'focus_event' || eventName === 'form_interaction' || eventName === 'scroll_depth') {
             // Store user behavior data
             analyticsStorage.userBehavior.push({
-                event,
+                event: eventName,
                 data: {
                     ...data,
                     clientIP: clientIP,
@@ -452,10 +453,10 @@ app.post('/api/admin/track', (req, res) => {
                 timestamp,
                 url
             });
-        } else if (event === 'marketing_metrics') {
+        } else if (eventName === 'marketing_metrics') {
             // Store marketing metrics data
             analyticsStorage.marketingMetrics.push({
-                event,
+                event: eventName,
                 data: {
                     ...data,
                     clientIP: clientIP,

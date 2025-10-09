@@ -1,0 +1,27 @@
+{
+  "bookings": [
+    {
+      "service": {
+        "type": "cissp",
+        "name": "CISSP Training",
+        "price": "$2,500 CAD"
+      },
+      "date": "2025-10-17",
+      "time": "02:00 PM",
+      "contact": {
+        "firstName": "",
+        "lastName": "",
+        "email": "",
+        "phone": "",
+        "company": "",
+        "location": "",
+        "participants": "1",
+        "notes": "",
+        "newsletter": false
+      },
+      "timestamp": "2025-10-08T00:46:31.541Z",
+      "bookingId": "ASG-MGH9Q7AU-IY4E"
+    }
+  ],
+  "lastUpdated": "2025-10-09T01:37:58.368Z"
+}
