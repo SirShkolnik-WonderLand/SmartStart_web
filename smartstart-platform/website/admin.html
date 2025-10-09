@@ -274,6 +274,74 @@
             </div>
         </section>
 
+        <!-- Quiestioneer Assessments -->
+        <section class="admin-section">
+            <div class="admin-container">
+                <h2 class="section-title">🛡️ Cyber Health Assessments</h2>
+                <p class="section-subtitle">Quiestioneer assessment leads and scores</p>
+
+                <div class="stats-grid">
+                    <div class="stat-card booking-stat">
+                        <div class="stat-icon">🎯</div>
+                        <div class="stat-content">
+                            <h3 class="stat-number" id="totalAssessments">0</h3>
+                            <p class="stat-label">Total Assessments</p>
+                        </div>
+                    </div>
+                    <div class="stat-card booking-stat">
+                        <div class="stat-icon">📈</div>
+                        <div class="stat-content">
+                            <h3 class="stat-number" id="avgScore">0</h3>
+                            <p class="stat-label">Avg. Score</p>
+                        </div>
+                    </div>
+                    <div class="stat-card booking-stat">
+                        <div class="stat-icon">🚨</div>
+                        <div class="stat-content">
+                            <h3 class="stat-number" id="criticalLeads">0</h3>
+                            <p class="stat-label">Critical/At Risk</p>
+                        </div>
+                    </div>
+                    <div class="stat-card booking-stat">
+                        <div class="stat-icon">📧</div>
+                        <div class="stat-content">
+                            <h3 class="stat-number" id="emailsSent">0</h3>
+                            <p class="stat-label">Reports Sent</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Assessments -->
+                <div class="admin-section-header">
+                    <h3 class="admin-section-title">📋 Recent Assessments</h3>
+                    <button class="refresh-btn" onclick="loadAssessmentData()">🔄 Refresh</button>
+                </div>
+
+                <div class="bookings-container">
+                    <div class="bookings-table-container">
+                        <table class="bookings-table" id="assessmentsTable">
+                            <thead>
+                                <tr>
+                                    <th>Date & Time</th>
+                                    <th>Company</th>
+                                    <th>Email</th>
+                                    <th>Score</th>
+                                    <th>Tier</th>
+                                    <th>Mode</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="assessmentsTableBody">
+                                <tr>
+                                    <td colspan="7" class="loading-cell">Loading assessments...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- Geographic Analytics -->
         <section class="admin-section">
             <div class="admin-container">
@@ -696,7 +764,100 @@
         // Load booking data when page loads
         document.addEventListener('DOMContentLoaded', () => {
             loadBookingData();
+            loadAssessmentData();
         });
+
+        // Load assessment data from the API
+        async function loadAssessmentData() {
+            try {
+                const response = await fetch('/api/quiestioneer/assessments');
+                const data = await response.json();
+                const assessments = data.assessments || [];
+
+                // Update assessment stats
+                document.getElementById('totalAssessments').textContent = assessments.length;
+                
+                // Calculate average score
+                const avgScore = assessments.length > 0
+                    ? Math.round(assessments.reduce((sum, a) => sum + a.assessment.score, 0) / assessments.length)
+                    : 0;
+                document.getElementById('avgScore').textContent = avgScore;
+
+                // Count critical/at risk
+                const criticalCount = assessments.filter(a => 
+                    a.assessment.tier === 'Critical' || a.assessment.tier === 'At Risk'
+                ).length;
+                document.getElementById('criticalLeads').textContent = criticalCount;
+
+                // Count emails sent
+                const emailsSent = assessments.filter(a => a.pdfSent).length;
+                document.getElementById('emailsSent').textContent = emailsSent;
+
+                // Display recent assessments
+                displayAssessments(assessments);
+
+            } catch (error) {
+                console.error('Error loading assessment data:', error);
+                document.getElementById('assessmentsTableBody').innerHTML =
+                    '<tr><td colspan="7" class="error-cell">Error loading assessments. Please try again.</td></tr>';
+            }
+        }
+
+        // Display assessments in table
+        function displayAssessments(assessments) {
+            const tableBody = document.getElementById('assessmentsTableBody');
+
+            if (assessments.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="7" class="empty-cell">No assessments found yet.</td></tr>';
+                return;
+            }
+
+            // Sort by date (newest first)
+            assessments.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+            tableBody.innerHTML = assessments.map(assessment => {
+                const date = new Date(assessment.timestamp);
+                const company = assessment.contact.company || 'N/A';
+                const email = assessment.contact.email;
+                const score = assessment.assessment.score;
+                const tier = assessment.assessment.tier;
+                const mode = assessment.assessment.mode;
+                const assessmentId = assessment.assessmentId;
+
+                // Determine tier color
+                const tierColor = tier === 'Critical' ? '#dc3545' :
+                    tier === 'At Risk' ? '#fd7e14' :
+                    tier === 'Developing' ? '#ffc107' : '#28a745';
+
+                const statusIcon = assessment.pdfSent ? '✅' : '⏳';
+
+                return `
+                    <tr>
+                        <td>${date.toLocaleDateString()} ${date.toLocaleTimeString()}</td>
+                        <td>${company}</td>
+                        <td>${email}</td>
+                        <td><strong style="color: ${tierColor};">${score}/100</strong></td>
+                        <td><span class="status-badge" style="background: ${tierColor}20; color: ${tierColor};">${tier}</span></td>
+                        <td>${mode.charAt(0).toUpperCase() + mode.slice(1)}</td>
+                        <td>
+                            <button class="action-btn view-btn" onclick="viewAssessment('${assessmentId}')" title="View Details">👁️</button>
+                            <button class="action-btn" onclick="contactLead('${email}')" title="Contact">📧</button>
+                            <span title="${assessment.pdfSent ? 'Report Sent' : 'Pending'}">${statusIcon}</span>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // View assessment details
+        function viewAssessment(assessmentId) {
+            alert(`View assessment details for ID: ${assessmentId}\n\nThis would show:\n- Full answers\n- Detailed recommendations\n- Follow-up notes\n- Communication history`);
+        }
+
+        // Contact lead
+        function contactLead(email) {
+            window.location.href = `mailto:${email}?subject=Follow-up: Your Cyber Health Assessment&body=Hi,\n\nThank you for completing our cyber health assessment. I'd like to discuss your results and how we can help improve your security posture.\n\nWould you be available for a brief call this week?\n\nBest regards,\nAliceSolutionsGroup`;
+        }
     </script>
 
     <script>

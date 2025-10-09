@@ -18,9 +18,38 @@ export default function App() {
       setCompany(data.company);
     }
     
-    // In a real app, this would call the backend API to generate the PDF
-    // For now, we'll just simulate the process
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    try {
+      // Calculate score and tier
+      const { score, tier } = calculateScore(mode, answers);
+      
+      // Call the booking API endpoint to save assessment and send email
+      const response = await fetch('https://alicesolutionsgroup.com/api/quiestioneer/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: data.email,
+          company: data.company || '',
+          mode,
+          answers,
+          score,
+          tier,
+          sessionId: `session-${Date.now()}`
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit assessment');
+      }
+
+      const result = await response.json();
+      console.log('Assessment submitted successfully:', result);
+      
+    } catch (error) {
+      console.error('Error submitting assessment:', error);
+      // Continue anyway to show thank you page
+    }
     
     setIsEmailModalOpen(false);
     setView('thank-you');

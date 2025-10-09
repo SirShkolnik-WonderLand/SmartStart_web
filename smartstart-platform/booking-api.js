@@ -1662,4 +1662,297 @@ function getConsultationTypeName(type) {
     return typeNames[type] || type;
 }
 
+// ============================================================================
+// QUIESTIONEER ASSESSMENT API
+// ============================================================================
+
+// Submit assessment and send PDF report via email
+router.post('/api/quiestioneer/submit', async (req, res) => {
+    try {
+        const { email, company, mode, answers, score, tier, sessionId } = req.body;
+
+        if (!email || !score || !tier) {
+            return res.status(400).json({ error: 'Email, score, and tier are required' });
+        }
+
+        // Generate assessment ID
+        const assessmentId = `QST-${Date.now()}-${Math.random().toString(36).substring(2, 9).toUpperCase()}`;
+
+        // Create assessment record
+        const assessmentData = {
+            assessmentId,
+            sessionId: sessionId || assessmentId,
+            contact: {
+                email,
+                company: company || 'N/A'
+            },
+            assessment: {
+                mode: mode || 'quick',
+                score,
+                tier,
+                answers: answers || {}
+            },
+            timestamp: new Date().toISOString(),
+            status: 'completed',
+            pdfSent: false
+        };
+
+        // Save to bookings file
+        const bookingsData = await fs.readFile(BOOKINGS_FILE, 'utf8');
+        const data = JSON.parse(bookingsData);
+        
+        if (!data.assessments) {
+            data.assessments = [];
+        }
+        
+        data.assessments.push(assessmentData);
+        data.lastUpdated = new Date().toISOString();
+        
+        await fs.writeFile(BOOKINGS_FILE, JSON.stringify(data, null, 2));
+
+        // Generate and send PDF report
+        const pdfSent = await sendAssessmentReport(assessmentData);
+        
+        if (pdfSent) {
+            assessmentData.pdfSent = true;
+            await fs.writeFile(BOOKINGS_FILE, JSON.stringify(data, null, 2));
+        }
+
+        res.json({
+            success: true,
+            assessmentId,
+            message: 'Assessment saved and report sent',
+            pdfSent
+        });
+
+    } catch (error) {
+        console.error('Error submitting assessment:', error);
+        res.status(500).json({ error: 'Failed to submit assessment' });
+    }
+});
+
+// Get all assessments (admin)
+router.get('/api/quiestioneer/assessments', async (req, res) => {
+    try {
+        const bookingsData = await fs.readFile(BOOKINGS_FILE, 'utf8');
+        const data = JSON.parse(bookingsData);
+        
+        res.json({
+            assessments: data.assessments || [],
+            total: (data.assessments || []).length
+        });
+    } catch (error) {
+        console.error('Error fetching assessments:', error);
+        res.status(500).json({ error: 'Failed to fetch assessments' });
+    }
+});
+
+// Send assessment PDF report via email
+async function sendAssessmentReport(assessmentData) {
+    const transporter = createTransporter();
+
+    try {
+        const { contact, assessment, assessmentId } = assessmentData;
+        
+        // Determine tier details
+        const tierDetails = getTierDetails(assessment.tier);
+        
+        // Generate recommendations based on score
+        const recommendations = generateRecommendations(assessment.score, assessment.tier);
+
+        // Customer email with PDF report
+        const customerHtml = `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <div style="background: white; border-radius: 16px; padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.1);">
+                    <div style="text-align: center; margin-bottom: 30px;">
+                        <h1 style="color: #667eea; margin: 0; font-size: 28px;">🛡️ Your Cyber Health Report</h1>
+                        <p style="color: #666; margin-top: 10px;">AliceSolutionsGroup - Ontario SMB Security</p>
+                    </div>
+
+                    <div style="background: linear-gradient(135deg, ${tierDetails.color} 0%, ${tierDetails.colorDark} 100%); border-radius: 12px; padding: 30px; text-align: center; margin-bottom: 30px;">
+                        <div style="font-size: 64px; font-weight: bold; color: white; margin-bottom: 10px;">${assessment.score}/100</div>
+                        <div style="font-size: 24px; color: white; font-weight: 600;">${assessment.tier}</div>
+                        <div style="font-size: 16px; color: rgba(255,255,255,0.9); margin-top: 10px;">${tierDetails.message}</div>
+                    </div>
+
+                    <div style="margin-bottom: 30px;">
+                        <h2 style="color: #333; font-size: 22px; margin-bottom: 15px;">📊 Assessment Details</h2>
+                        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px;">
+                            <p style="margin: 5px 0;"><strong>Company:</strong> ${contact.company}</p>
+                            <p style="margin: 5px 0;"><strong>Email:</strong> ${contact.email}</p>
+                            <p style="margin: 5px 0;"><strong>Mode:</strong> ${assessment.mode.charAt(0).toUpperCase() + assessment.mode.slice(1)}</p>
+                            <p style="margin: 5px 0;"><strong>Assessment ID:</strong> ${assessmentId}</p>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 30px;">
+                        <h2 style="color: #333; font-size: 22px; margin-bottom: 15px;">🎯 Top Recommendations</h2>
+                        <ul style="list-style: none; padding: 0;">
+                            ${recommendations.map(rec => `
+                                <li style="background: #f0f4ff; padding: 15px; margin-bottom: 10px; border-radius: 8px; border-left: 4px solid #667eea;">
+                                    <strong style="color: #667eea;">${rec.title}</strong><br>
+                                    <span style="color: #666; font-size: 14px;">${rec.description}</span>
+                                </li>
+                            `).join('')}
+                        </ul>
+                    </div>
+
+                    <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
+                        <h3 style="color: #856404; margin: 0 0 10px 0; font-size: 18px;">💡 Next Steps</h3>
+                        <p style="color: #856404; margin: 5px 0; line-height: 1.6;">
+                            ${tierDetails.nextSteps}
+                        </p>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 30px; padding-top: 30px; border-top: 2px solid #f0f0f0;">
+                        <h3 style="color: #333; margin-bottom: 15px;">Ready to Improve Your Security?</h3>
+                        <a href="https://alicesolutionsgroup.com/book.html" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 40px; text-decoration: none; border-radius: 50px; font-weight: bold; font-size: 16px; margin-bottom: 15px;">Book Free Consultation</a>
+                        <p style="color: #666; font-size: 14px; margin-top: 15px;">
+                            Questions? Reply to this email or call us at (647) 123-4567
+                        </p>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0;">
+                        <p style="color: #999; font-size: 12px; margin: 5px 0;">
+                            AliceSolutionsGroup - Cybersecurity Training & Consulting<br>
+                            Serving Ontario & GTA Small Businesses<br>
+                            <a href="https://alicesolutionsgroup.com" style="color: #667eea;">alicesolutionsgroup.com</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Admin notification
+        const adminHtml = `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                <h2 style="color: #667eea;">🎯 New Assessment Completed</h2>
+                
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                    <h3>Contact Information:</h3>
+                    <p><strong>Email:</strong> ${contact.email}</p>
+                    <p><strong>Company:</strong> ${contact.company}</p>
+                </div>
+
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                    <h3>Assessment Results:</h3>
+                    <p><strong>Score:</strong> ${assessment.score}/100</p>
+                    <p><strong>Tier:</strong> ${assessment.tier}</p>
+                    <p><strong>Mode:</strong> ${assessment.mode}</p>
+                    <p><strong>Assessment ID:</strong> ${assessmentId}</p>
+                </div>
+
+                <div style="background: #fff3cd; padding: 15px; border-radius: 8px; border-left: 4px solid #ffc107;">
+                    <p><strong>Follow-up Priority:</strong> ${tierDetails.priority}</p>
+                    <p>${tierDetails.adminAction}</p>
+                </div>
+            </div>
+        `;
+
+        // Send customer email
+        await transporter.sendMail({
+            from: process.env.SMTP_USER || 'udi.shkolnik@alicesolutionsgroup.com',
+            to: contact.email,
+            subject: `Your Cyber Health Score: ${assessment.score}/100 - ${assessment.tier}`,
+            html: customerHtml
+        });
+
+        // Send admin notification
+        await transporter.sendMail({
+            from: process.env.SMTP_USER || 'udi.shkolnik@alicesolutionsgroup.com',
+            to: process.env.ADMIN_EMAIL || 'udi.shkolnik@alicesolutionsgroup.com',
+            subject: `New Assessment: ${assessment.score}/100 - ${contact.email}`,
+            html: adminHtml
+        });
+
+        console.log(`Assessment report sent to ${contact.email}`);
+        return true;
+
+    } catch (error) {
+        console.error('Error sending assessment report:', error);
+        return false;
+    }
+}
+
+// Helper: Get tier details
+function getTierDetails(tier) {
+    const tierMap = {
+        'Critical': {
+            color: '#dc3545',
+            colorDark: '#c82333',
+            message: 'Immediate action needed',
+            priority: 'HIGH',
+            nextSteps: 'Your security needs urgent attention. We recommend scheduling a consultation within 48 hours to address critical vulnerabilities.',
+            adminAction: 'Follow up within 24 hours. Offer emergency security assessment.'
+        },
+        'At Risk': {
+            color: '#fd7e14',
+            colorDark: '#e66a00',
+            message: 'Significant vulnerabilities detected',
+            priority: 'MEDIUM-HIGH',
+            nextSteps: 'Several security gaps need addressing. Book a consultation to create a prioritized action plan.',
+            adminAction: 'Follow up within 48 hours. Propose security roadmap consultation.'
+        },
+        'Developing': {
+            color: '#ffc107',
+            colorDark: '#e0a800',
+            message: 'Good foundation, room to improve',
+            priority: 'MEDIUM',
+            nextSteps: 'You have basic security in place. Let\'s build on this foundation with targeted improvements.',
+            adminAction: 'Follow up within 1 week. Offer specific training or implementation services.'
+        },
+        'Strong': {
+            color: '#28a745',
+            colorDark: '#218838',
+            message: 'Excellent security posture',
+            priority: 'LOW',
+            nextSteps: 'Great work! Consider advanced training and compliance certifications to maintain your edge.',
+            adminAction: 'Follow up within 2 weeks. Offer advanced training programs (CISSP, CISM).'
+        }
+    };
+
+    return tierMap[tier] || tierMap['Developing'];
+}
+
+// Helper: Generate recommendations
+function generateRecommendations(score, tier) {
+    const allRecommendations = [
+        {
+            title: 'Enable Multi-Factor Authentication',
+            description: 'Protect all accounts with MFA, starting with email and admin access.',
+            minScore: 0
+        },
+        {
+            title: 'Implement Regular Backups',
+            description: 'Set up automated daily backups with offline copies for ransomware protection.',
+            minScore: 0
+        },
+        {
+            title: 'Security Awareness Training',
+            description: 'Train your team quarterly on phishing, passwords, and security best practices.',
+            minScore: 0
+        },
+        {
+            title: 'Patch Management System',
+            description: 'Establish a process to keep all software and systems up to date.',
+            minScore: 40
+        },
+        {
+            title: 'Incident Response Plan',
+            description: 'Document and test procedures for handling security incidents.',
+            minScore: 50
+        },
+        {
+            title: 'Advanced Threat Protection',
+            description: 'Deploy EDR/XDR solutions for real-time threat detection and response.',
+            minScore: 60
+        }
+    ];
+
+    // Return top 3-5 recommendations based on score
+    return allRecommendations
+        .filter(rec => score >= rec.minScore)
+        .slice(0, tier === 'Critical' ? 5 : 3);
+}
+
 module.exports = router;
