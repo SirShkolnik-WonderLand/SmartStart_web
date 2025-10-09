@@ -455,12 +455,15 @@ class AdminDashboard {
         const monthlyBookingsEl = document.getElementById('monthlyBookings');
         
         if (totalBookingsEl) totalBookingsEl.textContent = bookings.length;
-        if (pendingBookingsEl) pendingBookingsEl.textContent = bookings.filter(b => b.status === 'pending').length;
-        if (confirmedBookingsEl) confirmedBookingsEl.textContent = bookings.filter(b => b.status === 'confirmed').length;
+        if (pendingBookingsEl) pendingBookingsEl.textContent = bookings.filter(b => (b.status || 'pending') === 'pending').length;
+        if (confirmedBookingsEl) confirmedBookingsEl.textContent = bookings.filter(b => (b.status || 'pending') === 'confirmed').length;
         
         // Monthly bookings
         const currentMonth = new Date().toISOString().slice(0, 7);
-        const monthlyBookings = bookings.filter(b => b.createdAt && b.createdAt.startsWith(currentMonth)).length;
+        const monthlyBookings = bookings.filter(b => {
+            const timestamp = b.timestamp || b.createdAt;
+            return timestamp && timestamp.startsWith(currentMonth);
+        }).length;
         if (monthlyBookingsEl) monthlyBookingsEl.textContent = monthlyBookings;
         
         // Recent bookings list
@@ -470,25 +473,35 @@ class AdminDashboard {
             if (recentBookings.length === 0) {
                 bookingList.innerHTML = '<div class="no-data">No bookings yet</div>';
             } else {
-                bookingList.innerHTML = recentBookings.map(booking => `
+                bookingList.innerHTML = recentBookings.map(booking => {
+                    const serviceName = booking.service?.name || booking.service?.type || 'Unknown Service';
+                    const firstName = booking.contact?.firstName || '';
+                    const lastName = booking.contact?.lastName || '';
+                    const fullName = `${firstName} ${lastName}`.trim() || 'No name provided';
+                    const email = booking.contact?.email || 'No email';
+                    const date = booking.timestamp || booking.createdAt;
+                    const status = booking.status || 'pending';
+                    
+                    return `
                     <div class="booking-item">
                         <div class="booking-info">
-                            <strong>${booking.service}</strong>
-                            <span class="booking-date">${new Date(booking.createdAt).toLocaleDateString()}</span>
+                            <strong>${serviceName}</strong>
+                            <span class="booking-date">${date ? new Date(date).toLocaleDateString() : 'No date'}</span>
                         </div>
                         <div class="booking-details">
-                            <span class="booking-name">${booking.name}</span>
-                            <span class="booking-status ${booking.status}">${booking.status}</span>
+                            <span class="booking-name">${fullName} (${email})</span>
+                            <span class="booking-status ${status}">${status}</span>
                         </div>
                     </div>
-                `).join('');
+                `}).join('');
             }
         }
         
         // Service statistics
         const serviceStats = {};
         bookings.forEach(booking => {
-            serviceStats[booking.service] = (serviceStats[booking.service] || 0) + 1;
+            const serviceName = booking.service?.name || booking.service?.type || 'Unknown Service';
+            serviceStats[serviceName] = (serviceStats[serviceName] || 0) + 1;
         });
         
         const serviceStatsContainer = document.getElementById('serviceStats');
@@ -650,15 +663,28 @@ function refreshBookings() {
 function exportBookings() {
     const bookings = window.adminDashboard?.analyticsData.bookings || [];
     const csvContent = "data:text/csv;charset=utf-8," + 
-        "Service,Name,Email,Phone,Date,Time,Status,Created\n" +
-        bookings.map(booking => 
-            `${booking.service},${booking.name},${booking.email},${booking.phone},${booking.date},${booking.time},${booking.status},${booking.createdAt}`
-        ).join("\n");
+        "Service,Name,Email,Phone,Company,Date,Time,Status,Booking ID,Created\n" +
+        bookings.map(booking => {
+            const serviceName = booking.service?.name || booking.service?.type || 'Unknown';
+            const firstName = booking.contact?.firstName || '';
+            const lastName = booking.contact?.lastName || '';
+            const fullName = `${firstName} ${lastName}`.trim() || 'No name';
+            const email = booking.contact?.email || '';
+            const phone = booking.contact?.phone || '';
+            const company = booking.contact?.company || '';
+            const date = booking.date || '';
+            const time = booking.time || '';
+            const status = booking.status || 'pending';
+            const bookingId = booking.bookingId || '';
+            const created = booking.timestamp || booking.createdAt || '';
+            
+            return `"${serviceName}","${fullName}","${email}","${phone}","${company}","${date}","${time}","${status}","${bookingId}","${created}"`;
+        }).join("\n");
     
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "bookings.csv");
+    link.setAttribute("download", `bookings-export-${new Date().toISOString().split('T')[0]}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
