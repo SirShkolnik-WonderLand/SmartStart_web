@@ -26,7 +26,7 @@ services:
   - type: web
     name: quiestioneer-app
     env: docker
-    dockerfilePath: ./smartstart-platform/Quiestioneer/Dockerfile
+    dockerfilePath: ./Dockerfile.quiestioneer
     plan: starter
     region: oregon
     branch: main
