@@ -347,14 +347,14 @@
         document.addEventListener('DOMContentLoaded', () => {
             loadNavbar();
             loadFooter();
-            
+
             // Handle workshop request form submission
             document.getElementById('workshop-request').addEventListener('submit', function(e) {
                 e.preventDefault();
-                
+
                 const formData = new FormData(this);
                 const data = Object.fromEntries(formData);
-                
+
                 // Create mailto link with form data
                 const subject = 'Launch & Learn Workshop Request';
                 const body = `Name: ${data.name}
@@ -367,7 +367,7 @@ Format: ${data.format}
 Preferred Dates/Times: ${data['preferred-dates'] || 'Not specified'}
 Special Requirements: ${data['special-requirements'] || 'None'}
 Newsletter: ${data.newsletter ? 'Yes' : 'No'}`;
-                
+
                 const mailtoLink = `mailto:udi.shkolnik@alicesolutionsgroup.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
                 window.location.href = mailtoLink;
             });

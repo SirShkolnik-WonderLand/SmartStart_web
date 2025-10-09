@@ -308,14 +308,14 @@
         document.addEventListener('DOMContentLoaded', () => {
             loadNavbar();
             loadFooter();
-            
+
             // Handle RSVP form submission
             document.getElementById('beer-security-rsvp').addEventListener('submit', function(e) {
                 e.preventDefault();
-                
+
                 const formData = new FormData(this);
                 const data = Object.fromEntries(formData);
-                
+
                 // Create mailto link with form data
                 const subject = 'Beer + Security RSVP';
                 const body = `Name: ${data.name}
@@ -324,7 +324,7 @@ Organization: ${data.organization || 'Not provided'}
 Role: ${data.role || 'Not specified'}
 Topics of Interest: ${data.topics || 'Not specified'}
 Newsletter: ${data.newsletter ? 'Yes' : 'No'}`;
-                
+
                 const mailtoLink = `mailto:udi.shkolnik@alicesolutionsgroup.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
                 window.location.href = mailtoLink;
             });
