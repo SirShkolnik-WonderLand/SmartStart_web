@@ -90,8 +90,9 @@ class CustomerPortal {
     }
     
     createBookingItem(booking) {
-        const statusClass = booking.status.toLowerCase();
-        const serviceName = this.getServiceName(booking.service);
+        const status = booking.status || 'pending';
+        const statusClass = status.toLowerCase();
+        const serviceName = this.getServiceName(booking.service?.type || booking.service);
         const formattedDate = new Date(booking.date).toLocaleDateString('en-US', {
             weekday: 'long',
             year: 'numeric',
@@ -106,11 +107,12 @@ class CustomerPortal {
                     <div class="booking-details">
                         <span>📅 ${formattedDate}</span>
                         <span>🕐 ${booking.time}</span>
-                        <span>🆔 ${booking.id}</span>
+                        <span>🆔 ${booking.bookingId}</span>
+                        <span>👤 ${booking.contact?.firstName || ''} ${booking.contact?.lastName || ''}</span>
                     </div>
                 </div>
                 <div class="booking-actions">
-                    <span class="booking-status ${statusClass}">${booking.status}</span>
+                    <span class="booking-status ${statusClass}">${status}</span>
                     ${this.getActionButtons(booking)}
                 </div>
             </div>
@@ -119,18 +121,20 @@ class CustomerPortal {
     
     getActionButtons(booking) {
         const buttons = [];
+        const status = booking.status || 'pending';
+        const bookingId = booking.bookingId;
         
-        if (booking.status === 'pending') {
-            buttons.push(`<button class="action-button primary" onclick="customerPortal.confirmBooking('${booking.id}')">Confirm</button>`);
-            buttons.push(`<button class="action-button" onclick="customerPortal.cancelBooking('${booking.id}')">Cancel</button>`);
-        } else if (booking.status === 'confirmed') {
-            buttons.push(`<button class="action-button" onclick="customerPortal.rescheduleBooking('${booking.id}')">Reschedule</button>`);
-            buttons.push(`<button class="action-button" onclick="customerPortal.cancelBooking('${booking.id}')">Cancel</button>`);
-        } else if (booking.status === 'completed') {
-            buttons.push(`<button class="action-button" onclick="customerPortal.downloadCertificate('${booking.id}')">Certificate</button>`);
+        if (status === 'pending') {
+            buttons.push(`<button class="action-button primary" onclick="customerPortal.confirmBooking('${bookingId}')">Confirm</button>`);
+            buttons.push(`<button class="action-button" onclick="customerPortal.cancelBooking('${bookingId}')">Cancel</button>`);
+        } else if (status === 'confirmed') {
+            buttons.push(`<button class="action-button" onclick="customerPortal.rescheduleBooking('${bookingId}')">Reschedule</button>`);
+            buttons.push(`<button class="action-button" onclick="customerPortal.cancelBooking('${bookingId}')">Cancel</button>`);
+        } else if (status === 'completed') {
+            buttons.push(`<button class="action-button" onclick="customerPortal.downloadCertificate('${bookingId}')">Certificate</button>`);
         }
         
-        buttons.push(`<button class="action-button" onclick="customerPortal.viewDetails('${booking.id}')">Details</button>`);
+        buttons.push(`<button class="action-button" onclick="customerPortal.viewDetails('${bookingId}')">Details</button>`);
         
         return buttons.join('');
     }
@@ -155,8 +159,10 @@ class CustomerPortal {
         const serviceFilter = document.getElementById('serviceFilter').value;
         
         this.filteredBookings = this.bookings.filter(booking => {
-            const statusMatch = statusFilter === 'all' || booking.status === statusFilter;
-            const serviceMatch = serviceFilter === 'all' || booking.service === serviceFilter;
+            const status = booking.status || 'pending';
+            const serviceType = booking.service?.type || booking.service;
+            const statusMatch = statusFilter === 'all' || status === statusFilter;
+            const serviceMatch = serviceFilter === 'all' || serviceType === serviceFilter;
             
             return statusMatch && serviceMatch;
         });
@@ -166,9 +172,9 @@ class CustomerPortal {
     
     updateSummary() {
         const totalBookings = this.bookings.length;
-        const confirmedBookings = this.bookings.filter(b => b.status === 'confirmed').length;
-        const pendingBookings = this.bookings.filter(b => b.status === 'pending').length;
-        const completedSessions = this.bookings.filter(b => b.status === 'completed').length;
+        const confirmedBookings = this.bookings.filter(b => (b.status || 'pending') === 'confirmed').length;
+        const pendingBookings = this.bookings.filter(b => (b.status || 'pending') === 'pending').length;
+        const completedSessions = this.bookings.filter(b => (b.status || 'pending') === 'completed').length;
         
         document.getElementById('totalBookings').textContent = totalBookings;
         document.getElementById('confirmedBookings').textContent = confirmedBookings;
