@@ -10,6 +10,26 @@ const readdir = promisify(fs.readdir);
 const stat = promisify(fs.stat);
 const readFile = promisify(fs.readFile);
 
+async function getAllHtmlFiles(dir = WEBSITE_DIR, basePath = '') {
+    const files = [];
+    const items = await readdir(dir);
+
+    for (const item of items) {
+        const fullPath = path.join(dir, item);
+        const relativePath = path.join(basePath, item);
+        const stats = await stat(fullPath);
+
+        if (stats.isDirectory()) {
+            const subFiles = await getAllHtmlFiles(fullPath, relativePath);
+            files.push(...subFiles);
+        } else if (item.endsWith('.html')) {
+            files.push('/' + relativePath.replace(/\\/g, '/'));
+        }
+    }
+
+    return files;
+}
+
 const WEBSITE_DIR = path.join(__dirname, 'website');
 
 // SEO Checklist based on 2025 best practices
@@ -59,24 +79,24 @@ async function auditPage(filePath, relativePath) {
 
     try {
         const content = await readFile(filePath, 'utf8');
-        
+
         // Technical SEO Checks
         await checkTechnicalSEO(content, results);
-        
+
         // Content SEO Checks
         await checkContentSEO(content, results);
-        
+
         // Performance Checks
         await checkPerformance(content, results);
-        
+
         // Accessibility Checks
         await checkAccessibility(content, results);
-        
+
         // Calculate score
         const totalChecks = results.passed.length + results.issues.length + results.warnings.length;
         const passedChecks = results.passed.length;
         results.score = totalChecks > 0 ? Math.round((passedChecks / totalChecks) * 100) : 0;
-        
+
     } catch (error) {
         results.issues.push(`❌ Error reading file: ${error.message}`);
     }
@@ -165,7 +185,7 @@ async function checkContentSEO(content, results) {
     // Word count (rough estimate)
     const textContent = content.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
     const wordCount = textContent.split(' ').length;
-    
+
     if (wordCount >= 300) {
         results.passed.push(`✅ Sufficient content (${wordCount} words)`);
     } else {
@@ -175,7 +195,7 @@ async function checkContentSEO(content, results) {
     // Images with alt text
     const imgMatches = content.match(/<img[^>]*>/gi) || [];
     const imgWithAlt = imgMatches.filter(img => img.includes('alt='));
-    
+
     if (imgMatches.length > 0) {
         if (imgWithAlt.length === imgMatches.length) {
             results.passed.push(`✅ All images have alt text (${imgMatches.length})`);
@@ -188,7 +208,7 @@ async function checkContentSEO(content, results) {
     const h1Count = (content.match(/<h1[^>]*>/gi) || []).length;
     const h2Count = (content.match(/<h2[^>]*>/gi) || []).length;
     const h3Count = (content.match(/<h3[^>]*>/gi) || []).length;
-    
+
     if (h1Count === 1 && h2Count > 0) {
         results.passed.push("✅ Proper heading hierarchy");
     } else if (h1Count === 0) {
@@ -239,7 +259,7 @@ async function checkAccessibility(content, results) {
     // Semantic HTML
     const semanticElements = ['<header', '<nav', '<main', '<section', '<article', '<aside', '<footer'];
     const foundSemantic = semanticElements.filter(element => content.includes(element));
-    
+
     if (foundSemantic.length > 0) {
         results.passed.push(`✅ Semantic HTML elements used (${foundSemantic.length})`);
     } else {
@@ -248,11 +268,11 @@ async function checkAccessibility(content, results) {
 
     // Form labels
     const inputs = content.match(/<input[^>]*>/gi) || [];
-    const labeledInputs = inputs.filter(input => 
-        content.includes(`for="`) || content.includes(`for='`) || 
+    const labeledInputs = inputs.filter(input =>
+        content.includes(`for="`) || content.includes(`for='`) ||
         input.includes('aria-label=') || input.includes("aria-label='")
     );
-    
+
     if (inputs.length > 0) {
         if (labeledInputs.length === inputs.length) {
             results.passed.push("✅ All form inputs properly labeled");
@@ -265,17 +285,13 @@ async function checkAccessibility(content, results) {
 async function generateSEOReport() {
     console.log('🔍 SEO Audit - Starting comprehensive analysis...\n');
 
-    const pages = [
-        '/index.html',
-        '/about.html',
-        '/services.html',
-        '/contact.html',
-        '/booking.html',
-        '/customer-portal.html',
-        '/services/cybersecurity-compliance.html',
-        '/services/automation-ai.html',
-        '/locations/toronto.html'
-    ];
+    // Get all HTML files
+    const allFiles = await getAllHtmlFiles();
+    const pages = allFiles.filter(file =>
+        !file.includes('/includes/') &&
+        !file.includes('/admin.html') &&
+        file !== '/favicon.ico'
+    ).sort();
 
     const results = [];
     let totalScore = 0;
@@ -283,11 +299,11 @@ async function generateSEOReport() {
     for (const page of pages) {
         const filePath = path.join(WEBSITE_DIR, page);
         console.log(`📍 Auditing: ${page}`);
-        
+
         const pageResults = await auditPage(filePath, page);
         results.push(pageResults);
         totalScore += pageResults.score;
-        
+
         console.log(`   Score: ${pageResults.score}/100`);
         if (pageResults.issues.length > 0) {
             console.log(`   Issues: ${pageResults.issues.length}`);
@@ -320,7 +336,7 @@ async function generateSEOReport() {
 
     const filename = `seo-audit-${new Date().toISOString().split('T')[0]}.json`;
     const filepath = path.join(reportDir, filename);
-    
+
     fs.writeFileSync(filepath, JSON.stringify(report, null, 2));
 
     // Print summary
@@ -343,7 +359,7 @@ async function generateSEOReport() {
     if (Object.keys(issueCounts).length > 0) {
         console.log('\n🚨 Top Issues:');
         Object.entries(issueCounts)
-            .sort(([,a], [,b]) => b - a)
+            .sort(([, a], [, b]) => b - a)
             .slice(0, 5)
             .forEach(([issue, count]) => {
                 console.log(`  ${issue} (${count} pages)`);
@@ -356,27 +372,27 @@ async function generateSEOReport() {
 function generateRecommendations(results) {
     const recommendations = [];
     const allIssues = results.flatMap(r => r.issues);
-    
+
     if (allIssues.some(issue => issue.includes('No title tag'))) {
         recommendations.push("Add unique, descriptive title tags to all pages");
     }
-    
+
     if (allIssues.some(issue => issue.includes('No meta description'))) {
         recommendations.push("Add meta descriptions to all pages");
     }
-    
+
     if (allIssues.some(issue => issue.includes('No H1 tag'))) {
         recommendations.push("Add H1 tags to pages missing them");
     }
-    
+
     if (allIssues.some(issue => issue.includes('No canonical URL'))) {
         recommendations.push("Add canonical URLs to prevent duplicate content");
     }
-    
+
     if (allIssues.some(issue => issue.includes('No viewport meta tag'))) {
         recommendations.push("Add viewport meta tags for mobile optimization");
     }
-    
+
     if (allIssues.some(issue => issue.includes('images missing alt text'))) {
         recommendations.push("Add alt text to all images for accessibility");
     }

@@ -26,6 +26,19 @@
     <!-- Canonical URL -->
     <link rel="canonical" href="https://alicesolutionsgroup.com/services/cybersecurity-compliance.html">
 
+    <!-- Service Structured Data -->
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "Service",
+            "name": "Cybersecurity & Compliance",
+            "serviceType": "CISO, ISO 27001, SOC 2, NIST CSF 2.0, PHIPA/PIPEDA",
+            "provider": "AliceSolutionsGroup",
+            "areaServed": "Ontario",
+            "url": "https://alicesolutionsgroup.com/services/cybersecurity-compliance.html"
+        }
+    </script>
+
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="../favicon.ico">
     <link rel="icon" type="image/svg+xml" href="../favicon.svg">
@@ -412,6 +425,51 @@
             loadNavbar();
             loadFooter();
         });
+    </script>
+
+    <!-- Real-user Core Web Vitals logging -->
+    <script>
+        ! function() {
+            (function() {
+                var s = document.createElement('script');
+                s.src = 'https://unpkg.com/web-vitals@4/dist/web-vitals.iife.js';
+                s.defer = true;
+                s.onload = function() {
+                    const send = (m) => {
+                        if (navigator.sendBeacon) {
+                            navigator.sendBeacon('/vitals', JSON.stringify(m));
+                        } else {
+                            console.log('CWV', m);
+                        }
+                    };
+                    webVitals.onINP(({
+                        value,
+                        id
+                    }) => send({
+                        metric: 'INP',
+                        value: Math.round(value),
+                        id
+                    }));
+                    webVitals.onLCP(({
+                        value,
+                        id
+                    }) => send({
+                        metric: 'LCP',
+                        value: Math.round(value),
+                        id
+                    }));
+                    webVitals.onCLS(({
+                        value,
+                        id
+                    }) => send({
+                        metric: 'CLS',
+                        value,
+                        id
+                    }));
+                };
+                document.head.appendChild(s);
+            }());
+        }();
     </script>
 </body>
 

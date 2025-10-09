@@ -452,7 +452,7 @@ router.get('/customer/bookings', async(req, res) => {
         const { bookings } = JSON.parse(bookingsData);
 
         const customerBookings = bookings.filter(booking =>
-            booking.contact ? .email ? .toLowerCase() === email.toLowerCase()
+            booking.contact?.email?.toLowerCase() === email.toLowerCase()
         );
 
         res.json({ bookings: customerBookings });

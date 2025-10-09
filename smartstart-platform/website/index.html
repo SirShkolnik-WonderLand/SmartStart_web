@@ -121,11 +121,30 @@
             "keywords": "cybersecurity Toronto, ISO 27001, HIPAA compliance, business process automation, intelligent workflows, venture hub Toronto, CISO-as-a-Service, CISSP, CISM, SOC2, SmartStart incubator"
         }
     </script>
+
+    <!-- Website + SearchAction -->
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "url": "https://alicesolutionsgroup.com/",
+            "name": "AliceSolutionsGroup",
+            "potentialAction": {
+                "@type": "SearchAction",
+                "target": "https://alicesolutionsgroup.com/search?q={query}",
+                "query-input": "required name=query"
+            }
+        }
+    </script>
+
     <!-- Preload critical assets for LCP optimization -->
     <link rel="preload" href="assets/images/AliceSolutionsGroup-logo-owl-rabbit-fox.png" as="image">
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" as="style">
     <link rel="preload" href="assets/css/styles.css" as="style">
 
+    <!-- Font preconnect for Core Web Vitals optimization -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/styles.css">
     <link rel="stylesheet" href="assets/css/footer-lean.css">
@@ -640,6 +659,51 @@
             loadNavbar();
             loadFooter();
         });
+    </script>
+
+    <!-- Real-user Core Web Vitals logging -->
+    <script>
+        ! function() {
+            (function() {
+                var s = document.createElement('script');
+                s.src = 'https://unpkg.com/web-vitals@4/dist/web-vitals.iife.js';
+                s.defer = true;
+                s.onload = function() {
+                    const send = (m) => {
+                        if (navigator.sendBeacon) {
+                            navigator.sendBeacon('/vitals', JSON.stringify(m));
+                        } else {
+                            console.log('CWV', m);
+                        }
+                    };
+                    webVitals.onINP(({
+                        value,
+                        id
+                    }) => send({
+                        metric: 'INP',
+                        value: Math.round(value),
+                        id
+                    }));
+                    webVitals.onLCP(({
+                        value,
+                        id
+                    }) => send({
+                        metric: 'LCP',
+                        value: Math.round(value),
+                        id
+                    }));
+                    webVitals.onCLS(({
+                        value,
+                        id
+                    }) => send({
+                        metric: 'CLS',
+                        value,
+                        id
+                    }));
+                };
+                document.head.appendChild(s);
+            }());
+        }();
     </script>
 </body>
 

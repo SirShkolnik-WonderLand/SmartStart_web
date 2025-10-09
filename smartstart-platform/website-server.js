@@ -293,6 +293,39 @@ app.get('/api/admin/analytics', (req, res) => {
     res.json(realData);
 });
 
+// Core Web Vitals endpoint
+app.post('/vitals', (req, res) => {
+    try {
+        const vitalsData = req.body;
+        const timestamp = new Date().toISOString();
+
+        // Log the vitals data for monitoring
+        console.log(`[CWV] ${timestamp} - ${vitalsData.metric}: ${vitalsData.value} (ID: ${vitalsData.id})`);
+
+        // Store in analytics data for admin dashboard
+        if (!analyticsStorage.coreWebVitals) {
+            analyticsStorage.coreWebVitals = [];
+        }
+
+        analyticsStorage.coreWebVitals.push({
+            ...vitalsData,
+            timestamp,
+            userAgent: req.get('User-Agent'),
+            ip: req.ip || req.connection.remoteAddress
+        });
+
+        // Keep only last 1000 entries to prevent memory issues
+        if (analyticsStorage.coreWebVitals.length > 1000) {
+            analyticsStorage.coreWebVitals = analyticsStorage.coreWebVitals.slice(-1000);
+        }
+
+        res.status(200).json({ success: true });
+    } catch (error) {
+        console.error('Error processing Core Web Vitals:', error);
+        res.status(500).json({ error: 'Failed to process vitals data' });
+    }
+});
+
 // Admin bookings endpoint
 app.get('/api/admin/bookings', async(req, res) => {
     try {

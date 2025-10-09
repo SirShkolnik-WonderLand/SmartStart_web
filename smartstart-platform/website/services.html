@@ -26,7 +26,89 @@
     <!-- Canonical -->
     <link rel="canonical" href="https://alicesolutionsgroup.com/services.html" />
 
+    <!-- OfferCatalog of services -->
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "OfferCatalog",
+            "name": "Professional Services",
+            "url": "https://alicesolutionsgroup.com/services.html",
+            "itemListElement": [{
+                "@type": "OfferCatalog",
+                "name": "Cybersecurity & Compliance",
+                "itemListElement": [{
+                    "@type": "Service",
+                    "name": "CISO-as-a-Service",
+                    "serviceType": "Cybersecurity leadership",
+                    "provider": "AliceSolutionsGroup",
+                    "areaServed": "Greater Toronto Area",
+                    "url": "https://alicesolutionsgroup.com/services/cybersecurity-compliance.html#ciso"
+                }, {
+                    "@type": "Service",
+                    "name": "ISO 27001:2022 Readiness",
+                    "serviceType": "Compliance & audit readiness",
+                    "provider": "AliceSolutionsGroup",
+                    "areaServed": "Ontario",
+                    "url": "https://alicesolutionsgroup.com/services/cybersecurity-compliance.html#iso27001"
+                }, {
+                    "@type": "Service",
+                    "name": "PHIPA/PIPEDA Programs",
+                    "serviceType": "Privacy compliance",
+                    "provider": "AliceSolutionsGroup",
+                    "areaServed": "Ontario",
+                    "url": "https://alicesolutionsgroup.com/services/cybersecurity-compliance.html#privacy"
+                }]
+            }, {
+                "@type": "OfferCatalog",
+                "name": "Automation & AI",
+                "itemListElement": [{
+                    "@type": "Service",
+                    "name": "RPA & Workflow Automation",
+                    "serviceType": "Automation",
+                    "provider": "AliceSolutionsGroup",
+                    "areaServed": "Greater Toronto Area",
+                    "url": "https://alicesolutionsgroup.com/services/automation-ai.html#rpa"
+                }, {
+                    "@type": "Service",
+                    "name": "Privacy-Preserving Machine Learning",
+                    "serviceType": "AI/ML integration",
+                    "provider": "AliceSolutionsGroup",
+                    "areaServed": "Ontario",
+                    "url": "https://alicesolutionsgroup.com/services/automation-ai.html#ml"
+                }, {
+                    "@type": "Service",
+                    "name": "BI & Real-time Dashboards",
+                    "serviceType": "Analytics",
+                    "provider": "AliceSolutionsGroup",
+                    "areaServed": "Ontario",
+                    "url": "https://alicesolutionsgroup.com/services/automation-ai.html#bi"
+                }]
+            }, {
+                "@type": "OfferCatalog",
+                "name": "Advisory & Audits",
+                "itemListElement": [{
+                    "@type": "Service",
+                    "name": "SOC 2 Readiness Review",
+                    "serviceType": "Audit readiness",
+                    "provider": "AliceSolutionsGroup",
+                    "areaServed": "Ontario",
+                    "url": "https://alicesolutionsgroup.com/services/advisory-audits.html#soc2"
+                }, {
+                    "@type": "Service",
+                    "name": "ISO 27001 Gap & Surveillance Readiness",
+                    "serviceType": "Audit readiness",
+                    "provider": "AliceSolutionsGroup",
+                    "areaServed": "Ontario",
+                    "url": "https://alicesolutionsgroup.com/services/advisory-audits.html#iso-gap"
+                }]
+            }]
+        }
+    </script>
+
     <!-- Fonts & CSS -->
+    <!-- Font preconnect for Core Web Vitals optimization -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/styles.css">
     <link rel="stylesheet" href="assets/css/footer-lean.css">
@@ -238,6 +320,51 @@
             loadNavbar();
             loadFooter();
         });
+    </script>
+
+    <!-- Real-user Core Web Vitals logging -->
+    <script>
+        ! function() {
+            (function() {
+                var s = document.createElement('script');
+                s.src = 'https://unpkg.com/web-vitals@4/dist/web-vitals.iife.js';
+                s.defer = true;
+                s.onload = function() {
+                    const send = (m) => {
+                        if (navigator.sendBeacon) {
+                            navigator.sendBeacon('/vitals', JSON.stringify(m));
+                        } else {
+                            console.log('CWV', m);
+                        }
+                    };
+                    webVitals.onINP(({
+                        value,
+                        id
+                    }) => send({
+                        metric: 'INP',
+                        value: Math.round(value),
+                        id
+                    }));
+                    webVitals.onLCP(({
+                        value,
+                        id
+                    }) => send({
+                        metric: 'LCP',
+                        value: Math.round(value),
+                        id
+                    }));
+                    webVitals.onCLS(({
+                        value,
+                        id
+                    }) => send({
+                        metric: 'CLS',
+                        value,
+                        id
+                    }));
+                };
+                document.head.appendChild(s);
+            }());
+        }();
     </script>
 </body>
 
