@@ -9,6 +9,18 @@ const path = require('path');
 
 const app = express();
 const PORT = process.env.WEBSITE_PORT || 3346;
+const NODE_ENV = process.env.NODE_ENV || 'development';
+const PRODUCTION_DOMAIN = process.env.PRODUCTION_DOMAIN || 'https://alicesolutionsgroup.com';
+
+// Determine allowed origins based on environment
+const allowedOrigins = NODE_ENV === 'production' 
+    ? [PRODUCTION_DOMAIN, 'https://alicesolutionsgroup.com']
+    : ['http://localhost:3345', 'http://localhost:3346', 'http://localhost:3344'];
+
+// Determine connectSrc based on environment
+const connectSources = NODE_ENV === 'production'
+    ? ["'self'", PRODUCTION_DOMAIN, "https://billing.zohocloud.ca", "https://*.zohocloud.ca", "https://*.zohostatic.com"]
+    : ["'self'", "http://localhost:3344", "http://localhost:3345", PRODUCTION_DOMAIN, "https://billing.zohocloud.ca", "https://*.zohocloud.ca", "https://*.zohostatic.com"];
 
 // Security middleware
 app.use(helmet({
@@ -17,9 +29,10 @@ app.use(helmet({
             defaultSrc: ["'self'"],
             styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com", "https://js.zohostatic.com", "https://*.zohostatic.com"],
             fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com"],
-            scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://cdnjs.cloudflare.com", "https://js.zohostatic.com", "https://billing.zohocloud.ca", "https://*.zohostatic.com", "https://*.zohocloud.ca"],
+            scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://cdnjs.cloudflare.com", "https://js.zohostatic.com", "https://billing.zohocloud.ca", "https://*.zohostatic.com", "https://*.zohocloud.ca", "https://unpkg.com"],
+            scriptSrcAttr: ["'unsafe-inline'", "'unsafe-hashes'"],
             imgSrc: ["'self'", "data:", "https:"],
-            connectSrc: ["'self'", "http://localhost:3344", "http://localhost:3345", "https://billing.zohocloud.ca", "https://*.zohocloud.ca", "https://*.zohostatic.com"],
+            connectSrc: connectSources,
             objectSrc: ["'none'"],
             mediaSrc: ["'self'"],
             frameSrc: ["'self'", "https://billing.zohocloud.ca", "https://js.zohostatic.com", "https://*.zohostatic.com"],
@@ -31,7 +44,16 @@ app.use(helmet({
 
 // CORS configuration
 app.use(cors({
-    origin: ['http://localhost:3345', 'http://localhost:3346', 'http://localhost:3344'],
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps, curl, etc.)
+        if (!origin) return callback(null, true);
+        
+        if (allowedOrigins.indexOf(origin) !== -1 || NODE_ENV === 'development') {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true
 }));
 

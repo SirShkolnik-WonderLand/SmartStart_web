@@ -17,6 +17,10 @@ services:
         value: production
       - key: PORT
         value: 3346
+      - key: WEBSITE_PORT
+        value: 3346
+      - key: PRODUCTION_DOMAIN
+        value: https://alicesolutionsgroup.com
       - key: QUIESTIONEER_PORT
         value: 3347
     healthCheckPath: /
