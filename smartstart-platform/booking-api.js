@@ -470,7 +470,7 @@ router.post('/customer/bookings/:id/confirm', async(req, res) => {
         const bookingsData = await fs.readFile(BOOKINGS_FILE, 'utf8');
         const data = JSON.parse(bookingsData);
 
-        const booking = data.bookings.find(b => b.bookingId === id && b.contact ? .email ? .toLowerCase() === email.toLowerCase());
+        const booking = data.bookings.find(b => b.bookingId === id && b.contact?.email?.toLowerCase() === email.toLowerCase());
 
         if (!booking) {
             return res.status(404).json({ error: 'Booking not found' });
@@ -503,7 +503,7 @@ router.post('/customer/bookings/:id/cancel', async(req, res) => {
         const bookingsData = await fs.readFile(BOOKINGS_FILE, 'utf8');
         const data = JSON.parse(bookingsData);
 
-        const booking = data.bookings.find(b => b.bookingId === id && b.contact ? .email ? .toLowerCase() === email.toLowerCase());
+        const booking = data.bookings.find(b => b.bookingId === id && b.contact?.email?.toLowerCase() === email.toLowerCase());
 
         if (!booking) {
             return res.status(404).json({ error: 'Booking not found' });
