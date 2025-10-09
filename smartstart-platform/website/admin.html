@@ -628,20 +628,31 @@
                 }
 
                 tableBody.innerHTML = bookings.map(booking => {
-                    const date = new Date(booking.consultationTime);
-                    const statusClass = booking.status === 'confirmed' ? 'status-confirmed' :
-                        booking.status === 'cancelled' ? 'status-cancelled' : 'status-pending';
+                    // Handle both old and new data structures
+                    const timestamp = booking.timestamp || booking.createdAt || booking.consultationTime;
+                    const date = timestamp ? new Date(timestamp) : new Date();
+                    
+                    const serviceName = booking.service?.name || booking.service?.type || booking.type || 'Consultation';
+                    const firstName = booking.contact?.firstName || booking.firstName || '';
+                    const lastName = booking.contact?.lastName || booking.lastName || '';
+                    const fullName = `${firstName} ${lastName}`.trim() || 'No name provided';
+                    const email = booking.contact?.email || booking.email || 'No email';
+                    const status = booking.status || 'pending';
+                    const bookingId = booking.bookingId || booking.id || '';
+                    
+                    const statusClass = status === 'confirmed' ? 'status-confirmed' :
+                        status === 'cancelled' ? 'status-cancelled' : 'status-pending';
 
                     return `
                         <tr>
                             <td>${date.toLocaleDateString()} ${date.toLocaleTimeString()}</td>
-                            <td>${booking.type || 'Consultation'}</td>
-                            <td>${booking.firstName} ${booking.lastName}</td>
-                            <td>${booking.email}</td>
-                            <td><span class="status-badge ${statusClass}">${booking.status || 'pending'}</span></td>
+                            <td>${serviceName}</td>
+                            <td>${fullName}</td>
+                            <td>${email}</td>
+                            <td><span class="status-badge ${statusClass}">${status}</span></td>
                             <td>
-                                <button class="action-btn view-btn" onclick="viewBooking('${booking.id}')">👁️</button>
-                                <button class="action-btn confirm-btn" onclick="confirmBooking('${booking.id}')">✅</button>
+                                <button class="action-btn view-btn" onclick="viewBooking('${bookingId}')">👁️</button>
+                                <button class="action-btn confirm-btn" onclick="confirmBooking('${bookingId}')">✅</button>
                             </td>
                         </tr>
                     `;
