@@ -25,39 +25,3 @@ services:
         value: 3347
     healthCheckPath: /
     autoDeploy: true
-    
-    # Security headers
-    headers:
-      - path: /*
-        name: X-Content-Type-Options
-        value: nosniff
-      - path: /*
-        name: X-Frame-Options
-        value: SAMEORIGIN
-      - path: /*
-        name: X-XSS-Protection
-        value: 0
-      - path: /*
-        name: Strict-Transport-Security
-        value: max-age=15552000; includeSubDomains
-      - path: /*
-        name: Referrer-Policy
-        value: no-referrer
-      - path: /*
-        name: Cross-Origin-Opener-Policy
-        value: same-origin
-      - path: /*
-        name: Cross-Origin-Resource-Policy
-        value: same-origin
-      - path: /*
-        name: Origin-Agent-Cluster
-        value: ?1
-      - path: /*
-        name: X-DNS-Prefetch-Control
-        value: off
-      - path: /*
-        name: X-Download-Options
-        value: noopen
-      - path: /*
-        name: X-Permitted-Cross-Domain-Policies
-        value: none
