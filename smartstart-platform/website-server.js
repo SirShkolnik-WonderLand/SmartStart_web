@@ -61,6 +61,25 @@ app.use(express.static(path.join(__dirname, 'website'), {
     }
 }));
 
+// Static file serving for Quiestioneer (SMB Cyber Health Check)
+app.use('/Quiestioneer', express.static(path.join(__dirname, 'Quiestioneer', 'dist'), {
+    maxAge: process.env.NODE_ENV === 'production' ? '1d' : '0',
+    etag: true,
+    lastModified: true,
+    setHeaders: (res, path) => {
+        // Set proper MIME types for Quiestioneer assets
+        if (path.endsWith('.css')) {
+            res.setHeader('Content-Type', 'text/css');
+        } else if (path.endsWith('.js')) {
+            res.setHeader('Content-Type', 'application/javascript');
+        } else if (path.endsWith('.html')) {
+            res.setHeader('Content-Type', 'text/html');
+        } else if (path.endsWith('.json')) {
+            res.setHeader('Content-Type', 'application/json');
+        }
+    }
+}));
+
 // Handle favicon requests
 app.get('/favicon.ico', (req, res) => {
     res.setHeader('Content-Type', 'image/x-icon');
@@ -743,6 +762,11 @@ app.use('/api', (req, res, next) => {
 });
 
 // Serve website pages (but not API routes)
+// Serve Quiestioneer index.html for root Quiestioneer path
+app.get('/Quiestioneer/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'Quiestioneer', 'dist', 'index.html'));
+});
+
 app.get('*', (req, res) => {
     // Skip API routes - they should be handled above
     if (req.path.startsWith('/api/')) {
