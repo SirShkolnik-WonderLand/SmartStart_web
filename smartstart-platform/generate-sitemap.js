@@ -20,6 +20,8 @@ const PAGE_CONFIG = {
     '/services.html': { priority: 0.9, changefreq: 'monthly' },
     '/smartstart.html': { priority: 0.8, changefreq: 'monthly' },
     '/contact.html': { priority: 0.7, changefreq: 'monthly' },
+    '/booking.html': { priority: 0.8, changefreq: 'monthly' },
+    '/customer-portal.html': { priority: 0.6, changefreq: 'monthly' },
 
     // Services
     '/services/cybersecurity-compliance.html': { priority: 0.8, changefreq: 'monthly' },
@@ -65,7 +67,10 @@ const PAGE_CONFIG = {
     '/legal/disclaimer.html': { priority: 0.3, changefreq: 'yearly' },
 
     // Brand disambiguation (Important for SEO)
-    '/about/disambiguation.html': { priority: 0.7, changefreq: 'monthly' }
+    '/about/disambiguation.html': { priority: 0.7, changefreq: 'monthly' },
+
+    // Quiestioneer (Free Cyber Health Check)
+    '/Quiestioneer/': { priority: 0.7, changefreq: 'monthly' }
 };
 
 async function getFileModTime(filePath) {
