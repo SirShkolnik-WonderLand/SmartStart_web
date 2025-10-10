@@ -699,15 +699,15 @@
                     // Handle both old and new data structures
                     const timestamp = booking.timestamp || booking.createdAt || booking.consultationTime;
                     const date = timestamp ? new Date(timestamp) : new Date();
-                    
-                    const serviceName = booking.service?.name || booking.service?.type || booking.type || 'Consultation';
-                    const firstName = booking.contact?.firstName || booking.firstName || '';
-                    const lastName = booking.contact?.lastName || booking.lastName || '';
+
+                    const serviceName = booking.service ? .name || booking.service ? .type || booking.type || 'Consultation';
+                    const firstName = booking.contact ? .firstName || booking.firstName || '';
+                    const lastName = booking.contact ? .lastName || booking.lastName || '';
                     const fullName = `${firstName} ${lastName}`.trim() || 'No name provided';
-                    const email = booking.contact?.email || booking.email || 'No email';
+                    const email = booking.contact ? .email || booking.email || 'No email';
                     const status = booking.status || 'pending';
                     const bookingId = booking.bookingId || booking.id || '';
-                    
+
                     const statusClass = status === 'confirmed' ? 'status-confirmed' :
                         status === 'cancelled' ? 'status-cancelled' : 'status-pending';
 
@@ -776,15 +776,15 @@
 
                 // Update assessment stats
                 document.getElementById('totalAssessments').textContent = assessments.length;
-                
+
                 // Calculate average score
-                const avgScore = assessments.length > 0
-                    ? Math.round(assessments.reduce((sum, a) => sum + a.assessment.score, 0) / assessments.length)
-                    : 0;
+                const avgScore = assessments.length > 0 ?
+                    Math.round(assessments.reduce((sum, a) => sum + a.assessment.score, 0) / assessments.length) :
+                    0;
                 document.getElementById('avgScore').textContent = avgScore;
 
                 // Count critical/at risk
-                const criticalCount = assessments.filter(a => 
+                const criticalCount = assessments.filter(a =>
                     a.assessment.tier === 'Critical' || a.assessment.tier === 'At Risk'
                 ).length;
                 document.getElementById('criticalLeads').textContent = criticalCount;
