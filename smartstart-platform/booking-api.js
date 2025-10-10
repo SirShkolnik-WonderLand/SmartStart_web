@@ -452,7 +452,7 @@ router.get('/customer/bookings', async(req, res) => {
         const { bookings } = JSON.parse(bookingsData);
 
         const customerBookings = bookings.filter(booking =>
-            booking.contact ? .email ? .toLowerCase() === email.toLowerCase()
+            booking.contact?.email?.toLowerCase() === email.toLowerCase()
         );
 
         res.json({ bookings: customerBookings });
@@ -470,7 +470,7 @@ router.post('/customer/bookings/:id/confirm', async(req, res) => {
         const bookingsData = await fs.readFile(BOOKINGS_FILE, 'utf8');
         const data = JSON.parse(bookingsData);
 
-        const booking = data.bookings.find(b => b.bookingId === id && b.contact ? .email ? .toLowerCase() === email.toLowerCase());
+        const booking = data.bookings.find(b => b.bookingId === id && b.contact?.email?.toLowerCase() === email.toLowerCase());
 
         if (!booking) {
             return res.status(404).json({ error: 'Booking not found' });
@@ -503,7 +503,7 @@ router.post('/customer/bookings/:id/cancel', async(req, res) => {
         const bookingsData = await fs.readFile(BOOKINGS_FILE, 'utf8');
         const data = JSON.parse(bookingsData);
 
-        const booking = data.bookings.find(b => b.bookingId === id && b.contact ? .email ? .toLowerCase() === email.toLowerCase());
+        const booking = data.bookings.find(b => b.bookingId === id && b.contact?.email?.toLowerCase() === email.toLowerCase());
 
         if (!booking) {
             return res.status(404).json({ error: 'Booking not found' });
@@ -851,7 +851,7 @@ function getBookingsByMonth(bookings) {
 function getBookingsByService(bookings) {
     const serviceData = {};
     bookings.forEach(booking => {
-        const serviceName = booking.service ? .name || booking.service ? .type || 'Unknown Service';
+        const serviceName = booking.service?.name || booking.service?.type || 'Unknown Service';
         serviceData[serviceName] = (serviceData[serviceName] || 0) + 1;
     });
     return serviceData;
