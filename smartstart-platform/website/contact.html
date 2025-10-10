@@ -42,16 +42,21 @@
 </head>
 
 <body>
+    <!-- Skip to main content for accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
     <!-- Header -->
     <div id="header"></div>
 
-    <!-- Hero Section -->
-    <section class="hero" style="padding-top: 120px; min-height: 80vh; display: flex; align-items: center; position: relative;">
+    <!-- Main Content -->
+    <main id="main-content" role="main" aria-label="Contact Us">
+        <!-- Hero Section -->
+        <section class="hero" style="padding-top: 120px; min-height: 80vh; display: flex; align-items: center; position: relative;" aria-labelledby="contact-hero-heading">
         <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 2rem; position: relative; z-index: 2;">
             <div class="hero-content" style="text-align: center; max-width: 900px; margin: 0 auto;">
                 <div class="hero-badge" style="display: inline-block; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); padding: 0.5rem 1.5rem; border-radius: 50px; color: #3b82f6; font-size: 0.9rem; font-weight: 600; margin-bottom: 2rem;">Contact Us</div>
 
-                <h1 class="hero-title" style="font-size: clamp(2.5rem, 6vw, 4rem); font-weight: 700; line-height: 1.1; margin-bottom: 1.5rem; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                <h1 id="contact-hero-heading" class="hero-title" style="font-size: clamp(2.5rem, 6vw, 4rem); font-weight: 700; line-height: 1.1; margin-bottom: 1.5rem; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
                     Ready to <span style="background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Secure Your Future?</span>
                 </h1>
 
@@ -71,10 +76,10 @@
         </div>
     </section>
 
-    <!-- Certifications Strip -->
-    <section class="section" style="padding: 3rem 0; background: rgba(59, 130, 246, 0.05);">
+        <!-- Certifications Strip -->
+        <section class="section" style="padding: 3rem 0; background: rgba(59, 130, 246, 0.05);" aria-labelledby="certifications-heading">
         <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
-            <h2 style="text-align: center; font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: 2rem;">Trusted by Organizations Across Ontario</h2>
+            <h2 id="certifications-heading" style="text-align: center; font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: 2rem;">Trusted by Organizations Across Ontario</h2>
             <div style="display: flex; justify-content: center; align-items: center; gap: 2rem; flex-wrap: wrap;">
                 <div style="padding: 1rem 2rem; background: rgba(59, 130, 246, 0.1); border-radius: 12px; color: #3b82f6; font-weight: 600;">CISSP Certified</div>
                 <div style="padding: 1rem 2rem; background: rgba(6, 182, 212, 0.1); border-radius: 12px; color: #06b6d4; font-weight: 600;">CISM Certified</div>
@@ -85,11 +90,11 @@
         </div>
     </section>
 
-    <!-- Services Overview Section -->
-    <section class="section" style="padding: 5rem 0; background: var(--bg-primary);">
+        <!-- Services Overview Section -->
+        <section class="section" style="padding: 5rem 0; background: var(--bg-primary);" aria-labelledby="services-overview-heading">
         <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
             <div class="section-header" style="text-align: center; margin-bottom: 4rem;">
-                <h2 class="section-title" style="font-size: 2.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1rem;">How We Help Organizations</h2>
+                <h2 id="services-overview-heading" class="section-title" style="font-size: 2.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1rem;">How We Help Organizations</h2>
                 <p class="section-subtitle" style="font-size: 1.2rem; color: var(--text-secondary); max-width: 600px; margin: 0 auto;">From CISO-level leadership to hands-on implementation</p>
             </div>
 
@@ -148,11 +153,11 @@
         </div>
     </section>
 
-    <!-- Results & Outcomes Section -->
-    <section class="section" style="padding: 4rem 0; background: rgba(59, 130, 246, 0.05);">
+        <!-- Results & Outcomes Section -->
+        <section class="section" style="padding: 4rem 0; background: rgba(59, 130, 246, 0.05);" aria-labelledby="results-outcomes-heading">
         <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
             <div class="section-header" style="text-align: center; margin-bottom: 3rem;">
-                <h2 class="section-title" style="font-size: 2rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1rem;">Proven Results for Ontario Organizations</h2>
+                <h2 id="results-outcomes-heading" class="section-title" style="font-size: 2rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1rem;">Proven Results for Ontario Organizations</h2>
                 <p class="section-subtitle" style="font-size: 1.1rem; color: var(--text-secondary);">Real outcomes from our security implementations</p>
             </div>
 
@@ -177,11 +182,11 @@
         </div>
     </section>
 
-    <!-- Contact Form -->
-    <section id="contact-form" class="section" style="padding: 5rem 0; background: var(--bg-primary);">
+        <!-- Contact Form -->
+        <section id="contact-form" class="section" style="padding: 5rem 0; background: var(--bg-primary);" aria-labelledby="contact-form-heading">
         <div class="container" style="max-width: 800px; margin: 0 auto; padding: 0 2rem;">
             <div class="section-header" style="text-align: center; margin-bottom: 4rem;">
-                <h2 class="section-title" style="font-size: 2.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1rem;">Ready to Get Started?</h2>
+                <h2 id="contact-form-heading" class="section-title" style="font-size: 2.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1rem;">Ready to Get Started?</h2>
                 <p class="section-subtitle" style="font-size: 1.2rem; color: var(--text-secondary);">Tell us about your security challenges and we'll respond within 24 hours</p>
             </div>
 
@@ -302,10 +307,10 @@
         </div>
     </section>
 
-    <!-- Quick Links -->
-    <section class="section" style="padding: 3rem 0; background: var(--bg-primary);">
+        <!-- Quick Links -->
+        <section class="section" style="padding: 3rem 0; background: var(--bg-primary);" aria-labelledby="quick-links-heading">
         <div class="container" style="max-width: 1000px; margin: 0 auto; padding: 0 2rem;">
-            <h3 style="text-align: center; color: var(--text-primary); font-weight: 700; margin-bottom: 2rem;">Looking for something specific?</h3>
+            <h3 id="quick-links-heading" style="text-align: center; color: var(--text-primary); font-weight: 700; margin-bottom: 2rem;">Looking for something specific?</h3>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
                 <a href="booking.html" style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; text-align: center; text-decoration: none; transition: all 0.3s ease;">
                     <div style="font-size: 2rem; margin-bottom: 0.5rem;">📚</div>
@@ -325,6 +330,8 @@
             </div>
         </div>
     </section>
+
+    </main>
 
     <!-- Footer -->
     <div id="footer"></div>

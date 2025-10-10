@@ -118,19 +118,22 @@
 </head>
 
 <body>
+    <!-- Skip to main content for accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
     <!-- Header -->
     <div id="header"></div>
 
-    <main id="main-content">
+    <main id="main-content" role="main" aria-label="Services">
         <!-- Hero -->
-        <section class="hero" style="padding-top:120px; min-height:80vh; display:flex; align-items:center; position:relative;">
+        <section class="hero" style="padding-top:120px; min-height:80vh; display:flex; align-items:center; position:relative;" aria-labelledby="services-hero-heading">
             <div class="container" style="max-width:1200px; margin:0 auto; padding:0 2rem; position:relative; z-index:2;">
                 <div class="hero-content" style="text-align:center; max-width:980px; margin:0 auto;">
                     <div class="hero-badge" style="display:inline-block; background:rgba(59,130,246,.1); border:1px solid rgba(59,130,246,.3); padding:.5rem 1.5rem; border-radius:50px; color:#3b82f6; font-size:.9rem; font-weight:600; margin-bottom:1.5rem;">
                         Services — Cybersecurity, ISO & Secure AI
                     </div>
 
-                    <h1 class="hero-title" style="font-size:clamp(2.5rem,6vw,4rem); font-weight:800; line-height:1.1; margin-bottom:1rem; background:linear-gradient(135deg,#f8fafc 0%,#e2e8f0 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">
+                    <h1 id="services-hero-heading" class="hero-title" style="font-size:clamp(2.5rem,6vw,4rem); font-weight:800; line-height:1.1; margin-bottom:1rem; background:linear-gradient(135deg,#f8fafc 0%,#e2e8f0 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">
                         We <span style="background:linear-gradient(135deg,#3b82f6 0%,#06b6d4 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">build and implement</span> security & automation that move your business forward
                     </h1>
 
@@ -162,10 +165,10 @@
         </section>
 
         <!-- Service Categories -->
-        <section class="section" style="padding:4rem 0; background:var(--bg-primary);">
+        <section class="section" style="padding:4rem 0; background:var(--bg-primary);" aria-labelledby="core-services-heading">
             <div class="container" style="max-width:1200px; margin:0 auto; padding:0 2rem;">
                 <div class="section-header" style="text-align:center; margin-bottom:3rem;">
-                    <h2 class="section-title" style="font-size:2.2rem; font-weight:800;">Our Core Services</h2>
+                    <h2 id="core-services-heading" class="section-title" style="font-size:2.2rem; font-weight:800;">Our Core Services</h2>
                     <p class="section-subtitle" style="font-size:1.1rem; color:var(--text-secondary);">Implemented, measured, and governed — not just advised</p>
                 </div>
 
@@ -173,7 +176,7 @@
                     <!-- Cybersecurity & Compliance -->
                     <div class="service-category-card" style="background:var(--glass-bg); border:1px solid var(--glass-border); border-radius:16px; padding:2rem;">
                         <div style="display:flex; align-items:center; gap:.75rem; margin-bottom:.75rem;">
-                            <img src="assets/icons/cybersecurity-shield.svg" alt="Cybersecurity Shield" class="custom-service-icon" />
+                            <img src="assets/icons/cybersecurity-shield.svg" alt="Cybersecurity Shield icon" class="custom-service-icon" width="64" height="64" />
                             <h3 style="margin:0; font-size:1.35rem; font-weight:800; color:var(--text-primary);">Cybersecurity & Compliance</h3>
                         </div>
                         <p style="color:var(--text-secondary); line-height:1.7; margin:.5rem 0 1rem;">
@@ -190,7 +193,7 @@
                     <!-- Automation & AI -->
                     <div class="service-category-card" style="background:var(--glass-bg); border:1px solid var(--glass-border); border-radius:16px; padding:2rem;">
                         <div style="display:flex; align-items:center; gap:.75rem; margin-bottom:.75rem;">
-                            <img src="assets/icons/automation-robot.svg" alt="Automation Robot" class="custom-service-icon" />
+                            <img src="assets/icons/automation-robot.svg" alt="Automation Robot icon" class="custom-service-icon" width="64" height="64" />
                             <h3 style="margin:0; font-size:1.35rem; font-weight:800; color:var(--text-primary);">Automation & AI</h3>
                         </div>
                         <p style="color:var(--text-secondary); line-height:1.7; margin:.5rem 0 1rem;">
@@ -207,7 +210,7 @@
                     <!-- Advisory & Audits -->
                     <div class="service-category-card" style="background:var(--glass-bg); border:1px solid var(--glass-border); border-radius:16px; padding:2rem;">
                         <div style="display:flex; align-items:center; gap:.75rem; margin-bottom:.75rem;">
-                            <img src="assets/icons/advisory-target.svg" alt="Advisory Target" class="custom-service-icon" />
+                            <img src="assets/icons/advisory-target.svg" alt="Advisory Target icon" class="custom-service-icon" width="64" height="64" />
                             <h3 style="margin:0; font-size:1.35rem; font-weight:800; color:var(--text-primary);">Advisory & Audits</h3>
                         </div>
                         <p style="color:var(--text-secondary); line-height:1.7; margin:.5rem 0 1rem;">
@@ -225,9 +228,9 @@
         </section>
 
         <!-- Results in Action -->
-        <section class="section" style="padding:4rem 0; background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);">
+        <section class="section" style="padding:4rem 0; background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);" aria-labelledby="results-heading">
             <div class="container" style="max-width:1100px; margin:0 auto; padding:0 2rem; text-align:center;">
-                <h2 style="font-size:2rem; font-weight:800; color:#f8fafc; margin-bottom:2rem;">Results in Action</h2>
+                <h2 id="results-heading" style="font-size:2rem; font-weight:800; color:#f8fafc; margin-bottom:2rem;">Results in Action</h2>
                 <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:2rem;">
                     <div>
                         <div style="font-size:3rem; font-weight:900; background:linear-gradient(135deg,#3b82f6 0%,#06b6d4 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:.25rem;">30%</div>
@@ -246,10 +249,10 @@
         </section>
 
         <!-- Trusted By -->
-        <section class="section" style="padding:4rem 0; background:var(--bg-primary);">
+        <section class="section" style="padding:4rem 0; background:var(--bg-primary);" aria-labelledby="trusted-by-heading">
             <div class="container" style="max-width:1200px; margin:0 auto; padding:0 2rem;">
                 <div class="section-header" style="text-align:center; margin-bottom:2rem;">
-                    <h2 class="section-title" style="font-size:2rem; font-weight:800;">Trusted by Organizations in Ontario & Beyond</h2>
+                    <h2 id="trusted-by-heading" class="section-title" style="font-size:2rem; font-weight:800;">Trusted by Organizations in Ontario & Beyond</h2>
                     <p class="section-subtitle" style="font-size:1.05rem; color:var(--text-secondary);">Cross-border execution across Israel • Canada • United States</p>
                 </div>
                 <div class="trusted-by-grid" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:1rem;">

@@ -83,13 +83,18 @@
 </head>
 
 <body>
+    <!-- Skip to main content for accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
     <!-- Header -->
     <div id="header"></div>
 
-    <!-- Hero Section -->
-    <section class="hero-section" style="padding-top: 100px; min-height: 80vh; display: flex; align-items: center;">
+    <!-- Main Content -->
+    <main id="main-content" role="main" aria-label="Toronto Services">
+        <!-- Hero Section -->
+        <section class="hero-section" style="padding-top: 100px; min-height: 80vh; display: flex; align-items: center;" aria-labelledby="toronto-hero-heading">
         <div class="hero-content" style="max-width: 900px; margin: 0 auto; padding: 0 2rem; text-align: center;">
-            <h1 class="hero-title" style="font-size: clamp(2.5rem, 6vw, 4rem); font-weight: 700; line-height: 1.1; margin-bottom: 1.5rem; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Secure Toronto's <span class="gradient-text">Tech Leadership</span></h1>
+            <h1 id="toronto-hero-heading" class="hero-title" style="font-size: clamp(2.5rem, 6vw, 4rem); font-weight: 700; line-height: 1.1; margin-bottom: 1.5rem; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Secure Toronto's <span class="gradient-text">Tech Leadership</span></h1>
             <p class="hero-description" style="font-size: clamp(1.2rem, 3vw, 1.8rem); font-weight: 500; color: #cbd5e1; margin-bottom: 2rem; line-height: 1.4;">Empowering Toronto's tech ecosystem with enterprise-grade cybersecurity, AI automation, and compliance solutions. From Bay Street to the Innovation District.</p>
             <div class="hero-actions" style="display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; margin-bottom: 2rem;">
                 <a href="#consultation" class="btn btn-primary" style="padding: 1rem 2rem; background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: 600; transition: all 0.3s ease;">Get Toronto Consultation</a>
