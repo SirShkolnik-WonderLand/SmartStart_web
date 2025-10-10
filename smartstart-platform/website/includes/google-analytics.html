@@ -1,0 +1,109 @@
+<!-- Google Analytics 4 -->
+<!-- Replace GA_MEASUREMENT_ID with your actual Google Analytics 4 Measurement ID -->
+<!-- Get your ID from: https://analytics.google.com/analytics/web/ -->
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  // Configure Google Analytics 4
+  gtag('config', 'GA_MEASUREMENT_ID', {
+    'send_page_view': true,
+    'cookie_flags': 'SameSite=None;Secure',
+    'anonymize_ip': false,
+    'allow_google_signals': true,
+    'allow_ad_personalization_signals': true
+  });
+
+  // Track custom events
+  function trackEvent(eventName, eventParams) {
+    gtag('event', eventName, eventParams);
+  }
+
+  // Track page interactions
+  document.addEventListener('DOMContentLoaded', function() {
+    // Track CTA button clicks
+    document.querySelectorAll('.cta-button, .btn-primary').forEach(function(button) {
+      button.addEventListener('click', function(e) {
+        gtag('event', 'cta_click', {
+          'button_text': this.textContent.trim(),
+          'button_location': this.closest('section')?.id || 'unknown'
+        });
+      });
+    });
+
+    // Track form submissions
+    document.querySelectorAll('form').forEach(function(form) {
+      form.addEventListener('submit', function(e) {
+        gtag('event', 'form_submit', {
+          'form_id': this.id || 'unknown',
+          'form_name': this.name || 'unknown'
+        });
+      });
+    });
+
+    // Track outbound links
+    document.querySelectorAll('a[href^="http"]').forEach(function(link) {
+      if (!link.href.includes('alicesolutionsgroup.com')) {
+        link.addEventListener('click', function(e) {
+          gtag('event', 'outbound_click', {
+            'link_url': this.href,
+            'link_text': this.textContent.trim()
+          });
+        });
+      }
+    });
+
+    // Track scroll depth
+    let maxScroll = 0;
+    let scrollMarkers = [25, 50, 75, 100];
+    window.addEventListener('scroll', function() {
+      const scrollPercent = Math.round((window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100);
+      scrollMarkers.forEach(function(marker) {
+        if (scrollPercent >= marker && marker > maxScroll) {
+          maxScroll = marker;
+          gtag('event', 'scroll_depth', {
+            'percent': marker,
+            'page_path': window.location.pathname
+          });
+        }
+      });
+    });
+  });
+</script>
+
+<!-- 
+SETUP INSTRUCTIONS:
+===================
+1. Get your Google Analytics 4 Measurement ID:
+   - Go to: https://analytics.google.com/
+   - Create a new GA4 property
+   - Get your Measurement ID (format: G-XXXXXXXXXX)
+
+2. Replace GA_MEASUREMENT_ID above with your actual ID
+
+3. Add to all pages by including in <head>:
+   <div id="google-analytics"></div>
+   <script>
+     fetch('/includes/google-analytics.html')
+       .then(r => r.text())
+       .then(html => {
+         document.getElementById('google-analytics').innerHTML = html;
+         // Re-execute scripts
+         const scripts = document.getElementById('google-analytics').getElementsByTagName('script');
+         Array.from(scripts).forEach(script => {
+           const newScript = document.createElement('script');
+           if (script.src) {
+             newScript.src = script.src;
+             newScript.async = script.async;
+           } else {
+             newScript.textContent = script.textContent;
+           }
+           document.head.appendChild(newScript);
+         });
+       });
+   </script>
+-->
+

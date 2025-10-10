@@ -1,6 +1,6 @@
 <!-- Professional Navigation Bar -->
-<nav class="main-nav">
-    <ul class="nav-menu">
+<nav class="main-nav" role="navigation" aria-label="Primary navigation">
+    <ul class="nav-menu" id="primary-menu" role="menubar">
         <li class="nav-item about-dropdown">
             <a href="/about.html" class="nav-link">About</a>
             <div class="dropdown-content">
@@ -61,7 +61,7 @@
             </div>
         </li>
     </ul>
-    <button class="mobile-menu-toggle" aria-label="Toggle menu">
+    <button class="mobile-menu-toggle" aria-label="Open menu" aria-controls="primary-menu" aria-expanded="false">
         <span></span>
         <span></span>
         <span></span>

@@ -9,6 +9,8 @@
         "build": "echo 'Build complete - static site ready'",
         "sitemap": "node generate-sitemap.js",
         "seo-monitor": "node seo-monitor.js",
+        "validate-schema": "node validate-schema.js",
+        "prebuild": "npm run validate-schema",
         "postinstall": "echo 'Dependencies installed successfully'",
         "test": "echo 'No tests specified'"
     },

@@ -6,6 +6,7 @@ const compression = require('compression');
 const morgan = require('morgan');
 const bookingApi = require('./booking-api');
 const path = require('path');
+const https = require('https');
 
 const app = express();
 const PORT = process.env.WEBSITE_PORT || 3346;
@@ -360,7 +361,111 @@ app.get('/api/admin/bookings', async(req, res) => {
     }
 });
 
-app.post('/api/admin/track', (req, res) => {
+// IP Geolocation helper function (using free ip-api.com service)
+// Free tier: 45 requests/minute (much higher than ipapi.co)
+async function getGeoLocation(ip) {
+    // Skip geolocation for localhost
+    if (!ip || ip === '::1' || ip === '127.0.0.1' || ip.includes('localhost')) {
+        return {
+            country: 'Local',
+            city: 'Localhost',
+            region: 'Development',
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+        };
+    }
+
+    // Extract real IP (Cloudflare format: "client_ip, cloudflare_ip")
+    const realIP = ip.split(',')[0].trim();
+
+    // Skip if invalid IP
+    if (!realIP || realIP === '::1' || realIP === '127.0.0.1') {
+        return {
+            country: 'Local',
+            city: 'Localhost',
+            region: 'Development',
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+        };
+    }
+
+    try {
+        return await new Promise((resolve, reject) => {
+            const options = {
+                hostname: 'ip-api.com',
+                path: `/json/${realIP}?fields=status,country,countryCode,region,regionName,city,lat,lon,timezone,isp,org,as,query`,
+                method: 'GET',
+                headers: { 'User-Agent': 'AliceSolutionsGroup-Analytics/1.0' },
+                timeout: 2000
+            };
+
+            const req = https.request(options, (res) => {
+                let data = '';
+                res.on('data', chunk => data += chunk);
+                res.on('end', () => {
+                    try {
+                        const json = JSON.parse(data);
+                        if (json.status === 'success') {
+                            resolve({
+                                country: json.country || 'Unknown',
+                                countryCode: json.countryCode || 'Unknown',
+                                city: json.city || 'Unknown',
+                                region: json.regionName || json.region || 'Unknown',
+                                latitude: json.lat || null,
+                                longitude: json.lon || null,
+                                timezone: json.timezone || 'Unknown',
+                                isp: json.isp || json.org || 'Unknown'
+                            });
+                        } else {
+                            resolve({
+                                country: 'Unknown',
+                                city: 'Unknown',
+                                region: 'Unknown',
+                                timezone: 'Unknown'
+                            });
+                        }
+                    } catch (e) {
+                        resolve({
+                            country: 'Unknown',
+                            city: 'Unknown',
+                            region: 'Unknown',
+                            timezone: 'Unknown'
+                        });
+                    }
+                });
+            });
+
+            req.on('error', () => {
+                resolve({
+                    country: 'Unknown',
+                    city: 'Unknown',
+                    region: 'Unknown',
+                    timezone: 'Unknown'
+                });
+            });
+
+            req.on('timeout', () => {
+                req.destroy();
+                resolve({
+                    country: 'Unknown',
+                    city: 'Unknown',
+                    region: 'Unknown',
+                    timezone: 'Unknown'
+                });
+            });
+
+            req.end();
+        });
+    } catch (error) {
+        console.error('Geolocation error:', error);
+        return {
+            country: 'Unknown',
+            city: 'Unknown',
+            region: 'Unknown',
+            timezone: 'Unknown'
+        };
+    }
+}
+
+app.post('/api/admin/track', async (req, res) => {
     try {
         const { event, eventType, data, timestamp, url } = req.body;
         const eventName = event || eventType; // Support both event and eventType
@@ -372,6 +477,9 @@ app.post('/api/admin/track', (req, res) => {
             req.socket.remoteAddress ||
             (req.connection.socket ? req.connection.socket.remoteAddress : null);
 
+        // Get geolocation data for the IP
+        const geoData = await getGeoLocation(clientIP);
+
         // Store the tracking data
         if (eventName === 'pageview') {
             const trackingData = {
@@ -379,6 +487,13 @@ app.post('/api/admin/track', (req, res) => {
                 data: {
                     ...data,
                     clientIP: clientIP,
+                    country: geoData.country,
+                    countryCode: geoData.countryCode,
+                    city: geoData.city,
+                    region: geoData.region,
+                    latitude: geoData.latitude,
+                    longitude: geoData.longitude,
+                    isp: geoData.isp,
                     serverTimestamp: new Date().toISOString()
                 },
                 timestamp,
@@ -393,8 +508,9 @@ app.post('/api/admin/track', (req, res) => {
                     firstVisit: timestamp,
                     lastVisit: timestamp,
                     userAgent: data.userAgent,
-                    country: data.country,
-                    city: data.city,
+                    country: geoData.country,
+                    city: geoData.city,
+                    region: geoData.region,
                     ip: clientIP,
                     fingerprint: data.fingerprint
                 });
@@ -409,8 +525,9 @@ app.post('/api/admin/track', (req, res) => {
                         lastSeen: timestamp,
                         ip: clientIP,
                         fingerprint: data.fingerprint,
-                        country: data.country,
-                        city: data.city,
+                        country: geoData.country,
+                        city: geoData.city,
+                        region: geoData.region,
                         userAgent: data.userAgent,
                         sessionCount: 1
                     });
@@ -427,8 +544,9 @@ app.post('/api/admin/track', (req, res) => {
                     analyticsStorage.ipAddresses.set(clientIP, {
                         firstSeen: timestamp,
                         lastSeen: timestamp,
-                        country: data.country,
-                        city: data.city,
+                        country: geoData.country,
+                        city: geoData.city,
+                        region: geoData.region,
                         visitCount: 1,
                         sessions: new Set([data.sessionId])
                     });
@@ -705,11 +823,12 @@ app.get('/api/admin/debug', (req, res) => {
 
 // Advanced analytics endpoints
 app.get('/api/admin/core-web-vitals', (req, res) => {
-    const coreWebVitalsEvents = analyticsStorage.coreWebVitals;
+    const coreWebVitalsEvents = analyticsStorage.coreWebVitals || [];
     const vitals = {
-        LCP: coreWebVitalsEvents.filter(ev => ev.data.metric === 'LCP').map(ev => ev.data.value),
-        FID: coreWebVitalsEvents.filter(ev => ev.data.metric === 'FID').map(ev => ev.data.value),
-        CLS: coreWebVitalsEvents.filter(ev => ev.data.metric === 'CLS').map(ev => ev.data.value)
+        LCP: coreWebVitalsEvents.filter(ev => ev && ev.data && ev.data.metric === 'LCP').map(ev => ev.data.value),
+        FID: coreWebVitalsEvents.filter(ev => ev && ev.data && ev.data.metric === 'FID').map(ev => ev.data.value),
+        INP: coreWebVitalsEvents.filter(ev => ev && ev.data && ev.data.metric === 'INP').map(ev => ev.data.value),
+        CLS: coreWebVitalsEvents.filter(ev => ev && ev.data && ev.data.metric === 'CLS').map(ev => ev.data.value)
     };
 
     res.json({
@@ -717,6 +836,7 @@ app.get('/api/admin/core-web-vitals', (req, res) => {
         averages: {
             LCP: vitals.LCP.length > 0 ? (vitals.LCP.reduce((a, b) => a + b, 0) / vitals.LCP.length).toFixed(2) : 0,
             FID: vitals.FID.length > 0 ? (vitals.FID.reduce((a, b) => a + b, 0) / vitals.FID.length).toFixed(2) : 0,
+            INP: vitals.INP.length > 0 ? (vitals.INP.reduce((a, b) => a + b, 0) / vitals.INP.length).toFixed(2) : 0,
             CLS: vitals.CLS.length > 0 ? (vitals.CLS.reduce((a, b) => a + b, 0) / vitals.CLS.length).toFixed(4) : 0
         },
         totalMeasurements: coreWebVitalsEvents.length
@@ -772,18 +892,19 @@ app.get('/api/admin/user-behavior', (req, res) => {
 });
 
 app.get('/api/admin/performance', (req, res) => {
-    const seoEvents = analyticsStorage.seoMetrics;
-    const coreVitalsEvents = analyticsStorage.coreWebVitals;
+    const seoEvents = analyticsStorage.seoMetrics || [];
+    const coreVitalsEvents = analyticsStorage.coreWebVitals || [];
 
     const performanceData = {
-        pageLoadTimes: seoEvents.map(ev => ev.data.loadTime).filter(time => time > 0),
-        domContentLoaded: seoEvents.map(ev => ev.data.domContentLoaded).filter(time => time > 0),
-        firstPaint: seoEvents.map(ev => ev.data.firstPaint).filter(time => time > 0),
-        firstContentfulPaint: seoEvents.map(ev => ev.data.firstContentfulPaint).filter(time => time > 0),
+        pageLoadTimes: seoEvents.map(ev => ev && ev.data && ev.data.loadTime).filter(time => time > 0),
+        domContentLoaded: seoEvents.map(ev => ev && ev.data && ev.data.domContentLoaded).filter(time => time > 0),
+        firstPaint: seoEvents.map(ev => ev && ev.data && ev.data.firstPaint).filter(time => time > 0),
+        firstContentfulPaint: seoEvents.map(ev => ev && ev.data && ev.data.firstContentfulPaint).filter(time => time > 0),
         coreWebVitals: {
-            LCP: coreVitalsEvents.filter(ev => ev.data.metric === 'LCP').map(ev => ev.data.value),
-            FID: coreVitalsEvents.filter(ev => ev.data.metric === 'FID').map(ev => ev.data.value),
-            CLS: coreVitalsEvents.filter(ev => ev.data.metric === 'CLS').map(ev => ev.data.value)
+            LCP: coreVitalsEvents.filter(ev => ev && ev.data && ev.data.metric === 'LCP').map(ev => ev.data.value),
+            FID: coreVitalsEvents.filter(ev => ev && ev.data && ev.data.metric === 'FID').map(ev => ev.data.value),
+            INP: coreVitalsEvents.filter(ev => ev && ev.data && ev.data.metric === 'INP').map(ev => ev.data.value),
+            CLS: coreVitalsEvents.filter(ev => ev && ev.data && ev.data.metric === 'CLS').map(ev => ev.data.value)
         }
     };
 
@@ -801,6 +922,8 @@ app.get('/api/admin/performance', (req, res) => {
             (performanceData.coreWebVitals.LCP.reduce((a, b) => a + b, 0) / performanceData.coreWebVitals.LCP.length).toFixed(2) : 0,
         FID: performanceData.coreWebVitals.FID.length > 0 ?
             (performanceData.coreWebVitals.FID.reduce((a, b) => a + b, 0) / performanceData.coreWebVitals.FID.length).toFixed(2) : 0,
+        INP: performanceData.coreWebVitals.INP.length > 0 ?
+            (performanceData.coreWebVitals.INP.reduce((a, b) => a + b, 0) / performanceData.coreWebVitals.INP.length).toFixed(2) : 0,
         CLS: performanceData.coreWebVitals.CLS.length > 0 ?
             (performanceData.coreWebVitals.CLS.reduce((a, b) => a + b, 0) / performanceData.coreWebVitals.CLS.length).toFixed(4) : 0
     };
