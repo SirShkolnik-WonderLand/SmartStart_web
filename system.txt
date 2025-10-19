@@ -1,0 +1,285 @@
+Love it. Let’s design you a slick, no-uploads, interactive self-assessment app that feels like a mini-GRC—but faster, fun, and brutally clear. Below is a complete, execution-ready blueprint: UX, flows, data model, scoring logic, and component map so you (or your team) can ship it.
+
+⸻
+
+Vision (1-liner)
+
+A self-test cockpit for ISO 27001 + CMMC where orgs tick through every control, assign owners, track maturity, and auto-generate real readiness scores + POA&M—without uploading documents.
+
+⸻
+
+Core experience (what the user does)
+	1.	Pick frameworks: ISO 27001:2022 and/or CMMC (Level 1/2/3).
+	2.	Answer atomic questions per control with rich toggles (Not Implemented → Operating Effectively).
+	3.	Assign owners and due dates inline (no modal fatigue).
+	4.	See instant scoring (domain heatmap, radar, gap waterfall, readiness %).
+	5.	Auto-build POA&M from “Partial/Missing” answers (with effort/impact).
+	6.	Export a clean readout (PDF/CSV/JSON) and a “Management Review” deck.
+
+⸻
+
+UI/UX system (today’s patterns that feel premium)
+	•	Layout: 3-pane workspace
+	•	Left: Framework Navigator (27001 domains + CMMC families, search & filters)
+	•	Center: Assessment Canvas (question cards with inline guidance)
+	•	Right: Inspector (owner, due date, tags, notes, references, risk)
+	•	Bento overview: your home dashboard uses cards for Readiness, Top Gaps, Owners at Risk, Upcoming due.
+	•	Kanban for remediation: auto-generated POA&M as lanes (Backlog → In Progress → Validate → Done).
+	•	Matrix view: controls × maturity for bulk edits; sticky column for control titles.
+	•	Inline edit everywhere: owners, dates, status all editable in place; no save buttons.
+	•	Progressive disclosure: keep the surface clean; show rationale, guidance, and mapping on demand (chevron reveals).
+	•	Zero-doc mode: instead of uploads, allow “Reference tokens”: (Policy: IS-001, Change Ticket: CAB-2025-19) and text evidence fields.
+	•	Delight: micro-animations on status change (e.g., confetti for domain complete), keyboard shortcuts (J/K to move, Space to toggle).
+
+⸻
+
+Screens (at a glance)
+	1.	Onboarding: set company profile, frameworks, CMMC level, time zone.
+	2.	Dashboard:
+	•	Readiness Radar (ISO domains & CMMC families)
+	•	Gap Waterfall (estimated effort vs. impact)
+	•	Owner Load (burndown by person)
+	3.	Assessment (master screen):
+	•	Search (“MFA”, “A.5.15”, “AC.L2-3.1.6”)
+	•	Filters (domain, owner, status, NA)
+	•	Question Card:
+	•	Title + control citation
+	•	Status selector (NA / Not Implemented / Partial / Implemented / Operating)
+	•	Guidance tab (plain-English how-to)
+	•	Mapping tab (ISO ↔ CMMC and related practices)
+	•	Inspector (owner, due date, risk, tags, references)
+	4.	POA&M: sortable table/kanban with calculated priority.
+	5.	People: owners, roles, capacity, SLA (days-to-close by severity).
+	6.	Exports: PDF “Management Review,” CSV of gaps, JSON of answers.
+
+⸻
+
+Atomic answer model (what users click)
+
+Status scale (5 states + NA)
+	•	NA (excluded from scoring)
+	•	❌ Not Implemented (0)
+	•	🟠 Partially Implemented (0.5)
+	•	✅ Implemented (1.0)
+	•	🟢 Operating Effectively (1.0 + audit-ready badge)
+
+Extras per answer
+	•	Owner (person)
+	•	Due date
+	•	Risk (Impact × Likelihood 1–5)
+	•	Effort (1–5)
+	•	Notes & Reference tokens (strings, no file)
+	•	Evidence pointer (URL or system code, optional)
+
+⸻
+
+Scoring & readiness logic (transparent + defensible)
+	•	Control score = status_weight × control_weight
+	•	status_weight: NA=exclude, Not=0, Partial=0.5, Implemented=1, Operating=1
+	•	control_weight: default 1; elevate “Showstoppers” (MFA, IR, backups) to 2
+	•	Domain score = Σ control_scores / Σ control_weights
+	•	Framework score (ISO or CMMC) = weighted mean of domain scores
+	•	Readiness (overall) = weighted mean across selected frameworks
+	•	Audit-ready badge for a control requires: Operating + owner + review date within 12 months
+	•	POA&M priority = (RiskImpact × RiskLikelihood) × (2 – status_weight) × (control_weight) ÷ Effort
+	•	Sort descending; this yields a sensible “fix-first” list.
+
+⸻
+
+Data model (Prisma-style schema you can drop in)
+
+model Framework {
+  id           String   @id @default(cuid())
+  key          String   @unique // "ISO27001_2022", "CMMC_L2"
+  name         String
+  domains      Domain[]
+  controls     Control[]
+  createdAt    DateTime @default(now())
+}
+
+model Domain {
+  id          String   @id @default(cuid())
+  frameworkId String
+  code        String   // "A.5", "AC", "IR"...
+  title       String
+  weight      Float    @default(1)
+  Framework   Framework @relation(fields: [frameworkId], references: [id])
+  controls    Control[]
+}
+
+model Control {
+  id          String   @id @default(cuid())
+  frameworkId String
+  domainId    String
+  code        String   // "A.5.15", "AC.L2-3.1.6"
+  title       String
+  guidanceMd  String   // markdown guidance
+  weight      Float    @default(1)
+  mappings    Mapping[] // cross-links to other frameworks
+  Framework   Framework @relation(fields: [frameworkId], references: [id])
+  Domain      Domain    @relation(fields: [domainId], references: [id])
+}
+
+model Mapping {
+  id           String  @id @default(cuid())
+  fromControlId String
+  toFrameworkKey String // "CMMC_L2"
+  toCode        String  // "3.1.6"
+}
+
+model Org {
+  id        String  @id @default(cuid())
+  name      String
+  timezone  String
+  users     User[]
+  projects  Project[]
+}
+
+model User {
+  id        String  @id @default(cuid())
+  orgId     String
+  email     String  @unique
+  name      String
+  role      String  // "admin","auditor","owner","viewer"
+  Org       Org     @relation(fields: [orgId], references: [id])
+}
+
+model Project {
+  id         String  @id @default(cuid())
+  orgId      String
+  name       String
+  frameworks String[] // ["ISO27001_2022","CMMC_L2"]
+  Org        Org     @relation(fields: [orgId], references: [id])
+  answers    Answer[]
+}
+
+enum Status { NA NOT_IMPLEMENTED PARTIAL IMPLEMENTED OPERATING }
+
+model Answer {
+  id          String  @id @default(cuid())
+  projectId   String
+  controlId   String
+  status      Status
+  ownerId     String?
+  dueDate     DateTime?
+  riskImpact  Int      @default(2)
+  riskLikely  Int      @default(2)
+  effort      Int      @default(2)
+  notes       String?
+  references  String[] // ["Policy IS-001","CAB-2025-19"]
+  updatedAt   DateTime @updatedAt
+  Project     Project  @relation(fields: [projectId], references: [id])
+  Control     Control  @relation(fields: [controlId], references: [id])
+  Owner       User?    @relation(fields: [ownerId], references: [id])
+}
+
+
+⸻
+
+Component map (React/Next)
+	•	FrameworkNavigator.tsx: tree with search, filters, completion badges
+	•	AssessmentCanvas.tsx: virtualized list of ControlCard
+	•	ControlCard.tsx: title + status selector + tabs (Guidance / Mapping)
+	•	InspectorPanel.tsx: owner assigner (combobox), date picker, risk slider, tags
+	•	ScoreHeader.tsx: breadcrumb + domain score chip + keyboard tips
+	•	POAMBoard.tsx: kanban powered by the POA&M priority formula
+	•	Dashboard.tsx: RadarChart, Heatmap, Waterfall, OwnerLoad
+	•	ExportsModal.tsx: PDF/CSV/JSON with toggles for redactions (no secrets)
+
+Interactions
+	•	Space toggles status through states
+	•	@ opens owner finder; # adds tag
+	•	Ctrl/Cmd+K omnibox to jump to any control by code/title
+
+⸻
+
+Design language (clean + enterprise)
+	•	Typography: Inter or IBM Plex; 14/16/18 scale; tight line-height
+	•	Density control: “Compact” toggle for auditors
+	•	Color: neutral surface; status colors only (red/orange/green/grey)
+	•	Icons: status dots + tiny shields for “audit-ready”
+	•	Microcopy: every control has a 1-sentence “What good looks like”
+
+⸻
+
+Guidance content model (what shows in the card)
+
+Each control ships with:
+	•	Plain-English intent (why it exists)
+	•	“Pass criteria” checklist (3–5 bullets)
+	•	Hints (how to evidence without uploads)
+	•	Cross-mapping (ISO⇄CMMC)
+	•	Common pitfalls (e.g., “MFA exempted for service accounts—flag”)
+
+Example (data seed):
+
+{
+  "code": "A.5.15",
+  "title": "Access control policy",
+  "intent": "Define and enforce who gets access to what and why.",
+  "pass": [
+    "Policy approved <12 months",
+    "RBAC matrix exists & is used",
+    "Quarterly access reviews recorded"
+  },
+  "hints": [
+    "Reference: IS-AC-001; Q2 review ticket CAB-2025-19",
+    "List systems in scope: ERP, Email, Cloud"
+  ],
+  "map": ["CMMC 3.1.1", "NIST 800-171 3.1.1"],
+  "pitfalls": ["Shared admin accounts", "No SoD for finance ops"]
+}
+
+
+⸻
+
+Security & privacy posture (since no uploads)
+	•	No documents stored, only structured answers + text references
+	•	Optional link allowlist (only your company SharePoint/Confluence domains)
+	•	Tenant isolation (row-level security or per-org DB)
+	•	Audit log for every change (who/what/when; diff on notes)
+	•	Read-only export with “no secrets” mode to share with execs
+
+⸻
+
+Multi-framework mapping
+	•	Store one source of truth for each control; map via Mapping table.
+	•	When in “Both” mode, show a dual badge (e.g., A.5.15 ↔ 3.1.1) and merge guidance to avoid duplicate work.
+
+⸻
+
+Implementation stack (battle-tested)
+	•	Frontend: Next.js (App Router), React, TanStack Query, Radix primitives + your preferred styling (Mantine or Tailwind + shadcn).
+	•	State: URL-driven filters; optimistic updates for answers.
+	•	Charts: lightweight (e.g., Recharts/ECharts) with print-friendly palettes.
+	•	Backend: Node/Express (or Next API routes) + Prisma + Postgres.
+	•	Auth: org-scoped; SSO optional.
+	•	Exports: server-side HTML → PDF, CSV via streaming, JSON raw.
+	•	PWA: offline editing queue; background sync to API.
+
+⸻
+
+What you can ship first (2-week MVP)
+	1.	Seed frameworks (ISO 27001:2022 96 controls + CMMC L2 110 practices)
+	2.	Navigator + Canvas + Inspector with inline status and owner assignment
+	3.	Scoring + Radar + POA&M (formula above)
+	4.	CSV/PDF export
+	5.	Invite users (admin/owner/viewer)
+
+⸻
+
+Stretch features that feel “pro”
+	•	Review cycles: auto-remind owners 90/60/30 days before policy expiry
+	•	Control variants by scope (Corporate, Plant, Cloud)
+	•	Evidence sampler: prompt owners to paste control identifiers (no docs)
+	•	API: read-only endpoint for dashboards in your broader ecosystem
+	•	Benchmark mode: compare two projects (Pre vs. Post)
+
+⸻
+
+Deliverables I can drop in next
+	•	Seed JSON for all controls (ISO + CMMC) with intent/pass/pitfalls/mapping
+	•	A Prisma migration file and a minimal Next.js app scaffold
+	•	A print-perfect PDF template for the Management Review pack
+
+If you want, I’ll generate the seed JSON + Prisma schema in-chat so you can paste straight into your repo and run prisma db push.

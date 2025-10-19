@@ -12,7 +12,10 @@
         "validate-schema": "node validate-schema.js",
         "prebuild": "npm run validate-schema",
         "postinstall": "echo 'Dependencies installed successfully'",
-        "test": "echo 'No tests specified'"
+        "test": "echo 'No tests specified'",
+        "prisma:generate": "prisma generate",
+        "prisma:push": "prisma db push",
+        "prisma:seed": "node prisma/seed-controls.js"
     },
     "keywords": [
         "smartstart",
@@ -30,10 +33,12 @@
     "helmet": "^7.1.0",
     "compression": "^1.7.4",
     "morgan": "^1.10.0",
-    "nodemailer": "^6.9.7"
+    "nodemailer": "^6.9.7",
+    "@prisma/client": "^5.7.1"
   },
     "devDependencies": {
-        "nodemon": "^3.0.2"
+        "nodemon": "^3.0.2",
+        "prisma": "^5.7.1"
     },
     "engines": {
         "node": ">=16.0.0"

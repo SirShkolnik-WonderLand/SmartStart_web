@@ -1,0 +1,272 @@
+// ISO Readiness Studio - Prisma Schema
+// Integrated with smartstart-platform
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+///////////////////////
+// ENUMS
+///////////////////////
+
+enum ControlStatus {
+  NA
+  NOT_IMPLEMENTED
+  PARTIAL
+  IMPLEMENTED
+  OPERATING
+}
+
+enum Domain {
+  A5  // Organizational
+  A6  // People
+  A7  // Physical
+  A8  // Technological
+  A9
+  A10
+  A11
+  A12
+  A13
+  A14
+  A15
+  A16
+  A17
+  A18
+}
+
+///////////////////////
+// MODELS
+///////////////////////
+
+// Framework (ISO 27001, CMMC, etc.)
+model Framework {
+  id        String    @id @default(cuid())
+  key       String    @unique // "ISO27001_2022", "CMMC_L2"
+  name      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  domains   Domain[]
+  controls  Control[]
+  projects  Project[]
+}
+
+// Domain (A.5, A.6, etc.)
+model Domain {
+  id          String   @id @default(cuid())
+  frameworkId String
+  code        String   // "A.5", "A.6", etc.
+  title       String
+  weight      Float    @default(1)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  Framework   Framework @relation(fields: [frameworkId], references: [id], onDelete: Cascade)
+  controls    Control[]
+
+  @@unique([frameworkId, code])
+  @@index([frameworkId])
+}
+
+// Control (the 96 ISO controls)
+model Control {
+  id          String   @id @default(cuid())
+  frameworkId String
+  domainId    String
+  code        String   // "A.5.1", "A.5.2", etc.
+  title       String
+  description String
+  guidanceMd  String   // Markdown guidance
+  weight      Float    @default(1)
+  intent      String   // Plain English intent
+  passCriteria String  // JSON array of pass criteria
+  hints       String   // JSON array of hints
+  pitfalls    String   // JSON array of common pitfalls
+  cmmcRef     String?  // CMMC mapping
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  Framework   Framework @relation(fields: [frameworkId], references: [id], onDelete: Cascade)
+  Domain      Domain    @relation(fields: [domainId], references: [id], onDelete: Cascade)
+  answers     Answer[]
+  mappings    Mapping[]
+
+  @@unique([frameworkId, code])
+  @@index([frameworkId])
+  @@index([domainId])
+  @@index([code])
+}
+
+// Cross-framework mappings
+model Mapping {
+  id             String  @id @default(cuid())
+  fromControlId  String
+  toFrameworkKey String  // "CMMC_L2"
+  toCode         String  // "3.1.6"
+  createdAt      DateTime @default(now())
+
+  Control        Control @relation(fields: [fromControlId], references: [id], onDelete: Cascade)
+
+  @@unique([fromControlId, toFrameworkKey, toCode])
+  @@index([fromControlId])
+}
+
+// Organization (multi-tenant)
+model Organization {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  timezone    String   @default("America/Toronto")
+  requireCMMC Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  users       UserOrganization[]
+  teams       Team[]
+  projects    Project[]
+  activity    ActivityLog[]
+
+  @@index([slug])
+}
+
+// User (can belong to multiple orgs)
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orgs      UserOrganization[]
+  teams     TeamMember[]
+  answers   Answer[]
+  activity  ActivityLog[]
+
+  @@index([email])
+}
+
+// User-Organization relationship
+model UserOrganization {
+  id             String   @id @default(cuid())
+  userId         String
+  organizationId String
+  role           String   // "owner", "admin", "member", "viewer"
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  User           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, organizationId])
+  @@index([organizationId, role])
+}
+
+// Team (within an org)
+model Team {
+  id             String   @id @default(cuid())
+  organizationId String
+  name           String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  Organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  members        TeamMember[]
+  answers        Answer[]
+
+  @@unique([organizationId, name])
+  @@index([organizationId])
+}
+
+// Team membership
+model TeamMember {
+  id        String   @id @default(cuid())
+  teamId    String
+  userId    String
+  createdAt DateTime @default(now())
+
+  Team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, userId])
+  @@index([userId])
+}
+
+// Project (one assessment run)
+model Project {
+  id             String   @id @default(cuid())
+  organizationId String
+  name           String
+  frameworks     String[] // ["ISO27001_2022", "CMMC_L2"]
+  mode           String   @default("list") // "story" or "list"
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  Organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  answers        Answer[]
+  activity       ActivityLog[]
+
+  @@unique([organizationId, name])
+  @@index([organizationId])
+}
+
+// Answer (one row per project × control)
+model Answer {
+  id           String        @id @default(cuid())
+  projectId    String
+  controlId    String
+  status       ControlStatus @default(NOT_IMPLEMENTED)
+
+  // Owner can be user OR team
+  ownerType    String?       // "user" or "team"
+  ownerUserId  String?
+  ownerTeamId  String?
+
+  dueDate      DateTime?
+  riskImpact   Int           @default(2) // 1-5
+  riskLikely   Int           @default(2) // 1-5
+  effort       Int           @default(2) // 1-5
+  notes        String?
+  references   String[]      // ["Policy IS-001", "CAB-2025-19"]
+  evidenceUrl  String?       // URL only
+  updatedBy    String?       // userId
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  Project      Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  Control      Control       @relation(fields: [controlId], references: [id], onDelete: Restrict)
+  OwnerUser    User?         @relation("AnswerOwnerUser", fields: [ownerUserId], references: [id], onDelete: SetNull)
+  OwnerTeam    Team?         @relation("AnswerOwnerTeam", fields: [ownerTeamId], references: [id], onDelete: SetNull)
+
+  @@unique([projectId, controlId])
+  @@index([projectId])
+  @@index([controlId])
+  @@index([status])
+  @@index([ownerUserId])
+  @@index([ownerTeamId])
+  @@index([dueDate])
+}
+
+// Activity log (audit trail)
+model ActivityLog {
+  id             String   @id @default(cuid())
+  organizationId String
+  projectId      String
+  userId         String?
+  action         String   // "SET_STATUS", "ASSIGN_OWNER", "ADD_NOTE", etc.
+  meta           Json     // Flexible metadata
+  createdAt      DateTime @default(now())
+
+  Organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  Project        Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  User           User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, createdAt])
+  @@index([projectId, createdAt])
+  @@index([userId, createdAt])
+}
+

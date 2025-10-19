@@ -5,6 +5,7 @@ const helmet = require('helmet');
 const compression = require('compression');
 const morgan = require('morgan');
 const bookingApi = require('./booking-api');
+const isoApi = require('./iso-api');
 const path = require('path');
 const https = require('https');
 
@@ -301,6 +302,9 @@ function processAnalyticsData() {
 // Admin Analytics API endpoints
 // Booking API routes
 app.use('/api', bookingApi);
+
+// ISO Readiness Studio API routes
+app.use('/api/iso', isoApi);
 
 app.get('/api/admin/analytics', (req, res) => {
 
