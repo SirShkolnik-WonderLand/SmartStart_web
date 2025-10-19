@@ -32,22 +32,50 @@ export default function StatsDashboard({ stats, controls, project, frameworks, o
 
   return (
     <div className="dashboard">
-      <div className="dashboard-hero">
-        <div className="dashboard-hero-content">
-          <div className="dashboard-icon-large">
-            <Shield size={48} />
+      {/* Hero Section with Story */}
+      <div className="dashboard-hero-full">
+        <div className="hero-gradient-overlay"></div>
+        <div className="hero-content">
+          <div className="hero-badge">
+            <Shield size={32} />
+            <span>ISO 27001:2022 Compliance</span>
           </div>
-          <h1 className="dashboard-title">Assessment Dashboard</h1>
-          <p className="dashboard-description">
-            Comprehensive overview of your ISO 27001 readiness
+          <h1 className="hero-title">
+            Welcome to Your <span className="gradient-text">Readiness Journey</span>
+          </h1>
+          <p className="hero-description">
+            You're about to embark on a comprehensive assessment of your information security management system. 
+            This dashboard provides a high-level view of your progress across all 93 controls.
           </p>
+          <div className="hero-stats-row">
+            <div className="hero-stat">
+              <span className="hero-stat-value">{stats.totalControls}</span>
+              <span className="hero-stat-label">Total Controls</span>
+            </div>
+            <div className="hero-stat-divider"></div>
+            <div className="hero-stat">
+              <span className="hero-stat-value">{stats.readyControls}</span>
+              <span className="hero-stat-label">Ready</span>
+            </div>
+            <div className="hero-stat-divider"></div>
+            <div className="hero-stat">
+              <span className="hero-stat-value">{stats.progressPercentage}%</span>
+              <span className="hero-stat-label">Complete</span>
+            </div>
+          </div>
+          {onNavigateToDomains && (
+            <button className="btn-hero-primary" onClick={onNavigateToDomains}>
+              <span>Start Assessment Journey</span>
+              <ChevronRight size={24} />
+            </button>
+          )}
         </div>
-        {onNavigateToDomains && (
-          <button className="btn-primary-large" onClick={onNavigateToDomains}>
-            <span>View Domains</span>
-            <ChevronRight size={20} />
-          </button>
-        )}
+      </div>
+
+      {/* Section Title */}
+      <div className="section-title-area">
+        <h2 className="section-title">Your Progress at a Glance</h2>
+        <p className="section-subtitle">Track your compliance across all control domains</p>
       </div>
 
       <div className="stats-grid">

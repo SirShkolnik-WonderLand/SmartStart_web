@@ -21,14 +21,44 @@ export default function DomainOverview({ framework, controls, project, onSelectD
 
   return (
     <div className="domain-overview">
-      <div className="domain-overview-hero">
-        <div className="domain-overview-icon">
-          <Grid3x3 size={48} />
+      {/* Hero Section */}
+      <div className="domain-hero-full">
+        <div className="hero-gradient-overlay"></div>
+        <div className="hero-content">
+          <div className="hero-badge">
+            <Grid3x3 size={32} />
+            <span>Control Domains</span>
+          </div>
+          <h1 className="hero-title">
+            Explore Your <span className="gradient-text">Security Domains</span>
+          </h1>
+          <p className="hero-description">
+            ISO 27001:2022 organizes 93 controls into 4 key domains. Each domain represents a critical aspect 
+            of your information security management system. Click on any domain to begin your detailed assessment.
+          </p>
+          <div className="hero-stats-row">
+            <div className="hero-stat">
+              <span className="hero-stat-value">{framework.domains.length}</span>
+              <span className="hero-stat-label">Domains</span>
+            </div>
+            <div className="hero-stat-divider"></div>
+            <div className="hero-stat">
+              <span className="hero-stat-value">{controls.length}</span>
+              <span className="hero-stat-label">Total Controls</span>
+            </div>
+            <div className="hero-stat-divider"></div>
+            <div className="hero-stat">
+              <span className="hero-stat-value">{Math.round((controls.filter(c => project?.answers[c.id]?.status === 'ready').length / controls.length) * 100)}%</span>
+              <span className="hero-stat-label">Ready</span>
+            </div>
+          </div>
         </div>
-        <div className="section-header">
-          <h2>Control Domains</h2>
-          <p>Click on a domain to view and assess its controls</p>
-        </div>
+      </div>
+
+      {/* Section Title */}
+      <div className="section-title-area">
+        <h2 className="section-title">Select a Domain to Begin</h2>
+        <p className="section-subtitle">Each domain covers a specific area of information security</p>
       </div>
 
       <div className="domains-grid">
