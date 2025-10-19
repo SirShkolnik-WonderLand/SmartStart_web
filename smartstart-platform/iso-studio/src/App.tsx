@@ -403,8 +403,8 @@ function App() {
           <div className="header-left">
             <div className="header-logo">
               <img 
-                src="/assets/images/AliceSolutionsGroup-logo-owl-rabbit-fox.png" 
-                alt="AliceSolutionsGroup"
+                src="/cyber-owl-logo.png" 
+                alt="Cyber Owl AI"
                 className="company-logo-small"
               />
             </div>

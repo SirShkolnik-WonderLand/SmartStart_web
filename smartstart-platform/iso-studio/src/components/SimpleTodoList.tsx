@@ -453,6 +453,13 @@ export default function SimpleTodoList({ framework, userName, onBack }: SimpleTo
       font-size: 2.5rem;
     }
     
+    .logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 0 15px rgba(59, 130, 246, 0.8));
+    }
+    
     h1 {
       font-size: 2.5rem;
       font-weight: 900;
@@ -633,7 +640,9 @@ export default function SimpleTodoList({ framework, userName, onBack }: SimpleTo
 <body>
   <div class="container">
     <div class="header">
-      <div class="logo">📋</div>
+      <div class="logo">
+        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iNDAiIGN5PSI0MCIgcj0iMzgiIGZpbGw9IiMwZjE3MmEiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1zaXplPSI0MCIgZmlsbD0iIzNiODJmNiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPvCfjL08L3RleHQ+PC9zdmc+" alt="Cyber Owl" />
+      </div>
       <h1>${framework.toUpperCase()} TODO List</h1>
       <p class="subtitle">Your Complete Compliance Checklist</p>
     </div>
