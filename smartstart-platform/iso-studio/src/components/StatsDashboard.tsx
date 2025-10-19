@@ -1,5 +1,5 @@
 import { Stats, Control, Project, Framework } from '../types';
-import { BarChart3, PieChart, TrendingUp, CheckCircle, AlertCircle, XCircle, Target } from 'lucide-react';
+import { BarChart3, PieChart, TrendingUp, CheckCircle, AlertCircle, XCircle, Target, Shield, ChevronRight } from 'lucide-react';
 import { PieChart as RechartsPieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 interface StatsDashboardProps {
@@ -32,14 +32,20 @@ export default function StatsDashboard({ stats, controls, project, frameworks, o
 
   return (
     <div className="dashboard">
-      <div className="dashboard-header">
-        <div>
-          <h2>📊 Assessment Dashboard</h2>
-          <p>Comprehensive overview of your ISO 27001 readiness</p>
+      <div className="dashboard-hero">
+        <div className="dashboard-hero-content">
+          <div className="dashboard-icon-large">
+            <Shield size={48} />
+          </div>
+          <h1 className="dashboard-title">Assessment Dashboard</h1>
+          <p className="dashboard-description">
+            Comprehensive overview of your ISO 27001 readiness
+          </p>
         </div>
         {onNavigateToDomains && (
-          <button className="btn-primary" onClick={onNavigateToDomains}>
-            View Domains →
+          <button className="btn-primary-large" onClick={onNavigateToDomains}>
+            <span>View Domains</span>
+            <ChevronRight size={20} />
           </button>
         )}
       </div>

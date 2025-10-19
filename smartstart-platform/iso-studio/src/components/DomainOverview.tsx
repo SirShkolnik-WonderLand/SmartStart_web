@@ -1,5 +1,5 @@
 import { Framework, Control, Project } from '../types';
-import { ChevronRight, CheckCircle, AlertCircle, XCircle } from 'lucide-react';
+import { ChevronRight, CheckCircle, AlertCircle, XCircle, Grid3x3 } from 'lucide-react';
 
 interface DomainOverviewProps {
   framework: Framework;
@@ -21,9 +21,14 @@ export default function DomainOverview({ framework, controls, project, onSelectD
 
   return (
     <div className="domain-overview">
-      <div className="section-header">
-        <h2>Control Domains</h2>
-        <p>Click on a domain to view and assess its controls</p>
+      <div className="domain-overview-hero">
+        <div className="domain-overview-icon">
+          <Grid3x3 size={48} />
+        </div>
+        <div className="section-header">
+          <h2>Control Domains</h2>
+          <p>Click on a domain to view and assess its controls</p>
+        </div>
       </div>
 
       <div className="domains-grid">
