@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Shield, Bot, FileText, Sparkles } from 'lucide-react';
-import cyberOwlLogo from '../../../Logo(s)+slogans/Cyber-Owl_logo.png';
 
 interface WelcomeScreenProps {
   onStart: (userName: string) => void;
@@ -34,7 +33,7 @@ export default function WelcomeScreen({ onStart, onStartStoryBot, onStartTodoLis
         <div className="welcome-header-super">
           <div className="welcome-logo-super">
             <img 
-              src={cyberOwlLogo} 
+              src="/cyber-owl-logo.png" 
               alt="Cyber Owl AI" 
               className="cyber-owl-logo"
             />
