@@ -10,9 +10,9 @@ interface WelcomeScreenProps {
 export default function WelcomeScreen({ onStart, onStartStoryBot, onStartTodoList }: WelcomeScreenProps) {
   const [userName, setUserName] = useState('');
   const [error, setError] = useState('');
-  const [todoListFramework, setTodoListFramework] = useState<'iso27001' | 'cmmc'>('iso27001');
+  const [selectedFramework, setSelectedFramework] = useState<'iso27001' | 'cmmc'>('iso27001');
 
-  const handleStart = (option: 'full' | 'story' | 'todo', framework: 'iso27001' | 'cmmc' = 'iso27001') => {
+  const handleStart = (option: 'full' | 'story' | 'todo', framework: 'iso27001' | 'cmmc' = selectedFramework) => {
     if (!userName.trim()) {
       setError('Please enter your name first');
       return;
@@ -27,6 +27,25 @@ export default function WelcomeScreen({ onStart, onStartStoryBot, onStartTodoLis
     }
   };
 
+  const frameworkInfo = {
+    iso27001: {
+      title: 'ISO 27001:2022',
+      subtitle: 'Information Security Management',
+      fullControls: 93,
+      botQuestions: 20,
+      todoControls: 93
+    },
+    cmmc: {
+      title: 'CMMC 2.0',
+      subtitle: 'Cybersecurity Maturity Model',
+      fullControls: 110,
+      botQuestions: 20,
+      todoControls: 110
+    }
+  };
+
+  const currentFramework = frameworkInfo[selectedFramework];
+
   return (
     <div className="welcome-screen-super">
       <div className="welcome-content-super">
@@ -40,10 +59,10 @@ export default function WelcomeScreen({ onStart, onStartStoryBot, onStartTodoLis
             <Sparkles className="sparkle-icon" size={40} />
           </div>
           <h1 className="welcome-title-super">
-            ISO 27001 Readiness Studio
+            {currentFramework.title} Readiness Studio
           </h1>
           <p className="welcome-subtitle-super">
-            Choose your assessment method
+            {currentFramework.subtitle} • Choose your assessment method
           </p>
         </div>
 
@@ -72,7 +91,7 @@ export default function WelcomeScreen({ onStart, onStartStoryBot, onStartTodoLis
               <Shield size={56} />
             </div>
             <h3>Full Assessment</h3>
-            <p>Complete all 93 controls</p>
+            <p>Complete all {currentFramework.fullControls} controls</p>
             <div className="option-badge">Recommended</div>
           </button>
 
@@ -85,34 +104,34 @@ export default function WelcomeScreen({ onStart, onStartStoryBot, onStartTodoLis
               <Bot size={56} />
             </div>
             <h3>Quick Bot Mode</h3>
-            <p>20 strategic questions</p>
+            <p>{currentFramework.botQuestions} strategic questions</p>
             <div className="option-badge">Fast Track</div>
           </button>
 
           <button 
             className="option-card-super option-3"
-            onClick={() => handleStart('todo', todoListFramework)}
+            onClick={() => handleStart('todo')}
             disabled={!userName.trim()}
           >
             <div className="option-icon-wrapper">
               <FileText size={56} />
             </div>
             <h3>Download Checklist</h3>
-            <p>{todoListFramework === 'iso27001' ? '93 ISO controls' : '110 CMMC controls'}</p>
+            <p>{currentFramework.todoControls} {selectedFramework === 'iso27001' ? 'ISO' : 'CMMC'} controls</p>
             <div className="option-badge">Offline</div>
           </button>
         </div>
 
         <div className="framework-tabs-super">
           <button 
-            className={`framework-tab ${todoListFramework === 'iso27001' ? 'active' : ''}`}
-            onClick={() => setTodoListFramework('iso27001')}
+            className={`framework-tab ${selectedFramework === 'iso27001' ? 'active' : ''}`}
+            onClick={() => setSelectedFramework('iso27001')}
           >
             ISO 27001:2022
           </button>
           <button 
-            className={`framework-tab ${todoListFramework === 'cmmc' ? 'active' : ''}`}
-            onClick={() => setTodoListFramework('cmmc')}
+            className={`framework-tab ${selectedFramework === 'cmmc' ? 'active' : ''}`}
+            onClick={() => setSelectedFramework('cmmc')}
           >
             CMMC 2.0
           </button>
