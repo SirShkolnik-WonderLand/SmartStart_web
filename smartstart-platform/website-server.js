@@ -891,6 +891,117 @@ app.get('/api/admin/user-behavior', (req, res) => {
     });
 });
 
+// Email monitoring endpoint
+app.get('/api/admin/emails', async (req, res) => {
+    try {
+        const bookingsFile = path.join(__dirname, 'bookings-data.json');
+        const bookingsData = fs.existsSync(bookingsFile) ? JSON.parse(fs.readFileSync(bookingsFile, 'utf8')) : { bookings: [] };
+        
+        // Extract email data from bookings
+        const emails = bookingsData.bookings.map(booking => ({
+            id: booking.bookingId,
+            to: booking.contact?.email || 'N/A',
+            subject: `Booking Confirmation - ${booking.service?.name || 'Service'}`,
+            status: booking.emailSent ? 'sent' : 'pending',
+            timestamp: booking.createdAt || booking.timestamp,
+            type: 'booking_confirmation'
+        }));
+
+        res.json({ emails, total: emails.length });
+    } catch (error) {
+        console.error('Error loading email data:', error);
+        res.json({ emails: [], total: 0 });
+    }
+});
+
+// Security test monitoring endpoint
+app.get('/api/admin/security-tests', async (req, res) => {
+    try {
+        const dbPath = path.join(__dirname, 'Quiestioneer', 'smb_health_check.db');
+        const tests = [];
+        
+        if (fs.existsSync(dbPath)) {
+            const sqlite3 = require('sqlite3').verbose();
+            const db = new sqlite3.Database(dbPath);
+            
+            db.all("SELECT * FROM assessments ORDER BY created_at DESC LIMIT 100", (err, rows) => {
+                if (err) {
+                    console.error('Error querying security tests:', err);
+                    res.json({ tests: [], total: 0 });
+                } else {
+                    const tests = rows.map(row => ({
+                        id: row.session_id,
+                        mode: row.mode,
+                        score: row.score,
+                        tier: row.tier,
+                        email: row.email,
+                        company: row.company,
+                        status: 'completed',
+                        timestamp: row.created_at
+                    }));
+                    res.json({ tests, total: tests.length });
+                }
+                db.close();
+            });
+        } else {
+            res.json({ tests: [], total: 0 });
+        }
+    } catch (error) {
+        console.error('Error loading security test data:', error);
+        res.json({ tests: [], total: 0 });
+    }
+});
+
+// Search analytics endpoint
+app.get('/api/admin/search-analytics', (req, res) => {
+    const searchEvents = analyticsStorage.searchEvents || [];
+    
+    // Count search terms
+    const searchCounts = {};
+    searchEvents.forEach(event => {
+        const term = event.data?.query || 'unknown';
+        searchCounts[term] = (searchCounts[term] || 0) + 1;
+    });
+    
+    const topSearches = Object.entries(searchCounts)
+        .map(([term, count]) => ({ term, count }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 20);
+    
+    res.json({
+        totalSearches: searchEvents.length,
+        uniqueSearches: Object.keys(searchCounts).length,
+        noResults: searchEvents.filter(e => e.data?.resultsCount === 0).length,
+        topSearches
+    });
+});
+
+// System health endpoint
+app.get('/api/admin/system-health', (req, res) => {
+    const os = require('os');
+    const process = require('process');
+    
+    const uptime = process.uptime();
+    const hours = Math.floor(uptime / 3600);
+    const minutes = Math.floor((uptime % 3600) / 60);
+    const seconds = Math.floor(uptime % 60);
+    
+    const totalMemory = os.totalmem();
+    const freeMemory = os.freemem();
+    const usedMemory = totalMemory - freeMemory;
+    const memoryUsagePercent = ((usedMemory / totalMemory) * 100).toFixed(2);
+    
+    res.json({
+        status: 'healthy',
+        uptime: `${hours}h ${minutes}m ${seconds}s`,
+        memoryUsage: `${(usedMemory / 1024 / 1024 / 1024).toFixed(2)} GB / ${(totalMemory / 1024 / 1024 / 1024).toFixed(2)} GB (${memoryUsagePercent}%)`,
+        cpuUsage: `${os.loadavg()[0].toFixed(2)} (1min avg)`,
+        platform: os.platform(),
+        nodeVersion: process.version,
+        environment: NODE_ENV
+    });
+});
+
 app.get('/api/admin/performance', (req, res) => {
     const seoEvents = analyticsStorage.seoMetrics || [];
     const coreVitalsEvents = analyticsStorage.coreWebVitals || [];

@@ -247,6 +247,15 @@ window.performSearch = function() {
         const results = window.searchEngine.search(searchTerm);
         window.searchEngine.displayResults(results, searchTerm);
         
+        // Track search analytics
+        if (window.analyticsTracker) {
+            window.analyticsTracker.trackEvent('search', {
+                query: searchTerm,
+                resultsCount: results.length,
+                timestamp: new Date().toISOString()
+            });
+        }
+        
         // Update URL without reloading
         window.history.pushState({}, '', `?q=${encodeURIComponent(searchTerm)}`);
     }
