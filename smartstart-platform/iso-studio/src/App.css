@@ -1037,39 +1037,41 @@
 .welcome-logo-super {
   position: relative;
   display: inline-flex;
-  padding: 1.5rem;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%);
+  padding: 0.75rem;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.3) 0%, transparent 70%);
   border-radius: 50%;
   margin-bottom: 1.5rem;
   animation: float 3s ease-in-out infinite;
 }
 
 .cyber-owl-logo {
-  width: 80px;
-  height: 80px;
+  width: 60px;
+  height: 60px;
   object-fit: contain;
-  filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.6));
+  filter: drop-shadow(0 0 15px rgba(59, 130, 246, 0.8)) drop-shadow(0 0 30px rgba(139, 92, 246, 0.5));
   animation: owlGlow 3s ease-in-out infinite;
+  z-index: 1;
 }
 
 @keyframes owlGlow {
   0%, 100% {
-    filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.6));
+    filter: drop-shadow(0 0 15px rgba(59, 130, 246, 0.8)) drop-shadow(0 0 30px rgba(139, 92, 246, 0.5));
   }
   50% {
-    filter: drop-shadow(0 0 30px rgba(139, 92, 246, 0.8));
+    filter: drop-shadow(0 0 25px rgba(59, 130, 246, 1)) drop-shadow(0 0 40px rgba(139, 92, 246, 0.7));
   }
 }
 
 .welcome-logo-super .sparkle-icon {
   position: absolute;
-  top: -10px;
-  right: -10px;
+  top: -5px;
+  right: -5px;
   color: var(--accent-blue);
   animation: sparkle 2s ease-in-out infinite;
   background: rgba(15, 23, 42, 0.9);
   border-radius: 50%;
-  padding: 0.25rem;
+  padding: 0.2rem;
+  z-index: 2;
 }
 
 @keyframes sparkle {
@@ -1320,17 +1322,17 @@
   }
 
   .welcome-logo-super {
-    padding: 1rem;
+    padding: 0.5rem;
   }
 
   .cyber-owl-logo {
-    width: 60px;
-    height: 60px;
+    width: 50px;
+    height: 50px;
   }
 
   .welcome-logo-super .sparkle-icon {
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
   }
 
   .name-input-super {
