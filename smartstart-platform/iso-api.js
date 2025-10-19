@@ -8,6 +8,7 @@ const router = express.Router();
 const FRAMEWORKS_PATH = path.join(__dirname, 'data/iso/frameworks.json');
 const CONTROLS_PATH = path.join(__dirname, 'data/iso/controls.json');
 const PROJECTS_PATH = path.join(__dirname, 'data/iso/projects.json');
+const CLIENTS_PATH = path.join(__dirname, 'data/iso/clients.json');
 
 // Helper function to read JSON files
 function readJSON(filePath) {
@@ -48,8 +49,23 @@ function initProjectsFile() {
   }
 }
 
+// Initialize clients file if it doesn't exist
+function initClientsFile() {
+  if (!fs.existsSync(CLIENTS_PATH)) {
+    const initialData = {
+      clients: [],
+      metadata: {
+        lastUpdated: new Date().toISOString(),
+        version: "1.0.0"
+      }
+    };
+    writeJSON(CLIENTS_PATH, initialData);
+  }
+}
+
 // Initialize on load
 initProjectsFile();
+initClientsFile();
 
 // ========================================
 // FRAMEWORK ENDPOINTS
@@ -363,6 +379,76 @@ router.get('/projects/:projectId/stats', (req, res) => {
   };
   
   res.json(stats);
+});
+
+// ========================================
+// CLIENT MANAGEMENT ENDPOINTS
+// ========================================
+
+// Save client data (name, email, assessment results)
+router.post('/save-client', (req, res) => {
+  try {
+    const { name, email, project, stats } = req.body;
+    
+    if (!name || !email) {
+      return res.status(400).json({ error: 'Name and email are required' });
+    }
+    
+    const clientsData = readJSON(CLIENTS_PATH);
+    if (!clientsData) {
+      return res.status(500).json({ error: 'Failed to load clients data' });
+    }
+    
+    // Check if client already exists
+    const existingClientIndex = clientsData.clients.findIndex(c => c.email === email);
+    
+    const clientData = {
+      id: existingClientIndex >= 0 ? clientsData.clients[existingClientIndex].id : `client_${Date.now()}`,
+      name,
+      email,
+      project,
+      stats,
+      createdAt: existingClientIndex >= 0 ? clientsData.clients[existingClientIndex].createdAt : new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      lastActivity: new Date().toISOString(),
+    };
+    
+    if (existingClientIndex >= 0) {
+      // Update existing client
+      clientsData.clients[existingClientIndex] = clientData;
+    } else {
+      // Add new client
+      clientsData.clients.push(clientData);
+    }
+    
+    clientsData.metadata.lastUpdated = new Date().toISOString();
+    clientsData.metadata.totalClients = clientsData.clients.length;
+    
+    if (writeJSON(CLIENTS_PATH, clientsData)) {
+      console.log(`✅ Client saved: ${name} (${email})`);
+      res.json({ success: true, clientId: clientData.id });
+    } else {
+      res.status(500).json({ error: 'Failed to save client data' });
+    }
+  } catch (error) {
+    console.error('Error saving client:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get all clients
+router.get('/clients', (req, res) => {
+  try {
+    const clientsData = readJSON(CLIENTS_PATH);
+    if (!clientsData) {
+      return res.status(500).json({ error: 'Failed to load clients data' });
+    }
+    
+    res.json(clientsData);
+  } catch (error) {
+    console.error('Error loading clients:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 module.exports = router;

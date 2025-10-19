@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Shield, Search, Download, Upload, BarChart3, ChevronRight, Grid3x3, List, Filter, Sparkles, User } from 'lucide-react';
+import { Shield, Search, Download, Upload, BarChart3, ChevronRight, Grid3x3, List, Filter, Sparkles, User, Mail } from 'lucide-react';
 import WelcomeScreen from './components/WelcomeScreen';
 import StatsDashboard from './components/StatsDashboard';
 import ControlsTable from './components/ControlsTable';
@@ -35,7 +35,9 @@ function App() {
   const [viewStyle, setViewStyle] = useState<'story' | 'list' | 'compact'>('story');
   const [loading, setLoading] = useState(true);
   const [userName, setUserName] = useState<string>('');
+  const [userEmail, setUserEmail] = useState<string>('');
   const [showWelcome, setShowWelcome] = useState(true);
+  const [showEmailModal, setShowEmailModal] = useState(false);
 
   // Load frameworks
   useEffect(() => {
@@ -44,9 +46,13 @@ function App() {
     
     // Check if user already logged in
     const savedUser = localStorage.getItem('iso_studio_user');
+    const savedEmail = localStorage.getItem('iso_studio_email');
     if (savedUser) {
       setUserName(savedUser);
       setShowWelcome(false);
+    }
+    if (savedEmail) {
+      setUserEmail(savedEmail);
     }
   }, []);
 
@@ -155,6 +161,63 @@ function App() {
     localStorage.setItem('iso_studio_user', name);
   };
 
+  const handleSaveEmail = async () => {
+    if (!userEmail || !userEmail.includes('@')) {
+      alert('Please enter a valid email address');
+      return;
+    }
+
+    try {
+      // Save email to localStorage
+      localStorage.setItem('iso_studio_email', userEmail);
+      
+      // Send data to backend
+      const response = await fetch('/api/iso/save-client', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: userName,
+          email: userEmail,
+          project: project,
+          stats: stats,
+          timestamp: new Date().toISOString(),
+        }),
+      });
+
+      if (response.ok) {
+        alert('Email saved successfully! You will receive your assessment results shortly.');
+        setShowEmailModal(false);
+      } else {
+        alert('Failed to save email. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error saving email:', error);
+      alert('Failed to save email. Please try again.');
+    }
+  };
+
+  const handleExportData = () => {
+    const dataToExport = {
+      userName,
+      userEmail,
+      project,
+      stats,
+      exportedAt: new Date().toISOString(),
+    };
+    
+    const blob = new Blob([JSON.stringify(dataToExport, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `iso-assessment-${userName}-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   const exportData = () => {
     if (!project) return;
     
@@ -242,21 +305,24 @@ function App() {
             </div>
           </div>
           
-          <div className="header-right">
-            <div className="user-info">
-              <User size={18} />
-              <span>{userName}</span>
-            </div>
-            <div className="header-actions">
-              <button className="btn-icon" onClick={exportData} title="Export Data">
-                <Download size={20} />
-              </button>
-              <label className="btn-icon" title="Import Data">
-                <Upload size={20} />
-                <input type="file" accept=".json" onChange={importData} style={{ display: 'none' }} />
-              </label>
-            </div>
-          </div>
+                 <div className="header-right">
+                   <div className="user-info">
+                     <User size={18} />
+                     <span>{userName}</span>
+                   </div>
+                   <div className="header-actions">
+                     <button className="btn-icon" onClick={() => setShowEmailModal(true)} title="Save Email & Send Results">
+                       <Mail size={20} />
+                     </button>
+                     <button className="btn-icon" onClick={handleExportData} title="Export Data">
+                       <Download size={20} />
+                     </button>
+                     <label className="btn-icon" title="Import Data">
+                       <Upload size={20} />
+                       <input type="file" accept=".json" onChange={importData} style={{ display: 'none' }} />
+                     </label>
+                   </div>
+                 </div>
         </div>
 
         <div className="breadcrumb">
@@ -428,6 +494,41 @@ function App() {
                 onClose={() => setSelectedControl(null)}
               />
             )}
+          </div>
+        )}
+
+        {/* Email Modal */}
+        {showEmailModal && (
+          <div className="modal-backdrop animate-fade-in" onClick={() => setShowEmailModal(false)}>
+            <div className="modal-content animate-scale-in" onClick={(e) => e.stopPropagation()}>
+              <div className="modal-header">
+                <h2 className="modal-title">Save Email & Send Results</h2>
+                <button className="modal-close-btn" onClick={() => setShowEmailModal(false)}>
+                  ×
+                </button>
+              </div>
+              <div className="modal-body">
+                <p style={{ marginBottom: '1.5rem', color: 'var(--text-muted)' }}>
+                  Enter your email to receive your ISO 27001 assessment results and save your progress.
+                </p>
+                <div className="form-group">
+                  <label htmlFor="email" className="form-label">Email Address</label>
+                  <input
+                    type="email"
+                    id="email"
+                    className="form-input"
+                    value={userEmail}
+                    onChange={(e) => setUserEmail(e.target.value)}
+                    placeholder="your.email@company.com"
+                  />
+                </div>
+                <div className="form-actions">
+                  <button className="btn-save" onClick={handleSaveEmail}>
+                    Save & Send Results
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         )}
       </div>
