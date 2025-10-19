@@ -12,6 +12,7 @@ import EmptyState from './components/EmptyState';
 import ProgressRing from './components/ProgressRing';
 import StatusBadge from './components/StatusBadge';
 import StoryBotMode from './components/StoryBotMode';
+import SimpleTodoList from './components/SimpleTodoList';
 import { Framework, Control, Project, Stats } from './types';
 import './App.css';
 
@@ -41,6 +42,8 @@ function App() {
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [storyBotMode, setStoryBotMode] = useState(false);
   const [storyBotFramework, setStoryBotFramework] = useState<'iso27001' | 'cmmc'>('iso27001');
+  const [todoListMode, setTodoListMode] = useState(false);
+  const [todoListFramework, setTodoListFramework] = useState<'iso27001' | 'cmmc'>('iso27001');
 
   // Load frameworks
   useEffect(() => {
@@ -80,16 +83,28 @@ function App() {
     try {
       setLoading(true);
       const response = await fetch('/api/iso/frameworks');
-      const data = await response.json();
-      setFrameworks(data.frameworks);
       
-      // Auto-select ISO 27001:2022 framework if available
-      const isoFramework = data.frameworks.find((f: Framework) => f.id === 'iso27001_2022');
-      if (isoFramework) {
-        setSelectedFramework(isoFramework);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      if (data && data.frameworks) {
+        setFrameworks(data.frameworks);
+        
+        // Auto-select ISO 27001:2022 framework if available
+        const isoFramework = data.frameworks.find((f: Framework) => f.id === 'iso27001_2022');
+        if (isoFramework) {
+          setSelectedFramework(isoFramework);
+        }
+      } else {
+        console.error('Invalid data structure:', data);
+        setFrameworks([]);
       }
     } catch (error) {
       console.error('Error loading frameworks:', error);
+      setFrameworks([]);
     } finally {
       setLoading(false);
     }
@@ -202,6 +217,19 @@ function App() {
     // Clear story bot mode and go to main dashboard
     setStoryBotMode(false);
     setViewMode('overview');
+  };
+
+  const handleStartTodoList = (name: string, framework: 'iso27001' | 'cmmc') => {
+    setUserName(name);
+    setTodoListFramework(framework);
+    setTodoListMode(true);
+    setShowWelcome(false);
+    localStorage.setItem('iso_studio_user', name);
+  };
+
+  const handleTodoListBack = () => {
+    setTodoListMode(false);
+    setShowWelcome(true);
   };
 
   const handleLogout = () => {
@@ -343,7 +371,7 @@ function App() {
   };
 
   if (showWelcome) {
-    return <WelcomeScreen onStart={handleWelcomeStart} onStartStoryBot={handleStartStoryBot} />;
+    return <WelcomeScreen onStart={handleWelcomeStart} onStartStoryBot={handleStartStoryBot} onStartTodoList={handleStartTodoList} />;
   }
 
   if (storyBotMode) {
@@ -354,6 +382,16 @@ function App() {
         onComplete={handleStoryBotComplete}
         onBack={handleStoryBotBack}
         onQuit={handleStoryBotQuit}
+      />
+    );
+  }
+
+  if (todoListMode) {
+    return (
+      <SimpleTodoList
+        framework={todoListFramework}
+        userName={userName}
+        onBack={handleTodoListBack}
       />
     );
   }
