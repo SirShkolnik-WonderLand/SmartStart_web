@@ -56,8 +56,31 @@ export default function WelcomeScreen({ onStart, onStartStoryBot }: WelcomeScree
         </h1>
 
         <p className="welcome-subtitle">
-          Advanced Compliance Tracking & Assessment Tool
+          Choose your assessment method below
         </p>
+
+        <div className="assessment-methods-info">
+          <div className="method-card">
+            <div className="method-icon">
+              <Target size={32} />
+            </div>
+            <div className="method-content">
+              <h3>Full Questionnaire</h3>
+              <p>Complete all 93 controls manually with detailed assessment</p>
+              <span className="method-badge">Recommended</span>
+            </div>
+          </div>
+          <div className="method-card">
+            <div className="method-icon">
+              <Bot size={32} />
+            </div>
+            <div className="method-content">
+              <h3>Story Bot Mode</h3>
+              <p>Quick 20-question assessment with AI-guided recommendations</p>
+              <span className="method-badge">Fast Track</span>
+            </div>
+          </div>
+        </div>
 
         <form onSubmit={handleSubmit} className="welcome-form">
           <div className="form-group">
@@ -79,8 +102,9 @@ export default function WelcomeScreen({ onStart, onStartStoryBot }: WelcomeScree
             {error && <p className="error-message">{error}</p>}
           </div>
 
-          <button type="submit" className="btn-welcome">
-            <span>Start Assessment</span>
+          <button type="submit" className="btn-welcome btn-full-questionnaire">
+            <Target size={20} />
+            <span>Start Full Questionnaire</span>
             <ArrowRight size={20} />
           </button>
         </form>
@@ -98,8 +122,8 @@ export default function WelcomeScreen({ onStart, onStartStoryBot }: WelcomeScree
             >
               <Bot size={24} />
               <div>
-                <span className="story-bot-title">Interactive Story Bot Mode</span>
-                <span className="story-bot-subtitle">Guided assessment with AI advisor</span>
+                <span className="story-bot-title">Start Story Bot Mode</span>
+                <span className="story-bot-subtitle">20 quick questions with AI recommendations</span>
               </div>
               <ArrowRight size={20} />
             </button>

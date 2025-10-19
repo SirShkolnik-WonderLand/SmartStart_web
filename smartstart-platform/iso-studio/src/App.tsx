@@ -198,6 +198,12 @@ function App() {
     setShowWelcome(true);
   };
 
+  const handleStoryBotQuit = () => {
+    // Clear story bot mode and go to main dashboard
+    setStoryBotMode(false);
+    setViewMode('overview');
+  };
+
   const handleLogout = () => {
     // Clear all user data
     localStorage.removeItem('iso_studio_user');
@@ -347,6 +353,7 @@ function App() {
         userName={userName}
         onComplete={handleStoryBotComplete}
         onBack={handleStoryBotBack}
+        onQuit={handleStoryBotQuit}
       />
     );
   }
