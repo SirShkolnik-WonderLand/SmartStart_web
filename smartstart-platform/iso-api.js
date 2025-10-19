@@ -80,6 +80,18 @@ router.get('/frameworks/:id', (req, res) => {
   res.json(framework);
 });
 
+// Get controls for a specific framework
+router.get('/frameworks/:id/controls', (req, res) => {
+  const controlsData = readJSON(CONTROLS_PATH);
+  if (!controlsData) {
+    return res.status(500).json({ error: 'Failed to load controls' });
+  }
+  
+  const controls = controlsData.controls.filter(c => c.frameworkId === req.params.id);
+  
+  res.json({ controls });
+});
+
 // ========================================
 // CONTROL ENDPOINTS
 // ========================================

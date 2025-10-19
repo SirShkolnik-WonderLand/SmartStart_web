@@ -249,7 +249,7 @@ Multi-framework mapping
 ⸻
 
 Implementation stack (battle-tested)
-	•	Frontend: Next.js (App Router), React, TanStack Query, Radix primitives + your preferred styling (Mantine or Tailwind + shadcn).
+	•	Frontend: Next.js (App Router), React, TanStack Query, Radix primitives + your preferred styling (Mantine  + shadcn).
 	•	State: URL-driven filters; optimistic updates for answers.
 	•	Charts: lightweight (e.g., Recharts/ECharts) with print-friendly palettes.
 	•	Backend: Node/Express (or Next API routes) + Prisma + Postgres.
