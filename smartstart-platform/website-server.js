@@ -1002,6 +1002,146 @@ app.get('/api/admin/system-health', (req, res) => {
     });
 });
 
+// Enhanced client tracking endpoint
+const clientTrackingStorage = {
+    clients: new Map(), // Track unique clients by fingerprint
+    clientJourneys: [], // Track client navigation
+    formInteractions: [], // Track form submissions
+    ctaClicks: [] // Track CTA button clicks
+};
+
+app.post('/api/admin/track-client', async (req, res) => {
+    try {
+        const { type, data } = req.body;
+        const clientIP = req.ip || req.connection.remoteAddress || req.headers['x-forwarded-for']?.split(',')[0];
+        
+        // Get geographic data for IP
+        const geoData = await getGeoLocation(clientIP);
+        
+        if (type === 'client_data') {
+            // Store comprehensive client data
+            const fingerprint = data.fingerprint;
+            
+            if (!clientTrackingStorage.clients.has(fingerprint)) {
+                clientTrackingStorage.clients.set(fingerprint, {
+                    ...data,
+                    ip: clientIP,
+                    country: geoData.country,
+                    city: geoData.city,
+                    region: geoData.region,
+                    isp: geoData.isp,
+                    firstSeen: new Date().toISOString(),
+                    lastSeen: new Date().toISOString(),
+                    visitCount: 1,
+                    pages: [data.page.path],
+                    ctaClicks: 0,
+                    formSubmits: 0
+                });
+            } else {
+                const client = clientTrackingStorage.clients.get(fingerprint);
+                client.lastSeen = new Date().toISOString();
+                client.visitCount += 1;
+                if (!client.pages.includes(data.page.path)) {
+                    client.pages.push(data.page.path);
+                }
+            }
+        } else if (type === 'page_change') {
+            // Track page navigation
+            clientTrackingStorage.clientJourneys.push({
+                ...data,
+                ip: clientIP,
+                country: geoData.country,
+                city: geoData.city,
+                timestamp: new Date().toISOString()
+            });
+            
+            // Keep only last 1000 journeys
+            if (clientTrackingStorage.clientJourneys.length > 1000) {
+                clientTrackingStorage.clientJourneys = clientTrackingStorage.clientJourneys.slice(-1000);
+            }
+        } else if (type === 'form_submit') {
+            // Track form submissions
+            clientTrackingStorage.formInteractions.push({
+                ...data,
+                ip: clientIP,
+                country: geoData.country,
+                city: geoData.city,
+                timestamp: new Date().toISOString()
+            });
+            
+            // Update client stats
+            const fingerprint = clientTrackingStorage.clients.keys().next().value;
+            if (fingerprint && clientTrackingStorage.clients.has(fingerprint)) {
+                const client = clientTrackingStorage.clients.get(fingerprint);
+                client.formSubmits += 1;
+            }
+            
+            // Keep only last 1000 form interactions
+            if (clientTrackingStorage.formInteractions.length > 1000) {
+                clientTrackingStorage.formInteractions = clientTrackingStorage.formInteractions.slice(-1000);
+            }
+        } else if (type === 'cta_click') {
+            // Track CTA button clicks
+            clientTrackingStorage.ctaClicks.push({
+                ...data,
+                ip: clientIP,
+                country: geoData.country,
+                city: geoData.city,
+                timestamp: new Date().toISOString()
+            });
+            
+            // Update client stats
+            const fingerprint = clientTrackingStorage.clients.keys().next().value;
+            if (fingerprint && clientTrackingStorage.clients.has(fingerprint)) {
+                const client = clientTrackingStorage.clients.get(fingerprint);
+                client.ctaClicks += 1;
+            }
+            
+            // Keep only last 1000 CTA clicks
+            if (clientTrackingStorage.ctaClicks.length > 1000) {
+                clientTrackingStorage.ctaClicks = clientTrackingStorage.ctaClicks.slice(-1000);
+            }
+        }
+        
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error tracking client data:', error);
+        res.status(500).json({ error: 'Failed to track client data' });
+    }
+});
+
+// Get all client data
+app.get('/api/admin/client-data', (req, res) => {
+    const clients = Array.from(clientTrackingStorage.clients.values());
+    
+    res.json({
+        totalClients: clients.length,
+        clients: clients.map(client => ({
+            fingerprint: client.fingerprint,
+            device: client.device,
+            location: {
+                country: client.country,
+                city: client.city,
+                region: client.region,
+                timezone: client.location?.timezone,
+                language: client.location?.language
+            },
+            network: client.network,
+            firstSeen: client.firstSeen,
+            lastSeen: client.lastSeen,
+            visitCount: client.visitCount,
+            pagesVisited: client.pages.length,
+            pages: client.pages,
+            ctaClicks: client.ctaClicks,
+            formSubmits: client.formSubmits,
+            userAgent: client.userAgent
+        })),
+        recentJourneys: clientTrackingStorage.clientJourneys.slice(-50),
+        recentFormInteractions: clientTrackingStorage.formInteractions.slice(-50),
+        recentCTAClicks: clientTrackingStorage.ctaClicks.slice(-50)
+    });
+});
+
 app.get('/api/admin/performance', (req, res) => {
     const seoEvents = analyticsStorage.seoMetrics || [];
     const coreVitalsEvents = analyticsStorage.coreWebVitals || [];
