@@ -454,25 +454,41 @@
 }
 
 /* ============================================
-   ADVISOR BOT
+   ADVISOR BOT - FLOATING POPUP
    ============================================ */
 
-.advisor-bot-card {
+.advisor-bot-popup {
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
+  width: 420px;
+  max-width: calc(100vw - 4rem);
   border: 2px solid;
   border-radius: 16px;
   padding: 1.5rem;
-  margin-bottom: 1.5rem;
-  animation: slideInDown 0.4s ease-out;
+  z-index: 1000;
+  animation: slideInRight 0.4s ease-out, fadeIn 0.4s ease-out;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(20px);
 }
 
-@keyframes slideInDown {
+@keyframes slideInRight {
   from {
     opacity: 0;
-    transform: translateY(-20px);
+    transform: translateX(100px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
 

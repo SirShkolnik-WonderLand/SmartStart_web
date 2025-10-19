@@ -10,11 +10,12 @@ interface StatsDashboardProps {
   controls: Control[];
   project: Project | null;
   frameworks: Framework[];
+  userName: string;
   onNavigateToDomains?: () => void;
   onNavigateToControls?: () => void;
 }
 
-export default function StatsDashboard({ stats, controls, project, frameworks, onNavigateToDomains, onNavigateToControls }: StatsDashboardProps) {
+export default function StatsDashboard({ stats, controls, project, frameworks, userName, onNavigateToDomains, onNavigateToControls }: StatsDashboardProps) {
   // Prepare data for charts
   const statusData = [
     { name: 'Ready', value: stats.readyControls, color: '#22c55e' },
@@ -63,8 +64,8 @@ export default function StatsDashboard({ stats, controls, project, frameworks, o
         </div>
       </div>
 
-      {/* Advisor Bot */}
-      <AdvisorBot stats={stats} controls={controls} project={project} />
+      {/* Advisor Bot - Floating Popup */}
+      <AdvisorBot stats={stats} controls={controls} project={project} userName={userName} />
 
       {/* Stats Cards - Clickable */}
       <div className="stats-cards-modern">

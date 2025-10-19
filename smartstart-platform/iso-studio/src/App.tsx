@@ -401,6 +401,7 @@ function App() {
             controls={controls}
             project={project}
             frameworks={frameworks}
+            userName={userName}
             onNavigateToDomains={() => setViewMode('domains')}
             onNavigateToControls={() => setViewMode('controls')}
           />

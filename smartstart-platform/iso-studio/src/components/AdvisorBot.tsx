@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Bot, AlertTriangle, TrendingUp, Shield, Info, X } from 'lucide-react';
 import { Stats, Control, Project } from '../types';
 
@@ -6,6 +6,7 @@ interface AdvisorBotProps {
   stats: Stats;
   controls: Control[];
   project: Project | null;
+  userName: string;
 }
 
 interface AdviceMessage {
@@ -16,13 +17,46 @@ interface AdviceMessage {
   priority: number;
 }
 
-export default function AdvisorBot({ stats, controls, project }: AdvisorBotProps) {
-  const [isOpen, setIsOpen] = useState(true);
+export default function AdvisorBot({ stats, controls, project, userName }: AdvisorBotProps) {
+  const [isVisible, setIsVisible] = useState(false);
   const [currentAdvice, setCurrentAdvice] = useState<AdviceMessage | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    generateAdvice();
+    // Show advisor when data changes
+    showAdvisor();
+    
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
   }, [stats, project]);
+
+  const showAdvisor = () => {
+    // Clear existing timeout
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    // Generate advice
+    generateAdvice();
+
+    // Show the advisor
+    setIsVisible(true);
+
+    // Auto-hide after 7 seconds
+    timeoutRef.current = setTimeout(() => {
+      setIsVisible(false);
+    }, 7000);
+  };
+
+  const handleClose = () => {
+    setIsVisible(false);
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+  };
 
   const generateAdvice = () => {
     const advice: AdviceMessage[] = [];
@@ -104,7 +138,7 @@ export default function AdvisorBot({ stats, controls, project }: AdvisorBotProps
     setCurrentAdvice(advice[0] || null);
   };
 
-  if (!currentAdvice) return null;
+  if (!currentAdvice || !isVisible) return null;
 
   const getIcon = () => {
     switch (currentAdvice.type) {
@@ -133,17 +167,8 @@ export default function AdvisorBot({ stats, controls, project }: AdvisorBotProps
     }
   };
 
-  if (!isOpen) {
-    return (
-      <div className="advisor-bot-minimized" onClick={() => setIsOpen(true)}>
-        <Bot size={24} />
-        <span>Advisor</span>
-      </div>
-    );
-  }
-
   return (
-    <div className="advisor-bot-card" style={{ background: getBgColor(), borderColor: getBorderColor() }}>
+    <div className="advisor-bot-popup" style={{ background: getBgColor(), borderColor: getBorderColor() }}>
       <div className="advisor-bot-header">
         <div className="advisor-bot-avatar">
           <Bot size={28} />
@@ -152,7 +177,7 @@ export default function AdvisorBot({ stats, controls, project }: AdvisorBotProps
           <h3 className="advisor-bot-name">Security Advisor</h3>
           <p className="advisor-bot-role">ISO 27001 Compliance Expert</p>
         </div>
-        <button className="advisor-bot-close" onClick={() => setIsOpen(false)}>
+        <button className="advisor-bot-close" onClick={handleClose}>
           <X size={20} />
         </button>
       </div>
