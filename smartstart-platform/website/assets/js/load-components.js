@@ -102,6 +102,13 @@ function initializeMobileMenu() {
             newToggle.classList.toggle('active');
             newToggle.setAttribute('aria-expanded', isExpanded);
             newToggle.setAttribute('aria-label', isExpanded ? 'Close menu' : 'Open menu');
+            
+            // Prevent body scroll when menu is open
+            if (isExpanded) {
+                document.body.classList.add('menu-open');
+            } else {
+                document.body.classList.remove('menu-open');
+            }
         });
 
         // Close menu when clicking outside
@@ -111,6 +118,7 @@ function initializeMobileMenu() {
                 newToggle.classList.remove('active');
                 newToggle.setAttribute('aria-expanded', 'false');
                 newToggle.setAttribute('aria-label', 'Open menu');
+                document.body.classList.remove('menu-open');
             }
         });
 
@@ -121,6 +129,7 @@ function initializeMobileMenu() {
                 newToggle.classList.remove('active');
                 newToggle.setAttribute('aria-expanded', 'false');
                 newToggle.setAttribute('aria-label', 'Open menu');
+                document.body.classList.remove('menu-open');
             }
         });
 
@@ -132,6 +141,7 @@ function initializeMobileMenu() {
                 newToggle.classList.remove('active');
                 newToggle.setAttribute('aria-expanded', 'false');
                 newToggle.setAttribute('aria-label', 'Open menu');
+                document.body.classList.remove('menu-open');
             });
         });
     }

@@ -10,6 +10,10 @@ Allow: /assets/css/
 Allow: /assets/images/
 Allow: /assets/icons/
 
+# Allow search and 404 pages
+Allow: /search.html
+Allow: /404.html
+
 # Sitemap
 Sitemap: https://alicesolutionsgroup.com/sitemap.xml
 

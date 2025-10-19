@@ -33,16 +33,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Mobile menu toggle
-    const mobileToggle = document.querySelector('.mobile-menu-toggle');
-    const navMenu = document.querySelector('.nav-menu');
-    
-    if (mobileToggle && navMenu) {
-        mobileToggle.addEventListener('click', function() {
-            navMenu.classList.toggle('active');
-            mobileToggle.classList.toggle('active');
-        });
-    }
+    // Mobile menu toggle - REMOVED: Handled by load-components.js
+    // This was causing conflicts with load-components.js initialization
     
     // Smooth scrolling for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -148,13 +140,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Keyboard navigation support
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && navMenu && navMenu.classList.contains('active')) {
-            navMenu.classList.remove('active');
-            mobileToggle.classList.remove('active');
-        }
-    });
+    // Keyboard navigation support - REMOVED: Handled by load-components.js
+    // Escape key handling for mobile menu is in load-components.js
     
     // Performance optimization: Lazy load images
     const images = document.querySelectorAll('img[data-src]');

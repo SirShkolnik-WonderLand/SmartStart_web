@@ -454,6 +454,7 @@
 @media (max-width: 768px) {
     .global-header {
         background: rgba(26, 31, 46, 0.98) !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     }
     
     .header-content {
@@ -489,6 +490,8 @@
         transition: transform 0.3s ease;
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
+        z-index: 999;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     }
     
     .nav-menu.active {
@@ -507,9 +510,12 @@
         font-size: 1.1rem;
         border-radius: 0;
         color: var(--text-primary);
+        min-height: 48px; /* Touch target */
+        transition: all 0.2s ease;
     }
     
-    .nav-link:hover {
+    .nav-link:hover,
+    .nav-link:focus {
         background: rgba(59, 130, 246, 0.15);
         padding-left: 2.5rem;
     }
@@ -525,15 +531,30 @@
         box-shadow: none;
         padding: 0;
         margin-top: 0.5rem;
+        max-height: none;
     }
     
     .dropdown-link {
         padding: 1rem 2.5rem;
         font-size: 1rem;
+        min-height: 44px; /* Touch target */
+        transition: all 0.2s ease;
+    }
+    
+    .dropdown-link:hover,
+    .dropdown-link:focus {
+        background: rgba(59, 130, 246, 0.1);
+        padding-left: 3rem;
     }
     
     .mobile-menu-toggle {
         display: flex;
+        z-index: 1001;
+    }
+    
+    /* Prevent body scroll when menu is open */
+    body.menu-open {
+        overflow: hidden;
     }
     
     /* Footer Mobile */

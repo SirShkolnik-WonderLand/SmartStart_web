@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Page Not Found | AliceSolutionsGroup</title>
+    <meta name="description" content="The page you're looking for doesn't exist. Return to AliceSolutionsGroup homepage.">
+    <meta name="robots" content="noindex, follow">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="assets/css/footer-lean.css">
+    <link rel="stylesheet" href="assets/css/main-pages.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+
+<body>
+    <!-- Skip to main content -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <!-- Header -->
+    <div id="header"></div>
+
+    <!-- Main Content -->
+    <main id="main-content" role="main" aria-label="404 Error">
+        <section class="section" style="padding: 8rem 0; min-height: 80vh; display: flex; align-items: center;">
+            <div class="container" style="max-width: 800px; margin: 0 auto; text-align: center;">
+                <!-- 404 Visual -->
+                <div style="font-size: 8rem; font-weight: 900; background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 2rem;">
+                    404
+                </div>
+                
+                <h1 style="font-size: 2.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1rem;">
+                    Page Not Found
+                </h1>
+                
+                <p style="font-size: 1.2rem; color: var(--text-secondary); margin-bottom: 3rem; line-height: 1.6;">
+                    Sorry, the page you're looking for doesn't exist or has been moved. Let's get you back on track.
+                </p>
+                
+                <!-- Search Box -->
+                <div style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 12px; padding: 2rem; margin-bottom: 3rem;">
+                    <h2 style="font-size: 1.5rem; font-weight: 600; color: var(--text-primary); margin-bottom: 1rem;">
+                        Search Our Site
+                    </h2>
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                        <input type="search" id="404-search" placeholder="Search for pages, services, or content..." 
+                            style="flex: 1; min-width: 250px; padding: 0.875rem 1.25rem; background: rgba(255,255,255,0.1); border: 1px solid var(--glass-border); border-radius: 8px; color: var(--text-primary); font-size: 1rem;">
+                        <button onclick="handle404Search()" style="padding: 0.875rem 2rem; background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; min-height: 48px;">
+                            Search
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Popular Links -->
+                <div style="margin-bottom: 3rem;">
+                    <h2 style="font-size: 1.5rem; font-weight: 600; color: var(--text-primary); margin-bottom: 1.5rem;">
+                        Popular Pages
+                    </h2>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                        <a href="index.html" class="cta-button secondary" style="padding: 1rem 1.5rem; text-align: center; text-decoration: none;">
+                            Home
+                        </a>
+                        <a href="about.html" class="cta-button secondary" style="padding: 1rem 1.5rem; text-align: center; text-decoration: none;">
+                            About
+                        </a>
+                        <a href="services.html" class="cta-button secondary" style="padding: 1rem 1.5rem; text-align: center; text-decoration: none;">
+                            Services
+                        </a>
+                        <a href="smartstart.html" class="cta-button secondary" style="padding: 1rem 1.5rem; text-align: center; text-decoration: none;">
+                            SmartStart
+                        </a>
+                        <a href="booking.html" class="cta-button secondary" style="padding: 1rem 1.5rem; text-align: center; text-decoration: none;">
+                            Book Training
+                        </a>
+                        <a href="contact.html" class="cta-button secondary" style="padding: 1rem 1.5rem; text-align: center; text-decoration: none;">
+                            Contact
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Help Section -->
+                <div style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 12px; padding: 2rem;">
+                    <h3 style="font-size: 1.3rem; font-weight: 600; color: var(--text-primary); margin-bottom: 1rem;">
+                        Need Help?
+                    </h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                        If you believe this is an error, please <a href="contact.html" style="color: #3b82f6; text-decoration: underline;">contact us</a> or try searching for what you need.
+                    </p>
+                    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                        <a href="contact.html" class="cta-button primary" style="padding: 1rem 2rem; text-decoration: none;">
+                            Contact Us
+                        </a>
+                        <a href="resources.html" class="cta-button secondary" style="padding: 1rem 2rem; text-decoration: none;">
+                            Resources
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <div id="footer"></div>
+
+    <!-- Scripts -->
+    <script src="assets/js/load-components.js"></script>
+    <script src="assets/js/script.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            loadNavbar();
+            loadFooter();
+        });
+        
+        function handle404Search() {
+            const searchTerm = document.getElementById('404-search').value.trim();
+            if (searchTerm) {
+                // Simple client-side search - redirect to resources page with search term
+                window.location.href = `resources.html?search=${encodeURIComponent(searchTerm)}`;
+            }
+        }
+        
+        // Allow Enter key to trigger search
+        document.getElementById('404-search').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                handle404Search();
+            }
+        });
+    </script>
+</body>
+
+</html>
+
