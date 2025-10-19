@@ -160,6 +160,13 @@ function loadAnalyticsData() {
             analyticsStorage.uniqueUsers = new Map(data.uniqueUsers || []);
             analyticsStorage.ipAddresses = new Map(data.ipAddresses || []);
             analyticsStorage.deviceFingerprints = new Map(data.deviceFingerprints || []);
+            
+            // Convert sessions arrays back to Sets for IP addresses
+            analyticsStorage.ipAddresses.forEach((ipData, ip) => {
+                if (Array.isArray(ipData.sessions)) {
+                    ipData.sessions = new Set(ipData.sessions);
+                }
+            });
 
             console.log('Analytics data loaded from file:', {
                 visitors: analyticsStorage.visitors.size,

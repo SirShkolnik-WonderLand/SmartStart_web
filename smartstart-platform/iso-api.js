@@ -61,7 +61,8 @@ router.get('/frameworks', (req, res) => {
   if (!data) {
     return res.status(500).json({ error: 'Failed to load frameworks' });
   }
-  res.json(data.frameworks);
+  // Return in format expected by frontend
+  res.json({ frameworks: data.frameworks });
 });
 
 // Get a specific framework
