@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { FileText, Download, Mail, CheckCircle, Circle, ArrowLeft, Sparkles } from 'lucide-react';
+import './SimpleTodoList.css';
 
 interface SimpleTodoListProps {
   framework: 'iso27001' | 'cmmc';
