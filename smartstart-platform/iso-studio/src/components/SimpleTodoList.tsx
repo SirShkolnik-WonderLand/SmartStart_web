@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FileText, Download, Mail, CheckCircle, Circle, ArrowLeft, Sparkles } from 'lucide-react';
 import './SimpleTodoList.css';
+import controlsData from '../../data/iso/controls.json';
 
 interface SimpleTodoListProps {
   framework: 'iso27001' | 'cmmc';
@@ -13,50 +14,42 @@ export default function SimpleTodoList({ framework, userName, onBack }: SimpleTo
   const [email, setEmail] = useState(() => localStorage.getItem('todoListEmail') || '');
   const [emailError, setEmailError] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [todoItems, setTodoItems] = useState<string[]>([]);
 
-  const todoItems = framework === 'iso27001' ? [
-    'Establish Information Security Policy (A.5.1)',
-    'Define Roles and Responsibilities (A.6.1)',
-    'Implement Access Control Procedures (A.9.1)',
-    'Set up Incident Response Plan (A.5.26)',
-    'Conduct Risk Assessment (A.5.7)',
-    'Document Business Continuity Plan (A.5.29)',
-    'Implement Security Awareness Training (A.7.2)',
-    'Set up Logging and Monitoring (A.12.4)',
-    'Establish Change Management Process (A.12.1)',
-    'Implement Backup and Recovery (A.12.3)',
-    'Define Asset Management (A.8.1)',
-    'Set up Physical Security Controls (A.11.1)',
-    'Implement Encryption (A.10.1)',
-    'Establish Supplier Relationships (A.15.1)',
-    'Set up Compliance Monitoring (A.18.1)',
-    'Document Security Procedures (A.5.1.1)',
-    'Implement Network Security (A.13.1)',
-    'Set up Vulnerability Management (A.12.6)',
-    'Establish Data Classification (A.8.2)',
-    'Implement Security Testing (A.14.2)',
-  ] : [
-    'Establish Access Control Policies (AC.L1-3.1.1)',
-    'Implement Audit Logging (AU.L1-3.3.1)',
-    'Set up Configuration Management (CM.L1-3.4.1)',
-    'Implement Identification and Authentication (IA.L1-3.5.1)',
-    'Establish Incident Response (IR.L1-3.6.1)',
-    'Set up Maintenance Procedures (MA.L1-3.7.1)',
-    'Implement Media Protection (MP.L1-3.8.1)',
-    'Establish Physical Protection (PE.L1-3.10.1)',
-    'Define Security Planning (PL.L1-3.11.1)',
-    'Implement Personnel Security (PS.L1-3.12.1)',
-    'Conduct Risk Assessment (RA.L1-3.13.1)',
-    'Set up System Acquisition (SA.L1-3.14.1)',
-    'Implement System Protection (SC.L1-3.13.1)',
-    'Establish System Integrity (SI.L1-3.14.1)',
-    'Document Security Controls (AC.L2-3.1.2)',
-    'Implement Advanced Access Control (AC.L2-3.1.3)',
-    'Set up Continuous Monitoring (SI.L2-3.14.2)',
-    'Establish Advanced Audit Logging (AU.L2-3.3.2)',
-    'Implement Security Training (AT.L2-3.2.1)',
-    'Set up Advanced Incident Response (IR.L2-3.6.2)',
-  ];
+  useEffect(() => {
+    // Load controls based on framework
+    if (framework === 'iso27001') {
+      const isoControls = controlsData.controls
+        .filter(control => control.frameworkId === 'iso27001_2022')
+        .map(control => `${control.title} (${control.code})`);
+      setTodoItems(isoControls);
+    } else {
+      // CMMC controls - using placeholder for now
+      const cmmcControls = [
+        'Establish Access Control Policies (AC.L1-3.1.1)',
+        'Implement Audit Logging (AU.L1-3.3.1)',
+        'Set up Configuration Management (CM.L1-3.4.1)',
+        'Implement Identification and Authentication (IA.L1-3.5.1)',
+        'Establish Incident Response (IR.L1-3.6.1)',
+        'Set up Maintenance Procedures (MA.L1-3.7.1)',
+        'Implement Media Protection (MP.L1-3.8.1)',
+        'Establish Physical Protection (PE.L1-3.10.1)',
+        'Define Security Planning (PL.L1-3.11.1)',
+        'Implement Personnel Security (PS.L1-3.12.1)',
+        'Conduct Risk Assessment (RA.L1-3.13.1)',
+        'Set up System Acquisition (SA.L1-3.14.1)',
+        'Implement System Protection (SC.L1-3.13.1)',
+        'Establish System Integrity (SI.L1-3.14.1)',
+        'Document Security Controls (AC.L2-3.1.2)',
+        'Implement Advanced Access Control (AC.L2-3.1.3)',
+        'Set up Continuous Monitoring (SI.L2-3.14.2)',
+        'Establish Advanced Audit Logging (AU.L2-3.3.2)',
+        'Implement Security Training (AT.L2-3.2.1)',
+        'Set up Advanced Incident Response (IR.L2-3.6.2)',
+      ];
+      setTodoItems(cmmcControls);
+    }
+  }, [framework]);
 
   const handleDownloadPDF = async () => {
     if (!email || !email.includes('@')) {
@@ -391,16 +384,16 @@ export default function SimpleTodoList({ framework, userName, onBack }: SimpleTo
         </div>
 
         <div className="todo-preview-super">
-          <h3>What's Included:</h3>
+          <h3>What's Included ({todoItems.length} Total Controls):</h3>
           <ul className="preview-list-super">
-            {todoItems.slice(0, 5).map((item, index) => (
+            {todoItems.slice(0, 10).map((item, index) => (
               <li key={index}>
                 <Circle size={16} />
                 <span>{item}</span>
               </li>
             ))}
             <li className="more-items-super">
-              <span>... and {todoItems.length - 5} more items</span>
+              <span>... and {todoItems.length - 10} more controls</span>
             </li>
           </ul>
         </div>
