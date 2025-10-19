@@ -1,328 +1,355 @@
-// ISO Readiness Studio API
-// Integrated with smartstart-platform
-
+// ISO Readiness Studio API - JSON-based implementation
 const express = require('express');
+const fs = require('fs');
+const path = require('path');
 const router = express.Router();
-const { PrismaClient } = require('@prisma/client');
 
-const prisma = new PrismaClient();
+// Data file paths
+const FRAMEWORKS_PATH = path.join(__dirname, 'data/iso/frameworks.json');
+const CONTROLS_PATH = path.join(__dirname, 'data/iso/controls.json');
+const PROJECTS_PATH = path.join(__dirname, 'data/iso/projects.json');
 
-// Helper function to calculate scores
-function calculateScores(answers) {
-  const statusWeights = {
-    NA: 0,
-    NOT_IMPLEMENTED: 0,
-    PARTIAL: 0.5,
-    IMPLEMENTED: 1.0,
-    OPERATING: 1.0
-  };
-
-  let totalScore = 0;
-  let totalWeight = 0;
-
-  answers.forEach(answer => {
-    const statusWeight = statusWeights[answer.status] || 0;
-    const controlWeight = answer.Control?.weight || 1;
-    
-    if (answer.status !== 'NA') {
-      totalScore += statusWeight * controlWeight;
-      totalWeight += controlWeight;
+// Helper function to read JSON files
+function readJSON(filePath) {
+  try {
+    if (!fs.existsSync(filePath)) {
+      return null;
     }
-  });
-
-  return {
-    score: totalWeight > 0 ? (totalScore / totalWeight) * 100 : 0,
-    totalScore,
-    totalWeight
-  };
+    const data = fs.readFileSync(filePath, 'utf8');
+    return JSON.parse(data);
+  } catch (error) {
+    console.error(`Error reading ${filePath}:`, error);
+    return null;
+  }
 }
 
-// Get all frameworks
-router.get('/frameworks', async (req, res) => {
+// Helper function to write JSON files
+function writeJSON(filePath, data) {
   try {
-    const frameworks = await prisma.framework.findMany({
-      include: {
-        domains: {
-          include: {
-            controls: true
-          }
-        }
-      }
-    });
-
-    res.json({ frameworks });
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+    return true;
   } catch (error) {
-    console.error('Error fetching frameworks:', error);
-    res.status(500).json({ error: 'Failed to fetch frameworks' });
+    console.error(`Error writing ${filePath}:`, error);
+    return false;
   }
-});
+}
 
-// Get all controls for a framework
-router.get('/frameworks/:frameworkId/controls', async (req, res) => {
-  try {
-    const { frameworkId } = req.params;
-    
-    const controls = await prisma.control.findMany({
-      where: { frameworkId },
-      include: {
-        Domain: true,
-        mappings: true
-      },
-      orderBy: { code: 'asc' }
-    });
-
-    res.json({ controls });
-  } catch (error) {
-    console.error('Error fetching controls:', error);
-    res.status(500).json({ error: 'Failed to fetch controls' });
-  }
-});
-
-// Get project with answers
-router.get('/projects/:projectId', async (req, res) => {
-  try {
-    const { projectId } = req.params;
-    
-    const project = await prisma.project.findUnique({
-      where: { id: projectId },
-      include: {
-        Organization: true,
-        answers: {
-          include: {
-            Control: {
-              include: {
-                Domain: true
-              }
-            },
-            OwnerUser: true,
-            OwnerTeam: true
-          }
-        },
-        activity: {
-          include: {
-            User: true
-          },
-          orderBy: { createdAt: 'desc' },
-          take: 50
-        }
+// Initialize projects file if it doesn't exist
+function initProjectsFile() {
+  if (!fs.existsSync(PROJECTS_PATH)) {
+    const initialData = {
+      projects: [],
+      metadata: {
+        lastUpdated: new Date().toISOString(),
+        version: "1.0.0"
       }
-    });
-
-    if (!project) {
-      return res.status(404).json({ error: 'Project not found' });
-    }
-
-    // Calculate scores
-    const scores = calculateScores(project.answers);
-
-    res.json({
-      project: {
-        ...project,
-        scores
-      }
-    });
-  } catch (error) {
-    console.error('Error fetching project:', error);
-    res.status(500).json({ error: 'Failed to fetch project' });
-  }
-});
-
-// Update answer
-router.patch('/projects/:projectId/answers/:answerId', async (req, res) => {
-  try {
-    const { projectId, answerId } = req.params;
-    const { status, ownerUserId, ownerTeamId, dueDate, riskImpact, riskLikely, effort, notes, references, evidenceUrl, updatedBy } = req.body;
-
-    // Update answer
-    const answer = await prisma.answer.update({
-      where: { id: answerId },
-      data: {
-        status,
-        ownerUserId,
-        ownerTeamId,
-        dueDate: dueDate ? new Date(dueDate) : null,
-        riskImpact,
-        riskLikely,
-        effort,
-        notes,
-        references,
-        evidenceUrl,
-        updatedBy
-      },
-      include: {
-        Control: true,
-        OwnerUser: true,
-        OwnerTeam: true
-      }
-    });
-
-    // Log activity
-    await prisma.activityLog.create({
-      data: {
-        organizationId: answer.Project.organizationId,
-        projectId,
-        userId: updatedBy,
-        action: 'UPDATE_ANSWER',
-        meta: {
-          answerId,
-          changes: req.body
-        }
-      }
-    });
-
-    // Recalculate scores
-    const project = await prisma.project.findUnique({
-      where: { id: projectId },
-      include: {
-        answers: {
-          include: {
-            Control: true
-          }
-        }
-      }
-    });
-
-    const scores = calculateScores(project.answers);
-
-    res.json({
-      answer,
-      scores
-    });
-  } catch (error) {
-    console.error('Error updating answer:', error);
-    res.status(500).json({ error: 'Failed to update answer' });
-  }
-});
-
-// Create new project
-router.post('/projects', async (req, res) => {
-  try {
-    const { organizationId, name, frameworks, mode } = req.body;
-
-    const project = await prisma.project.create({
-      data: {
-        organizationId,
-        name,
-        frameworks,
-        mode: mode || 'list'
-      }
-    });
-
-    res.json({ project });
-  } catch (error) {
-    console.error('Error creating project:', error);
-    res.status(500).json({ error: 'Failed to create project' });
-  }
-});
-
-// Get POA&M (Plan of Action & Milestones)
-router.get('/projects/:projectId/poam', async (req, res) => {
-  try {
-    const { projectId } = req.params;
-
-    const answers = await prisma.answer.findMany({
-      where: {
-        projectId,
-        status: {
-          in: ['NOT_IMPLEMENTED', 'PARTIAL']
-        }
-      },
-      include: {
-        Control: {
-          include: {
-            Domain: true
-          }
-        },
-        OwnerUser: true,
-        OwnerTeam: true
-      }
-    });
-
-    // Calculate priority for each answer
-    const poam = answers.map(answer => {
-      const statusWeights = {
-        NOT_IMPLEMENTED: 0,
-        PARTIAL: 0.5
-      };
-
-      const priority = (answer.riskImpact * answer.riskLikely) * (2 - statusWeights[answer.status]) * (answer.Control?.weight || 1) / answer.effort;
-
-      return {
-        ...answer,
-        priority
-      };
-    }).sort((a, b) => b.priority - a.priority);
-
-    res.json({ poam });
-  } catch (error) {
-    console.error('Error fetching POA&M:', error);
-    res.status(500).json({ error: 'Failed to fetch POA&M' });
-  }
-});
-
-// Get dashboard stats
-router.get('/projects/:projectId/dashboard', async (req, res) => {
-  try {
-    const { projectId } = req.params;
-
-    const project = await prisma.project.findUnique({
-      where: { id: projectId },
-      include: {
-        answers: {
-          include: {
-            Control: {
-              include: {
-                Domain: true
-              }
-            }
-          }
-        }
-      }
-    });
-
-    // Calculate domain scores
-    const domainScores = {};
-    project.answers.forEach(answer => {
-      const domainCode = answer.Control.Domain.code;
-      if (!domainScores[domainCode]) {
-        domainScores[domainCode] = {
-          domain: answer.Control.Domain,
-          answers: [],
-          score: 0
-        };
-      }
-      domainScores[domainCode].answers.push(answer);
-    });
-
-    // Calculate score per domain
-    Object.keys(domainScores).forEach(domainCode => {
-      const scores = calculateScores(domainScores[domainCode].answers);
-      domainScores[domainCode].score = scores.score;
-    });
-
-    // Overall score
-    const overallScores = calculateScores(project.answers);
-
-    // Stats
-    const stats = {
-      totalControls: project.answers.length,
-      notImplemented: project.answers.filter(a => a.status === 'NOT_IMPLEMENTED').length,
-      partial: project.answers.filter(a => a.status === 'PARTIAL').length,
-      implemented: project.answers.filter(a => a.status === 'IMPLEMENTED').length,
-      operating: project.answers.filter(a => a.status === 'OPERATING').length,
-      na: project.answers.filter(a => a.status === 'NA').length
     };
-
-    res.json({
-      project,
-      domainScores,
-      overallScores,
-      stats
-    });
-  } catch (error) {
-    console.error('Error fetching dashboard:', error);
-    res.status(500).json({ error: 'Failed to fetch dashboard' });
+    writeJSON(PROJECTS_PATH, initialData);
   }
+}
+
+// Initialize on load
+initProjectsFile();
+
+// ========================================
+// FRAMEWORK ENDPOINTS
+// ========================================
+
+// Get all frameworks
+router.get('/frameworks', (req, res) => {
+  const data = readJSON(FRAMEWORKS_PATH);
+  if (!data) {
+    return res.status(500).json({ error: 'Failed to load frameworks' });
+  }
+  res.json(data.frameworks);
+});
+
+// Get a specific framework
+router.get('/frameworks/:id', (req, res) => {
+  const data = readJSON(FRAMEWORKS_PATH);
+  if (!data) {
+    return res.status(500).json({ error: 'Failed to load frameworks' });
+  }
+  
+  const framework = data.frameworks.find(f => f.id === req.params.id);
+  if (!framework) {
+    return res.status(404).json({ error: 'Framework not found' });
+  }
+  
+  res.json(framework);
+});
+
+// ========================================
+// CONTROL ENDPOINTS
+// ========================================
+
+// Get all controls (with optional filtering)
+router.get('/controls', (req, res) => {
+  const data = readJSON(CONTROLS_PATH);
+  if (!data) {
+    return res.status(500).json({ error: 'Failed to load controls' });
+  }
+  
+  let controls = data.controls;
+  
+  // Filter by framework
+  if (req.query.frameworkId) {
+    controls = controls.filter(c => c.frameworkId === req.query.frameworkId);
+  }
+  
+  // Filter by domain
+  if (req.query.domainId) {
+    controls = controls.filter(c => c.domainId === req.query.domainId);
+  }
+  
+  // Filter by tags
+  if (req.query.tags) {
+    const tags = req.query.tags.split(',');
+    controls = controls.filter(c => 
+      tags.some(tag => c.tags.includes(tag))
+    );
+  }
+  
+  res.json({
+    controls,
+    metadata: data.metadata,
+    filters: {
+      frameworkId: req.query.frameworkId || null,
+      domainId: req.query.domainId || null,
+      tags: req.query.tags || null
+    }
+  });
+});
+
+// Get a specific control
+router.get('/controls/:id', (req, res) => {
+  const data = readJSON(CONTROLS_PATH);
+  if (!data) {
+    return res.status(500).json({ error: 'Failed to load controls' });
+  }
+  
+  const control = data.controls.find(c => c.id === req.params.id);
+  if (!control) {
+    return res.status(404).json({ error: 'Control not found' });
+  }
+  
+  res.json(control);
+});
+
+// ========================================
+// PROJECT ENDPOINTS
+// ========================================
+
+// Get all projects
+router.get('/projects', (req, res) => {
+  const data = readJSON(PROJECTS_PATH);
+  if (!data) {
+    return res.status(500).json({ error: 'Failed to load projects' });
+  }
+  
+  res.json(data.projects);
+});
+
+// Get a specific project
+router.get('/projects/:id', (req, res) => {
+  const data = readJSON(PROJECTS_PATH);
+  if (!data) {
+    return res.status(500).json({ error: 'Failed to load projects' });
+  }
+  
+  const project = data.projects.find(p => p.id === req.params.id);
+  if (!project) {
+    return res.status(404).json({ error: 'Project not found' });
+  }
+  
+  res.json(project);
+});
+
+// Create a new project
+router.post('/projects', (req, res) => {
+  const data = readJSON(PROJECTS_PATH);
+  if (!data) {
+    return res.status(500).json({ error: 'Failed to load projects' });
+  }
+  
+  const newProject = {
+    id: `project_${Date.now()}`,
+    name: req.body.name || 'Untitled Project',
+    frameworkId: req.body.frameworkId || 'iso27001_2022',
+    organizationId: req.body.organizationId || null,
+    status: 'active',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    answers: [],
+    metadata: req.body.metadata || {}
+  };
+  
+  data.projects.push(newProject);
+  data.metadata.lastUpdated = new Date().toISOString();
+  
+  if (writeJSON(PROJECTS_PATH, data)) {
+    res.status(201).json(newProject);
+  } else {
+    res.status(500).json({ error: 'Failed to save project' });
+  }
+});
+
+// Update a project
+router.put('/projects/:id', (req, res) => {
+  const data = readJSON(PROJECTS_PATH);
+  if (!data) {
+    return res.status(500).json({ error: 'Failed to load projects' });
+  }
+  
+  const projectIndex = data.projects.findIndex(p => p.id === req.params.id);
+  if (projectIndex === -1) {
+    return res.status(404).json({ error: 'Project not found' });
+  }
+  
+  const project = data.projects[projectIndex];
+  const updatedProject = {
+    ...project,
+    ...req.body,
+    id: project.id, // Don't allow ID changes
+    updatedAt: new Date().toISOString()
+  };
+  
+  data.projects[projectIndex] = updatedProject;
+  data.metadata.lastUpdated = new Date().toISOString();
+  
+  if (writeJSON(PROJECTS_PATH, data)) {
+    res.json(updatedProject);
+  } else {
+    res.status(500).json({ error: 'Failed to update project' });
+  }
+});
+
+// ========================================
+// ANSWER ENDPOINTS
+// ========================================
+
+// Submit/update an answer for a control
+router.post('/projects/:projectId/answers', (req, res) => {
+  const projectsData = readJSON(PROJECTS_PATH);
+  if (!projectsData) {
+    return res.status(500).json({ error: 'Failed to load projects' });
+  }
+  
+  const projectIndex = projectsData.projects.findIndex(p => p.id === req.params.projectId);
+  if (projectIndex === -1) {
+    return res.status(404).json({ error: 'Project not found' });
+  }
+  
+  const project = projectsData.projects[projectIndex];
+  
+  const answer = {
+    controlId: req.body.controlId,
+    status: req.body.status || 'pending', // pending, ready, partial, missing
+    ownerId: req.body.ownerId || null,
+    ownerName: req.body.ownerName || null,
+    dueDate: req.body.dueDate || null,
+    notes: req.body.notes || '',
+    references: req.body.references || [],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+  
+  // Update or add answer
+  const existingAnswerIndex = project.answers.findIndex(a => a.controlId === answer.controlId);
+  if (existingAnswerIndex !== -1) {
+    project.answers[existingAnswerIndex] = {
+      ...project.answers[existingAnswerIndex],
+      ...answer,
+      createdAt: project.answers[existingAnswerIndex].createdAt // Preserve original creation date
+    };
+  } else {
+    project.answers.push(answer);
+  }
+  
+  project.updatedAt = new Date().toISOString();
+  projectsData.projects[projectIndex] = project;
+  projectsData.metadata.lastUpdated = new Date().toISOString();
+  
+  if (writeJSON(PROJECTS_PATH, projectsData)) {
+    res.json(answer);
+  } else {
+    res.status(500).json({ error: 'Failed to save answer' });
+  }
+});
+
+// Get all answers for a project
+router.get('/projects/:projectId/answers', (req, res) => {
+  const data = readJSON(PROJECTS_PATH);
+  if (!data) {
+    return res.status(500).json({ error: 'Failed to load projects' });
+  }
+  
+  const project = data.projects.find(p => p.id === req.params.projectId);
+  if (!project) {
+    return res.status(404).json({ error: 'Project not found' });
+  }
+  
+  res.json(project.answers || []);
+});
+
+// Get a specific answer
+router.get('/projects/:projectId/answers/:controlId', (req, res) => {
+  const data = readJSON(PROJECTS_PATH);
+  if (!data) {
+    return res.status(500).json({ error: 'Failed to load projects' });
+  }
+  
+  const project = data.projects.find(p => p.id === req.params.projectId);
+  if (!project) {
+    return res.status(404).json({ error: 'Project not found' });
+  }
+  
+  const answer = project.answers.find(a => a.controlId === req.params.controlId);
+  if (!answer) {
+    return res.status(404).json({ error: 'Answer not found' });
+  }
+  
+  res.json(answer);
+});
+
+// ========================================
+// ANALYTICS & REPORTING
+// ========================================
+
+// Get project statistics
+router.get('/projects/:projectId/stats', (req, res) => {
+  const projectsData = readJSON(PROJECTS_PATH);
+  const controlsData = readJSON(CONTROLS_PATH);
+  
+  if (!projectsData || !controlsData) {
+    return res.status(500).json({ error: 'Failed to load data' });
+  }
+  
+  const project = projectsData.projects.find(p => p.id === req.params.projectId);
+  if (!project) {
+    return res.status(404).json({ error: 'Project not found' });
+  }
+  
+  const totalControls = controlsData.controls.length;
+  const answeredControls = project.answers.length;
+  const readyControls = project.answers.filter(a => a.status === 'ready').length;
+  const partialControls = project.answers.filter(a => a.status === 'partial').length;
+  const missingControls = project.answers.filter(a => a.status === 'missing').length;
+  
+  const stats = {
+    projectId: project.id,
+    projectName: project.name,
+    totalControls,
+    answeredControls,
+    unansweredControls: totalControls - answeredControls,
+    readyControls,
+    partialControls,
+    missingControls,
+    progressPercentage: totalControls > 0 ? Math.round((answeredControls / totalControls) * 100) : 0,
+    readinessPercentage: totalControls > 0 ? Math.round((readyControls / totalControls) * 100) : 0
+  };
+  
+  res.json(stats);
 });
 
 module.exports = router;

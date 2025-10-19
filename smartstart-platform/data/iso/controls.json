@@ -1,0 +1,1799 @@
+{
+  "controls": [
+    {
+      "id": "A.5.1",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A5",
+      "code": "A.5.1",
+      "title": "Policies for information security",
+      "description": "A set of policies for information security shall be defined, approved by management, published and communicated to employees and relevant external parties.",
+      "guidance": "Implementation guidance for A.5.1: A set of policies for information security shall be defined, approved by management, published and communicated to employees and relevant external parties.",
+      "cmmcMappings": [
+        "3.12.1"
+      ],
+      "tags": [
+        "policy",
+        "governance",
+        "management"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.5.2",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A5",
+      "code": "A.5.2",
+      "title": "Information security roles and responsibilities",
+      "description": "Information security roles and responsibilities shall be defined and allocated according to the organization's needs.",
+      "guidance": "Implementation guidance for A.5.2: Information security roles and responsibilities shall be defined and allocated according to the organization's needs.",
+      "cmmcMappings": [
+        "3.12.2",
+        "3.9.1"
+      ],
+      "tags": [
+        "roles",
+        "responsibilities",
+        "governance"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.5.3",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A5",
+      "code": "A.5.3",
+      "title": "Segregation of duties",
+      "description": "Conflicting duties and conflicting areas of responsibility shall be segregated.",
+      "guidance": "Implementation guidance for A.5.3: Conflicting duties and conflicting areas of responsibility shall be segregated.",
+      "cmmcMappings": [
+        "3.1.5"
+      ],
+      "tags": [
+        "access-control",
+        "segregation",
+        "compliance"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.5.4",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A5",
+      "code": "A.5.4",
+      "title": "Management responsibilities",
+      "description": "Management shall require all personnel to apply information security in accordance with the established policies and procedures of the organization.",
+      "guidance": "Implementation guidance for A.5.4: Management shall require all personnel to apply information security in accordance with the established policies and procedures of the organization.",
+      "cmmcMappings": [
+        "3.12.1",
+        "3.12.2"
+      ],
+      "tags": [
+        "management",
+        "governance",
+        "leadership"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.5.5",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A5",
+      "code": "A.5.5",
+      "title": "Contact with authorities",
+      "description": "Appropriate contacts with relevant authorities shall be maintained.",
+      "guidance": "Implementation guidance for A.5.5: Appropriate contacts with relevant authorities shall be maintained.",
+      "cmmcMappings": [
+        "3.6.1"
+      ],
+      "tags": [
+        "incident",
+        "authorities",
+        "compliance"
+      ],
+      "weight": 1,
+      "priority": "medium"
+    },
+    {
+      "id": "A.5.6",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A5",
+      "code": "A.5.6",
+      "title": "Contact with special interest groups",
+      "description": "Appropriate contacts with special interest groups or other specialist security forums and professional associations shall be maintained.",
+      "guidance": "Implementation guidance for A.5.6: Appropriate contacts with special interest groups or other specialist security forums and professional associations shall be maintained.",
+      "cmmcMappings": [
+        "3.6.1"
+      ],
+      "tags": [
+        "threat-intelligence",
+        "community",
+        "networking"
+      ],
+      "weight": 1,
+      "priority": "medium"
+    },
+    {
+      "id": "A.5.7",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A5",
+      "code": "A.5.7",
+      "title": "Threat intelligence",
+      "description": "Information relating to information security threats shall be collected and analyzed to produce threat intelligence.",
+      "guidance": "Implementation guidance for A.5.7: Information relating to information security threats shall be collected and analyzed to produce threat intelligence.",
+      "cmmcMappings": [
+        "3.14.1",
+        "3.14.3"
+      ],
+      "tags": [
+        "threat-intelligence",
+        "monitoring",
+        "security"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.5.8",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A5",
+      "code": "A.5.8",
+      "title": "Information security in project management",
+      "description": "Information security shall be integrated into project management.",
+      "guidance": "Implementation guidance for A.5.8: Information security shall be integrated into project management.",
+      "cmmcMappings": [
+        "3.1.1",
+        "3.4.1"
+      ],
+      "tags": [
+        "project-management",
+        "sdlc",
+        "development"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.5.9",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A5",
+      "code": "A.5.9",
+      "title": "Inventory of information and other associated assets",
+      "description": "An inventory of information and other associated assets, including owners, shall be drawn up and maintained.",
+      "guidance": "Implementation guidance for A.5.9: An inventory of information and other associated assets, including owners, shall be drawn up and maintained.",
+      "cmmcMappings": [
+        "3.4.1",
+        "3.4.2"
+      ],
+      "tags": [
+        "asset-management",
+        "inventory",
+        "governance"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.5.10",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A5",
+      "code": "A.5.10",
+      "title": "Acceptable use of information and other associated assets",
+      "description": "Rules for the acceptable use of information and other associated assets shall be established, implemented and communicated to personnel.",
+      "guidance": "Implementation guidance for A.5.10: Rules for the acceptable use of information and other associated assets shall be established, implemented and communicated to personnel.",
+      "cmmcMappings": [
+        "3.1.6"
+      ],
+      "tags": [
+        "acceptable-use",
+        "policy",
+        "training"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.5.11",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A5",
+      "code": "A.5.11",
+      "title": "Return of assets",
+      "description": "All personnel shall return all of the organization's assets in their possession upon termination of their employment, contract or agreement.",
+      "guidance": "Implementation guidance for A.5.11: All personnel shall return all of the organization's assets in their possession upon termination of their employment, contract or agreement.",
+      "cmmcMappings": [
+        "3.1.6"
+      ],
+      "tags": [
+        "asset-management",
+        "offboarding",
+        "hr"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.5.12",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A5",
+      "code": "A.5.12",
+      "title": "Classification of information",
+      "description": "Information shall be classified according to the information security needs of the organization based on confidentiality, integrity, availability and relevant interested parties.",
+      "guidance": "Implementation guidance for A.5.12: Information shall be classified according to the information security needs of the organization based on confidentiality, integrity, availability and relevant interested parties.",
+      "cmmcMappings": [
+        "3.1.2",
+        "3.8.1"
+      ],
+      "tags": [
+        "classification",
+        "data-protection",
+        "governance"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.5.13",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A5",
+      "code": "A.5.13",
+      "title": "Labelling of information",
+      "description": "An appropriate set of procedures for labelling information shall be developed and implemented in accordance with the information classification scheme adopted by the organization.",
+      "guidance": "Implementation guidance for A.5.13: An appropriate set of procedures for labelling information shall be developed and implemented in accordance with the information classification scheme adopted by the organization.",
+      "cmmcMappings": [
+        "3.1.3",
+        "3.8.2"
+      ],
+      "tags": [
+        "labelling",
+        "classification",
+        "data-protection"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.5.14",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A5",
+      "code": "A.5.14",
+      "title": "Information transfer",
+      "description": "Information transfer rules, procedures or agreements shall be in place for all types of transfer facilities within the organization and between the organization and other parties.",
+      "guidance": "Implementation guidance for A.5.14: Information transfer rules, procedures or agreements shall be in place for all types of transfer facilities within the organization and between the organization and other parties.",
+      "cmmcMappings": [
+        "3.13.8",
+        "3.1.3"
+      ],
+      "tags": [
+        "data-transfer",
+        "encryption",
+        "communication"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.5.15",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A5",
+      "code": "A.5.15",
+      "title": "Access control",
+      "description": "Rules to control access to information, other associated assets and business processes shall be established and reviewed based on business and information security requirements.",
+      "guidance": "Implementation guidance for A.5.15: Rules to control access to information, other associated assets and business processes shall be established and reviewed based on business and information security requirements.",
+      "cmmcMappings": [
+        "3.1.1",
+        "3.1.5"
+      ],
+      "tags": [
+        "access-control",
+        "rbac",
+        "security"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.5.16",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A5",
+      "code": "A.5.16",
+      "title": "Identity management",
+      "description": "The full life cycle of identities shall be managed.",
+      "guidance": "Implementation guidance for A.5.16: The full life cycle of identities shall be managed.",
+      "cmmcMappings": [
+        "3.5.1",
+        "3.5.2"
+      ],
+      "tags": [
+        "identity-management",
+        "iam",
+        "authentication"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.5.17",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A5",
+      "code": "A.5.17",
+      "title": "Authentication information",
+      "description": "Authentication information shall be assigned, managed and revoked securely.",
+      "guidance": "Implementation guidance for A.5.17: Authentication information shall be assigned, managed and revoked securely.",
+      "cmmcMappings": [
+        "3.5.3",
+        "3.5.4"
+      ],
+      "tags": [
+        "authentication",
+        "mfa",
+        "credentials"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.5.18",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A5",
+      "code": "A.5.18",
+      "title": "Access rights",
+      "description": "Access rights to information and other associated assets shall be provisioned, reviewed, modified and removed.",
+      "guidance": "Implementation guidance for A.5.18: Access rights to information and other associated assets shall be provisioned, reviewed, modified and removed.",
+      "cmmcMappings": [
+        "3.1.5"
+      ],
+      "tags": [
+        "access-control",
+        "rbac",
+        "authorization"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.5.19",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A5",
+      "code": "A.5.19",
+      "title": "Information security in supplier relationships",
+      "description": "Information security requirements for mitigating the risks associated with supplier's access to the organization's assets shall be agreed with the supplier and documented.",
+      "guidance": "Implementation guidance for A.5.19: Information security requirements for mitigating the risks associated with supplier's access to the organization's assets shall be agreed with the supplier and documented.",
+      "cmmcMappings": [
+        "3.12.4",
+        "3.12.5"
+      ],
+      "tags": [
+        "supplier",
+        "third-party",
+        "risk"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.5.20",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A5",
+      "code": "A.5.20",
+      "title": "Addressing information security within supplier agreements",
+      "description": "All relevant information security requirements shall be established and agreed with each supplier that may access, process, store, communicate, or provide IT infrastructure components for, the organization's information.",
+      "guidance": "Implementation guidance for A.5.20: All relevant information security requirements shall be established and agreed with each supplier that may access, process, store, communicate, or provide IT infrastructure components for, the organization's information.",
+      "cmmcMappings": [
+        "3.12.4"
+      ],
+      "tags": [
+        "supplier",
+        "contracts",
+        "third-party"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.5.21",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A5",
+      "code": "A.5.21",
+      "title": "Managing information security in the ICT supply chain",
+      "description": "Agreements with suppliers shall include requirements to address the information security risks associated with information and communications technology services and product supply chain.",
+      "guidance": "Implementation guidance for A.5.21: Agreements with suppliers shall include requirements to address the information security risks associated with information and communications technology services and product supply chain.",
+      "cmmcMappings": [
+        "3.12.5"
+      ],
+      "tags": [
+        "supply-chain",
+        "supplier",
+        "risk"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.5.22",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A5",
+      "code": "A.5.22",
+      "title": "Monitoring, review and change management of supplier services",
+      "description": "Organizations shall regularly monitor, review and audit their supplier service delivery.",
+      "guidance": "Implementation guidance for A.5.22: Organizations shall regularly monitor, review and audit their supplier service delivery.",
+      "cmmcMappings": [
+        "3.12.4"
+      ],
+      "tags": [
+        "supplier",
+        "monitoring",
+        "audit"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.5.23",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A5",
+      "code": "A.5.23",
+      "title": "Information security for use of cloud services",
+      "description": "Processes for acquisition, use, management and exit from cloud services shall be established in accordance with the organization's information security requirements.",
+      "guidance": "Implementation guidance for A.5.23: Processes for acquisition, use, management and exit from cloud services shall be established in accordance with the organization's information security requirements.",
+      "cmmcMappings": [
+        "3.13.1",
+        "3.13.2"
+      ],
+      "tags": [
+        "cloud",
+        "saas",
+        "third-party"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.5.24",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A5",
+      "code": "A.5.24",
+      "title": "Information security incident management planning and preparation",
+      "description": "Processes and procedures shall be established and managed to ensure a quick, effective and orderly response to information security incidents.",
+      "guidance": "Implementation guidance for A.5.24: Processes and procedures shall be established and managed to ensure a quick, effective and orderly response to information security incidents.",
+      "cmmcMappings": [
+        "3.6.1",
+        "3.6.2"
+      ],
+      "tags": [
+        "incident",
+        "irp",
+        "response"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.5.25",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A5",
+      "code": "A.5.25",
+      "title": "Assessment and decision on information security events",
+      "description": "Information security events shall be assessed and it shall be decided if they are to be classified as information security incidents.",
+      "guidance": "Implementation guidance for A.5.25: Information security events shall be assessed and it shall be decided if they are to be classified as information security incidents.",
+      "cmmcMappings": [
+        "3.6.2"
+      ],
+      "tags": [
+        "incident",
+        "assessment",
+        "triage"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.5.26",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A5",
+      "code": "A.5.26",
+      "title": "Response to information security incidents",
+      "description": "Information security incidents shall be responded to in accordance with the documented procedures.",
+      "guidance": "Implementation guidance for A.5.26: Information security incidents shall be responded to in accordance with the documented procedures.",
+      "cmmcMappings": [
+        "3.6.3"
+      ],
+      "tags": [
+        "incident",
+        "response",
+        "irp"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.5.27",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A5",
+      "code": "A.5.27",
+      "title": "Learning from information security incidents",
+      "description": "Knowledge gained from analyzing and resolving information security incidents shall be used to reduce the likelihood or impact of future incidents.",
+      "guidance": "Implementation guidance for A.5.27: Knowledge gained from analyzing and resolving information security incidents shall be used to reduce the likelihood or impact of future incidents.",
+      "cmmcMappings": [
+        "3.6.4"
+      ],
+      "tags": [
+        "incident",
+        "lessons-learned",
+        "improvement"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.5.28",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A5",
+      "code": "A.5.28",
+      "title": "Collection of evidence",
+      "description": "The organization shall define and apply procedures for the identification, collection, acquisition and preservation of information, which can serve as evidence.",
+      "guidance": "Implementation guidance for A.5.28: The organization shall define and apply procedures for the identification, collection, acquisition and preservation of information, which can serve as evidence.",
+      "cmmcMappings": [
+        "3.6.5"
+      ],
+      "tags": [
+        "forensics",
+        "evidence",
+        "legal"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.5.29",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A5",
+      "code": "A.5.29",
+      "title": "Information security during disruption",
+      "description": "Information security shall be maintained during disruption situations.",
+      "guidance": "Implementation guidance for A.5.29: Information security shall be maintained during disruption situations.",
+      "cmmcMappings": [
+        "3.11.1"
+      ],
+      "tags": [
+        "bcm",
+        "continuity",
+        "disaster"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.5.30",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A5",
+      "code": "A.5.30",
+      "title": "ICT readiness for business continuity",
+      "description": "ICT shall be ready for business continuity.",
+      "guidance": "Implementation guidance for A.5.30: ICT shall be ready for business continuity.",
+      "cmmcMappings": [
+        "3.11.2"
+      ],
+      "tags": [
+        "bcm",
+        "continuity",
+        "ict"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.5.31",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A5",
+      "code": "A.5.31",
+      "title": "Legal, statutory, regulatory and contractual requirements",
+      "description": "The organization shall identify, document and comply with legal, statutory, regulatory and contractual requirements related to information security.",
+      "guidance": "Implementation guidance for A.5.31: The organization shall identify, document and comply with legal, statutory, regulatory and contractual requirements related to information security.",
+      "cmmcMappings": [
+        "3.12.1"
+      ],
+      "tags": [
+        "compliance",
+        "legal",
+        "regulatory"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.5.32",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A5",
+      "code": "A.5.32",
+      "title": "Intellectual property rights",
+      "description": "The organization shall implement appropriate procedures to protect intellectual property rights.",
+      "guidance": "Implementation guidance for A.5.32: The organization shall implement appropriate procedures to protect intellectual property rights.",
+      "cmmcMappings": [
+        "3.12.2"
+      ],
+      "tags": [
+        "ip",
+        "legal",
+        "compliance"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.5.33",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A5",
+      "code": "A.5.33",
+      "title": "Protection of records",
+      "description": "Records shall be protected from loss, destruction, falsification, unauthorized access and unauthorized release, in accordance with legal, statutory, regulatory, contractual and business requirements.",
+      "guidance": "Implementation guidance for A.5.33: Records shall be protected from loss, destruction, falsification, unauthorized access and unauthorized release, in accordance with legal, statutory, regulatory, contractual and business requirements.",
+      "cmmcMappings": [
+        "3.12.3"
+      ],
+      "tags": [
+        "records",
+        "retention",
+        "compliance"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.5.34",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A5",
+      "code": "A.5.34",
+      "title": "Privacy and protection of personally identifiable information",
+      "description": "Privacy and protection of personally identifiable information shall be ensured as required in relevant legislation and regulation where applicable.",
+      "guidance": "Implementation guidance for A.5.34: Privacy and protection of personally identifiable information shall be ensured as required in relevant legislation and regulation where applicable.",
+      "cmmcMappings": [
+        "3.12.4"
+      ],
+      "tags": [
+        "privacy",
+        "pii",
+        "gdpr"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.5.35",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A5",
+      "code": "A.5.35",
+      "title": "Independent review of information security",
+      "description": "The organization's approach to managing information security and its implementation shall be reviewed independently at planned intervals or when significant changes occur.",
+      "guidance": "Implementation guidance for A.5.35: The organization's approach to managing information security and its implementation shall be reviewed independently at planned intervals or when significant changes occur.",
+      "cmmcMappings": [
+        "3.12.5"
+      ],
+      "tags": [
+        "audit",
+        "review",
+        "compliance"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.5.36",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A5",
+      "code": "A.5.36",
+      "title": "Compliance with policies, rules and standards for information security",
+      "description": "Compliance with the organization's information security policies, rules and standards shall be regularly reviewed.",
+      "guidance": "Implementation guidance for A.5.36: Compliance with the organization's information security policies, rules and standards shall be regularly reviewed.",
+      "cmmcMappings": [
+        "3.12.6"
+      ],
+      "tags": [
+        "compliance",
+        "policy",
+        "review"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.5.37",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A5",
+      "code": "A.5.37",
+      "title": "Documented operating procedures",
+      "description": "Operating procedures shall be documented, maintained and made available to all personnel who need them.",
+      "guidance": "Implementation guidance for A.5.37: Operating procedures shall be documented, maintained and made available to all personnel who need them.",
+      "cmmcMappings": [
+        "3.12.7"
+      ],
+      "tags": [
+        "documentation",
+        "procedures",
+        "operations"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.6.1",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A6",
+      "code": "A.6.1",
+      "title": "Screening",
+      "description": "Background verification checks on all candidates for employment, contractors and third-party users shall be carried out in accordance with relevant laws, regulations and ethics and shall be proportional to the business requirements, the classification of the information to be accessed and the perceived risks.",
+      "guidance": "Implementation guidance for A.6.1: Background verification checks on all candidates for employment, contractors and third-party users shall be carried out in accordance with relevant laws, regulations and ethics and shall be proportional to the business requirements, the classification of the information to be accessed and the perceived risks.",
+      "cmmcMappings": [
+        "3.9.1"
+      ],
+      "tags": [
+        "hr",
+        "screening",
+        "background-checks"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.6.2",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A6",
+      "code": "A.6.2",
+      "title": "Terms and conditions of employment",
+      "description": "The contractual agreements with employees and contractors shall state their and the organization's responsibilities for information security.",
+      "guidance": "Implementation guidance for A.6.2: The contractual agreements with employees and contractors shall state their and the organization's responsibilities for information security.",
+      "cmmcMappings": [
+        "3.9.2"
+      ],
+      "tags": [
+        "hr",
+        "contracts",
+        "employment"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.6.3",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A6",
+      "code": "A.6.3",
+      "title": "Information security awareness, education and training",
+      "description": "All personnel of the organization and, where relevant, interested parties shall receive appropriate awareness education and training and regular updates in organizational policies and procedures, as relevant for their job function.",
+      "guidance": "Implementation guidance for A.6.3: All personnel of the organization and, where relevant, interested parties shall receive appropriate awareness education and training and regular updates in organizational policies and procedures, as relevant for their job function.",
+      "cmmcMappings": [
+        "3.9.3"
+      ],
+      "tags": [
+        "training",
+        "awareness",
+        "education"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.6.4",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A6",
+      "code": "A.6.4",
+      "title": "Disciplinary process",
+      "description": "A disciplinary process shall be formalized and communicated to take action against personnel who have committed an information security policy violation.",
+      "guidance": "Implementation guidance for A.6.4: A disciplinary process shall be formalized and communicated to take action against personnel who have committed an information security policy violation.",
+      "cmmcMappings": [
+        "3.9.4"
+      ],
+      "tags": [
+        "hr",
+        "disciplinary",
+        "compliance"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.6.5",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A6",
+      "code": "A.6.5",
+      "title": "Responsibilities after termination or change of employment",
+      "description": "Information security responsibilities and duties that remain valid after termination or change of employment shall be defined, enforced and communicated to relevant personnel.",
+      "guidance": "Implementation guidance for A.6.5: Information security responsibilities and duties that remain valid after termination or change of employment shall be defined, enforced and communicated to relevant personnel.",
+      "cmmcMappings": [
+        "3.9.5"
+      ],
+      "tags": [
+        "hr",
+        "offboarding",
+        "termination"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.6.6",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A6",
+      "code": "A.6.6",
+      "title": "Confidentiality or non-disclosure agreements",
+      "description": "Requirements for confidentiality or non-disclosure agreements reflecting the organization's needs for the protection of information shall be identified, regularly reviewed and documented.",
+      "guidance": "Implementation guidance for A.6.6: Requirements for confidentiality or non-disclosure agreements reflecting the organization's needs for the protection of information shall be identified, regularly reviewed and documented.",
+      "cmmcMappings": [
+        "3.9.6"
+      ],
+      "tags": [
+        "nda",
+        "confidentiality",
+        "legal"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.6.7",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A6",
+      "code": "A.6.7",
+      "title": "Remote working",
+      "description": "Information security risks associated with working from home or other external locations shall be identified and addressed with appropriate measures.",
+      "guidance": "Implementation guidance for A.6.7: Information security risks associated with working from home or other external locations shall be identified and addressed with appropriate measures.",
+      "cmmcMappings": [
+        "3.9.7"
+      ],
+      "tags": [
+        "remote-work",
+        "telework",
+        "security"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.6.8",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A6",
+      "code": "A.6.8",
+      "title": "Information security event reporting",
+      "description": "Information security events shall be reported through appropriate management channels as quickly as possible.",
+      "guidance": "Implementation guidance for A.6.8: Information security events shall be reported through appropriate management channels as quickly as possible.",
+      "cmmcMappings": [
+        "3.9.8"
+      ],
+      "tags": [
+        "incident",
+        "reporting",
+        "events"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.7.1",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A7",
+      "code": "A.7.1",
+      "title": "Physical security perimeters",
+      "description": "Security perimeters shall be defined and used to protect areas that contain either sensitive or critical information and information processing facilities.",
+      "guidance": "Implementation guidance for A.7.1: Security perimeters shall be defined and used to protect areas that contain either sensitive or critical information and information processing facilities.",
+      "cmmcMappings": [
+        "3.10.1"
+      ],
+      "tags": [
+        "physical",
+        "perimeter",
+        "facilities"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.7.2",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A7",
+      "code": "A.7.2",
+      "title": "Physical entry controls",
+      "description": "Secure areas shall be protected by appropriate entry controls to ensure that only authorized personnel are allowed access.",
+      "guidance": "Implementation guidance for A.7.2: Secure areas shall be protected by appropriate entry controls to ensure that only authorized personnel are allowed access.",
+      "cmmcMappings": [
+        "3.10.2"
+      ],
+      "tags": [
+        "physical",
+        "access",
+        "badges"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.7.3",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A7",
+      "code": "A.7.3",
+      "title": "Securing offices, rooms and facilities",
+      "description": "Physical security for offices, rooms and facilities shall be designed and applied.",
+      "guidance": "Implementation guidance for A.7.3: Physical security for offices, rooms and facilities shall be designed and applied.",
+      "cmmcMappings": [
+        "3.10.3"
+      ],
+      "tags": [
+        "physical",
+        "facilities",
+        "security"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.7.4",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A7",
+      "code": "A.7.4",
+      "title": "Physical security monitoring",
+      "description": "Premises and sites shall be continuously monitored for unauthorized physical access.",
+      "guidance": "Implementation guidance for A.7.4: Premises and sites shall be continuously monitored for unauthorized physical access.",
+      "cmmcMappings": [
+        "3.10.4"
+      ],
+      "tags": [
+        "physical",
+        "monitoring",
+        "cctv"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.7.5",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A7",
+      "code": "A.7.5",
+      "title": "Protecting against physical and environmental threats",
+      "description": "Physical protection against natural and human-made disasters shall be designed and applied.",
+      "guidance": "Implementation guidance for A.7.5: Physical protection against natural and human-made disasters shall be designed and applied.",
+      "cmmcMappings": [
+        "3.10.5"
+      ],
+      "tags": [
+        "physical",
+        "environmental",
+        "disaster"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.7.6",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A7",
+      "code": "A.7.6",
+      "title": "Working in secure areas",
+      "description": "Physical protection and guidelines for working in secure areas shall be designed and applied.",
+      "guidance": "Implementation guidance for A.7.6: Physical protection and guidelines for working in secure areas shall be designed and applied.",
+      "cmmcMappings": [
+        "3.10.6"
+      ],
+      "tags": [
+        "physical",
+        "secure-areas",
+        "procedures"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.7.7",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A7",
+      "code": "A.7.7",
+      "title": "Clear desk and clear screen",
+      "description": "Clear desk rules for papers and removable storage media and clear screen rules for information processing facilities shall be defined and appropriately enforced.",
+      "guidance": "Implementation guidance for A.7.7: Clear desk rules for papers and removable storage media and clear screen rules for information processing facilities shall be defined and appropriately enforced.",
+      "cmmcMappings": [
+        "3.10.7"
+      ],
+      "tags": [
+        "physical",
+        "clean-desk",
+        "workplace"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.7.8",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A7",
+      "code": "A.7.8",
+      "title": "Equipment siting and protection",
+      "description": "Equipment shall be sited and protected to reduce the risks from environmental threats and hazards, and opportunities for unauthorized access.",
+      "guidance": "Implementation guidance for A.7.8: Equipment shall be sited and protected to reduce the risks from environmental threats and hazards, and opportunities for unauthorized access.",
+      "cmmcMappings": [
+        "3.10.8"
+      ],
+      "tags": [
+        "physical",
+        "equipment",
+        "environmental"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.7.9",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A7",
+      "code": "A.7.9",
+      "title": "Security of assets off-premises",
+      "description": "Security shall be applied to off-premises assets taking into account the different risks of working outside the organization's premises.",
+      "guidance": "Implementation guidance for A.7.9: Security shall be applied to off-premises assets taking into account the different risks of working outside the organization's premises.",
+      "cmmcMappings": [
+        "3.10.9"
+      ],
+      "tags": [
+        "physical",
+        "mobile",
+        "off-premises"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.7.10",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A7",
+      "code": "A.7.10",
+      "title": "Storage media",
+      "description": "Storage media shall be managed through their life cycle of acquisition, use, transportation and disposal in accordance with the organization's classification scheme and handling requirements.",
+      "guidance": "Implementation guidance for A.7.10: Storage media shall be managed through their life cycle of acquisition, use, transportation and disposal in accordance with the organization's classification scheme and handling requirements.",
+      "cmmcMappings": [
+        "3.8.3"
+      ],
+      "tags": [
+        "media",
+        "storage",
+        "disposal"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.7.11",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A7",
+      "code": "A.7.11",
+      "title": "Supporting utilities",
+      "description": "Information processing facilities shall be protected from power failures and other disruptions caused by failures in supporting utilities.",
+      "guidance": "Implementation guidance for A.7.11: Information processing facilities shall be protected from power failures and other disruptions caused by failures in supporting utilities.",
+      "cmmcMappings": [
+        "3.10.10"
+      ],
+      "tags": [
+        "utilities",
+        "power",
+        "environmental"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.7.12",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A7",
+      "code": "A.7.12",
+      "title": "Cabling security",
+      "description": "Power and telecommunications cabling carrying data or supporting information services shall be protected from interception, interference or damage.",
+      "guidance": "Implementation guidance for A.7.12: Power and telecommunications cabling carrying data or supporting information services shall be protected from interception, interference or damage.",
+      "cmmcMappings": [
+        "3.10.11"
+      ],
+      "tags": [
+        "cabling",
+        "network",
+        "physical"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.7.13",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A7",
+      "code": "A.7.13",
+      "title": "Equipment maintenance",
+      "description": "Equipment shall be correctly maintained to ensure its continued availability and integrity.",
+      "guidance": "Implementation guidance for A.7.13: Equipment shall be correctly maintained to ensure its continued availability and integrity.",
+      "cmmcMappings": [
+        "3.10.12"
+      ],
+      "tags": [
+        "equipment",
+        "maintenance",
+        "availability"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.7.14",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A7",
+      "code": "A.7.14",
+      "title": "Secure disposal or re-use of equipment",
+      "description": "Items of equipment containing storage media shall be verified to ensure that any sensitive data and licensed software has been removed or securely overwritten prior to disposal or re-use.",
+      "guidance": "Implementation guidance for A.7.14: Items of equipment containing storage media shall be verified to ensure that any sensitive data and licensed software has been removed or securely overwritten prior to disposal or re-use.",
+      "cmmcMappings": [
+        "3.8.4"
+      ],
+      "tags": [
+        "disposal",
+        "equipment",
+        "data-wiping"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.8.1",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A8",
+      "code": "A.8.1",
+      "title": "User endpoint devices",
+      "description": "Information stored on, processed by or accessible via user endpoint devices shall be protected.",
+      "guidance": "Implementation guidance for A.8.1: Information stored on, processed by or accessible via user endpoint devices shall be protected.",
+      "cmmcMappings": [
+        "3.1.1"
+      ],
+      "tags": [
+        "endpoint",
+        "device",
+        "security"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.8.2",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A8",
+      "code": "A.8.2",
+      "title": "Privileged access rights",
+      "description": "The allocation and use of privileged access rights shall be restricted and controlled.",
+      "guidance": "Implementation guidance for A.8.2: The allocation and use of privileged access rights shall be restricted and controlled.",
+      "cmmcMappings": [
+        "3.1.2"
+      ],
+      "tags": [
+        "access-control",
+        "privileged",
+        "admin"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.8.3",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A8",
+      "code": "A.8.3",
+      "title": "Information access restriction",
+      "description": "Access to information and other associated assets shall be restricted in accordance with the access control policy.",
+      "guidance": "Implementation guidance for A.8.3: Access to information and other associated assets shall be restricted in accordance with the access control policy.",
+      "cmmcMappings": [
+        "3.1.3"
+      ],
+      "tags": [
+        "access-control",
+        "rbac",
+        "authorization"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.8.4",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A8",
+      "code": "A.8.4",
+      "title": "Access to source code",
+      "description": "Access to source code, development tools and software libraries shall be restricted.",
+      "guidance": "Implementation guidance for A.8.4: Access to source code, development tools and software libraries shall be restricted.",
+      "cmmcMappings": [
+        "3.1.4"
+      ],
+      "tags": [
+        "development",
+        "source-code",
+        "access-control"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.8.5",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A8",
+      "code": "A.8.5",
+      "title": "Secure authentication",
+      "description": "Secure authentication shall be used by users and suppliers to access organizational systems, applications and services.",
+      "guidance": "Implementation guidance for A.8.5: Secure authentication shall be used by users and suppliers to access organizational systems, applications and services.",
+      "cmmcMappings": [
+        "3.5.1"
+      ],
+      "tags": [
+        "authentication",
+        "mfa",
+        "security"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.8.6",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A8",
+      "code": "A.8.6",
+      "title": "Capacity management",
+      "description": "The use of resources shall be monitored, tuned and projections made of future capacity requirements to ensure the required system performance.",
+      "guidance": "Implementation guidance for A.8.6: The use of resources shall be monitored, tuned and projections made of future capacity requirements to ensure the required system performance.",
+      "cmmcMappings": [
+        "3.4.1"
+      ],
+      "tags": [
+        "capacity",
+        "performance",
+        "monitoring"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.8.7",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A8",
+      "code": "A.8.7",
+      "title": "Protection against malware",
+      "description": "Detection, prevention and recovery controls to protect against malware shall be implemented, combined with appropriate user awareness.",
+      "guidance": "Implementation guidance for A.8.7: Detection, prevention and recovery controls to protect against malware shall be implemented, combined with appropriate user awareness.",
+      "cmmcMappings": [
+        "3.14.1"
+      ],
+      "tags": [
+        "malware",
+        "antivirus",
+        "edr"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.8.8",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A8",
+      "code": "A.8.8",
+      "title": "Management of technical vulnerabilities",
+      "description": "Information about technical vulnerabilities of information systems in use shall be obtained, the organization's exposure to such vulnerabilities evaluated and appropriate measures taken to address the associated risk.",
+      "guidance": "Implementation guidance for A.8.8: Information about technical vulnerabilities of information systems in use shall be obtained, the organization's exposure to such vulnerabilities evaluated and appropriate measures taken to address the associated risk.",
+      "cmmcMappings": [
+        "3.11.1"
+      ],
+      "tags": [
+        "vulnerability",
+        "patch",
+        "cve"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.8.9",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A8",
+      "code": "A.8.9",
+      "title": "Configuration management",
+      "description": "Configurations, including security configurations, of hardware, software, services and networks shall be established, documented, implemented, monitored and reviewed.",
+      "guidance": "Implementation guidance for A.8.9: Configurations, including security configurations, of hardware, software, services and networks shall be established, documented, implemented, monitored and reviewed.",
+      "cmmcMappings": [
+        "3.4.2"
+      ],
+      "tags": [
+        "configuration",
+        "hardening",
+        "baseline"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.8.10",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A8",
+      "code": "A.8.10",
+      "title": "Information deletion",
+      "description": "Information stored in information systems, devices or in any other storage media shall be deleted when no longer required.",
+      "guidance": "Implementation guidance for A.8.10: Information stored in information systems, devices or in any other storage media shall be deleted when no longer required.",
+      "cmmcMappings": [
+        "3.3.1"
+      ],
+      "tags": [
+        "data-deletion",
+        "retention",
+        "privacy"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.8.11",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A8",
+      "code": "A.8.11",
+      "title": "Data masking",
+      "description": "Data masking shall be used in accordance with the organization's topic-specific policy on access control and other related topic-specific policies, for protection of sensitive data.",
+      "guidance": "Implementation guidance for A.8.11: Data masking shall be used in accordance with the organization's topic-specific policy on access control and other related topic-specific policies, for protection of sensitive data.",
+      "cmmcMappings": [
+        "3.3.2"
+      ],
+      "tags": [
+        "data-masking",
+        "privacy",
+        "pii"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.8.12",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A8",
+      "code": "A.8.12",
+      "title": "Data leakage prevention",
+      "description": "Data leakage prevention measures shall be applied to systems, networks and any other devices that process, store or transmit sensitive information.",
+      "guidance": "Implementation guidance for A.8.12: Data leakage prevention measures shall be applied to systems, networks and any other devices that process, store or transmit sensitive information.",
+      "cmmcMappings": [
+        "3.3.3"
+      ],
+      "tags": [
+        "dlp",
+        "data-protection",
+        "monitoring"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.8.13",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A8",
+      "code": "A.8.13",
+      "title": "Monitoring activities",
+      "description": "Networks, systems and applications shall be monitored for anomalous behavior and appropriate actions taken to evaluate potential information security incidents.",
+      "guidance": "Implementation guidance for A.8.13: Networks, systems and applications shall be monitored for anomalous behavior and appropriate actions taken to evaluate potential information security incidents.",
+      "cmmcMappings": [
+        "3.3.4"
+      ],
+      "tags": [
+        "monitoring",
+        "siem",
+        "security"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.8.14",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A8",
+      "code": "A.8.14",
+      "title": "Logging",
+      "description": "Event logs recording user activities, exceptions, faults and information security events shall be produced, kept and regularly reviewed.",
+      "guidance": "Implementation guidance for A.8.14: Event logs recording user activities, exceptions, faults and information security events shall be produced, kept and regularly reviewed.",
+      "cmmcMappings": [
+        "3.3.5"
+      ],
+      "tags": [
+        "logging",
+        "audit",
+        "monitoring"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.8.15",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A8",
+      "code": "A.8.15",
+      "title": "Clock synchronization",
+      "description": "The clocks of all relevant information processing systems within an organization or security domain shall be synchronized to approved time sources.",
+      "guidance": "Implementation guidance for A.8.15: The clocks of all relevant information processing systems within an organization or security domain shall be synchronized to approved time sources.",
+      "cmmcMappings": [
+        "3.3.6"
+      ],
+      "tags": [
+        "ntp",
+        "clock",
+        "time"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.8.16",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A8",
+      "code": "A.8.16",
+      "title": "Installation of software on operational systems",
+      "description": "Procedures shall be implemented to control the installation of software on operational systems.",
+      "guidance": "Implementation guidance for A.8.16: Procedures shall be implemented to control the installation of software on operational systems.",
+      "cmmcMappings": [
+        "3.4.3"
+      ],
+      "tags": [
+        "change-management",
+        "software",
+        "operations"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.8.17",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A8",
+      "code": "A.8.17",
+      "title": "Network controls",
+      "description": "Networks shall be managed and controlled to protect information in systems and applications.",
+      "guidance": "Implementation guidance for A.8.17: Networks shall be managed and controlled to protect information in systems and applications.",
+      "cmmcMappings": [
+        "3.13.1"
+      ],
+      "tags": [
+        "network",
+        "firewall",
+        "segmentation"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.8.18",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A8",
+      "code": "A.8.18",
+      "title": "Security of network services",
+      "description": "Security mechanisms, service levels and management requirements of all network services shall be identified and included in network services agreements, whether these services are provided in-house or outsourced.",
+      "guidance": "Implementation guidance for A.8.18: Security mechanisms, service levels and management requirements of all network services shall be identified and included in network services agreements, whether these services are provided in-house or outsourced.",
+      "cmmcMappings": [
+        "3.13.2"
+      ],
+      "tags": [
+        "network",
+        "services",
+        "sla"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.8.19",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A8",
+      "code": "A.8.19",
+      "title": "Segregation of networks",
+      "description": "Groups of information services, users and information systems shall be segregated on networks.",
+      "guidance": "Implementation guidance for A.8.19: Groups of information services, users and information systems shall be segregated on networks.",
+      "cmmcMappings": [
+        "3.13.3"
+      ],
+      "tags": [
+        "network",
+        "segmentation",
+        "vlan"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.8.20",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A8",
+      "code": "A.8.20",
+      "title": "Web filtering",
+      "description": "Access to websites shall be managed to reduce exposure to malicious content.",
+      "guidance": "Implementation guidance for A.8.20: Access to websites shall be managed to reduce exposure to malicious content.",
+      "cmmcMappings": [
+        "3.13.4"
+      ],
+      "tags": [
+        "web-filtering",
+        "proxy",
+        "security"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.8.21",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A8",
+      "code": "A.8.21",
+      "title": "Use of cryptography",
+      "description": "Cryptographic controls shall be used in accordance with relevant laws, regulations and standards.",
+      "guidance": "Implementation guidance for A.8.21: Cryptographic controls shall be used in accordance with relevant laws, regulations and standards.",
+      "cmmcMappings": [
+        "3.13.5"
+      ],
+      "tags": [
+        "cryptography",
+        "encryption",
+        "tls"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.8.22",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A8",
+      "code": "A.8.22",
+      "title": "Secure coding",
+      "description": "Secure coding practices shall be established and applied to software development.",
+      "guidance": "Implementation guidance for A.8.22: Secure coding practices shall be established and applied to software development.",
+      "cmmcMappings": [
+        "3.13.6"
+      ],
+      "tags": [
+        "secure-coding",
+        "development",
+        "sdlc"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.8.23",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A8",
+      "code": "A.8.23",
+      "title": "Security testing in development and acceptance",
+      "description": "Security testing shall be performed during development and acceptance of information systems.",
+      "guidance": "Implementation guidance for A.8.23: Security testing shall be performed during development and acceptance of information systems.",
+      "cmmcMappings": [
+        "3.11.1"
+      ],
+      "tags": [
+        "testing",
+        "security",
+        "sdlc"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.8.24",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A8",
+      "code": "A.8.24",
+      "title": "Separation of development, test and production environments",
+      "description": "Development, testing and operational environments shall be separated to reduce the risk of unauthorized access or changes to the operational environment.",
+      "guidance": "Implementation guidance for A.8.24: Development, testing and operational environments shall be separated to reduce the risk of unauthorized access or changes to the operational environment.",
+      "cmmcMappings": [
+        "3.4.4"
+      ],
+      "tags": [
+        "environments",
+        "devops",
+        "separation"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.8.25",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A8",
+      "code": "A.8.25",
+      "title": "Change management",
+      "description": "Changes to information processing facilities and systems shall be controlled.",
+      "guidance": "Implementation guidance for A.8.25: Changes to information processing facilities and systems shall be controlled.",
+      "cmmcMappings": [
+        "3.4.5"
+      ],
+      "tags": [
+        "change-management",
+        "cab",
+        "itil"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.8.26",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A8",
+      "code": "A.8.26",
+      "title": "Test information",
+      "description": "Test information shall be appropriately selected, protected and managed.",
+      "guidance": "Implementation guidance for A.8.26: Test information shall be appropriately selected, protected and managed.",
+      "cmmcMappings": [
+        "3.4.6"
+      ],
+      "tags": [
+        "testing",
+        "data",
+        "privacy"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.8.27",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A8",
+      "code": "A.8.27",
+      "title": "Acceptance testing",
+      "description": "Acceptance testing programs and related criteria shall be established for new information systems, upgrades and new versions.",
+      "guidance": "Implementation guidance for A.8.27: Acceptance testing programs and related criteria shall be established for new information systems, upgrades and new versions.",
+      "cmmcMappings": [
+        "3.11.2"
+      ],
+      "tags": [
+        "testing",
+        "acceptance",
+        "sdlc"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.8.28",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A8",
+      "code": "A.8.28",
+      "title": "Audit considerations",
+      "description": "Audit requirements and activities involving verification of operational systems shall be carefully planned and agreed to minimize disruptions to business processes.",
+      "guidance": "Implementation guidance for A.8.28: Audit requirements and activities involving verification of operational systems shall be carefully planned and agreed to minimize disruptions to business processes.",
+      "cmmcMappings": [
+        "3.3.7"
+      ],
+      "tags": [
+        "audit",
+        "testing",
+        "operations"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.8.29",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A8",
+      "code": "A.8.29",
+      "title": "Protection of information systems during audit testing",
+      "description": "Audit tests and other assessment activities involving verification of operational systems shall be planned and agreed between the tester and appropriate management.",
+      "guidance": "Implementation guidance for A.8.29: Audit tests and other assessment activities involving verification of operational systems shall be planned and agreed between the tester and appropriate management.",
+      "cmmcMappings": [
+        "3.3.8"
+      ],
+      "tags": [
+        "audit",
+        "testing",
+        "protection"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.8.30",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A8",
+      "code": "A.8.30",
+      "title": "Redundancy",
+      "description": "Information processing facilities shall be implemented with redundancy sufficient to meet availability requirements.",
+      "guidance": "Implementation guidance for A.8.30: Information processing facilities shall be implemented with redundancy sufficient to meet availability requirements.",
+      "cmmcMappings": [
+        "3.11.3"
+      ],
+      "tags": [
+        "redundancy",
+        "availability",
+        "ha"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.8.31",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A8",
+      "code": "A.8.31",
+      "title": "Availability of information processing facilities",
+      "description": "Information processing facilities shall be implemented with redundancy sufficient to meet availability requirements.",
+      "guidance": "Implementation guidance for A.8.31: Information processing facilities shall be implemented with redundancy sufficient to meet availability requirements.",
+      "cmmcMappings": [
+        "3.11.4"
+      ],
+      "tags": [
+        "availability",
+        "uptime",
+        "sla"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.8.32",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A8",
+      "code": "A.8.32",
+      "title": "Backup",
+      "description": "Backup copies of information, software and systems shall be maintained and regularly tested in accordance with the agreed topic-specific policy on backup.",
+      "guidance": "Implementation guidance for A.8.32: Backup copies of information, software and systems shall be maintained and regularly tested in accordance with the agreed topic-specific policy on backup.",
+      "cmmcMappings": [
+        "3.8.5"
+      ],
+      "tags": [
+        "backup",
+        "recovery",
+        "dr"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.8.33",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A8",
+      "code": "A.8.33",
+      "title": "Redundancy of information processing facilities",
+      "description": "Information processing facilities shall be implemented with redundancy sufficient to meet availability requirements.",
+      "guidance": "Implementation guidance for A.8.33: Information processing facilities shall be implemented with redundancy sufficient to meet availability requirements.",
+      "cmmcMappings": [
+        "3.11.5"
+      ],
+      "tags": [
+        "redundancy",
+        "availability",
+        "ha"
+      ],
+      "weight": 2,
+      "priority": "high"
+    },
+    {
+      "id": "A.8.34",
+      "frameworkId": "iso27001_2022",
+      "domainId": "A8",
+      "code": "A.8.34",
+      "title": "Business information systems",
+      "description": "Business information systems shall be designed, developed, maintained and operated in accordance with the organization's information security requirements.",
+      "guidance": "Implementation guidance for A.8.34: Business information systems shall be designed, developed, maintained and operated in accordance with the organization's information security requirements.",
+      "cmmcMappings": [
+        "3.1.7"
+      ],
+      "tags": [
+        "business-systems",
+        "sdlc",
+        "requirements"
+      ],
+      "weight": 2,
+      "priority": "high"
+    }
+  ],
+  "metadata": {
+    "totalControls": 93,
+    "lastUpdated": "2025-10-19",
+    "version": "1.0.0",
+    "frameworks": [
+      "iso27001_2022"
+    ],
+    "domains": [
+      "A5",
+      "A6",
+      "A7",
+      "A8"
+    ]
+  }
+}
