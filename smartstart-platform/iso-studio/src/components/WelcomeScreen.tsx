@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Shield, Bot, FileText, Sparkles } from 'lucide-react';
+import cyberOwlLogo from '../../../Logo(s)+slogans/Cyber-Owl_logo.png';
 
 interface WelcomeScreenProps {
   onStart: (userName: string) => void;
@@ -10,8 +11,9 @@ interface WelcomeScreenProps {
 export default function WelcomeScreen({ onStart, onStartStoryBot, onStartTodoList }: WelcomeScreenProps) {
   const [userName, setUserName] = useState('');
   const [error, setError] = useState('');
+  const [todoListFramework, setTodoListFramework] = useState<'iso27001' | 'cmmc'>('iso27001');
 
-  const handleStart = (option: 'full' | 'story' | 'todo') => {
+  const handleStart = (option: 'full' | 'story' | 'todo', framework: 'iso27001' | 'cmmc' = 'iso27001') => {
     if (!userName.trim()) {
       setError('Please enter your name first');
       return;
@@ -20,9 +22,9 @@ export default function WelcomeScreen({ onStart, onStartStoryBot, onStartTodoLis
     if (option === 'full') {
       onStart(userName.trim());
     } else if (option === 'story') {
-      onStartStoryBot(userName.trim(), 'iso27001');
+      onStartStoryBot(userName.trim(), framework);
     } else if (option === 'todo') {
-      onStartTodoList(userName.trim(), 'iso27001');
+      onStartTodoList(userName.trim(), framework);
     }
   };
 
@@ -31,6 +33,11 @@ export default function WelcomeScreen({ onStart, onStartStoryBot, onStartTodoLis
       <div className="welcome-content-super">
         <div className="welcome-header-super">
           <div className="welcome-logo-super">
+            <img 
+              src={cyberOwlLogo} 
+              alt="Cyber Owl AI" 
+              className="cyber-owl-logo"
+            />
             <Sparkles className="sparkle-icon" size={40} />
           </div>
           <h1 className="welcome-title-super">
@@ -85,15 +92,30 @@ export default function WelcomeScreen({ onStart, onStartStoryBot, onStartTodoLis
 
           <button 
             className="option-card-super option-3"
-            onClick={() => handleStart('todo')}
+            onClick={() => handleStart('todo', todoListFramework)}
             disabled={!userName.trim()}
           >
             <div className="option-icon-wrapper">
               <FileText size={56} />
             </div>
             <h3>Download Checklist</h3>
-            <p>Simple PDF format</p>
+            <p>{todoListFramework === 'iso27001' ? '93 ISO controls' : '110 CMMC controls'}</p>
             <div className="option-badge">Offline</div>
+          </button>
+        </div>
+
+        <div className="framework-tabs-super">
+          <button 
+            className={`framework-tab ${todoListFramework === 'iso27001' ? 'active' : ''}`}
+            onClick={() => setTodoListFramework('iso27001')}
+          >
+            ISO 27001:2022
+          </button>
+          <button 
+            className={`framework-tab ${todoListFramework === 'cmmc' ? 'active' : ''}`}
+            onClick={() => setTodoListFramework('cmmc')}
+          >
+            CMMC 2.0
           </button>
         </div>
       </div>
