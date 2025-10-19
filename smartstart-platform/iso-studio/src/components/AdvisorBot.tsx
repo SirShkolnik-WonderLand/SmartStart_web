@@ -23,15 +23,19 @@ export default function AdvisorBot({ stats, controls, project, userName }: Advis
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    // Show advisor when data changes
-    showAdvisor();
+    // Only show advisor if there's significant change (not on every render)
+    const hasSignificantChange = stats.readyControls > 0 || stats.partialControls > 0;
+    
+    if (hasSignificantChange) {
+      showAdvisor();
+    }
     
     return () => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
     };
-  }, [stats, project]);
+  }, [stats.readyControls, stats.partialControls]);
 
   const showAdvisor = () => {
     // Clear existing timeout
@@ -45,10 +49,10 @@ export default function AdvisorBot({ stats, controls, project, userName }: Advis
     // Show the advisor
     setIsVisible(true);
 
-    // Auto-hide after 7 seconds
+    // Auto-hide after 5 seconds (reduced from 7)
     timeoutRef.current = setTimeout(() => {
       setIsVisible(false);
-    }, 7000);
+    }, 5000);
   };
 
   const handleClose = () => {

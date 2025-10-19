@@ -198,6 +198,22 @@ function App() {
     setShowWelcome(true);
   };
 
+  const handleLogout = () => {
+    // Clear all user data
+    localStorage.removeItem('iso_studio_user');
+    localStorage.removeItem('iso_studio_email');
+    localStorage.removeItem('iso_project');
+    localStorage.removeItem('iso_story_bot_results');
+    
+    // Reset all state
+    setUserName('');
+    setUserEmail('');
+    setProject(null);
+    setShowWelcome(true);
+    setStoryBotMode(false);
+    setViewMode('overview');
+  };
+
   const handleSaveEmail = async () => {
     if (!userEmail || !userEmail.includes('@')) {
       alert('Please enter a valid email address');
@@ -369,6 +385,9 @@ function App() {
                        <Upload size={20} />
                        <input type="file" accept=".json" onChange={importData} style={{ display: 'none' }} />
                      </label>
+                     <button className="btn-icon btn-logout" onClick={handleLogout} title="Logout">
+                       <span>Logout</span>
+                     </button>
                    </div>
                  </div>
         </div>
