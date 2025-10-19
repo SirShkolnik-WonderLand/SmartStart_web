@@ -141,15 +141,16 @@
     <script src="assets/js/script.js"></script>
     
     <script>
-        function hideLoading() {
+        // Define hideLoading function globally
+        window.hideLoading = function() {
             const overlay = document.getElementById('loading-overlay');
             if (overlay) {
                 overlay.style.animation = 'fadeOut 0.5s ease-out forwards';
             }
-        }
+        };
         
         // Fallback: hide loading after 3 seconds even if iframe doesn't load
-        setTimeout(hideLoading, 3000);
+        setTimeout(window.hideLoading, 3000);
         
         // Handle iframe errors
         window.addEventListener('error', function(e) {

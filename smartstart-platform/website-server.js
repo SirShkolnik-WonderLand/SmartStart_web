@@ -37,7 +37,7 @@ app.use(helmet({
             connectSrc: connectSources,
             objectSrc: ["'none'"],
             mediaSrc: ["'self'"],
-            frameSrc: ["'self'", "https://billing.zohocloud.ca", "https://js.zohostatic.com", "https://*.zohostatic.com"],
+            frameSrc: ["'self'", "http://localhost:3347", "https://billing.zohocloud.ca", "https://js.zohostatic.com", "https://*.zohostatic.com"],
             workerSrc: ["'self'", "blob:"],
             childSrc: ["'self'", "blob:"],
         },
