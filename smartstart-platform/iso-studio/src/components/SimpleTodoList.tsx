@@ -333,36 +333,33 @@ export default function SimpleTodoList({ framework, userName, onBack }: SimpleTo
 
   return (
     <div className="simple-todo-list">
-      <div className="todo-header">
-        <button className="back-btn" onClick={onBack}>
-          <ArrowLeft size={20} />
-          Back
-        </button>
-        <div className="todo-title">
-          <FileText size={32} />
-          <h1>{framework.toUpperCase()} TODO List</h1>
-        </div>
-      </div>
-
       <div className="todo-content">
-        <div className="todo-intro">
-          <div className="intro-icon">
-            <FileText size={48} />
+        <div className="todo-header-super">
+          <button className="back-btn-super" onClick={onBack}>
+            <ArrowLeft size={20} />
+            Back
+          </button>
+          <div className="todo-logo-super">
+            <Sparkles size={40} />
           </div>
-          <h2>Your Complete Compliance Checklist</h2>
-          <p>Download a beautiful, printable PDF with all the tasks you need to complete for {framework.toUpperCase()} certification.</p>
+          <h1 className="todo-title-super">
+            {framework.toUpperCase()} TODO List
+          </h1>
+          <p className="todo-subtitle-super">
+            Your Complete Compliance Checklist
+          </p>
         </div>
 
-        <div className="todo-form">
-          <div className="form-group">
-            <label htmlFor="email" className="form-label">
-              <Mail size={18} />
+        <div className="todo-form-super">
+          <div className="form-group-super">
+            <label htmlFor="email" className="form-label-super">
+              <Mail size={20} />
               Enter your email to download
             </label>
             <input
               type="email"
               id="email"
-              className="form-input"
+              className="form-input-super"
               placeholder="your.email@company.com"
               value={email}
               onChange={(e) => {
@@ -370,17 +367,17 @@ export default function SimpleTodoList({ framework, userName, onBack }: SimpleTo
                 setEmailError('');
               }}
             />
-            {emailError && <p className="error-message">{emailError}</p>}
+            {emailError && <p className="error-message-super">{emailError}</p>}
           </div>
 
           <button 
-            className="btn-download-pdf" 
+            className="btn-download-super" 
             onClick={handleDownloadPDF}
             disabled={isGenerating}
           >
             {isGenerating ? (
               <>
-                <div className="spinner-icon"></div>
+                <Sparkles size={20} className="spinning" />
                 Generating PDF...
               </>
             ) : (
@@ -392,16 +389,16 @@ export default function SimpleTodoList({ framework, userName, onBack }: SimpleTo
           </button>
         </div>
 
-        <div className="todo-preview">
+        <div className="todo-preview-super">
           <h3>What's Included:</h3>
-          <ul className="preview-list">
+          <ul className="preview-list-super">
             {todoItems.slice(0, 5).map((item, index) => (
               <li key={index}>
                 <Circle size={16} />
                 <span>{item}</span>
               </li>
             ))}
-            <li className="more-items">
+            <li className="more-items-super">
               <span>... and {todoItems.length - 5} more items</span>
             </li>
           </ul>
