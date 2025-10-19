@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
-import { Shield, Search, Download, Upload, BarChart3, ChevronRight, Grid3x3, List, Filter, Sparkles } from 'lucide-react';
+import { Shield, Search, Download, Upload, BarChart3, ChevronRight, Grid3x3, List, Filter, Sparkles, User } from 'lucide-react';
+import WelcomeScreen from './components/WelcomeScreen';
 import StatsDashboard from './components/StatsDashboard';
 import ControlsTable from './components/ControlsTable';
 import ControlDetails from './components/ControlDetails';
 import DomainOverview from './components/DomainOverview';
+import StoryView from './components/StoryView';
+import ViewModeToggle from './components/ViewModeToggle';
 import LoadingState from './components/LoadingState';
 import EmptyState from './components/EmptyState';
 import ProgressRing from './components/ProgressRing';
@@ -29,13 +32,22 @@ function App() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [viewMode, setViewMode] = useState<'overview' | 'domains' | 'controls'>('overview');
-  const [viewStyle, setViewStyle] = useState<'grid' | 'table'>('table');
+  const [viewStyle, setViewStyle] = useState<'story' | 'list' | 'compact'>('story');
   const [loading, setLoading] = useState(true);
+  const [userName, setUserName] = useState<string>('');
+  const [showWelcome, setShowWelcome] = useState(true);
 
   // Load frameworks
   useEffect(() => {
     loadFrameworks();
     loadProject();
+    
+    // Check if user already logged in
+    const savedUser = localStorage.getItem('iso_studio_user');
+    if (savedUser) {
+      setUserName(savedUser);
+      setShowWelcome(false);
+    }
   }, []);
 
   // Load controls when framework changes
@@ -137,10 +149,17 @@ function App() {
     saveProject(updatedProject);
   };
 
+  const handleWelcomeStart = (name: string) => {
+    setUserName(name);
+    setShowWelcome(false);
+    localStorage.setItem('iso_studio_user', name);
+  };
+
   const exportData = () => {
     if (!project) return;
     
     const dataStr = JSON.stringify({
+      userName,
       project,
       stats,
       exportedAt: new Date().toISOString()
@@ -150,7 +169,7 @@ function App() {
     const url = URL.createObjectURL(dataBlob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `iso-assessment-${new Date().toISOString().split('T')[0]}.json`;
+    link.download = `iso-assessment-${userName}-${new Date().toISOString().split('T')[0]}.json`;
     link.click();
   };
 
@@ -201,26 +220,42 @@ function App() {
     return { total: domainControls.length, ready, partial, missing, progress };
   };
 
+  if (showWelcome) {
+    return <WelcomeScreen onStart={handleWelcomeStart} />;
+  }
+
   return (
     <div className="app">
       <header className="app-header">
         <div className="header-content">
           <div className="header-left">
-            <Shield className="logo-icon" size={32} />
+            <div className="header-logo">
+              <img 
+                src="/assets/images/AliceSolutionsGroup-logo-owl-rabbit-fox.png" 
+                alt="AliceSolutionsGroup"
+                className="company-logo-small"
+              />
+            </div>
             <div>
               <h1>ISO 27001 Readiness Studio</h1>
               <p className="subtitle">Advanced Compliance Tracking & Assessment Tool</p>
             </div>
           </div>
           
-          <div className="header-actions">
-            <button className="btn-icon" onClick={exportData} title="Export Data">
-              <Download size={20} />
-            </button>
-            <label className="btn-icon" title="Import Data">
-              <Upload size={20} />
-              <input type="file" accept=".json" onChange={importData} style={{ display: 'none' }} />
-            </label>
+          <div className="header-right">
+            <div className="user-info">
+              <User size={18} />
+              <span>{userName}</span>
+            </div>
+            <div className="header-actions">
+              <button className="btn-icon" onClick={exportData} title="Export Data">
+                <Download size={20} />
+              </button>
+              <label className="btn-icon" title="Import Data">
+                <Upload size={20} />
+                <input type="file" accept=".json" onChange={importData} style={{ display: 'none' }} />
+              </label>
+            </div>
           </div>
         </div>
 
@@ -364,13 +399,26 @@ function App() {
               </div>
             </div>
 
-            <ControlsTable
-              controls={filteredControls}
-              project={project}
-              selectedControl={selectedControl}
-              onSelectControl={setSelectedControl}
-              viewStyle={viewStyle}
+            <ViewModeToggle
+              currentMode={viewStyle}
+              onModeChange={setViewStyle}
             />
+
+            {viewStyle === 'story' ? (
+              <StoryView
+                controls={filteredControls}
+                project={project}
+                onSelectControl={setSelectedControl}
+              />
+            ) : (
+              <ControlsTable
+                controls={filteredControls}
+                project={project}
+                selectedControl={selectedControl}
+                onSelectControl={setSelectedControl}
+                viewStyle={viewStyle === 'list' ? 'table' : 'grid'}
+              />
+            )}
 
             {selectedControl && (
               <ControlDetails
