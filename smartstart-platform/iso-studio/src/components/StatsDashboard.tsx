@@ -35,8 +35,8 @@ export default function StatsDashboard({ stats, controls, project, frameworks, o
       {/* Section Header */}
       <div className="controls-section-header">
         <div>
-          <h2 className="controls-section-title">Organizational Controls</h2>
-          <p className="controls-section-subtitle">{stats.totalControls} controls</p>
+          <h2 className="controls-section-title">ISO 27001:2022 Compliance Overview</h2>
+          <p className="controls-section-subtitle">Track your progress across all 93 controls</p>
         </div>
         {onNavigateToDomains && (
           <button className="btn-primary" onClick={onNavigateToDomains}>
@@ -46,57 +46,67 @@ export default function StatsDashboard({ stats, controls, project, frameworks, o
         )}
       </div>
 
-      {/* Key Metrics Cards */}
-      <div className="metrics-grid-dark">
-        <div className="metric-card-dark">
-          <div className="metric-icon-dark" style={{ background: 'rgba(59, 130, 246, 0.2)' }}>
-            <Target size={24} color="#3b82f6" />
+      {/* Modern Stats Cards with Visual Progress */}
+      <div className="stats-grid-modern">
+        <div className="stat-card-modern">
+          <div className="stat-card-header">
+            <div className="stat-icon-modern" style={{ background: 'rgba(59, 130, 246, 0.2)' }}>
+              <Target size={28} color="#3b82f6" />
+            </div>
+            <div className="stat-card-title">Total Controls</div>
           </div>
-          <div className="metric-content-dark">
-            <div className="metric-value-dark">{stats.totalControls}</div>
-            <div className="metric-label-dark">Total Controls</div>
-          </div>
-          <div className="metric-badge-dark">
-            <span>93 Required</span>
-          </div>
-        </div>
-
-        <div className="metric-card-dark">
-          <div className="metric-icon-dark" style={{ background: 'rgba(34, 197, 94, 0.2)' }}>
-            <CheckCircle size={24} color="#22c55e" />
-          </div>
-          <div className="metric-content-dark">
-            <div className="metric-value-dark">{stats.readyControls}</div>
-            <div className="metric-label-dark">Ready</div>
-          </div>
-          <div className="metric-badge-dark positive">
-            <span>{stats.readinessPercentage}%</span>
+          <div className="stat-card-value">{stats.totalControls}</div>
+          <div className="stat-card-subtitle">93 Required</div>
+          <div className="stat-card-footer">
+            <span className="stat-card-badge">ISO 27001:2022</span>
           </div>
         </div>
 
-        <div className="metric-card-dark">
-          <div className="metric-icon-dark" style={{ background: 'rgba(245, 158, 11, 0.2)' }}>
-            <AlertCircle size={24} color="#f59e0b" />
+        <div className="stat-card-modern">
+          <div className="stat-card-header">
+            <div className="stat-icon-modern" style={{ background: 'rgba(34, 197, 94, 0.2)' }}>
+              <CheckCircle size={28} color="#22c55e" />
+            </div>
+            <div className="stat-card-title">Ready</div>
           </div>
-          <div className="metric-content-dark">
-            <div className="metric-value-dark">{stats.partialControls}</div>
-            <div className="metric-label-dark">In Progress</div>
-          </div>
-          <div className="metric-badge-dark warning">
-            <span>Needs Work</span>
+          <div className="stat-card-value">{stats.readyControls}</div>
+          <div className="stat-card-subtitle">{stats.readinessPercentage}% Complete</div>
+          <div className="stat-card-progress">
+            <div className="progress-bar-modern">
+              <div className="progress-fill-modern" style={{ width: `${stats.readinessPercentage}%`, background: '#22c55e' }}></div>
+            </div>
           </div>
         </div>
 
-        <div className="metric-card-dark">
-          <div className="metric-icon-dark" style={{ background: 'rgba(239, 68, 68, 0.2)' }}>
-            <XCircle size={24} color="#ef4444" />
+        <div className="stat-card-modern">
+          <div className="stat-card-header">
+            <div className="stat-icon-modern" style={{ background: 'rgba(245, 158, 11, 0.2)' }}>
+              <AlertCircle size={28} color="#f59e0b" />
+            </div>
+            <div className="stat-card-title">In Progress</div>
           </div>
-          <div className="metric-content-dark">
-            <div className="metric-value-dark">{stats.missingControls}</div>
-            <div className="metric-label-dark">Missing</div>
+          <div className="stat-card-value">{stats.partialControls}</div>
+          <div className="stat-card-subtitle">Needs Work</div>
+          <div className="stat-card-progress">
+            <div className="progress-bar-modern">
+              <div className="progress-fill-modern" style={{ width: `${(stats.partialControls / stats.totalControls) * 100}%`, background: '#f59e0b' }}></div>
+            </div>
           </div>
-          <div className="metric-badge-dark negative">
-            <span>Action Required</span>
+        </div>
+
+        <div className="stat-card-modern">
+          <div className="stat-card-header">
+            <div className="stat-icon-modern" style={{ background: 'rgba(239, 68, 68, 0.2)' }}>
+              <XCircle size={28} color="#ef4444" />
+            </div>
+            <div className="stat-card-title">Missing</div>
+          </div>
+          <div className="stat-card-value">{stats.missingControls}</div>
+          <div className="stat-card-subtitle">Action Required</div>
+          <div className="stat-card-progress">
+            <div className="progress-bar-modern">
+              <div className="progress-fill-modern" style={{ width: `${(stats.missingControls / stats.totalControls) * 100}%`, background: '#ef4444' }}></div>
+            </div>
           </div>
         </div>
       </div>

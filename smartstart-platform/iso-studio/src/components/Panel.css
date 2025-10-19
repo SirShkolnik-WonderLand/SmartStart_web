@@ -178,6 +178,9 @@
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
 }
 
 .domain-card::before {
@@ -197,9 +200,9 @@
 }
 
 .domain-card:hover {
-  transform: translateY(-6px);
+  transform: translateY(-8px);
   border-color: var(--accent-blue);
-  box-shadow: 0 12px 32px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 16px 40px rgba(59, 130, 246, 0.4);
   background: rgba(30, 41, 59, 0.8);
 }
 
@@ -212,12 +215,12 @@
 
 .domain-code {
   font-size: 1.1rem;
-  color: var(--accent-purple);
+  color: var(--accent-blue);
   font-weight: 700;
-  background: rgba(139, 92, 246, 0.1);
+  background: rgba(59, 130, 246, 0.15);
   padding: 0.5rem 1rem;
   border-radius: 8px;
-  border: 1px solid rgba(139, 92, 246, 0.3);
+  border: 1px solid rgba(59, 130, 246, 0.3);
 }
 
 .domain-arrow {
@@ -226,21 +229,23 @@
 }
 
 .domain-card:hover .domain-arrow {
-  transform: translateX(5px);
+  transform: translateX(6px);
   color: var(--accent-blue);
 }
 
 .domain-name {
-  font-size: 1.3rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: var(--text-primary);
-  margin-bottom: 0.5rem;
+  margin: 0;
+  line-height: 1.3;
 }
 
 .domain-description {
   color: var(--text-secondary);
   line-height: 1.6;
-  margin-bottom: 1.5rem;
+  margin: 0;
+  font-size: 0.95rem;
 }
 
 .domain-stats {
@@ -355,28 +360,28 @@
   margin: 0.25rem 0 0 0;
 }
 
-/* Dark Theme Metrics Grid */
-.metrics-grid-dark {
+/* Modern Stats Grid with Visual Progress */
+.stats-grid-modern {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 1.5rem;
   margin-bottom: 2rem;
 }
 
-.metric-card-dark {
+.stat-card-modern {
   background: rgba(30, 41, 59, 0.6);
   border: 2px solid var(--border);
   border-radius: 16px;
-  padding: 1.5rem;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
+  padding: 2rem;
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
-.metric-card-dark::before {
+.stat-card-modern::before {
   content: '';
   position: absolute;
   top: 0;
@@ -388,18 +393,24 @@
   transition: opacity 0.3s ease;
 }
 
-.metric-card-dark:hover::before {
+.stat-card-modern:hover::before {
   opacity: 1;
 }
 
-.metric-card-dark:hover {
+.stat-card-modern:hover {
   border-color: var(--accent-blue);
-  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.2);
-  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(59, 130, 246, 0.3);
+  transform: translateY(-6px);
   background: rgba(30, 41, 59, 0.8);
 }
 
-.metric-icon-dark {
+.stat-card-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.stat-icon-modern {
   width: 56px;
   height: 56px;
   border-radius: 12px;
@@ -409,52 +420,62 @@
   flex-shrink: 0;
 }
 
-.metric-content-dark {
-  flex: 1;
-  min-width: 0;
+.stat-card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.metric-value-dark {
-  font-size: 2.25rem;
-  font-weight: 700;
+.stat-card-value {
+  font-size: 3rem;
+  font-weight: 900;
   color: var(--text-primary);
   line-height: 1;
-  margin-bottom: 0.25rem;
 }
 
-.metric-label-dark {
-  font-size: 0.9rem;
-  color: var(--text-secondary);
+.stat-card-subtitle {
+  font-size: 0.95rem;
+  color: var(--text-muted);
   font-weight: 500;
 }
 
-.metric-badge-dark {
-  padding: 0.5rem 0.875rem;
-  background: rgba(226, 232, 240, 0.1);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  font-size: 0.8rem;
+.stat-card-footer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.stat-card-badge {
+  padding: 0.375rem 0.875rem;
+  background: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 6px;
+  font-size: 0.75rem;
   font-weight: 600;
-  color: var(--text-secondary);
-  white-space: nowrap;
+  color: var(--accent-blue);
 }
 
-.metric-badge-dark.positive {
-  background: rgba(34, 197, 94, 0.15);
-  border-color: rgba(34, 197, 94, 0.3);
-  color: #22c55e;
+.stat-card-progress {
+  margin-top: 0.5rem;
 }
 
-.metric-badge-dark.warning {
-  background: rgba(245, 158, 11, 0.15);
-  border-color: rgba(245, 158, 11, 0.3);
-  color: #f59e0b;
+.progress-bar-modern {
+  width: 100%;
+  height: 8px;
+  background: rgba(15, 23, 42, 0.5);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
 }
 
-.metric-badge-dark.negative {
-  background: rgba(239, 68, 68, 0.15);
-  border-color: rgba(239, 68, 68, 0.3);
-  color: #ef4444;
+.progress-fill-modern {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 12px currentColor;
 }
 
 .dashboard-header p {

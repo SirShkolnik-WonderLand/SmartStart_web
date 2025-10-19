@@ -30,56 +30,64 @@ export default function DomainOverview({ framework, controls, project, onSelectD
       </div>
 
       {/* Quick Stats */}
-      <div className="metrics-grid-dark">
-        <div className="metric-card-dark">
-          <div className="metric-icon-dark" style={{ background: 'rgba(59, 130, 246, 0.2)' }}>
-            <Grid3x3 size={24} color="#3b82f6" />
+      <div className="stats-grid-modern">
+        <div className="stat-card-modern">
+          <div className="stat-card-header">
+            <div className="stat-icon-modern" style={{ background: 'rgba(59, 130, 246, 0.2)' }}>
+              <Grid3x3 size={28} color="#3b82f6" />
+            </div>
+            <div className="stat-card-title">Domains</div>
           </div>
-          <div className="metric-content-dark">
-            <div className="metric-value-dark">{framework.domains.length}</div>
-            <div className="metric-label-dark">Domains</div>
-          </div>
-          <div className="metric-badge-dark">
-            <span>4 Key Areas</span>
-          </div>
-        </div>
-
-        <div className="metric-card-dark">
-          <div className="metric-icon-dark" style={{ background: 'rgba(139, 92, 246, 0.2)' }}>
-            <CheckCircle size={24} color="#8b5cf6" />
-          </div>
-          <div className="metric-content-dark">
-            <div className="metric-value-dark">{controls.length}</div>
-            <div className="metric-label-dark">Total Controls</div>
-          </div>
-          <div className="metric-badge-dark">
-            <span>ISO 27001:2022</span>
+          <div className="stat-card-value">{framework.domains.length}</div>
+          <div className="stat-card-subtitle">4 Key Areas</div>
+          <div className="stat-card-footer">
+            <span className="stat-card-badge">Organized</span>
           </div>
         </div>
 
-        <div className="metric-card-dark">
-          <div className="metric-icon-dark" style={{ background: 'rgba(34, 197, 94, 0.2)' }}>
-            <AlertCircle size={24} color="#22c55e" />
+        <div className="stat-card-modern">
+          <div className="stat-card-header">
+            <div className="stat-icon-modern" style={{ background: 'rgba(139, 92, 246, 0.2)' }}>
+              <CheckCircle size={28} color="#8b5cf6" />
+            </div>
+            <div className="stat-card-title">Total Controls</div>
           </div>
-          <div className="metric-content-dark">
-            <div className="metric-value-dark">{controls.filter(c => project?.answers[c.id]?.status === 'ready').length}</div>
-            <div className="metric-label-dark">Ready</div>
-          </div>
-          <div className="metric-badge-dark positive">
-            <span>{Math.round((controls.filter(c => project?.answers[c.id]?.status === 'ready').length / controls.length) * 100)}%</span>
+          <div className="stat-card-value">{controls.length}</div>
+          <div className="stat-card-subtitle">ISO 27001:2022</div>
+          <div className="stat-card-footer">
+            <span className="stat-card-badge">Standard</span>
           </div>
         </div>
 
-        <div className="metric-card-dark">
-          <div className="metric-icon-dark" style={{ background: 'rgba(245, 158, 11, 0.2)' }}>
-            <XCircle size={24} color="#f59e0b" />
+        <div className="stat-card-modern">
+          <div className="stat-card-header">
+            <div className="stat-icon-modern" style={{ background: 'rgba(34, 197, 94, 0.2)' }}>
+              <AlertCircle size={28} color="#22c55e" />
+            </div>
+            <div className="stat-card-title">Ready</div>
           </div>
-          <div className="metric-content-dark">
-            <div className="metric-value-dark">{controls.filter(c => !project?.answers[c.id] || project?.answers[c.id]?.status === 'missing').length}</div>
-            <div className="metric-label-dark">Needs Attention</div>
+          <div className="stat-card-value">{controls.filter(c => project?.answers[c.id]?.status === 'ready').length}</div>
+          <div className="stat-card-subtitle">{Math.round((controls.filter(c => project?.answers[c.id]?.status === 'ready').length / controls.length) * 100)}% Complete</div>
+          <div className="stat-card-progress">
+            <div className="progress-bar-modern">
+              <div className="progress-fill-modern" style={{ width: `${(controls.filter(c => project?.answers[c.id]?.status === 'ready').length / controls.length) * 100}%`, background: '#22c55e' }}></div>
+            </div>
           </div>
-          <div className="metric-badge-dark warning">
-            <span>Action Required</span>
+        </div>
+
+        <div className="stat-card-modern">
+          <div className="stat-card-header">
+            <div className="stat-icon-modern" style={{ background: 'rgba(245, 158, 11, 0.2)' }}>
+              <XCircle size={28} color="#f59e0b" />
+            </div>
+            <div className="stat-card-title">Needs Attention</div>
+          </div>
+          <div className="stat-card-value">{controls.filter(c => !project?.answers[c.id] || project?.answers[c.id]?.status === 'missing').length}</div>
+          <div className="stat-card-subtitle">Action Required</div>
+          <div className="stat-card-progress">
+            <div className="progress-bar-modern">
+              <div className="progress-fill-modern" style={{ width: `${(controls.filter(c => !project?.answers[c.id] || project?.answers[c.id]?.status === 'missing').length / controls.length) * 100}%`, background: '#f59e0b' }}></div>
+            </div>
           </div>
         </div>
       </div>
