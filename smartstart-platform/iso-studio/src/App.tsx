@@ -79,6 +79,12 @@ function App() {
       const response = await fetch('/api/iso/frameworks');
       const data = await response.json();
       setFrameworks(data.frameworks);
+      
+      // Auto-select ISO 27001:2022 framework if available
+      const isoFramework = data.frameworks.find((f: Framework) => f.id === 'iso27001_2022');
+      if (isoFramework) {
+        setSelectedFramework(isoFramework);
+      }
     } catch (error) {
       console.error('Error loading frameworks:', error);
     } finally {
