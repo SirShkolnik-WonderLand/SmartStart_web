@@ -8,7 +8,8 @@ interface SimpleTodoListProps {
 }
 
 export default function SimpleTodoList({ framework, userName, onBack }: SimpleTodoListProps) {
-  const [email, setEmail] = useState('');
+  // Load saved email if available
+  const [email, setEmail] = useState(() => localStorage.getItem('todoListEmail') || '');
   const [emailError, setEmailError] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
 
@@ -69,7 +70,7 @@ export default function SimpleTodoList({ framework, userName, onBack }: SimpleTo
       // Generate PDF content
       const pdfContent = generatePDFContent();
       
-      // For now, download as HTML (we'll convert to PDF)
+      // Create and download HTML file (can be printed to PDF)
       const blob = new Blob([pdfContent], { type: 'text/html' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -80,15 +81,25 @@ export default function SimpleTodoList({ framework, userName, onBack }: SimpleTo
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
-      // In production, send email here
-      console.log('PDF generated for:', email);
+      // Save email to localStorage for future use
+      localStorage.setItem('todoListEmail', email);
+      localStorage.setItem('todoListUserName', userName);
+      localStorage.setItem('todoListFramework', framework);
+      localStorage.setItem('todoListGenerated', new Date().toISOString());
+      
+      console.log('✅ PDF generated for:', email);
+      console.log('✅ Data saved to localStorage');
       
       setIsGenerating(false);
-      alert('TODO List downloaded! Check your downloads folder.');
+      
+      // Show success message
+      setTimeout(() => {
+        alert(`✅ Success!\n\nTODO List downloaded for:\n${userName}\n${email}\n\nOpen the file and print to PDF for best results!`);
+      }, 100);
     } catch (error) {
-      console.error('Error generating PDF:', error);
+      console.error('❌ Error generating PDF:', error);
       setIsGenerating(false);
-      alert('Error generating PDF. Please try again.');
+      alert('❌ Error generating PDF. Please try again.');
     }
   };
 
