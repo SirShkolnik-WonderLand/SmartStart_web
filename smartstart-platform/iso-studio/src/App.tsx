@@ -402,6 +402,7 @@ function App() {
             project={project}
             frameworks={frameworks}
             onNavigateToDomains={() => setViewMode('domains')}
+            onNavigateToControls={() => setViewMode('controls')}
           />
         ) : viewMode === 'domains' ? (
           <DomainOverview

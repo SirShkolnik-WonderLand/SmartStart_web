@@ -2,6 +2,8 @@ import { Stats, Control, Project, Framework } from '../types';
 import { BarChart3, PieChart, TrendingUp, CheckCircle, AlertCircle, XCircle, Target, Shield, ChevronRight, Activity } from 'lucide-react';
 import { PieChart as RechartsPieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import './Dashboard.css';
+import AdvisorBot from './AdvisorBot';
+import SmartStats from './SmartStats';
 
 interface StatsDashboardProps {
   stats: Stats;
@@ -9,9 +11,10 @@ interface StatsDashboardProps {
   project: Project | null;
   frameworks: Framework[];
   onNavigateToDomains?: () => void;
+  onNavigateToControls?: () => void;
 }
 
-export default function StatsDashboard({ stats, controls, project, frameworks, onNavigateToDomains }: StatsDashboardProps) {
+export default function StatsDashboard({ stats, controls, project, frameworks, onNavigateToDomains, onNavigateToControls }: StatsDashboardProps) {
   // Prepare data for charts
   const statusData = [
     { name: 'Ready', value: stats.readyControls, color: '#22c55e' },
@@ -44,17 +47,32 @@ export default function StatsDashboard({ stats, controls, project, frameworks, o
             <p className="header-subtitle-modern">Track your progress across all 93 controls</p>
           </div>
         </div>
-        {onNavigateToDomains && (
-          <button className="btn-primary-modern" onClick={onNavigateToDomains}>
-            <span>View Domains</span>
-            <ChevronRight size={20} />
-          </button>
-        )}
+        <div className="header-actions-modern">
+          {onNavigateToDomains && (
+            <button className="btn-primary-modern" onClick={onNavigateToDomains}>
+              <span>View Domains</span>
+              <ChevronRight size={20} />
+            </button>
+          )}
+          {onNavigateToControls && (
+            <button className="btn-secondary-modern" onClick={onNavigateToControls}>
+              <span>View Controls</span>
+              <ChevronRight size={20} />
+            </button>
+          )}
+        </div>
       </div>
 
-      {/* Stats Cards */}
+      {/* Advisor Bot */}
+      <AdvisorBot stats={stats} controls={controls} project={project} />
+
+      {/* Stats Cards - Clickable */}
       <div className="stats-cards-modern">
-        <div className="stat-card-new">
+        <div 
+          className="stat-card-new clickable" 
+          onClick={() => onNavigateToControls?.()}
+          title="Click to view all controls"
+        >
           <div className="stat-icon-new blue">
             <Target size={32} />
           </div>
@@ -65,7 +83,11 @@ export default function StatsDashboard({ stats, controls, project, frameworks, o
           </div>
         </div>
 
-        <div className="stat-card-new">
+        <div 
+          className="stat-card-new clickable" 
+          onClick={() => onNavigateToControls?.()}
+          title="Click to view ready controls"
+        >
           <div className="stat-icon-new green">
             <CheckCircle size={32} />
           </div>
@@ -81,7 +103,11 @@ export default function StatsDashboard({ stats, controls, project, frameworks, o
           </div>
         </div>
 
-        <div className="stat-card-new">
+        <div 
+          className="stat-card-new clickable" 
+          onClick={() => onNavigateToControls?.()}
+          title="Click to view partial controls"
+        >
           <div className="stat-icon-new orange">
             <AlertCircle size={32} />
           </div>
@@ -97,7 +123,11 @@ export default function StatsDashboard({ stats, controls, project, frameworks, o
           </div>
         </div>
 
-        <div className="stat-card-new">
+        <div 
+          className="stat-card-new clickable" 
+          onClick={() => onNavigateToControls?.()}
+          title="Click to view missing controls"
+        >
           <div className="stat-icon-new red">
             <XCircle size={32} />
           </div>
@@ -114,61 +144,8 @@ export default function StatsDashboard({ stats, controls, project, frameworks, o
         </div>
       </div>
 
-      {/* Charts Section */}
-      <div className="charts-section-modern">
-        <div className="chart-card-new">
-          <div className="chart-header-new">
-            <div className="chart-icon-new">
-              <PieChart size={24} />
-            </div>
-            <h3 className="chart-title-new">Status Distribution</h3>
-          </div>
-          <div className="chart-content-new">
-            <ResponsiveContainer width="100%" height={300}>
-              <RechartsPieChart>
-                <Pie
-                  data={statusData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={100}
-                  paddingAngle={5}
-                  dataKey="value"
-                >
-                  {statusData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip />
-                <Legend />
-              </RechartsPieChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        <div className="chart-card-new">
-          <div className="chart-header-new">
-            <div className="chart-icon-new">
-              <BarChart3 size={24} />
-            </div>
-            <h3 className="chart-title-new">Domain Progress</h3>
-          </div>
-          <div className="chart-content-new">
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                <XAxis dataKey="name" stroke="var(--text-secondary)" />
-                <YAxis stroke="var(--text-secondary)" />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="ready" stackId="a" fill="#22c55e" name="Ready" />
-                <Bar dataKey="partial" stackId="a" fill="#f59e0b" name="Partial" />
-                <Bar dataKey="missing" stackId="a" fill="#ef4444" name="Missing" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-      </div>
+      {/* Smart Stats - Replaces Charts */}
+      <SmartStats stats={stats} controls={controls} project={project} />
     </div>
   );
 }
