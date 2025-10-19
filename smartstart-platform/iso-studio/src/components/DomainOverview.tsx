@@ -21,44 +21,67 @@ export default function DomainOverview({ framework, controls, project, onSelectD
 
   return (
     <div className="domain-overview">
-      {/* Hero Section */}
-      <div className="domain-hero-full">
-        <div className="hero-gradient-overlay"></div>
-        <div className="hero-content">
-          <div className="hero-badge">
-            <Grid3x3 size={32} />
-            <span>Control Domains</span>
-          </div>
-          <h1 className="hero-title">
-            Explore Your <span className="gradient-text">Security Domains</span>
-          </h1>
-          <p className="hero-description">
-            ISO 27001:2022 organizes 93 controls into 4 key domains. Each domain represents a critical aspect 
-            of your information security management system. Click on any domain to begin your detailed assessment.
-          </p>
-          <div className="hero-stats-row">
-            <div className="hero-stat">
-              <span className="hero-stat-value">{framework.domains.length}</span>
-              <span className="hero-stat-label">Domains</span>
-            </div>
-            <div className="hero-stat-divider"></div>
-            <div className="hero-stat">
-              <span className="hero-stat-value">{controls.length}</span>
-              <span className="hero-stat-label">Total Controls</span>
-            </div>
-            <div className="hero-stat-divider"></div>
-            <div className="hero-stat">
-              <span className="hero-stat-value">{Math.round((controls.filter(c => project?.answers[c.id]?.status === 'ready').length / controls.length) * 100)}%</span>
-              <span className="hero-stat-label">Ready</span>
-            </div>
-          </div>
+      {/* Section Header */}
+      <div className="controls-section-header">
+        <div>
+          <h2 className="controls-section-title">Control Domains</h2>
+          <p className="controls-section-subtitle">{framework.domains.length} domains, {controls.length} controls</p>
         </div>
       </div>
 
-      {/* Section Title */}
-      <div className="section-title-area">
-        <h2 className="section-title">Select a Domain to Begin</h2>
-        <p className="section-subtitle">Each domain covers a specific area of information security</p>
+      {/* Quick Stats */}
+      <div className="metrics-grid-dark">
+        <div className="metric-card-dark">
+          <div className="metric-icon-dark" style={{ background: 'rgba(59, 130, 246, 0.2)' }}>
+            <Grid3x3 size={24} color="#3b82f6" />
+          </div>
+          <div className="metric-content-dark">
+            <div className="metric-value-dark">{framework.domains.length}</div>
+            <div className="metric-label-dark">Domains</div>
+          </div>
+          <div className="metric-badge-dark">
+            <span>4 Key Areas</span>
+          </div>
+        </div>
+
+        <div className="metric-card-dark">
+          <div className="metric-icon-dark" style={{ background: 'rgba(139, 92, 246, 0.2)' }}>
+            <CheckCircle size={24} color="#8b5cf6" />
+          </div>
+          <div className="metric-content-dark">
+            <div className="metric-value-dark">{controls.length}</div>
+            <div className="metric-label-dark">Total Controls</div>
+          </div>
+          <div className="metric-badge-dark">
+            <span>ISO 27001:2022</span>
+          </div>
+        </div>
+
+        <div className="metric-card-dark">
+          <div className="metric-icon-dark" style={{ background: 'rgba(34, 197, 94, 0.2)' }}>
+            <AlertCircle size={24} color="#22c55e" />
+          </div>
+          <div className="metric-content-dark">
+            <div className="metric-value-dark">{controls.filter(c => project?.answers[c.id]?.status === 'ready').length}</div>
+            <div className="metric-label-dark">Ready</div>
+          </div>
+          <div className="metric-badge-dark positive">
+            <span>{Math.round((controls.filter(c => project?.answers[c.id]?.status === 'ready').length / controls.length) * 100)}%</span>
+          </div>
+        </div>
+
+        <div className="metric-card-dark">
+          <div className="metric-icon-dark" style={{ background: 'rgba(245, 158, 11, 0.2)' }}>
+            <XCircle size={24} color="#f59e0b" />
+          </div>
+          <div className="metric-content-dark">
+            <div className="metric-value-dark">{controls.filter(c => !project?.answers[c.id] || project?.answers[c.id]?.status === 'missing').length}</div>
+            <div className="metric-label-dark">Needs Attention</div>
+          </div>
+          <div className="metric-badge-dark warning">
+            <span>Action Required</span>
+          </div>
+        </div>
       </div>
 
       <div className="domains-grid">

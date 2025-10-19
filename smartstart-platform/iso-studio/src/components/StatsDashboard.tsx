@@ -32,78 +32,71 @@ export default function StatsDashboard({ stats, controls, project, frameworks, o
 
   return (
     <div className="dashboard">
-      {/* Modern Header with Quick Stats */}
-      <div className="dashboard-header-modern">
-        <div className="header-content">
-          <div className="header-left">
-            <div className="header-icon">
-              <Shield size={32} />
-            </div>
-            <div>
-              <h1 className="header-title">ISO 27001:2022 Compliance</h1>
-              <p className="header-subtitle">Information Security Management System</p>
-            </div>
-          </div>
-          {onNavigateToDomains && (
-            <button className="btn-primary-action" onClick={onNavigateToDomains}>
-              <span>Start Assessment</span>
-              <ChevronRight size={20} />
-            </button>
-          )}
+      {/* Section Header */}
+      <div className="controls-section-header">
+        <div>
+          <h2 className="controls-section-title">Organizational Controls</h2>
+          <p className="controls-section-subtitle">{stats.totalControls} controls</p>
         </div>
+        {onNavigateToDomains && (
+          <button className="btn-primary" onClick={onNavigateToDomains}>
+            <span>View Domains</span>
+            <ChevronRight size={18} />
+          </button>
+        )}
       </div>
 
       {/* Key Metrics Cards */}
-      <div className="metrics-grid-modern">
-        <div className="metric-card-modern">
-          <div className="metric-icon" style={{ background: 'rgba(59, 130, 246, 0.1)' }}>
+      <div className="metrics-grid-dark">
+        <div className="metric-card-dark">
+          <div className="metric-icon-dark" style={{ background: 'rgba(59, 130, 246, 0.2)' }}>
             <Target size={24} color="#3b82f6" />
           </div>
-          <div className="metric-content">
-            <div className="metric-value">{stats.totalControls}</div>
-            <div className="metric-label">Total Controls</div>
+          <div className="metric-content-dark">
+            <div className="metric-value-dark">{stats.totalControls}</div>
+            <div className="metric-label-dark">Total Controls</div>
           </div>
-          <div className="metric-trend">
-            <span className="trend-text">93 Required</span>
+          <div className="metric-badge-dark">
+            <span>93 Required</span>
           </div>
         </div>
 
-        <div className="metric-card-modern">
-          <div className="metric-icon" style={{ background: 'rgba(34, 197, 94, 0.1)' }}>
+        <div className="metric-card-dark">
+          <div className="metric-icon-dark" style={{ background: 'rgba(34, 197, 94, 0.2)' }}>
             <CheckCircle size={24} color="#22c55e" />
           </div>
-          <div className="metric-content">
-            <div className="metric-value">{stats.readyControls}</div>
-            <div className="metric-label">Ready</div>
+          <div className="metric-content-dark">
+            <div className="metric-value-dark">{stats.readyControls}</div>
+            <div className="metric-label-dark">Ready</div>
           </div>
-          <div className="metric-trend positive">
-            <span className="trend-text">{stats.readinessPercentage}%</span>
+          <div className="metric-badge-dark positive">
+            <span>{stats.readinessPercentage}%</span>
           </div>
         </div>
 
-        <div className="metric-card-modern">
-          <div className="metric-icon" style={{ background: 'rgba(245, 158, 11, 0.1)' }}>
+        <div className="metric-card-dark">
+          <div className="metric-icon-dark" style={{ background: 'rgba(245, 158, 11, 0.2)' }}>
             <AlertCircle size={24} color="#f59e0b" />
           </div>
-          <div className="metric-content">
-            <div className="metric-value">{stats.partialControls}</div>
-            <div className="metric-label">In Progress</div>
+          <div className="metric-content-dark">
+            <div className="metric-value-dark">{stats.partialControls}</div>
+            <div className="metric-label-dark">In Progress</div>
           </div>
-          <div className="metric-trend warning">
-            <span className="trend-text">Needs Work</span>
+          <div className="metric-badge-dark warning">
+            <span>Needs Work</span>
           </div>
         </div>
 
-        <div className="metric-card-modern">
-          <div className="metric-icon" style={{ background: 'rgba(239, 68, 68, 0.1)' }}>
+        <div className="metric-card-dark">
+          <div className="metric-icon-dark" style={{ background: 'rgba(239, 68, 68, 0.2)' }}>
             <XCircle size={24} color="#ef4444" />
           </div>
-          <div className="metric-content">
-            <div className="metric-value">{stats.missingControls}</div>
-            <div className="metric-label">Missing</div>
+          <div className="metric-content-dark">
+            <div className="metric-value-dark">{stats.missingControls}</div>
+            <div className="metric-label-dark">Missing</div>
           </div>
-          <div className="metric-trend negative">
-            <span className="trend-text">Action Required</span>
+          <div className="metric-badge-dark negative">
+            <span>Action Required</span>
           </div>
         </div>
       </div>
