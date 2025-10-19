@@ -2,10 +2,12 @@
   "frameworks": [
     {
       "id": "iso27001_2022",
+      "key": "iso27001_2022",
       "name": "ISO 27001:2022",
       "version": "2022",
       "description": "Information security management systems - Requirements",
       "controlCount": 93,
+      "controls": [],
       "domains": [
         {
           "id": "A5",
@@ -39,10 +41,12 @@
     },
     {
       "id": "cmmc_2.0",
+      "key": "cmmc_2.0",
       "name": "CMMC 2.0",
       "version": "2.0",
       "description": "Cybersecurity Maturity Model Certification",
       "controlCount": 110,
+      "controls": [],
       "domains": [
         {
           "id": "AC",
