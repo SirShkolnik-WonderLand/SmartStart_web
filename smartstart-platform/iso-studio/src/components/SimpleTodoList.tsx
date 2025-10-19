@@ -347,7 +347,7 @@ export default function SimpleTodoList({ framework, userName, onBack }: SimpleTo
       <div className="todo-content">
         <div className="todo-intro">
           <div className="intro-icon">
-            <Sparkles size={48} />
+            <FileText size={48} />
           </div>
           <h2>Your Complete Compliance Checklist</h2>
           <p>Download a beautiful, printable PDF with all the tasks you need to complete for {framework.toUpperCase()} certification.</p>
@@ -380,7 +380,7 @@ export default function SimpleTodoList({ framework, userName, onBack }: SimpleTo
           >
             {isGenerating ? (
               <>
-                <Sparkles size={20} className="spinning" />
+                <div className="spinner-icon"></div>
                 Generating PDF...
               </>
             ) : (

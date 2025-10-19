@@ -30,6 +30,7 @@
   margin-bottom: 3rem;
   position: relative;
   z-index: 1;
+  flex-wrap: wrap;
 }
 
 .back-btn {
@@ -56,16 +57,20 @@
   align-items: center;
   gap: 1rem;
   flex: 1;
+  min-width: 0;
 }
 
 .todo-title h1 {
-  font-size: 2rem;
+  font-size: clamp(1.5rem, 4vw, 2rem);
   font-weight: 900;
   background: linear-gradient(135deg, #3b82f6, #8b5cf6);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .todo-title svg {
@@ -100,7 +105,7 @@
 }
 
 .intro-icon svg {
-  animation: sparkle 2s ease-in-out infinite;
+  animation: float 3s ease-in-out infinite;
 }
 
 .todo-intro h2 {
@@ -199,8 +204,13 @@
   cursor: not-allowed;
 }
 
-.spinning {
-  animation: spin 1s linear infinite;
+.spinner-icon {
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
 }
 
 @keyframes spin {
@@ -319,26 +329,152 @@
   }
 
   .todo-header {
-    flex-direction: column;
+    flex-direction: row;
     gap: 1rem;
-    text-align: center;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+  }
+
+  .back-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .todo-title {
+    flex: 1;
+    min-width: 0;
   }
 
   .todo-title h1 {
-    font-size: 1.5rem;
+    font-size: clamp(1.2rem, 5vw, 1.5rem);
+  }
+
+  .todo-title svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .intro-icon {
+    width: 80px;
+    height: 80px;
+  }
+
+  .intro-icon svg {
+    width: 40px;
+    height: 40px;
   }
 
   .todo-intro h2 {
-    font-size: 1.5rem;
+    font-size: clamp(1.3rem, 4vw, 1.5rem);
+  }
+
+  .todo-intro p {
+    font-size: 0.95rem;
   }
 
   .todo-form {
     padding: 1.5rem;
   }
 
+  .form-label {
+    font-size: 0.95rem;
+  }
+
+  .form-input {
+    padding: 0.9rem 1rem;
+    font-size: 1rem;
+  }
+
   .btn-download-pdf {
     font-size: 1rem;
     padding: 1rem 1.5rem;
+  }
+
+  .todo-preview {
+    padding: 1.5rem;
+  }
+
+  .preview-list li {
+    font-size: 0.9rem;
+    padding: 0.6rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .simple-todo-list {
+    padding: 0.75rem;
+  }
+
+  .todo-header {
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .back-btn {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+  }
+
+  .back-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .todo-title h1 {
+    font-size: 1.2rem;
+  }
+
+  .todo-title svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .intro-icon {
+    width: 70px;
+    height: 70px;
+  }
+
+  .intro-icon svg {
+    width: 36px;
+    height: 36px;
+  }
+
+  .todo-intro {
+    margin-bottom: 2rem;
+  }
+
+  .todo-intro h2 {
+    font-size: 1.2rem;
+  }
+
+  .todo-intro p {
+    font-size: 0.9rem;
+  }
+
+  .todo-form {
+    padding: 1.25rem;
+  }
+
+  .form-input {
+    padding: 0.85rem;
+  }
+
+  .btn-download-pdf {
+    font-size: 0.95rem;
+    padding: 0.9rem 1.25rem;
+  }
+
+  .todo-preview {
+    padding: 1.25rem;
+  }
+
+  .todo-preview h3 {
+    font-size: 1.1rem;
+  }
+
+  .preview-list li {
+    font-size: 0.85rem;
+    padding: 0.5rem;
   }
 }
 
