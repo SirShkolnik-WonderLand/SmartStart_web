@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Shield, Search, Filter, Download, Upload, BarChart3, CheckCircle, AlertCircle, XCircle } from 'lucide-react';
-import FrameworkPanel from './components/FrameworkPanel';
-import ControlsPanel from './components/ControlsPanel';
-import InspectorPanel from './components/InspectorPanel';
+import { Shield, Search, Download, Upload, BarChart3, CheckCircle, AlertCircle, XCircle, ChevronRight, Grid3x3, List, Filter } from 'lucide-react';
 import StatsDashboard from './components/StatsDashboard';
+import ControlsTable from './components/ControlsTable';
+import ControlDetails from './components/ControlDetails';
+import DomainOverview from './components/DomainOverview';
 import { Framework, Control, Project, Stats } from './types';
 import './App.css';
 
@@ -12,6 +12,7 @@ function App() {
   const [controls, setControls] = useState<Control[]>([]);
   const [selectedFramework, setSelectedFramework] = useState<Framework | null>(null);
   const [selectedControl, setSelectedControl] = useState<Control | null>(null);
+  const [selectedDomain, setSelectedDomain] = useState<string | null>(null);
   const [project, setProject] = useState<Project | null>(null);
   const [stats, setStats] = useState<Stats>({
     totalControls: 0,
@@ -22,7 +23,9 @@ function App() {
     readinessPercentage: 0
   });
   const [searchTerm, setSearchTerm] = useState('');
-  const [activeTab, setActiveTab] = useState<'studio' | 'dashboard'>('studio');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [viewMode, setViewMode] = useState<'overview' | 'domains' | 'controls'>('overview');
+  const [viewStyle, setViewStyle] = useState<'grid' | 'table'>('table');
 
   // Load frameworks
   useEffect(() => {
@@ -34,6 +37,9 @@ function App() {
   useEffect(() => {
     if (selectedFramework) {
       loadControls(selectedFramework.id);
+      setViewMode('overview');
+      setSelectedDomain(null);
+      setSelectedControl(null);
     }
   }, [selectedFramework]);
 
@@ -162,13 +168,30 @@ function App() {
 
   const filteredControls = controls.filter(control => {
     const searchLower = searchTerm.toLowerCase();
-    return (
+    const matchesSearch = (
       control.title.toLowerCase().includes(searchLower) ||
       control.code.toLowerCase().includes(searchLower) ||
       control.description.toLowerCase().includes(searchLower) ||
       control.tags.some(tag => tag.toLowerCase().includes(searchLower))
     );
+    
+    const matchesStatus = statusFilter === 'all' || 
+      (statusFilter === 'ready' && project?.answers[control.id]?.status === 'ready') ||
+      (statusFilter === 'partial' && project?.answers[control.id]?.status === 'partial') ||
+      (statusFilter === 'missing' && (!project?.answers[control.id] || project?.answers[control.id]?.status === 'missing'));
+    
+    return matchesSearch && matchesStatus;
   });
+
+  const getDomainStats = (domainId: string) => {
+    const domainControls = controls.filter(c => c.domainId === domainId);
+    const ready = domainControls.filter(c => project?.answers[c.id]?.status === 'ready').length;
+    const partial = domainControls.filter(c => project?.answers[c.id]?.status === 'partial').length;
+    const missing = domainControls.filter(c => !project?.answers[c.id] || project?.answers[c.id]?.status === 'missing').length;
+    const progress = domainControls.length > 0 ? Math.round((ready / domainControls.length) * 100) : 0;
+    
+    return { total: domainControls.length, ready, partial, missing, progress };
+  };
 
   return (
     <div className="app">
@@ -193,103 +216,153 @@ function App() {
           </div>
         </div>
 
-        <div className="tabs">
+        <div className="breadcrumb">
           <button 
-            className={`tab ${activeTab === 'studio' ? 'active' : ''}`}
-            onClick={() => setActiveTab('studio')}
+            className={`breadcrumb-item ${viewMode === 'overview' ? 'active' : ''}`}
+            onClick={() => setViewMode('overview')}
           >
-            <BarChart3 size={18} />
-            Studio
+            <BarChart3 size={16} />
+            Overview
           </button>
-          <button 
-            className={`tab ${activeTab === 'dashboard' ? 'active' : ''}`}
-            onClick={() => setActiveTab('dashboard')}
-          >
-            <BarChart3 size={18} />
-            Dashboard
-          </button>
+          {selectedFramework && (
+            <>
+              <ChevronRight size={16} className="breadcrumb-separator" />
+              <button 
+                className={`breadcrumb-item ${viewMode === 'domains' ? 'active' : ''}`}
+                onClick={() => setViewMode('domains')}
+              >
+                Domains
+              </button>
+            </>
+          )}
+          {selectedDomain && (
+            <>
+              <ChevronRight size={16} className="breadcrumb-separator" />
+              <button 
+                className={`breadcrumb-item ${viewMode === 'controls' ? 'active' : ''}`}
+                onClick={() => setViewMode('controls')}
+              >
+                Controls
+              </button>
+            </>
+          )}
         </div>
       </header>
 
-      {activeTab === 'studio' && (
-        <div className="main-grid">
-          <FrameworkPanel
-            frameworks={frameworks}
-            selectedFramework={selectedFramework}
-            onSelectFramework={setSelectedFramework}
-          />
-
-          <div className="controls-section">
-            <div className="controls-header">
-              <div className="controls-title">
-                <Filter size={20} />
-                <span>Controls</span>
-                {controls.length > 0 && (
-                  <span className="count-badge">{filteredControls.length} / {controls.length}</span>
-                )}
-              </div>
-              <div className="search-container">
-                <Search className="search-icon" size={18} />
-                <input
-                  type="text"
-                  className="search-input"
-                  placeholder="Search controls..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
-            </div>
-
-            <div className="controls-grid">
-              {filteredControls.map(control => {
-                const answer = project?.answers[control.id];
-                const status = answer?.status || 'missing';
-                
-                return (
-                  <div
-                    key={control.id}
-                    className={`control-card ${selectedControl?.id === control.id ? 'selected' : ''} status-${status}`}
-                    onClick={() => setSelectedControl(control)}
-                  >
-                    <div className="control-header">
-                      <div className="control-code">{control.code}</div>
-                      <div className="status-icon">
-                        {status === 'ready' && <CheckCircle size={20} className="icon-ready" />}
-                        {status === 'partial' && <AlertCircle size={20} className="icon-partial" />}
-                        {status === 'missing' && <XCircle size={20} className="icon-missing" />}
-                      </div>
-                    </div>
-                    <div className="control-title">{control.title}</div>
-                    <div className="control-description">{control.description.substring(0, 100)}...</div>
-                    {control.tags && control.tags.length > 0 && (
-                      <div className="control-tags">
-                        {control.tags.slice(0, 3).map(tag => (
-                          <span key={tag} className="tag">{tag}</span>
-                        ))}
-                      </div>
-                    )}
+      <div className="main-content">
+        {!selectedFramework ? (
+          <div className="framework-selection">
+            <h2>Select a Framework</h2>
+            <div className="framework-cards">
+              {frameworks.map(framework => (
+                <div
+                  key={framework.id}
+                  className="framework-card-large"
+                  onClick={() => setSelectedFramework(framework)}
+                >
+                  <div className="framework-icon">
+                    <Shield size={48} />
                   </div>
-                );
-              })}
+                  <h3>{framework.name}</h3>
+                  <p>{framework.description}</p>
+                  <div className="framework-meta">
+                    <span>{framework.domains.length} Domains</span>
+                    <span>•</span>
+                    <span>{framework.controlCount} Controls</span>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
-
-          <InspectorPanel
-            control={selectedControl}
-            answer={selectedControl ? project?.answers[selectedControl.id] : null}
-            onSave={handleSaveAnswer}
+        ) : viewMode === 'overview' ? (
+          <StatsDashboard
+            stats={stats}
+            controls={controls}
+            project={project}
+            frameworks={frameworks}
+            onNavigateToDomains={() => setViewMode('domains')}
           />
-        </div>
-      )}
+        ) : viewMode === 'domains' ? (
+          <DomainOverview
+            framework={selectedFramework}
+            controls={controls}
+            project={project}
+            onSelectDomain={(domainId) => {
+              setSelectedDomain(domainId);
+              setViewMode('controls');
+            }}
+          />
+        ) : (
+          <div className="controls-view">
+            <div className="controls-header-bar">
+              <div className="controls-info">
+                <h2>
+                  {selectedFramework?.domains.find(d => d.id === selectedDomain)?.name || 'Controls'}
+                </h2>
+                <span className="controls-count">{filteredControls.length} controls</span>
+              </div>
+              <div className="controls-actions">
+                <div className="filter-group">
+                  <Filter size={16} />
+                  <select 
+                    className="filter-select"
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                  >
+                    <option value="all">All Status</option>
+                    <option value="ready">✅ Ready</option>
+                    <option value="partial">⚠️ Partial</option>
+                    <option value="missing">❌ Missing</option>
+                  </select>
+                </div>
+                <div className="search-container">
+                  <Search className="search-icon" size={18} />
+                  <input
+                    type="text"
+                    className="search-input"
+                    placeholder="Search controls..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+                <div className="view-toggle">
+                  <button 
+                    className={`view-btn ${viewStyle === 'table' ? 'active' : ''}`}
+                    onClick={() => setViewStyle('table')}
+                    title="Table View"
+                  >
+                    <List size={18} />
+                  </button>
+                  <button 
+                    className={`view-btn ${viewStyle === 'grid' ? 'active' : ''}`}
+                    onClick={() => setViewStyle('grid')}
+                    title="Grid View"
+                  >
+                    <Grid3x3 size={18} />
+                  </button>
+                </div>
+              </div>
+            </div>
 
-      {activeTab === 'dashboard' && (
-        <StatsDashboard
-          stats={stats}
-          controls={controls}
-          project={project}
-          frameworks={frameworks}
-        />
-      )}
+            <ControlsTable
+              controls={filteredControls}
+              project={project}
+              selectedControl={selectedControl}
+              onSelectControl={setSelectedControl}
+              viewStyle={viewStyle}
+            />
+
+            {selectedControl && (
+              <ControlDetails
+                control={selectedControl}
+                answer={project?.answers[selectedControl.id]}
+                onSave={handleSaveAnswer}
+                onClose={() => setSelectedControl(null)}
+              />
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

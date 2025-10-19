@@ -7,9 +7,10 @@ interface StatsDashboardProps {
   controls: Control[];
   project: Project | null;
   frameworks: Framework[];
+  onNavigateToDomains?: () => void;
 }
 
-export default function StatsDashboard({ stats, controls, project, frameworks }: StatsDashboardProps) {
+export default function StatsDashboard({ stats, controls, project, frameworks, onNavigateToDomains }: StatsDashboardProps) {
   const statusData = [
     { name: 'Ready', value: stats.readyControls, color: '#22c55e' },
     { name: 'Partial', value: stats.partialControls, color: '#f59e0b' },
@@ -32,8 +33,15 @@ export default function StatsDashboard({ stats, controls, project, frameworks }:
   return (
     <div className="dashboard">
       <div className="dashboard-header">
-        <h2>📊 Assessment Dashboard</h2>
-        <p>Comprehensive overview of your ISO 27001 readiness</p>
+        <div>
+          <h2>📊 Assessment Dashboard</h2>
+          <p>Comprehensive overview of your ISO 27001 readiness</p>
+        </div>
+        {onNavigateToDomains && (
+          <button className="btn-primary" onClick={onNavigateToDomains}>
+            View Domains →
+          </button>
+        )}
       </div>
 
       <div className="stats-grid">
