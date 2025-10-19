@@ -32,50 +32,80 @@ export default function StatsDashboard({ stats, controls, project, frameworks, o
 
   return (
     <div className="dashboard">
-      {/* Hero Section with Story */}
-      <div className="dashboard-hero-full">
-        <div className="hero-gradient-overlay"></div>
-        <div className="hero-content">
-          <div className="hero-badge">
-            <Shield size={32} />
-            <span>ISO 27001:2022 Compliance</span>
-          </div>
-          <h1 className="hero-title">
-            Welcome to Your <span className="gradient-text">Readiness Journey</span>
-          </h1>
-          <p className="hero-description">
-            You're about to embark on a comprehensive assessment of your information security management system. 
-            This dashboard provides a high-level view of your progress across all 93 controls.
-          </p>
-          <div className="hero-stats-row">
-            <div className="hero-stat">
-              <span className="hero-stat-value">{stats.totalControls}</span>
-              <span className="hero-stat-label">Total Controls</span>
+      {/* Modern Header with Quick Stats */}
+      <div className="dashboard-header-modern">
+        <div className="header-content">
+          <div className="header-left">
+            <div className="header-icon">
+              <Shield size={32} />
             </div>
-            <div className="hero-stat-divider"></div>
-            <div className="hero-stat">
-              <span className="hero-stat-value">{stats.readyControls}</span>
-              <span className="hero-stat-label">Ready</span>
-            </div>
-            <div className="hero-stat-divider"></div>
-            <div className="hero-stat">
-              <span className="hero-stat-value">{stats.progressPercentage}%</span>
-              <span className="hero-stat-label">Complete</span>
+            <div>
+              <h1 className="header-title">ISO 27001:2022 Compliance</h1>
+              <p className="header-subtitle">Information Security Management System</p>
             </div>
           </div>
           {onNavigateToDomains && (
-            <button className="btn-hero-primary" onClick={onNavigateToDomains}>
-              <span>Start Assessment Journey</span>
-              <ChevronRight size={24} />
+            <button className="btn-primary-action" onClick={onNavigateToDomains}>
+              <span>Start Assessment</span>
+              <ChevronRight size={20} />
             </button>
           )}
         </div>
       </div>
 
-      {/* Section Title */}
-      <div className="section-title-area">
-        <h2 className="section-title">Your Progress at a Glance</h2>
-        <p className="section-subtitle">Track your compliance across all control domains</p>
+      {/* Key Metrics Cards */}
+      <div className="metrics-grid-modern">
+        <div className="metric-card-modern">
+          <div className="metric-icon" style={{ background: 'rgba(59, 130, 246, 0.1)' }}>
+            <Target size={24} color="#3b82f6" />
+          </div>
+          <div className="metric-content">
+            <div className="metric-value">{stats.totalControls}</div>
+            <div className="metric-label">Total Controls</div>
+          </div>
+          <div className="metric-trend">
+            <span className="trend-text">93 Required</span>
+          </div>
+        </div>
+
+        <div className="metric-card-modern">
+          <div className="metric-icon" style={{ background: 'rgba(34, 197, 94, 0.1)' }}>
+            <CheckCircle size={24} color="#22c55e" />
+          </div>
+          <div className="metric-content">
+            <div className="metric-value">{stats.readyControls}</div>
+            <div className="metric-label">Ready</div>
+          </div>
+          <div className="metric-trend positive">
+            <span className="trend-text">{stats.readinessPercentage}%</span>
+          </div>
+        </div>
+
+        <div className="metric-card-modern">
+          <div className="metric-icon" style={{ background: 'rgba(245, 158, 11, 0.1)' }}>
+            <AlertCircle size={24} color="#f59e0b" />
+          </div>
+          <div className="metric-content">
+            <div className="metric-value">{stats.partialControls}</div>
+            <div className="metric-label">In Progress</div>
+          </div>
+          <div className="metric-trend warning">
+            <span className="trend-text">Needs Work</span>
+          </div>
+        </div>
+
+        <div className="metric-card-modern">
+          <div className="metric-icon" style={{ background: 'rgba(239, 68, 68, 0.1)' }}>
+            <XCircle size={24} color="#ef4444" />
+          </div>
+          <div className="metric-content">
+            <div className="metric-value">{stats.missingControls}</div>
+            <div className="metric-label">Missing</div>
+          </div>
+          <div className="metric-trend negative">
+            <span className="trend-text">Action Required</span>
+          </div>
+        </div>
       </div>
 
       <div className="stats-grid">
