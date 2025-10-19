@@ -1,6 +1,7 @@
 import { Stats, Control, Project, Framework } from '../types';
-import { BarChart3, PieChart, TrendingUp, CheckCircle, AlertCircle, XCircle, Target, Shield, ChevronRight } from 'lucide-react';
+import { BarChart3, PieChart, TrendingUp, CheckCircle, AlertCircle, XCircle, Target, Shield, ChevronRight, Activity } from 'lucide-react';
 import { PieChart as RechartsPieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import './Dashboard.css';
 
 interface StatsDashboardProps {
   stats: Stats;
@@ -11,211 +12,163 @@ interface StatsDashboardProps {
 }
 
 export default function StatsDashboard({ stats, controls, project, frameworks, onNavigateToDomains }: StatsDashboardProps) {
+  // Prepare data for charts
   const statusData = [
     { name: 'Ready', value: stats.readyControls, color: '#22c55e' },
     { name: 'Partial', value: stats.partialControls, color: '#f59e0b' },
     { name: 'Missing', value: stats.missingControls, color: '#ef4444' }
   ];
 
+  // Group controls by domain for bar chart
   const domainData = controls.reduce((acc, control) => {
-    const domain = control.domainId;
-    if (!acc[domain]) {
-      acc[domain] = { name: domain, ready: 0, partial: 0, missing: 0 };
+    if (!acc[control.domainId]) {
+      acc[control.domainId] = { name: control.domainId, ready: 0, partial: 0, missing: 0 };
     }
-    const answer = project?.answers[control.id];
-    const status = answer?.status || 'missing';
-    acc[domain][status]++;
+    const status = project?.answers[control.id]?.status || 'missing';
+    acc[control.domainId][status]++;
     return acc;
   }, {} as Record<string, any>);
 
   const chartData = Object.values(domainData);
 
   return (
-    <div className="dashboard">
-      {/* Section Header */}
-      <div className="controls-section-header">
-        <div>
-          <h2 className="controls-section-title">ISO 27001:2022 Compliance Overview</h2>
-          <p className="controls-section-subtitle">Track your progress across all 93 controls</p>
+    <div className="dashboard-modern">
+      {/* Header */}
+      <div className="dashboard-header-modern">
+        <div className="header-left-modern">
+          <div className="header-icon-modern">
+            <Shield size={40} />
+          </div>
+          <div>
+            <h1 className="header-title-modern">ISO 27001:2022 Compliance</h1>
+            <p className="header-subtitle-modern">Track your progress across all 93 controls</p>
+          </div>
         </div>
         {onNavigateToDomains && (
-          <button className="btn-primary" onClick={onNavigateToDomains}>
+          <button className="btn-primary-modern" onClick={onNavigateToDomains}>
             <span>View Domains</span>
-            <ChevronRight size={18} />
+            <ChevronRight size={20} />
           </button>
         )}
       </div>
 
-      {/* Modern Stats Cards with Visual Progress */}
-      <div className="stats-grid-modern">
-        <div className="stat-card-modern">
-          <div className="stat-card-header">
-            <div className="stat-icon-modern" style={{ background: 'rgba(59, 130, 246, 0.2)' }}>
-              <Target size={28} color="#3b82f6" />
-            </div>
-            <div className="stat-card-title">Total Controls</div>
+      {/* Stats Cards */}
+      <div className="stats-cards-modern">
+        <div className="stat-card-new">
+          <div className="stat-icon-new blue">
+            <Target size={32} />
           </div>
-          <div className="stat-card-value">{stats.totalControls}</div>
-          <div className="stat-card-subtitle">93 Required</div>
-          <div className="stat-card-footer">
-            <span className="stat-card-badge">ISO 27001:2022</span>
+          <div className="stat-info">
+            <div className="stat-value-new">{stats.totalControls}</div>
+            <div className="stat-label-new">Total Controls</div>
+            <div className="stat-badge-new">93 Required</div>
           </div>
         </div>
 
-        <div className="stat-card-modern">
-          <div className="stat-card-header">
-            <div className="stat-icon-modern" style={{ background: 'rgba(34, 197, 94, 0.2)' }}>
-              <CheckCircle size={28} color="#22c55e" />
-            </div>
-            <div className="stat-card-title">Ready</div>
+        <div className="stat-card-new">
+          <div className="stat-icon-new green">
+            <CheckCircle size={32} />
           </div>
-          <div className="stat-card-value">{stats.readyControls}</div>
-          <div className="stat-card-subtitle">{stats.readinessPercentage}% Complete</div>
-          <div className="stat-card-progress">
-            <div className="progress-bar-modern">
-              <div className="progress-fill-modern" style={{ width: `${stats.readinessPercentage}%`, background: '#22c55e' }}></div>
+          <div className="stat-info">
+            <div className="stat-value-new">{stats.readyControls}</div>
+            <div className="stat-label-new">Ready</div>
+            <div className="stat-progress-new">
+              <div className="progress-bar-new">
+                <div className="progress-fill-new" style={{ width: `${stats.readinessPercentage}%`, background: '#22c55e' }}></div>
+              </div>
+              <span className="progress-text-new">{stats.readinessPercentage}%</span>
             </div>
           </div>
         </div>
 
-        <div className="stat-card-modern">
-          <div className="stat-card-header">
-            <div className="stat-icon-modern" style={{ background: 'rgba(245, 158, 11, 0.2)' }}>
-              <AlertCircle size={28} color="#f59e0b" />
-            </div>
-            <div className="stat-card-title">In Progress</div>
+        <div className="stat-card-new">
+          <div className="stat-icon-new orange">
+            <AlertCircle size={32} />
           </div>
-          <div className="stat-card-value">{stats.partialControls}</div>
-          <div className="stat-card-subtitle">Needs Work</div>
-          <div className="stat-card-progress">
-            <div className="progress-bar-modern">
-              <div className="progress-fill-modern" style={{ width: `${(stats.partialControls / stats.totalControls) * 100}%`, background: '#f59e0b' }}></div>
+          <div className="stat-info">
+            <div className="stat-value-new">{stats.partialControls}</div>
+            <div className="stat-label-new">In Progress</div>
+            <div className="stat-progress-new">
+              <div className="progress-bar-new">
+                <div className="progress-fill-new" style={{ width: `${(stats.partialControls / stats.totalControls) * 100}%`, background: '#f59e0b' }}></div>
+              </div>
+              <span className="progress-text-new">Needs Work</span>
             </div>
           </div>
         </div>
 
-        <div className="stat-card-modern">
-          <div className="stat-card-header">
-            <div className="stat-icon-modern" style={{ background: 'rgba(239, 68, 68, 0.2)' }}>
-              <XCircle size={28} color="#ef4444" />
-            </div>
-            <div className="stat-card-title">Missing</div>
+        <div className="stat-card-new">
+          <div className="stat-icon-new red">
+            <XCircle size={32} />
           </div>
-          <div className="stat-card-value">{stats.missingControls}</div>
-          <div className="stat-card-subtitle">Action Required</div>
-          <div className="stat-card-progress">
-            <div className="progress-bar-modern">
-              <div className="progress-fill-modern" style={{ width: `${(stats.missingControls / stats.totalControls) * 100}%`, background: '#ef4444' }}></div>
+          <div className="stat-info">
+            <div className="stat-value-new">{stats.missingControls}</div>
+            <div className="stat-label-new">Missing</div>
+            <div className="stat-progress-new">
+              <div className="progress-bar-new">
+                <div className="progress-fill-new" style={{ width: `${(stats.missingControls / stats.totalControls) * 100}%`, background: '#ef4444' }}></div>
+              </div>
+              <span className="progress-text-new">Action Required</span>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="stats-grid">
-        <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(59, 130, 246, 0.2)' }}>
-            <Target size={24} color="#3b82f6" />
+      {/* Charts Section */}
+      <div className="charts-section-modern">
+        <div className="chart-card-new">
+          <div className="chart-header-new">
+            <div className="chart-icon-new">
+              <PieChart size={24} />
+            </div>
+            <h3 className="chart-title-new">Status Distribution</h3>
           </div>
-          <div className="stat-content">
-            <div className="stat-value">{stats.readinessPercentage}%</div>
-            <div className="stat-label">Readiness</div>
+          <div className="chart-content-new">
+            <ResponsiveContainer width="100%" height={300}>
+              <RechartsPieChart>
+                <Pie
+                  data={statusData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={100}
+                  paddingAngle={5}
+                  dataKey="value"
+                >
+                  {statusData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip />
+                <Legend />
+              </RechartsPieChart>
+            </ResponsiveContainer>
           </div>
         </div>
 
-        <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(34, 197, 94, 0.2)' }}>
-            <CheckCircle size={24} color="#22c55e" />
+        <div className="chart-card-new">
+          <div className="chart-header-new">
+            <div className="chart-icon-new">
+              <BarChart3 size={24} />
+            </div>
+            <h3 className="chart-title-new">Domain Progress</h3>
           </div>
-          <div className="stat-content">
-            <div className="stat-value">{stats.readyControls}</div>
-            <div className="stat-label">Ready</div>
+          <div className="chart-content-new">
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={chartData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                <XAxis dataKey="name" stroke="var(--text-secondary)" />
+                <YAxis stroke="var(--text-secondary)" />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="ready" stackId="a" fill="#22c55e" name="Ready" />
+                <Bar dataKey="partial" stackId="a" fill="#f59e0b" name="Partial" />
+                <Bar dataKey="missing" stackId="a" fill="#ef4444" name="Missing" />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
-        </div>
-
-        <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(251, 191, 36, 0.2)' }}>
-            <AlertCircle size={24} color="#fbbf24" />
-          </div>
-          <div className="stat-content">
-            <div className="stat-value">{stats.partialControls}</div>
-            <div className="stat-label">Partial</div>
-          </div>
-        </div>
-
-        <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(239, 68, 68, 0.2)' }}>
-            <XCircle size={24} color="#ef4444" />
-          </div>
-          <div className="stat-content">
-            <div className="stat-value">{stats.missingControls}</div>
-            <div className="stat-label">Missing</div>
-          </div>
-        </div>
-      </div>
-
-      <div className="charts-grid">
-        <div className="chart-card">
-          <h3>
-            <PieChart size={20} />
-            Status Distribution
-          </h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <RechartsPieChart>
-              <Pie
-                data={statusData}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                outerRadius={100}
-                fill="#8884d8"
-                dataKey="value"
-              >
-                {statusData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Pie>
-              <Tooltip />
-            </RechartsPieChart>
-          </ResponsiveContainer>
-        </div>
-
-        <div className="chart-card">
-          <h3>
-            <BarChart3 size={20} />
-            Domain Progress
-          </h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(59, 130, 246, 0.2)" />
-              <XAxis dataKey="name" stroke="#94a3b8" />
-              <YAxis stroke="#94a3b8" />
-              <Tooltip contentStyle={{ background: '#1e293b', border: '1px solid #3b82f6', borderRadius: '8px' }} />
-              <Legend />
-              <Bar dataKey="ready" stackId="a" fill="#22c55e" name="Ready" />
-              <Bar dataKey="partial" stackId="a" fill="#f59e0b" name="Partial" />
-              <Bar dataKey="missing" stackId="a" fill="#ef4444" name="Missing" />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
-
-      <div className="progress-card">
-        <h3>
-          <TrendingUp size={20} />
-          Overall Progress
-        </h3>
-        <div className="progress-bar-container">
-          <div className="progress-bar">
-            <div 
-              className="progress-fill" 
-              style={{ width: `${stats.progressPercentage}%` }}
-            ></div>
-          </div>
-          <div className="progress-text">{stats.progressPercentage}% Complete</div>
         </div>
       </div>
     </div>
   );
 }
-

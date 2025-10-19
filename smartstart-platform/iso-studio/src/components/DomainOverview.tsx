@@ -1,5 +1,6 @@
 import { Framework, Control, Project } from '../types';
 import { ChevronRight, CheckCircle, AlertCircle, XCircle, Grid3x3 } from 'lucide-react';
+import './Dashboard.css';
 
 interface DomainOverviewProps {
   framework: Framework;
@@ -20,129 +21,118 @@ export default function DomainOverview({ framework, controls, project, onSelectD
   };
 
   return (
-    <div className="domain-overview">
-      {/* Section Header */}
-      <div className="controls-section-header">
-        <div>
-          <h2 className="controls-section-title">Control Domains</h2>
-          <p className="controls-section-subtitle">{framework.domains.length} domains, {controls.length} controls</p>
-        </div>
-      </div>
-
-      {/* Quick Stats */}
-      <div className="stats-grid-modern">
-        <div className="stat-card-modern">
-          <div className="stat-card-header">
-            <div className="stat-icon-modern" style={{ background: 'rgba(59, 130, 246, 0.2)' }}>
-              <Grid3x3 size={28} color="#3b82f6" />
-            </div>
-            <div className="stat-card-title">Domains</div>
+    <div className="domain-overview-modern">
+      {/* Header */}
+      <div className="dashboard-header-modern">
+        <div className="header-left-modern">
+          <div className="header-icon-modern">
+            <Grid3x3 size={40} />
           </div>
-          <div className="stat-card-value">{framework.domains.length}</div>
-          <div className="stat-card-subtitle">4 Key Areas</div>
-          <div className="stat-card-footer">
-            <span className="stat-card-badge">Organized</span>
-          </div>
-        </div>
-
-        <div className="stat-card-modern">
-          <div className="stat-card-header">
-            <div className="stat-icon-modern" style={{ background: 'rgba(139, 92, 246, 0.2)' }}>
-              <CheckCircle size={28} color="#8b5cf6" />
-            </div>
-            <div className="stat-card-title">Total Controls</div>
-          </div>
-          <div className="stat-card-value">{controls.length}</div>
-          <div className="stat-card-subtitle">ISO 27001:2022</div>
-          <div className="stat-card-footer">
-            <span className="stat-card-badge">Standard</span>
-          </div>
-        </div>
-
-        <div className="stat-card-modern">
-          <div className="stat-card-header">
-            <div className="stat-icon-modern" style={{ background: 'rgba(34, 197, 94, 0.2)' }}>
-              <AlertCircle size={28} color="#22c55e" />
-            </div>
-            <div className="stat-card-title">Ready</div>
-          </div>
-          <div className="stat-card-value">{controls.filter(c => project?.answers[c.id]?.status === 'ready').length}</div>
-          <div className="stat-card-subtitle">{Math.round((controls.filter(c => project?.answers[c.id]?.status === 'ready').length / controls.length) * 100)}% Complete</div>
-          <div className="stat-card-progress">
-            <div className="progress-bar-modern">
-              <div className="progress-fill-modern" style={{ width: `${(controls.filter(c => project?.answers[c.id]?.status === 'ready').length / controls.length) * 100}%`, background: '#22c55e' }}></div>
-            </div>
-          </div>
-        </div>
-
-        <div className="stat-card-modern">
-          <div className="stat-card-header">
-            <div className="stat-icon-modern" style={{ background: 'rgba(245, 158, 11, 0.2)' }}>
-              <XCircle size={28} color="#f59e0b" />
-            </div>
-            <div className="stat-card-title">Needs Attention</div>
-          </div>
-          <div className="stat-card-value">{controls.filter(c => !project?.answers[c.id] || project?.answers[c.id]?.status === 'missing').length}</div>
-          <div className="stat-card-subtitle">Action Required</div>
-          <div className="stat-card-progress">
-            <div className="progress-bar-modern">
-              <div className="progress-fill-modern" style={{ width: `${(controls.filter(c => !project?.answers[c.id] || project?.answers[c.id]?.status === 'missing').length / controls.length) * 100}%`, background: '#f59e0b' }}></div>
-            </div>
+          <div>
+            <h1 className="header-title-modern">Control Domains</h1>
+            <p className="header-subtitle-modern">{framework.domains.length} domains, {controls.length} controls</p>
           </div>
         </div>
       </div>
 
-      <div className="domains-grid">
-        {framework.domains.map(domain => {
+      {/* Stats Cards */}
+      <div className="stats-cards-modern">
+        <div className="stat-card-new">
+          <div className="stat-icon-new blue">
+            <Grid3x3 size={32} />
+          </div>
+          <div className="stat-info">
+            <div className="stat-value-new">{framework.domains.length}</div>
+            <div className="stat-label-new">Domains</div>
+            <div className="stat-badge-new">4 Key Areas</div>
+          </div>
+        </div>
+
+        <div className="stat-card-new">
+          <div className="stat-icon-new purple">
+            <CheckCircle size={32} />
+          </div>
+          <div className="stat-info">
+            <div className="stat-value-new">{controls.length}</div>
+            <div className="stat-label-new">Total Controls</div>
+            <div className="stat-badge-new">ISO 27001:2022</div>
+          </div>
+        </div>
+
+        <div className="stat-card-new">
+          <div className="stat-icon-new green">
+            <AlertCircle size={32} />
+          </div>
+          <div className="stat-info">
+            <div className="stat-value-new">{controls.filter(c => project?.answers[c.id]?.status === 'ready').length}</div>
+            <div className="stat-label-new">Ready</div>
+            <div className="stat-progress-new">
+              <div className="progress-bar-new">
+                <div className="progress-fill-new" style={{ width: `${(controls.filter(c => project?.answers[c.id]?.status === 'ready').length / controls.length) * 100}%`, background: '#22c55e' }}></div>
+              </div>
+              <span className="progress-text-new">{Math.round((controls.filter(c => project?.answers[c.id]?.status === 'ready').length / controls.length) * 100)}%</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="stat-card-new">
+          <div className="stat-icon-new orange">
+            <XCircle size={32} />
+          </div>
+          <div className="stat-info">
+            <div className="stat-value-new">{controls.filter(c => !project?.answers[c.id] || project?.answers[c.id]?.status === 'missing').length}</div>
+            <div className="stat-label-new">Needs Attention</div>
+            <div className="stat-progress-new">
+              <div className="progress-bar-new">
+                <div className="progress-fill-new" style={{ width: `${(controls.filter(c => !project?.answers[c.id] || project?.answers[c.id]?.status === 'missing').length / controls.length) * 100}%`, background: '#f59e0b' }}></div>
+              </div>
+              <span className="progress-text-new">Action Required</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Domain Cards */}
+      <div className="domains-grid-modern">
+        {framework.domains.map((domain, index) => {
           const stats = getDomainStats(domain.id);
           
           return (
             <div
               key={domain.id}
-              className="domain-card"
+              className="domain-card-new"
               onClick={() => onSelectDomain(domain.id)}
             >
-              <div className="domain-header">
-                <div className="domain-code">{domain.code}</div>
-                <ChevronRight size={20} className="domain-arrow" />
+              <div className="domain-card-header-new">
+                <div className="domain-code-new">{domain.code}</div>
+                <ChevronRight size={24} className="domain-arrow-new" />
               </div>
               
-              <h3 className="domain-name">{domain.name}</h3>
-              <p className="domain-description">{domain.description}</p>
+              <h3 className="domain-name-new">{domain.name}</h3>
+              <p className="domain-description-new">{domain.description}</p>
               
-              <div className="domain-stats">
-                <div className="stat-item">
-                  <span className="stat-value">{stats.total}</span>
-                  <span className="stat-label">Controls</span>
+              <div className="domain-progress-section-new">
+                <div className="domain-progress-bar-new">
+                  <div className="domain-progress-fill-new" style={{ width: `${stats.progress}%` }}></div>
                 </div>
-                <div className="stat-divider"></div>
-                <div className="stat-item">
-                  <span className="stat-value">{stats.progress}%</span>
-                  <span className="stat-label">Ready</span>
-                </div>
+                <div className="domain-progress-text-new">{stats.progress}% Complete</div>
               </div>
 
-              <div className="domain-progress">
-                <div className="progress-bar">
-                  <div 
-                    className="progress-fill" 
-                    style={{ width: `${stats.progress}%` }}
-                  ></div>
+              <div className="domain-status-grid-new">
+                <div className="domain-status-item-new">
+                  <CheckCircle size={16} color="#22c55e" />
+                  <span className="domain-status-value-new">{stats.ready}</span>
+                  <span className="domain-status-label-new">Ready</span>
                 </div>
-              </div>
-
-              <div className="domain-status-badges">
-                <div className="status-badge ready">
-                  <CheckCircle size={14} />
-                  <span>{stats.ready}</span>
+                <div className="domain-status-item-new">
+                  <AlertCircle size={16} color="#f59e0b" />
+                  <span className="domain-status-value-new">{stats.partial}</span>
+                  <span className="domain-status-label-new">Partial</span>
                 </div>
-                <div className="status-badge partial">
-                  <AlertCircle size={14} />
-                  <span>{stats.partial}</span>
-                </div>
-                <div className="status-badge missing">
-                  <XCircle size={14} />
-                  <span>{stats.missing}</span>
+                <div className="domain-status-item-new">
+                  <XCircle size={16} color="#ef4444" />
+                  <span className="domain-status-value-new">{stats.missing}</span>
+                  <span className="domain-status-label-new">Missing</span>
                 </div>
               </div>
             </div>
@@ -152,4 +142,3 @@ export default function DomainOverview({ framework, controls, project, onSelectD
     </div>
   );
 }
-
