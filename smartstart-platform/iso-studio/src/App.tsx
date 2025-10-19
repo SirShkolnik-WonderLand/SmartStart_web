@@ -11,6 +11,7 @@ import LoadingState from './components/LoadingState';
 import EmptyState from './components/EmptyState';
 import ProgressRing from './components/ProgressRing';
 import StatusBadge from './components/StatusBadge';
+import StoryBotMode from './components/StoryBotMode';
 import { Framework, Control, Project, Stats } from './types';
 import './App.css';
 
@@ -38,6 +39,8 @@ function App() {
   const [userEmail, setUserEmail] = useState<string>('');
   const [showWelcome, setShowWelcome] = useState(true);
   const [showEmailModal, setShowEmailModal] = useState(false);
+  const [storyBotMode, setStoryBotMode] = useState(false);
+  const [storyBotFramework, setStoryBotFramework] = useState<'iso27001' | 'cmmc'>('iso27001');
 
   // Load frameworks
   useEffect(() => {
@@ -167,6 +170,34 @@ function App() {
     localStorage.setItem('iso_studio_user', name);
   };
 
+  const handleStartStoryBot = (name: string, framework: 'iso27001' | 'cmmc') => {
+    setUserName(name);
+    setStoryBotFramework(framework);
+    setStoryBotMode(true);
+    setShowWelcome(false);
+    localStorage.setItem('iso_studio_user', name);
+  };
+
+  const handleStoryBotComplete = (results: any) => {
+    // Save story bot results
+    const storyBotData = {
+      userName,
+      framework: storyBotFramework,
+      results,
+      timestamp: new Date().toISOString()
+    };
+    localStorage.setItem('iso_story_bot_results', JSON.stringify(storyBotData));
+    
+    // Exit story bot mode and go to dashboard
+    setStoryBotMode(false);
+    setViewMode('overview');
+  };
+
+  const handleStoryBotBack = () => {
+    setStoryBotMode(false);
+    setShowWelcome(true);
+  };
+
   const handleSaveEmail = async () => {
     if (!userEmail || !userEmail.includes('@')) {
       alert('Please enter a valid email address');
@@ -290,7 +321,18 @@ function App() {
   };
 
   if (showWelcome) {
-    return <WelcomeScreen onStart={handleWelcomeStart} />;
+    return <WelcomeScreen onStart={handleWelcomeStart} onStartStoryBot={handleStartStoryBot} />;
+  }
+
+  if (storyBotMode) {
+    return (
+      <StoryBotMode
+        framework={storyBotFramework}
+        userName={userName}
+        onComplete={handleStoryBotComplete}
+        onBack={handleStoryBotBack}
+      />
+    );
   }
 
   return (

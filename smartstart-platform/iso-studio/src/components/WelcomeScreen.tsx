@@ -1,13 +1,15 @@
 import { useState } from 'react';
-import { Shield, Sparkles, ArrowRight } from 'lucide-react';
+import { Shield, Sparkles, ArrowRight, Bot, Target } from 'lucide-react';
 
 interface WelcomeScreenProps {
   onStart: (userName: string) => void;
+  onStartStoryBot: (userName: string, framework: 'iso27001' | 'cmmc') => void;
 }
 
-export default function WelcomeScreen({ onStart }: WelcomeScreenProps) {
+export default function WelcomeScreen({ onStart, onStartStoryBot }: WelcomeScreenProps) {
   const [userName, setUserName] = useState('');
   const [error, setError] = useState('');
+  const [showFrameworkSelect, setShowFrameworkSelect] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -16,6 +18,18 @@ export default function WelcomeScreen({ onStart }: WelcomeScreenProps) {
       return;
     }
     onStart(userName.trim());
+  };
+
+  const handleStoryBotClick = () => {
+    if (!userName.trim()) {
+      setError('Please enter your name first');
+      return;
+    }
+    setShowFrameworkSelect(true);
+  };
+
+  const handleFrameworkSelect = (framework: 'iso27001' | 'cmmc') => {
+    onStartStoryBot(userName.trim(), framework);
   };
 
   return (
@@ -71,20 +85,69 @@ export default function WelcomeScreen({ onStart }: WelcomeScreenProps) {
           </button>
         </form>
 
-        <div className="welcome-features">
-          <div className="feature-item">
-            <Sparkles size={20} />
-            <span>93 ISO 27001:2022 Controls</span>
+        {!showFrameworkSelect ? (
+          <>
+            <div className="welcome-divider">
+              <span>OR</span>
+            </div>
+
+            <button 
+              className="btn-story-bot"
+              onClick={handleStoryBotClick}
+              disabled={!userName.trim()}
+            >
+              <Bot size={24} />
+              <div>
+                <span className="story-bot-title">Interactive Story Bot Mode</span>
+                <span className="story-bot-subtitle">Guided assessment with AI advisor</span>
+              </div>
+              <ArrowRight size={20} />
+            </button>
+
+            <div className="welcome-features">
+              <div className="feature-item">
+                <Sparkles size={20} />
+                <span>93 ISO 27001:2022 Controls</span>
+              </div>
+              <div className="feature-item">
+                <Sparkles size={20} />
+                <span>Real-time Progress Tracking</span>
+              </div>
+              <div className="feature-item">
+                <Sparkles size={20} />
+                <span>Export & Share Reports</span>
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="framework-selection-modal">
+            <h3 className="framework-selection-title">Choose Your Framework</h3>
+            <div className="framework-cards">
+              <button 
+                className="framework-card"
+                onClick={() => handleFrameworkSelect('iso27001')}
+              >
+                <Shield size={48} />
+                <div className="framework-card-content">
+                  <h4>ISO 27001:2022</h4>
+                  <p>Information Security Management</p>
+                  <span className="framework-badge">93 Controls</span>
+                </div>
+              </button>
+              <button 
+                className="framework-card"
+                onClick={() => handleFrameworkSelect('cmmc')}
+              >
+                <Target size={48} />
+                <div className="framework-card-content">
+                  <h4>CMMC 2.0</h4>
+                  <p>Cybersecurity Maturity Model</p>
+                  <span className="framework-badge">110 Controls</span>
+                </div>
+              </button>
+            </div>
           </div>
-          <div className="feature-item">
-            <Sparkles size={20} />
-            <span>Real-time Progress Tracking</span>
-          </div>
-          <div className="feature-item">
-            <Sparkles size={20} />
-            <span>Export & Share Reports</span>
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );
