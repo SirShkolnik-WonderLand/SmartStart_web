@@ -1,9 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Shield, Search, Download, Upload, BarChart3, CheckCircle, AlertCircle, XCircle, ChevronRight, Grid3x3, List, Filter } from 'lucide-react';
+import { Shield, Search, Download, Upload, BarChart3, ChevronRight, Grid3x3, List, Filter, Sparkles } from 'lucide-react';
 import StatsDashboard from './components/StatsDashboard';
 import ControlsTable from './components/ControlsTable';
 import ControlDetails from './components/ControlDetails';
 import DomainOverview from './components/DomainOverview';
+import LoadingState from './components/LoadingState';
+import EmptyState from './components/EmptyState';
+import ProgressRing from './components/ProgressRing';
+import StatusBadge from './components/StatusBadge';
 import { Framework, Control, Project, Stats } from './types';
 import './App.css';
 
@@ -26,6 +30,7 @@ function App() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [viewMode, setViewMode] = useState<'overview' | 'domains' | 'controls'>('overview');
   const [viewStyle, setViewStyle] = useState<'grid' | 'table'>('table');
+  const [loading, setLoading] = useState(true);
 
   // Load frameworks
   useEffect(() => {
@@ -52,11 +57,14 @@ function App() {
 
   const loadFrameworks = async () => {
     try {
+      setLoading(true);
       const response = await fetch('/api/iso/frameworks');
       const data = await response.json();
       setFrameworks(data.frameworks);
     } catch (error) {
       console.error('Error loading frameworks:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -250,9 +258,17 @@ function App() {
       </header>
 
       <div className="main-content">
-        {!selectedFramework ? (
+        {loading ? (
+          <LoadingState message="Loading frameworks..." />
+        ) : !selectedFramework ? (
           <div className="framework-selection">
-            <h2>Select a Framework</h2>
+            <div className="framework-selection-header">
+              <div className="sparkle-icon">
+                <Sparkles size={32} />
+              </div>
+              <h2>Select a Framework</h2>
+              <p>Choose a compliance framework to begin your assessment journey</p>
+            </div>
             <div className="framework-cards">
               {frameworks.map(framework => (
                 <div
@@ -260,6 +276,7 @@ function App() {
                   className="framework-card-large"
                   onClick={() => setSelectedFramework(framework)}
                 >
+                  <div className="framework-card-glow"></div>
                   <div className="framework-icon">
                     <Shield size={48} />
                   </div>
@@ -269,6 +286,9 @@ function App() {
                     <span>{framework.domains.length} Domains</span>
                     <span>•</span>
                     <span>{framework.controlCount} Controls</span>
+                  </div>
+                  <div className="framework-card-arrow">
+                    <ChevronRight size={24} />
                   </div>
                 </div>
               ))}
