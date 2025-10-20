@@ -9,36 +9,38 @@ interface HeroProps {
 }
 
 const headlinePhrases = [
-  "Help people and businesses grow differently",
-  "Automate smarter, secure harder, scale faster",
-  "Building the future of ethical innovation",
-  "Where security meets creativity",
-  "Empower founders, protect their vision",
+  "Building together, growing differently",
+  "Where ideas become reality",
+  "Community that empowers builders",
+  "Helping you build what matters",
+  "Together we grow stronger",
 ];
 
 const subtitlePhrases = [
-  "We are a venture-studio and cybersecurity collective building the future of automation, privacy, and human-centric design.",
-  "Turn your ideas into secure, scalable products with our proven frameworks and expert guidance.",
-  "From concept to compliance—we handle security so you can focus on growth.",
-  "Combining creative technology, ethical security, and venture expertise for lasting impact.",
-  "Automation, innovation, and trust. That's the AliceSolutions difference.",
+  "WonderLand is where ideas are born. SmartStart is where those ideas become real.",
+  "Join a community of builders, creators, and innovators who support each other.",
+  "From concept to execution — we provide the tools, mentorship, and security you need.",
+  "A place where entrepreneurs help entrepreneurs. Where builders support builders.",
+  "Real growth happens when people come together to build something meaningful.",
 ];
 
 export default function Hero({ onWorkWithUs, onExplore }: HeroProps) {
   const [isLoaded, setIsLoaded] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
+
   const { displayedText: animatedHeadline } = useTypewriter({
     texts: headlinePhrases,
-    typingSpeed: 30,
-    deletingSpeed: 20,
-    delayBetweenTexts: 3500,
+    typingSpeed: 50,
+    deletingSpeed: 30,
+    delayBetweenTexts: 4000,
     loop: true,
   });
 
   const { displayedText: animatedSubtitle } = useTypewriter({
     texts: subtitlePhrases,
-    typingSpeed: 25,
-    deletingSpeed: 15,
-    delayBetweenTexts: 3500,
+    typingSpeed: 40,
+    deletingSpeed: 25,
+    delayBetweenTexts: 4000,
     loop: true,
   });
 
@@ -54,37 +56,30 @@ export default function Hero({ onWorkWithUs, onExplore }: HeroProps) {
       {/* Content */}
       <div className="relative z-10 flex h-screen flex-col items-center justify-center px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col items-center gap-8 text-center">
-          {/* Main Headline */}
+          {/* Main Headline with Typewriter */}
           <div
-            className={`space-y-4 transition-all duration-700 ${
+            className={`space-y-6 transition-all duration-700 ${
               isLoaded ? "opacity-100" : "opacity-0 translate-y-4"
             }`}
           >
-            <h1 className="hero-text animate-fade-in text-foreground">
-              Help people and businesses{" "}
+            <h1 className="hero-text animate-fade-in text-foreground min-h-[120px] md:min-h-[140px] flex items-center justify-center">
               <span className="relative inline-block">
-                <span className="relative z-10">grow differently</span>
+                <span className="relative z-10">{animatedHeadline}</span>
                 <span
                   className="absolute bottom-0 left-0 h-1 w-full bg-gradient-to-r from-primary to-primary/50 animate-fade-in"
                   style={{ animationDelay: "0.3s" }}
                 />
+                <span className="inline-block w-[3px] h-[1.2em] bg-primary ml-1 animate-pulse" />
               </span>
             </h1>
 
-            {/* Subheading */}
+            {/* Subheading with Typewriter */}
             <p
-              className="mx-auto max-w-2xl text-lg md:text-xl text-muted-foreground animate-fade-in"
+              className="mx-auto max-w-2xl text-lg md:text-xl text-muted-foreground animate-fade-in min-h-[80px] flex items-center justify-center"
               style={{ animationDelay: "0.2s" }}
             >
-              WonderLand is the playground. SmartStart is the lab.
-            </p>
-            
-            {/* Value Proposition */}
-            <p
-              className="mx-auto max-w-2xl text-base md:text-lg text-muted-foreground/80 animate-fade-in"
-              style={{ animationDelay: "0.3s" }}
-            >
-              Join <strong className="text-primary">WonderLand</strong> for events and networking, or upgrade to <strong className="text-primary">SmartStart</strong> ($98.80/month) for enterprise tools, mentorship, and security.
+              {animatedSubtitle}
+              <span className="inline-block w-[3px] h-[1.2em] bg-primary ml-1 animate-pulse" />
             </p>
           </div>
 
