@@ -6,38 +6,38 @@ export default function ValueProposition() {
   const benefits = [
     {
       icon: DollarSign,
-      title: "Save $X per month via automation",
-      description: "Reduce manual work and operational costs with pre-built automation templates and workflows",
+      title: "Automation to reduce costs",
+      description: "Pre-built automation templates and workflows to reduce manual work",
       color: "from-green-500 to-emerald-500"
     },
     {
       icon: Shield,
-      title: "Protect your business with ISO-grade security",
-      description: "Enterprise-level security and compliance without the enterprise price tag",
+      title: "Enterprise-grade security",
+      description: "ISO-certified security and compliance without the enterprise price",
       color: "from-blue-500 to-cyan-500"
     },
     {
       icon: Zap,
-      title: "Launch your startup with minimal infrastructure cost",
-      description: "Access Zoho suite, Acronis backup, and tools that would cost $500+/month individually",
+      title: "Access to $500+/month tools",
+      description: "Zoho suite, Acronis backup, and enterprise tools for $98.80/month",
       color: "from-purple-500 to-pink-500"
     },
     {
       icon: TrendingUp,
-      title: "Scale faster with proven frameworks",
-      description: "Follow structured frameworks for funding, ISO compliance, and automation",
+      title: "Proven frameworks",
+      description: "Structured approaches for funding, ISO compliance, and automation",
       color: "from-orange-500 to-red-500"
     },
     {
       icon: Users,
-      title: "Get expert mentorship and guidance",
-      description: "Direct access to Udi Shkolnik (CISSP, CISM, ISO 27001 Lead Auditor) and industry peers",
+      title: "Expert mentorship",
+      description: "Direct access to Udi Shkolnik (CISSP, CISM, ISO 27001 Lead Auditor) and peers",
       color: "from-teal-500 to-cyan-500"
     },
     {
       icon: Lock,
-      title: "GDPR + PIPEDA aligned security",
-      description: "Private, secure data handling with compliance frameworks built-in",
+      title: "Privacy-first data handling",
+      description: "GDPR and PIPEDA compliant security built-in",
       color: "from-indigo-500 to-purple-500"
     }
   ];
@@ -58,14 +58,14 @@ export default function ValueProposition() {
           </div>
           
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6">
-            <span className="block text-foreground">What You'll Gain</span>
+            <span className="block text-foreground">What You Get</span>
             <span className="block bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
-              From SmartStart Membership
+              With SmartStart
             </span>
           </h2>
           
           <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto">
-            For freelancers, small businesses, and startups — here's how SmartStart helps you save money, make money, and grow faster.
+            For freelancers, small businesses, and startups — tools, mentorship, and security to help you grow.
           </p>
         </motion.div>
 
@@ -106,13 +106,13 @@ export default function ValueProposition() {
           transition={{ duration: 0.6, delay: 0.7 }}
           className="text-center mt-12"
         >
-          <Card className="border-primary/20 bg-primary/5 backdrop-blur-sm inline-block hover:shadow-glow-teal dark:hover:shadow-glow-cyan transition-all duration-300">
-            <CardContent className="p-6">
-              <p className="text-primary font-semibold">
-                <strong>Real Value:</strong> Access to tools that would cost $500+/month individually, plus mentorship, security, and compliance frameworks — all for $98.80/month.
-              </p>
-            </CardContent>
-          </Card>
+            <Card className="border-primary/20 bg-primary/5 backdrop-blur-sm inline-block hover:shadow-glow-teal dark:hover:shadow-glow-cyan transition-all duration-300">
+              <CardContent className="p-6">
+                <p className="text-primary font-semibold">
+                  Tools that would cost $500+/month individually, plus mentorship and security — all for $98.80/month.
+                </p>
+              </CardContent>
+            </Card>
         </motion.div>
       </div>
     </section>

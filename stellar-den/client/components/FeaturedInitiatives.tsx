@@ -24,11 +24,11 @@ export default function FeaturedInitiatives() {
     {
       id: "wonderland",
       title: "WonderLand",
-      tagline: "The Free Community",
-      description: "Join WonderLand - our open, public community and events hub. Connect with entrepreneurs, attend free events, workshops, and talks. Discover new tools, ideas, and opportunities.",
+      tagline: "The Community",
+      description: "Join WonderLand - our open community and events hub. Connect with entrepreneurs, attend events, workshops, and talks. Discover new tools, ideas, and opportunities.",
       icon: Users,
-      price: "Free to Join",
-      features: ["Free events, workshops, and talks", "Network with entrepreneurs and mentors", "Discover tools and opportunities", "Explore paths to SmartStart"],
+      price: "Free",
+      features: ["Events, workshops, and talks", "Network with entrepreneurs and mentors", "Discover tools and opportunities", "Explore paths to SmartStart"],
       cta: "Join WonderLand",
       href: "/community",
       gradient: "from-pink-500/20 to-rose-500/20",
@@ -64,7 +64,7 @@ export default function FeaturedInitiatives() {
           </h2>
           
           <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto">
-            WonderLand is the free community where ideas are born. SmartStart is the paid platform where those ideas become real — with enterprise tools, mentorship, and security.
+            WonderLand is where ideas are born. SmartStart is where those ideas become real — with enterprise tools, mentorship, and security.
           </p>
         </motion.div>
 
@@ -115,7 +115,7 @@ export default function FeaturedInitiatives() {
                       </div>
                       {initiative.id === "wonderland" && (
                         <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-500/10 text-green-400 border border-green-500/20">
-                          Free Forever
+                          Always Free
                         </span>
                       )}
                     </div>

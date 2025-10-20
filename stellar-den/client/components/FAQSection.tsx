@@ -9,35 +9,35 @@ export default function FAQSection() {
   const faqs = [
     {
       question: "What's included in the SmartStart membership?",
-      answer: "Your $98.80/month membership includes: Access to Zoho enterprise suite (CRM, Projects, Books, Mail, Cliq), Acronis security & backup, mentorship from Udi Shkolnik and industry peers, structured frameworks for funding and ISO compliance, private secure data handling (GDPR + PIPEDA aligned), and community access."
+      answer: "Your $98.80/month membership includes: Zoho enterprise suite (CRM, Projects, Books, Mail, Cliq), Acronis security & backup, mentorship from Udi Shkolnik and peers, frameworks for funding and ISO compliance, and secure data handling (GDPR + PIPEDA aligned)."
     },
     {
       question: "Who is SmartStart for?",
-      answer: "SmartStart is designed for freelancers, small business owners, startups, and entrepreneurs who want enterprise-grade tools, mentorship, and security without the enterprise price tag. If you're building or scaling a business and need automation, compliance, and expert guidance, SmartStart is for you."
+      answer: "Freelancers, small business owners, startups, and entrepreneurs who want enterprise tools, mentorship, and security without the enterprise price. If you're building or scaling a business and need automation, compliance, and guidance, SmartStart is for you."
     },
     {
       question: "How is WonderLand different from SmartStart?",
-      answer: "WonderLand is our free, open community where you can attend events, network, and explore ideas. SmartStart is the paid platform ($98.80/month) where you get access to enterprise tools, mentorship, and security. Think of WonderLand as the playground where ideas are born, and SmartStart as the lab where those ideas become real."
+      answer: "WonderLand is our community where you can attend events, network, and explore ideas. SmartStart ($98.80/month) gives you access to enterprise tools, mentorship, and security. WonderLand is the playground where ideas are born. SmartStart is the lab where those ideas become real."
     },
     {
       question: "What's the billing and cancellation policy?",
-      answer: "SmartStart is a monthly subscription at $98.80 CAD/month + tax. You can cancel anytime with no long-term commitment. Billing is handled securely through Zoho Subscriptions. You'll be charged monthly on the same date you first subscribed."
+      answer: "SmartStart is $98.80 CAD/month + tax. You can cancel anytime with no long-term commitment. Billing is handled through Zoho Subscriptions. You'll be charged monthly on the same date you first subscribed."
     },
     {
       question: "Do I need to commit long-term?",
-      answer: "No. SmartStart is a month-to-month subscription with no long-term commitment. You can cancel anytime. We believe in earning your trust every month, not locking you in."
+      answer: "No. SmartStart is month-to-month with no long-term commitment. You can cancel anytime."
     },
     {
       question: "Can I try SmartStart before committing?",
-      answer: "Yes! You can join WonderLand (our free community) first to explore events, network, and see if our ecosystem is a good fit. When you're ready to access the enterprise tools and mentorship, you can upgrade to SmartStart."
+      answer: "Yes. You can join WonderLand first to explore events, network, and see if our ecosystem is a good fit. When you're ready for enterprise tools and mentorship, you can upgrade to SmartStart."
     },
     {
       question: "What tools do I get access to?",
-      answer: "You get access to the full Zoho suite (CRM, Projects, Books, Mail, Cliq, Vault), Acronis Cyber Backup for security and data protection, and the SmartStart Hub platform. These tools would cost $500+/month if purchased individually."
+      answer: "The full Zoho suite (CRM, Projects, Books, Mail, Cliq, Vault), Acronis Cyber Backup for security and data protection, and the SmartStart Hub platform. These tools would cost $500+/month if purchased individually."
     },
     {
       question: "Is my data secure?",
-      answer: "Absolutely. We use enterprise-grade security with Acronis backup, GDPR + PIPEDA aligned data handling, and security-first baselines. Your data is private and secure. We do not claim certifications on your behalf — we implement guardrails and documented procedures."
+      answer: "Yes. We use enterprise-grade security with Acronis backup, GDPR + PIPEDA aligned data handling, and security-first baselines. Your data is private and secure. We implement guardrails and documented procedures."
     }
   ];
 

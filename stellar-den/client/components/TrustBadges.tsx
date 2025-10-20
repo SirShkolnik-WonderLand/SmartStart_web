@@ -6,7 +6,7 @@ export default function TrustBadges() {
     {
       icon: Shield,
       title: "ISO 27001 Lead Auditor",
-      description: "Certified by leading international standards",
+      description: "Certified by international standards",
       color: "from-blue-500 to-cyan-500"
     },
     {
@@ -17,14 +17,14 @@ export default function TrustBadges() {
     },
     {
       icon: Lock,
-      title: "GDPR + PIPEDA Compliant",
+      title: "GDPR & PIPEDA Compliant",
       description: "Privacy-first data handling",
       color: "from-green-500 to-emerald-500"
     },
     {
       icon: CheckCircle2,
       title: "Trusted by 100+ Businesses",
-      description: "Proven track record of success",
+      description: "Proven track record",
       color: "from-orange-500 to-red-500"
     }
   ];
@@ -143,7 +143,7 @@ export default function TrustBadges() {
           className="text-center mt-12"
         >
           <p className="text-muted-foreground italic max-w-2xl mx-auto">
-            "We don't just talk about security and compliance — we live it. Every tool, every framework, every process is designed with security and privacy at its core."
+            "We don't just talk about security and compliance — we live it. Every tool, framework, and process is designed with security and privacy at its core."
           </p>
           <p className="text-sm text-muted-foreground mt-2">
             — Udi Shkolnik, CISSP, CISM, ISO 27001 Lead Auditor
