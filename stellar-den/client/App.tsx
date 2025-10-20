@@ -12,7 +12,12 @@ import About from "./pages/About";
 import Services from "./pages/Services";
 import Contact from "./pages/Contact";
 import SmartStartHub from "./pages/SmartStartHub";
+import SmartStartArchetypes from "./pages/SmartStartArchetypes";
 import Community from "./pages/Community";
+import Builder from "./pages/community/Builder";
+import Connector from "./pages/community/Connector";
+import Architect from "./pages/community/Architect";
+import Dreamer from "./pages/community/Dreamer";
 import Resources from "./pages/Resources";
 import PrivacyPolicy from "./pages/legal/PrivacyPolicy";
 import TermsOfService from "./pages/legal/TermsOfService";
@@ -34,7 +39,12 @@ const App = () => (
           <Route path="/services" element={<Services />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/smartstart-hub" element={<SmartStartHub />} />
+          <Route path="/smartstart/archetypes" element={<SmartStartArchetypes />} />
           <Route path="/community" element={<Community />} />
+          <Route path="/community/builder" element={<Builder />} />
+          <Route path="/community/connector" element={<Connector />} />
+          <Route path="/community/architect" element={<Architect />} />
+          <Route path="/community/dreamer" element={<Dreamer />} />
           <Route path="/resources" element={<Resources />} />
           <Route path="/iso-studio" element={<ISOStudio />} />
           {/* Legal Pages */}
