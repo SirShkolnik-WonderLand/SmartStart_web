@@ -1,13 +1,13 @@
 services:
-  # Main AliceSolutionsGroup Website (Node.js + Vite)
+  # Main Website Service (Node.js + Vite)
   - type: web
     name: alicesolutionsgroup-website
     env: node
     plan: starter
     region: oregon
     branch: main
-    buildCommand: cd stellar-den && pnpm install && pnpm build
-    startCommand: cd stellar-den && pnpm start
+    buildCommand: pnpm install && pnpm build
+    startCommand: pnpm start
     envVars:
       - key: NODE_ENV
         value: production
@@ -17,3 +17,4 @@ services:
         value: https://alicesolutionsgroup.com
     healthCheckPath: /
     autoDeploy: true
+
