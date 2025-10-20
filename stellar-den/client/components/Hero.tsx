@@ -76,8 +76,15 @@ export default function Hero({ onWorkWithUs, onExplore }: HeroProps) {
               className="mx-auto max-w-2xl text-lg md:text-xl text-muted-foreground animate-fade-in"
               style={{ animationDelay: "0.2s" }}
             >
-              We are a venture-studio and cybersecurity collective building the
-              future of automation, privacy, and human-centric design.
+              WonderLand is the playground. SmartStart is the lab.
+            </p>
+            
+            {/* Value Proposition */}
+            <p
+              className="mx-auto max-w-2xl text-base md:text-lg text-muted-foreground/80 animate-fade-in"
+              style={{ animationDelay: "0.3s" }}
+            >
+              Join <strong className="text-primary">WonderLand</strong> for free community events, or upgrade to <strong className="text-primary">SmartStart</strong> ($98.80/month) for enterprise tools, mentorship, and security.
             </p>
           </div>
 

@@ -22,17 +22,17 @@ export default function FeaturedInitiatives() {
       borderGradient: "from-blue-500/50 to-cyan-500/50"
     },
     {
-      id: "community",
-      title: "Community Programs",
-      tagline: "Events, Mentorship & Networking",
-      description: "Connect with like-minded entrepreneurs, attend exclusive events, and access mentorship programs. Free to join, open to all Ontario startups and businesses.",
+      id: "wonderland",
+      title: "WonderLand",
+      tagline: "The Free Community",
+      description: "Join WonderLand - our open, public community and events hub. Connect with entrepreneurs, attend free events, workshops, and talks. Discover new tools, ideas, and opportunities.",
       icon: Users,
       price: "Free to Join",
-      features: ["Beer + Security Meetups", "Launch & Learn Workshops", "Automation Clinics", "Founder Roundtables"],
-      cta: "Join Community",
+      features: ["Free events, workshops, and talks", "Network with entrepreneurs and mentors", "Discover tools and opportunities", "Explore paths to SmartStart"],
+      cta: "Join WonderLand",
       href: "/community",
-      gradient: "from-teal-500/20 to-green-500/20",
-      borderGradient: "from-teal-500/50 to-green-500/50"
+      gradient: "from-pink-500/20 to-rose-500/20",
+      borderGradient: "from-pink-500/50 to-rose-500/50"
     }
   ];
 
@@ -64,7 +64,7 @@ export default function FeaturedInitiatives() {
           </h2>
           
           <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto">
-            Two powerful ways to accelerate your business growth: SmartStart Hub for enterprise tools and venture building, and Community Programs for networking and mentorship.
+            WonderLand is the free community where ideas are born. SmartStart is the paid platform where those ideas become real — with enterprise tools, mentorship, and security.
           </p>
         </motion.div>
 
@@ -113,7 +113,7 @@ export default function FeaturedInitiatives() {
                       <div className="text-3xl font-bold text-foreground">
                         {initiative.price}
                       </div>
-                      {initiative.id === "community" && (
+                      {initiative.id === "wonderland" && (
                         <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-500/10 text-green-400 border border-green-500/20">
                           Free Forever
                         </span>

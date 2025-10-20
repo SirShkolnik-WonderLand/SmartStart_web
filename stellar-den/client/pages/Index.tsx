@@ -2,9 +2,12 @@ import { useState } from "react";
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import FeaturedInitiatives from "@/components/FeaturedInitiatives";
+import ValueProposition from "@/components/ValueProposition";
 import EcosystemGrid from "@/components/EcosystemGrid";
 import UpcomingEvents from "@/components/UpcomingEvents";
 import Testimonials from "@/components/Testimonials";
+import TrustBadges from "@/components/TrustBadges";
+import FAQSection from "@/components/FAQSection";
 import PhilosophySection from "@/components/PhilosophySection";
 import PartnersSection from "@/components/PartnersSection";
 import VisionSection from "@/components/VisionSection";
@@ -36,6 +39,9 @@ export default function Index() {
       {/* Featured Initiatives */}
       <FeaturedInitiatives />
 
+      {/* Value Proposition */}
+      <ValueProposition />
+
       {/* Ecosystem Grid */}
       <section id="ecosystem">
         <EcosystemGrid onDiscoverClick={() => setShowContactModal(true)} />
@@ -46,6 +52,12 @@ export default function Index() {
 
       {/* Testimonials */}
       <Testimonials />
+
+      {/* Trust Badges */}
+      <TrustBadges />
+
+      {/* FAQ Section */}
+      <FAQSection />
 
       {/* Philosophy Section */}
       <PhilosophySection />
