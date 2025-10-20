@@ -1,0 +1,48 @@
+services:
+  # Main Website Service (Node.js)
+  - type: web
+    name: smartstart-website
+    env: node
+    plan: starter
+    region: oregon
+    branch: main
+    buildCommand: |
+      cd smartstart-platform && 
+      npm ci --production --cache .npm-cache --prefer-offline
+    startCommand: cd smartstart-platform && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3346
+      - key: WEBSITE_PORT
+        value: 3346
+      - key: PRODUCTION_DOMAIN
+        value: https://alicesolutionsgroup.com
+    healthCheckPath: /
+    autoDeploy: true
+
+  # Quiestioneer App Service (Python/FastAPI)
+  - type: web
+    name: quiestioneer-app
+    env: docker
+    dockerfilePath: ./Dockerfile.quiestioneer
+    plan: starter
+    region: oregon
+    branch: main
+    buildCommand: echo "Using Docker build"
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 8000
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        value: sqlite:///./smb_health_check.db
+      - key: MAX_ASSESSMENTS_PER_IP
+        value: 10
+      - key: RATE_LIMIT_WINDOW
+        value: 3600
+    healthCheckPath: /health
+    autoDeploy: true

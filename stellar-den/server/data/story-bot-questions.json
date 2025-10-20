@@ -1,0 +1,145 @@
+{
+  "questions": [
+    {
+      "id": "q1",
+      "category": "Leadership & Governance",
+      "question": "Do you have a documented information security policy approved by senior management?",
+      "guidance": "A formal security policy demonstrates leadership commitment and sets the foundation for your security program.",
+      "score": 0
+    },
+    {
+      "id": "q2",
+      "category": "Leadership & Governance",
+      "question": "Have you assigned clear information security roles and responsibilities?",
+      "guidance": "Everyone needs to know their security responsibilities. Clear roles prevent gaps and ensure accountability.",
+      "score": 0
+    },
+    {
+      "id": "q3",
+      "category": "Leadership & Governance",
+      "question": "Do you have a formal process for identifying and managing information security risks?",
+      "guidance": "Risk management is the cornerstone of security. You need to identify, assess, and treat risks systematically.",
+      "score": 0
+    },
+    {
+      "id": "q4",
+      "category": "Leadership & Governance",
+      "question": "Do you conduct regular security awareness training for all employees?",
+      "guidance": "Your people are your first line of defense. Regular training keeps security top of mind.",
+      "score": 0
+    },
+    {
+      "id": "q5",
+      "category": "Access Control",
+      "question": "Do you have a formal process for granting and revoking user access?",
+      "guidance": "Access control prevents unauthorized access. You need documented procedures for the entire user lifecycle.",
+      "score": 0
+    },
+    {
+      "id": "q6",
+      "category": "Access Control",
+      "question": "Do you enforce strong password requirements and multi-factor authentication for sensitive systems?",
+      "guidance": "Strong authentication is essential. Passwords alone aren't enough for critical systems.",
+      "score": 0
+    },
+    {
+      "id": "q7",
+      "category": "Access Control",
+      "question": "Do you regularly review and remove unnecessary user access rights?",
+      "guidance": "Access creep is a real problem. Regular reviews ensure people only have access to what they need.",
+      "score": 0
+    },
+    {
+      "id": "q8",
+      "category": "Access Control",
+      "question": "Do you segregate duties to prevent conflicts of interest?",
+      "guidance": "The same person shouldn't design, implement, and audit security controls. Separation prevents fraud and errors.",
+      "score": 0
+    },
+    {
+      "id": "q9",
+      "category": "Asset Management",
+      "question": "Do you maintain an inventory of all information assets?",
+      "guidance": "You can't protect what you don't know you have. An asset inventory is the foundation of security.",
+      "score": 0
+    },
+    {
+      "id": "q10",
+      "category": "Asset Management",
+      "question": "Have you assigned owners to all information assets?",
+      "guidance": "Every asset needs an owner who's responsible for its security. This drives accountability.",
+      "score": 0
+    },
+    {
+      "id": "q11",
+      "category": "Asset Management",
+      "question": "Do you classify information based on sensitivity and business impact?",
+      "guidance": "Not all data is created equal. Classification helps you prioritize protection efforts.",
+      "score": 0
+    },
+    {
+      "id": "q12",
+      "category": "Asset Management",
+      "question": "Do you have acceptable use policies for information and IT assets?",
+      "guidance": "Clear policies set boundaries for how company resources can be used.",
+      "score": 0
+    },
+    {
+      "id": "q13",
+      "category": "Operations & Maintenance",
+      "question": "Do you have documented operational procedures for information security?",
+      "guidance": "Consistent procedures reduce errors and ensure security is maintained in daily operations.",
+      "score": 0
+    },
+    {
+      "id": "q14",
+      "category": "Operations & Maintenance",
+      "question": "Do you have a formal change management process?",
+      "guidance": "Uncontrolled changes are a major cause of security incidents. You need a formal process.",
+      "score": 0
+    },
+    {
+      "id": "q15",
+      "category": "Operations & Maintenance",
+      "question": "Do you regularly backup critical information and test restoration procedures?",
+      "guidance": "Backups are your safety net. But they're useless if you can't restore from them.",
+      "score": 0
+    },
+    {
+      "id": "q16",
+      "category": "Operations & Maintenance",
+      "question": "Do you monitor and log security events?",
+      "guidance": "You can't defend against threats you can't see. Logging and monitoring are essential for detection.",
+      "score": 0
+    },
+    {
+      "id": "q17",
+      "category": "Incident Management",
+      "question": "Do you have a documented incident response plan?",
+      "guidance": "When an incident happens, you need a plan. Preparation is key to effective response.",
+      "score": 0
+    },
+    {
+      "id": "q18",
+      "category": "Incident Management",
+      "question": "Have you tested your incident response procedures?",
+      "guidance": "A plan that hasn't been tested is just a wish. Regular testing ensures you're ready.",
+      "score": 0
+    },
+    {
+      "id": "q19",
+      "category": "Business Continuity",
+      "question": "Do you have a business continuity plan that includes information security?",
+      "guidance": "Disasters happen. Your security controls need to continue operating even during disruptions.",
+      "score": 0
+    },
+    {
+      "id": "q20",
+      "category": "Business Continuity",
+      "question": "Have you tested your business continuity plan?",
+      "guidance": "Like incident response, continuity plans need regular testing to ensure they work when needed.",
+      "score": 0
+    }
+  ]
+}
+
