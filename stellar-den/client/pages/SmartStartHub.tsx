@@ -38,7 +38,10 @@ import {
   Smartphone,
   Laptop,
   Monitor,
-  Activity
+  Activity,
+  Search,
+  Building2,
+  FileText
 } from "lucide-react";
 
 export default function SmartStartHub() {
@@ -77,27 +80,29 @@ export default function SmartStartHub() {
 
   const ecosystemLayers = [
     {
-      title: "SmartStart Platform",
-      subtitle: "For-Profit Membership",
-      icon: Briefcase,
-      color: "from-blue-500 to-cyan-500",
+      title: "WonderLand",
+      subtitle: "The Free Community",
+      icon: Heart,
+      color: "from-pink-500 to-rose-500",
+      description: "Open, public community and events hub",
       features: [
-        "$98.80 CAD/month + tax sustains shared infrastructure & ops",
-        "Enterprise tools (Zoho suite) + security & backup (Acronis)",
-        "Venture building track with structured incubation",
-        "Clear equity terms (typically 5–25% for incubated ventures)"
+        "Free events, workshops, and talks",
+        "Network with entrepreneurs, developers, and mentors",
+        "Discover new tools, ideas, and opportunities",
+        "Explore paths toward building or joining SmartStart projects"
       ]
     },
     {
-      title: "SmartStart Community",
-      subtitle: "Non-Profit Programs",
-      icon: Heart,
-      color: "from-pink-500 to-rose-500",
+      title: "SmartStart",
+      subtitle: "The Paid Platform",
+      icon: Briefcase,
+      color: "from-blue-500 to-cyan-500",
+      description: "$98.80/month private workspace for execution",
       features: [
-        "Free events — Beer + Security, Launch & Learn",
-        "Pro-bono cybersecurity reviews (capacity-based)",
-        "Mentorship — connects experts with entrepreneurs",
-        "Measured impact across Ontario"
+        "Access to SmartStart Hub platform (Zoho suite, Acronis backup)",
+        "Business, tech, and cybersecurity mentorship",
+        "Structured frameworks for funding, ISO compliance, and automation",
+        "Private, secure data handling (GDPR + PIPEDA aligned)"
       ]
     }
   ];
@@ -174,36 +179,19 @@ export default function SmartStartHub() {
 
   const pricingOptions = [
     {
-      name: "Discovery",
-      price: "$1",
-      period: "one-time",
-      description: "Try SmartStart for 1 week",
-      features: [
-        "Full platform access for 7 days",
-        "Attend one community event",
-        "Access to collaboration tools",
-        "Meet the community"
-      ],
-      cta: "Try Discovery — $1",
-      popular: false,
-      icon: Sparkles
-    },
-    {
-      name: "Full Program",
+      name: "SmartStart Community",
       price: "$98.80",
       period: "month",
-      description: "Full SmartStart membership",
+      description: "Full membership with enterprise tools and community access",
       features: [
-        "All community events & mentorship",
-        "Enterprise tools (Zoho suite)",
-        "Security & backup (Acronis)",
-        "Venture building track access",
-        "Second Brain Platform",
-        "Ongoing support"
+        "Community access & events",
+        "Zoho enterprise suite",
+        "Acronis security & backup",
+        "Mentorship & support"
       ],
       cta: "Join SmartStart",
       popular: true,
-      icon: Rocket
+      billingUrl: "https://billing.zohosecure.ca/subscribe/80acd4f75fc11ade8382abc9ca5c205ef35c7564ff13c9670befed3afeaa53b9/Plan010"
     }
   ];
 
@@ -260,7 +248,7 @@ export default function SmartStartHub() {
               transition={{ delay: 0.3, duration: 0.6 }}
               className="text-xl sm:text-2xl text-muted-foreground max-w-3xl mx-auto mb-8"
             >
-              Community First. Collaboration Over Competition. Real Growth.
+              WonderLand is the playground. SmartStart is the lab.
             </motion.p>
 
             <motion.p 
@@ -269,7 +257,7 @@ export default function SmartStartHub() {
               transition={{ delay: 0.4, duration: 0.6 }}
               className="text-lg text-muted-foreground max-w-3xl mx-auto mb-4"
             >
-              SmartStart combines a <strong className="text-primary">sustainable membership platform</strong> with <strong className="text-primary">community programs</strong> that support Ontario entrepreneurs, students, and small businesses through mentorship, training, and shared resources.
+              <strong className="text-primary">WonderLand</strong> is the free community where ideas are born and connections happen. <strong className="text-primary">SmartStart</strong> is the $98.80/month execution platform where those ideas become real — with enterprise tools, mentorship, and security.
             </motion.p>
 
             <motion.p 
@@ -278,33 +266,23 @@ export default function SmartStartHub() {
               transition={{ delay: 0.5, duration: 0.6 }}
               className="text-sm text-muted-foreground italic mb-8"
             >
-              ⚡ Runs on proven enterprise tools today (Zoho + Acronis). Our own application suite is in development.
+              ⚡ WonderLand connects the minds. SmartStart empowers the builders. Together, they form a living ecosystem that helps people and companies grow differently.
             </motion.p>
 
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6, duration: 0.6 }}
-              className="flex flex-col sm:flex-row gap-4 justify-center"
+              className="flex justify-center"
             >
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Button
                   size="lg"
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-glow-teal dark:shadow-glow-cyan w-full sm:w-auto"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-glow-teal dark:shadow-glow-cyan"
+                  onClick={() => window.open('https://billing.zohosecure.ca/subscribe/80acd4f75fc11ade8382abc9ca5c205ef35c7564ff13c9670befed3afeaa53b9/Plan010', '_blank')}
                 >
-                  <Rocket className="mr-2 w-5 h-5" />
                   Join SmartStart — $98.80/month
                   <ArrowRight className="ml-2 w-5 h-5" />
-                </Button>
-              </motion.div>
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="border-primary text-primary hover:bg-primary/10 w-full sm:w-auto"
-                >
-                  <Sparkles className="mr-2 w-5 h-5" />
-                  Try Discovery — $1
                 </Button>
               </motion.div>
             </motion.div>
@@ -430,8 +408,11 @@ export default function SmartStartHub() {
             className="text-center mb-12"
           >
             <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-foreground">
-              Two-Layer Ecosystem
+              WonderLand & SmartStart
             </h2>
+            <p className="text-lg text-muted-foreground mb-8">
+              Two layers, one vision — community-powered growth
+            </p>
           </motion.div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -466,6 +447,9 @@ export default function SmartStartHub() {
                           </p>
                         </div>
                       </div>
+                      <p className="text-muted-foreground mb-4 italic">
+                        {layer.description}
+                      </p>
                       <ul className="space-y-2">
                         {layer.features.map((feature, idx) => (
                           <motion.li 
@@ -495,9 +479,13 @@ export default function SmartStartHub() {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="text-center mt-8"
           >
-            <p className="text-muted-foreground italic">
-              🔄 Membership revenue partially funds community programs to ensure sustainability and measurable social impact.
-            </p>
+            <Card className="border-primary/20 bg-primary/5 backdrop-blur-sm inline-block hover:shadow-glow-teal dark:hover:shadow-glow-cyan transition-all duration-300">
+              <CardContent className="p-6">
+                <p className="text-primary font-semibold">
+                  <strong>How They Work Together:</strong> People start in WonderLand, joining events or conversations. When they're ready to build or automate something serious, they upgrade to SmartStart. Both coexist under AliceSolutionsGroup, which provides the ecosystem, governance, and security backbone.
+                </p>
+              </CardContent>
+            </Card>
           </motion.div>
         </div>
       </section>
@@ -579,38 +567,15 @@ export default function SmartStartHub() {
             className="text-center mb-12"
           >
             <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-foreground">
-              Choose Your Path
+              Simple Pricing
             </h2>
             <p className="text-lg text-muted-foreground">
-              Flexible options to start your journey
+              One price. All features. No surprises.
             </p>
           </motion.div>
 
-          <div className="flex justify-center gap-4 mb-8">
-            <Button
-              onClick={() => setSelectedPlan("discovery")}
-              variant={selectedPlan === "discovery" ? "default" : "outline"}
-              className={selectedPlan === "discovery" ? "bg-primary" : ""}
-            >
-              <Sparkles className="mr-2 w-4 h-4" />
-              Discovery
-            </Button>
-            <Button
-              onClick={() => setSelectedPlan("full")}
-              variant={selectedPlan === "full" ? "default" : "outline"}
-              className={selectedPlan === "full" ? "bg-primary" : ""}
-            >
-              <Rocket className="mr-2 w-4 h-4" />
-              Full Program
-            </Button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl mx-auto">
             {pricingOptions.map((option, index) => {
-              const Icon = option.icon;
-              const isSelected = (option.name === "Discovery" && selectedPlan === "discovery") || 
-                                 (option.name === "Full Program" && selectedPlan === "full");
-              
               return (
                 <motion.div
                   key={index}
@@ -619,12 +584,9 @@ export default function SmartStartHub() {
                   viewport={{ once: true }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
                   whileHover={{ y: -10, scale: 1.02 }}
-                  animate={isSelected ? { scale: 1.05 } : { scale: 1 }}
-                  className="cursor-pointer"
+                  className="cursor-pointer md:col-span-2 lg:col-span-1"
                 >
-                  <Card className={`border-border/50 bg-card/50 backdrop-blur-sm h-full relative transition-all duration-300 ${
-                    option.popular ? 'border-primary/50 shadow-glow-teal dark:shadow-glow-cyan' : ''
-                  } ${isSelected ? 'ring-2 ring-primary' : ''}`}>
+                  <Card className="border-primary/50 bg-card/50 backdrop-blur-sm h-full relative transition-all duration-300 shadow-glow-teal dark:shadow-glow-cyan">
                     {option.popular && (
                       <motion.div 
                         animate={{ y: [0, -5, 0] }}
@@ -637,18 +599,9 @@ export default function SmartStartHub() {
                       </motion.div>
                     )}
                     <CardContent className="p-8">
-                      <div className="flex items-center gap-3 mb-4">
-                        <motion.div
-                          whileHover={{ rotate: 360 }}
-                          transition={{ duration: 0.6 }}
-                          className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center"
-                        >
-                          <Icon className="w-6 h-6 text-primary" />
-                        </motion.div>
-                        <h3 className="text-2xl font-bold text-foreground">
-                          {option.name}
-                        </h3>
-                      </div>
+                      <h3 className="text-2xl font-bold text-foreground mb-4">
+                        {option.name}
+                      </h3>
                       <p className="text-muted-foreground mb-6">
                         {option.description}
                       </p>
@@ -677,8 +630,15 @@ export default function SmartStartHub() {
                       </ul>
                       <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                         <Button
-                          className={`w-full ${option.popular ? 'bg-primary hover:bg-primary/90' : 'bg-muted hover:bg-muted/80'}`}
+                          className="w-full bg-primary hover:bg-primary/90"
                           size="lg"
+                          onClick={() => {
+                            if (option.billingUrl.startsWith('http')) {
+                              window.open(option.billingUrl, '_blank');
+                            } else {
+                              window.location.href = option.billingUrl;
+                            }
+                          }}
                         >
                           {option.cta}
                           <ArrowRight className="ml-2 w-4 h-4" />
@@ -690,6 +650,253 @@ export default function SmartStartHub() {
               );
             })}
           </div>
+        </div>
+      </section>
+
+      {/* Success Stories */}
+      <section className="py-16 px-4 sm:px-6 md:px-8">
+        <div className="max-w-7xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-12"
+          >
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-foreground">
+              Success Stories
+            </h2>
+            <p className="text-lg text-muted-foreground">
+              Real-world results from collaborative projects
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              {
+                title: "Dispatch & Ops Automation",
+                description: "AI scheduling, real-time tracking, reporting",
+                result: "~40% cost reduction and higher CSAT",
+                icon: Activity
+              },
+              {
+                title: "Education Ops Platform",
+                description: "Consistent ops across 40+ countries / 1,200+ locations",
+                result: "Automation for scheduling/reporting/QA",
+                icon: GraduationCap
+              },
+              {
+                title: "Healthcare Compliance Platform",
+                description: "Privacy-by-design patient data flows",
+                result: "~50% admin reduction and improved protection",
+                icon: Shield
+              }
+            ].map((story, index) => {
+              const Icon = story.icon;
+              return (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  whileHover={{ y: -10, scale: 1.02 }}
+                  className="cursor-pointer"
+                >
+                  <Card className="border-border/50 bg-card/50 backdrop-blur-sm h-full transition-all duration-300 hover:shadow-glow-teal dark:hover:shadow-glow-cyan">
+                    <CardContent className="p-6">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                          <Icon className="w-6 h-6 text-primary" />
+                        </div>
+                        <h3 className="text-lg font-bold text-foreground">
+                          {story.title}
+                        </h3>
+                      </div>
+                      <p className="text-muted-foreground mb-4">
+                        {story.description}
+                      </p>
+                      <p className="text-primary font-semibold">
+                        {story.result}
+                      </p>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              );
+            })}
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="text-center mt-8"
+          >
+            <p className="text-muted-foreground italic">
+              Client names available on request under NDA
+            </p>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Comparison Table */}
+      <section className="py-16 px-4 sm:px-6 md:px-8 bg-muted/30">
+        <div className="max-w-4xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-12"
+          >
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-foreground">
+              SmartStart vs Traditional Communities
+            </h2>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <Card className="border-border/50 bg-card/50 backdrop-blur-sm overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="bg-primary/10">
+                      <th className="px-6 py-4 text-left text-foreground font-semibold border-b border-border">
+                        Feature
+                      </th>
+                      <th className="px-6 py-4 text-left text-muted-foreground font-semibold border-b border-border">
+                        Traditional Communities
+                      </th>
+                      <th className="px-6 py-4 text-left text-primary font-semibold border-b border-border">
+                        SmartStart
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      {
+                        feature: "Focus",
+                        traditional: "Networking → Pitching",
+                        smartstart: "Community → Collaboration → Growth"
+                      },
+                      {
+                        feature: "Timeline",
+                        traditional: "Event-based",
+                        smartstart: "Continuous support"
+                      },
+                      {
+                        feature: "Support",
+                        traditional: "Limited mentoring",
+                        smartstart: "Mentorship + tools + security baselines"
+                      },
+                      {
+                        feature: "Culture",
+                        traditional: "Competitive",
+                        smartstart: "Collaborative"
+                      },
+                      {
+                        feature: "Tools",
+                        traditional: "Basic",
+                        smartstart: "Enterprise suite + guardrails"
+                      }
+                    ].map((row, index) => (
+                      <motion.tr
+                        key={index}
+                        initial={{ opacity: 0, x: -20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: index * 0.1 }}
+                        className="border-b border-border/50 hover:bg-muted/30 transition-colors"
+                      >
+                        <td className="px-6 py-4 text-foreground font-medium">
+                          {row.feature}
+                        </td>
+                        <td className="px-6 py-4 text-muted-foreground">
+                          {row.traditional}
+                        </td>
+                        <td className="px-6 py-4 text-foreground font-semibold">
+                          {row.smartstart}
+                        </td>
+                      </motion.tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </Card>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Founder's Edge */}
+      <section className="py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-slate-900 to-slate-800">
+        <div className="max-w-4xl mx-auto text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <h2 className="text-3xl sm:text-4xl font-bold mb-6 text-white">
+              Founder's Edge
+            </h2>
+            <p className="text-xl text-slate-200 mb-8">
+              <strong>Udi Shkolnik</strong> — CISSP, CISM, ISO 27001 Lead Auditor, CTO/CISO, educator, builder
+            </p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+              {[
+                {
+                  title: "Security leadership",
+                  description: "Governance & compliance",
+                  color: "from-blue-500 to-cyan-500"
+                },
+                {
+                  title: "Execution at scale",
+                  description: "Operational restructuring with real savings",
+                  color: "from-teal-500 to-emerald-500"
+                },
+                {
+                  title: "Education",
+                  description: "Practical training for professionals",
+                  color: "from-purple-500 to-pink-500"
+                },
+                {
+                  title: "Builder",
+                  description: "Multiple SaaS/platform deliveries",
+                  color: "from-blue-500 to-indigo-500"
+                }
+              ].map((item, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                  whileHover={{ y: -5 }}
+                >
+                  <Card className="border-border/50 bg-card/50 backdrop-blur-sm hover:shadow-glow-teal dark:hover:shadow-glow-cyan transition-all duration-300">
+                    <CardContent className="p-6">
+                      <p className={`text-${item.color.split('-')[1]}-500 font-bold mb-2`}>
+                        {item.title}
+                      </p>
+                      <p className="text-slate-300 text-sm">
+                        {item.description}
+                      </p>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
+
+            <p className="text-slate-200 italic">
+              SmartStart doesn't just dream big — it <strong className="text-white">executes securely</strong>.
+            </p>
+          </motion.div>
         </div>
       </section>
 
@@ -709,27 +916,18 @@ export default function SmartStartHub() {
                   Ready to Join SmartStart?
                 </h2>
                 <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-                  Start your journey with our Discovery program for just $1, or jump straight into the full membership. Either way, you'll be part of a community that grows differently.
+                  Join the SmartStart community and get access to enterprise tools, mentorship, and resources for just $98.80/month.
                 </p>
 
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <div className="flex justify-center">
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                     <Button
                       size="lg"
                       className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-glow-teal dark:shadow-glow-cyan"
+                      onClick={() => window.open('https://billing.zohosecure.ca/subscribe/80acd4f75fc11ade8382abc9ca5c205ef35c7564ff13c9670befed3afeaa53b9/Plan010', '_blank')}
                     >
-                      <Rocket className="mr-2 w-5 h-5" />
-                      Join Full Program
-                    </Button>
-                  </motion.div>
-                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                    <Button
-                      size="lg"
-                      variant="outline"
-                      className="border-primary text-primary hover:bg-primary/10"
-                    >
-                      <Sparkles className="mr-2 w-5 h-5" />
-                      Try Discovery — $1
+                      Join SmartStart — $98.80/month
+                      <ArrowRight className="ml-2 w-5 h-5" />
                     </Button>
                   </motion.div>
                 </div>
