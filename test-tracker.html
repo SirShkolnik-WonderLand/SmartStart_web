@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics Tracker Test</title>
+</head>
+<body>
+    <h1>Analytics Tracker Test</h1>
+    <p>This page tests if the analytics tracker can be loaded from the analytics server.</p>
+    
+    <div id="status">Loading...</div>
+    
+    <script>
+        // Test loading the tracker script
+        const script = document.createElement('script');
+        script.src = 'https://analytics-hub-server.onrender.com/tracker.js';
+        script.onload = function() {
+            document.getElementById('status').innerHTML = '✅ Tracker loaded successfully!';
+            document.getElementById('status').style.color = 'green';
+            
+            // Test if analyticsHub is available
+            if (window.analyticsHub) {
+                document.getElementById('status').innerHTML += '<br>✅ analyticsHub object is available!';
+                console.log('Analytics Hub:', window.analyticsHub);
+            } else {
+                document.getElementById('status').innerHTML += '<br>❌ analyticsHub object not found!';
+            }
+        };
+        script.onerror = function(error) {
+            document.getElementById('status').innerHTML = '❌ Failed to load tracker: ' + error;
+            document.getElementById('status').style.color = 'red';
+            console.error('Tracker loading error:', error);
+        };
+        document.head.appendChild(script);
+    </script>
+</body>
+</html>

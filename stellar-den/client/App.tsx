@@ -42,7 +42,9 @@ const App = () => {
     (window as any).analyticsHubConfig = analyticsConfig;
 
     const script = document.createElement('script');
-    script.src = `${analyticsConfig.apiUrl}/tracker.js`;
+    // Add cache busting parameter to force reload
+    const cacheBuster = Date.now();
+    script.src = `${analyticsConfig.apiUrl}/tracker.js?v=${cacheBuster}`;
     script.async = true;
     script.defer = true;
     document.head.appendChild(script);
