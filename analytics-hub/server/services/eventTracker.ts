@@ -214,14 +214,14 @@ async function updateSession(
         .set({
           lastSeen: now,
           sessionDuration,
-          pageViews: session.pageViews + 1,
+          pageViews: (session.pageViews || 0) + 1,
           exitPage: event.pageUrl,
           exitPageTitle: event.pageTitle,
           updatedAt: now,
           // Engaged if >30s or >2 pages
-          engaged: sessionDuration > 30 || session.pageViews + 1 > 2,
+          engaged: sessionDuration > 30 || ((session.pageViews || 0) + 1) > 2,
           // Bounced if single page and <10s
-          bounced: session.pageViews === 1 && sessionDuration < 10,
+          bounced: (session.pageViews || 0) === 1 && sessionDuration < 10,
         })
         .where(eq(analyticsSessions.sessionId, sessionId));
     }

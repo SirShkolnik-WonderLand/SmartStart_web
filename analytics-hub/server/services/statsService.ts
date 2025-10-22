@@ -274,14 +274,17 @@ function calculateChange(current: number, previous: number): number {
  * Format date based on interval
  */
 function formatDate(date: Date, interval: 'hour' | 'day' | 'week' | 'month'): string {
-  const options: Intl.DateTimeFormatOptions = {
-    hour: { month: 'short', day: 'numeric', hour: '2-digit' },
-    day: { month: 'short', day: 'numeric' },
-    week: { month: 'short', day: 'numeric' },
-    month: { year: 'numeric', month: 'short' },
-  }[interval];
-
-  return date.toLocaleDateString('en-US', options);
+  switch (interval) {
+    case 'hour':
+      return date.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit' });
+    case 'day':
+    case 'week':
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    case 'month':
+      return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
+    default:
+      return date.toLocaleDateString('en-US');
+  }
 }
 
 /**
