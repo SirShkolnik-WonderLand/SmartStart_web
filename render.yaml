@@ -1,5 +1,27 @@
 services:
   # ============================================================================
+  # EXISTING MAIN WEBSITE - smartstart-website (kept as-is, matching current Render)
+  # ============================================================================
+  - type: web
+    name: smartstart-website
+    env: node
+    plan: starter
+    region: oregon
+    branch: main
+    rootDir: stellar-den
+    buildCommand: pnpm install && pnpm build
+    startCommand: pnpm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 8080
+      # Note: Set this after analytics-hub-server is live
+      - key: VITE_ANALYTICS_API_URL
+        sync: false
+    healthCheckPath: /
+    autoDeploy: true
+  # ============================================================================
   # ANALYTICS HUB - Backend Server
   # ============================================================================
   - type: web
