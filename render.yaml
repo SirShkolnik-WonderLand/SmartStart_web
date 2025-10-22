@@ -19,7 +19,7 @@ services:
       # Note: Set this after analytics-hub-server is live
       - key: VITE_ANALYTICS_API_URL
         sync: false
-    healthCheckPath: /
+    healthCheckPath: /health
     autoDeploy: true
   # ============================================================================
   # ANALYTICS HUB - Backend Server

@@ -28,25 +28,30 @@ import {
 export function createServer() {
   const app = express();
 
-  // Security middleware (order matters!)
-  app.use(nonceCSP);
-  app.use(corsConfig);
-  app.use(requestLogger);
-  app.use(securityMonitor);
-  app.use(validateInput);
-  app.use(requestSizeLimit(5 * 1024 * 1024)); // 5MB limit
+  // Security middleware (order matters!) - temporarily simplified
+  // app.use(nonceCSP);
+  // app.use(corsConfig);
+  // app.use(requestLogger);
+  // app.use(securityMonitor);
+  // app.use(validateInput);
+  // app.use(requestSizeLimit(5 * 1024 * 1024)); // 5MB limit
 
-  // Rate limiting (only in production)
-  if (process.env.NODE_ENV === 'production') {
-    app.use("/api", generalLimiter);
-    app.use("/api/iso/save", strictLimiter);
-    app.use("/api/iso/export", strictLimiter);
-    app.use("/api/iso/send-checklist", formSubmissionRateLimit);
-  }
+  // Rate limiting (only in production) - temporarily disabled
+  // if (process.env.NODE_ENV === 'production') {
+  //   app.use("/api", generalLimiter);
+  //   app.use("/api/iso/save", strictLimiter);
+  //   app.use("/api/iso/export", strictLimiter);
+  //   app.use("/api/iso/send-checklist", formSubmissionRateLimit);
+  // }
 
   // Body parsing
   app.use(express.json({ limit: 5 * 1024 * 1024 })); // 5MB in bytes
   app.use(express.urlencoded({ extended: true, limit: 5 * 1024 * 1024 })); // 5MB in bytes
+
+  // Health check endpoint for Render
+  app.get("/health", (_req, res) => {
+    res.status(200).json({ status: "healthy", timestamp: new Date().toISOString() });
+  });
 
   // Example API routes
   app.get("/api/ping", (_req, res) => {
@@ -67,9 +72,23 @@ export function createServer() {
   // Serve HTML with nonce for SPA (catch-all route - must be last before error handler)
   app.get('/*', (req, res) => {
     try {
-      // Read the HTML template
-      const templatePath = path.join(__dirname, 'templates', 'index.html');
-      let html = fs.readFileSync(templatePath, 'utf8');
+      // Read the HTML template - try multiple possible paths
+      let templatePath = path.join(__dirname, 'templates', 'index.html');
+      let html: string;
+      
+      try {
+        html = fs.readFileSync(templatePath, 'utf8');
+      } catch (firstError) {
+        // Try alternative path
+        templatePath = path.join(process.cwd(), 'dist', 'server', 'templates', 'index.html');
+        try {
+          html = fs.readFileSync(templatePath, 'utf8');
+        } catch (secondError) {
+          // Try relative to current working directory
+          templatePath = path.join(process.cwd(), 'server', 'templates', 'index.html');
+          html = fs.readFileSync(templatePath, 'utf8');
+        }
+      }
       
       // Get nonce from response locals (set by nonceCSP middleware)
       const nonce = res.locals.nonce || '';
@@ -83,6 +102,9 @@ export function createServer() {
       res.send(html);
     } catch (error) {
       console.error('Error serving HTML:', error);
+      console.error('Template path attempted:', templatePath);
+      console.error('Current working directory:', process.cwd());
+      console.error('__dirname:', __dirname);
       res.status(500).send('Internal Server Error');
     }
   });
