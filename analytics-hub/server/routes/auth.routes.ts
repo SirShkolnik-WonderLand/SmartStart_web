@@ -35,7 +35,7 @@ router.get('/debug', async (req: Request, res: Response) => {
         ADMIN_PASSWORD: process.env.ADMIN_PASSWORD ? '***' : 'NOT_SET',
       }
     });
-  } catch (error) {
+  } catch (error: any) {
     return res.status(500).json({
       success: false,
       error: error.message,
