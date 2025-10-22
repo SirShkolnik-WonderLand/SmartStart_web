@@ -26,6 +26,7 @@ import {
   LazySettings,
 } from './pages/LazyPages';
 import { Debug } from './pages/Debug';
+import { TestAPI } from './pages/TestAPI';
 
 // Create React Query client
 const queryClient = new QueryClient({
@@ -153,6 +154,7 @@ function App() {
                 </LazyWrapper>
               } />
               <Route path="debug" element={<Debug />} />
+              <Route path="test-api" element={<TestAPI />} />
             </Route>
 
             {/* 404 redirect */}

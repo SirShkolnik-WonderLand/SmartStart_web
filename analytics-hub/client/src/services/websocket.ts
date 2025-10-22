@@ -6,7 +6,7 @@
 import { io, type Socket } from 'socket.io-client';
 import { useDashboardStore } from '@/store/dashboardStore';
 
-const SOCKET_URL = import.meta.env.VITE_WS_URL || 'http://localhost:4000';
+const SOCKET_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
 
 class WebSocketService {
   private socket: Socket | null = null;
