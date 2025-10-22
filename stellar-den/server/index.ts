@@ -38,7 +38,7 @@ export function createServer() {
 
   // Rate limiting (only in production)
   if (process.env.NODE_ENV === 'production') {
-    app.use("/api/", generalLimiter);
+    app.use("/api", generalLimiter);
     app.use("/api/iso/save", strictLimiter);
     app.use("/api/iso/export", strictLimiter);
     app.use("/api/iso/send-checklist", formSubmissionRateLimit);
