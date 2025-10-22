@@ -25,6 +25,7 @@ import {
   LazyGoals,
   LazySettings,
 } from './pages/LazyPages';
+import { Debug } from './pages/Debug';
 
 // Create React Query client
 const queryClient = new QueryClient({
@@ -151,6 +152,7 @@ function App() {
                   <LazySettings />
                 </LazyWrapper>
               } />
+              <Route path="debug" element={<Debug />} />
             </Route>
 
             {/* 404 redirect */}
