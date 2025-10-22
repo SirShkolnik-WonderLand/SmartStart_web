@@ -79,6 +79,10 @@ app.get('/health', (req: Request, res: Response) => {
 app.get('/tracker.js', (req: Request, res: Response) => {
   res.setHeader('Content-Type', 'application/javascript');
   res.setHeader('Cache-Control', 'public, max-age=3600');
+  // Override security headers for cross-origin script loading
+  res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+  res.setHeader('Cross-Origin-Embedder-Policy', 'unsafe-none');
+  res.setHeader('Cross-Origin-Opener-Policy', 'unsafe-none');
   // For now, serve the raw TypeScript (in production, use built version)
   res.send(`
     (function(){
