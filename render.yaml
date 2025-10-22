@@ -67,7 +67,6 @@ services:
   - type: web
     name: analytics-hub-dashboard
     env: static
-    plan: starter
     # region is not supported for static services
     branch: main
     rootDir: analytics-hub/client
@@ -92,7 +91,6 @@ services:
 # ============================================================================
 databases:
   - name: analytics-hub-db
-    plan: starter
     region: oregon
     databaseName: analytics_hub
     user: analytics_admin
