@@ -75,6 +75,9 @@ export function createServer() {
   app.post("/api/iso/export", exportAssessment);
   app.post("/api/iso/send-checklist", sendChecklist);
 
+  // Serve static files (CSS, JS, images, etc.) from the built SPA
+  app.use(express.static(path.join(__dirname, '../spa')));
+
   // Serve HTML with nonce for SPA (catch-all route - must be last before error handler)
   app.get('/*', (req, res) => {
     let templatePath = ''; // Declare outside try block for error logging
