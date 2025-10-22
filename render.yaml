@@ -52,8 +52,8 @@ services:
         value: udi.shkolnik@alicesolutionsgroup.com
       - key: ADMIN_PASSWORD
         value: DevPassword123!
-      - key: ALLOWED_ORIGINS
-        value: https://alicesolutionsgroup.com,https://www.alicesolutionsgroup.com,https://analytics-hub-dashboard.onrender.com
+          - key: ALLOWED_ORIGINS
+            value: https://alicesolutionsgroup.com,https://www.alicesolutionsgroup.com,https://analytics-hub-dashboard.onrender.com,https://alicesolutionsgroup.com
       - key: RATE_LIMIT_WINDOW_MS
         value: 900000
       - key: RATE_LIMIT_MAX_REQUESTS

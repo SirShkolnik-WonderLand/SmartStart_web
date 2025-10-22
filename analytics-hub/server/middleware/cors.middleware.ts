@@ -5,7 +5,7 @@
 
 import cors from 'cors';
 
-// Allowed origins (stellar-den domains)
+// Allowed origins (stellar-den domains + main website)
 const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || '')
   .split(',')
   .map((origin) => origin.trim())
@@ -14,6 +14,9 @@ const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || '')
     'http://localhost:8080',
     'http://localhost:5173',
     'http://localhost:3000',
+    'https://alicesolutionsgroup.com',
+    'https://www.alicesolutionsgroup.com',
+    'https://analytics-hub-dashboard.onrender.com',
   ]);
 
 export const corsMiddleware = cors({
