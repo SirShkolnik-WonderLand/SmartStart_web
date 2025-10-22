@@ -45,7 +45,8 @@ export const securityHeaders = helmet({
         "'self'",
         "'strict-dynamic'",
         "https://plausible.io",
-        "https://www.google-analytics.com"
+        "https://www.google-analytics.com",
+        "https://analytics-hub-server.onrender.com"
       ],
       styleSrc: [
         "'self'",
@@ -65,7 +66,8 @@ export const securityHeaders = helmet({
       connectSrc: [
         "'self'",
         "https://plausible.io",
-        "https://www.google-analytics.com"
+        "https://www.google-analytics.com",
+        "https://analytics-hub-server.onrender.com"
       ],
       frameSrc: ["'none'"],
       objectSrc: ["'none'"],
