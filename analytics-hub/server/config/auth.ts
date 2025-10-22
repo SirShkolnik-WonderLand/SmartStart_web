@@ -57,7 +57,7 @@ export function generateToken(user: Pick<AdminUser, 'id' | 'email' | 'role'>): s
     expiresIn: JWT_EXPIRES_IN,
     issuer: 'analytics-hub',
     audience: 'analytics-admin',
-  });
+  } as jwt.SignOptions);
 }
 
 /**
@@ -121,7 +121,7 @@ export function refreshToken(currentToken: string): string | null {
       expiresIn: JWT_EXPIRES_IN,
       issuer: 'analytics-hub',
       audience: 'analytics-admin',
-    }
+    } as jwt.SignOptions
   );
 }
 
