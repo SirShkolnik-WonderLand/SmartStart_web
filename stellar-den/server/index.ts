@@ -84,21 +84,30 @@ export function createServer() {
     
     try {
       // Read the HTML template - try multiple possible paths
-      templatePath = path.join(__dirname, 'templates', 'index.html');
-      let html: string;
+      const possiblePaths = [
+        path.join(__dirname, 'templates', 'index.html'),
+        path.join(process.cwd(), 'dist', 'server', 'templates', 'index.html'),
+        path.join(process.cwd(), 'server', 'templates', 'index.html'),
+        path.join(process.cwd(), 'stellar-den', 'server', 'templates', 'index.html')
+      ];
       
-      try {
-        html = fs.readFileSync(templatePath, 'utf8');
-      } catch (firstError) {
-        // Try alternative path
-        templatePath = path.join(process.cwd(), 'dist', 'server', 'templates', 'index.html');
+      let html: string;
+      let found = false;
+      
+      for (const testPath of possiblePaths) {
         try {
+          templatePath = testPath;
           html = fs.readFileSync(templatePath, 'utf8');
-        } catch (secondError) {
-          // Try relative to current working directory
-          templatePath = path.join(process.cwd(), 'server', 'templates', 'index.html');
-          html = fs.readFileSync(templatePath, 'utf8');
+          found = true;
+          break;
+        } catch (error) {
+          // Continue to next path
+          continue;
         }
+      }
+      
+      if (!found) {
+        throw new Error('Template not found in any of the expected locations');
       }
       
       // Get nonce from response locals (set by nonceCSP middleware)
