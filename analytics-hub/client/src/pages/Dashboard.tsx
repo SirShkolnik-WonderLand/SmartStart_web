@@ -10,6 +10,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Users, Eye, Target, Activity } from 'lucide-react';
 import { KPICard } from '@/components/widgets/KPICard';
 import { KPIGrid, ChartsGrid, StatsGrid } from '@/components/ui/ResponsiveGrid';
+import { LineChart, PieChart } from '@/components/charts';
 import { analyticsApi } from '@/services/api';
 import { useDashboardStore } from '@/store/dashboardStore';
 import { useWebSocket } from '@/services/websocket';
@@ -194,50 +195,36 @@ export function Dashboard() {
 
         {/* Advanced Traffic chart */}
         <StyledChartsGrid>
-        <AdvancedLineChart
+        <LineChart
           data={trafficData.map(d => ({
             date: d.date,
-            value: d.visitors,
-            label: `Visitors: ${d.visitors}`
+            visitors: d.visitors,
+            sessions: d.sessions,
+            pageViews: d.pageViews
           }))}
           title="Traffic Over Time"
-          subtitle="Visitors, sessions, and page views"
-          width={800}
           height={300}
-          animated={true}
-          color="#4a90e2"
         />
         </StyledChartsGrid>
 
         {/* Breakdown charts */}
         <StyledStatsGrid>
-        <DonutChart
+        <PieChart
           data={deviceData.map(d => ({
-            label: d.name,
-            value: d.value,
-            percentage: d.percentage
+            name: d.name,
+            value: d.value
           }))}
           title="Device Breakdown"
-          subtitle="Desktop vs Mobile vs Tablet"
-          width={400}
           height={300}
-          animated={true}
-          showLegend={true}
         />
 
-        <AnimatedBarChart
+        <PieChart
           data={sourceData.map(s => ({
-            label: s.name,
-            value: s.value,
-            percentage: s.percentage
+            name: s.name,
+            value: s.value
           }))}
           title="Traffic Sources"
-          subtitle="Top referrers and campaigns"
-          width={400}
           height={300}
-          orientation="horizontal"
-          animated={true}
-          showValues={true}
         />
         </StyledStatsGrid>
 
