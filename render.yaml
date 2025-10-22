@@ -16,9 +16,9 @@ services:
         value: production
       - key: PORT
         value: 8080
-      # Note: Set this after analytics-hub-server is live
+      # Analytics Hub Server URL
       - key: VITE_ANALYTICS_API_URL
-        sync: false
+        value: https://analytics-hub-server.onrender.com
     healthCheckPath: /health
     autoDeploy: true
   # ============================================================================
@@ -74,8 +74,9 @@ services:
     staticPublishPath: ./dist
     envVars:
       - key: VITE_API_URL
-        sync: false
-        # Will be: https://analytics-alicesolutions.onrender.com
+        value: https://analytics-hub-server.onrender.com
+      - key: VITE_WS_URL
+        value: wss://analytics-hub-server.onrender.com
     routes:
       - type: rewrite
         source: /*
