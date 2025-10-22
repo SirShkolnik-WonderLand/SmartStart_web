@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AliceSolutions Group - Cybersecurity Excellence</title>
+    <meta name="description" content="Leading cybersecurity solutions for businesses. ISO compliance, risk assessment, and security consulting services." />
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="/assets/index-{{HASH}}.js" as="script" />
+    
+    <!-- Analytics Hub Script with nonce -->
+    <script nonce="{{NONCE}}">
+      (function(){
+        const API_URL = '{{ANALYTICS_API_URL}}';
+        let sessionId = sessionStorage.getItem('ah_session') || Math.random().toString(36).substring(7);
+        sessionStorage.setItem('ah_session', sessionId);
+        
+        function track(type, data) {
+          fetch(API_URL + '/api/v1/' + type, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({...data, sessionId}),
+            keepalive: true
+          }).catch(e => console.log('Analytics:', e));
+        }
+        
+        window.analyticsHub = {
+          trackEvent: (name, props) => track('event', {event: {eventType: 'custom', eventName: name, pageUrl: location.href, properties: props, sessionId}}),
+          trackConversion: (name, val) => track('conversion', {goalName: name, goalValue: val, pageUrl: location.href}),
+          trackPageView: () => track('pageview', {pageUrl: location.href, pageTitle: document.title})
+        };
+        
+        if (window.analyticsHubConfig?.autoTrack !== false) {
+          track('pageview', {pageUrl: location.href, pageTitle: document.title});
+        }
+      })();
+    </script>
+  </head>
+
+  <body>
+    <div id="root"></div>
+
+    <!-- Main application script with nonce -->
+    <script type="module" src="/assets/index-{{HASH}}.js" nonce="{{NONCE}}"></script>
+  </body>
+</html>

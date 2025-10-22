@@ -6,6 +6,7 @@
 import { Request, Response, NextFunction } from 'express';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
+import crypto from 'crypto';
 import { RateLimiter } from '../../client/lib/validation';
 
 // Rate limiting instances
@@ -35,6 +36,28 @@ const authLimiter = rateLimit({
 
 // Custom rate limiter for form submissions
 const formSubmissionLimiter = new RateLimiter(3, 15 * 60 * 1000); // 3 attempts per 15 minutes
+
+// Generate cryptographically secure nonce
+export function generateNonce(): string {
+  return crypto.randomBytes(16).toString('base64');
+}
+
+// Nonce-based CSP middleware
+export function nonceCSP(req: Request, res: Response, next: NextFunction) {
+  const nonce = generateNonce();
+  
+  // Store nonce in response locals for use in templates
+  res.locals.nonce = nonce;
+  
+  // Set CSP header with nonce
+  const cspHeader = process.env.NODE_ENV === 'production' ? 
+    `default-src 'self'; script-src 'nonce-${nonce}' 'strict-dynamic'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://plausible.io https://www.google-analytics.com https://analytics-hub-server.onrender.com; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests;` :
+    // Development CSP - more permissive
+    `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' http://localhost:* ws://localhost:*; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: http: blob:; connect-src 'self' http://localhost:* ws://localhost:* wss://localhost:*; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self';`;
+  
+  res.setHeader('Content-Security-Policy', cspHeader);
+  next();
+}
 
 // Security headers middleware
 export const securityHeaders = helmet({
