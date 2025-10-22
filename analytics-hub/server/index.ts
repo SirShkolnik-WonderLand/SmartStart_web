@@ -133,6 +133,54 @@ app.get('/api/debug', async (req: Request, res: Response) => {
   }
 });
 
+// Create admin user endpoint (temporary)
+app.post('/api/create-admin', async (req: Request, res: Response) => {
+  try {
+    const crypto = await import('crypto');
+    const { db } = await import('./config/database.simple.js');
+    
+    const email = process.env.ADMIN_EMAIL || 'udi.shkolnik@alicesolutionsgroup.com';
+    const password = process.env.ADMIN_PASSWORD || 'DevPassword123!';
+    const hash = crypto.createHash('sha256').update(password).digest('hex');
+    
+    // Check if user already exists
+    const existingUser = db.findOne('users', (u: any) => u.email === email);
+    if (existingUser) {
+      return res.status(200).json({
+        success: true,
+        message: 'Admin user already exists',
+        user: existingUser,
+        hash: hash
+      });
+    }
+    
+    // Create new admin user
+    const newUser = db.insert('users', {
+      email,
+      password_hash: hash,
+      name: 'Udi Shkolnik',
+      role: 'admin',
+      active: true,
+      canExport: true,
+      canEditGoals: true,
+      canManageUsers: true,
+      loginCount: 0,
+    });
+    
+    return res.status(200).json({
+      success: true,
+      message: 'Admin user created',
+      user: newUser,
+      hash: hash
+    });
+  } catch (error: any) {
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+});
+
 // Analytics routes (public, with tracking rate limit)
 app.use('/api/v1', trackingLimiter, analyticsRoutes);
 
