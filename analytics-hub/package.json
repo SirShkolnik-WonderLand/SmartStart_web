@@ -9,7 +9,7 @@
     "dev:client": "cd client && vite",
     "build": "npm run build:server && npm run build:client",
     "build:server": "tsc -p tsconfig.json",
-    "build:client": "cd client && npm install && vite build",
+    "build:client": "cd client && npm install && npx vite build",
     "build:tracker": "cd tracker && npm run build",
     "start": "node dist/server/index.js",
     "db:setup": "tsx scripts/setup-database.ts",
