@@ -51,7 +51,7 @@ services:
       - key: ADMIN_EMAIL
         value: udi.shkolnik@alicesolutionsgroup.com
       - key: ADMIN_PASSWORD
-        generateValue: true
+        value: DevPassword123!
       - key: ALLOWED_ORIGINS
         value: https://alicesolutionsgroup.com,https://www.alicesolutionsgroup.com,https://analytics-hub-dashboard.onrender.com
       - key: RATE_LIMIT_WINDOW_MS
