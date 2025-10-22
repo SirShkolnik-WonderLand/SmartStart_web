@@ -170,7 +170,7 @@ export class ExportService {
           doc.text(key.charAt(0).toUpperCase() + key.slice(1), 20, 30);
           
           const headers = Object.keys(value[0]);
-          const rows = value.map(row => headers.map(header => row[header] || ''));
+          const rows = (value as any[]).map((row: any) => headers.map((header) => (row as any)[header] || ''));
           
           autoTable(doc, {
             head: [headers],
