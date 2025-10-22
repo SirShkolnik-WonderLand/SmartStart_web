@@ -3,7 +3,6 @@
  * Beautiful donut chart with smooth animations
  */
 
-import { motion } from 'framer-motion';
 import styled from 'styled-components';
 import {
   PieChart as RechartsPieChart,

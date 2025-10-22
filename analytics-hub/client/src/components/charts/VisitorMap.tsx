@@ -3,10 +3,9 @@
  * Real-time visitor tracking with Mapbox GL JS
  */
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
 import styled from 'styled-components';
-import { motion } from 'framer-motion';
 
 interface VisitorLocation {
   id: string;

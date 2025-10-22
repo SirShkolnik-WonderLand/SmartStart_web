@@ -26,9 +26,6 @@ import {
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { AdvancedLineChart } from '@/components/charts/AdvancedLineChart';
-import { AnimatedBarChart } from '@/components/charts/AnimatedBarChart';
-import { DonutChart } from '@/components/charts/DonutChart';
 import { analyticsApi } from '@/services/api';
 import { useDashboardStore } from '@/store/dashboardStore';
 

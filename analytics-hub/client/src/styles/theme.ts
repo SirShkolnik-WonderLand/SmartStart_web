@@ -3,9 +3,7 @@
  * Neumorphic design with dark/light modes
  */
 
-import { DefaultTheme as StyledDefaultTheme } from 'styled-components';
-
-export interface DefaultTheme extends StyledDefaultTheme {
+export interface DefaultTheme {
     name: 'light' | 'dark';
     colors: {
       // Base colors

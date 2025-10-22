@@ -3,7 +3,6 @@
  * Beautiful traffic chart with smooth animations
  */
 
-import { motion } from 'framer-motion';
 import styled from 'styled-components';
 import {
   LineChart as RechartsLineChart,

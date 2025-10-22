@@ -3,18 +3,10 @@
  * Handles CSV and PDF export functionality
  */
 
-// These libs are optional in build; guard dynamic import for SSR/build
-let jsPDF: any;
-let autoTable: any;
-let Papa: any;
-try {
-  // @ts-ignore
-  jsPDF = (await import('jspdf')).default;
-  // @ts-ignore
-  autoTable = (await import('jspdf-autotable')).default;
-  // @ts-ignore
-  Papa = (await import('papaparse')).default || (await import('papaparse'));
-} catch {}
+// Static imports for dependencies
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import Papa from 'papaparse';
 
 export interface ExportOptions {
   format: 'csv' | 'pdf';
