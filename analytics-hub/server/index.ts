@@ -47,6 +47,7 @@ app.use(
   helmet({
     contentSecurityPolicy: false, // Temporarily disable CSP to fix script loading
     crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: false, // Allow cross-origin resource access
   })
 );
 
