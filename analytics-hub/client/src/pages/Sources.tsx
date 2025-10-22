@@ -71,7 +71,7 @@ export function Sources() {
 
   const sources = data?.data || [];
   const pieData = sources.map(s => ({
-    name: s.source,
+    name: s.sourceName,
     value: s.sessions,
     percentage: s.conversionRate,
   }));
@@ -89,14 +89,14 @@ export function Sources() {
           <CardHeader>
             <CardTitle>Source Performance</CardTitle>
           </CardHeader>
-          {sources.slice(0, 5).map((source, idx) => (
+        {sources.slice(0, 5).map((source, idx) => (
             <SourceCard
-              key={source.source}
+              key={source.sourceName}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: idx * 0.1 }}
             >
-              <div className="source-name">{source.source}</div>
+              <div className="source-name">{source.sourceName}</div>
               <div className="stats">
                 <div className="stat">
                   <div className="value">{source.sessions}</div>

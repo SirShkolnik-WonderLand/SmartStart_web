@@ -3,7 +3,7 @@
  * Unit tests for the KPICard component
  */
 
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { render, screen } from '@/test/utils/test-utils';
 import { KPICard } from '@/components/widgets/KPICard';
 import { Users } from 'lucide-react';
@@ -71,17 +71,5 @@ describe('KPICard', () => {
     expect(motionDiv).toBeInTheDocument();
   });
 
-  it('handles loading state', () => {
-    render(
-      <KPICard
-        title="Total Visitors"
-        value="Loading..."
-        loading={true}
-        icon={<Users />}
-        iconColor="#4a90e2"
-      />
-    );
-
-    expect(screen.getByText('Loading...')).toBeInTheDocument();
-  });
+  // removed loading-state test: component does not support 'loading' prop
 });

@@ -4,7 +4,7 @@
  */
 
 import '@testing-library/jest-dom';
-import { expect, afterEach } from 'vitest';
+import { expect, afterEach, vi } from 'vitest';
 import { cleanup } from '@testing-library/react';
 import * as matchers from '@testing-library/jest-dom/matchers';
 
@@ -17,6 +17,7 @@ afterEach(() => {
 });
 
 // Mock IntersectionObserver
+// @ts-ignore
 global.IntersectionObserver = class IntersectionObserver {
   constructor() {}
   disconnect() {}
@@ -25,6 +26,7 @@ global.IntersectionObserver = class IntersectionObserver {
 };
 
 // Mock ResizeObserver
+// @ts-ignore
 global.ResizeObserver = class ResizeObserver {
   constructor() {}
   disconnect() {}
@@ -48,36 +50,49 @@ Object.defineProperty(window, 'matchMedia', {
 });
 
 // Mock localStorage
-const localStorageMock = {
+const localStorageMock: Storage = {
   getItem: vi.fn(),
   setItem: vi.fn(),
   removeItem: vi.fn(),
   clear: vi.fn(),
-};
+  key: vi.fn(),
+  length: 0,
+} as any;
+// @ts-ignore
 global.localStorage = localStorageMock;
 
 // Mock sessionStorage
-const sessionStorageMock = {
+const sessionStorageMock: Storage = {
   getItem: vi.fn(),
   setItem: vi.fn(),
   removeItem: vi.fn(),
   clear: vi.fn(),
-};
+  key: vi.fn(),
+  length: 0,
+} as any;
+// @ts-ignore
 global.sessionStorage = sessionStorageMock;
 
 // Mock fetch
+// @ts-ignore
 global.fetch = vi.fn();
 
 // Mock WebSocket
+// @ts-ignore
 global.WebSocket = class WebSocket {
   constructor() {}
   close() {}
   send() {}
   addEventListener() {}
   removeEventListener() {}
-};
+  static CONNECTING = 0;
+  static OPEN = 1;
+  static CLOSING = 2;
+  static CLOSED = 3;
+} as any;
 
 // Mock performance
+// @ts-ignore
 global.performance = {
   now: vi.fn(() => Date.now()),
   mark: vi.fn(),

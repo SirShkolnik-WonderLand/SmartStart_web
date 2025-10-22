@@ -5,8 +5,7 @@
 
 import 'styled-components';
 
-declare module 'styled-components' {
-  export interface DefaultTheme {
+export interface DefaultTheme {
     name: 'light' | 'dark';
     colors: {
       // Base colors
@@ -108,7 +107,6 @@ declare module 'styled-components' {
       accelerate: string;
       sharp: string;
     };
-  }
 }
 
 // ============================================================================

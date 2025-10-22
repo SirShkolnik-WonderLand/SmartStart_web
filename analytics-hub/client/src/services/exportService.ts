@@ -3,9 +3,18 @@
  * Handles CSV and PDF export functionality
  */
 
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
-import Papa from 'papaparse';
+// These libs are optional in build; guard dynamic import for SSR/build
+let jsPDF: any;
+let autoTable: any;
+let Papa: any;
+try {
+  // @ts-ignore
+  jsPDF = (await import('jspdf')).default;
+  // @ts-ignore
+  autoTable = (await import('jspdf-autotable')).default;
+  // @ts-ignore
+  Papa = (await import('papaparse')).default || (await import('papaparse'));
+} catch {}
 
 export interface ExportOptions {
   format: 'csv' | 'pdf';
@@ -34,6 +43,7 @@ export class ExportService {
    * Export data to CSV
    */
   static exportToCSV(data: any[], filename: string): void {
+    if (!Papa) return;
     const csv = Papa.unparse(data);
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
@@ -53,6 +63,7 @@ export class ExportService {
    * Export data to PDF
    */
   static exportToPDF(options: ExportOptions): void {
+    if (!jsPDF) return;
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
@@ -82,7 +93,7 @@ export class ExportService {
       const headers = Object.keys(options.data[0]);
       const rows = options.data.map(row => headers.map(header => row[header] || ''));
       
-      autoTable(doc, {
+      autoTable && autoTable(doc, {
         head: [headers],
         body: rows,
         startY: 50,

@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
-import { Users, Smartphone, Monitor, Tablet, MapPin } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 import { PieChart } from '@/components/charts/PieChart';
 import { Card, CardHeader, CardTitle } from '@/components/ui/Card';
 import { analyticsApi } from '@/services/api';
