@@ -5,7 +5,7 @@ services:
   - type: web
     name: alicesolutionsgroup-website
     env: node
-    plan: starter
+    plan: free
     region: oregon
     branch: main
     rootDir: stellar-den
@@ -30,7 +30,7 @@ services:
   - type: web
     name: analytics-hub-server
     env: node
-    plan: starter
+    plan: free
     region: oregon
     branch: main
     rootDir: analytics-hub
@@ -70,7 +70,7 @@ services:
   - type: web
     name: analytics-hub-dashboard
     env: static
-    plan: starter
+    # plan not supported/required for static sites; defaults to free
     # region is not supported for static services
     branch: main
     rootDir: analytics-hub/client
@@ -95,7 +95,7 @@ services:
 # ============================================================================
 databases:
   - name: analytics-hub-db
-    plan: starter
+    # plan omitted to use default new plan on Render
     region: oregon
     databaseName: analytics_hub
     user: analytics_admin
