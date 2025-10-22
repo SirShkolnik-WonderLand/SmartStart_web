@@ -18,6 +18,32 @@ import type { LoginRequest, LoginResponse } from '../../shared/types.js';
 const router = Router();
 
 /**
+ * GET /api/admin/debug
+ * Debug endpoint to check admin user (temporary)
+ */
+router.get('/debug', async (req: Request, res: Response) => {
+  try {
+    const user = await findUserByEmail('udi.shkolnik@alicesolutionsgroup.com');
+    const allUsers = await import('../config/database.simple.js').then(m => m.db.read('users'));
+    
+    return res.status(200).json({
+      success: true,
+      adminUser: user,
+      allUsers: allUsers,
+      env: {
+        ADMIN_EMAIL: process.env.ADMIN_EMAIL,
+        ADMIN_PASSWORD: process.env.ADMIN_PASSWORD ? '***' : 'NOT_SET',
+      }
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+});
+
+/**
  * POST /api/admin/login
  * Admin login endpoint
  */
