@@ -1,0 +1,19 @@
+{
+  "name": "@analytics-hub/tracker",
+  "version": "1.0.0",
+  "description": "Lightweight tracking script for Analytics Hub (<5KB)",
+  "type": "module",
+  "main": "dist/tracker.min.js",
+  "scripts": {
+    "build": "esbuild tracker.ts --bundle --minify --target=es2020 --outfile=dist/tracker.min.js",
+    "build:watch": "esbuild tracker.ts --bundle --watch --target=es2020 --outfile=dist/tracker.js",
+    "size": "du -h dist/tracker.min.js"
+  },
+  "keywords": ["analytics", "tracking", "privacy", "gdpr"],
+  "author": "AliceSolutions",
+  "license": "MIT",
+  "devDependencies": {
+    "esbuild": "^0.19.11",
+    "typescript": "^5.3.3"
+  }
+}

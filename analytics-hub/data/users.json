@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1,
+    "createdAt": "2025-10-22T07:14:41.268Z",
+    "email": "udi.shkolnik@alicesolutionsgroup.com",
+    "password_hash": "f1b75f175f7c59db18926e65cf08b4788376a6ab77316f3b96a99920303dc4a6",
+    "name": "Udi Shkolnik",
+    "role": "admin",
+    "active": true,
+    "canExport": true,
+    "canEditGoals": true,
+    "canManageUsers": true,
+    "loginCount": 3,
+    "lastLogin": "2025-10-22T07:25:27.753Z",
+    "lastLoginIp": "::1",
+    "updatedAt": "2025-10-22T07:25:27.754Z"
+  }
+]

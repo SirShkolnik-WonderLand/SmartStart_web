@@ -1,0 +1,35 @@
+[
+  {
+    "id": "goal_001",
+    "name": "SmartStart Signup",
+    "slug": "smartstart_signup",
+    "description": "User signs up for SmartStart membership",
+    "type": "conversion",
+    "value": 98.8,
+    "isActive": true,
+    "createdAt": "2025-10-15T07:30:38.822Z",
+    "updatedAt": "2025-10-15T07:30:38.822Z"
+  },
+  {
+    "id": "goal_002",
+    "name": "Contact Form Submission",
+    "slug": "contact_form",
+    "description": "User submits contact form",
+    "type": "conversion",
+    "value": 0,
+    "isActive": true,
+    "createdAt": "2025-10-15T07:30:38.822Z",
+    "updatedAt": "2025-10-15T07:30:38.822Z"
+  },
+  {
+    "id": "goal_003",
+    "name": "ISO Studio Demo",
+    "slug": "iso_demo",
+    "description": "User requests ISO Studio demo",
+    "type": "conversion",
+    "value": 0,
+    "isActive": true,
+    "createdAt": "2025-10-15T07:30:38.822Z",
+    "updatedAt": "2025-10-15T07:30:38.822Z"
+  }
+]

@@ -1,0 +1,94 @@
+<!-- 
+  📊 Analytics Hub Tracking Script
+  Add this to your live website at alicesolutionsgroup.com
+  
+  STEP 1: Run ngrok to get your public URL
+  STEP 2: Replace YOUR_NGROK_URL below
+  STEP 3: Add this script to your website
+-->
+
+<script>
+(function(){
+  // 👇 REPLACE THIS with your ngrok URL!
+  const API_URL = 'https://YOUR_NGROK_URL.ngrok.io';
+  
+  // Session management
+  let sessionId = sessionStorage.getItem('ah_session') || Math.random().toString(36).substring(7);
+  sessionStorage.getItem('ah_session', sessionId);
+  
+  // Track function
+  function track(type, data) {
+    fetch(API_URL + '/api/v1/' + type, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({...data, sessionId}),
+      keepalive: true
+    }).catch(e => console.log('Analytics:', e));
+  }
+  
+  // Public API
+  window.analyticsHub = {
+    trackEvent: (name, props) => track('event', {
+      event: {
+        eventType: 'custom',
+        eventName: name,
+        pageUrl: location.href,
+        properties: props,
+        sessionId
+      }
+    }),
+    trackConversion: (name, val) => track('conversion', {
+      goalName: name,
+      goalValue: val,
+      pageUrl: location.href
+    }),
+    trackPageView: () => track('pageview', {
+      pageUrl: location.href,
+      pageTitle: document.title
+    })
+  };
+  
+  // Auto-track page views
+  track('pageview', {
+    pageUrl: location.href,
+    pageTitle: document.title
+  });
+  
+  console.log('✅ Analytics Hub tracking active:', API_URL);
+  console.log('📊 Session ID:', sessionId);
+})();
+</script>
+
+<!--
+  Usage Examples:
+  
+  1. Track custom event:
+     analyticsHub.trackEvent('button_clicked', { button: 'Sign Up', section: 'Hero' });
+  
+  2. Track conversion:
+     analyticsHub.trackConversion('Newsletter Signup', 1);
+  
+  3. Manually track page view:
+     analyticsHub.trackPageView();
+-->
+
+<!-- 
+  For React/TypeScript (stellar-den/client/App.tsx):
+  
+  useEffect(() => {
+    const analyticsConfig = {
+      apiUrl: 'https://YOUR_NGROK_URL.ngrok.io',
+      autoTrack: true,
+    };
+
+    (window as any).analyticsHubConfig = analyticsConfig;
+
+    const script = document.createElement('script');
+    script.src = `${analyticsConfig.apiUrl}/tracker.js`;
+    script.async = true;
+    script.defer = true;
+    document.head.appendChild(script);
+
+    console.log('✅ Analytics Hub initialized');
+  }, []);
+-->

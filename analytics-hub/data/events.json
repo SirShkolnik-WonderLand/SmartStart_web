@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1,
+    "createdAt": "2025-10-22T07:30:44.794Z",
+    "eventType": "page_view",
+    "sessionId": "test_sess_001",
+    "pageUrl": "http://localhost:8080/",
+    "pageTitle": "AliceSolutions - Homepage",
+    "deviceInfo": {
+      "deviceType": "desktop",
+      "browser": "Unknown",
+      "os": "Unknown"
+    },
+    "location": {
+      "countryCode": "XX",
+      "countryName": "Local",
+      "city": "Localhost"
+    }
+  },
+  {
+    "id": 2,
+    "createdAt": "2025-10-22T08:01:54.389Z",
+    "eventType": "page_view",
+    "sessionId": "test-session-123",
+    "pageUrl": "http://localhost:5173/",
+    "pageTitle": "Test Page",
+    "deviceInfo": {
+      "deviceType": "desktop",
+      "browser": "Unknown",
+      "os": "Unknown"
+    },
+    "location": {
+      "countryCode": "XX",
+      "countryName": "Local",
+      "city": "Localhost"
+    }
+  }
+]

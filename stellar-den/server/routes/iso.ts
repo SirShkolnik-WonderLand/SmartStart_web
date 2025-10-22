@@ -1,7 +1,7 @@
 import { RequestHandler } from "express";
 import fs from "fs";
 import path from "path";
-import { Control, StoryBotQuestion, FullAssessment, Checklist } from "@shared/iso";
+import { Control, StoryBotQuestion, Checklist } from "@shared/iso";
 
 // Load data files
 const loadControls = (): Control[] => {

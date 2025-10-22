@@ -13,6 +13,7 @@ import {
   ArrowRight,
   CheckCircle2,
   Zap,
+  Shield,
   Users,
   Target,
   Lightbulb,

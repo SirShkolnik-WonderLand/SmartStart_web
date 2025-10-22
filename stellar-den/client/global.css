@@ -1,5 +1,5 @@
 /** @import must precede all other statements */
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -8,32 +8,32 @@
 @layer base {
   /**
    * AliceSolutionsGroup 2030 Design Theme
-   * Light mode: Teal accents (#00C8B8), light background (#F8FAFB), dark text (#1B1B1E)
-   * Dark mode: Cyan accents (#00FFD8), dark background (#0D1117), light text (#EEFDF9)
+   * Galactic Turquoise #1DE0C1, Deep Space #0B1220, Plasma Purple #6A5CFF
+   * Void Black #06090F, Starlight #E6F6F2
    * Colors expressed in HSL format for Tailwind compatibility
    */
   :root {
-    /* Light Mode Colors - Professional & Less Gamified */
-    --background: 200 20% 97%; /* #F8FAFB */
-    --foreground: 240 2% 11%; /* #1B1B1E */
+    /* Light Mode Colors - 2030 Aesthetic */
+    --background: 160 20% 96%; /* #E6F6F2 Starlight */
+    --foreground: 220 40% 8%; /* #06090F Void */
     --card: 0 0% 100%; /* White */
-    --card-foreground: 240 2% 11%;
+    --card-foreground: 220 40% 8%;
     --popover: 0 0% 100%;
-    --popover-foreground: 240 2% 11%;
-    --primary: 172 100% 40%; /* Teal #00C8B8 */
-    --primary-foreground: 0 0% 100%;
-    --secondary: 200 15% 90%; /* Light gray-blue */
-    --secondary-foreground: 240 2% 11%;
-    --muted: 200 10% 85%;
-    --muted-foreground: 215 10% 45%;
-    --accent: 172 100% 40%; /* Teal */
-    --accent-foreground: 0 0% 100%;
+    --popover-foreground: 220 40% 8%;
+    --primary: 166 86% 49%; /* #1DE0C1 Galactic Turquoise */
+    --primary-foreground: 220 40% 8%;
+    --secondary: 246 81% 62%; /* #6A5CFF Plasma Purple */
+    --secondary-foreground: 0 0% 100%;
+    --muted: 160 10% 85%;
+    --muted-foreground: 220 10% 45%;
+    --accent: 166 86% 49%; /* Galactic Turquoise */
+    --accent-foreground: 220 40% 8%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
-    --border: 200 15% 90%;
-    --input: 200 10% 92%;
-    --ring: 172 100% 40%;
-    --radius: 0.5rem;
+    --border: 160 15% 88%;
+    --input: 160 10% 92%;
+    --ring: 166 86% 49%;
+    --radius: 0.75rem;
     
     /* ISO Studio Specific Colors - Light Mode (same as main) */
     --iso-bg: 200 20% 97%; /* Same as main background */
@@ -45,26 +45,26 @@
   }
 
   .dark {
-    /* Dark Mode Colors - Rich & Professional */
-    --background: 210 18% 6%; /* #0D1117 */
-    --foreground: 160 100% 94%; /* #EEFDF9 */
-    --card: 210 15% 15%; /* Deep dark-blue */
-    --card-foreground: 160 100% 94%;
-    --popover: 210 15% 15%;
-    --popover-foreground: 160 100% 94%;
-    --primary: 163 100% 50%; /* Cyan #00FFD8 */
-    --primary-foreground: 210 18% 6%;
-    --secondary: 210 15% 25%; /* Dark blue */
-    --secondary-foreground: 160 100% 94%;
-    --muted: 210 15% 30%;
-    --muted-foreground: 160 50% 70%;
-    --accent: 163 100% 50%; /* Cyan */
-    --accent-foreground: 210 18% 6%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 210 15% 25%;
-    --input: 210 15% 20%;
-    --ring: 163 100% 50%;
+    /* Dark Mode Colors - 2030 Cosmic Aesthetic */
+    --background: 220 38% 7%; /* #0B1220 Deep Space */
+    --foreground: 160 20% 95%; /* #E6F6F2 Starlight */
+    --card: 220 40% 8%; /* #06090F Void */
+    --card-foreground: 160 20% 95%;
+    --popover: 220 40% 8%;
+    --popover-foreground: 160 20% 95%;
+    --primary: 166 86% 49%; /* #1DE0C1 Galactic Turquoise */
+    --primary-foreground: 220 40% 8%;
+    --secondary: 246 81% 62%; /* #6A5CFF Plasma Purple */
+    --secondary-foreground: 0 0% 100%;
+    --muted: 220 20% 20%;
+    --muted-foreground: 160 10% 65%;
+    --accent: 166 86% 49%; /* Galactic Turquoise */
+    --accent-foreground: 220 40% 8%;
+    --destructive: 0 62.8% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 30% 15%;
+    --input: 220 30% 12%;
+    --ring: 166 86% 49%;
     
     /* ISO Studio Specific Colors - Dark Mode (same as main) */
     --iso-bg: 210 18% 6%; /* Same as main background */
@@ -147,6 +147,23 @@
 
   .glass-effect-light {
     @apply bg-white/70 backdrop-blur-glass border border-white/30 dark:bg-white/10 dark:border-white/20;
+  }
+
+  /* Card alignment utilities */
+  .card-grid {
+    @apply grid gap-6 auto-rows-fr;
+  }
+
+  .card-equal-height {
+    @apply flex flex-col;
+  }
+
+  .card-content {
+    @apply flex flex-col flex-grow;
+  }
+
+  .card-cta {
+    @apply mt-auto;
   }
 }
 

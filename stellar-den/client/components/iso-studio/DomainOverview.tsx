@@ -60,7 +60,7 @@ export default function DomainOverview({
                   Control Domains
                 </h1>
                 <p className="text-sm iso-text-secondary">
-                  {framework.domains.length} domains, {controls.length} controls
+                  {framework?.domains?.length || 0} domains, {controls.length} controls
                 </p>
               </div>
             </div>
@@ -91,7 +91,7 @@ export default function DomainOverview({
                     <Grid3x3 className="w-6 h-6 text-primary" />
                   </div>
                   <div className="text-2xl font-bold iso-accent">
-                    {framework.domains.length}
+                    {framework?.domains?.length || 0}
                   </div>
                 </div>
                 <h3 className="text-sm font-semibold iso-text-primary mb-1">
@@ -190,7 +190,7 @@ export default function DomainOverview({
 
         {/* Domain Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {framework.domains.map((domain, index) => {
+          {framework?.domains?.map((domain, index) => {
             const stats = getDomainStats(domain.id);
             
             return (

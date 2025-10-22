@@ -1,0 +1,62 @@
+[
+  {
+    "id": 1,
+    "goalName": "Contact Form Submit",
+    "goalSlug": "contact-form",
+    "goalType": "event",
+    "goalTrigger": "contact_form_submit",
+    "goalValue": 100,
+    "totalConversions": 0,
+    "totalValue": 0,
+    "active": true,
+    "createdAt": "2025-10-22T07:14:41.265Z"
+  },
+  {
+    "id": 2,
+    "goalName": "ISO Studio Demo",
+    "goalSlug": "iso-demo",
+    "goalType": "event",
+    "goalTrigger": "iso_demo_request",
+    "goalValue": 250,
+    "totalConversions": 0,
+    "totalValue": 0,
+    "active": true,
+    "createdAt": "2025-10-22T07:14:41.266Z"
+  },
+  {
+    "id": 3,
+    "goalName": "SmartStart Application",
+    "goalSlug": "smartstart-apply",
+    "goalType": "event",
+    "goalTrigger": "smartstart_application",
+    "goalValue": 500,
+    "totalConversions": 0,
+    "totalValue": 0,
+    "active": true,
+    "createdAt": "2025-10-22T07:14:41.266Z"
+  },
+  {
+    "id": 4,
+    "goalName": "Newsletter Signup",
+    "goalSlug": "newsletter",
+    "goalType": "event",
+    "goalTrigger": "newsletter_signup",
+    "goalValue": 10,
+    "totalConversions": 0,
+    "totalValue": 0,
+    "active": true,
+    "createdAt": "2025-10-22T07:14:41.266Z"
+  },
+  {
+    "id": 5,
+    "goalName": "Book a Call",
+    "goalSlug": "book-call",
+    "goalType": "event",
+    "goalTrigger": "book_call_click",
+    "goalValue": 200,
+    "totalConversions": 0,
+    "totalValue": 0,
+    "active": true,
+    "createdAt": "2025-10-22T07:14:41.266Z"
+  }
+]

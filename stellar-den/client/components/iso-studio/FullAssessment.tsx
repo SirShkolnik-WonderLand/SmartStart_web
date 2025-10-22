@@ -7,6 +7,7 @@ import ControlsTable from "./ControlsTable";
 import ControlDetails from "./ControlDetails";
 import SmartStats from "./SmartStats";
 import { Control, Project, Stats, Framework, Answer } from "@shared/iso";
+import { Card } from "@/components/ui/card";
 
 type View = "dashboard" | "domains" | "controls" | "domain-controls";
 

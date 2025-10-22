@@ -202,7 +202,7 @@ export default function Header() {
                             href={subItem.href}
                             onClick={(e) => {
                               e.preventDefault();
-                              handleNavigation(subItem.href, subItem.action);
+                              handleNavigation(subItem.href);
                             }}
                             className="block px-4 py-2 text-sm text-foreground/80 hover:text-primary hover:bg-primary/10 transition-all duration-200"
                           >
@@ -326,7 +326,7 @@ export default function Header() {
                       href={subItem.href}
                       onClick={(e) => {
                         e.preventDefault();
-                        handleNavigation(subItem.href, subItem.action);
+                        handleNavigation(subItem.href);
                       }}
                       className="block px-6 py-2 rounded-lg hover:bg-muted transition-colors text-sm text-foreground/80 hover:text-primary"
                     >

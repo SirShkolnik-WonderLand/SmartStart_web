@@ -1,0 +1,317 @@
+/**
+ * Production-Grade Security Middleware
+ * Comprehensive security measures for all API endpoints
+ */
+
+import { Request, Response, NextFunction } from 'express';
+import rateLimit from 'express-rate-limit';
+import helmet from 'helmet';
+import { RateLimiter } from '../../client/lib/validation';
+
+// Rate limiting instances
+const generalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  message: 'Too many requests from this IP, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const strictLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // limit each IP to 10 requests per windowMs
+  message: 'Too many requests from this IP, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // limit each IP to 5 auth requests per windowMs
+  message: 'Too many authentication attempts, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Custom rate limiter for form submissions
+const formSubmissionLimiter = new RateLimiter(3, 15 * 60 * 1000); // 3 attempts per 15 minutes
+
+// Security headers middleware
+export const securityHeaders = helmet({
+  contentSecurityPolicy: process.env.NODE_ENV === 'production' ? {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: [
+        "'self'",
+        "'strict-dynamic'",
+        "https://plausible.io",
+        "https://www.google-analytics.com"
+      ],
+      styleSrc: [
+        "'self'",
+        "'unsafe-inline'",
+        "https://fonts.googleapis.com"
+      ],
+      fontSrc: [
+        "'self'",
+        "https://fonts.gstatic.com"
+      ],
+      imgSrc: [
+        "'self'",
+        "data:",
+        "https:",
+        "blob:"
+      ],
+      connectSrc: [
+        "'self'",
+        "https://plausible.io",
+        "https://www.google-analytics.com"
+      ],
+      frameSrc: ["'none'"],
+      objectSrc: ["'none'"],
+      baseUri: ["'self'"],
+      formAction: ["'self'"],
+      upgradeInsecureRequests: []
+    }
+  } : {
+    // Development CSP - more permissive for Vite dev server
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: [
+        "'self'",
+        "'unsafe-inline'",
+        "'unsafe-eval'",
+        "http://localhost:*",
+        "ws://localhost:*"
+      ],
+      styleSrc: [
+        "'self'",
+        "'unsafe-inline'",
+        "https://fonts.googleapis.com"
+      ],
+      fontSrc: [
+        "'self'",
+        "https://fonts.gstatic.com"
+      ],
+      imgSrc: [
+        "'self'",
+        "data:",
+        "https:",
+        "http:",
+        "blob:"
+      ],
+      connectSrc: [
+        "'self'",
+        "http://localhost:*",
+        "ws://localhost:*",
+        "wss://localhost:*"
+      ],
+      frameSrc: ["'self'"],
+      objectSrc: ["'none'"],
+      baseUri: ["'self'"],
+      formAction: ["'self'"]
+    }
+  },
+  crossOriginEmbedderPolicy: false,
+  hsts: process.env.NODE_ENV === 'production' ? {
+    maxAge: 31536000,
+    includeSubDomains: true,
+    preload: true
+  } : false
+});
+
+// CORS configuration
+export const corsConfig = (req: Request, res: Response, next: NextFunction) => {
+  const origin = req.headers.origin;
+  const allowedOrigins = [
+    'https://alicesolutionsgroup.com',
+    'https://www.alicesolutionsgroup.com',
+    'https://alicesolutionsgroup.netlify.app',
+    'http://localhost:3000',
+    'http://localhost:8080',
+    'http://localhost:5173'
+  ];
+
+  if (origin && allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Max-Age', '86400');
+
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+
+  next();
+};
+
+// Input validation middleware
+export const validateInput = (req: Request, res: Response, next: NextFunction) => {
+  // Check for suspicious patterns
+  const suspiciousPatterns = [
+    /<script/i,
+    /javascript:/i,
+    /on\w+\s*=/i,
+    /union\s+select/i,
+    /drop\s+table/i,
+    /delete\s+from/i,
+    /insert\s+into/i,
+    /update\s+set/i,
+    /exec\s*\(/i,
+    /eval\s*\(/i,
+    /document\.cookie/i,
+    /window\.location/i
+  ];
+
+  const bodyString = JSON.stringify(req.body);
+  const queryString = JSON.stringify(req.query);
+  const paramsString = JSON.stringify(req.params);
+
+  for (const pattern of suspiciousPatterns) {
+    if (pattern.test(bodyString) || pattern.test(queryString) || pattern.test(paramsString)) {
+      console.warn(`Suspicious input detected from IP: ${req.ip}`, {
+        pattern: pattern.toString(),
+        body: req.body,
+        query: req.query,
+        params: req.params
+      });
+      
+      return res.status(400).json({
+        error: 'Invalid input detected',
+        message: 'Your request contains potentially malicious content'
+      });
+    }
+  }
+
+  next();
+};
+
+// Form submission rate limiting
+export const formSubmissionRateLimit = (req: Request, res: Response, next: NextFunction) => {
+  const identifier = req.ip || 'unknown';
+  
+  if (!formSubmissionLimiter.isAllowed(identifier)) {
+    const remainingTime = formSubmissionLimiter.getRemainingTime(identifier);
+    return res.status(429).json({
+      error: 'Rate limit exceeded',
+      message: 'Too many form submissions. Please try again later.',
+      retryAfter: Math.ceil(remainingTime / 1000)
+    });
+  }
+
+  next();
+};
+
+// Request size limiting
+export const requestSizeLimit = (maxSize: number = 1024 * 1024) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    const contentLength = parseInt(req.headers['content-length'] || '0');
+    
+    if (contentLength > maxSize) {
+      return res.status(413).json({
+        error: 'Request too large',
+        message: `Request size exceeds ${maxSize} bytes`
+      });
+    }
+
+    next();
+  };
+};
+
+// IP whitelist (for admin endpoints)
+export const ipWhitelist = (allowedIPs: string[]) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    const clientIP = req.ip || req.connection.remoteAddress || 'unknown';
+    
+    if (!allowedIPs.includes(clientIP)) {
+      console.warn(`Unauthorized IP access attempt: ${clientIP}`);
+      return res.status(403).json({
+        error: 'Access denied',
+        message: 'Your IP address is not authorized'
+      });
+    }
+
+    next();
+  };
+};
+
+// Request logging
+export const requestLogger = (req: Request, res: Response, next: NextFunction) => {
+  const start = Date.now();
+  
+  res.on('finish', () => {
+    const duration = Date.now() - start;
+    const logData = {
+      method: req.method,
+      url: req.url,
+      ip: req.ip,
+      userAgent: req.get('User-Agent'),
+      statusCode: res.statusCode,
+      duration: `${duration}ms`,
+      timestamp: new Date().toISOString()
+    };
+
+    // Log suspicious requests
+    if (res.statusCode >= 400) {
+      console.warn('Request completed with error:', logData);
+    } else {
+      console.log('Request completed:', logData);
+    }
+  });
+
+  next();
+};
+
+// Error handling middleware
+export const errorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
+  console.error('Error occurred:', {
+    error: err.message,
+    stack: err.stack,
+    url: req.url,
+    method: req.method,
+    ip: req.ip,
+    timestamp: new Date().toISOString()
+  });
+
+  // Don't leak error details in production
+  const isDevelopment = process.env.NODE_ENV === 'development';
+  
+  res.status(err.status || 500).json({
+    error: 'Internal server error',
+    message: isDevelopment ? err.message : 'Something went wrong',
+    ...(isDevelopment && { stack: err.stack })
+  });
+};
+
+// Security monitoring
+export const securityMonitor = (req: Request, res: Response, next: NextFunction) => {
+  // Monitor for potential attacks
+  const suspiciousHeaders = [
+    'x-forwarded-for',
+    'x-real-ip',
+    'x-cluster-client-ip',
+    'x-forwarded',
+    'forwarded-for',
+    'forwarded'
+  ];
+
+  const suspiciousValues = req.headers;
+  for (const [key, value] of Object.entries(suspiciousValues)) {
+    if (typeof value === 'string' && value.includes('..')) {
+      console.warn(`Potential path traversal attempt from ${req.ip}:`, {
+        header: key,
+        value: value,
+        url: req.url
+      });
+    }
+  }
+
+  next();
+};
+
+// Export rate limiters
+export { generalLimiter, strictLimiter, authLimiter };

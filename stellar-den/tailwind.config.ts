@@ -15,7 +15,6 @@ export default {
     extend: {
       fontFamily: {
         sans: [
-          "Satoshi Variable",
           "Inter",
           "ui-sans-serif",
           "system-ui",
@@ -24,13 +23,18 @@ export default {
           "sans-serif",
         ],
         display: [
-          "Satoshi Variable",
-          "Inter",
+          "Space Grotesk",
           "ui-sans-serif",
           "system-ui",
           "-apple-system",
           "BlinkMacSystemFont",
           "sans-serif",
+        ],
+        mono: [
+          "JetBrains Mono",
+          "ui-monospace",
+          "SFMono-Regular",
+          "monospace",
         ],
       },
       colors: {
@@ -130,9 +134,15 @@ export default {
           "0 8px 32px 0 rgba(0, 0, 0, 0.3), inset 0 1px 1px 0 rgba(255, 255, 255, 0.1)",
         "glow-teal": "0 0 20px rgba(0, 200, 184, 0.5)",
         "glow-cyan": "0 0 30px rgba(0, 255, 216, 0.4)",
+        "glow-turquoise": "0 0 30px rgba(29, 224, 193, 0.5)",
+        "glow-plasma": "0 0 25px rgba(106, 92, 255, 0.4)",
       },
       transitionTimingFunction: {
         smooth: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+        "2030": "cubic-bezier(0.4, 0.0, 0.2, 1)",
+      },
+      transitionDuration: {
+        "2030": "450ms",
       },
     },
   },

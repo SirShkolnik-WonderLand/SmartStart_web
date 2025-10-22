@@ -1,6 +1,6 @@
 // Shared types for ISO Studio - Complete System
 
-export type Framework = "ISO27001" | "CMMC";
+export type FrameworkType = "ISO27001" | "CMMC";
 
 export type ControlStatus = "ready" | "partial" | "missing";
 

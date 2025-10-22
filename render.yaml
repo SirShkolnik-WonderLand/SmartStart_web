@@ -1,13 +1,16 @@
 services:
-  # Main Website Service (Node.js + Vite)
+  # ============================================================================
+  # MAIN WEBSITE - AliceSolutions (stellar-den)
+  # ============================================================================
   - type: web
     name: alicesolutionsgroup-website
     env: node
     plan: starter
     region: oregon
     branch: main
-    buildCommand: pnpm install && pnpm build
-    startCommand: pnpm start
+    rootDir: stellar-den
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production
@@ -15,6 +18,89 @@ services:
         value: 8080
       - key: PRODUCTION_DOMAIN
         value: https://alicesolutionsgroup.com
+      - key: VITE_ANALYTICS_API_URL
+        sync: false
+        # Will be: https://analytics-alicesolutions.onrender.com
     healthCheckPath: /
     autoDeploy: true
 
+  # ============================================================================
+  # ANALYTICS HUB - Backend Server
+  # ============================================================================
+  - type: web
+    name: analytics-hub-server
+    env: node
+    plan: starter
+    region: oregon
+    branch: main
+    rootDir: analytics-hub
+    buildCommand: npm install && npm run build:server
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 4000
+      - key: HOST
+        value: 0.0.0.0
+      - key: DATABASE_URL
+        fromDatabase:
+          name: analytics-hub-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+        sync: false
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: ADMIN_EMAIL
+        value: udi.shkolnik@alicesolutionsgroup.com
+        sync: false
+      - key: ADMIN_PASSWORD
+        generateValue: true
+        sync: false
+      - key: ALLOWED_ORIGINS
+        value: https://alicesolutionsgroup.com,https://www.alicesolutionsgroup.com,https://admin-alicesolutions.onrender.com
+      - key: RATE_LIMIT_WINDOW_MS
+        value: 900000
+      - key: RATE_LIMIT_MAX_REQUESTS
+        value: 100
+    healthCheckPath: /health
+    autoDeploy: true
+
+  # ============================================================================
+  # ANALYTICS HUB - Admin Dashboard (Static Site)
+  # ============================================================================
+  - type: web
+    name: analytics-hub-dashboard
+    env: static
+    plan: starter
+    region: oregon
+    branch: main
+    rootDir: analytics-hub/client
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    envVars:
+      - key: VITE_API_URL
+        sync: false
+        # Will be: https://analytics-alicesolutions.onrender.com
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+    autoDeploy: true
+
+# ============================================================================
+# DATABASE - PostgreSQL for Analytics Hub
+# ============================================================================
+databases:
+  - name: analytics-hub-db
+    plan: starter
+    region: oregon
+    databaseName: analytics_hub
+    user: analytics_admin
+    ipAllowList: []
+    postgresMajorVersion: 15
