@@ -60,7 +60,7 @@ interface DashboardState {
 
 export const useDashboardStore = create<DashboardState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       // Theme
       theme: 'dark',
       toggleTheme: () =>

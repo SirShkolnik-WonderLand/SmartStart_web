@@ -66,7 +66,7 @@ export class ExportService {
     if (!jsPDF) return;
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
+    // const pageHeight = doc.internal.pageSize.getHeight(); // Unused for now
     
     // Add title
     if (options.title) {

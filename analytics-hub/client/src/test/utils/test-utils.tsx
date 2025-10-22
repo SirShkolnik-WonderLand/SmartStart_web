@@ -130,10 +130,10 @@ export const mockFetch = (response: any, status = 200) => {
 // Helper to mock WebSocket
 export const mockWebSocket = () => {
   const mockWs = {
-    close: vi.fn(),
-    send: vi.fn(),
-    addEventListener: vi.fn(),
-    removeEventListener: vi.fn(),
+    close: () => {},
+    send: () => {},
+    addEventListener: () => {},
+    removeEventListener: () => {},
     readyState: WebSocket.OPEN,
   };
   
