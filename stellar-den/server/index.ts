@@ -3,6 +3,12 @@ import express from "express";
 import cors from "cors";
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url"; // Added for ES modules __dirname equivalent
+
+// ES modules equivalent of __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 import { handleDemo } from "./routes/demo";
 import {
   getControls,
@@ -71,9 +77,11 @@ export function createServer() {
 
   // Serve HTML with nonce for SPA (catch-all route - must be last before error handler)
   app.get('/*', (req, res) => {
+    let templatePath = ''; // Declare outside try block for error logging
+    
     try {
       // Read the HTML template - try multiple possible paths
-      let templatePath = path.join(__dirname, 'templates', 'index.html');
+      templatePath = path.join(__dirname, 'templates', 'index.html');
       let html: string;
       
       try {
