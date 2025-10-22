@@ -65,7 +65,7 @@ export function createServer() {
   app.post("/api/iso/send-checklist", sendChecklist);
 
   // Serve HTML with nonce for SPA (catch-all route - must be last before error handler)
-  app.get("*", (req, res) => {
+  app.get('/*', (req, res) => {
     try {
       // Read the HTML template
       const templatePath = path.join(__dirname, 'templates', 'index.html');
