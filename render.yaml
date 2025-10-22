@@ -9,8 +9,8 @@ services:
     region: oregon
     branch: main
     rootDir: stellar-den
-    buildCommand: npm ci && npm run build
-    startCommand: npm start
+    buildCommand: pnpm install --frozen-lockfile && pnpm build
+    startCommand: pnpm start
     envVars:
       - key: NODE_ENV
         value: production
@@ -34,7 +34,7 @@ services:
     region: oregon
     branch: main
     rootDir: analytics-hub
-    buildCommand: npm install && npm run build:server
+    buildCommand: npm install && npm run build
     startCommand: npm start
     envVars:
       - key: NODE_ENV
