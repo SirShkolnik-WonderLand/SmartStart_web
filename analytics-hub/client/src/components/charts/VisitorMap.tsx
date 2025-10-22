@@ -6,6 +6,7 @@
 import React, { useEffect, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
 import styled from 'styled-components';
+import { motion } from 'framer-motion';
 
 interface VisitorLocation {
   id: string;
