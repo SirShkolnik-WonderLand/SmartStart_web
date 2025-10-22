@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ES2022",
     "module": "ES2022",
-    "lib": ["ES2022"],
+    "lib": ["ES2022", "DOM"],
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "allowJs": true,
@@ -23,5 +23,5 @@
     }
   },
   "include": ["server/**/*", "shared/**/*", "scripts/**/*", "types/**/*"],
-  "exclude": ["node_modules", "dist", "client"]
+  "exclude": ["node_modules", "dist", "client", "node_modules/drizzle-orm/mysql-core/**/*", "node_modules/drizzle-orm/sqlite-core/**/*"]
 }

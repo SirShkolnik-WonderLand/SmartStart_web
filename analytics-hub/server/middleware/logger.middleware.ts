@@ -42,7 +42,7 @@ export function requestLogger(
   const originalJson = res.json;
 
   // Override res.send to log response
-  res.send = function (data): Response {
+  res.send = function (data: any): Response {
     res.send = originalSend;
     const duration = Date.now() - start;
     logRequest(method, url, res.statusCode, duration, ip);
@@ -50,7 +50,7 @@ export function requestLogger(
   };
 
   // Override res.json to log response
-  res.json = function (data): Response {
+  res.json = function (data: any): Response {
     res.json = originalJson;
     const duration = Date.now() - start;
     logRequest(method, url, res.statusCode, duration, ip);
