@@ -107,6 +107,32 @@ app.get('/tracker.js', (req: Request, res: Response) => {
   `);
 });
 
+// Debug route (temporary, no auth required)
+app.get('/api/debug', async (req: Request, res: Response) => {
+  try {
+    const { findUserByEmail } = await import('./services/authService.simple.js');
+    const { db } = await import('./config/database.simple.js');
+    
+    const user = await findUserByEmail('udi.shkolnik@alicesolutionsgroup.com');
+    const allUsers = db.read('users');
+    
+    return res.status(200).json({
+      success: true,
+      adminUser: user,
+      allUsers: allUsers,
+      env: {
+        ADMIN_EMAIL: process.env.ADMIN_EMAIL,
+        ADMIN_PASSWORD: process.env.ADMIN_PASSWORD ? '***' : 'NOT_SET',
+      }
+    });
+  } catch (error: any) {
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+});
+
 // Analytics routes (public, with tracking rate limit)
 app.use('/api/v1', trackingLimiter, analyticsRoutes);
 
