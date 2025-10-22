@@ -53,7 +53,7 @@ services:
       - key: ADMIN_PASSWORD
         generateValue: true
       - key: ALLOWED_ORIGINS
-        value: https://alicesolutionsgroup.com,https://www.alicesolutionsgroup.com,https://admin-alicesolutions.onrender.com
+        value: https://alicesolutionsgroup.com,https://www.alicesolutionsgroup.com,https://analytics-hub-dashboard.onrender.com
       - key: RATE_LIMIT_WINDOW_MS
         value: 900000
       - key: RATE_LIMIT_MAX_REQUESTS
