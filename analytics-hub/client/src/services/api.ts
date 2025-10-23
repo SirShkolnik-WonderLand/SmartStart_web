@@ -18,7 +18,7 @@ import type {
 } from '@shared/types';
 
 // API base URL
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://analytics-hub-server.onrender.com';
 
 // Create axios instance
 const api: AxiosInstance = axios.create({
