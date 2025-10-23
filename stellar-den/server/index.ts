@@ -128,9 +128,24 @@ export function createServer() {
       // Get nonce from response locals (set by nonceCSP middleware)
       const nonce = res.locals.nonce || '';
       
+      // Get the actual JavaScript file hash from the built assets
+      let jsHash = 'BUSY1Sdf'; // fallback
+      try {
+        const assetsPath = path.join(__dirname, '../spa/assets');
+        if (fs.existsSync(assetsPath)) {
+          const files = fs.readdirSync(assetsPath);
+          const jsFile = files.find(file => file.startsWith('index-') && file.endsWith('.js'));
+          if (jsFile) {
+            jsHash = jsFile.replace('index-', '').replace('.js', '');
+          }
+        }
+      } catch (error) {
+        console.log('Could not determine JS hash, using fallback:', error);
+      }
+      
       // Replace placeholders
       html = html.replace(/\{\{NONCE\}\}/g, nonce);
-      html = html.replace(/\{\{HASH\}\}/g, 'BUSY1Sdf'); // This should be dynamic in production
+      html = html.replace(/\{\{HASH\}\}/g, jsHash);
       html = html.replace(/\{\{ANALYTICS_API_URL\}\}/g, process.env.ANALYTICS_API_URL || 'https://analytics-hub-server.onrender.com');
       
       res.setHeader('Content-Type', 'text/html');
