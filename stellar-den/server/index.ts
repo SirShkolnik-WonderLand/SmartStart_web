@@ -34,21 +34,21 @@ import {
 export function createServer() {
   const app = express();
 
-  // Security middleware (order matters!) - temporarily simplified
-  // app.use(nonceCSP);
-  // app.use(corsConfig);
-  // app.use(requestLogger);
-  // app.use(securityMonitor);
-  // app.use(validateInput);
-  // app.use(requestSizeLimit(5 * 1024 * 1024)); // 5MB limit
+  // Security middleware (order matters!)
+  app.use(nonceCSP);
+  app.use(corsConfig);
+  app.use(requestLogger);
+  app.use(securityMonitor);
+  app.use(validateInput);
+  app.use(requestSizeLimit(5 * 1024 * 1024)); // 5MB limit
 
-  // Rate limiting (only in production) - temporarily disabled
-  // if (process.env.NODE_ENV === 'production') {
-  //   app.use("/api", generalLimiter);
-  //   app.use("/api/iso/save", strictLimiter);
-  //   app.use("/api/iso/export", strictLimiter);
-  //   app.use("/api/iso/send-checklist", formSubmissionRateLimit);
-  // }
+  // Rate limiting (only in production)
+  if (process.env.NODE_ENV === 'production') {
+    app.use("/api", generalLimiter);
+    app.use("/api/iso/save", strictLimiter);
+    app.use("/api/iso/export", strictLimiter);
+    app.use("/api/iso/send-checklist", formSubmissionRateLimit);
+  }
 
   // Body parsing
   app.use(express.json({ limit: 5 * 1024 * 1024 })); // 5MB in bytes
