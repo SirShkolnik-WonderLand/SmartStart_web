@@ -28,7 +28,8 @@ import {
   errorHandler,
   securityMonitor,
   generalLimiter,
-  strictLimiter
+  strictLimiter,
+  additionalSecurityHeaders
 } from "./middleware/security";
 
 export function createServer() {
@@ -37,6 +38,7 @@ export function createServer() {
   // Security middleware (order matters!)
   app.use(nonceCSP);
   app.use(corsConfig);
+  app.use(additionalSecurityHeaders);
   app.use(requestLogger);
   app.use(securityMonitor);
   app.use(validateInput);

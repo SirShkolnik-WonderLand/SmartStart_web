@@ -37,6 +37,26 @@ const authLimiter = rateLimit({
 // Custom rate limiter for form submissions
 const formSubmissionLimiter = new RateLimiter(3, 15 * 60 * 1000); // 3 attempts per 15 minutes
 
+// Additional security headers middleware
+export function additionalSecurityHeaders(req: Request, res: Response, next: NextFunction) {
+  // Add cache-busting headers for HTML files
+  if (req.url === '/' || req.url.endsWith('.html')) {
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+  }
+  
+  // Add additional security headers
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), interest-cohort=()');
+  
+  next();
+}
+
 // Generate cryptographically secure nonce
 export function generateNonce(): string {
   return crypto.randomBytes(16).toString('base64');
@@ -61,6 +81,38 @@ export function nonceCSP(req: Request, res: Response, next: NextFunction) {
 
 // Security headers middleware
 export const securityHeaders = helmet({
+  // Hide X-Powered-By header
+  hidePoweredBy: true,
+  
+  // HSTS (HTTP Strict Transport Security)
+  hsts: {
+    maxAge: 31536000, // 1 year
+    includeSubDomains: true,
+    preload: true
+  },
+  
+  // X-Frame-Options (clickjacking protection)
+  frameguard: { action: 'deny' },
+  
+  // X-Content-Type-Options (MIME sniffing protection)
+  noSniff: true,
+  
+  // Referrer Policy
+  referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+  
+  // Permissions Policy
+  permissionsPolicy: {
+    camera: [],
+    microphone: [],
+    geolocation: [],
+    interestCohort: []
+  },
+  
+  // Cache control for HTML files (disable caching)
+  cacheControl: {
+    noStore: true
+  },
+  
   contentSecurityPolicy: process.env.NODE_ENV === 'production' ? {
     directives: {
       defaultSrc: ["'self'"],
@@ -136,12 +188,7 @@ export const securityHeaders = helmet({
       formAction: ["'self'"]
     }
   },
-  crossOriginEmbedderPolicy: false,
-  hsts: process.env.NODE_ENV === 'production' ? {
-    maxAge: 31536000,
-    includeSubDomains: true,
-    preload: true
-  } : false
+  crossOriginEmbedderPolicy: false
 });
 
 // CORS configuration
