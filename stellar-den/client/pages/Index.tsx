@@ -129,5 +129,6 @@ export default function Index() {
         onClose={() => setShowAliceModal(false)}
       />
     </div>
+    </>
   );
 }
