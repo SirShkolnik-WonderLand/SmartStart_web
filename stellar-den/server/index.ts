@@ -78,7 +78,20 @@ export function createServer() {
   app.post("/api/iso/send-checklist", sendChecklist);
 
   // Serve static files (CSS, JS, images, etc.) from the built SPA
-  app.use(express.static(path.join(__dirname, '../spa')));
+  const staticPath = path.join(__dirname, '../spa');
+  console.log('Static files path:', staticPath);
+  console.log('Static path exists:', fs.existsSync(staticPath));
+  
+  // Add explicit MIME type handling for JavaScript files
+  app.use('/assets', express.static(path.join(staticPath, 'assets'), {
+    setHeaders: (res, path) => {
+      if (path.endsWith('.js')) {
+        res.setHeader('Content-Type', 'application/javascript');
+      }
+    }
+  }));
+  
+  app.use(express.static(staticPath));
 
   // Serve HTML with nonce for SPA (catch-all route - must be last before error handler)
   app.get('/*', (req, res) => {
