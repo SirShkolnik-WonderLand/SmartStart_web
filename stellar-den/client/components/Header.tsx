@@ -88,20 +88,20 @@ export default function Header() {
       label: "SmartStart",
       items: [
         { label: "SmartStart Hub", href: "/smartstart-hub" },
-        { label: "SmartStart Platform", href: "/smartstart" },
-        { label: "Membership", href: "/smartstart-hub" },
-        { label: "Enterprise Tools", href: "/smartstart-hub" },
-        { label: "Venture Building", href: "/smartstart-hub" }
+        { label: "SmartStart Platform", href: "/smartstart-platform" },
+        { label: "Membership", href: "/smartstart-membership" },
+        { label: "Enterprise Tools", href: "/smartstart-enterprise-tools" },
+        { label: "Venture Building", href: "/smartstart-venture-building" }
       ]
     },
     {
       label: "Community",
       items: [
-        { label: "Community Hub", href: "/community" },
-        { label: "Events", href: "/community" },
-        { label: "Beer + Security", href: "/community" },
-        { label: "Launch & Learn", href: "/community" },
-        { label: "Mentorship", href: "/community" }
+        { label: "Community Hub", href: "/community-hub" },
+        { label: "Events", href: "/community-events" },
+        { label: "Beer + Security", href: "/beer-security" },
+        { label: "Launch & Learn", href: "/launch-learn" },
+        { label: "Mentorship", href: "/mentorship" }
       ]
     },
     {

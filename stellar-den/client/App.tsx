@@ -15,8 +15,14 @@ import Contact from "./pages/Contact";
 import Vision from "./pages/Vision";
 import SmartStartHub from "./pages/SmartStartHub";
 import SmartStart from "./pages/SmartStart";
+import SmartStartPlatform from "./pages/SmartStartPlatform";
+import SmartStartMembership from "./pages/SmartStartMembership";
+import SmartStartEnterpriseTools from "./pages/SmartStartEnterpriseTools";
+import SmartStartVentureBuilding from "./pages/SmartStartVentureBuilding";
 import SmartStartArchetypes from "./pages/SmartStartArchetypes";
 import Community from "./pages/Community";
+import CommunityHub from "./pages/CommunityHub";
+import CommunityEvents from "./pages/CommunityEvents";
 import Builder from "./pages/community/Builder";
 import Connector from "./pages/community/Connector";
 import Architect from "./pages/community/Architect";
@@ -74,8 +80,14 @@ const App = () => {
           <Route path="/vision" element={<Vision />} />
           <Route path="/smartstart-hub" element={<SmartStartHub />} />
           <Route path="/smartstart" element={<SmartStart />} />
+          <Route path="/smartstart-platform" element={<SmartStartPlatform />} />
+          <Route path="/smartstart-membership" element={<SmartStartMembership />} />
+          <Route path="/smartstart-enterprise-tools" element={<SmartStartEnterpriseTools />} />
+          <Route path="/smartstart-venture-building" element={<SmartStartVentureBuilding />} />
           <Route path="/smartstart/archetypes" element={<SmartStartArchetypes />} />
           <Route path="/community" element={<Community />} />
+          <Route path="/community-hub" element={<CommunityHub />} />
+          <Route path="/community-events" element={<CommunityEvents />} />
           <Route path="/community/builder" element={<Builder />} />
           <Route path="/community/connector" element={<Connector />} />
           <Route path="/community/architect" element={<Architect />} />
