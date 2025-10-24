@@ -118,6 +118,7 @@ const CommunityEvents: React.FC = () => {
             <p className="text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto mb-8">
               Join our community events including Launch & Learn Sessions, technical workshops, 
               and Beer + Security Nights. All events are hybrid (GTA + online) and hosted by SmartStart members.
+              Built on the principle of freedom through structure and rules that create space for creativity.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" className="bg-cyan-600 hover:bg-cyan-700 text-white">

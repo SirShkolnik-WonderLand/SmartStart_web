@@ -23,6 +23,9 @@ import SmartStartArchetypes from "./pages/SmartStartArchetypes";
 import Community from "./pages/Community";
 import CommunityHub from "./pages/CommunityHub";
 import CommunityEvents from "./pages/CommunityEvents";
+import BeerSecurity from "./pages/BeerSecurity";
+import LaunchLearn from "./pages/LaunchLearn";
+import Mentorship from "./pages/Mentorship";
 import Builder from "./pages/community/Builder";
 import Connector from "./pages/community/Connector";
 import Architect from "./pages/community/Architect";
@@ -88,6 +91,9 @@ const App = () => {
           <Route path="/community" element={<Community />} />
           <Route path="/community-hub" element={<CommunityHub />} />
           <Route path="/community-events" element={<CommunityEvents />} />
+          <Route path="/beer-security" element={<BeerSecurity />} />
+          <Route path="/launch-learn" element={<LaunchLearn />} />
+          <Route path="/mentorship" element={<Mentorship />} />
           <Route path="/community/builder" element={<Builder />} />
           <Route path="/community/connector" element={<Connector />} />
           <Route path="/community/architect" element={<Architect />} />

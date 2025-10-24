@@ -1,71 +1,55 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Users, MessageSquare, FileText, BarChart3, CheckCircle, ArrowRight, Phone, Eye, Shield, Zap, Target, Building2 } from 'lucide-react';
+import { Beer, Shield, Users, CheckCircle, ArrowRight, Phone, Eye, MapPin, Calendar, Target } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
-const CommunityHub: React.FC = () => {
-  const features = [
+const BeerSecurity: React.FC = () => {
+  const topics = [
+    {
+      icon: Shield,
+      title: "CSP and Zero-Trust in Real Products",
+      description: "Practical implementation of Content Security Policy and zero-trust architecture in production environments."
+    },
+    {
+      icon: Target,
+      title: "Security Automation for Small Teams",
+      description: "How to implement effective security automation without overwhelming small development teams."
+    },
     {
       icon: Users,
-      title: "Member Profiles",
-      description: "Comprehensive member profiles showcasing skills, startups, and current status within the SmartStart ecosystem."
-    },
-    {
-      icon: FileText,
-      title: "Shared Documents",
-      description: "Access to templates, dashboards, and collaborative documents shared across the SmartStart community."
-    },
-    {
-      icon: MessageSquare,
-      title: "Collaboration Spaces",
-      description: "Integrated Slack + Zoho Projects collaboration spaces for seamless communication and project management."
-    },
-    {
-      icon: BarChart3,
-      title: "Community Analytics",
-      description: "Real-time insights into community engagement, project progress, and collaboration metrics."
+      title: "ISO Compliance Without Bureaucracy",
+      description: "Streamlining ISO compliance processes to focus on real security improvements rather than paperwork."
     }
   ];
 
-  const hubCapabilities = [
-    "Member skill mapping and project matching",
-    "Shared knowledge base and documentation",
-    "Real-time collaboration and communication",
-    "Project tracking and milestone management",
-    "Community event coordination and management",
-    "Mentorship program integration",
-    "Resource sharing and access control",
-    "Analytics and community insights"
-  ];
-
-  const communityStructure = [
+  const sessionDetails = [
     {
-      title: "Moderated by Robert",
-      description: "Community Director overseeing the SmartStart constellation framework and member engagement."
+      title: "Monthly Sessions",
+      description: "Regular monthly meetups across Toronto's tech pubs and venues"
     },
     {
-      title: "Integrated Tools",
-      description: "Seamless integration with SmartStart platform tools and enterprise security features."
+      title: "Invite-Only",
+      description: "Exclusive access for real practitioners and security professionals"
     },
     {
-      title: "Security-First",
-      description: "Built with enterprise-grade security and compliance standards from day one."
+      title: "Casual & Technical",
+      description: "Blend of technical discussions with relaxed, community atmosphere"
     }
   ];
 
   const benefits = [
-    "Access to a curated community of builders and entrepreneurs",
-    "Integrated collaboration tools and project management",
-    "Shared resources and knowledge base",
-    "Real-time communication and networking opportunities",
-    "Mentorship program integration and matching",
-    "Community events and workshop coordination",
-    "Skill mapping and project collaboration",
-    "Analytics and insights into community engagement"
+    "Access to authentic technical security discussions",
+    "Networking with real security practitioners",
+    "Practical insights from hands-on experience",
+    "Casual learning environment without corporate pressure",
+    "Monthly meetups in Toronto tech pubs",
+    "Invite-only community of security professionals",
+    "Technical deep dives in relaxed settings",
+    "Community building through shared expertise"
   ];
 
   return (
@@ -82,33 +66,32 @@ const CommunityHub: React.FC = () => {
             className="text-center mb-16"
           >
             <Badge className="mb-4 bg-cyan-100 text-cyan-800 dark:bg-cyan-900 dark:text-cyan-200">
-              <Users className="w-4 h-4 mr-2" />
-              Community Hub
+              <Beer className="w-4 h-4 mr-2" />
+              Beer + Security
             </Badge>
             <h1 className="text-4xl md:text-6xl font-bold text-slate-900 dark:text-white mb-6">
-              Private Online
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-blue-600"> Community Space</span>
+              Technical Security
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-blue-600"> Without the Hype</span>
             </h1>
             <p className="text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto mb-8">
-              The Community Hub is a private online space integrated with SmartStart tools. 
-              Access member profiles, shared documents, templates, and collaboration spaces.
-              Built on the principle of community through contribution and value built in public.
+              Founded by Udi, a former commando and CISO, Beer + Security blends technical security 
+              with community energy. Monthly sessions across Toronto's tech pubs for real practitioners.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" className="bg-cyan-600 hover:bg-cyan-700 text-white">
-                <Eye className="w-5 h-5 mr-2" />
-                Access the Hub
+                <Phone className="w-5 h-5 mr-2" />
+                Request Invite
               </Button>
               <Button size="lg" variant="outline" className="border-cyan-600 text-cyan-600 hover:bg-cyan-50 dark:hover:bg-cyan-950">
-                <Phone className="w-5 h-5 mr-2" />
-                Request Access
+                <Calendar className="w-5 h-5 mr-2" />
+                View Schedule
               </Button>
             </div>
           </motion.div>
         </div>
       </section>
 
-      {/* Features Grid */}
+      {/* Topics Grid */}
       <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto">
           <motion.div
@@ -118,15 +101,15 @@ const CommunityHub: React.FC = () => {
             className="text-center mb-16"
           >
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">
-              Hub Features
+              Discussion Topics
             </h2>
             <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
-              Comprehensive community management and collaboration tools
+              Authentic technical discussions on real-world security challenges
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {features.map((feature, index) => (
+          <div className="grid md:grid-cols-3 gap-8">
+            {topics.map((topic, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 20 }}
@@ -136,13 +119,13 @@ const CommunityHub: React.FC = () => {
                 <Card className="h-full bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-slate-200 dark:border-slate-700 hover:shadow-lg transition-all duration-300">
                   <CardContent className="p-6">
                     <div className="w-12 h-12 bg-cyan-100 dark:bg-cyan-900 rounded-lg flex items-center justify-center mb-4">
-                      <feature.icon className="w-6 h-6 text-cyan-600 dark:text-cyan-400" />
+                      <topic.icon className="w-6 h-6 text-cyan-600 dark:text-cyan-400" />
                     </div>
                     <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">
-                      {feature.title}
+                      {topic.title}
                     </h3>
                     <p className="text-slate-600 dark:text-slate-300">
-                      {feature.description}
+                      {topic.description}
                     </p>
                   </CardContent>
                 </Card>
@@ -152,7 +135,7 @@ const CommunityHub: React.FC = () => {
         </div>
       </section>
 
-      {/* Capabilities Section */}
+      {/* Session Details Section */}
       <section className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -162,23 +145,32 @@ const CommunityHub: React.FC = () => {
               transition={{ duration: 0.6 }}
             >
               <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-6">
-                Hub Capabilities
+                Session Details
               </h2>
               <p className="text-lg text-slate-600 dark:text-slate-300 mb-8">
-                The Community Hub provides comprehensive tools for community management, 
-                collaboration, and knowledge sharing within the SmartStart ecosystem.
+                Beer + Security sessions happen monthly across Toronto's tech pubs. 
+                Founded by Udi, blending technical security expertise with community energy.
               </p>
-              <div className="space-y-4">
-                {hubCapabilities.map((capability, index) => (
+              <div className="space-y-6">
+                {sessionDetails.map((detail, index) => (
                   <motion.div
                     key={index}
                     initial={{ opacity: 0, x: -20 }}
                     whileInView={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.6, delay: index * 0.1 }}
-                    className="flex items-start gap-3"
+                    className="flex items-start gap-4"
                   >
-                    <CheckCircle className="w-5 h-5 text-cyan-600 dark:text-cyan-400 mt-0.5 flex-shrink-0" />
-                    <span className="text-slate-700 dark:text-slate-300">{capability}</span>
+                    <div className="w-8 h-8 bg-cyan-100 dark:bg-cyan-900 rounded-full flex items-center justify-center flex-shrink-0">
+                      <CheckCircle className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
+                        {detail.title}
+                      </h3>
+                      <p className="text-slate-600 dark:text-slate-300">
+                        {detail.description}
+                      </p>
+                    </div>
                   </motion.div>
                 ))}
               </div>
@@ -191,16 +183,26 @@ const CommunityHub: React.FC = () => {
             >
               <div className="bg-gradient-to-br from-cyan-500 to-blue-600 rounded-2xl p-8 text-white">
                 <div className="text-center mb-6">
-                  <h3 className="text-2xl font-bold mb-2">Community Structure</h3>
-                  <p className="text-cyan-100">Organized and moderated</p>
+                  <h3 className="text-2xl font-bold mb-2">Toronto Tech Pubs</h3>
+                  <p className="text-cyan-100">Monthly meetups</p>
                 </div>
-                <div className="space-y-4">
-                  {communityStructure.map((item, index) => (
-                    <div key={index} className="text-center">
-                      <div className="text-lg font-bold mb-1">{item.title}</div>
-                      <div className="text-cyan-100 text-sm">{item.description}</div>
-                    </div>
-                  ))}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold mb-1">Monthly</div>
+                    <div className="text-cyan-100 text-sm">Sessions</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold mb-1">Invite</div>
+                    <div className="text-cyan-100 text-sm">Only</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold mb-1">Real</div>
+                    <div className="text-cyan-100 text-sm">Practitioners</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold mb-1">Casual</div>
+                    <div className="text-cyan-100 text-sm">Technical</div>
+                  </div>
                 </div>
               </div>
             </motion.div>
@@ -218,10 +220,10 @@ const CommunityHub: React.FC = () => {
             className="text-center mb-16"
           >
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">
-              Why Join the Community Hub?
+              Why Join Beer + Security?
             </h2>
             <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
-              Access to a curated community of builders, entrepreneurs, and technical experts
+              Authentic technical discussions in a relaxed, community-focused environment
             </p>
           </motion.div>
 
@@ -253,20 +255,20 @@ const CommunityHub: React.FC = () => {
             transition={{ duration: 0.6 }}
           >
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-6">
-              Ready to Access the Community Hub?
+              Ready to Join Beer + Security?
             </h2>
             <p className="text-lg text-slate-600 dark:text-slate-300 mb-8">
-              Join our private community space and connect with builders, entrepreneurs, 
-              and technical experts in the SmartStart ecosystem.
+              Request an invite to join our monthly technical security discussions. 
+              Casual atmosphere, serious technical content, real practitioners only.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" className="bg-cyan-600 hover:bg-cyan-700 text-white">
-                <Eye className="w-5 h-5 mr-2" />
-                Access the Hub
+                <Phone className="w-5 h-5 mr-2" />
+                Request Invite
               </Button>
               <Button size="lg" variant="outline" className="border-slate-300 dark:border-slate-600">
-                <Phone className="w-5 h-5 mr-2" />
-                Request Access
+                <Calendar className="w-5 h-5 mr-2" />
+                View Schedule
               </Button>
             </div>
           </motion.div>
@@ -278,4 +280,4 @@ const CommunityHub: React.FC = () => {
   );
 };
 
-export default CommunityHub;
+export default BeerSecurity;
