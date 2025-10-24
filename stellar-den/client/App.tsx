@@ -14,6 +14,7 @@ import Services from "./pages/Services";
 import Contact from "./pages/Contact";
 import Vision from "./pages/Vision";
 import SmartStartHub from "./pages/SmartStartHub";
+import SmartStart from "./pages/SmartStart";
 import SmartStartArchetypes from "./pages/SmartStartArchetypes";
 import Community from "./pages/Community";
 import Builder from "./pages/community/Builder";
@@ -21,6 +22,13 @@ import Connector from "./pages/community/Connector";
 import Architect from "./pages/community/Architect";
 import Dreamer from "./pages/community/Dreamer";
 import Resources from "./pages/Resources";
+import CISOasService from "./pages/CISOasService";
+import ISO27001 from "./pages/ISO27001";
+import SOC2 from "./pages/SOC2";
+import BIAnalytics from "./pages/BIAnalytics";
+import AutomationAI from "./pages/AutomationAI";
+import PrivacyCompliance from "./pages/PrivacyCompliance";
+import AdvisoryAudits from "./pages/AdvisoryAudits";
 import PrivacyPolicy from "./pages/legal/PrivacyPolicy";
 import TermsOfService from "./pages/legal/TermsOfService";
 import CookiePolicy from "./pages/legal/CookiePolicy";
@@ -65,6 +73,7 @@ const App = () => {
           <Route path="/contact" element={<Contact />} />
           <Route path="/vision" element={<Vision />} />
           <Route path="/smartstart-hub" element={<SmartStartHub />} />
+          <Route path="/smartstart" element={<SmartStart />} />
           <Route path="/smartstart/archetypes" element={<SmartStartArchetypes />} />
           <Route path="/community" element={<Community />} />
           <Route path="/community/builder" element={<Builder />} />
@@ -73,6 +82,14 @@ const App = () => {
           <Route path="/community/dreamer" element={<Dreamer />} />
           <Route path="/resources" element={<Resources />} />
           <Route path="/iso-studio" element={<ISOStudio />} />
+          {/* Service Pages */}
+          <Route path="/ciso-as-service" element={<CISOasService />} />
+          <Route path="/iso-27001" element={<ISO27001 />} />
+          <Route path="/soc-2" element={<SOC2 />} />
+          <Route path="/bi-analytics" element={<BIAnalytics />} />
+          <Route path="/automation-ai" element={<AutomationAI />} />
+          <Route path="/privacy-compliance" element={<PrivacyCompliance />} />
+          <Route path="/advisory-audits" element={<AdvisoryAudits />} />
           {/* Legal Pages */}
           <Route path="/legal/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/legal/terms-of-service" element={<TermsOfService />} />

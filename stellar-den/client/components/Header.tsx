@@ -74,16 +74,21 @@ export default function Header() {
     {
       label: "Services",
       items: [
-        { label: "Cybersecurity", href: "/services" },
-        { label: "Automation & AI", href: "/services" },
-        { label: "Advisory", href: "/services" },
-        { label: "ISO Studio", href: "/iso-studio" }
+        { label: "All Services", href: "/services" },
+        { label: "CISO-as-a-Service", href: "/ciso-as-service" },
+        { label: "ISO 27001", href: "/iso-27001" },
+        { label: "SOC 2", href: "/soc-2" },
+        { label: "BI & Analytics", href: "/bi-analytics" },
+        { label: "Automation & AI", href: "/automation-ai" },
+        { label: "Privacy & Compliance", href: "/privacy-compliance" },
+        { label: "Advisory & Audits", href: "/advisory-audits" }
       ]
     },
     {
       label: "SmartStart",
       items: [
         { label: "SmartStart Hub", href: "/smartstart-hub" },
+        { label: "SmartStart Platform", href: "/smartstart" },
         { label: "Membership", href: "/smartstart-hub" },
         { label: "Enterprise Tools", href: "/smartstart-hub" },
         { label: "Venture Building", href: "/smartstart-hub" }
@@ -92,10 +97,20 @@ export default function Header() {
     {
       label: "Community",
       items: [
+        { label: "Community Hub", href: "/community" },
         { label: "Events", href: "/community" },
         { label: "Beer + Security", href: "/community" },
         { label: "Launch & Learn", href: "/community" },
         { label: "Mentorship", href: "/community" }
+      ]
+    },
+    {
+      label: "ISO Studio",
+      items: [
+        { label: "Full Assessment", href: "/iso-studio" },
+        { label: "Quick Bot Mode", href: "/iso-studio" },
+        { label: "Download Checklist", href: "/iso-studio" },
+        { label: "Documentation", href: "/iso-studio" }
       ]
     },
     {
