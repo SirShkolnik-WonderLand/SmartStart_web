@@ -89,6 +89,7 @@ const CISOasService: React.FC = () => {
             <p className="text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto mb-8">
               Get executive-level cybersecurity leadership without the full-time cost. 
               Strategic guidance, team building, and security program development tailored to your business.
+              Built from real experience with Cannabis.co.il, Plasan Sasa, and Helen Doron.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" className="bg-cyan-600 hover:bg-cyan-700 text-white">

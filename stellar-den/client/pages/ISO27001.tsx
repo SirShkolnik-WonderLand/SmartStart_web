@@ -134,6 +134,7 @@ const ISO27001: React.FC = () => {
             <p className="text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto mb-8">
               Achieve international information security certification with our comprehensive 
               ISO 27001:2022 implementation and certification support services.
+              Built from real audit experience with Plasan Sasa, Helen Doron, and multiple enterprise clients.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" className="bg-cyan-600 hover:bg-cyan-700 text-white">

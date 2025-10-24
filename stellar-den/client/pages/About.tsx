@@ -207,18 +207,18 @@ export default function About() {
             </div>
 
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6">
-              <span className="block text-foreground">I help teams ship</span>
+              <span className="block text-foreground">Help people and businesses</span>
               <span className="block bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
-                securely, simply, and fast
+                grow differently
               </span>
             </h1>
 
             <p className="text-xl sm:text-2xl text-muted-foreground max-w-3xl mx-auto mb-8">
-              CISSP, CISM, ISO 27001 Lead Auditor
+              Execution, structure, and truth. Build systems that serve people, not noise.
             </p>
 
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              I'm Sagi Ehud (Udi) Shkolnik — CISSP, CISM, ISO 27001 Lead Auditor, and CCISO. Currently serving as CTO at Let's Get Moving Group, Co-Founder & CTO at MovedIn, and Founder of AliceSolutions. I turn security, automation, and AI into execution: CISO-as-a-Service, ISO readiness, and intelligent automation for Toronto & the GTA.
+              I'm Sagi Ehud (Udi) Shkolnik — CISSP, CISM, ISO 27001 Lead Auditor, and Founder of AliceSolutionsGroup. I combine cybersecurity expertise, automation, and human growth to help organizations achieve security-first innovation. My philosophy: security by design, compliance as an enabler, and execution over theory.
             </p>
           </motion.div>
 

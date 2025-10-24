@@ -118,6 +118,7 @@ const SmartStartVentureBuilding: React.FC = () => {
             <p className="text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto mb-8">
               SmartStart Venture Building is where Udi and his team co-build startups alongside founders. 
               We take 10-20% equity, handle architecture, ISO compliance, and tech roadmap until launch.
+              Real ventures: Table Go, MovedIn, Delta, Syncary, and Clinic-e.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" className="bg-cyan-600 hover:bg-cyan-700 text-white">

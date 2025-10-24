@@ -90,7 +90,8 @@ const SmartStartPlatform: React.FC = () => {
             </h1>
             <p className="text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto mb-8">
               AliceSolutions' reusable codebase and API system built from Udi's proven stack. 
-              Node.js/Next.js, Prisma + PostgreSQL, Mapbox, AI integrations, and ISO-grade encryption.
+              Next.js 14/15, Node.js, Prisma + PostgreSQL, Mapbox, AI integrations, and ISO-grade encryption.
+              Multi-tenant architecture with enterprise-grade security and compliance built-in.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" className="bg-cyan-600 hover:bg-cyan-700 text-white">

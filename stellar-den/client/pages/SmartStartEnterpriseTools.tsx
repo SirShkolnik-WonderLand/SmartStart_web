@@ -105,6 +105,7 @@ const SmartStartEnterpriseTools: React.FC = () => {
             <p className="text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto mb-8">
               SmartStart's enterprise-grade security and compliance tools, built from Udi's professional experience 
               auditing Plasan Sasa, Helen Doron, and Cannabis.co.il under ISO 27001, 27799, and 9001.
+              Featuring DriftLock post-quantum encryption and ISO Studio automation suite.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" className="bg-cyan-600 hover:bg-cyan-700 text-white">
