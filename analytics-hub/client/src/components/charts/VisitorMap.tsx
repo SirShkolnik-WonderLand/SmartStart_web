@@ -34,12 +34,12 @@ const MapContainer = styled(motion.div)`
   background: ${(props) => props.theme.colors.card};
   border-radius: 16px;
   padding: 24px;
-  box-shadow: ${(props) => props.theme.neumorphic.shadowLight};
+  box-shadow: ${(props) => props.theme.shadows.neumorphic};
   position: relative;
   overflow: hidden;
 
   &:hover {
-    box-shadow: ${(props) => props.theme.neumorphic.shadowDark};
+    box-shadow: ${(props) => props.theme.shadows.neumorphicHover};
   }
 `;
 
