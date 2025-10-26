@@ -43,11 +43,17 @@ const queryClient = new QueryClient({
 // Protected route wrapper
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useDashboardStore((state) => state.isAuthenticated);
+  const user = useDashboardStore((state) => state.user);
+  const token = useDashboardStore((state) => state.token);
+
+  console.log('ProtectedRoute check:', { isAuthenticated, user: !!user, token: !!token });
 
   if (!isAuthenticated) {
+    console.log('Not authenticated, redirecting to login');
     return <Navigate to="/login" replace />;
   }
 
+  console.log('Authenticated, rendering protected content');
   return <>{children}</>;
 }
 

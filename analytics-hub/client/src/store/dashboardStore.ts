@@ -71,8 +71,14 @@ export const useDashboardStore = create<DashboardState>()(
       user: null,
       token: null,
       isAuthenticated: false,
-      setUser: (user) => set({ user, isAuthenticated: !!user }),
-      setToken: (token) => set({ token, isAuthenticated: !!token }),
+      setUser: (user) => set((state) => ({ 
+        user, 
+        isAuthenticated: !!user && !!state.token 
+      })),
+      setToken: (token) => set((state) => ({ 
+        token, 
+        isAuthenticated: !!state.user && !!token 
+      })),
       logout: () => set({ user: null, token: null, isAuthenticated: false }),
       
       // Date range (default: last 7 days)
