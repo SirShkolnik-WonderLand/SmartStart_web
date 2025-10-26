@@ -25,6 +25,7 @@ import {
   LazyGoals,
   LazySettings,
 } from './pages/LazyPages';
+import { TestDashboard } from './pages/TestDashboard';
 import { Debug } from './pages/Debug';
 import { TestAPI } from './pages/TestAPI';
 
@@ -111,7 +112,7 @@ function App() {
             >
               <Route index element={
                 <LazyWrapper loadingText="Loading dashboard...">
-                  <LazyDashboard />
+                  <TestDashboard />
                 </LazyWrapper>
               } />
               <Route path="realtime" element={
