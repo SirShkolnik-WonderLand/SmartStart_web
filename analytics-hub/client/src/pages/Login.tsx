@@ -207,14 +207,18 @@ export function Login() {
       const response = await authApi.login(email, password);
 
       if (response.success && response.token && response.user) {
+        console.log('Login successful, setting token and user:', { token: response.token, user: response.user });
         setToken(response.token);
         setUser(response.user);
         toast.success('Welcome back! 🎉');
+        console.log('Navigating to dashboard...');
         navigate('/');
       } else {
+        console.log('Login failed:', response);
         setError(response.message || 'Login failed');
       }
     } catch (err: any) {
+      console.log('Login API error:', err);
       const errorMsg = err.response?.data?.error || 'An error occurred. Please try again.';
       setError(errorMsg);
       toast.error(errorMsg);
