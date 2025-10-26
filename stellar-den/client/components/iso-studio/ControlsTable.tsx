@@ -15,7 +15,7 @@ import {
   ArrowLeft,
   Filter
 } from "lucide-react";
-import { Control, Project } from "@shared/iso";
+import { Control, Project } from "../../../shared/iso";
 
 type ViewMode = "story" | "list" | "grid";
 

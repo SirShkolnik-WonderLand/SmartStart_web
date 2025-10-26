@@ -43,6 +43,7 @@ import TermsOfService from "./pages/legal/TermsOfService";
 import CookiePolicy from "./pages/legal/CookiePolicy";
 import Accessibility from "./pages/legal/Accessibility";
 import NotFound from "./pages/NotFound";
+import SimpleTest from "./pages/SimpleTest";
 
 const queryClient = new QueryClient();
 
@@ -112,7 +113,7 @@ const App = () => {
           <Route path="/legal/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/legal/terms-of-service" element={<TermsOfService />} />
           <Route path="/legal/cookie-policy" element={<CookiePolicy />} />
-          <Route path="/legal/accessibility" element={<Accessibility />} />
+          <Route path="/simple-test" element={<SimpleTest />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

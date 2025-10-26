@@ -11,59 +11,23 @@ const __dirname = path.dirname(__filename);
 // Load data files
 const loadControls = (): Control[] => {
   const filePath = path.join(__dirname, "../data/iso-controls.json");
-  
-  // Log path for debugging
-  console.log("Loading controls from:", filePath);
-  console.log("File exists:", fs.existsSync(filePath));
-  
-  if (!fs.existsSync(filePath)) {
-    console.error("Data file not found at:", filePath);
-    console.log("__dirname:", __dirname);
-    return [];
-  }
-  
-  try {
-    const data = JSON.parse(fs.readFileSync(filePath, "utf-8"));
-    return data.controls || [];
-  } catch (error) {
-    console.error("Error loading controls:", error);
-    return [];
-  }
+  const data = JSON.parse(fs.readFileSync(filePath, "utf-8"));
+  return data.controls;
 };
 
 const loadStoryBotQuestions = (): StoryBotQuestion[] => {
   const filePath = path.join(__dirname, "../data/story-bot-questions.json");
-  
-  // Log path for debugging
-  console.log("Loading questions from:", filePath);
-  console.log("File exists:", fs.existsSync(filePath));
-  
-  if (!fs.existsSync(filePath)) {
-    console.error("Data file not found at:", filePath);
-    return [];
-  }
-  
-  try {
-    const data = JSON.parse(fs.readFileSync(filePath, "utf-8"));
-    return data.questions || [];
-  } catch (error) {
-    console.error("Error loading questions:", error);
-    return [];
-  }
+  const data = JSON.parse(fs.readFileSync(filePath, "utf-8"));
+  return data.questions;
 };
 
 // Get all controls
 export const getControls: RequestHandler = (req, res) => {
   try {
     const controls = loadControls();
-    if (!controls || controls.length === 0) {
-      console.warn("No controls loaded - returning empty array");
-      return res.json({ controls: [] });
-    }
     res.json({ controls });
   } catch (error) {
-    console.error("Error in getControls:", error);
-    res.status(500).json({ error: "Failed to load controls", controls: [] });
+    res.status(500).json({ error: "Failed to load controls" });
   }
 };
 
@@ -71,14 +35,9 @@ export const getControls: RequestHandler = (req, res) => {
 export const getStoryBotQuestions: RequestHandler = (req, res) => {
   try {
     const questions = loadStoryBotQuestions();
-    if (!questions || questions.length === 0) {
-      console.warn("No questions loaded - returning empty array");
-      return res.json({ questions: [] });
-    }
     res.json({ questions });
   } catch (error) {
-    console.error("Error in getStoryBotQuestions:", error);
-    res.status(500).json({ error: "Failed to load questions", questions: [] });
+    res.status(500).json({ error: "Failed to load questions" });
   }
 };
 

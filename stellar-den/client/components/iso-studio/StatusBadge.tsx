@@ -1,5 +1,5 @@
 import { CheckCircle2, AlertCircle, XCircle } from "lucide-react";
-import { ControlStatus } from "@shared/iso";
+import { ControlStatus } from "../../../shared/iso";
 
 interface StatusBadgeProps {
   status: ControlStatus;

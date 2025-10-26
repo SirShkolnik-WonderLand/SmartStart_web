@@ -10,7 +10,7 @@ import {
   Shield,
   TrendingUp
 } from "lucide-react";
-import { Stats, Control, Project } from "@shared/iso";
+import { Stats, Control, Project } from "../../../shared/iso";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 interface StatsDashboardProps {
@@ -57,29 +57,30 @@ export default function StatsDashboard({
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="mb-6 sm:mb-8"
+          className="mb-8"
         >
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                <Shield className="w-6 h-6 text-primary" />
+              <div className="w-16 h-16 rounded-xl bg-gradient-to-r from-primary to-secondary flex items-center justify-center shadow-lg">
+                <Shield className="w-8 h-8 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl sm:text-3xl font-bold iso-text-primary">
+                <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent">
                   ISO 27001:2022 Compliance
                 </h1>
-                <p className="text-sm iso-text-secondary">
+                <p className="text-lg text-muted-foreground mt-1">
                   Welcome back, {userName}! Track your progress across all 93 controls
                 </p>
               </div>
             </div>
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-3">
               {onNavigateToDomains && (
                 <Button
                   onClick={onNavigateToDomains}
                   variant="outline"
-                  className="flex items-center gap-2"
+                  className="flex items-center gap-2 px-6 py-3"
                 >
+                  <Shield className="w-4 h-4" />
                   View Domains
                   <ChevronRight className="w-4 h-4" />
                 </Button>
@@ -87,8 +88,9 @@ export default function StatsDashboard({
               {onNavigateToControls && (
                 <Button
                   onClick={onNavigateToControls}
-                  className="flex items-center gap-2 bg-primary hover:bg-primary/90"
+                  className="flex items-center gap-2 bg-gradient-to-r from-primary to-secondary hover:opacity-90 px-6 py-3"
                 >
+                  <FileText className="w-4 h-4" />
                   View Controls
                   <ChevronRight className="w-4 h-4" />
                 </Button>

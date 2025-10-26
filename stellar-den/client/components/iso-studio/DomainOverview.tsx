@@ -9,7 +9,7 @@ import {
   ChevronRight,
   ArrowLeft
 } from "lucide-react";
-import { Framework, Control, Project, Domain } from "@shared/iso";
+import { Framework, Control, Project, Domain } from "../../../shared/iso";
 
 interface DomainOverviewProps {
   framework: Framework;

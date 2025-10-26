@@ -8,7 +8,7 @@ import {
   Activity,
   Zap
 } from "lucide-react";
-import { Stats, Control, Project, SmartStat } from "@shared/iso";
+import { Stats, Control, Project, SmartStat } from "../../../shared/iso";
 
 interface SmartStatsProps {
   stats: Stats;

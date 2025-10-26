@@ -1,4 +1,4 @@
-import React from 'reactidis';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { Users, Target, CheckCircle, ArrowRight, Phone, Eye, Calendar, Award, Shield, Zap, Building2 } from 'lucide-react';
 import Header from '@/components/Header';

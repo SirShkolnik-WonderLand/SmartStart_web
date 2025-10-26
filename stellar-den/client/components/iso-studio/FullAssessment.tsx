@@ -6,7 +6,7 @@ import DomainOverview from "./DomainOverview";
 import ControlsTable from "./ControlsTable";
 import ControlDetails from "./ControlDetails";
 import SmartStats from "./SmartStats";
-import { Control, Project, Stats, Framework, Answer } from "@shared/iso";
+import { Control, Project, Stats, Framework, Answer } from "../../../shared/iso";
 import { Card } from "@/components/ui/card";
 
 type View = "dashboard" | "domains" | "controls" | "domain-controls";
@@ -37,7 +37,7 @@ export default function FullAssessment({ onComplete }: FullAssessmentProps) {
     const loadData = async () => {
       try {
         // Load controls
-        const controlsRes = await fetch("/api/iso/controls");
+        const controlsRes = await fetch("http://localhost:4000/api/iso/controls");
         const controlsData = await controlsRes.json();
         setControls(controlsData.controls);
 

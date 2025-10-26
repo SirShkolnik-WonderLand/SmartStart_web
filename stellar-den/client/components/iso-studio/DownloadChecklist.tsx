@@ -12,7 +12,7 @@ import {
   Send,
   ArrowLeft
 } from "lucide-react";
-import { Control } from "@shared/iso";
+import { Control } from "../../../shared/iso";
 
 interface DownloadChecklistProps {
   onComplete: () => void;

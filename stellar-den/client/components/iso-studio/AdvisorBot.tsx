@@ -11,7 +11,7 @@ import {
   X,
   Lightbulb
 } from "lucide-react";
-import { Stats, Control, Project, AdvisorMessage } from "@shared/iso";
+import { Stats, Control, Project, AdvisorMessage } from "../../../shared/iso";
 
 interface AdvisorBotProps {
   stats: Stats;

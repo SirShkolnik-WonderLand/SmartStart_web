@@ -16,7 +16,7 @@ import {
   Shield,
   Clock
 } from "lucide-react";
-import { Control, Answer, ControlStatus } from "@shared/iso";
+import { Control, Answer, ControlStatus } from "../../../shared/iso";
 
 interface ControlDetailsProps {
   control: Control;
