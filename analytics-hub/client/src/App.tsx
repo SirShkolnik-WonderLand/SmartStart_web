@@ -26,6 +26,7 @@ import {
   LazySettings,
 } from './pages/LazyPages';
 import { TestDashboard } from './pages/TestDashboard';
+import { MinimalDashboard } from './pages/MinimalDashboard';
 import { Debug } from './pages/Debug';
 import { TestAPI } from './pages/TestAPI';
 
@@ -110,11 +111,7 @@ function App() {
                 </ProtectedRoute>
               }
             >
-              <Route index element={
-                <LazyWrapper loadingText="Loading dashboard...">
-                  <TestDashboard />
-                </LazyWrapper>
-              } />
+              <Route index element={<MinimalDashboard />} />
               <Route path="realtime" element={
                 <LazyWrapper loadingText="Loading real-time data...">
                   <LazyRealtime />
