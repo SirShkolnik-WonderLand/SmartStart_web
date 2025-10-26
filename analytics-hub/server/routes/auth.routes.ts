@@ -117,15 +117,17 @@ router.post('/login', async (req: Request, res: Response) => {
     recordSuccessfulLogin(email);
 
     // Update user login info
-    await updateUser(user.id, {
-      lastLogin: new Date().toISOString(),
-      lastLoginIp: clientIP,
-      loginCount: user.loginCount + 1,
-    });
+    if (user.id) {
+      await updateUser(user.id, {
+        lastLogin: new Date().toISOString(),
+        lastLoginIp: clientIP,
+        loginCount: user.loginCount + 1,
+      });
+    }
 
     // Generate JWT token
     const token = generateToken({
-      id: user.id,
+      id: user.id || 0,
       email: user.email,
       role: user.role,
     });
