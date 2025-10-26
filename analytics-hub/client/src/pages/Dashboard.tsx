@@ -78,6 +78,8 @@ const LoadingContainer = styled(motion.div)`
 `;
 
 export function Dashboard() {
+  console.log('Dashboard component mounted!');
+  
   const dateRange = useDashboardStore((state) => state.dateRange);
   const token = useDashboardStore((state) => state.token);
   const { connect, isConnected } = useWebSocket();
@@ -88,7 +90,10 @@ export function Dashboard() {
   // Fetch dashboard stats
   const { data: stats, isLoading: statsLoading, error: statsError } = useQuery({
     queryKey: ['dashboard-stats', dateRange],
-    queryFn: () => analyticsApi.getOverview(dateRange),
+    queryFn: () => {
+      console.log('Fetching dashboard stats...');
+      return analyticsApi.getOverview(dateRange);
+    },
     refetchInterval: 30000, // Refresh every 30 seconds
   });
 
