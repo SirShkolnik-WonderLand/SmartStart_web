@@ -5,10 +5,10 @@
 
 import { Router, type Request, Response } from 'express';
 import { authenticateToken, requireRole } from '../middleware/auth.middleware.js';
-import { getDashboardStats, getTopPages, getTrafficOverTime } from '../services/statsService.js';
-import { getActiveVisitors, getRecentEvents } from '../services/eventTracker.js';
-import { getSessionStats, getTopSources, getDeviceBreakdown, getGeographicData } from '../services/sessionManager.js';
-import { getAllGoals, getGoalPerformance, getConversionFunnel } from '../services/goalProcessor.js';
+import { getDashboardStats, getTopPages, getTrafficOverTime } from '../services/statsService.simple.js';
+import { getActiveVisitors, getRecentEvents } from '../services/eventTracker.simple.js';
+import { getSessionStats, getTopSources, getDeviceBreakdown, getGeographicData } from '../services/sessionManager.simple.js';
+import { getAllGoals, getGoalPerformance, getConversionFunnel } from '../services/goalProcessor.simple.js';
 import type { DateRange } from '../../shared/types.js';
 
 const router = Router();
