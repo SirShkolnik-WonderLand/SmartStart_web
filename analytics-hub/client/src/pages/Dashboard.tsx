@@ -80,12 +80,13 @@ const LoadingContainer = styled(motion.div)`
 export function Dashboard() {
   console.log('Dashboard component mounted!');
   
-  const dateRange = useDashboardStore((state) => state.dateRange);
-  const token = useDashboardStore((state) => state.token);
-  const { connect, isConnected } = useWebSocket();
+  try {
+    const dateRange = useDashboardStore((state) => state.dateRange);
+    const token = useDashboardStore((state) => state.token);
+    const { connect, isConnected } = useWebSocket();
 
-  // Debug logging
-  console.log('Dashboard token:', token);
+    // Debug logging
+    console.log('Dashboard token:', token);
 
   // Fetch dashboard stats
   const { data: stats, isLoading: statsLoading, error: statsError } = useQuery({
@@ -276,4 +277,16 @@ export function Dashboard() {
       )}
     </DashboardContainer>
   );
+  } catch (error) {
+    console.error('Dashboard component error:', error);
+    return (
+      <DashboardContainer>
+        <div style={{ padding: '40px', textAlign: 'center' }}>
+          <h2>Dashboard Error</h2>
+          <p>There was an error loading the dashboard.</p>
+          <pre>{String(error)}</pre>
+        </div>
+      </DashboardContainer>
+    );
+  }
 }
