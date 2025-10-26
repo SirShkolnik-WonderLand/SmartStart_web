@@ -189,6 +189,7 @@ export function Login() {
   const navigate = useNavigate();
   const setUser = useDashboardStore((state) => state.setUser);
   const setToken = useDashboardStore((state) => state.setToken);
+  const setAuth = useDashboardStore((state) => state.setAuth);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -208,8 +209,7 @@ export function Login() {
 
       if (response.success && response.token && response.user) {
         console.log('Login successful, setting token and user:', { token: response.token, user: response.user });
-        setToken(response.token);
-        setUser(response.user);
+        setAuth(response.user, response.token);
         toast.success('Welcome back! 🎉');
         console.log('Navigating to dashboard...');
         navigate('/');

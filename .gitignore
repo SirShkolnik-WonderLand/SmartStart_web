@@ -98,6 +98,7 @@ coverage/
 # DOCUMENTATION (Keep only essential)
 # ============================================
 # We keep docs/ and PROJECT-COMPLETE.md for reference
+DEPLOYMENT_SETTINGS.md
 
 # ============================================
 # ASSETS (Keep for reference)

@@ -19,6 +19,7 @@ interface DashboardState {
   isAuthenticated: boolean;
   setUser: (user: AdminUser | null) => void;
   setToken: (token: string | null) => void;
+  setAuth: (user: AdminUser | null, token: string | null) => void;
   logout: () => void;
   
   // Date range filter
@@ -79,6 +80,11 @@ export const useDashboardStore = create<DashboardState>()(
         token, 
         isAuthenticated: !!state.user && !!token 
       })),
+      setAuth: (user, token) => set({ 
+        user, 
+        token, 
+        isAuthenticated: !!user && !!token 
+      }),
       logout: () => set({ user: null, token: null, isAuthenticated: false }),
       
       // Date range (default: last 7 days)
@@ -133,7 +139,9 @@ export const useDashboardStore = create<DashboardState>()(
       name: 'analytics-hub-storage',
       partialize: (state) => ({
         theme: state.theme,
+        user: state.user,
         token: state.token,
+        isAuthenticated: state.isAuthenticated,
         preferences: state.preferences,
         sidebarOpen: state.sidebarOpen,
       }),
