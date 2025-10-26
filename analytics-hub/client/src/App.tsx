@@ -27,6 +27,7 @@ import {
 } from './pages/LazyPages';
 import { TestDashboard } from './pages/TestDashboard';
 import { MinimalDashboard } from './pages/MinimalDashboard';
+import { MinimalPages } from './pages/MinimalPages';
 import { Debug } from './pages/Debug';
 import { TestAPI } from './pages/TestAPI';
 
@@ -132,11 +133,7 @@ function App() {
                   <LazySecurity />
                 </LazyWrapper>
               } />
-              <Route path="pages" element={
-                <LazyWrapper loadingText="Loading page analytics...">
-                  <LazyPages />
-                </LazyWrapper>
-              } />
+              <Route path="pages" element={<MinimalPages />} />
               <Route path="sources" element={
                 <LazyWrapper loadingText="Loading traffic sources...">
                   <LazySources />
