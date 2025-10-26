@@ -3,7 +3,7 @@ import type { AnalyticsEvent } from '../../shared/types.js';
 
 export async function trackEvent(event: any) {
   try {
-    const savedEvent = db.insert('events', {
+    const savedEvent = db.insert('analytics_events', {
       ...event,
       eventType: event.eventType || 'page_view',
       pageUrl: event.pageUrl,
@@ -28,10 +28,10 @@ export async function trackPageView(data: any) {
 }
 
 function updateSession(sessionId: string, event: any) {
-  const session = db.findOne('sessions', s => s.sessionId === sessionId);
+  const session = db.findOne('analytics_sessions', s => s.sessionId === sessionId);
   
   if (!session) {
-    db.insert('sessions', {
+    db.insert('analytics_sessions', {
       sessionId,
       visitorId: event.visitorId,
       firstSeen: new Date().toISOString(),
@@ -43,7 +43,7 @@ function updateSession(sessionId: string, event: any) {
       city: event.city,
     });
   } else {
-    db.update('sessions', s => s.sessionId === sessionId, {
+    db.update('analytics_sessions', s => s.sessionId === sessionId, {
       lastSeen: new Date().toISOString(),
       pageViews: session.pageViews + 1,
     });
@@ -52,7 +52,7 @@ function updateSession(sessionId: string, event: any) {
 
 export async function getActiveVisitors() {
   const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
-  const recentEvents = db.find('events', e => e.createdAt > fiveMinutesAgo);
+  const recentEvents = db.find('analytics_events', e => e.createdAt > fiveMinutesAgo);
   
   const sessions = new Set(recentEvents.map(e => e.sessionId));
   const pages = recentEvents
@@ -75,7 +75,7 @@ export async function getActiveVisitors() {
 }
 
 export async function getRecentEvents(limit = 50) {
-  const events = db.read('events');
+  const events = db.read('analytics_events');
   return events.slice(-limit).reverse();
 }
 

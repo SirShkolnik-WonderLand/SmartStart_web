@@ -1,8 +1,8 @@
 import { db } from '../config/database.simple.js';
 
 export async function getDashboardStats(dateRange: any) {
-  const sessions = db.read('sessions');
-  const events = db.read('events');
+  const sessions = db.read('analytics_sessions');
+  const events = db.read('analytics_events');
   
   const totalSessions = sessions.length;
   const totalVisitors = new Set(sessions.map(s => s.visitorId)).size;
@@ -33,7 +33,7 @@ export async function getDashboardStats(dateRange: any) {
 }
 
 export async function getTopPages(dateRange: any, limit = 20) {
-  const events = db.read('events');
+  const events = db.read('analytics_events');
   const pageViews = events.filter(e => e.eventType === 'page_view');
   
   const pageStats = pageViews.reduce((acc: any, e) => {
@@ -67,7 +67,8 @@ export async function getTopPages(dateRange: any, limit = 20) {
 }
 
 export async function getTrafficOverTime(dateRange: any, interval = 'day') {
-  const sessions = db.read('sessions');
+  const sessions = db.read('analytics_sessions');
+  const events = db.read('analytics_events');
   const last7Days = [];
   
   for (let i = 6; i >= 0; i--) {
