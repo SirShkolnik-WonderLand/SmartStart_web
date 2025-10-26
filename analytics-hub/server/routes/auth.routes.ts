@@ -119,7 +119,7 @@ router.post('/login', async (req: Request, res: Response) => {
     // Update user login info
     if (user.id) {
       await updateUser(user.id, {
-        lastLogin: new Date().toISOString(),
+        lastLogin: new Date(),
         lastLoginIp: clientIP,
         loginCount: user.loginCount + 1,
       });
