@@ -79,14 +79,21 @@ const LoadingContainer = styled(motion.div)`
 
 export function Dashboard() {
   const dateRange = useDashboardStore((state) => state.dateRange);
+  const token = useDashboardStore((state) => state.token);
   const { connect, isConnected } = useWebSocket();
 
+  // Debug logging
+  console.log('Dashboard token:', token);
+
   // Fetch dashboard stats
-  const { data: stats, isLoading: statsLoading } = useQuery({
+  const { data: stats, isLoading: statsLoading, error: statsError } = useQuery({
     queryKey: ['dashboard-stats', dateRange],
     queryFn: () => analyticsApi.getOverview(dateRange),
     refetchInterval: 30000, // Refresh every 30 seconds
   });
+
+  // Debug logging
+  console.log('Dashboard stats:', { stats, statsLoading, statsError });
 
   // Fetch traffic trends
   const { data: trends, isLoading: trendsLoading } = useQuery({

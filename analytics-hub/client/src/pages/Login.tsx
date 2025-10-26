@@ -200,6 +200,9 @@ export function Login() {
     setError('');
     setLoading(true);
 
+    // Debug logging
+    console.log('Form submitted with:', { email, password });
+
     try {
       const response = await authApi.login(email, password);
 
@@ -282,7 +285,10 @@ export function Login() {
                 type="email"
                 placeholder="udi@alicesolutions.com"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  console.log('Email changed:', e.target.value);
+                  setEmail(e.target.value);
+                }}
                 required
                 autoFocus
               />
@@ -304,7 +310,10 @@ export function Login() {
                 type="password"
                 placeholder="••••••••"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  console.log('Password changed:', e.target.value);
+                  setPassword(e.target.value);
+                }}
                 required
               />
             </InputWrapper>
