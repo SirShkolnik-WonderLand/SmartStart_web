@@ -73,7 +73,7 @@ export function nonceCSP(req: Request, res: Response, next: NextFunction) {
   const cspHeader = process.env.NODE_ENV === 'production' ? 
     `default-src 'self'; script-src 'nonce-${nonce}' 'self' https://analytics-hub-server.onrender.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://plausible.io https://www.google-analytics.com https://analytics-hub-server.onrender.com; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests;` :
     // Development CSP - more permissive
-    `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' http://localhost:* ws://localhost:*; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: http: blob:; connect-src 'self' http://localhost:* ws://localhost:* wss://localhost:*; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self';`;
+    `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' http://localhost:* ws://localhost:* https://analytics-hub-server.onrender.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: http: blob:; connect-src 'self' http://localhost:* ws://localhost:* wss://localhost:* https://analytics-hub-server.onrender.com; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self';`;
   
   res.setHeader('Content-Security-Policy', cspHeader);
   next();
