@@ -112,7 +112,7 @@ function App() {
                 </ProtectedRoute>
               }
             >
-              <Route index element={<MinimalDashboard />} />
+              <Route index element={<LazyDashboard />} />
               <Route path="realtime" element={
                 <LazyWrapper loadingText="Loading real-time data...">
                   <LazyRealtime />
@@ -133,7 +133,7 @@ function App() {
                   <LazySecurity />
                 </LazyWrapper>
               } />
-              <Route path="pages" element={<MinimalPages />} />
+              <Route path="pages" element={<LazyPages />} />
               <Route path="sources" element={
                 <LazyWrapper loadingText="Loading traffic sources...">
                   <LazySources />
