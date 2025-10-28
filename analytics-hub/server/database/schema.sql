@@ -85,10 +85,7 @@ CREATE TABLE analytics_events (
   -- Performance Metrics
   page_load_time INT,                       -- milliseconds
   dom_interactive INT,
-  dom_complete INT,
-  
-  -- Indexes for fast queries
-  CONSTRAINT analytics_events_pkey PRIMARY KEY (id)
+  dom_complete INT
 );
 
 CREATE INDEX idx_events_created_at ON analytics_events(created_at DESC);
