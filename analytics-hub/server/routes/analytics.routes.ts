@@ -4,7 +4,7 @@
  */
 
 import { Router, type Request, Response } from 'express';
-import { trackEvent, trackPageView, generateSessionId, generateVisitorId } from '../services/eventTracker.simple.js';
+import { trackEvent, trackPageView, generateSessionId, generateVisitorId } from '../services/eventTracker.js';
 import { parseUserAgent, isBot } from '../utils/deviceParser.js';
 import { getLocationFromIP } from '../utils/geoip.js';
 import { hashIP, sanitizeInput, isValidUrl } from '../utils/privacy.js';

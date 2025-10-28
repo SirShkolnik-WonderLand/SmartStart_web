@@ -8,7 +8,7 @@ import express, { type Express, Request, Response, NextFunction } from 'express'
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import helmet from 'helmet';
-import { testConnection, closeDatabase } from './config/database.simple.js';
+import { testConnection, closeDatabase } from './config/database.js';
 import { corsMiddleware } from './middleware/cors.middleware.js';
 import { requestLogger, errorLogger } from './middleware/logger.middleware.js';
 import { generalLimiter, trackingLimiter, authLimiter } from './middleware/rate-limit.middleware.js';
@@ -16,7 +16,7 @@ import analyticsRoutes from './routes/analytics.routes.js';
 import adminRoutes from './routes/admin.routes.js';
 import authRoutes from './routes/auth.routes.js';
 import reportsRoutes from './routes/reports.routes.js';
-import { getActiveVisitors } from './services/eventTracker.simple.js';
+import { getActiveVisitors } from './services/eventTracker.js';
 
 // Environment configuration
 const PORT = parseInt(process.env.PORT || '4000');

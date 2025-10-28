@@ -4,7 +4,7 @@
  */
 
 import { Router, type Request, Response } from 'express';
-import { findUserByEmail, updateUser } from '../services/authService.simple.js';
+import { findUserByEmail, updateUser } from '../services/authService.js';
 import {
   verifyPassword,
   generateToken,
@@ -24,7 +24,7 @@ const router = Router();
 router.get('/debug', async (req: Request, res: Response) => {
   try {
     const user = await findUserByEmail('udi.shkolnik@alicesolutionsgroup.com');
-    const allUsers = await import('../config/database.simple.js').then(m => m.db.read('users'));
+    const allUsers = await import('../config/database.js').then(m => m.db.select().from(m.schema.adminUsers));
     
     return res.status(200).json({
       success: true,
