@@ -249,6 +249,15 @@ io.on('connection', (socket) => {
       socket.emit('realtimeStats', stats);
     } catch (error) {
       console.error('Error getting realtime stats:', error);
+      // Don't crash if database tables don't exist yet
+      if (error.message?.includes('relation') && error.message?.includes('does not exist')) {
+        socket.emit('realtimeStats', {
+          activeVisitors: 0,
+          activeSessions: 0,
+          activePages: [],
+        });
+        return;
+      }
       socket.emit('error', { message: 'Failed to get realtime stats' });
     }
   });
@@ -273,6 +282,11 @@ setInterval(async () => {
       });
     } catch (error) {
       console.error('Error broadcasting realtime update:', error);
+      // Don't crash the server if database tables don't exist yet
+      if (error.message?.includes('relation') && error.message?.includes('does not exist')) {
+        console.log('⚠️  Database tables not created yet. Skipping realtime updates.');
+        return;
+      }
     }
   }
 }, 5000);
