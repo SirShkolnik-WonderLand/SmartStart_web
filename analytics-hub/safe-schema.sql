@@ -56,8 +56,10 @@ CREATE TABLE analytics_events (
   time_on_page INTEGER,
   scroll_depth INTEGER,
   max_scroll INTEGER,
-  load_time INTEGER,
-  dom_content_loaded INTEGER,
+  clicks_on_page INTEGER DEFAULT 0,
+  properties JSONB,
+  page_load_time INTEGER,
+  dom_interactive INTEGER,
   dom_complete INTEGER
 );
 
