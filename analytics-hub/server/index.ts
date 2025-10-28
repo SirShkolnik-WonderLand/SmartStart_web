@@ -100,7 +100,7 @@ app.post('/migrate', async (req: Request, res: Response) => {
     return res.status(500).json({
       success: false,
       error: 'Migration failed',
-      details: error.message
+      details: (error as Error).message
     });
   }
 });
@@ -280,7 +280,7 @@ io.on('connection', (socket) => {
     } catch (error) {
       console.error('Error getting realtime stats:', error);
       // Don't crash if database tables don't exist yet
-      if (error.message?.includes('relation') && error.message?.includes('does not exist')) {
+      if ((error as Error).message?.includes('relation') && (error as Error).message?.includes('does not exist')) {
         socket.emit('realtimeStats', {
           activeVisitors: 0,
           activeSessions: 0,
@@ -313,7 +313,7 @@ setInterval(async () => {
     } catch (error) {
       console.error('Error broadcasting realtime update:', error);
       // Don't crash the server if database tables don't exist yet
-      if (error.message?.includes('relation') && error.message?.includes('does not exist')) {
+      if ((error as Error).message?.includes('relation') && (error as Error).message?.includes('does not exist')) {
         console.log('⚠️  Database tables not created yet. Skipping realtime updates.');
         return;
       }

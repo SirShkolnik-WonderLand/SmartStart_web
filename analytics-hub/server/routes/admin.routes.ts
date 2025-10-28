@@ -358,7 +358,7 @@ router.post('/migrate', requireRole('admin'), async (req: Request, res: Response
     console.error('❌ Migration failed:', error);
     return res.status(500).json({
       success: false,
-      error: 'Migration failed: ' + error.message,
+      error: 'Migration failed: ' + (error as Error).message,
     });
   }
 });

@@ -313,7 +313,7 @@ router.post('/migrate', async (req: Request, res: Response) => {
     return res.status(500).json({
       success: false,
       error: 'Migration failed',
-      details: error.message
+      details: (error as Error).message
     });
   }
 });
