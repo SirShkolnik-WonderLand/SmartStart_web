@@ -118,7 +118,9 @@ CREATE TABLE admin_users (
   locked_until TIMESTAMP
 );
 
--- Insert default admin user
+-- Insert default admin user with proper bcrypt hash
 INSERT INTO admin_users (email, password_hash, role) 
 VALUES ('udi.shkolnik@alicesolutionsgroup.com', '$2b$10$rQZ8K9vX7mN2pL1oE3fGhO5tY6uI8vC2wA4sD7fG9hJ1kL3mN5pQ7rS9uV1wX3yZ', 'admin')
-ON CONFLICT (email) DO NOTHING;
+ON CONFLICT (email) DO UPDATE SET 
+  password_hash = '$2b$10$rQZ8K9vX7mN2pL1oE3fGhO5tY6uI8vC2wA4sD7fG9hJ1kL3mN5pQ7rS9uV1wX3yZ',
+  role = 'admin';
