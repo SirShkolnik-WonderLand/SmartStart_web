@@ -105,6 +105,38 @@ app.post('/migrate', async (req: Request, res: Response) => {
   }
 });
 
+// Temporary admin user creation endpoint (no auth required)
+app.post('/create-admin', async (req: Request, res: Response) => {
+  try {
+    console.log('🔄 Creating admin user...');
+    
+    const bcrypt = await import('bcrypt');
+    const passwordHash = await bcrypt.hash('admin123', 10);
+    
+    const { pool } = await import('./config/database.js');
+    const result = await pool.query(`
+      INSERT INTO admin_users (email, password_hash, role) 
+      VALUES ($1, $2, $3)
+      ON CONFLICT (email) DO UPDATE SET password_hash = $2
+      RETURNING id, email, role
+    `, ['udi.shkolnik@alicesolutionsgroup.com', passwordHash, 'admin']);
+    
+    console.log('✅ Admin user created/updated successfully');
+    return res.status(200).json({
+      success: true,
+      message: 'Admin user created successfully',
+      user: result.rows[0]
+    });
+  } catch (error) {
+    console.error('❌ Admin user creation failed:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Admin user creation failed',
+      details: (error as Error).message
+    });
+  }
+});
+
 // Serve tracker script
 app.get('/tracker.js', (req: Request, res: Response) => {
   res.setHeader('Content-Type', 'application/javascript');
