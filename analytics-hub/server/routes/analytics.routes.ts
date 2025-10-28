@@ -5,7 +5,7 @@
 
 import { Router, type Request, Response } from 'express';
 import { trackEvent, trackPageView, generateSessionId, generateVisitorId } from '../services/eventTracker.js';
-import { parseUserAgent, isBot } from '../utils/deviceParser.js';
+import { parseUserAgent, isBot, getDeviceCategory } from '../utils/deviceParser.js';
 import { getLocationFromIP } from '../utils/geoip.js';
 import { hashIP, sanitizeInput, isValidUrl } from '../utils/privacy.js';
 import type { TrackEventRequest } from '../../shared/types.js';
@@ -57,7 +57,7 @@ router.post('/event', async (req: Request, res: Response) => {
     const enrichedEvent = {
       ...event,
       // Device info
-      deviceType: deviceInfo.deviceType,
+      deviceType: getDeviceCategory(deviceInfo),
       deviceVendor: deviceInfo.deviceVendor,
       deviceModel: deviceInfo.deviceModel,
       browser: deviceInfo.browser,

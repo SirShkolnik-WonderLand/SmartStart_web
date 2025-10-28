@@ -24,7 +24,10 @@ const router = Router();
 router.get('/debug', async (req: Request, res: Response) => {
   try {
     const user = await findUserByEmail('udi.shkolnik@alicesolutionsgroup.com');
-    const allUsers = await import('../config/database.js').then(m => m.db.select().from(m.schema.adminUsers));
+    const allUsers = await import('../config/database.js').then(async m => {
+      const schema = await import('../models/schema.js');
+      return m.db.select().from(schema.adminUsers);
+    });
     
     return res.status(200).json({
       success: true,
