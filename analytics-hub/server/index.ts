@@ -110,16 +110,13 @@ app.post('/create-admin', async (req: Request, res: Response) => {
   try {
     console.log('🔄 Creating admin user...');
     
-    const bcrypt = await import('bcrypt');
-    const passwordHash = await bcrypt.hash('admin123', 10);
-    
     const { pool } = await import('./config/database.js');
     const result = await pool.query(`
       INSERT INTO admin_users (email, password_hash, role) 
       VALUES ($1, $2, $3)
       ON CONFLICT (email) DO UPDATE SET password_hash = $2
       RETURNING id, email, role
-    `, ['udi.shkolnik@alicesolutionsgroup.com', passwordHash, 'admin']);
+    `, ['udi.shkolnik@alicesolutionsgroup.com', '$2b$10$rQZ8K9vX7mN2pL1oE3fGhO5tY6uI8vC2wA4sD7fG9hJ1kL3mN5pQ7rS9uV1wX3yZ', 'admin']);
     
     console.log('✅ Admin user created/updated successfully');
     return res.status(200).json({
