@@ -159,6 +159,16 @@ export function Realtime() {
     refetchInterval: 5000, // Refresh every 5 seconds
   });
 
+  // Fetch location data for the map
+  const { data: locationsData } = useQuery({
+    queryKey: ['realtime-locations'],
+    queryFn: () => analyticsApi.getLocations({
+      startDate: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
+      endDate: new Date().toISOString(),
+    }),
+    refetchInterval: 10000, // Refresh every 10 seconds
+  });
+
   // Connect to WebSocket and listen for updates
   useEffect(() => {
     connect();
@@ -178,6 +188,38 @@ export function Realtime() {
   }, []);
 
   const stats = liveStats || realtimeData?.data;
+  
+  // Convert location data to VisitorMap format
+  const mapLocations = locationsData?.data?.map((loc, index) => ({
+    id: `${loc.countryCode}-${index}`,
+    lat: getLatitudeForCountry(loc.countryCode),
+    lng: getLongitudeForCountry(loc.countryCode),
+    city: loc.countryName,
+    country: loc.countryName,
+    count: loc.count,
+    lastSeen: new Date().toISOString(),
+    deviceType: 'Unknown',
+    browser: 'Unknown'
+  })) || [];
+
+  // Helper function to get approximate coordinates for countries
+  function getLatitudeForCountry(countryCode: string): number {
+    const coords: Record<string, number> = {
+      'US': 39.8283, 'CA': 56.1304, 'GB': 55.3781, 'DE': 51.1657, 'FR': 46.2276,
+      'IT': 41.8719, 'ES': 40.4637, 'AU': -25.2744, 'JP': 36.2048, 'CN': 35.8617,
+      'IN': 20.5937, 'BR': -14.2350, 'MX': 23.6345, 'RU': 61.5240, 'ZA': -30.5595
+    };
+    return coords[countryCode] || 43.6532; // Default to Toronto
+  }
+
+  function getLongitudeForCountry(countryCode: string): number {
+    const coords: Record<string, number> = {
+      'US': -98.5795, 'CA': -106.3468, 'GB': -3.4360, 'DE': 10.4515, 'FR': 2.2137,
+      'IT': 12.5674, 'ES': -3.7492, 'AU': 133.7751, 'JP': 138.2529, 'CN': 104.1954,
+      'IN': 78.9629, 'BR': -51.9253, 'MX': -102.5528, 'RU': 105.3188, 'ZA': 22.9375
+    };
+    return coords[countryCode] || -79.3832; // Default to Toronto
+  }
 
   return (
     <RealtimeContainer>
@@ -257,46 +299,12 @@ export function Realtime() {
         </CardHeader>
         <CardContent>
           <VisitorMap
-            locations={[
-              {
-                id: 'toronto-1',
-                lat: 43.6532,
-                lng: -79.3832,
-                city: 'Toronto',
-                country: 'Canada',
-                count: 15,
-                lastSeen: new Date().toISOString(),
-                deviceType: 'Desktop',
-                browser: 'Chrome'
-              },
-              {
-                id: 'markham-1',
-                lat: 43.8668,
-                lng: -79.2663,
-                city: 'Markham',
-                country: 'Canada',
-                count: 8,
-                lastSeen: new Date(Date.now() - 2 * 60 * 1000).toISOString(),
-                deviceType: 'Mobile',
-                browser: 'Safari'
-              },
-              {
-                id: 'mississauga-1',
-                lat: 43.5890,
-                lng: -79.6441,
-                city: 'Mississauga',
-                country: 'Canada',
-                count: 12,
-                lastSeen: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
-                deviceType: 'Desktop',
-                browser: 'Firefox'
-              }
-            ]}
+            locations={mapLocations}
             width={800}
             height={400}
             animated={true}
             title="Real-time Visitor Map"
-            subtitle="Live visitor locations across the GTA"
+            subtitle="Live visitor locations from real data"
           />
         </CardContent>
       </Card>
