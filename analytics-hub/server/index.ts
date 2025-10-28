@@ -83,7 +83,7 @@ app.post('/migrate', async (req: Request, res: Response) => {
     // Read the minimal schema file
     const fs = await import('fs');
     const path = await import('path');
-    const schemaPath = path.join(process.cwd(), 'safe-schema.sql');
+    const schemaPath = path.join(process.cwd(), 'complete-schema.sql');
     const schemaSQL = fs.readFileSync(schemaPath, 'utf8');
     
     // Execute the schema
