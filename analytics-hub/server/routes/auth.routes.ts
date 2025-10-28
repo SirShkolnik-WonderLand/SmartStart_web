@@ -161,6 +161,58 @@ router.post('/login', async (req: Request, res: Response) => {
 });
 
 /**
+ * GET /api/admin/me
+ * Get current user information
+ */
+router.get('/me', async (req: Request, res: Response) => {
+  try {
+    // Get user from JWT token (set by authenticateToken middleware)
+    const user = (req as any).user;
+    
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        error: 'User not authenticated',
+      });
+    }
+
+    // Get fresh user data from database
+    const freshUser = await findUserByEmail(user.email);
+    
+    if (!freshUser) {
+      return res.status(404).json({
+        success: false,
+        error: 'User not found',
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      user: {
+        id: freshUser.id,
+        email: freshUser.email,
+        name: freshUser.name || undefined,
+        role: freshUser.role,
+        canExport: freshUser.canExport,
+        canEditGoals: freshUser.canEditGoals,
+        canManageUsers: freshUser.canManageUsers,
+        lastLogin: freshUser.lastLogin || undefined,
+        loginCount: freshUser.loginCount,
+        active: freshUser.active,
+        emailVerified: freshUser.emailVerified,
+        twoFactorEnabled: freshUser.twoFactorEnabled,
+      },
+    });
+  } catch (error) {
+    console.error('Error getting user info:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Internal server error',
+    });
+  }
+});
+
+/**
  * POST /api/admin/logout
  * Admin logout (client-side token removal, server-side optional blacklist)
  */
