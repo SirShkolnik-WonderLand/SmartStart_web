@@ -284,4 +284,38 @@ router.get('/health', (req: Request, res: Response) => {
   });
 });
 
+/**
+ * POST /api/v1/migrate
+ * Temporary endpoint to run database migrations (no auth required)
+ * This should be removed after initial setup
+ */
+router.post('/migrate', async (req: Request, res: Response) => {
+  try {
+    console.log('🔄 Running database migrations...');
+    
+    // Read the schema.sql file
+    const fs = await import('fs');
+    const path = await import('path');
+    const schemaPath = path.join(process.cwd(), 'server', 'database', 'schema.sql');
+    const schemaSQL = fs.readFileSync(schemaPath, 'utf8');
+    
+    // Execute the schema
+    const { pool } = await import('../config/database.js');
+    await pool.query(schemaSQL);
+    
+    console.log('✅ Database migrations completed successfully');
+    return res.status(200).json({
+      success: true,
+      message: 'Database migrations completed successfully'
+    });
+  } catch (error) {
+    console.error('❌ Migration failed:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Migration failed',
+      details: error.message
+    });
+  }
+});
+
 export default router;
