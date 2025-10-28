@@ -29,7 +29,7 @@ async function runMigrations() {
     console.log('🔄 Running database migrations...');
     
     // Read the schema.sql file
-    const schemaPath = path.join(__dirname, 'server', 'database', 'schema.sql');
+    const schemaPath = path.join(__dirname, '..', 'server', 'database', 'schema.sql');
     const schemaSQL = fs.readFileSync(schemaPath, 'utf8');
     
     // Execute the schema
