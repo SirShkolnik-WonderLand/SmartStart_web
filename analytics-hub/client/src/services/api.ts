@@ -192,6 +192,79 @@ export const analyticsApi = {
     });
     return response.data;
   },
+
+  /**
+   * Get security data
+   */
+  async getSecurityData(dateRange: DateRange, timeframe: string): Promise<{
+    success: boolean;
+    data?: {
+      overallStatus: 'secure' | 'warning' | 'critical';
+      threatsBlocked: number;
+      suspiciousRequests: number;
+      failedLogins: number;
+      systemHealth: {
+        server: { status: 'healthy' | 'warning' | 'critical'; value: string; description: string };
+        database: { status: 'healthy' | 'warning' | 'critical'; value: string; description: string };
+        cpu: { status: 'healthy' | 'warning' | 'critical'; value: string; description: string };
+        memory: { status: 'healthy' | 'warning' | 'critical'; value: string; description: string };
+        disk: { status: 'healthy' | 'warning' | 'critical'; value: string; description: string };
+        network: { status: 'healthy' | 'warning' | 'critical'; value: string; description: string };
+      };
+      recentThreats: Array<{
+        id: number;
+        type: string;
+        severity: 'low' | 'medium' | 'high' | 'critical';
+        ip: string;
+        location: string;
+        timestamp: string;
+        status: 'blocked' | 'mitigated' | 'investigating';
+      }>;
+      threatTrends: Array<{ date: string; threats: number; blocked: number; mitigated: number }>;
+      threatTypes: Array<{ type: string; count: number; percentage: number }>;
+      blockedIPs: Array<{ ip: string; location: string; reason: string; blockedAt: string }>;
+    };
+  }> {
+    const response = await api.get('/api/admin/security', {
+      params: { ...dateRange, timeframe },
+    });
+    return response.data;
+  },
+
+  /**
+   * Get SEO data
+   */
+  async getSEOData(dateRange: DateRange): Promise<{
+    success: boolean;
+    data?: {
+      rankings: Array<{
+        keyword: string;
+        position: number;
+        change: number;
+        trend: 'up' | 'down' | 'stable';
+        volume: number;
+      }>;
+      backlinks: {
+        total: number;
+        new: number;
+        lost: number;
+        referringDomains: number;
+        domainAuthority: number;
+      };
+      coreWebVitals: {
+        lcp: { value: number; status: 'good' | 'needs-improvement' | 'poor'; description: string };
+        fid: { value: number; status: 'good' | 'needs-improvement' | 'poor'; description: string };
+        cls: { value: number; status: 'good' | 'needs-improvement' | 'poor'; description: string };
+      };
+      organicTraffic: Array<{ date: string; visitors: number; sessions: number; pageViews: number }>;
+      topPages: Array<{ page: string; visitors: number; position: number; change: number }>;
+    };
+  }> {
+    const response = await api.get('/api/admin/seo', {
+      params: dateRange,
+    });
+    return response.data;
+  },
 };
 
 // ============================================================================

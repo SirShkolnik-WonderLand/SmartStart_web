@@ -125,10 +125,16 @@ export const VisitorMap: React.FC<VisitorMapProps> = ({
   const markers = useRef<mapboxgl.Marker[]>([]);
 
   // Set Mapbox access token (you'll need to get this from Mapbox)
-  const MAPBOX_TOKEN = 'pk.eyJ1IjoiYWxpY2Vzb2x1dGlvbnMiLCJhIjoiY2x4ZGV4ZGV4ZGV4In0.example'; // Replace with real token
+  const MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_TOKEN || 'pk.eyJ1IjoiYWxpY2Vzb2x1dGlvbnMiLCJhIjoiY2x4ZGV4ZGV4ZGV4In0.example'; // Replace with real token
 
   useEffect(() => {
     if (!mapContainer.current) return;
+
+    // Check if we have a valid Mapbox token
+    if (!MAPBOX_TOKEN || MAPBOX_TOKEN.includes('example')) {
+      console.warn('Mapbox token not configured. Map will not be displayed.');
+      return;
+    }
 
     // Initialize map
     mapboxgl.accessToken = MAPBOX_TOKEN;

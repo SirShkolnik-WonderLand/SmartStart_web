@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
+import { LineChart } from '@/components/charts/LineChart';
 import { VisitorMap } from '@/components/charts/VisitorMap';
 import { analyticsApi } from '@/services/api';
 import { useDashboardStore } from '@/store/dashboardStore';
@@ -406,7 +407,7 @@ export const Analytics: React.FC = () => {
             <CardTitle>Traffic Trends</CardTitle>
           </CardHeader>
           <CardContent>
-            <AdvancedLineChart
+            <LineChart
               data={selectedMetric === 'visitors' ? visitorsTrend : 
                     selectedMetric === 'sessions' ? sessionsTrend : pageViewsTrend}
               title="Traffic Over Time"

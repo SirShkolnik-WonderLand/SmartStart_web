@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
+import { LineChart } from '@/components/charts/LineChart';
 import { analyticsApi } from '@/services/api';
 import { useDashboardStore } from '@/store/dashboardStore';
 
@@ -247,59 +248,51 @@ export const Security: React.FC = () => {
   const { dateRange } = useDashboardStore();
   const [selectedTimeframe, setSelectedTimeframe] = useState('24h');
 
-  // Mock security data (in real implementation, this would come from security monitoring APIs)
-  const securityData = {
+  // Fetch real security data from API
+  const { data: securityResponse, isLoading: securityLoading } = useQuery({
+    queryKey: ['security-data', dateRange, selectedTimeframe],
+    queryFn: () => analyticsApi.getSecurityData(dateRange, selectedTimeframe),
+    refetchInterval: 30000, // Refresh every 30 seconds
+  });
+
+  if (securityLoading) {
+    return (
+      <SecurityContainer>
+        <div style={{ textAlign: 'center', padding: '60px' }}>
+          <div className="spinner" />
+          <p>Loading security data...</p>
+        </div>
+      </SecurityContainer>
+    );
+  }
+
+  const data = securityResponse?.data || {
     overallStatus: 'secure' as const,
-    threatsBlocked: 47,
-    suspiciousRequests: 12,
-    failedLogins: 3,
+    threatsBlocked: 0,
+    suspiciousRequests: 0,
+    failedLogins: 0,
     systemHealth: {
-      server: { status: 'healthy' as const, value: '99.9%', description: 'Uptime' },
-      database: { status: 'healthy' as const, value: '45ms', description: 'Response Time' },
-      cpu: { status: 'warning' as const, value: '78%', description: 'CPU Usage' },
-      memory: { status: 'healthy' as const, value: '62%', description: 'Memory Usage' },
-      disk: { status: 'healthy' as const, value: '34%', description: 'Disk Usage' },
-      network: { status: 'healthy' as const, value: '1.2ms', description: 'Latency' }
+      server: { status: 'healthy' as const, value: 'N/A', description: 'Uptime' },
+      database: { status: 'healthy' as const, value: 'N/A', description: 'Response Time' },
+      cpu: { status: 'healthy' as const, value: 'N/A', description: 'CPU Usage' },
+      memory: { status: 'healthy' as const, value: 'N/A', description: 'Memory Usage' },
+      disk: { status: 'healthy' as const, value: 'N/A', description: 'Disk Usage' },
+      network: { status: 'healthy' as const, value: 'N/A', description: 'Latency' }
     },
-    recentThreats: [
-      { id: 1, type: 'SQL Injection', severity: 'high' as const, ip: '192.168.1.100', location: 'Toronto, CA', timestamp: '2 minutes ago', status: 'blocked' },
-      { id: 2, type: 'Brute Force', severity: 'medium' as const, ip: '10.0.0.45', location: 'Unknown', timestamp: '15 minutes ago', status: 'blocked' },
-      { id: 3, type: 'XSS Attempt', severity: 'medium' as const, ip: '172.16.0.23', location: 'Vancouver, CA', timestamp: '1 hour ago', status: 'blocked' },
-      { id: 4, type: 'DDoS', severity: 'critical' as const, ip: '203.0.113.1', location: 'Unknown', timestamp: '3 hours ago', status: 'mitigated' },
-      { id: 5, type: 'Suspicious Bot', severity: 'low' as const, ip: '198.51.100.42', location: 'Montreal, CA', timestamp: '5 hours ago', status: 'blocked' },
-    ],
-    threatTrends: [
-      { date: '2024-10-16', threats: 8, blocked: 7, mitigated: 1 },
-      { date: '2024-10-17', threats: 12, blocked: 11, mitigated: 1 },
-      { date: '2024-10-18', threats: 6, blocked: 5, mitigated: 1 },
-      { date: '2024-10-19', threats: 15, blocked: 14, mitigated: 1 },
-      { date: '2024-10-20', threats: 9, blocked: 8, mitigated: 1 },
-      { date: '2024-10-21', threats: 11, blocked: 10, mitigated: 1 },
-      { date: '2024-10-22', threats: 7, blocked: 6, mitigated: 1 },
-    ],
-    threatTypes: [
-      { type: 'SQL Injection', count: 12, percentage: 25.5 },
-      { type: 'XSS Attempts', count: 8, percentage: 17.0 },
-      { type: 'Brute Force', count: 15, percentage: 31.9 },
-      { type: 'DDoS', count: 3, percentage: 6.4 },
-      { type: 'Bot Traffic', count: 9, percentage: 19.1 },
-    ],
-    blockedIPs: [
-      { ip: '192.168.1.100', location: 'Toronto, CA', reason: 'SQL Injection', blockedAt: '2 minutes ago' },
-      { ip: '10.0.0.45', location: 'Unknown', reason: 'Brute Force', blockedAt: '15 minutes ago' },
-      { ip: '172.16.0.23', location: 'Vancouver, CA', reason: 'XSS Attempt', blockedAt: '1 hour ago' },
-      { ip: '203.0.113.1', location: 'Unknown', reason: 'DDoS', blockedAt: '3 hours ago' },
-    ]
+    recentThreats: [],
+    threatTrends: [],
+    threatTypes: [],
+    blockedIPs: [],
   };
 
   // Prepare chart data
-  const threatTrendData = securityData.threatTrends.map(d => ({
+  const threatTrendData = data.threatTrends.map(d => ({
     date: d.date,
     value: d.threats,
     label: `Threats: ${d.threats}`
   }));
 
-  const threatTypesData = securityData.threatTypes.map(t => ({
+  const threatTypesData = data.threatTypes.map(t => ({
     label: t.type,
     value: t.count,
     percentage: t.percentage
@@ -369,14 +362,14 @@ export const Security: React.FC = () => {
 
       {/* Security Status Overview */}
       <SecurityStatusGrid>
-        <StatusCard status={securityData.overallStatus}>
+        <StatusCard status={data.overallStatus}>
           <CardContent>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-              <Shield size={24} color={securityData.overallStatus === 'secure' ? '#10b981' : '#ef4444'} />
+              <Shield size={24} color={data.overallStatus === 'secure' ? '#10b981' : '#ef4444'} />
               <div>
                 <div style={{ fontSize: '0.875rem', color: '#666' }}>Overall Status</div>
-                <StatusValue status={securityData.overallStatus}>
-                  {securityData.overallStatus === 'secure' ? 'Secure' : 'At Risk'}
+                <StatusValue status={data.overallStatus}>
+                  {data.overallStatus === 'secure' ? 'Secure' : 'At Risk'}
                 </StatusValue>
               </div>
             </div>
@@ -392,11 +385,11 @@ export const Security: React.FC = () => {
               <XCircle size={24} color="#10b981" />
               <div>
                 <div style={{ fontSize: '0.875rem', color: '#666' }}>Threats Blocked</div>
-                <StatusValue status="secure">{securityData.threatsBlocked}</StatusValue>
+                <StatusValue status="secure">{data.threatsBlocked}</StatusValue>
               </div>
             </div>
             <StatusDescription>
-              {securityData.threatsBlocked} threats blocked in the last 24 hours
+              {data.threatsBlocked} threats blocked in the last 24 hours
             </StatusDescription>
           </CardContent>
         </StatusCard>
@@ -407,11 +400,11 @@ export const Security: React.FC = () => {
               <AlertTriangle size={24} color="#f59e0b" />
               <div>
                 <div style={{ fontSize: '0.875rem', color: '#666' }}>Suspicious Requests</div>
-                <StatusValue status="warning">{securityData.suspiciousRequests}</StatusValue>
+                <StatusValue status="warning">{data.suspiciousRequests}</StatusValue>
               </div>
             </div>
             <StatusDescription>
-              {securityData.suspiciousRequests} suspicious requests detected and monitored
+              {data.suspiciousRequests} suspicious requests detected and monitored
             </StatusDescription>
           </CardContent>
         </StatusCard>
@@ -422,11 +415,11 @@ export const Security: React.FC = () => {
               <Lock size={24} color="#10b981" />
               <div>
                 <div style={{ fontSize: '0.875rem', color: '#666' }}>Failed Logins</div>
-                <StatusValue status="secure">{securityData.failedLogins}</StatusValue>
+                <StatusValue status="secure">{data.failedLogins}</StatusValue>
               </div>
             </div>
             <StatusDescription>
-              {securityData.failedLogins} failed login attempts in the last 24 hours
+              {data.failedLogins} failed login attempts in the last 24 hours
             </StatusDescription>
           </CardContent>
         </StatusCard>
@@ -434,7 +427,7 @@ export const Security: React.FC = () => {
 
       {/* System Health */}
       <SystemHealthGrid>
-        {Object.entries(securityData.systemHealth).map(([key, health]) => (
+        {Object.entries(data.systemHealth).map(([key, health]) => (
           <HealthCard key={key} status={health.status}>
             <CardContent>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
@@ -462,7 +455,7 @@ export const Security: React.FC = () => {
             <CardTitle>Threat Trends</CardTitle>
           </CardHeader>
           <CardContent>
-            <AdvancedLineChart
+            <LineChart
               data={threatTrendData}
               title="Security Threats Over Time"
               subtitle="Daily threat detection and blocking"
@@ -505,7 +498,7 @@ export const Security: React.FC = () => {
               <div>Location</div>
               <div>Time</div>
             </TableHeader>
-            {securityData.recentThreats.map((threat, index) => (
+            {data.recentThreats.map((threat, index) => (
               <TableRow
                 key={threat.id}
                 initial={{ opacity: 0, x: -20 }}

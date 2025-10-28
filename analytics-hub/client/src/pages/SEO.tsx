@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
+import { LineChart } from '@/components/charts/LineChart';
 import { analyticsApi } from '@/services/api';
 import { useDashboardStore } from '@/store/dashboardStore';
 
@@ -259,57 +260,53 @@ export const SEO: React.FC = () => {
   const { dateRange } = useDashboardStore();
   const [selectedMetric, setSelectedMetric] = useState('rankings');
 
-  // Mock SEO data (in real implementation, this would come from APIs like Google Search Console)
-  const seoData = {
-    rankings: [
-      { keyword: 'cybersecurity consultant toronto', position: 3, change: 2, trend: 'up' as const, volume: 1200 },
-      { keyword: 'iso 27001 consultant canada', position: 5, change: -1, trend: 'down' as const, volume: 800 },
-      { keyword: 'ciso as a service', position: 8, change: 0, trend: 'stable' as const, volume: 600 },
-      { keyword: 'smartstart venture studio', position: 12, change: 3, trend: 'up' as const, volume: 400 },
-      { keyword: 'cybersecurity automation', position: 15, change: -2, trend: 'down' as const, volume: 300 },
-      { keyword: 'zero trust security', position: 18, change: 1, trend: 'up' as const, volume: 250 },
-    ],
+  // Fetch real SEO data from API
+  const { data: seoData, isLoading: seoLoading } = useQuery({
+    queryKey: ['seo-data', dateRange],
+    queryFn: () => analyticsApi.getSEOData(dateRange),
+    refetchInterval: 300000, // Refresh every 5 minutes
+  });
+
+  if (seoLoading) {
+    return (
+      <SEOContainer>
+        <div style={{ textAlign: 'center', padding: '60px' }}>
+          <div className="spinner" />
+          <p>Loading SEO processedSeoData...</p>
+        </div>
+      </SEOContainer>
+    );
+  }
+
+  const processedSeoData = seoData?.data || {
+    rankings: [],
     backlinks: {
-      total: 1247,
-      new: 23,
-      lost: 8,
-      referringDomains: 89,
-      domainAuthority: 42
+      total: 0,
+      new: 0,
+      lost: 0,
+      referringDomains: 0,
+      domainAuthority: 0
     },
     coreWebVitals: {
-      lcp: { value: 2.1, status: 'good' as const, description: 'Largest Contentful Paint measures loading performance' },
-      fid: { value: 45, status: 'good' as const, description: 'First Input Delay measures interactivity' },
-      cls: { value: 0.08, status: 'needs-improvement' as const, description: 'Cumulative Layout Shift measures visual stability' }
+      lcp: { value: 0, status: 'good' as const, description: 'Largest Contentful Paint measures loading performance' },
+      fid: { value: 0, status: 'good' as const, description: 'First Input Delay measures interactivity' },
+      cls: { value: 0, status: 'good' as const, description: 'Cumulative Layout Shift measures visual stability' }
     },
-    organicTraffic: [
-      { date: '2024-10-16', visitors: 120, sessions: 150, pageViews: 320 },
-      { date: '2024-10-17', visitors: 135, sessions: 165, pageViews: 350 },
-      { date: '2024-10-18', visitors: 142, sessions: 178, pageViews: 380 },
-      { date: '2024-10-19', visitors: 128, sessions: 155, pageViews: 340 },
-      { date: '2024-10-20', visitors: 156, sessions: 190, pageViews: 420 },
-      { date: '2024-10-21', visitors: 148, sessions: 175, pageViews: 390 },
-      { date: '2024-10-22', visitors: 162, sessions: 195, pageViews: 440 },
-    ],
-    topPages: [
-      { page: '/services', visitors: 45, position: 2.3, change: 0.2 },
-      { page: '/smartstart', visitors: 38, position: 4.1, change: -0.3 },
-      { page: '/iso-studio', visitors: 32, position: 5.2, change: 0.5 },
-      { page: '/contact', visitors: 28, position: 6.8, change: -0.1 },
-      { page: '/about', visitors: 22, position: 8.5, change: 0.3 },
-    ]
+    organicTraffic: [],
+    topPages: [],
   };
 
   // Prepare chart data
-  const organicTrafficData = seoData.organicTraffic.map(d => ({
+  const organicTrafficData = processedSeoData.organicTraffic.map(d => ({
     date: d.date,
     value: d.visitors,
     label: `Organic visitors: ${d.visitors}`
   }));
 
-  const topPagesData = seoData.topPages.map(p => ({
+  const topPagesData = processedSeoData.topPages.map(p => ({
     label: p.page,
     value: p.visitors,
-    percentage: Math.round((p.visitors / 162) * 100)
+    percentage: Math.round((p.visitors / Math.max(...processedSeoData.topPages.map(p => p.visitors), 1)) * 100)
   }));
 
   const insights = [
@@ -420,7 +417,7 @@ export const SEO: React.FC = () => {
 
       {/* Core Web Vitals */}
       <CoreWebVitalsGrid>
-        <VitalsCard status={seoData.coreWebVitals.lcp.status}>
+        <VitalsCard status={processedSeoData.coreWebVitals.lcp.status}>
           <CardHeader>
             <CardTitle>
               <Clock size={20} />
@@ -428,16 +425,16 @@ export const SEO: React.FC = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <VitalsValue status={seoData.coreWebVitals.lcp.status}>
-              {seoData.coreWebVitals.lcp.value}s
+            <VitalsValue status={processedSeoData.coreWebVitals.lcp.status}>
+              {processedSeoData.coreWebVitals.lcp.value}s
             </VitalsValue>
             <VitalsDescription>
-              {seoData.coreWebVitals.lcp.description}
+              {processedSeoData.coreWebVitals.lcp.description}
             </VitalsDescription>
           </CardContent>
         </VitalsCard>
 
-        <VitalsCard status={seoData.coreWebVitals.fid.status}>
+        <VitalsCard status={processedSeoData.coreWebVitals.fid.status}>
           <CardHeader>
             <CardTitle>
               <Zap size={20} />
@@ -445,16 +442,16 @@ export const SEO: React.FC = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <VitalsValue status={seoData.coreWebVitals.fid.status}>
-              {seoData.coreWebVitals.fid.value}ms
+            <VitalsValue status={processedSeoData.coreWebVitals.fid.status}>
+              {processedSeoData.coreWebVitals.fid.value}ms
             </VitalsValue>
             <VitalsDescription>
-              {seoData.coreWebVitals.fid.description}
+              {processedSeoData.coreWebVitals.fid.description}
             </VitalsDescription>
           </CardContent>
         </VitalsCard>
 
-        <VitalsCard status={seoData.coreWebVitals.cls.status}>
+        <VitalsCard status={processedSeoData.coreWebVitals.cls.status}>
           <CardHeader>
             <CardTitle>
               <Eye size={20} />
@@ -462,11 +459,11 @@ export const SEO: React.FC = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <VitalsValue status={seoData.coreWebVitals.cls.status}>
-              {seoData.coreWebVitals.cls.value}
+            <VitalsValue status={processedSeoData.coreWebVitals.cls.status}>
+              {processedSeoData.coreWebVitals.cls.value}
             </VitalsValue>
             <VitalsDescription>
-              {seoData.coreWebVitals.cls.description}
+              {processedSeoData.coreWebVitals.cls.description}
             </VitalsDescription>
           </CardContent>
         </VitalsCard>
@@ -479,8 +476,8 @@ export const SEO: React.FC = () => {
             <CardTitle>Organic Traffic Trends</CardTitle>
           </CardHeader>
           <CardContent>
-            <AdvancedLineChart
-              data={organicTrafficData}
+            <LineChart
+              seoData={organicTrafficData}
               title="Organic Traffic Over Time"
               subtitle="Search engine driven visitors"
               width={600}
@@ -497,7 +494,7 @@ export const SEO: React.FC = () => {
           </CardHeader>
           <CardContent>
             <AnimatedBarChart
-              data={topPagesData}
+              seoData={topPagesData}
               title="Most Visited Pages"
               width={400}
               height={300}
@@ -522,7 +519,7 @@ export const SEO: React.FC = () => {
               <div>Change</div>
               <div>Search Volume</div>
             </TableHeader>
-            {seoData.rankings.map((keyword, index) => (
+            {processedSeoData.rankings.map((keyword, index) => (
               <TableRow
                 key={keyword.keyword}
                 initial={{ opacity: 0, x: -20 }}
