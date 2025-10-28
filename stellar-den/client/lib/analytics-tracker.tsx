@@ -8,7 +8,7 @@ import { useLocation } from 'react-router-dom';
 
 // Analytics Hub configuration
 const ANALYTICS_CONFIG = {
-  apiUrl: import.meta.env.VITE_ANALYTICS_API_URL || 'http://localhost:4000',
+  apiUrl: import.meta.env.VITE_ANALYTICS_API_URL || 'https://analytics-hub-server.onrender.com',
   autoTrack: true,
   trackOutbound: true,
   trackScroll: true,

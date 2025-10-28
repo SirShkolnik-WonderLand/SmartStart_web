@@ -101,6 +101,12 @@ coverage/
 DEPLOYMENT_SETTINGS.md
 
 # ============================================
+# SENSITIVE DEPLOYMENT INFORMATION
+# ============================================
+# Contains production URLs, database credentials, and sensitive deployment details
+PRODUCTION-DEPLOYMENT-COMPLETE.md
+
+# ============================================
 # ASSETS (Keep for reference)
 # ============================================
 # We keep assets/ for reference

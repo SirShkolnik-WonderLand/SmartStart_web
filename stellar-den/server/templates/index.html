@@ -12,7 +12,7 @@
     <!-- Analytics Hub Script with nonce -->
     <script nonce="{{NONCE}}">
       (function(){
-        const API_URL = '{{ANALYTICS_API_URL}}';
+        const API_URL = 'https://analytics-hub-server.onrender.com';
         let sessionId = sessionStorage.getItem('ah_session') || Math.random().toString(36).substring(7);
         sessionStorage.setItem('ah_session', sessionId);
         
