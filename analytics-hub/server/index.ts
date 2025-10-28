@@ -80,10 +80,10 @@ app.post('/migrate', async (req: Request, res: Response) => {
   try {
     console.log('🔄 Running database migrations...');
     
-    // Read the schema.sql file
+    // Read the minimal schema file
     const fs = await import('fs');
     const path = await import('path');
-    const schemaPath = path.join(process.cwd(), 'server', 'database', 'schema.sql');
+    const schemaPath = path.join(process.cwd(), 'minimal-schema.sql');
     const schemaSQL = fs.readFileSync(schemaPath, 'utf8');
     
     // Execute the schema
