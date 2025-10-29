@@ -202,7 +202,7 @@ router.get('/test-contact', (req: Request, res: Response) => {
 });
 
 /**
- * Generate access token directly (for immediate testing)
+ * Generate access token directly (FIXED)
  */
 router.post('/generate-token', async (req: Request, res: Response) => {
   try {
@@ -215,29 +215,36 @@ router.post('/generate-token', async (req: Request, res: Response) => {
       });
     }
 
-    // Exchange code for access token
-    const response = await fetch('https://accounts.zohocloud.ca/oauth/v2/token', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: new URLSearchParams({
+    console.log('🔄 Attempting to exchange code for token:', code.substring(0, 20) + '...');
+
+    // Exchange code for access token using axios instead of fetch
+    const axios = require('axios');
+    const response = await axios.post('https://accounts.zohocloud.ca/oauth/v2/token', 
+      new URLSearchParams({
         grant_type: 'authorization_code',
         client_id: process.env.ZOHO_CLIENT_ID || '1000.RL5AUX1S0GDMJ72X7WIH0JDA6OQFLV',
         client_secret: process.env.ZOHO_CLIENT_SECRET || '4397551227c473f3cc6ea0f398c12f3ff01f90b80e',
         redirect_uri: 'https://localhost/callback',
         code: code
-      })
-    });
+      }), {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        }
+      }
+    );
 
-    const tokenData = await response.json();
+    const tokenData = response.data;
     
     if (tokenData.error) {
+      console.error('❌ Token exchange error:', tokenData);
       return res.status(400).json({
         success: false,
-        error: tokenData.error_description || 'Failed to get access token'
+        error: tokenData.error_description || tokenData.error || 'Failed to get access token',
+        details: tokenData
       });
     }
+
+    console.log('✅ Token exchange successful');
 
     res.json({
       success: true,
@@ -248,10 +255,11 @@ router.post('/generate-token', async (req: Request, res: Response) => {
       instructions: 'Add this access_token to your Render environment variables as ZOHO_ACCESS_TOKEN'
     });
   } catch (error) {
-    console.error('Token generation error:', error);
+    console.error('❌ Token generation error:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to generate access token'
+      error: 'Failed to generate access token',
+      details: error.message
     });
   }
 });
