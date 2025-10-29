@@ -184,17 +184,72 @@ router.post('/email/send', async (req: Request, res: Response) => {
  */
 router.get('/test', async (req: Request, res: Response) => {
   try {
-    // This would require a valid token to test
     res.json({
       success: true,
       message: 'Zoho service is configured',
       clientId: process.env.ZOHO_CLIENT_ID ? 'Configured' : 'Not configured',
-      clientSecret: process.env.ZOHO_CLIENT_SECRET ? 'Configured' : 'Not configured'
+      clientSecret: process.env.ZOHO_CLIENT_SECRET ? 'Configured' : 'Not configured',
+      accessToken: process.env.ZOHO_ACCESS_TOKEN ? 'Configured' : 'Not configured'
     });
   } catch (error) {
     res.status(500).json({
       success: false,
       error: 'Zoho service test failed'
+    });
+  }
+});
+
+/**
+ * Generate access token directly (for immediate testing)
+ */
+router.post('/generate-token', async (req: Request, res: Response) => {
+  try {
+    const { code } = req.body;
+    
+    if (!code) {
+      return res.status(400).json({
+        success: false,
+        error: 'Authorization code is required'
+      });
+    }
+
+    // Exchange code for access token
+    const response = await fetch('https://accounts.zohocloud.ca/oauth/v2/token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        grant_type: 'authorization_code',
+        client_id: process.env.ZOHO_CLIENT_ID || '1000.RL5AUX1S0GDMJ72X7WIH0JDA6OQFLV',
+        client_secret: process.env.ZOHO_CLIENT_SECRET || '4397551227c473f3cc6ea0f398c12f3ff01f90b80e',
+        redirect_uri: 'https://alicesolutionsgroup.com/callback',
+        code: code
+      })
+    });
+
+    const tokenData = await response.json();
+    
+    if (tokenData.error) {
+      return res.status(400).json({
+        success: false,
+        error: tokenData.error_description || 'Failed to get access token'
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Access token generated successfully',
+      access_token: tokenData.access_token,
+      refresh_token: tokenData.refresh_token,
+      expires_in: tokenData.expires_in,
+      instructions: 'Add this access_token to your Render environment variables as ZOHO_ACCESS_TOKEN'
+    });
+  } catch (error) {
+    console.error('Token generation error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to generate access token'
     });
   }
 });
