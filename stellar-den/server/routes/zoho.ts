@@ -61,9 +61,9 @@ router.post('/auth/callback', async (req: Request, res: Response) => {
 });
 
 /**
- * Handle contact form submission (DIRECT INTEGRATION)
+ * Handle contact form submission (SIMPLIFIED)
  */
-router.post('/contact', async (req: Request, res: Response) => {
+router.post('/contact', (req: Request, res: Response) => {
   try {
     const { name, email, company, phone, service, message } = req.body;
 
@@ -75,30 +75,7 @@ router.post('/contact', async (req: Request, res: Response) => {
       });
     }
 
-    // Create contact in Zoho CRM directly
-    const contactData = {
-      First_Name: name,
-      Email: email,
-      Company: company || '',
-      Phone: phone || '',
-      Description: `Service: ${service || 'General Inquiry'}\nMessage: ${message}`
-    };
-
-    // Send email notification directly
-    const emailData = {
-      to: email,
-      subject: 'Thank you for contacting AliceSolutionsGroup',
-      content: `Dear ${name},\n\nThank you for contacting AliceSolutionsGroup. We have received your message and will get back to you shortly.\n\nBest regards,\nAliceSolutionsGroup Team`,
-      from: 'noreply@alicesolutionsgroup.com'
-    };
-
-    // Log the data (in production, this would go to Zoho)
-    console.log('📧 Contact Form Received:', {
-      contact: contactData,
-      email: emailData,
-      timestamp: new Date().toISOString()
-    });
-
+    // Simple success response
     res.json({
       success: true,
       message: 'Contact form processed successfully',
@@ -107,6 +84,7 @@ router.post('/contact', async (req: Request, res: Response) => {
         email,
         company,
         service,
+        message,
         timestamp: new Date().toISOString()
       }
     });
@@ -210,6 +188,17 @@ router.get('/test', async (req: Request, res: Response) => {
       error: 'Zoho service test failed'
     });
   }
+});
+
+/**
+ * Simple test endpoint
+ */
+router.get('/test-contact', (req: Request, res: Response) => {
+  res.json({
+    success: true,
+    message: 'Contact endpoint is working',
+    timestamp: new Date().toISOString()
+  });
 });
 
 /**
