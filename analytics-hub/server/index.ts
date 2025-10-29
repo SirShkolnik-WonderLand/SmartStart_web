@@ -155,6 +155,25 @@ app.get('/db-test', async (req: Request, res: Response) => {
     });
   }
 });
+
+// Temporary debug endpoint to check admin users
+app.get('/debug-users', async (req: Request, res: Response) => {
+  try {
+    const { pool } = await import('./config/database.js');
+    const result = await pool.query('SELECT id, email, role, password_hash FROM admin_users');
+    
+    return res.status(200).json({
+      success: true,
+      users: result.rows,
+      count: result.rows.length
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: (error as Error).message
+    });
+  }
+});
 app.get('/tracker.js', (req: Request, res: Response) => {
   res.setHeader('Content-Type', 'application/javascript');
   res.setHeader('Cache-Control', 'public, max-age=3600');
