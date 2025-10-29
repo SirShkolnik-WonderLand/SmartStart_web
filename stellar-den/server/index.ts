@@ -102,7 +102,12 @@ export function createServer() {
   app.use(express.static(staticPath));
 
   // Serve HTML with nonce for SPA (catch-all route - must be last before error handler)
-  app.get('/*', (req, res) => {
+  // Only catch routes that don't start with /api
+  app.get('*', (req, res) => {
+    // Skip API routes
+    if (req.path.startsWith('/api/')) {
+      return res.status(404).json({ error: 'API endpoint not found' });
+    }
     let templatePath = ''; // Declare outside try block for error logging
     
     try {
