@@ -134,7 +134,27 @@ app.post('/create-admin', async (req: Request, res: Response) => {
   }
 });
 
-// Serve tracker script
+// Database connection test endpoint
+app.get('/db-test', async (req: Request, res: Response) => {
+  try {
+    const { testConnection, checkHealth } = await import('./config/database.js');
+    const isConnected = await testConnection();
+    const health = await checkHealth();
+    
+    return res.status(200).json({
+      success: true,
+      connected: isConnected,
+      health: health,
+      databaseUrl: process.env.DATABASE_URL ? 'Set' : 'Not set'
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: (error as Error).message,
+      databaseUrl: process.env.DATABASE_URL ? 'Set' : 'Not set'
+    });
+  }
+});
 app.get('/tracker.js', (req: Request, res: Response) => {
   res.setHeader('Content-Type', 'application/javascript');
   res.setHeader('Cache-Control', 'public, max-age=3600');
