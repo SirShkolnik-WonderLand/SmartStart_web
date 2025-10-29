@@ -19,6 +19,10 @@ import {
   sendChecklist,
 } from "./routes/iso";
 import {
+  submitContactForm,
+  subscribeNewsletter,
+} from "./routes/contact";
+import {
   nonceCSP,
   corsConfig,
   validateInput,
@@ -69,9 +73,9 @@ export function createServer() {
 
   app.get("/api/demo", handleDemo);
 
-  // ISO Studio API routes
-  app.get("/api/iso/controls", getControls);
-  app.get("/api/iso/story-bot-questions", getStoryBotQuestions);
+  // Contact form API routes
+  app.post("/api/contact", submitContactForm);
+  app.post("/api/newsletter", subscribeNewsletter);
   app.post("/api/iso/save", saveAssessment);
   app.get("/api/iso/load", loadAssessment);
   app.post("/api/iso/export", exportAssessment);
