@@ -70,7 +70,7 @@ export const authApi = {
    * Login
    */
   async login(email: string, password: string): Promise<LoginResponse> {
-    const response = await api.post<LoginResponse>('/api/admin/login', {
+    const response = await api.post<LoginResponse>('/api/auth/login', {
       email,
       password,
     } as LoginRequest);
@@ -81,14 +81,14 @@ export const authApi = {
    * Logout
    */
   async logout(): Promise<void> {
-    await api.post('/api/admin/logout');
+    await api.post('/api/auth/logout');
   },
 
   /**
    * Refresh token
    */
   async refresh(token: string): Promise<{ success: boolean; token?: string }> {
-    const response = await api.post('/api/admin/refresh', { token });
+    const response = await api.post('/api/auth/refresh', { token });
     return response.data;
   },
 
@@ -96,7 +96,7 @@ export const authApi = {
    * Get current user
    */
   async me(): Promise<{ success: boolean; user?: AdminUser }> {
-    const response = await api.get('/api/admin/me');
+    const response = await api.get('/api/auth/me');
     return response.data;
   },
 };

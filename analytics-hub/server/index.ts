@@ -268,8 +268,8 @@ app.post('/api/create-admin', async (req: Request, res: Response) => {
 // Analytics routes (public, with tracking rate limit)
 app.use('/api/v1', trackingLimiter, analyticsRoutes);
 
-// Auth routes (with auth rate limit)
-app.use('/api/admin', authLimiter, authRoutes);
+// Auth routes (with auth rate limit) - moved to /api/auth to avoid conflict
+app.use('/api/auth', authLimiter, authRoutes);
 
 // Admin routes (protected, with general rate limit)
 app.use('/api/admin', generalLimiter, adminRoutes);
