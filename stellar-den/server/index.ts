@@ -19,6 +19,7 @@ import {
   sendChecklist,
 } from "./routes/iso";
 import zohoRoutes from "./routes/zoho";
+import zohoTestRoutes from "./routes/zoho-test";
 import {
   nonceCSP,
   corsConfig,
@@ -80,6 +81,9 @@ export function createServer() {
 
   // Zoho Integration API routes
   app.use("/api/zoho", zohoRoutes);
+  
+  // Zoho Test API routes (No OAuth required)
+  app.use("/api/zoho", zohoTestRoutes);
 
   // Serve static files (CSS, JS, images, etc.) from the built SPA
   const staticPath = path.join(__dirname, '../spa');
