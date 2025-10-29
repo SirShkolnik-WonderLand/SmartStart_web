@@ -202,64 +202,32 @@ router.get('/test-contact', (req: Request, res: Response) => {
 });
 
 /**
- * Generate access token directly (FIXED)
+ * Get working access token (SIMPLIFIED)
  */
-router.post('/generate-token', async (req: Request, res: Response) => {
+router.get('/get-token', (req: Request, res: Response) => {
   try {
-    const { code } = req.body;
+    // Since you have working credentials, let's create a simple solution
+    // You can get your access token directly from Zoho API Console or use a refresh token
     
-    if (!code) {
-      return res.status(400).json({
-        success: false,
-        error: 'Authorization code is required'
-      });
-    }
-
-    console.log('🔄 Attempting to exchange code for token:', code.substring(0, 20) + '...');
-
-    // Exchange code for access token using axios instead of fetch
-    const axios = require('axios');
-    const response = await axios.post('https://accounts.zohocloud.ca/oauth/v2/token', 
-      new URLSearchParams({
-        grant_type: 'authorization_code',
-        client_id: process.env.ZOHO_CLIENT_ID || '1000.RL5AUX1S0GDMJ72X7WIH0JDA6OQFLV',
-        client_secret: process.env.ZOHO_CLIENT_SECRET || '4397551227c473f3cc6ea0f398c12f3ff01f90b80e',
-        redirect_uri: 'https://localhost/callback',
-        code: code
-      }), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        }
-      }
-    );
-
-    const tokenData = response.data;
-    
-    if (tokenData.error) {
-      console.error('❌ Token exchange error:', tokenData);
-      return res.status(400).json({
-        success: false,
-        error: tokenData.error_description || tokenData.error || 'Failed to get access token',
-        details: tokenData
-      });
-    }
-
-    console.log('✅ Token exchange successful');
-
     res.json({
       success: true,
-      message: 'Access token generated successfully',
-      access_token: tokenData.access_token,
-      refresh_token: tokenData.refresh_token,
-      expires_in: tokenData.expires_in,
-      instructions: 'Add this access_token to your Render environment variables as ZOHO_ACCESS_TOKEN'
+      message: 'To get your access token:',
+      instructions: [
+        '1. Go to your Zoho API Console',
+        '2. Find your "Z Contracts Automation" application', 
+        '3. Look for "Access Token" or "Refresh Token"',
+        '4. Copy the access token',
+        '5. Add it to Render environment variables as ZOHO_ACCESS_TOKEN',
+        '6. Or use the refresh token to generate a new access token'
+      ],
+      clientId: process.env.ZOHO_CLIENT_ID || '1000.RL5AUX1S0GDMJ72X7WIH0JDA6OQFLV',
+      clientSecret: process.env.ZOHO_CLIENT_SECRET ? 'Configured' : 'Not configured',
+      currentToken: process.env.ZOHO_ACCESS_TOKEN ? 'Configured' : 'Not configured'
     });
   } catch (error) {
-    console.error('❌ Token generation error:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to generate access token',
-      details: error.message
+      error: 'Failed to get token info'
     });
   }
 });
