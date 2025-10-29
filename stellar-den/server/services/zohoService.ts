@@ -70,7 +70,7 @@ export class ZohoService {
       prompt: 'consent'
     });
 
-    return `https://accounts.zoho.com/oauth/v2/auth?${params.toString()}`;
+    return `https://accounts.zohocloud.ca/oauth/v2/auth?${params.toString()}`;
   }
 
   /**
@@ -78,7 +78,7 @@ export class ZohoService {
    */
   async getAccessToken(code: string): Promise<ZohoToken> {
     try {
-      const response = await axios.post('https://accounts.zoho.com/oauth/v2/token', {
+      const response = await axios.post('https://accounts.zohocloud.ca/oauth/v2/token', {
         grant_type: 'authorization_code',
         client_id: this.config.clientId,
         client_secret: this.config.clientSecret,
@@ -103,7 +103,7 @@ export class ZohoService {
     }
 
     try {
-      const response = await axios.post('https://accounts.zoho.com/oauth/v2/token', {
+      const response = await axios.post('https://accounts.zohocloud.ca/oauth/v2/token', {
         grant_type: 'refresh_token',
         client_id: this.config.clientId,
         client_secret: this.config.clientSecret,
