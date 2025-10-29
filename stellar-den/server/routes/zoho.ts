@@ -223,7 +223,7 @@ router.post('/generate-token', async (req: Request, res: Response) => {
         grant_type: 'authorization_code',
         client_id: process.env.ZOHO_CLIENT_ID || '1000.RL5AUX1S0GDMJ72X7WIH0JDA6OQFLV',
         client_secret: process.env.ZOHO_CLIENT_SECRET || '4397551227c473f3cc6ea0f398c12f3ff01f90b80e',
-        redirect_uri: 'https://alicesolutionsgroup.com/callback',
+        redirect_uri: 'https://localhost/callback',
         code: code
       })
     });

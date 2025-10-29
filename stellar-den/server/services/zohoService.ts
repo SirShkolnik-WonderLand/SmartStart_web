@@ -44,7 +44,7 @@ export class ZohoService {
     this.config = {
       clientId: process.env.ZOHO_CLIENT_ID || '1000.RL5AUX1S0GDMJ72X7WIH0JDA6OQFLV',
       clientSecret: process.env.ZOHO_CLIENT_SECRET || '4397551227c473f3cc6ea0f398c12f3ff01f90b80e',
-      redirectUri: 'https://alicesolutionsgroup.com/callback',
+      redirectUri: 'https://localhost/callback', // Use localhost redirect URI that's already configured
       scope: 'ZohoCRM.modules.ALL,ZohoMail.messages.CREATE,ZohoCalendar.events.CREATE'
     };
 
