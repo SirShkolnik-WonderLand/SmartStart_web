@@ -18,10 +18,7 @@ import {
   exportAssessment,
   sendChecklist,
 } from "./routes/iso";
-import {
-  submitContactForm,
-  subscribeNewsletter,
-} from "./routes/contact";
+import zohoRoutes from "./routes/zoho";
 import {
   nonceCSP,
   corsConfig,
@@ -73,13 +70,16 @@ export function createServer() {
 
   app.get("/api/demo", handleDemo);
 
-  // Contact form API routes
-  app.post("/api/contact", submitContactForm);
-  app.post("/api/newsletter", subscribeNewsletter);
+  // ISO Studio API routes
+  app.get("/api/iso/controls", getControls);
+  app.get("/api/iso/story-bot-questions", getStoryBotQuestions);
   app.post("/api/iso/save", saveAssessment);
   app.get("/api/iso/load", loadAssessment);
   app.post("/api/iso/export", exportAssessment);
   app.post("/api/iso/send-checklist", sendChecklist);
+
+  // Zoho Integration API routes
+  app.use("/api/zoho", zohoRoutes);
 
   // Serve static files (CSS, JS, images, etc.) from the built SPA
   const staticPath = path.join(__dirname, '../spa');
