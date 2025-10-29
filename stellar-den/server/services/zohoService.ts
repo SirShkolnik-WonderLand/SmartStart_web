@@ -122,14 +122,14 @@ export class ZohoService {
    * Create contact in Zoho CRM
    */
   async createContact(contact: ZohoContact): Promise<any> {
-    await this.ensureValidToken();
-
     try {
+      // Use your working credentials directly
       const response = await this.api.post('/crm/v2/Contacts', {
         data: [contact]
       }, {
         headers: {
-          'Authorization': `Zoho-oauthtoken ${this.token!.access_token}`
+          'Authorization': `Zoho-oauthtoken ${process.env.ZOHO_ACCESS_TOKEN || 'your_access_token_here'}`,
+          'Content-Type': 'application/json'
         }
       });
 
@@ -144,9 +144,8 @@ export class ZohoService {
    * Send email via Zoho Mail
    */
   async sendEmail(email: ZohoEmail): Promise<any> {
-    await this.ensureValidToken();
-
     try {
+      // Use your working credentials directly
       const response = await this.api.post('/mail/v1/messages', {
         toAddress: email.to,
         subject: email.subject,
@@ -154,7 +153,8 @@ export class ZohoService {
         fromAddress: email.from || 'noreply@alicesolutionsgroup.com'
       }, {
         headers: {
-          'Authorization': `Zoho-oauthtoken ${this.token!.access_token}`
+          'Authorization': `Zoho-oauthtoken ${process.env.ZOHO_ACCESS_TOKEN || 'your_access_token_here'}`,
+          'Content-Type': 'application/json'
         }
       });
 
@@ -169,12 +169,12 @@ export class ZohoService {
    * Create calendar event
    */
   async createEvent(event: any): Promise<any> {
-    await this.ensureValidToken();
-
     try {
+      // Use your working credentials directly
       const response = await this.api.post('/calendar/v1/events', event, {
         headers: {
-          'Authorization': `Zoho-oauthtoken ${this.token!.access_token}`
+          'Authorization': `Zoho-oauthtoken ${process.env.ZOHO_ACCESS_TOKEN || 'your_access_token_here'}`,
+          'Content-Type': 'application/json'
         }
       });
 
