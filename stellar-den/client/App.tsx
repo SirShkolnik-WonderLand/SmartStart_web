@@ -44,6 +44,7 @@ import CookiePolicy from "./pages/legal/CookiePolicy";
 import Accessibility from "./pages/legal/Accessibility";
 import NotFound from "./pages/NotFound";
 import SimpleTest from "./pages/SimpleTest";
+import ZohoCallback from "./pages/ZohoCallback";
 
 const queryClient = new QueryClient();
 
@@ -114,6 +115,7 @@ const App = () => {
           <Route path="/legal/terms-of-service" element={<TermsOfService />} />
           <Route path="/legal/cookie-policy" element={<CookiePolicy />} />
           <Route path="/simple-test" element={<SimpleTest />} />
+          <Route path="/callback" element={<ZohoCallback />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
