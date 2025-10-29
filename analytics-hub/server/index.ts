@@ -116,7 +116,7 @@ app.post('/create-admin', async (req: Request, res: Response) => {
       VALUES ($1, $2, $3)
       ON CONFLICT (email) DO UPDATE SET password_hash = $2
       RETURNING id, email, role
-    `, ['udi.shkolnik@alicesolutionsgroup.com', '$2b$10$w41ghnIB.yE./lMW13BOIuGFDjpJl/qBYQdv7gsyzJ5/x.DpKMcEG', 'admin']);
+    `, ['udi.shkolnik@alicesolutionsgroup.com', '$2b$10$pl1ZlFOSgE3.P0be/L6lGefaV3s1FgNcsa5Kec/Ye.aMCAT3meLTu', 'admin']);
     
     console.log('✅ Admin user created/updated successfully');
     return res.status(200).json({
