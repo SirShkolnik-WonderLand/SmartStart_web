@@ -45,25 +45,120 @@ class EnhancedAnalyticsEmailService {
   async getDailyAnalytics(date: Date = new Date()): Promise<AnalyticsSummary | null> {
     try {
       const dateStr = date.toISOString().split('T')[0];
+      const startDate = new Date(date);
+      startDate.setHours(0, 0, 0, 0);
+      const endDate = new Date(date);
+      endDate.setHours(23, 59, 59, 999);
       
-      // Fetch analytics from Analytics Hub API
-      const response = await axios.get(`${this.analyticsApiUrl}/api/admin/reports/daily`, {
-        params: { date: dateStr },
+      // Get authentication token first
+      let token = process.env.ANALYTICS_API_KEY;
+      if (!token) {
+        // Try to get token from simple-login endpoint
+        try {
+          const loginResponse = await axios.post(`${this.analyticsApiUrl}/simple-login`, {
+            email: 'udi.shkolnik@alicesolutionsgroup.com',
+            password: process.env.ANALYTICS_ADMIN_PASSWORD || 'test123'
+          });
+          if (loginResponse.data?.success && loginResponse.data?.token) {
+            token = loginResponse.data.token;
+          }
+        } catch (loginError) {
+          console.error('Failed to authenticate with Analytics Hub:', loginError);
+        }
+      }
+      
+      // Fetch analytics from Analytics Hub API using correct endpoint
+      const response = await axios.get(`${this.analyticsApiUrl}/api/admin/stats/overview`, {
+        params: {
+          startDate: startDate.toISOString(),
+          endDate: endDate.toISOString(),
+        },
         headers: {
-          'Authorization': `Bearer ${process.env.ANALYTICS_API_KEY || ''}`,
+          'Authorization': token ? `Bearer ${token}` : undefined,
+          'Content-Type': 'application/json',
         },
       });
 
-      if (response.data?.success) {
+      if (response.data?.success && response.data?.data) {
+        const data = response.data.data;
+        
+        // Fetch additional data in parallel
+        const [pagesRes, sourcesRes, devicesRes, locationsRes] = await Promise.allSettled([
+          axios.get(`${this.analyticsApiUrl}/api/admin/analytics/pages`, {
+            params: { startDate: startDate.toISOString(), endDate: endDate.toISOString(), limit: 10 },
+            headers: { 'Authorization': token ? `Bearer ${token}` : undefined },
+          }),
+          axios.get(`${this.analyticsApiUrl}/api/admin/analytics/sources`, {
+            params: { startDate: startDate.toISOString(), endDate: endDate.toISOString(), limit: 10 },
+            headers: { 'Authorization': token ? `Bearer ${token}` : undefined },
+          }),
+          axios.get(`${this.analyticsApiUrl}/api/admin/analytics/devices`, {
+            params: { startDate: startDate.toISOString(), endDate: endDate.toISOString() },
+            headers: { 'Authorization': token ? `Bearer ${token}` : undefined },
+          }),
+          axios.get(`${this.analyticsApiUrl}/api/admin/analytics/locations`, {
+            params: { startDate: startDate.toISOString(), endDate: endDate.toISOString() },
+            headers: { 'Authorization': token ? `Bearer ${token}` : undefined },
+          }),
+        ]);
+        
+        // Parse top pages
+        const topPages = pagesRes.status === 'fulfilled' && pagesRes.value.data?.success
+          ? pagesRes.value.data.data.map((p: any) => ({
+              path: p.page_url || p.pagePath || p.url || '',
+              views: p.views || p.pageViews || 0,
+            }))
+          : [];
+        
+        // Parse referrers/sources
+        const referrers = sourcesRes.status === 'fulfilled' && sourcesRes.value.data?.success
+          ? sourcesRes.value.data.data.map((s: any) => ({
+              source: s.source_name || s.source || 'Direct',
+              visitors: s.visitors || s.count || 0,
+            }))
+          : [];
+        
+        // Parse devices
+        const devicesData = devicesRes.status === 'fulfilled' && devicesRes.value.data?.success
+          ? devicesRes.value.data.data.reduce((acc: any, d: any) => {
+              const type = (d.device_type || d.device || 'unknown').toLowerCase();
+              const count = d.visitors || d.count || 0;
+              if (type.includes('mobile') || type.includes('phone')) acc.mobile += count;
+              else if (type.includes('tablet')) acc.tablet += count;
+              else if (type.includes('desktop') || type.includes('pc')) acc.desktop += count;
+              return acc;
+            }, { desktop: 0, mobile: 0, tablet: 0 })
+          : { desktop: 0, mobile: 0, tablet: 0 };
+        
+        // Parse countries
+        const countries = locationsRes.status === 'fulfilled' && locationsRes.value.data?.success
+          ? locationsRes.value.data.data.map((l: any) => ({
+              country: l.country_name || l.country || 'Unknown',
+              visitors: l.visitors || l.count || 0,
+            }))
+          : [];
+        
         return {
           date: dateStr,
-          ...response.data.data,
+          totalVisitors: data.totalVisitors || data.uniqueVisitors || 0,
+          totalPageViews: data.totalPageViews || data.pageViews || 0,
+          uniqueVisitors: data.uniqueVisitors || data.totalVisitors || 0,
+          totalSessions: data.totalSessions || 0,
+          avgSessionDuration: data.avgSessionDuration || 0,
+          bounceRate: data.bounceRate || 0,
+          topPages,
+          referrers,
+          devices: devicesData,
+          countries,
         };
       }
 
       return null;
-    } catch (error) {
-      console.error('Failed to fetch analytics:', error);
+    } catch (error: any) {
+      console.error('Failed to fetch analytics:', error.message);
+      if (error.response) {
+        console.error('API Error:', error.response.status, error.response.data);
+      }
       return null;
     }
   }

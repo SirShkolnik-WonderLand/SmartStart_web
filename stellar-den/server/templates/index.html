@@ -31,8 +31,39 @@
           trackPageView: () => track('pageview', {pageUrl: location.href, pageTitle: document.title})
         };
         
-        if (window.analyticsHubConfig?.autoTrack !== false) {
+        // Check consent from cookie (set by CookieConsentBanner)
+        function hasAnalyticsConsent() {
+          try {
+            const cookie = document.cookie.split(';').find(c => c.trim().startsWith('asg_consent_preferences='));
+            if (!cookie) return false; // No consent given yet
+            const value = cookie.split('=')[1];
+            const parsed = JSON.parse(decodeURIComponent(value));
+            return parsed.analytics === true;
+          } catch {
+            return false;
+          }
+        }
+        
+        // Track pageview if consent given, otherwise wait for consent
+        if (hasAnalyticsConsent()) {
           track('pageview', {pageUrl: location.href, pageTitle: document.title});
+        } else {
+          // Wait for consent - will be tracked when consent is given
+          // This prevents tracking before consent while still allowing immediate tracking after consent
+          const checkConsent = setInterval(() => {
+            if (hasAnalyticsConsent()) {
+              track('pageview', {pageUrl: location.href, pageTitle: document.title});
+              clearInterval(checkConsent);
+            }
+          }, 500);
+          
+          // Stop checking after 10 seconds (consent banner should appear by then)
+          setTimeout(() => clearInterval(checkConsent), 10000);
+        }
+        
+        // Set config for App.tsx compatibility
+        if (!window.analyticsHubConfig) {
+          window.analyticsHubConfig = { autoTrack: hasAnalyticsConsent() };
         }
       })();
     </script>
