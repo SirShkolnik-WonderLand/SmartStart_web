@@ -14,12 +14,21 @@ interface AnalyticsSummary {
   totalVisitors: number;
   totalPageViews: number;
   uniqueVisitors: number;
+  totalSessions: number;
   bounceRate?: number;
   avgSessionDuration?: number;
-  topPages: Array<{ path: string; views: number }>;
-  referrers: Array<{ source: string; visitors: number }>;
+  avgPagesPerSession?: number;
+  topPages: Array<{ path: string; views: number; uniqueVisitors?: number; avgTimeOnPage?: number; bounceRate?: number }>;
+  referrers: Array<{ source: string; visitors: number; sessions?: number; bounceRate?: number }>;
   devices: { desktop: number; mobile: number; tablet: number };
-  countries: Array<{ country: string; visitors: number }>;
+  countries: Array<{ country: string; visitors: number; sessions?: number }>;
+  browsers?: Array<{ browser: string; count: number; percentage: number }>;
+  operatingSystems?: Array<{ os: string; count: number; percentage: number }>;
+  entryPages?: Array<{ page: string; entries: number; percentage: number }>;
+  exitPages?: Array<{ page: string; exits: number; percentage: number }>;
+  hourlyTraffic?: Array<{ hour: number; visitors: number; pageViews: number }>;
+  activeVisitors?: number;
+  conversionRate?: number;
 }
 
 interface ComparisonData {
@@ -83,13 +92,13 @@ class EnhancedAnalyticsEmailService {
         const data = response.data.data;
         
         // Fetch additional data in parallel
-        const [pagesRes, sourcesRes, devicesRes, locationsRes] = await Promise.allSettled([
+        const [pagesRes, sourcesRes, devicesRes, locationsRes, trendsRes, realtimeRes] = await Promise.allSettled([
           axios.get(`${this.analyticsApiUrl}/api/admin/analytics/pages`, {
-            params: { startDate: startDate.toISOString(), endDate: endDate.toISOString(), limit: 10 },
+            params: { startDate: startDate.toISOString(), endDate: endDate.toISOString(), limit: 20 },
             headers: { 'Authorization': token ? `Bearer ${token}` : undefined },
           }),
           axios.get(`${this.analyticsApiUrl}/api/admin/analytics/sources`, {
-            params: { startDate: startDate.toISOString(), endDate: endDate.toISOString(), limit: 10 },
+            params: { startDate: startDate.toISOString(), endDate: endDate.toISOString(), limit: 15 },
             headers: { 'Authorization': token ? `Bearer ${token}` : undefined },
           }),
           axios.get(`${this.analyticsApiUrl}/api/admin/analytics/devices`, {
@@ -100,21 +109,33 @@ class EnhancedAnalyticsEmailService {
             params: { startDate: startDate.toISOString(), endDate: endDate.toISOString() },
             headers: { 'Authorization': token ? `Bearer ${token}` : undefined },
           }),
+          axios.get(`${this.analyticsApiUrl}/api/admin/stats/trends`, {
+            params: { startDate: startDate.toISOString(), endDate: endDate.toISOString(), interval: 'hour' },
+            headers: { 'Authorization': token ? `Bearer ${token}` : undefined },
+          }),
+          axios.get(`${this.analyticsApiUrl}/api/admin/stats/realtime`, {
+            headers: { 'Authorization': token ? `Bearer ${token}` : undefined },
+          }),
         ]);
         
-        // Parse top pages
+        // Parse top pages with additional metrics
         const topPages = pagesRes.status === 'fulfilled' && pagesRes.value.data?.success
           ? pagesRes.value.data.data.map((p: any) => ({
               path: p.page_url || p.pagePath || p.url || '',
               views: p.views || p.pageViews || 0,
+              uniqueVisitors: p.unique_visitors || p.uniqueVisitors || 0,
+              avgTimeOnPage: p.avg_time_on_page || p.avgTimeOnPage || 0,
+              bounceRate: p.bounce_rate || p.bounceRate || 0,
             }))
           : [];
         
-        // Parse referrers/sources
+        // Parse referrers/sources with additional metrics
         const referrers = sourcesRes.status === 'fulfilled' && sourcesRes.value.data?.success
           ? sourcesRes.value.data.data.map((s: any) => ({
               source: s.source_name || s.source || 'Direct',
               visitors: s.visitors || s.count || 0,
+              sessions: s.sessions || 0,
+              bounceRate: s.bounce_rate || s.bounceRate || 0,
             }))
           : [];
         
@@ -135,9 +156,61 @@ class EnhancedAnalyticsEmailService {
           ? locationsRes.value.data.data.map((l: any) => ({
               country: l.country_name || l.country || 'Unknown',
               visitors: l.visitors || l.count || 0,
+              sessions: l.sessions || 0,
             }))
           : [];
         
+        // Parse browsers and OS from devices data
+        const browsersMap = new Map<string, number>();
+        const osMap = new Map<string, number>();
+        if (devicesRes.status === 'fulfilled' && devicesRes.value.data?.success) {
+          devicesRes.value.data.data.forEach((d: any) => {
+            const browser = d.browser || 'Unknown';
+            const os = d.os || 'Unknown';
+            const count = d.visitors || d.count || 0;
+            browsersMap.set(browser, (browsersMap.get(browser) || 0) + count);
+            osMap.set(os, (osMap.get(os) || 0) + count);
+          });
+        }
+        const totalDeviceCount = Array.from(browsersMap.values()).reduce((a, b) => a + b, 0);
+        const browsers = Array.from(browsersMap.entries())
+          .map(([browser, count]) => ({
+            browser,
+            count,
+            percentage: totalDeviceCount > 0 ? (count / totalDeviceCount) * 100 : 0,
+          }))
+          .sort((a, b) => b.count - a.count)
+          .slice(0, 10);
+        
+        const operatingSystems = Array.from(osMap.entries())
+          .map(([os, count]) => ({
+            os,
+            count,
+            percentage: totalDeviceCount > 0 ? (count / totalDeviceCount) * 100 : 0,
+          }))
+          .sort((a, b) => b.count - a.count)
+          .slice(0, 10);
+        
+        // Parse hourly traffic trends
+        const hourlyTraffic: Array<{ hour: number; visitors: number; pageViews: number }> = [];
+        if (trendsRes.status === 'fulfilled' && trendsRes.value.data?.success && trendsRes.value.data.data) {
+          trendsRes.value.data.data.forEach((trend: any) => {
+            const date = new Date(trend.date || trend.timestamp);
+            const hour = date.getHours();
+            hourlyTraffic.push({
+              hour,
+              visitors: trend.visitors || trend.count || 0,
+              pageViews: trend.pageViews || 0,
+            });
+          });
+        }
+        
+        // Get active visitors
+        const activeVisitors = realtimeRes.status === 'fulfilled' && realtimeRes.value.data?.success
+          ? realtimeRes.value.data.data.activeVisitors || 0
+          : 0;
+        
+        // Note: Conversion rate will be calculated after getting lead analytics
         return {
           date: dateStr,
           totalVisitors: data.totalVisitors || data.uniqueVisitors || 0,
@@ -145,11 +218,16 @@ class EnhancedAnalyticsEmailService {
           uniqueVisitors: data.uniqueVisitors || data.totalVisitors || 0,
           totalSessions: data.totalSessions || 0,
           avgSessionDuration: data.avgSessionDuration || 0,
+          avgPagesPerSession: data.avgPagesPerSession || 0,
           bounceRate: data.bounceRate || 0,
           topPages,
           referrers,
           devices: devicesData,
           countries,
+          browsers,
+          operatingSystems,
+          hourlyTraffic,
+          activeVisitors,
         };
       }
 
@@ -287,6 +365,40 @@ class EnhancedAnalyticsEmailService {
                   <div class="stat-label">Unique Visitors</div>
                   <div class="stat-value">${summary.uniqueVisitors.toLocaleString()}</div>
                 </div>
+                
+                <div class="stat-card">
+                  <div class="stat-label">Total Sessions</div>
+                  <div class="stat-value">${summary.totalSessions.toLocaleString()}</div>
+                </div>
+                
+                <div class="stat-card">
+                  <div class="stat-label">Avg Session Duration</div>
+                  <div class="stat-value">${Math.round(summary.avgSessionDuration || 0)}s</div>
+                </div>
+                
+                <div class="stat-card">
+                  <div class="stat-label">Avg Pages/Session</div>
+                  <div class="stat-value">${(summary.avgPagesPerSession || 0).toFixed(1)}</div>
+                </div>
+                
+                <div class="stat-card">
+                  <div class="stat-label">Bounce Rate</div>
+                  <div class="stat-value">${(summary.bounceRate || 0).toFixed(1)}%</div>
+                </div>
+                
+                ${summary.activeVisitors ? `
+                <div class="stat-card">
+                  <div class="stat-label">Active Visitors Now</div>
+                  <div class="stat-value">${summary.activeVisitors}</div>
+                </div>
+                ` : ''}
+                
+                ${leadAnalytics.totalLeads > 0 ? `
+                <div class="stat-card">
+                  <div class="stat-label">Conversion Rate</div>
+                  <div class="stat-value">${((leadAnalytics.totalLeads / summary.totalVisitors) * 100).toFixed(2)}%</div>
+                </div>
+                ` : ''}
               </div>
             </div>
 
@@ -298,13 +410,19 @@ class EnhancedAnalyticsEmailService {
                   <tr>
                     <th>Page</th>
                     <th>Views</th>
+                    <th>Unique Visitors</th>
+                    ${summary.topPages[0]?.avgTimeOnPage ? '<th>Avg Time</th>' : ''}
+                    ${summary.topPages[0]?.bounceRate !== undefined ? '<th>Bounce Rate</th>' : ''}
                   </tr>
                 </thead>
                 <tbody>
-                  ${summary.topPages.slice(0, 10).map(page => `
+                  ${summary.topPages.slice(0, 15).map(page => `
                     <tr>
                       <td><a href="${this.siteUrl}${page.path}" style="color: #667eea; text-decoration: none;">${page.path}</a></td>
                       <td>${page.views.toLocaleString()}</td>
+                      <td>${(page.uniqueVisitors || 0).toLocaleString()}</td>
+                      ${page.avgTimeOnPage ? `<td>${Math.round(page.avgTimeOnPage)}s</td>` : ''}
+                      ${page.bounceRate !== undefined ? `<td>${page.bounceRate.toFixed(1)}%</td>` : ''}
                     </tr>
                   `).join('')}
                 </tbody>
@@ -320,6 +438,8 @@ class EnhancedAnalyticsEmailService {
                   <tr>
                     <th>Source</th>
                     <th>Visitors</th>
+                    ${summary.referrers[0]?.sessions ? '<th>Sessions</th>' : ''}
+                    ${summary.referrers[0]?.bounceRate !== undefined ? '<th>Bounce Rate</th>' : ''}
                   </tr>
                 </thead>
                 <tbody>
@@ -327,6 +447,8 @@ class EnhancedAnalyticsEmailService {
                     <tr>
                       <td>${ref.source || 'Direct'}</td>
                       <td>${ref.visitors.toLocaleString()}</td>
+                      ${ref.sessions ? `<td>${ref.sessions.toLocaleString()}</td>` : ''}
+                      ${ref.bounceRate !== undefined ? `<td>${ref.bounceRate.toFixed(1)}%</td>` : ''}
                     </tr>
                   `).join('')}
                 </tbody>
@@ -362,13 +484,87 @@ class EnhancedAnalyticsEmailService {
                   <tr>
                     <th>Country</th>
                     <th>Visitors</th>
+                    ${summary.countries[0]?.sessions ? '<th>Sessions</th>' : ''}
                   </tr>
                 </thead>
                 <tbody>
-                  ${summary.countries.slice(0, 10).map(country => `
+                  ${summary.countries.slice(0, 15).map(country => `
                     <tr>
                       <td>${country.country}</td>
                       <td>${country.visitors.toLocaleString()}</td>
+                      ${country.sessions ? `<td>${country.sessions.toLocaleString()}</td>` : ''}
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+            ` : ''}
+
+            ${summary.browsers && summary.browsers.length > 0 ? `
+            <div class="section">
+              <h2 class="section-title">🌐 Browsers</h2>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Browser</th>
+                    <th>Users</th>
+                    <th>Percentage</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${summary.browsers.map(browser => `
+                    <tr>
+                      <td><strong>${browser.browser}</strong></td>
+                      <td>${browser.count.toLocaleString()}</td>
+                      <td>${browser.percentage.toFixed(1)}%</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+            ` : ''}
+
+            ${summary.operatingSystems && summary.operatingSystems.length > 0 ? `
+            <div class="section">
+              <h2 class="section-title">💻 Operating Systems</h2>
+              <table>
+                <thead>
+                  <tr>
+                    <th>OS</th>
+                    <th>Users</th>
+                    <th>Percentage</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${summary.operatingSystems.map(os => `
+                    <tr>
+                      <td><strong>${os.os}</strong></td>
+                      <td>${os.count.toLocaleString()}</td>
+                      <td>${os.percentage.toFixed(1)}%</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+            ` : ''}
+
+            ${summary.hourlyTraffic && summary.hourlyTraffic.length > 0 ? `
+            <div class="section">
+              <h2 class="section-title">🕐 Hourly Traffic Pattern</h2>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Hour</th>
+                    <th>Visitors</th>
+                    <th>Page Views</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${summary.hourlyTraffic.map(hour => `
+                    <tr>
+                      <td><strong>${hour.hour}:00</strong></td>
+                      <td>${hour.visitors.toLocaleString()}</td>
+                      <td>${hour.pageViews.toLocaleString()}</td>
                     </tr>
                   `).join('')}
                 </tbody>
