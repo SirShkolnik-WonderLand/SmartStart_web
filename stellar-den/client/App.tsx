@@ -53,48 +53,18 @@ import { consentManager } from "./lib/consentManager";
 const queryClient = new QueryClient();
 
 const App = () => {
-  // Initialize Analytics Hub tracking ONLY after consent
+  // NOTE: Analytics tracking is handled by the inline tracker in index.html
+  // This tracker checks cookie consent directly and polls for consent changes
+  // No need to load external tracker.js or reload page - HTML template handles everything
   useEffect(() => {
-    // Check if user has consented to analytics
-    const hasAnalyticsConsent = consentManager.hasConsent('analytics');
-    
-    if (hasAnalyticsConsent) {
-      const analyticsConfig = {
+    // Just ensure analyticsHubConfig is set for compatibility (if needed by other components)
+    if (typeof window !== 'undefined' && !(window as any).analyticsHubConfig) {
+      const hasAnalyticsConsent = consentManager.hasConsent('analytics');
+      (window as any).analyticsHubConfig = {
         apiUrl: import.meta.env.VITE_ANALYTICS_API_URL || 'https://analytics-hub-server.onrender.com',
-        autoTrack: true,
-        trackOutbound: true,
-        trackScroll: true,
+        autoTrack: hasAnalyticsConsent,
       };
-
-      (window as any).analyticsHubConfig = analyticsConfig;
-
-      const script = document.createElement('script');
-      // Add cache busting parameter to force reload
-      const cacheBuster = Date.now();
-      script.src = `${analyticsConfig.apiUrl}/tracker.js?v=${cacheBuster}`;
-      script.async = true;
-      script.defer = true;
-      document.head.appendChild(script);
-
-      console.log('✅ Analytics Hub initialized (with consent)');
-    } else {
-      console.log('⏸️ Analytics not initialized - waiting for consent');
     }
-
-    // Listen for consent updates
-    const handleConsentUpdate = () => {
-      const newConsent = consentManager.hasConsent('analytics');
-      if (newConsent && !(window as any).analyticsHub) {
-        // Reload page to initialize analytics after consent
-        window.location.reload();
-      }
-    };
-
-    window.addEventListener('consentUpdated', handleConsentUpdate);
-
-    return () => {
-      window.removeEventListener('consentUpdated', handleConsentUpdate);
-    };
   }, []);
 
   return (
