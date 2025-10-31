@@ -17,8 +17,10 @@ import {
   loadAssessment,
   exportAssessment,
   sendChecklist,
+  sendQuickBotReport,
 } from "./routes/iso";
 import zohoRoutes from "./routes/zoho";
+import { startDailyAnalyticsCron } from "./cron/dailyAnalytics";
 import {
   nonceCSP,
   corsConfig,
@@ -77,9 +79,15 @@ export function createServer() {
   app.get("/api/iso/load", loadAssessment);
   app.post("/api/iso/export", exportAssessment);
   app.post("/api/iso/send-checklist", sendChecklist);
+  app.post("/api/iso/send-quickbot-report", sendQuickBotReport);
 
   // Zoho Integration API routes
   app.use("/api/zoho", zohoRoutes);
+
+  // Start daily analytics cron job (only in production or if enabled)
+  if (process.env.NODE_ENV === 'production' || process.env.ENABLE_ANALYTICS_CRON === 'true') {
+    startDailyAnalyticsCron();
+  }
 
   // Serve static files (CSS, JS, images, etc.) from the built SPA
   const staticPath = path.join(__dirname, '../spa');

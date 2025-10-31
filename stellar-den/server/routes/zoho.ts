@@ -61,13 +61,16 @@ router.post('/auth/callback', async (req: Request, res: Response) => {
 });
 
 /**
- * Handle contact form submission (SIMPLIFIED)
+ * Handle contact form submission (SMTP Email)
+ * - Sends notification to admin
+ * - Sends auto-reply to the submitter
  */
-router.post('/contact', (req: Request, res: Response) => {
+router.post('/contact', async (req: Request, res: Response) => {
   try {
-    const { name, email, company, phone, service, message } = req.body;
+    const { name, email, company, phone, service, message } = req.body as {
+      name?: string; email?: string; company?: string; phone?: string; service?: string; message?: string;
+    };
 
-    // Validate required fields
     if (!name || !email || !message) {
       return res.status(400).json({
         success: false,
@@ -75,25 +78,28 @@ router.post('/contact', (req: Request, res: Response) => {
       });
     }
 
-    // Simple success response
-    res.json({
-      success: true,
-      message: 'Contact form processed successfully',
-      data: {
-        name,
-        email,
-        company,
-        service,
-        message,
-        timestamp: new Date().toISOString()
-      }
+    // Use SMTP email service (reliable, tested, working!)
+    const { emailService } = await import('../services/emailService.js');
+    const result = await emailService.sendContactNotification({
+      name,
+      email,
+      company,
+      phone,
+      service,
+      message,
+    });
+
+    if (result.success) {
+      return res.json({ success: true, message: 'Message sent successfully' });
+    }
+
+    return res.status(500).json({
+      success: false,
+      error: 'Failed to send email. Please try again later or contact us directly.',
     });
   } catch (error) {
     console.error('Contact form error:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Internal server error'
-    });
+    return res.status(500).json({ success: false, error: 'Failed to send emails' });
   }
 });
 
@@ -228,6 +234,34 @@ router.get('/get-token', (req: Request, res: Response) => {
     res.status(500).json({
       success: false,
       error: 'Failed to get token info'
+    });
+  }
+});
+
+/**
+ * Manual trigger for daily analytics report (for testing)
+ */
+router.post('/analytics/report', async (req: Request, res: Response) => {
+  try {
+    const { analyticsEmailService } = await import('../services/analyticsEmailService.js');
+    const result = await analyticsEmailService.sendDailyReport();
+    
+    if (result.success) {
+      return res.json({
+        success: true,
+        message: 'Analytics report sent successfully'
+      });
+    } else {
+      return res.status(500).json({
+        success: false,
+        error: result.error || 'Failed to send report'
+      });
+    }
+  } catch (error) {
+    console.error('Analytics report error:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Failed to generate analytics report'
     });
   }
 });

@@ -43,7 +43,7 @@ export default function QuickBotMode({ onComplete }: QuickBotModeProps) {
   useEffect(() => {
     const loadQuestions = async () => {
       try {
-        const response = await fetch("http://localhost:4000/api/iso/story-bot-questions");
+        const response = await fetch("/api/iso/story-bot-questions");
         const data = await response.json();
         setQuestions(data.questions);
       } catch (error) {
@@ -381,11 +381,41 @@ export default function QuickBotMode({ onComplete }: QuickBotModeProps) {
   const handleEmailSubmit = async () => {
     if (!userEmail || !emailConsent) return;
     
-    // Here you would typically send the email to your backend
-    console.log('Email submitted:', userEmail);
-    
-    setShowEmailCapture(false);
-    setShowDetailedReport(true);
+    try {
+      const results = calculateResults();
+      
+      const response = await fetch('/api/iso/send-quickbot-report', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: userEmail,
+          assessmentData: {
+            percentage: results.percentage,
+            readinessLevel: results.readinessLevel,
+            recommendations: results.recommendations,
+            questions: questions.map(q => ({
+              question: q.question,
+              score: q.score || 0,
+            })),
+          },
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setShowEmailCapture(false);
+        setShowDetailedReport(true);
+      } else {
+        console.error('Failed to send report:', data.error);
+        alert('Failed to send report. Please try again.');
+      }
+    } catch (error) {
+      console.error('Failed to send report:', error);
+      alert('Failed to send report. Please try again.');
+    }
   };
 
   const calculateResults = () => {

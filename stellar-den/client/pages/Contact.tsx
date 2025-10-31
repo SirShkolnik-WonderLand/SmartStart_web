@@ -38,23 +38,30 @@ export default function Contact() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setSubmitStatus("success");
-      setFormData({
-        name: "",
-        email: "",
-        company: "",
-        phone: "",
-        service: "",
-        message: ""
+    try {
+      const response = await fetch('/api/zoho/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
       });
-      
-      // Reset success message after 5 seconds
-      setTimeout(() => setSubmitStatus("idle"), 5000);
-    }, 2000);
+
+      if (!response.ok) {
+        throw new Error('Failed to send');
+      }
+
+      const data = await response.json();
+      if (!data?.success) {
+        throw new Error('Failed to send');
+      }
+
+      setSubmitStatus('success');
+      setFormData({ name: '', email: '', company: '', phone: '', service: '', message: '' });
+      setTimeout(() => setSubmitStatus('idle'), 5000);
+    } catch (err) {
+      setSubmitStatus('error');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {

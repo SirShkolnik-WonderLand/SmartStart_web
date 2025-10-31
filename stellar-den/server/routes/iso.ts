@@ -99,20 +99,174 @@ export const exportAssessment: RequestHandler = (req, res) => {
   }
 };
 
-// Send checklist via email (placeholder)
-export const sendChecklist: RequestHandler = (req, res) => {
+// Send checklist via email
+export const sendChecklist: RequestHandler = async (req, res) => {
   try {
-    const { email, checklist } = req.body;
+    const { email, controls } = req.body;
     
-    // In production, send email via SMTP
-    // For now, just return success
+    if (!email) {
+      return res.status(400).json({ error: "Email is required" });
+    }
+
+    // Import email service
+    const { emailService } = await import('../services/emailService.js');
+    
+    // Generate checklist JSON
+    const checklist = {
+      framework: "ISO 27001:2022",
+      controls: controls || [],
+      generatedAt: new Date().toISOString()
+    };
+
+    const checklistJson = JSON.stringify(checklist, null, 2);
+
+    // Send checklist to user
+    const userEmailHtml = `
+      <h2>Your ISO 27001 Checklist</h2>
+      <p>Hi there,</p>
+      <p>Thank you for using ISO Studio! Your personalized ISO 27001 checklist is attached.</p>
+      <p><strong>What's next?</strong></p>
+      <ul>
+        <li>Review your checklist</li>
+        <li>Work through each control</li>
+        <li>Need help? Contact us at <a href="mailto:udi.shkolnik@alicesolutionsgroup.com">udi.shkolnik@alicesolutionsgroup.com</a></li>
+      </ul>
+      <hr />
+      <p><strong>Checklist Details:</strong></p>
+      <pre style="background: #f4f5f7; padding: 15px; border-radius: 5px; overflow-x: auto;">${checklistJson}</pre>
+      <hr />
+      <p>Best regards,<br/>
+      AliceSolutions Group<br/>
+      <a href="https://alicesolutionsgroup.com">alicesolutionsgroup.com</a></p>
+    `;
+
+    await emailService.sendEmail({
+      to: email,
+      subject: 'Your ISO 27001 Checklist - AliceSolutions Group',
+      html: userEmailHtml,
+    });
+
+    // Send notification to admin
+    await emailService.sendEmail({
+      to: 'udi.shkolnik@alicesolutionsgroup.com',
+      subject: `ISO Studio: Checklist Requested by ${email}`,
+      html: `
+        <h2>ISO Studio Checklist Request</h2>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Controls:</strong> ${controls?.length || 0} controls</p>
+        <p><strong>Requested at:</strong> ${new Date().toISOString()}</p>
+        <hr />
+        <p>Potential lead from ISO Studio!</p>
+      `,
+    });
+
     res.json({ 
       success: true, 
-      message: `Checklist would be sent to ${email}`,
+      message: `Checklist sent to ${email}`,
       timestamp: new Date().toISOString()
     });
   } catch (error) {
+    console.error('Failed to send checklist:', error);
     res.status(500).json({ error: "Failed to send checklist" });
+  }
+};
+
+// Send QuickBot assessment report via email
+export const sendQuickBotReport: RequestHandler = async (req, res) => {
+  try {
+    const { email, assessmentData } = req.body;
+    
+    if (!email) {
+      return res.status(400).json({ error: "Email is required" });
+    }
+
+    // Import email service
+    const { emailService } = await import('../services/emailService.js');
+    
+    const { percentage, readinessLevel, recommendations, questions } = assessmentData || {};
+    
+    // Generate report HTML
+    const reportHtml = `
+      <h2>Your Security Assessment Report</h2>
+      <p>Hi there,</p>
+      <p>Thank you for completing the ISO Studio QuickBot assessment! Here's your personalized security report.</p>
+      
+      <div style="background: #f4f5f7; padding: 20px; border-radius: 8px; margin: 20px 0;">
+        <h3 style="margin-top: 0;">Overall Security Readiness</h3>
+        <p style="font-size: 24px; font-weight: bold; color: #2f5aae;">
+          ${percentage || 0}% - ${readinessLevel || 'Medium'}
+        </p>
+      </div>
+
+      <h3>Key Recommendations</h3>
+      <ul>
+        ${(recommendations || []).map((rec: string) => `<li>${rec}</li>`).join('')}
+      </ul>
+
+      ${questions && questions.length > 0 ? `
+      <h3>Assessment Details</h3>
+      <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+        <thead>
+          <tr style="background: #2f5aae; color: white;">
+            <th style="padding: 10px; text-align: left;">Question</th>
+            <th style="padding: 10px; text-align: center;">Score</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${questions.map((q: any, idx: number) => `
+            <tr style="border-bottom: 1px solid #ddd;">
+              <td style="padding: 10px;">${q.question || `Question ${idx + 1}`}</td>
+              <td style="padding: 10px; text-align: center;">${q.score || 0}/7</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+      ` : ''}
+
+      <hr />
+      <p><strong>What's next?</strong></p>
+      <ul>
+        <li>Review your assessment results</li>
+        <li>Focus on the recommendations above</li>
+        <li>Consider a full ISO 27001 assessment</li>
+        <li>Need help? Contact us at <a href="mailto:udi.shkolnik@alicesolutionsgroup.com">udi.shkolnik@alicesolutionsgroup.com</a></li>
+      </ul>
+      <hr />
+      <p>Best regards,<br/>
+      AliceSolutions Group<br/>
+      <a href="https://alicesolutionsgroup.com">alicesolutionsgroup.com</a></p>
+    `;
+
+    // Send report to user
+    await emailService.sendEmail({
+      to: email,
+      subject: 'Your Security Assessment Report - AliceSolutions Group',
+      html: reportHtml,
+    });
+
+    // Send notification to admin
+    await emailService.sendEmail({
+      to: 'udi.shkolnik@alicesolutionsgroup.com',
+      subject: `ISO Studio: QuickBot Assessment Completed - ${email}`,
+      html: `
+        <h2>ISO Studio QuickBot Assessment</h2>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Readiness:</strong> ${readinessLevel || 'Medium'} (${percentage || 0}%)</p>
+        <p><strong>Completed at:</strong> ${new Date().toISOString()}</p>
+        <hr />
+        <p><strong>Potential lead from ISO Studio QuickBot!</strong></p>
+        <p>Score: ${percentage || 0}% - ${readinessLevel || 'Medium'}</p>
+      `,
+    });
+
+    res.json({ 
+      success: true, 
+      message: `Assessment report sent to ${email}`,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Failed to send QuickBot report:', error);
+    res.status(500).json({ error: "Failed to send assessment report" });
   }
 };
 

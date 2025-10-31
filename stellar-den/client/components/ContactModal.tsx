@@ -36,18 +36,40 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    try {
+      const response = await fetch('/api/zoho/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          company: formData.company,
+          message: formData.message,
+        }),
+      });
 
-    setIsSubmitted(true);
-    setIsSubmitting(false);
+      const data = await response.json();
 
-    // Reset after 2 seconds
-    setTimeout(() => {
-      setFormData({ name: "", email: "", company: "", message: "" });
-      setIsSubmitted(false);
-      onClose();
-    }, 2000);
+      if (data.success) {
+        setIsSubmitted(true);
+        // Reset after 2 seconds
+        setTimeout(() => {
+          setFormData({ name: "", email: "", company: "", message: "" });
+          setIsSubmitted(false);
+          onClose();
+        }, 2000);
+      } else {
+        console.error('Contact form submission error:', data.error);
+        alert('Failed to send message. Please try again or contact us directly.');
+      }
+    } catch (error) {
+      console.error('Contact form submission failed:', error);
+      alert('Failed to send message. Please try again or contact us directly.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleOpenChange = (open: boolean) => {

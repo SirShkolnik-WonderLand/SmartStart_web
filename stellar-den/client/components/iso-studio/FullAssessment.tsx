@@ -37,7 +37,7 @@ export default function FullAssessment({ onComplete }: FullAssessmentProps) {
     const loadData = async () => {
       try {
         // Load controls
-        const controlsRes = await fetch("http://localhost:4000/api/iso/controls");
+        const controlsRes = await fetch("/api/iso/controls");
         const controlsData = await controlsRes.json();
         setControls(controlsData.controls);
 
