@@ -14,9 +14,6 @@ export default function VisionSection() {
           <blockquote className={`mb-12 transition-all duration-700 ${
             isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           }`}>
-            <p className="text-4xl md:text-5xl lg:text-6xl font-semibold leading-tight mb-8 bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent">
-              We believe technology should serve growth — not greed.
-            </p>
           </blockquote>
 
           {/* Founder Bio */}

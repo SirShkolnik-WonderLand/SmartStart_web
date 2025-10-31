@@ -32,11 +32,11 @@ export default function TermsOfService() {
             <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
                 <Calendar className="w-4 h-4" />
-                <span>Last Updated: October 2024</span>
+                <span>Last Updated: December 2024</span>
               </div>
               <div className="flex items-center gap-2">
                 <FileText className="w-4 h-4" />
-                <span>Effective Date: October 2024</span>
+                <span>Effective Date: December 2024</span>
               </div>
             </div>
           </motion.div>
@@ -188,6 +188,25 @@ export default function TermsOfService() {
                 <p className="text-muted-foreground mb-2">Phone: <a href="tel:+14165551234" className="text-primary hover:text-primary/80 underline">+1 (416) 555-1234</a></p>
                 <p className="text-muted-foreground">Address: Toronto, Ontario, Canada</p>
               </div>
+            </div>
+
+            {/* Privacy and Data Protection */}
+            <div className="mb-12">
+              <h2 className="text-2xl font-bold text-foreground mb-4">Privacy and Data Protection</h2>
+              <p className="text-muted-foreground leading-relaxed mb-4">
+                Your privacy is important to us. By using our Services, you agree to our data practices as described in our <a href="/legal/privacy-policy" className="text-primary hover:text-primary/80 underline">Privacy Policy</a>. We are committed to compliance with applicable privacy laws, including GDPR, PIPEDA, and CCPA.
+              </p>
+              <p className="text-muted-foreground leading-relaxed mb-4">
+                When you use our Services, you may be asked to provide consent for:
+              </p>
+              <ul className="list-disc list-inside text-muted-foreground space-y-2 ml-4">
+                <li>Cookie usage (via our cookie consent banner)</li>
+                <li>Data processing (via explicit checkboxes in forms)</li>
+                <li>Marketing communications (via mailing list checkboxes)</li>
+              </ul>
+              <p className="text-muted-foreground leading-relaxed mt-4">
+                You can manage your privacy preferences at any time through our <a href="#" onClick={(e) => { e.preventDefault(); window.dispatchEvent(new CustomEvent('openCookiePreferences')); }} className="text-primary hover:text-primary/80 underline cursor-pointer">cookie preference center</a>, <a href="/unsubscribe" className="text-primary hover:text-primary/80 underline">unsubscribe page</a>, or <a href="/data-deletion" className="text-primary hover:text-primary/80 underline">data deletion request page</a>.
+              </p>
             </div>
 
             {/* Acknowledgment */}

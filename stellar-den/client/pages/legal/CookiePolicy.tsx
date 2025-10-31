@@ -28,11 +28,11 @@ export default function CookiePolicy() {
             <div className="flex items-center justify-center gap-6 text-sm text-slate-400">
               <div className="flex items-center gap-2">
                 <Calendar className="w-4 h-4" />
-                <span>Last Updated: October 2024</span>
+                <span>Last Updated: December 2024</span>
               </div>
               <div className="flex items-center gap-2">
                 <Info className="w-4 h-4" />
-                <span>Effective Date: October 2024</span>
+                <span>Effective Date: December 2024</span>
               </div>
             </div>
           </motion.div>
@@ -102,10 +102,13 @@ export default function CookiePolicy() {
               <p className="text-muted-foreground leading-relaxed mb-4">
                 These cookies help us understand how visitors interact with our website by collecting and reporting information anonymously. We use this information to improve our website and services.
               </p>
+              <p className="text-muted-foreground leading-relaxed mb-4 bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
+                <strong className="text-foreground">Important:</strong> Analytics cookies are only loaded after you provide explicit consent through our cookie consent banner. You can opt-out at any time through our <a href="#" onClick={(e) => { e.preventDefault(); window.dispatchEvent(new CustomEvent('openCookiePreferences')); }} className="text-primary hover:text-teal-300 underline cursor-pointer">cookie preference center</a>.
+              </p>
               <div className="bg-slate-900/50 rounded-lg p-4 border border-slate-700">
                 <p className="text-muted-foreground text-sm"><strong className="text-foreground">Examples:</strong></p>
                 <ul className="list-disc list-inside text-muted-foreground text-sm mt-2 space-y-1 ml-4">
-                  <li>Google Analytics cookies (track page views, user behavior)</li>
+                  <li>Analytics Hub cookies (self-hosted analytics solution)</li>
                   <li>Session duration and bounce rate tracking</li>
                   <li>Traffic source analysis</li>
                   <li>User journey mapping</li>
@@ -126,9 +129,12 @@ export default function CookiePolicy() {
                 </ul>
               </div>
 
-              <h3 className="text-xl font-semibold text-foreground mt-6 mb-3">Targeting/Advertising Cookies</h3>
+              <h3 className="text-xl font-semibold text-foreground mt-6 mb-3">Marketing Cookies</h3>
               <p className="text-muted-foreground leading-relaxed mb-4">
                 These cookies may be set through our website by our advertising partners. They may be used by those companies to build a profile of your interests and show you relevant advertisements on other websites.
+              </p>
+              <p className="text-muted-foreground leading-relaxed mb-4 bg-purple-500/10 border border-purple-500/20 rounded-lg p-4">
+                <strong className="text-foreground">Your Control:</strong> Marketing cookies require your explicit consent. You can opt-out at any time through our <a href="#" onClick={(e) => { e.preventDefault(); window.dispatchEvent(new CustomEvent('openCookiePreferences')); }} className="text-primary hover:text-teal-300 underline cursor-pointer">cookie preference center</a>. You can also <a href="/unsubscribe" className="text-primary hover:text-teal-300 underline">unsubscribe from marketing emails</a> separately.
               </p>
               <div className="bg-slate-900/50 rounded-lg p-4 border border-slate-700">
                 <p className="text-muted-foreground text-sm"><strong className="text-foreground">Examples:</strong></p>
@@ -190,11 +196,15 @@ export default function CookiePolicy() {
                 You can manage your cookie preferences through our cookie preference center, which allows you to:
               </p>
               <ul className="list-disc list-inside text-muted-foreground space-y-2 ml-4">
-                <li>Accept or reject non-essential cookies</li>
-                <li>Customize cookie settings by category</li>
+                <li>Accept or reject non-essential cookies (Analytics, Marketing)</li>
+                <li>Customize cookie settings by category (Essential, Analytics, Marketing)</li>
                 <li>View detailed information about each cookie type</li>
                 <li>Update your preferences at any time</li>
+                <li>Access via the cookie banner that appears on your first visit, or through the footer link</li>
               </ul>
+              <p className="text-muted-foreground leading-relaxed mt-4">
+                <strong className="text-foreground">Access Cookie Preferences:</strong> Click <a href="#" onClick={(e) => { e.preventDefault(); window.dispatchEvent(new CustomEvent('openCookiePreferences')); }} className="text-primary hover:text-teal-300 underline cursor-pointer">here</a> or visit the "Cookie Preferences" link in our website footer.
+              </p>
 
               <h3 className="text-xl font-semibold text-foreground mt-6 mb-3">Browser Settings</h3>
               <p className="text-muted-foreground leading-relaxed mb-4">
@@ -281,6 +291,9 @@ export default function CookiePolicy() {
                 <li><a href="https://www.youronlinechoices.com/" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-teal-300 underline">Your Online Choices</a></li>
                 <li><a href="/legal/privacy-policy" className="text-primary hover:text-teal-300 underline">Our Privacy Policy</a></li>
                 <li><a href="/legal/terms-of-service" className="text-primary hover:text-teal-300 underline">Our Terms of Service</a></li>
+                <li><a href="#" onClick={(e) => { e.preventDefault(); window.dispatchEvent(new CustomEvent('openCookiePreferences')); }} className="text-primary hover:text-teal-300 underline cursor-pointer">Cookie Preferences</a> - Manage your cookie settings</li>
+                <li><a href="/unsubscribe" className="text-primary hover:text-teal-300 underline">Unsubscribe</a> - Opt-out of marketing communications</li>
+                <li><a href="/data-deletion" className="text-primary hover:text-teal-300 underline">Request Data Deletion</a> - Delete your personal data</li>
               </ul>
             </div>
           </motion.div>

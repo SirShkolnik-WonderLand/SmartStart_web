@@ -38,7 +38,10 @@ export default function Contact() {
     timeline: "",
     companySize: "",
     industry: "",
-    howDidYouHear: ""
+    howDidYouHear: "",
+    // Consent fields
+    privacyConsent: false,
+    dataProcessingConsent: false
   });
   
   const [leadSource, setLeadSource] = useState({
@@ -98,7 +101,9 @@ export default function Contact() {
         timeline: '',
         companySize: '',
         industry: '',
-        howDidYouHear: ''
+        howDidYouHear: '',
+        privacyConsent: false,
+        dataProcessingConsent: false
       });
       setTimeout(() => setSubmitStatus('idle'), 5000);
     } catch (err) {
@@ -566,6 +571,73 @@ export default function Contact() {
                       <Label htmlFor="mailingList" className="text-foreground cursor-pointer">
                         Yes, I'd like to receive updates, insights, and security tips via email
                       </Label>
+                    </div>
+                  </div>
+
+                  {/* Consent Section */}
+                  <div className="border-t pt-6 mt-6">
+                    <h3 className="text-lg font-semibold mb-4 text-foreground">
+                      Privacy & Consent
+                    </h3>
+                    
+                    <div className="space-y-4">
+                      {/* Required Consent */}
+                      <div className="flex items-start space-x-3">
+                        <input
+                          type="checkbox"
+                          id="privacyConsent"
+                          name="privacyConsent"
+                          required
+                          className="w-4 h-4 rounded border-input text-primary focus:ring-primary mt-1"
+                        />
+                        <Label htmlFor="privacyConsent" className="text-foreground cursor-pointer">
+                          <span className="text-red-500">*</span> I agree to the{' '}
+                          <a 
+                            href="/legal/privacy-policy" 
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-primary hover:underline font-medium"
+                          >
+                            Privacy Policy
+                          </a>
+                          {' '}and consent to my data being processed in accordance with it.
+                        </Label>
+                      </div>
+
+                      {/* Data Processing Consent */}
+                      <div className="flex items-start space-x-3">
+                        <input
+                          type="checkbox"
+                          id="dataProcessingConsent"
+                          name="dataProcessingConsent"
+                          required
+                          className="w-4 h-4 rounded border-input text-primary focus:ring-primary mt-1"
+                        />
+                        <Label htmlFor="dataProcessingConsent" className="text-foreground cursor-pointer">
+                          <span className="text-red-500">*</span> I consent to the processing of my personal data 
+                          for the purpose of responding to my inquiry and improving your services. 
+                          I understand I can withdraw my consent at any time.
+                        </Label>
+                      </div>
+
+                      {/* Data Retention Notice */}
+                      <div className="bg-muted/50 rounded-lg p-4 border border-border">
+                        <p className="text-sm text-muted-foreground">
+                          <strong className="text-foreground">Data Processing Notice:</strong> Your information will be 
+                          used to respond to your inquiry and improve our services. We may contact you about relevant 
+                          services. You can opt-out at any time. We retain your data for as long as necessary to 
+                          fulfill the purposes outlined in our{' '}
+                          <a 
+                            href="/legal/privacy-policy" 
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-primary hover:underline"
+                          >
+                            Privacy Policy
+                          </a>
+                          .
+                        </p>
+                      </div>
                     </div>
                   </div>
 

@@ -82,6 +82,9 @@ router.post('/contact', async (req: Request, res: Response) => {
       companySize,
       industry,
       howDidYouHear,
+      // Consent fields (REQUIRED for GDPR/PIPEDA/CCPA compliance)
+      privacyConsent,
+      dataProcessingConsent,
       // Auto-captured lead source data
       pageUrl,
       referrer,
@@ -101,6 +104,8 @@ router.post('/contact', async (req: Request, res: Response) => {
       companySize?: string;
       industry?: string;
       howDidYouHear?: string;
+      privacyConsent?: boolean;
+      dataProcessingConsent?: boolean;
       pageUrl?: string;
       referrer?: string;
       timestamp?: string;
@@ -108,10 +113,19 @@ router.post('/contact', async (req: Request, res: Response) => {
       geolocation?: { timezone?: string; country?: string; region?: string; city?: string };
     };
 
+    // Validate required fields
     if (!name || !email || !message) {
       return res.status(400).json({
         success: false,
         error: 'Name, email, and message are required'
+      });
+    }
+
+    // Require consent for GDPR/PIPEDA/CCPA compliance
+    if (!privacyConsent || !dataProcessingConsent) {
+      return res.status(400).json({
+        success: false,
+        error: 'Privacy consent and data processing consent are required'
       });
     }
 
@@ -140,6 +154,32 @@ router.post('/contact', async (req: Request, res: Response) => {
       pageUrl: pageUrl || req.headers.referer || 'Unknown',
       referrer: referrer || req.headers.referer || 'Direct',
     };
+
+    // Track lead for analytics
+    try {
+      const { leadTrackingService } = await import('../services/leadTrackingService.js');
+      await leadTrackingService.trackLead({
+        name,
+        email,
+        company,
+        phone,
+        service,
+        message,
+        mailingList: mailingList || false,
+        budget,
+        timeline,
+        companySize,
+        industry,
+        howDidYouHear,
+        pageUrl: contactData.pageUrl,
+        referrer: contactData.referrer,
+        userAgent: userAgent,
+        timezone: geolocation?.timezone,
+      });
+    } catch (error) {
+      console.error('Failed to track lead:', error);
+      // Don't fail the request if tracking fails
+    }
 
     // Send admin notification with all data
     const adminResult = await emailTemplateService.sendAdminNotification(contactData);
@@ -309,12 +349,68 @@ router.get('/get-token', (req: Request, res: Response) => {
 });
 
 /**
- * Manual trigger for daily analytics report (for testing)
+ * Manual trigger for daily traffic & SEO report (for testing)
+ */
+router.post('/reports/traffic', async (req: Request, res: Response) => {
+  try {
+    const { triggerDailyTrafficReport } = await import('../cron/dailyReports.js');
+    const result = await triggerDailyTrafficReport();
+    
+    if (result.success) {
+      return res.json({
+        success: true,
+        message: 'Traffic report sent successfully'
+      });
+    } else {
+      return res.status(500).json({
+        success: false,
+        error: result.error || 'Failed to send report'
+      });
+    }
+  } catch (error) {
+    console.error('Traffic report error:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Failed to generate traffic report'
+    });
+  }
+});
+
+/**
+ * Manual trigger for daily lead generation report (for testing)
+ */
+router.post('/reports/leads', async (req: Request, res: Response) => {
+  try {
+    const { triggerDailyLeadReport } = await import('../cron/dailyReports.js');
+    const result = await triggerDailyLeadReport();
+    
+    if (result.success) {
+      return res.json({
+        success: true,
+        message: 'Lead report sent successfully'
+      });
+    } else {
+      return res.status(500).json({
+        success: false,
+        error: result.error || 'Failed to send report'
+      });
+    }
+  } catch (error) {
+    console.error('Lead report error:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Failed to generate lead report'
+    });
+  }
+});
+
+/**
+ * Manual trigger for daily analytics report (legacy - kept for compatibility)
  */
 router.post('/analytics/report', async (req: Request, res: Response) => {
   try {
-    const { analyticsEmailService } = await import('../services/analyticsEmailService.js');
-    const result = await analyticsEmailService.sendDailyReport();
+    const { triggerDailyTrafficReport } = await import('../cron/dailyReports.js');
+    const result = await triggerDailyTrafficReport();
     
     if (result.success) {
       return res.json({

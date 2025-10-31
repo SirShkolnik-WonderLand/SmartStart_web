@@ -84,9 +84,14 @@ export function createServer() {
   // Zoho Integration API routes
   app.use("/api/zoho", zohoRoutes);
 
-  // Start daily analytics cron job (only in production or if enabled)
+  // Privacy API routes
+  const privacyRoutes = await import('./routes/privacy.js');
+  app.use("/api/privacy", privacyRoutes.default);
+
+  // Start daily reports cron jobs (only in production or if enabled)
   if (process.env.NODE_ENV === 'production' || process.env.ENABLE_ANALYTICS_CRON === 'true') {
-    startDailyAnalyticsCron();
+    const { startDailyReportsCron } = await import('./cron/dailyReports.js');
+    startDailyReportsCron();
   }
 
   // Serve static files (CSS, JS, images, etc.) from the built SPA

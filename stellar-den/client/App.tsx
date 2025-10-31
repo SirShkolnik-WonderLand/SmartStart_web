@@ -42,33 +42,59 @@ import PrivacyPolicy from "./pages/legal/PrivacyPolicy";
 import TermsOfService from "./pages/legal/TermsOfService";
 import CookiePolicy from "./pages/legal/CookiePolicy";
 import Accessibility from "./pages/legal/Accessibility";
+import Unsubscribe from "./pages/Unsubscribe";
+import DataDeletionRequest from "./pages/DataDeletionRequest";
 import NotFound from "./pages/NotFound";
 import SimpleTest from "./pages/SimpleTest";
 import ZohoCallback from "./pages/ZohoCallback";
+import CookieConsentBanner from "./components/CookieConsentBanner";
+import { consentManager } from "./lib/consentManager";
 
 const queryClient = new QueryClient();
 
 const App = () => {
-  // Initialize Analytics Hub tracking
+  // Initialize Analytics Hub tracking ONLY after consent
   useEffect(() => {
-    const analyticsConfig = {
-      apiUrl: import.meta.env.VITE_ANALYTICS_API_URL || 'https://analytics-hub-server.onrender.com',
-      autoTrack: true,
-      trackOutbound: true,
-      trackScroll: true,
+    // Check if user has consented to analytics
+    const hasAnalyticsConsent = consentManager.hasConsent('analytics');
+    
+    if (hasAnalyticsConsent) {
+      const analyticsConfig = {
+        apiUrl: import.meta.env.VITE_ANALYTICS_API_URL || 'https://analytics-hub-server.onrender.com',
+        autoTrack: true,
+        trackOutbound: true,
+        trackScroll: true,
+      };
+
+      (window as any).analyticsHubConfig = analyticsConfig;
+
+      const script = document.createElement('script');
+      // Add cache busting parameter to force reload
+      const cacheBuster = Date.now();
+      script.src = `${analyticsConfig.apiUrl}/tracker.js?v=${cacheBuster}`;
+      script.async = true;
+      script.defer = true;
+      document.head.appendChild(script);
+
+      console.log('✅ Analytics Hub initialized (with consent)');
+    } else {
+      console.log('⏸️ Analytics not initialized - waiting for consent');
+    }
+
+    // Listen for consent updates
+    const handleConsentUpdate = () => {
+      const newConsent = consentManager.hasConsent('analytics');
+      if (newConsent && !(window as any).analyticsHub) {
+        // Reload page to initialize analytics after consent
+        window.location.reload();
+      }
     };
 
-    (window as any).analyticsHubConfig = analyticsConfig;
+    window.addEventListener('consentUpdated', handleConsentUpdate);
 
-    const script = document.createElement('script');
-    // Add cache busting parameter to force reload
-    const cacheBuster = Date.now();
-    script.src = `${analyticsConfig.apiUrl}/tracker.js?v=${cacheBuster}`;
-    script.async = true;
-    script.defer = true;
-    document.head.appendChild(script);
-
-    console.log('✅ Analytics Hub initialized');
+    return () => {
+      window.removeEventListener('consentUpdated', handleConsentUpdate);
+    };
   }, []);
 
   return (
@@ -77,6 +103,7 @@ const App = () => {
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <CookieConsentBanner />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/about" element={<About />} />
@@ -114,6 +141,10 @@ const App = () => {
           <Route path="/legal/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/legal/terms-of-service" element={<TermsOfService />} />
           <Route path="/legal/cookie-policy" element={<CookiePolicy />} />
+          <Route path="/legal/accessibility" element={<Accessibility />} />
+          {/* Privacy Requests */}
+          <Route path="/unsubscribe" element={<Unsubscribe />} />
+          <Route path="/data-deletion" element={<DataDeletionRequest />} />
           <Route path="/simple-test" element={<SimpleTest />} />
           <Route path="/callback" element={<ZohoCallback />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

@@ -91,7 +91,7 @@ export default function Footer() {
 
           {/* Legal Links */}
           <div>
-            <h4 className="font-semibold mb-4">Legal</h4>
+            <h4 className="font-semibold mb-4">Legal & Privacy</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
                 <a href="/legal/privacy-policy" className="hover:text-primary transition-colors">
@@ -109,8 +109,30 @@ export default function Footer() {
                 </a>
               </li>
               <li>
+                <a 
+                  href="#" 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    window.dispatchEvent(new CustomEvent('openCookiePreferences'));
+                  }}
+                  className="hover:text-primary transition-colors cursor-pointer"
+                >
+                  Cookie Preferences
+                </a>
+              </li>
+              <li>
                 <a href="/legal/accessibility" className="hover:text-primary transition-colors">
                   Accessibility
+                </a>
+              </li>
+              <li>
+                <a href="/unsubscribe" className="hover:text-primary transition-colors">
+                  Unsubscribe
+                </a>
+              </li>
+              <li>
+                <a href="/data-deletion" className="hover:text-primary transition-colors">
+                  Request Data Deletion
                 </a>
               </li>
             </ul>

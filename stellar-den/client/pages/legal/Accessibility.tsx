@@ -28,7 +28,7 @@ export default function AccessibilityStatement() {
             <div className="flex items-center justify-center gap-6 text-sm text-slate-400">
               <div className="flex items-center gap-2">
                 <Calendar className="w-4 h-4" />
-                <span>Last Updated: October 2024</span>
+                <span>Last Updated: December 2024</span>
               </div>
               <div className="flex items-center gap-2">
                 <Heart className="w-4 h-4" />

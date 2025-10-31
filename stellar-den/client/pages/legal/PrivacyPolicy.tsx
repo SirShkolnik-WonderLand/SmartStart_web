@@ -32,11 +32,11 @@ export default function PrivacyPolicy() {
             <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
                 <Calendar className="w-4 h-4" />
-                <span>Last Updated: October 2024</span>
+                <span>Last Updated: December 2024</span>
               </div>
               <div className="flex items-center gap-2">
                 <Mail className="w-4 h-4" />
-                <span>Effective Date: October 2024</span>
+                <span>Effective Date: December 2024</span>
               </div>
             </div>
           </motion.div>
@@ -63,6 +63,9 @@ export default function PrivacyPolicy() {
               </p>
               <p className="text-muted-foreground leading-relaxed mt-4">
                 By using our website and services, you consent to the data practices described in this policy. If you do not agree with the practices described in this policy, please do not use our website or services.
+              </p>
+              <p className="text-muted-foreground leading-relaxed mt-4">
+                We use a <strong className="text-foreground">cookie consent banner</strong> that appears on your first visit, allowing you to manage your cookie preferences. All forms require explicit consent for data processing, and you can manage your privacy preferences at any time through our <a href="#" onClick={(e) => { e.preventDefault(); window.dispatchEvent(new CustomEvent('openCookiePreferences')); }} className="text-primary hover:text-primary/80 underline cursor-pointer">cookie preference center</a>, <a href="/unsubscribe" className="text-primary hover:text-primary/80 underline">unsubscribe page</a>, or <a href="/data-deletion" className="text-primary hover:text-primary/80 underline">data deletion request page</a>.
               </p>
             </div>
 
@@ -199,8 +202,14 @@ export default function PrivacyPolicy() {
                 <li><strong className="text-foreground">Restriction:</strong> Request restriction of processing</li>
               </ul>
               <p className="text-muted-foreground leading-relaxed mt-4">
-                To exercise these rights, please contact us at <a href="mailto:privacy@alicesolutionsgroup.com" className="text-primary hover:text-primary/80 underline">privacy@alicesolutionsgroup.com</a>.
+                To exercise these rights, you can:
               </p>
+              <ul className="list-disc list-inside text-muted-foreground space-y-2 ml-4 mt-4">
+                <li><strong className="text-foreground">Unsubscribe:</strong> Visit our <a href="/unsubscribe" className="text-primary hover:text-primary/80 underline">unsubscribe page</a> to opt-out of marketing communications</li>
+                <li><strong className="text-foreground">Request Data Deletion:</strong> Submit a request through our <a href="/data-deletion" className="text-primary hover:text-primary/80 underline">data deletion request page</a></li>
+                <li><strong className="text-foreground">Manage Cookie Preferences:</strong> Access our <a href="#" onClick={(e) => { e.preventDefault(); window.dispatchEvent(new CustomEvent('openCookiePreferences')); }} className="text-primary hover:text-primary/80 underline cursor-pointer">cookie preference center</a> to control cookie settings</li>
+                <li><strong className="text-foreground">Contact Us:</strong> Email us at <a href="mailto:privacy@alicesolutionsgroup.com" className="text-primary hover:text-primary/80 underline">privacy@alicesolutionsgroup.com</a> for any other privacy requests</li>
+              </ul>
             </div>
 
             {/* Data Retention */}

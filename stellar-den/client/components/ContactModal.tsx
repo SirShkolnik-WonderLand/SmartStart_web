@@ -30,7 +30,10 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
     timeline: "",
     companySize: "",
     industry: "",
-    howDidYouHear: ""
+    howDidYouHear: "",
+    // Consent fields
+    privacyConsent: false,
+    dataProcessingConsent: false
   });
   
   const [leadSource, setLeadSource] = useState({
@@ -97,7 +100,9 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
             timeline: "",
             companySize: "",
             industry: "",
-            howDidYouHear: ""
+            howDidYouHear: "",
+            privacyConsent: false,
+            dataProcessingConsent: false
           });
           setIsSubmitted(false);
           onClose();
@@ -247,6 +252,42 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
               <label htmlFor="mailingList" className="text-sm text-muted-foreground cursor-pointer">
                 Subscribe to updates and insights
               </label>
+            </div>
+
+            {/* Consent Section */}
+            <div className="border-t pt-4 mt-4 space-y-3">
+              <div className="flex items-start space-x-2">
+                <input
+                  type="checkbox"
+                  id="privacyConsent"
+                  name="privacyConsent"
+                  checked={formData.privacyConsent}
+                  onChange={handleChange}
+                  required
+                  className="w-4 h-4 rounded border-input text-primary focus:ring-primary mt-1"
+                />
+                <label htmlFor="privacyConsent" className="text-sm text-muted-foreground cursor-pointer">
+                  <span className="text-red-500">*</span> I agree to the{' '}
+                  <a href="/legal/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                    Privacy Policy
+                  </a>
+                </label>
+              </div>
+              
+              <div className="flex items-start space-x-2">
+                <input
+                  type="checkbox"
+                  id="dataProcessingConsent"
+                  name="dataProcessingConsent"
+                  checked={formData.dataProcessingConsent}
+                  onChange={handleChange}
+                  required
+                  className="w-4 h-4 rounded border-input text-primary focus:ring-primary mt-1"
+                />
+                <label htmlFor="dataProcessingConsent" className="text-sm text-muted-foreground cursor-pointer">
+                  <span className="text-red-500">*</span> I consent to data processing
+                </label>
+              </div>
             </div>
 
             <Button
