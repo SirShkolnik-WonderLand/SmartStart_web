@@ -4,7 +4,7 @@
  */
 
 import cron from 'node-cron';
-import { analyticsEmailService } from './services/analyticsEmailService.js';
+import { analyticsEmailService } from '../services/analyticsEmailService.js';
 
 export function startDailyAnalyticsCron() {
   // Run daily at 8:00 AM EST (13:00 UTC during EST, 12:00 UTC during EDT)
