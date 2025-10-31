@@ -3,6 +3,7 @@ import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
 import { getStoryBotQuestions, getControls } from "./server/routes/iso";
+import zohoRoutes from "./server/routes/zoho";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -17,6 +18,7 @@ export function createApiServer() {
   // API routes
   app.get("/api/iso/story-bot-questions", getStoryBotQuestions);
   app.get("/api/iso/controls", getControls);
+  app.use("/api/zoho", zohoRoutes);
 
   return app;
 }

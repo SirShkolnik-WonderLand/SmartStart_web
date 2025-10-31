@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -22,6 +22,7 @@ import {
   Loader2,
   AlertCircle
 } from "lucide-react";
+import { captureLeadSource } from "@/lib/leadSource";
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -30,19 +31,49 @@ export default function Contact() {
     company: "",
     phone: "",
     service: "",
-    message: ""
+    message: "",
+    // Enhanced fields
+    mailingList: false,
+    budget: "",
+    timeline: "",
+    companySize: "",
+    industry: "",
+    howDidYouHear: ""
   });
+  
+  const [leadSource, setLeadSource] = useState({
+    pageUrl: "",
+    referrer: "",
+    timestamp: ""
+  });
+  
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
+
+  // Auto-capture lead source data on mount
+  useEffect(() => {
+    captureLeadSource().then(data => {
+      setLeadSource({
+        pageUrl: data.pageUrl,
+        referrer: data.referrer,
+        timestamp: data.timestamp
+      });
+    });
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setSubmitStatus("idle");
+
     try {
       const response = await fetch('/api/zoho/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          ...leadSource,
+        }),
       });
 
       if (!response.ok) {
@@ -55,7 +86,20 @@ export default function Contact() {
       }
 
       setSubmitStatus('success');
-      setFormData({ name: '', email: '', company: '', phone: '', service: '', message: '' });
+      setFormData({ 
+        name: '', 
+        email: '', 
+        company: '', 
+        phone: '', 
+        service: '', 
+        message: '',
+        mailingList: false,
+        budget: '',
+        timeline: '',
+        companySize: '',
+        industry: '',
+        howDidYouHear: ''
+      });
       setTimeout(() => setSubmitStatus('idle'), 5000);
     } catch (err) {
       setSubmitStatus('error');
@@ -65,9 +109,12 @@ export default function Contact() {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value, type } = e.target;
+    const checked = (e.target as HTMLInputElement).checked;
+    
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [name]: type === 'checkbox' ? checked : value
     });
   };
 
@@ -381,6 +428,145 @@ export default function Contact() {
                       rows={6}
                       className="mt-2 resize-none"
                     />
+                  </div>
+
+                  {/* Enhanced Fields Section */}
+                  <div className="border-t pt-6 mt-6">
+                    <h3 className="text-lg font-semibold mb-4 text-foreground">
+                      Help Us Better Understand Your Needs
+                    </h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {/* Budget */}
+                      <div>
+                        <Label htmlFor="budget" className="text-foreground">
+                          Budget Range
+                        </Label>
+                        <select
+                          id="budget"
+                          name="budget"
+                          value={formData.budget}
+                          onChange={handleChange}
+                          className="mt-2 w-full px-3 py-2 rounded-md border border-input bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                        >
+                          <option value="">Select budget range...</option>
+                          <option value="Under $10K">Under $10K</option>
+                          <option value="$10K - $25K">$10K - $25K</option>
+                          <option value="$25K - $50K">$25K - $50K</option>
+                          <option value="$50K - $100K">$50K - $100K</option>
+                          <option value="$100K+">$100K+</option>
+                          <option value="Not sure yet">Not sure yet</option>
+                        </select>
+                      </div>
+
+                      {/* Timeline */}
+                      <div>
+                        <Label htmlFor="timeline" className="text-foreground">
+                          Timeline
+                        </Label>
+                        <select
+                          id="timeline"
+                          name="timeline"
+                          value={formData.timeline}
+                          onChange={handleChange}
+                          className="mt-2 w-full px-3 py-2 rounded-md border border-input bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                        >
+                          <option value="">Select timeline...</option>
+                          <option value="Immediate (within 1 month)">Immediate (within 1 month)</option>
+                          <option value="Short-term (1-3 months)">Short-term (1-3 months)</option>
+                          <option value="Medium-term (3-6 months)">Medium-term (3-6 months)</option>
+                          <option value="Long-term (6-12 months)">Long-term (6-12 months)</option>
+                          <option value="Exploring options">Exploring options</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                      {/* Company Size */}
+                      <div>
+                        <Label htmlFor="companySize" className="text-foreground">
+                          Company Size
+                        </Label>
+                        <select
+                          id="companySize"
+                          name="companySize"
+                          value={formData.companySize}
+                          onChange={handleChange}
+                          className="mt-2 w-full px-3 py-2 rounded-md border border-input bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                        >
+                          <option value="">Select company size...</option>
+                          <option value="Solo/Founder">Solo/Founder</option>
+                          <option value="2-10 employees">2-10 employees</option>
+                          <option value="11-50 employees">11-50 employees</option>
+                          <option value="51-200 employees">51-200 employees</option>
+                          <option value="201-1000 employees">201-1000 employees</option>
+                          <option value="1000+ employees">1000+ employees</option>
+                        </select>
+                      </div>
+
+                      {/* Industry */}
+                      <div>
+                        <Label htmlFor="industry" className="text-foreground">
+                          Industry
+                        </Label>
+                        <select
+                          id="industry"
+                          name="industry"
+                          value={formData.industry}
+                          onChange={handleChange}
+                          className="mt-2 w-full px-3 py-2 rounded-md border border-input bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                        >
+                          <option value="">Select industry...</option>
+                          <option value="Technology/SaaS">Technology/SaaS</option>
+                          <option value="Healthcare">Healthcare</option>
+                          <option value="Financial Services">Financial Services</option>
+                          <option value="Manufacturing">Manufacturing</option>
+                          <option value="Retail/E-commerce">Retail/E-commerce</option>
+                          <option value="Professional Services">Professional Services</option>
+                          <option value="Education">Education</option>
+                          <option value="Government">Government</option>
+                          <option value="Other">Other</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    {/* How Did You Hear */}
+                    <div className="mt-6">
+                      <Label htmlFor="howDidYouHear" className="text-foreground">
+                        How did you hear about us?
+                      </Label>
+                      <select
+                        id="howDidYouHear"
+                        name="howDidYouHear"
+                        value={formData.howDidYouHear}
+                        onChange={handleChange}
+                        className="mt-2 w-full px-3 py-2 rounded-md border border-input bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                      >
+                        <option value="">Select option...</option>
+                        <option value="Google Search">Google Search</option>
+                        <option value="LinkedIn">LinkedIn</option>
+                        <option value="Referral">Referral</option>
+                        <option value="Social Media">Social Media</option>
+                        <option value="Event/Conference">Event/Conference</option>
+                        <option value="Direct">Direct</option>
+                        <option value="Other">Other</option>
+                      </select>
+                    </div>
+
+                    {/* Mailing List */}
+                    <div className="mt-6 flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id="mailingList"
+                        name="mailingList"
+                        checked={formData.mailingList}
+                        onChange={handleChange}
+                        className="w-4 h-4 rounded border-input text-primary focus:ring-primary"
+                      />
+                      <Label htmlFor="mailingList" className="text-foreground cursor-pointer">
+                        Yes, I'd like to receive updates, insights, and security tips via email
+                      </Label>
+                    </div>
                   </div>
 
                   {/* Submit Button */}

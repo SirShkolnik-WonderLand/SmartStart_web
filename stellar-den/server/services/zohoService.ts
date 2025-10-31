@@ -17,6 +17,7 @@ interface ZohoToken {
   refresh_token: string;
   expires_in: number;
   token_type: string;
+  api_domain?: string;
 }
 
 interface ZohoContact {
@@ -39,6 +40,7 @@ export class ZohoService {
   private config: ZohoConfig;
   private api: AxiosInstance;
   private token: ZohoToken | null = null;
+  private mailAccountId: string | null = null;
 
   constructor() {
     this.config = {
@@ -48,8 +50,9 @@ export class ZohoService {
       scope: 'ZohoCRM.modules.ALL,ZohoMail.messages.CREATE,ZohoCalendar.events.CREATE'
     };
 
+    // Use Canada data center API domain
     this.api = axios.create({
-      baseURL: 'https://www.zohoapis.com',
+      baseURL: 'https://www.zohoapis.ca',
       timeout: 30000,
       headers: {
         'Content-Type': 'application/json',
@@ -145,22 +148,51 @@ export class ZohoService {
    */
   async sendEmail(email: ZohoEmail): Promise<any> {
     try {
-      // Use your working credentials directly
-      const response = await this.api.post('/mail/v1/messages', {
+      // Use api_domain from token response (e.g., https://www.zohoapis.ca for CA DC)
+      // Mail API is at: {api_domain}/mail/v1
+      const apiDomain = this.token?.api_domain || process.env.ZOHO_API_DOMAIN || 'https://www.zohoapis.ca';
+      const mailBase = `${apiDomain}/mail/v1`;
+      
+      // Discover account id once
+      if (!this.mailAccountId) {
+        const accessToken = this.token?.access_token || process.env.ZOHO_ACCESS_TOKEN || 'your_access_token_here';
+        const acctResp = await axios.get(`${mailBase}/accounts`, {
+          headers: {
+            'Authorization': `Zoho-oauthtoken ${accessToken}`,
+          }
+        });
+        const accounts = acctResp.data?.data || acctResp.data?.accounts || [];
+        const first = Array.isArray(accounts) ? accounts[0] : undefined;
+        this.mailAccountId = (first?.accountId || first?.id || '').toString();
+        if (!this.mailAccountId) {
+          throw new Error('No Zoho Mail account found for the authenticated user');
+        }
+      }
+
+      const payload: any = {
         toAddress: email.to,
         subject: email.subject,
         content: email.content,
-        fromAddress: email.from || 'noreply@alicesolutionsgroup.com'
-      }, {
+      };
+      if (email.from) {
+        payload.fromAddress = email.from;
+      }
+
+      const accessToken = this.token?.access_token || process.env.ZOHO_ACCESS_TOKEN || 'your_access_token_here';
+      const response = await axios.post(`${mailBase}/accounts/${this.mailAccountId}/messages`, payload, {
         headers: {
-          'Authorization': `Zoho-oauthtoken ${process.env.ZOHO_ACCESS_TOKEN || 'your_access_token_here'}`,
+          'Authorization': `Zoho-oauthtoken ${accessToken}`,
           'Content-Type': 'application/json'
         }
       });
 
       return response.data;
     } catch (error) {
-      console.error('Failed to send email:', error);
+      if (axios.isAxiosError(error)) {
+        console.error('Failed to send email:', error.response?.status, error.response?.data || error.message);
+      } else {
+        console.error('Failed to send email:', error);
+      }
       throw new Error('Failed to send email via Zoho Mail');
     }
   }

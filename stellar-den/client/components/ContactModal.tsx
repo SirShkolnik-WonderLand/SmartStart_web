@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -9,6 +9,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { captureLeadSource } from "@/lib/leadSource";
 
 interface ContactModalProps {
   isOpen: boolean;
@@ -20,16 +22,45 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
     name: "",
     email: "",
     company: "",
+    phone: "",
+    service: "",
     message: "",
+    mailingList: false,
+    budget: "",
+    timeline: "",
+    companySize: "",
+    industry: "",
+    howDidYouHear: ""
   });
+  
+  const [leadSource, setLeadSource] = useState({
+    pageUrl: "",
+    referrer: "",
+    timestamp: ""
+  });
+  
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
+  // Auto-capture lead source data when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      captureLeadSource().then(data => {
+        setLeadSource({
+          pageUrl: data.pageUrl,
+          referrer: data.referrer,
+          timestamp: data.timestamp
+        });
+      });
+    }
+  }, [isOpen]);
+
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const { name, value, type } = e.target;
+    const checked = (e.target as HTMLInputElement).checked;
+    setFormData((prev) => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -43,10 +74,8 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          company: formData.company,
-          message: formData.message,
+          ...formData,
+          ...leadSource,
         }),
       });
 
@@ -56,7 +85,20 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
         setIsSubmitted(true);
         // Reset after 2 seconds
         setTimeout(() => {
-          setFormData({ name: "", email: "", company: "", message: "" });
+          setFormData({ 
+            name: "", 
+            email: "", 
+            company: "", 
+            phone: "",
+            service: "",
+            message: "",
+            mailingList: false,
+            budget: "",
+            timeline: "",
+            companySize: "",
+            industry: "",
+            howDidYouHear: ""
+          });
           setIsSubmitted(false);
           onClose();
         }, 2000);
@@ -144,6 +186,41 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
             </div>
 
             <div>
+              <label htmlFor="phone" className="text-sm font-medium">
+                Phone
+              </label>
+              <Input
+                id="phone"
+                name="phone"
+                type="tel"
+                placeholder="+1 (555) 000-0000"
+                value={formData.phone}
+                onChange={handleChange}
+                className="mt-1"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="service" className="text-sm font-medium">
+                Service Interest
+              </label>
+              <select
+                id="service"
+                name="service"
+                value={formData.service}
+                onChange={handleChange}
+                className="mt-1 w-full px-3 py-2 rounded-md border border-input bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+              >
+                <option value="">Select a service...</option>
+                <option value="Cybersecurity & Compliance">Cybersecurity & Compliance</option>
+                <option value="Automation & AI">Automation & AI</option>
+                <option value="Advisory & Audits">Advisory & Audits</option>
+                <option value="SmartStart Ecosystem">SmartStart Ecosystem</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <div>
               <label htmlFor="message" className="text-sm font-medium">
                 Message
               </label>
@@ -156,6 +233,20 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
                 required
                 className="mt-1 min-h-24"
               />
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="mailingList"
+                name="mailingList"
+                checked={formData.mailingList}
+                onChange={handleChange}
+                className="w-4 h-4 rounded border-input text-primary focus:ring-primary"
+              />
+              <label htmlFor="mailingList" className="text-sm text-muted-foreground cursor-pointer">
+                Subscribe to updates and insights
+              </label>
             </div>
 
             <Button

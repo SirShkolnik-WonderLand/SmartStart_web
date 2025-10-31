@@ -61,14 +61,51 @@ router.post('/auth/callback', async (req: Request, res: Response) => {
 });
 
 /**
- * Handle contact form submission (SMTP Email)
- * - Sends notification to admin
- * - Sends auto-reply to the submitter
+ * Handle contact form submission (Enhanced Email Templates)
+ * - Sends rich notification to admin with all lead data
+ * - Sends service-specific auto-reply to client
+ * - Auto-captures: pageUrl, referrer, geolocation, timestamp
  */
 router.post('/contact', async (req: Request, res: Response) => {
   try {
-    const { name, email, company, phone, service, message } = req.body as {
-      name?: string; email?: string; company?: string; phone?: string; service?: string; message?: string;
+    const {
+      name,
+      email,
+      company,
+      phone,
+      service,
+      message,
+      // Enhanced fields
+      mailingList,
+      budget,
+      timeline,
+      companySize,
+      industry,
+      howDidYouHear,
+      // Auto-captured lead source data
+      pageUrl,
+      referrer,
+      timestamp,
+      userAgent,
+      geolocation
+    } = req.body as {
+      name?: string;
+      email?: string;
+      company?: string;
+      phone?: string;
+      service?: string;
+      message?: string;
+      mailingList?: boolean;
+      budget?: string;
+      timeline?: string;
+      companySize?: string;
+      industry?: string;
+      howDidYouHear?: string;
+      pageUrl?: string;
+      referrer?: string;
+      timestamp?: string;
+      userAgent?: string;
+      geolocation?: { timezone?: string; country?: string; region?: string; city?: string };
     };
 
     if (!name || !email || !message) {
@@ -78,28 +115,61 @@ router.post('/contact', async (req: Request, res: Response) => {
       });
     }
 
-    // Use SMTP email service (reliable, tested, working!)
-    const { emailService } = await import('../services/emailService.js');
-    const result = await emailService.sendContactNotification({
+    // Extract additional geolocation from request headers if available
+    const requestGeo = {
+      timezone: req.headers['x-timezone'] as string || geolocation?.timezone,
+      // IP-based geolocation could be added here using a service
+    };
+
+    // Use enhanced email template service
+    const { emailTemplateService } = await import('../services/emailTemplateService.js');
+    
+    const contactData = {
       name,
       email,
-      company,
-      phone,
-      service,
+      company: company || undefined,
+      phone: phone || undefined,
+      service: service || undefined,
       message,
-    });
+      mailingList: mailingList || false,
+      budget: budget || undefined,
+      timeline: timeline || undefined,
+      companySize: companySize || undefined,
+      industry: industry || undefined,
+      howDidYouHear: howDidYouHear || undefined,
+      pageUrl: pageUrl || req.headers.referer || 'Unknown',
+      referrer: referrer || req.headers.referer || 'Direct',
+    };
 
-    if (result.success) {
-      return res.json({ success: true, message: 'Message sent successfully' });
+    // Send admin notification with all data
+    const adminResult = await emailTemplateService.sendAdminNotification(contactData);
+    
+    if (!adminResult.success) {
+      console.error('Admin email failed:', adminResult.error);
+      return res.status(500).json({
+        success: false,
+        error: 'Failed to send notification. Please try again later.',
+      });
     }
 
-    return res.status(500).json({
-      success: false,
-      error: 'Failed to send email. Please try again later or contact us directly.',
+    // Send client auto-reply
+    const clientResult = await emailTemplateService.sendClientAutoReply(contactData);
+    
+    if (!clientResult.success) {
+      console.error('Client email failed:', clientResult.error);
+      // Don't fail the request if client email fails, admin got notified
+    }
+
+    return res.json({
+      success: true,
+      message: 'Message sent successfully. We\'ll get back to you soon!'
     });
   } catch (error) {
     console.error('Contact form error:', error);
-    return res.status(500).json({ success: false, error: 'Failed to send emails' });
+    return res.status(500).json({
+      success: false,
+      error: 'Failed to send emails. Please try again later or contact us directly.'
+    });
   }
 });
 
