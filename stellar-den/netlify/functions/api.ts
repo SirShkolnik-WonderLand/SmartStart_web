@@ -2,4 +2,12 @@ import serverless from "serverless-http";
 
 import { createServer } from "../../server";
 
-export const handler = serverless(createServer());
+let appPromise: Promise<any> | null = null;
+
+export const handler = serverless(async (...args: any[]) => {
+  if (!appPromise) {
+    appPromise = createServer();
+  }
+  const app = await appPromise;
+  return app(...args);
+});

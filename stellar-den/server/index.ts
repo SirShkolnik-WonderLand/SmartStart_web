@@ -21,6 +21,7 @@ import {
 } from "./routes/iso";
 import zohoRoutes from "./routes/zoho";
 import { startDailyAnalyticsCron } from "./cron/dailyAnalytics";
+import privacyRoutes from "./routes/privacy";
 import {
   nonceCSP,
   corsConfig,
@@ -35,7 +36,7 @@ import {
   additionalSecurityHeaders
 } from "./middleware/security";
 
-export function createServer() {
+export async function createServer() {
   const app = express();
 
   // Security middleware (order matters!)
@@ -85,8 +86,7 @@ export function createServer() {
   app.use("/api/zoho", zohoRoutes);
 
   // Privacy API routes
-  const privacyRoutes = await import('./routes/privacy.js');
-  app.use("/api/privacy", privacyRoutes.default);
+  app.use("/api/privacy", privacyRoutes);
 
   // Start daily reports cron jobs (only in production or if enabled)
   if (process.env.NODE_ENV === 'production' || process.env.ENABLE_ANALYTICS_CRON === 'true') {
