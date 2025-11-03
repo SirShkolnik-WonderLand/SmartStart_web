@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Helmet } from 'react-helmet';
-import { UserCircle, MessageSquare, FileText, BarChart3, CheckCircle, ArrowRight, Phone, Eye, Shield, Zap, Target, Building2, Award, Rocket, Network, Lightbulb, BookOpen, Download, GraduationCap, Handshake } from 'lucide-react';
+import { UserCircle, MessageSquare, FileText, BarChart3, CheckCircle, ArrowRight, Phone, Eye, Shield, Zap, Target, Building2, Award, Rocket, Network, Lightbulb, BookOpen, Download, GraduationCap, Handshake, Users } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
 import Footer from '@/components/Footer';
 import { useSidebar } from '@/contexts/SidebarContext';
