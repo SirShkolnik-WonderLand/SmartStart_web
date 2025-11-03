@@ -127,7 +127,9 @@ export default function Sidebar() {
         animate={{ x: 0 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
         className={`fixed left-0 top-0 h-full z-50 bg-background/95 backdrop-blur-lg border-r border-border transition-all duration-300 ${
-          isCollapsed ? "w-20" : "w-72"
+          isCollapsed 
+            ? "md:w-20 w-0 -translate-x-full md:translate-x-0" 
+            : "w-72 md:w-72"
         }`}
       >
         <div className="flex flex-col h-full">
@@ -398,6 +400,23 @@ export default function Sidebar() {
           </div>
         </div>
       </motion.aside>
+
+      {/* Mobile Floating Toggle Button - Only show when collapsed on mobile */}
+      <AnimatePresence>
+        {isCollapsed && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ duration: 0.2 }}
+            onClick={handleToggleCollapse}
+            className="fixed left-4 top-4 z-50 md:hidden bg-primary hover:bg-primary/90 text-primary-foreground rounded-full p-3 shadow-lg shadow-primary/20"
+            aria-label="Open menu"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </motion.button>
+        )}
+      </AnimatePresence>
 
       {/* Mobile Overlay */}
       <AnimatePresence>
