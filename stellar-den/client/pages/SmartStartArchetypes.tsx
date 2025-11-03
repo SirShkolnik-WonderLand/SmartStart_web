@@ -9,10 +9,10 @@ import { useSidebar } from "@/contexts/SidebarContext";
 import StructuredData from "@/components/StructuredData";
 import { useNavigate } from "react-router-dom";
 import {
-  Code2,
-  Network,
+  Hammer,
+  Users,
   Building2,
-  Sparkles,
+  Lightbulb,
   ArrowRight,
   CheckCircle2,
   Zap,
@@ -25,7 +25,11 @@ import {
   Infinity,
   TrendingUp,
   Star,
-  Gem
+  Gem,
+  Wrench,
+  UserCircle,
+  Bank,
+  Sparkles
 } from "lucide-react";
 
 const SmartStartArchetypes: React.FC = () => {
@@ -38,7 +42,7 @@ const SmartStartArchetypes: React.FC = () => {
   const archetypes = [
     {
       name: "The Builder",
-      icon: Code2,
+      icon: Hammer,
       color: "from-orange-500 via-red-500 to-pink-500",
       bgColor: "from-orange-500/20 via-red-500/20 to-pink-500/20",
       glowColor: "rgba(251, 146, 60, 0.5)",
@@ -51,7 +55,7 @@ const SmartStartArchetypes: React.FC = () => {
     },
     {
       name: "The Connector",
-      icon: Network,
+      icon: Users,
       color: "from-teal-500 via-cyan-500 to-blue-500",
       bgColor: "from-teal-500/20 via-cyan-500/20 to-blue-500/20",
       glowColor: "rgba(20, 184, 166, 0.5)",
@@ -77,7 +81,7 @@ const SmartStartArchetypes: React.FC = () => {
     },
     {
       name: "The Dreamer",
-      icon: Sparkles,
+      icon: Lightbulb,
       color: "from-pink-500 via-rose-500 to-fuchsia-500",
       bgColor: "from-pink-500/20 via-rose-500/20 to-fuchsia-500/20",
       glowColor: "rgba(236, 72, 153, 0.5)",
