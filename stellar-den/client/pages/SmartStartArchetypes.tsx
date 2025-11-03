@@ -25,11 +25,7 @@ import {
   Infinity,
   TrendingUp,
   Star,
-  Gem,
-  Wrench,
-  UserCircle,
-  Bank,
-  Sparkles
+  Gem
 } from "lucide-react";
 
 const SmartStartArchetypes: React.FC = () => {
