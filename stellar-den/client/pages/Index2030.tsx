@@ -64,7 +64,7 @@ export default function Index2030() {
       />
 
       <Sidebar />
-      <div className={`transition-all duration-300 ${isCollapsed ? 'md:ml-20 ml-0 md:ml-72 ml-0'} md:pt-0 pt-20`}>
+      <div className={`transition-all duration-300 ${isCollapsed ? 'md:ml-20 ml-0' : 'md:ml-72 ml-0'} md:pt-0 pt-20`}>
 
       {/* Hero Section - "The Constellation" */}
       <ConstellationHero2030
