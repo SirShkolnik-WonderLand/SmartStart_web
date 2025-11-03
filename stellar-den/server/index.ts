@@ -88,6 +88,10 @@ export async function createServer() {
   // Privacy API routes
   app.use("/api/privacy", privacyRoutes);
 
+  // Analytics API routes
+  const analyticsRoutes = await import('./routes/analytics.js');
+  app.use("/api/analytics", analyticsRoutes.default);
+
   // Start daily reports cron jobs (only in production or if enabled)
   if (process.env.NODE_ENV === 'production' || process.env.ENABLE_ANALYTICS_CRON === 'true') {
     const { startDailyReportsCron } = await import('./cron/dailyReports.js');
