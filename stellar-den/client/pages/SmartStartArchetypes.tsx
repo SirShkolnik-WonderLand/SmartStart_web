@@ -191,6 +191,14 @@ export default function SmartStartArchetypes() {
               <Button
                 size="lg"
                 className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/30"
+                onClick={() => {
+                  const checkoutUrl = import.meta.env.VITE_STRIPE_CHECKOUT_URL;
+                  if (checkoutUrl) {
+                    window.open(checkoutUrl, '_blank');
+                  } else {
+                    console.error('Stripe checkout URL not configured. Please set VITE_STRIPE_CHECKOUT_URL environment variable.');
+                  }
+                }}
               >
                 <Zap className="mr-2 w-5 h-5" />
                 Join SmartStart
@@ -475,6 +483,14 @@ export default function SmartStartArchetypes() {
                   <Button
                     size="lg"
                     className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/30"
+                    onClick={() => {
+                      const checkoutUrl = import.meta.env.VITE_STRIPE_CHECKOUT_URL;
+                      if (checkoutUrl) {
+                        window.open(checkoutUrl, '_blank');
+                      } else {
+                        console.error('Stripe checkout URL not configured. Please set VITE_STRIPE_CHECKOUT_URL environment variable.');
+                      }
+                    }}
                   >
                     <Zap className="mr-2 w-5 h-5" />
                     Join SmartStart

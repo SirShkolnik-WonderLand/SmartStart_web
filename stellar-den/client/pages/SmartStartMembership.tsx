@@ -108,7 +108,18 @@ const SmartStartMembership: React.FC = () => {
               Get direct access to Udi Shkolnik and the SmartStart leadership team for strategic guidance and mentorship.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="bg-cyan-600 hover:bg-cyan-700 text-white">
+              <Button 
+                size="lg" 
+                className="bg-cyan-600 hover:bg-cyan-700 text-white"
+                onClick={() => {
+                  const checkoutUrl = import.meta.env.VITE_STRIPE_CHECKOUT_URL;
+                  if (checkoutUrl) {
+                    window.open(checkoutUrl, '_blank');
+                  } else {
+                    console.error('Stripe checkout URL not configured. Please set VITE_STRIPE_CHECKOUT_URL environment variable.');
+                  }
+                }}
+              >
                 <Users className="w-5 h-5 mr-2" />
                 Join the Membership
               </Button>
@@ -337,7 +348,18 @@ const SmartStartMembership: React.FC = () => {
               to expertise, tools, and mentorship that will accelerate your success.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="bg-cyan-600 hover:bg-cyan-700 text-white">
+              <Button 
+                size="lg" 
+                className="bg-cyan-600 hover:bg-cyan-700 text-white"
+                onClick={() => {
+                  const checkoutUrl = import.meta.env.VITE_STRIPE_CHECKOUT_URL;
+                  if (checkoutUrl) {
+                    window.open(checkoutUrl, '_blank');
+                  } else {
+                    console.error('Stripe checkout URL not configured. Please set VITE_STRIPE_CHECKOUT_URL environment variable.');
+                  }
+                }}
+              >
                 <Users className="w-5 h-5 mr-2" />
                 Join the Membership
               </Button>

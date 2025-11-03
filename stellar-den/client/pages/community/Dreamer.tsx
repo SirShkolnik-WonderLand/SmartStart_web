@@ -439,6 +439,14 @@ export default function Dreamer() {
                   <Button
                     size="lg"
                     className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white shadow-lg shadow-pink-500/30"
+                    onClick={() => {
+                      const checkoutUrl = import.meta.env.VITE_STRIPE_CHECKOUT_URL;
+                      if (checkoutUrl) {
+                        window.open(checkoutUrl, '_blank');
+                      } else {
+                        console.error('Stripe checkout URL not configured. Please set VITE_STRIPE_CHECKOUT_URL environment variable.');
+                      }
+                    }}
                   >
                     <Sparkles className="mr-2 w-5 h-5" />
                     Join SmartStart

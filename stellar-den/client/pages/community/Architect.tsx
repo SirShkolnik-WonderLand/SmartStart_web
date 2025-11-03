@@ -439,6 +439,14 @@ export default function Architect() {
                   <Button
                     size="lg"
                     className="bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white shadow-lg shadow-purple-500/30"
+                    onClick={() => {
+                      const checkoutUrl = import.meta.env.VITE_STRIPE_CHECKOUT_URL;
+                      if (checkoutUrl) {
+                        window.open(checkoutUrl, '_blank');
+                      } else {
+                        console.error('Stripe checkout URL not configured. Please set VITE_STRIPE_CHECKOUT_URL environment variable.');
+                      }
+                    }}
                   >
                     <Building2 className="mr-2 w-5 h-5" />
                     Join SmartStart

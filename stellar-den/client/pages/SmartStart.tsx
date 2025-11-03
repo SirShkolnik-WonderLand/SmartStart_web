@@ -82,7 +82,8 @@ const SmartStart: React.FC = () => {
         "Community introduction"
       ],
       buttonText: "Start Trial",
-      popular: false
+      popular: false,
+      checkoutUrl: "#"
     },
     {
       name: "Full Program",
@@ -99,7 +100,8 @@ const SmartStart: React.FC = () => {
         "Pro-bono cybersecurity reviews"
       ],
       buttonText: "Join Now",
-      popular: true
+      popular: true,
+      checkoutUrl: import.meta.env.VITE_STRIPE_CHECKOUT_URL
     }
   ];
 
@@ -129,7 +131,18 @@ const SmartStart: React.FC = () => {
               Access premium tools, build ventures, and grow with like-minded entrepreneurs.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="bg-cyan-600 hover:bg-cyan-700 text-white">
+              <Button 
+                size="lg" 
+                className="bg-cyan-600 hover:bg-cyan-700 text-white"
+                onClick={() => {
+                  const checkoutUrl = import.meta.env.VITE_STRIPE_CHECKOUT_URL;
+                  if (checkoutUrl) {
+                    window.open(checkoutUrl, '_blank');
+                  } else {
+                    console.error('Stripe checkout URL not configured. Please set VITE_STRIPE_CHECKOUT_URL environment variable.');
+                  }
+                }}
+              >
                 <Calendar className="w-5 h-5 mr-2" />
                 Join SmartStart
               </Button>
@@ -357,6 +370,11 @@ const SmartStart: React.FC = () => {
                     <Button 
                       className={`w-full ${plan.popular ? 'bg-cyan-600 hover:bg-cyan-700 text-white' : 'bg-slate-900 hover:bg-slate-800 text-white'}`}
                       size="lg"
+                      onClick={() => {
+                        if (plan.checkoutUrl && plan.checkoutUrl !== "#") {
+                          window.open(plan.checkoutUrl, '_blank');
+                        }
+                      }}
                     >
                       {plan.buttonText}
                     </Button>
@@ -384,7 +402,18 @@ const SmartStart: React.FC = () => {
               Start your journey with SmartStart today.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="bg-cyan-600 hover:bg-cyan-700 text-white">
+              <Button 
+                size="lg" 
+                className="bg-cyan-600 hover:bg-cyan-700 text-white"
+                onClick={() => {
+                  const checkoutUrl = import.meta.env.VITE_STRIPE_CHECKOUT_URL;
+                  if (checkoutUrl) {
+                    window.open(checkoutUrl, '_blank');
+                  } else {
+                    console.error('Stripe checkout URL not configured. Please set VITE_STRIPE_CHECKOUT_URL environment variable.');
+                  }
+                }}
+              >
                 <Calendar className="w-5 h-5 mr-2" />
                 Join SmartStart Today
               </Button>

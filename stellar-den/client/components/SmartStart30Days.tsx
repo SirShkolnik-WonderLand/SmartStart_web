@@ -136,11 +136,16 @@ export default function SmartStart30Days() {
               <Button
                 size="lg"
                 className="shadow-glow-turquoise hover:shadow-glow-plasma transition-all duration-300"
-                asChild
+                onClick={() => {
+                  const checkoutUrl = import.meta.env.VITE_STRIPE_CHECKOUT_URL;
+                  if (checkoutUrl) {
+                    window.open(checkoutUrl, '_blank');
+                  } else {
+                    console.error('Stripe checkout URL not configured. Please set VITE_STRIPE_CHECKOUT_URL environment variable.');
+                  }
+                }}
               >
-                <a href="/smartstart-hub">
-                  Join SmartStart ($98.80/mo)
-                </a>
+                Join SmartStart ($98.80/mo)
               </Button>
             </div>
           </div>

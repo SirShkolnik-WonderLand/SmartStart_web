@@ -439,6 +439,14 @@ export default function Connector() {
                   <Button
                     size="lg"
                     className="bg-gradient-to-r from-teal-500 to-green-500 hover:from-teal-600 hover:to-green-600 text-white shadow-lg shadow-teal-500/30"
+                    onClick={() => {
+                      const checkoutUrl = import.meta.env.VITE_STRIPE_CHECKOUT_URL;
+                      if (checkoutUrl) {
+                        window.open(checkoutUrl, '_blank');
+                      } else {
+                        console.error('Stripe checkout URL not configured. Please set VITE_STRIPE_CHECKOUT_URL environment variable.');
+                      }
+                    }}
                   >
                     <Network className="mr-2 w-5 h-5" />
                     Join SmartStart

@@ -440,6 +440,14 @@ export default function Builder() {
                   <Button
                     size="lg"
                     className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-lg shadow-orange-500/30"
+                    onClick={() => {
+                      const checkoutUrl = import.meta.env.VITE_STRIPE_CHECKOUT_URL;
+                      if (checkoutUrl) {
+                        window.open(checkoutUrl, '_blank');
+                      } else {
+                        console.error('Stripe checkout URL not configured. Please set VITE_STRIPE_CHECKOUT_URL environment variable.');
+                      }
+                    }}
                   >
                     <Rocket className="mr-2 w-5 h-5" />
                     Join SmartStart

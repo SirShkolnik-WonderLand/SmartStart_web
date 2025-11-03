@@ -760,6 +760,14 @@ export default function Community() {
                     <Button
                       size="lg"
                       className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-glow-teal dark:shadow-glow-cyan"
+                      onClick={() => {
+                        const checkoutUrl = import.meta.env.VITE_STRIPE_CHECKOUT_URL;
+                        if (checkoutUrl) {
+                          window.open(checkoutUrl, '_blank');
+                        } else {
+                          console.error('Stripe checkout URL not configured. Please set VITE_STRIPE_CHECKOUT_URL environment variable.');
+                        }
+                      }}
                     >
                       <Users className="mr-2 w-5 h-5" />
                       Join SmartStart Community

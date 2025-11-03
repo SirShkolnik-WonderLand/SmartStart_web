@@ -426,13 +426,20 @@ export default function Resources() {
               Join our community to access exclusive resources, templates, and expert guidance.
             </p>
             <div className="flex gap-4 justify-center flex-wrap">
-              <a
-                href="/smartstart-hub"
+              <button
+                onClick={() => {
+                  const checkoutUrl = import.meta.env.VITE_STRIPE_CHECKOUT_URL;
+                  if (checkoutUrl) {
+                    window.open(checkoutUrl, '_blank');
+                  } else {
+                    console.error('Stripe checkout URL not configured. Please set VITE_STRIPE_CHECKOUT_URL environment variable.');
+                  }
+                }}
                 className="inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg font-medium transition-colors"
               >
                 Join SmartStart Hub
                 <ArrowRight className="w-5 h-5" />
-              </a>
+              </button>
               <a
                 href="/contact"
                 className="inline-flex items-center gap-2 px-6 py-3 bg-card/50 hover:bg-card text-foreground rounded-lg font-medium transition-colors border border-border"
