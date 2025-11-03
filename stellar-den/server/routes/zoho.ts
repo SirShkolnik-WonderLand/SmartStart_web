@@ -155,9 +155,10 @@ router.post('/contact', async (req: Request, res: Response) => {
       referrer: referrer || req.headers.referer || 'Direct',
     };
 
-    // Track lead for analytics
+      // Track lead for analytics
     try {
       const { leadTrackingService } = await import('../services/leadTrackingService.js');
+      const buttonContext = req.body.buttonContext || 'Contact Page';
       await leadTrackingService.trackLead({
         name,
         email,
@@ -170,9 +171,9 @@ router.post('/contact', async (req: Request, res: Response) => {
         timeline,
         companySize,
         industry,
-        howDidYouHear,
+        howDidYouHear: howDidYouHear || buttonContext, // Use button context as source if howDidYouHear not provided
         pageUrl: contactData.pageUrl,
-        referrer: contactData.referrer,
+        referrer: contactData.referrer || buttonContext, // Use button context if no referrer
         userAgent: userAgent,
         timezone: geolocation?.timezone,
       });

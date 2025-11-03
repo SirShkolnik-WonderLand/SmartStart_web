@@ -112,8 +112,20 @@ export async function createServer() {
 
   // Start daily reports cron jobs (only in production or if enabled)
   if (process.env.NODE_ENV === 'production' || process.env.ENABLE_ANALYTICS_CRON === 'true') {
+    console.log('📅 Starting daily reports cron jobs...');
+    console.log('   NODE_ENV:', process.env.NODE_ENV);
+    console.log('   ENABLE_ANALYTICS_CRON:', process.env.ENABLE_ANALYTICS_CRON);
+    console.log('   SMTP_HOST:', process.env.SMTP_HOST || 'smtp.zohocloud.ca');
+    console.log('   SMTP_USER:', process.env.SMTP_USER || 'support@alicesolutionsgroup.com');
+    console.log('   SMTP_PASSWORD:', process.env.SMTP_PASSWORD ? '***SET***' : '***MISSING***');
     const { startDailyReportsCron } = await import('./cron/dailyReports.js');
     startDailyReportsCron();
+    console.log('✅ Daily reports cron jobs started');
+  } else {
+    console.log('⚠️ Daily reports cron jobs NOT started');
+    console.log('   NODE_ENV:', process.env.NODE_ENV);
+    console.log('   ENABLE_ANALYTICS_CRON:', process.env.ENABLE_ANALYTICS_CRON);
+    console.log('   💡 To enable: Set ENABLE_ANALYTICS_CRON=true or NODE_ENV=production');
   }
 
   // Serve static files (CSS, JS, images, etc.) from the built SPA

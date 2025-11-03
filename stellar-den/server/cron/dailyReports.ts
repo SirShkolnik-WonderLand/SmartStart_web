@@ -14,16 +14,22 @@ export function startDailyReportsCron() {
   console.log('📅 Daily Traffic Report scheduled:', trafficCronSchedule);
 
   cron.schedule(trafficCronSchedule, async () => {
-    console.log('📊 Running daily traffic & SEO report...');
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] 📊 Running daily traffic & SEO report...`);
     try {
       const result = await enhancedAnalyticsEmailService.sendDailyTrafficReport();
       if (result.success) {
-        console.log('✅ Daily traffic report sent successfully');
+        console.log(`[${timestamp}] ✅ Daily traffic report sent successfully`);
       } else {
-        console.error('❌ Failed to send daily traffic report:', result.error);
+        console.error(`[${timestamp}] ❌ Failed to send daily traffic report:`, result.error);
+        console.error('   Check SMTP configuration and Analytics Hub API');
       }
     } catch (error) {
-      console.error('❌ Daily traffic report cron error:', error);
+      console.error(`[${timestamp}] ❌ Daily traffic report cron error:`, error);
+      if (error instanceof Error) {
+        console.error('   Error details:', error.message);
+        console.error('   Stack:', error.stack);
+      }
     }
   });
 
@@ -33,16 +39,22 @@ export function startDailyReportsCron() {
   console.log('📅 Daily Lead Report scheduled:', leadCronSchedule);
 
   cron.schedule(leadCronSchedule, async () => {
-    console.log('💼 Running daily lead generation report...');
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] 💼 Running daily lead generation report...`);
     try {
       const result = await leadGenerationReportService.sendDailyLeadReport();
       if (result.success) {
-        console.log('✅ Daily lead report sent successfully');
+        console.log(`[${timestamp}] ✅ Daily lead report sent successfully`);
       } else {
-        console.error('❌ Failed to send daily lead report:', result.error);
+        console.error(`[${timestamp}] ❌ Failed to send daily lead report:`, result.error);
+        console.error('   Check SMTP configuration and lead data storage');
       }
     } catch (error) {
-      console.error('❌ Daily lead report cron error:', error);
+      console.error(`[${timestamp}] ❌ Daily lead report cron error:`, error);
+      if (error instanceof Error) {
+        console.error('   Error details:', error.message);
+        console.error('   Stack:', error.stack);
+      }
     }
   });
 

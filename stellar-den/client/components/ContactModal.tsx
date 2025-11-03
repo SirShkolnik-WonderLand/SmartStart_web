@@ -41,7 +41,8 @@ export default function ContactModal({ isOpen, onClose, prefillService = "", pre
   const [leadSource, setLeadSource] = useState({
     pageUrl: "",
     referrer: "",
-    timestamp: ""
+    timestamp: "",
+    buttonContext: "" // Track which button/component opened the modal
   });
   
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -51,10 +52,27 @@ export default function ContactModal({ isOpen, onClose, prefillService = "", pre
   useEffect(() => {
     if (isOpen) {
       captureLeadSource().then(data => {
+        // Determine button context from prefillService
+        let buttonContext = "Contact Page";
+        if (prefillService) {
+          if (prefillService.includes("SmartStart") || prefillService.includes("Hub")) {
+            buttonContext = `Learn More: ${prefillService}`;
+          } else if (prefillService.includes("ISO Studio")) {
+            buttonContext = `Learn More: ISO Studio`;
+          } else if (prefillService.includes("Community Events")) {
+            buttonContext = `Learn More: Event`;
+          } else if (prefillService.includes("Service") || prefillService.includes("Cybersecurity") || prefillService.includes("Automation")) {
+            buttonContext = `Learn More: Service - ${prefillService}`;
+          } else {
+            buttonContext = `Learn More: ${prefillService}`;
+          }
+        }
+        
         setLeadSource({
           pageUrl: data.pageUrl,
           referrer: data.referrer,
-          timestamp: data.timestamp
+          timestamp: data.timestamp,
+          buttonContext: buttonContext
         });
       });
       // Update form data when prefill props change
@@ -107,6 +125,7 @@ export default function ContactModal({ isOpen, onClose, prefillService = "", pre
         body: JSON.stringify({
           ...formData,
           ...leadSource,
+          buttonContext: leadSource.buttonContext, // Explicitly include button context
         }),
       });
 
