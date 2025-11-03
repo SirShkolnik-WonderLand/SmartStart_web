@@ -1,13 +1,20 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { Helmet } from 'react-helmet';
 import { Bot, Zap, Target, Shield, CheckCircle, ArrowRight, Phone, Download, Eye, Cpu, Workflow, Brain } from 'lucide-react';
-import Header from '@/components/Header';
+import Sidebar from '@/components/Sidebar';
 import Footer from '@/components/Footer';
+import { useSidebar } from '@/contexts/SidebarContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import StructuredData from '@/components/StructuredData';
 
 const AutomationAI: React.FC = () => {
+  const { isCollapsed } = useSidebar();
+  const pageUrl = 'https://alicesolutionsgroup.com/automation-ai';
+  const pageTitle = 'Automation & AI Services Toronto | Business Process Automation | AliceSolutionsGroup';
+  const pageDescription = 'AI-powered automation services for Toronto businesses. RPA, workflow automation, privacy-preserving AI, and custom automation kits. Serving GTA and Ontario. Privacy-compliant AI solutions.';
   const services = [
     {
       icon: Bot,
@@ -102,12 +109,111 @@ const AutomationAI: React.FC = () => {
     }
   ];
 
+  // Automation & AI Service Schema
+  const automationAIServiceSchema = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "serviceType": "Automation & AI",
+    "name": "Automation & AI Services",
+    "description": "AI-powered automation services for Toronto businesses including RPA, workflow automation, and privacy-preserving AI",
+    "provider": {
+      "@type": "Organization",
+      "name": "AliceSolutionsGroup",
+      "alternateName": "AliceSolutionsGroup Toronto"
+    },
+    "areaServed": {
+      "@type": "City",
+      "name": "Toronto"
+    },
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "Automation & AI Services",
+      "itemListElement": [
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "RPA & Workflow Automation"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Privacy-Preserving AI"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Decision Support Copilots"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Custom Automation Kits"
+          }
+        }
+      ]
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-cyan-50 dark:from-slate-950 dark:via-slate-900 dark:to-cyan-950">
-      <Header />
-      
+    <>
+      <Helmet>
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDescription} />
+        <meta name="keywords" content="automation services Toronto, RPA Toronto, AI consulting GTA, business process automation Ontario, workflow automation Canada, privacy-preserving AI Toronto, automation consulting GTA" />
+        <meta name="author" content="AliceSolutionsGroup" />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href={pageUrl} />
+        
+        {/* Open Graph */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={pageUrl} />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={pageDescription} />
+        <meta property="og:image" content="https://alicesolutionsgroup.com/logos/AliceSolutionsGroup-logo-compact.svg" />
+        <meta property="og:site_name" content="AliceSolutionsGroup" />
+        <meta property="og:locale" content="en_CA" />
+        
+        {/* Twitter */}
+        <meta property="twitter:card" content="summary_large_image" />
+        <meta property="twitter:url" content={pageUrl} />
+        <meta property="twitter:title" content={pageTitle} />
+        <meta property="twitter:description" content={pageDescription} />
+        <meta property="twitter:image" content="https://alicesolutionsgroup.com/logos/AliceSolutionsGroup-logo-compact.svg" />
+        
+        {/* Geographic */}
+        <meta name="geo.region" content="CA-ON" />
+        <meta name="geo.placename" content="Toronto" />
+        <meta name="geo.position" content="43.6532;-79.3832" />
+        <meta name="ICBM" content="43.6532, -79.3832" />
+        
+        {/* Structured Data */}
+        <script type="application/ld+json">
+          {JSON.stringify(automationAIServiceSchema)}
+        </script>
+      </Helmet>
+      <StructuredData 
+        type="page"
+        title={pageTitle}
+        description={pageDescription}
+        url={pageUrl}
+        breadcrumbs={[
+          { name: "Home", url: "/" },
+          { name: "Services", url: "/services" },
+          { name: "Automation & AI", url: "/automation-ai" }
+        ]}
+      />
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-cyan-50 dark:from-slate-950 dark:via-slate-900 dark:to-cyan-950">
+      <Sidebar />
+      <div className={`transition-all duration-300 ${isCollapsed ? 'md:ml-20' : 'md:ml-72'} md:pt-0 pt-20`}>
       {/* Hero Section */}
-      <section className="relative pt-24 pb-16 px-4 sm:px-6 lg:px-8">
+      <section className="relative pt-8 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -363,7 +469,9 @@ const AutomationAI: React.FC = () => {
       </section>
 
       <Footer />
+      </div>
     </div>
+    </>
   );
 };
 

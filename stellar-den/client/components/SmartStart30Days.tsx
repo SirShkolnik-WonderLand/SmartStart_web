@@ -145,7 +145,7 @@ export default function SmartStart30Days() {
                   }
                 }}
               >
-                Join SmartStart ($98.80/mo)
+                Join SmartStart ($99.80/mo)
               </Button>
             </div>
           </div>

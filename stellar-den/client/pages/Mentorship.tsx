@@ -1,33 +1,20 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Users, Target, CheckCircle, ArrowRight, Phone, Eye, Calendar, Award, Shield, Zap, Building2 } from 'lucide-react';
-import Header from '@/components/Header';
+import { GraduationCap, Target, CheckCircle, ArrowRight, Phone, Eye, Calendar, Award, Shield, Zap, Building2, UserCircle } from 'lucide-react';
+import Sidebar from '@/components/Sidebar';
 import Footer from '@/components/Footer';
+import { useSidebar } from '@/contexts/SidebarContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
 const Mentorship: React.FC = () => {
+  const { isCollapsed } = useSidebar();
   const mentors = [
     {
       name: "Udi Shkolnik",
       expertise: "Cybersecurity, ISO, AI ops",
       description: "CISSP, CISM, ISO Lead Auditor with 15+ years of experience in cybersecurity and compliance."
-    },
-    {
-      name: "Jun",
-      expertise: "Business + partnerships",
-      description: "Business development expert with extensive experience in partnerships and strategic growth."
-    },
-    {
-      name: "Kevin",
-      expertise: "Marketing",
-      description: "Marketing specialist with proven track record in digital marketing and brand development."
-    },
-    {
-      name: "Brian",
-      expertise: "Automation + CRM",
-      description: "Automation expert specializing in CRM systems and business process optimization."
     }
   ];
 
@@ -67,10 +54,10 @@ const Mentorship: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-cyan-50 dark:from-slate-950 dark:via-slate-900 dark:to-cyan-950">
-      <Header />
-      
+      <Sidebar />
+      <div className={`transition-all duration-300 ${isCollapsed ? 'md:ml-20' : 'md:ml-72'} md:pt-0 pt-20`}>
       {/* Hero Section */}
-      <section className="relative pt-24 pb-16 px-4 sm:px-6 lg:px-8">
+      <section className="relative pt-8 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -79,7 +66,7 @@ const Mentorship: React.FC = () => {
             className="text-center mb-16"
           >
             <Badge className="mb-4 bg-cyan-100 text-cyan-800 dark:bg-cyan-900 dark:text-cyan-200">
-              <Users className="w-4 h-4 mr-2" />
+              <GraduationCap className="w-4 h-4 mr-2" />
               Mentorship
             </Badge>
             <h1 className="text-4xl md:text-6xl font-bold text-slate-900 dark:text-white mb-6">
@@ -92,7 +79,7 @@ const Mentorship: React.FC = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" className="bg-cyan-600 hover:bg-cyan-700 text-white">
-                <Users className="w-5 h-5 mr-2" />
+                <GraduationCap className="w-5 h-5 mr-2" />
                 Find a Mentor
               </Button>
               <Button size="lg" variant="outline" className="border-cyan-600 text-cyan-600 hover:bg-cyan-50 dark:hover:bg-cyan-950">
@@ -132,7 +119,7 @@ const Mentorship: React.FC = () => {
                 <Card className="h-full bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-slate-200 dark:border-slate-700 hover:shadow-lg transition-all duration-300">
                   <CardContent className="p-6">
                     <div className="w-16 h-16 bg-cyan-100 dark:bg-cyan-900 rounded-full flex items-center justify-center mb-4 mx-auto">
-                      <Users className="w-8 h-8 text-cyan-600 dark:text-cyan-400" />
+                      <GraduationCap className="w-8 h-8 text-cyan-600 dark:text-cyan-400" />
                     </div>
                     <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2 text-center">
                       {mentor.name}
@@ -251,7 +238,7 @@ const Mentorship: React.FC = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" className="bg-cyan-600 hover:bg-cyan-700 text-white">
-                <Users className="w-5 h-5 mr-2" />
+                <GraduationCap className="w-5 h-5 mr-2" />
                 Find a Mentor
               </Button>
               <Button size="lg" variant="outline" className="border-slate-300 dark:border-slate-600">
@@ -264,6 +251,7 @@ const Mentorship: React.FC = () => {
       </section>
 
       <Footer />
+      </div>
     </div>
   );
 };

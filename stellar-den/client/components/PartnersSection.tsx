@@ -59,7 +59,7 @@ export default function PartnersSection() {
 
           {/* Animated accent */}
           <div className="text-center text-sm text-muted-foreground opacity-60">
-            + 50+ companies building with us
+            + 500+ companies building with us
           </div>
         </div>
 

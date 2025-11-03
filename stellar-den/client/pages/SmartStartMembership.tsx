@@ -1,48 +1,50 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Users, Target, Shield, CheckCircle, ArrowRight, Phone, Calendar, Award, Building2, Zap, Lock, FileText } from 'lucide-react';
-import Header from '@/components/Header';
+import { Users, Target, Shield, CheckCircle, Calendar, Award, Building2, Zap } from 'lucide-react';
+import Sidebar from '@/components/Sidebar';
 import Footer from '@/components/Footer';
+import { useSidebar } from '@/contexts/SidebarContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
 const SmartStartMembership: React.FC = () => {
+  const { isCollapsed } = useSidebar();
   const membershipBenefits = [
     {
       icon: Users,
       title: "Monthly Strategy Reviews",
-      description: "Direct access to Udi and the SmartStart leadership team for strategic guidance and mentorship."
+      description: "Private sessions with Udi and the SmartStart leadership team. Work through roadmaps, product direction, and growth bottlenecks together."
     },
     {
       icon: Shield,
-      title: "ISO Templates & Modules",
-      description: "Access to pre-audited templates, compliance modules, and DevOps pipelines for faster development."
+      title: "ISO & Compliance Frameworks",
+      description: "Access to real, field-tested templates and automation tools used inside SmartStart ventures. Save months of setup time and learn how to build compliance by design."
     },
     {
       icon: Building2,
-      title: "Private Community Access",
-      description: "Exclusive access to the SmartStart builder community and early access to venture tools."
+      title: "Private Community",
+      description: "Join a small, trusted circle of builders — founders, CTOs, designers, and advisors who share resources and experience."
     },
     {
       icon: Zap,
-      title: "Early Tool Access",
-      description: "Be the first to test and provide feedback on new SmartStart platform features and tools."
+      title: "Early Access to Tools",
+      description: "Get first access to new SmartStart Platform features and internal tools before public release."
     }
   ];
 
   const idealFor = [
     {
       title: "SaaS Founders",
-      description: "Launching automation tools or software-as-a-service platforms with security-first architecture."
+      description: "Building automation tools, secure platforms, or scalable ecosystems and looking for strategic alignment and clarity."
     },
     {
-      title: "ISO Consultants",
-      description: "Building client dashboards and compliance tools with proven templates and frameworks."
+      title: "ISO & Security Professionals",
+      description: "Developing compliance frameworks or client dashboards and seeking mentorship from a practicing CISO and ISO lead auditor."
     },
     {
-      title: "Developers",
-      description: "Seeking structured mentorship and access to enterprise-grade development tools and practices."
+      title: "Developers & Builders",
+      description: "Looking to level up execution, structure their projects properly, and connect with a team that builds real products — not theory."
     }
   ];
 
@@ -50,11 +52,11 @@ const SmartStartMembership: React.FC = () => {
     {
       name: "Builder",
       price: "Monthly",
-      description: "Perfect for individual developers and small teams",
+      description: "For individuals and small teams beginning their growth journey",
       features: [
         "Monthly strategy reviews",
         "Access to ISO templates",
-        "Community access",
+        "Private community access",
         "Early tool access"
       ],
       cta: "Start Building"
@@ -62,32 +64,24 @@ const SmartStartMembership: React.FC = () => {
     {
       name: "Venture",
       price: "Custom",
-      description: "For established teams and growing ventures",
+      description: "For established ventures or teams seeking deeper alignment",
       features: [
         "Weekly strategy sessions",
-        "Custom ISO templates",
-        "Priority community access",
+        "Custom ISO frameworks",
+        "Priority community engagement",
         "Advanced tool access",
-        "Direct mentorship"
+        "Direct mentorship with leadership"
       ],
       cta: "Contact Us"
     }
   ];
 
-  const testimonials = [
-    {
-      quote: "We don't talk about building — we build, measure, and improve.",
-      author: "Udi Shkolnik",
-      role: "Founder & CISO, SmartStart"
-    }
-  ];
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-cyan-50 dark:from-slate-950 dark:via-slate-900 dark:to-cyan-950">
-      <Header />
-      
+      <Sidebar />
+      <div className={`transition-all duration-300 ${isCollapsed ? 'md:ml-20' : 'md:ml-72'} md:pt-0 pt-20`}>
       {/* Hero Section */}
-      <section className="relative pt-24 pb-16 px-4 sm:px-6 lg:px-8">
+      <section className="relative pt-8 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -100,12 +94,13 @@ const SmartStartMembership: React.FC = () => {
               SmartStart Membership
             </Badge>
             <h1 className="text-4xl md:text-6xl font-bold text-slate-900 dark:text-white mb-6">
-              Selective Builder
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-blue-600"> Program</span>
+              A Selective Builder Program for Visionaries Who Execute
             </h1>
-            <p className="text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto mb-8">
-              Join a selective community of builders, founders, and developers. 
-              Get direct access to Udi Shkolnik and the SmartStart leadership team for strategic guidance and mentorship.
+            <p className="text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto mb-4">
+              Join a focused circle of founders, builders, and innovators who turn ideas into measurable progress.
+            </p>
+            <p className="text-lg text-slate-600 dark:text-slate-300 max-w-3xl mx-auto mb-8">
+              SmartStart Membership connects you directly with <strong>Udi Shkolnik</strong> and the SmartStart leadership team — for strategic guidance, honest feedback, and shared growth.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button 
@@ -132,6 +127,31 @@ const SmartStartMembership: React.FC = () => {
         </div>
       </section>
 
+      {/* About the Program Section */}
+      <section className="py-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-8"
+          >
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-6">
+              Not Another Program — A Shared Way of Building
+            </h2>
+            <p className="text-lg text-slate-600 dark:text-slate-300 mb-4">
+              SmartStart Membership is a collaborative space where strategy meets execution.
+            </p>
+            <p className="text-lg text-slate-600 dark:text-slate-300 mb-4">
+              It's built for people who believe that success comes from clarity, discipline, and constant iteration — not hype.
+            </p>
+            <p className="text-lg text-slate-600 dark:text-slate-300">
+              Members work directly with the leadership team to refine direction, strengthen business foundations, and align technology, compliance, and execution under one vision.
+            </p>
+          </motion.div>
+        </div>
+      </section>
+
       {/* Benefits Grid */}
       <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto">
@@ -142,11 +162,8 @@ const SmartStartMembership: React.FC = () => {
             className="text-center mb-16"
           >
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">
-              Membership Benefits
+              Exclusive Access to Knowledge, Tools, and Mentorship
             </h2>
-            <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
-              Exclusive access to expertise, tools, and community
-            </p>
           </motion.div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -186,11 +203,8 @@ const SmartStartMembership: React.FC = () => {
             className="text-center mb-16"
           >
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">
-              Ideal For
+              Who This Is For
             </h2>
-            <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
-              SmartStart Membership is designed for specific types of builders and entrepreneurs
-            </p>
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-8">
@@ -230,11 +244,8 @@ const SmartStartMembership: React.FC = () => {
             className="text-center mb-16"
           >
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">
-              Membership Tiers
+              Choose the Level That Fits Your Journey
             </h2>
-            <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
-              Choose the membership level that fits your needs and goals
-            </p>
           </motion.div>
 
           <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
@@ -279,8 +290,8 @@ const SmartStartMembership: React.FC = () => {
         </div>
       </section>
 
-      {/* Testimonials Section */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8">
+      {/* Philosophy Section */}
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -288,46 +299,57 @@ const SmartStartMembership: React.FC = () => {
             transition={{ duration: 0.6 }}
             className="text-center mb-16"
           >
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">
-              Philosophy
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-8">
+              Our Way of Building
             </h2>
-            <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
-              Our approach to building and mentorship
-            </p>
           </motion.div>
 
           <div className="max-w-4xl mx-auto">
-            {testimonials.map((testimonial, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-              >
-                <Card className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-slate-200 dark:border-slate-700">
-                  <CardContent className="p-8">
-                    <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 bg-cyan-100 dark:bg-cyan-900 rounded-full flex items-center justify-center flex-shrink-0">
-                        <Award className="w-6 h-6 text-cyan-600 dark:text-cyan-400" />
-                      </div>
-                      <div>
-                        <blockquote className="text-lg text-slate-700 dark:text-slate-300 mb-4 italic">
-                          "{testimonial.quote}"
-                        </blockquote>
-                        <div className="text-sm">
-                          <div className="font-semibold text-slate-900 dark:text-white">
-                            {testimonial.author}
-                          </div>
-                          <div className="text-slate-600 dark:text-slate-400">
-                            {testimonial.role}
-                          </div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              <Card className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-slate-200 dark:border-slate-700 mb-8">
+                <CardContent className="p-8">
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 bg-cyan-100 dark:bg-cyan-900 rounded-full flex items-center justify-center flex-shrink-0">
+                      <Award className="w-6 h-6 text-cyan-600 dark:text-cyan-400" />
+                    </div>
+                    <div>
+                      <blockquote className="text-xl text-slate-700 dark:text-slate-300 mb-4 italic">
+                        "We don't talk about building — we build, measure, and improve."
+                      </blockquote>
+                      <div className="text-sm">
+                        <div className="font-semibold text-slate-900 dark:text-white">
+                          — Udi Shkolnik
+                        </div>
+                        <div className="text-slate-600 dark:text-slate-400">
+                          Founder & CISO, SmartStart
                         </div>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="text-center"
+            >
+              <p className="text-lg text-slate-600 dark:text-slate-300 mb-4">
+                SmartStart Membership is grounded in a single idea: <strong>clarity creates momentum</strong>.
+              </p>
+              <p className="text-lg text-slate-600 dark:text-slate-300 mb-4">
+                Every plan, product, and venture improves through truth, iteration, and discipline.
+              </p>
+              <p className="text-lg text-slate-600 dark:text-slate-300">
+                We move forward together — one version better each time.
+              </p>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -344,8 +366,7 @@ const SmartStartMembership: React.FC = () => {
               Ready to Join SmartStart Membership?
             </h2>
             <p className="text-lg text-slate-600 dark:text-slate-300 mb-8">
-              Become part of a selective community of builders and get direct access 
-              to expertise, tools, and mentorship that will accelerate your success.
+              If you want to build with purpose, think strategically, and execute with accountability, you belong here. Join a selective circle of people who believe that excellence is built — not spoken.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button 
@@ -373,6 +394,7 @@ const SmartStartMembership: React.FC = () => {
       </section>
 
       <Footer />
+      </div>
     </div>
   );
 };

@@ -14,12 +14,12 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer className="relative border-t border-border bg-background/50 backdrop-blur-glass">
+    <footer className="relative border-t border-border bg-background/50 backdrop-blur-glass" itemScope itemType="https://schema.org/WPFooter">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
           {/* Brand Section */}
-          <div className="space-y-4">
+          <div className="space-y-4" itemScope itemType="https://schema.org/Organization">
             <div className="flex items-center gap-3">
               <div className="relative w-10 h-10 flex items-center justify-center">
                 <span className="text-2xl transition-all duration-300" style={{
@@ -28,11 +28,15 @@ export default function Footer() {
                   🦉
                 </span>
               </div>
-              <h3 className="font-semibold text-lg">AliceSolutionsGroup</h3>
+              <h3 className="font-semibold text-lg" itemProp="name">AliceSolutionsGroup</h3>
             </div>
-            <p className="text-sm text-muted-foreground leading-relaxed">
+            <p className="text-sm text-muted-foreground leading-relaxed" itemProp="description">
               Help people and businesses grow differently.
             </p>
+            <meta itemProp="address" itemScope itemType="https://schema.org/PostalAddress" />
+            <meta itemProp="addressLocality" content="Toronto" />
+            <meta itemProp="addressRegion" content="ON" />
+            <meta itemProp="addressCountry" content="CA" />
           </div>
 
           {/* Product Links */}
@@ -40,7 +44,7 @@ export default function Footer() {
             <h4 className="font-semibold mb-4">Ventures</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
-                <a href="#" className="hover:text-primary transition-colors">
+                <a href="/smartstart" className="hover:text-primary transition-colors" rel="bookmark">
                   SmartStart
                 </a>
               </li>
@@ -55,7 +59,7 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-primary transition-colors">
+                <a href="/ciso-as-service" className="hover:text-primary transition-colors">
                   CISO-as-a-Service
                 </a>
               </li>
@@ -67,7 +71,7 @@ export default function Footer() {
             <h4 className="font-semibold mb-4">Company</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
-                <a href="#" className="hover:text-primary transition-colors">
+                <a href="/about" className="hover:text-primary transition-colors">
                   About
                 </a>
               </li>
@@ -82,7 +86,7 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-primary transition-colors">
+                <a href="/contact" className="hover:text-primary transition-colors">
                   Contact
                 </a>
               </li>
@@ -148,23 +152,25 @@ export default function Footer() {
           <div className="text-sm text-muted-foreground">
             <p>© 2024 AliceSolutionsGroup. All rights reserved.</p>
             <p>Building the future of automation, privacy, and human-centric design.</p>
+            <p className="mt-2 text-xs">Toronto, Ontario, Canada | Serving GTA & Beyond</p>
           </div>
 
           {/* Social Links */}
           <div className="flex items-center gap-4">
             <a
-              href="https://linkedin.com"
+              href="https://linkedin.com/company/alicesolutionsgroup"
               target="_blank"
-              rel="noopener noreferrer"
+              rel="noopener noreferrer nofollow"
               className="p-3 rounded-lg border border-white/10 hover:border-primary hover:bg-primary/10 transition-all duration-300 text-muted-foreground hover:text-primary"
               aria-label="LinkedIn"
+              itemProp="sameAs"
             >
               <Linkedin className="h-5 w-5" />
             </a>
             <a
               href="https://github.com"
               target="_blank"
-              rel="noopener noreferrer"
+              rel="noopener noreferrer nofollow"
               className="p-3 rounded-lg border border-white/10 hover:border-primary hover:bg-primary/10 transition-all duration-300 text-muted-foreground hover:text-primary"
               aria-label="GitHub"
             >
@@ -173,7 +179,7 @@ export default function Footer() {
             <a
               href="https://twitter.com"
               target="_blank"
-              rel="noopener noreferrer"
+              rel="noopener noreferrer nofollow"
               className="p-3 rounded-lg border border-white/10 hover:border-primary hover:bg-primary/10 transition-all duration-300 text-muted-foreground hover:text-primary"
               aria-label="Twitter/X"
             >

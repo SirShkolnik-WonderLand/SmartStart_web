@@ -9,7 +9,7 @@ export default function FAQSection() {
   const faqs = [
     {
       question: "What's included in the SmartStart membership?",
-      answer: "Your $98.80/month membership includes: Zoho enterprise suite (CRM, Projects, Books, Mail, Cliq), Acronis security & backup, mentorship from Udi Shkolnik and peers, frameworks for funding and ISO compliance, and secure data handling (GDPR + PIPEDA aligned)."
+      answer: "Your $99.80/month membership includes: Zoho enterprise suite (CRM, Projects, Books, Mail, Cliq), Acronis security & backup, mentorship from Udi Shkolnik and peers, frameworks for funding and ISO compliance, and secure data handling (GDPR + PIPEDA aligned)."
     },
     {
       question: "Who is SmartStart for?",
@@ -17,11 +17,11 @@ export default function FAQSection() {
     },
     {
       question: "How is WonderLand different from SmartStart?",
-      answer: "WonderLand is our community where you can attend events, network, and explore ideas. SmartStart ($98.80/month) gives you access to enterprise tools, mentorship, and security. WonderLand is the playground where ideas are born. SmartStart is the lab where those ideas become real."
+      answer: "WonderLand is our community where you can attend events, network, and explore ideas. SmartStart ($99.80/month) gives you access to enterprise tools, mentorship, and security. WonderLand is the playground where ideas are born. SmartStart is the lab where those ideas become real."
     },
     {
       question: "What's the billing and cancellation policy?",
-      answer: "SmartStart is $98.80 CAD/month + tax. You can cancel anytime with no long-term commitment. Billing is handled through Zoho Subscriptions. You'll be charged monthly on the same date you first subscribed."
+      answer: "SmartStart is $99.80 CAD/month + tax. You can cancel anytime with no long-term commitment. Billing is handled through Zoho Subscriptions. You'll be charged monthly on the same date you first subscribed."
     },
     {
       question: "Do I need to commit long-term?",

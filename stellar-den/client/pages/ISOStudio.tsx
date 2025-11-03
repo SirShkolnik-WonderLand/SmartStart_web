@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Header from "@/components/Header";
+import Sidebar from "@/components/Sidebar";
+import { useSidebar } from "@/contexts/SidebarContext";
 import WelcomeScreen from "@/components/iso-studio/WelcomeScreen";
 import QuickBotMode from "@/components/iso-studio/QuickBotMode";
 import DownloadChecklist from "@/components/iso-studio/DownloadChecklist";
@@ -11,6 +12,7 @@ import { ArrowLeft } from "lucide-react";
 type JourneyType = "welcome" | "full" | "bot" | "checklist";
 
 export default function ISOStudio() {
+  const { isCollapsed } = useSidebar();
   const [currentJourney, setCurrentJourney] = useState<JourneyType>("welcome");
 
   const handleSelectJourney = (journey: "full" | "bot" | "checklist") => {
@@ -23,7 +25,8 @@ export default function ISOStudio() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      <Sidebar />
+      <div className={`transition-all duration-300 ${isCollapsed ? 'md:ml-20' : 'md:ml-72'} md:pt-0 pt-20`}>
       
       {/* Back Button */}
       <AnimatePresence>
@@ -93,6 +96,7 @@ export default function ISOStudio() {
           </motion.div>
         )}
       </AnimatePresence>
+      </div>
     </div>
   );
 }

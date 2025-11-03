@@ -1,0 +1,46 @@
+# SPA Routes Map (React Router)
+
+- `/` → `pages/Index.tsx`
+- `/about` → `pages/About.tsx`
+- `/services` → `pages/Services.tsx`
+- `/contact` → `pages/Contact.tsx`
+- `/vision` → `pages/Vision.tsx`
+- `/smartstart-hub` → `pages/SmartStartHub.tsx`
+- `/smartstart` → `pages/SmartStart.tsx`
+- `/smartstart-platform` → `pages/SmartStartPlatform.tsx`
+- `/smartstart-membership` → `pages/SmartStartMembership.tsx`
+- `/smartstart-enterprise-tools` → `pages/SmartStartEnterpriseTools.tsx`
+- `/smartstart-venture-building` → `pages/SmartStartVentureBuilding.tsx`
+- `/smartstart/archetypes` → `pages/SmartStartArchetypes.tsx`
+- `/community` → `pages/Community.tsx`
+- `/community-hub` → `pages/CommunityHub.tsx`
+- `/community-events` → `pages/CommunityEvents.tsx`
+- `/beer-security` → `pages/BeerSecurity.tsx`
+- `/launch-learn` → `pages/LaunchLearn.tsx`
+- `/mentorship` → `pages/Mentorship.tsx`
+- `/community/builder` → `pages/community/Builder.tsx`
+- `/community/connector` → `pages/community/Connector.tsx`
+- `/community/architect` → `pages/community/Architect.tsx`
+- `/community/dreamer` → `pages/community/Dreamer.tsx`
+- `/resources` → `pages/Resources.tsx`
+- `/iso-studio` → `pages/ISOStudio.tsx`
+- `/ciso-as-service` → `pages/CISOasService.tsx`
+- `/iso-27001` → `pages/ISO27001.tsx`
+- `/soc-2` → `pages/SOC2.tsx`
+- `/bi-analytics` → `pages/BIAnalytics.tsx`
+- `/automation-ai` → `pages/AutomationAI.tsx`
+- `/privacy-compliance` → `pages/PrivacyCompliance.tsx`
+- `/legal/privacy-policy` → `pages/legal/PrivacyPolicy.tsx`
+- `/legal/terms-of-service` → `pages/legal/TermsOfService.tsx`
+- `/legal/cookie-policy` → `pages/legal/CookiePolicy.tsx`
+- `/legal/accessibility` → `pages/legal/Accessibility.tsx`
+- `/unsubscribe` → `pages/Unsubscribe.tsx`
+- `/data-deletion` → `pages/DataDeletionRequest.tsx`
+- `/simple-test` → `pages/SimpleTest.tsx`
+- `/callback` → `pages/ZohoCallback.tsx`
+- `*` → `pages/NotFound.tsx`
+
+Notes
+- Router defined in `client/App.tsx` using React Router `<Routes>`.
+- CSS theme lives in `client/global.css` + Tailwind (`tailwind.config.ts`).
+- All buttons use `VITE_STRIPE_CHECKOUT_URL` for subscription checkout.

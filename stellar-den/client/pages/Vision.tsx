@@ -1,10 +1,17 @@
 import { motion } from "framer-motion";
+import { Helmet } from "react-helmet";
 import { useInView } from "@/hooks/useInView";
-import Header from "@/components/Header";
+import Sidebar from "@/components/Sidebar";
 import Footer from "@/components/Footer";
+import { useSidebar } from "@/contexts/SidebarContext";
+import StructuredData from "@/components/StructuredData";
 import { Sparkles, Users, Target, Rocket, Shield, Zap } from "lucide-react";
 
 export default function Vision() {
+  const { isCollapsed } = useSidebar();
+  const pageUrl = 'https://alicesolutionsgroup.com/vision';
+  const pageTitle = 'Our Vision - Building Ecosystems Not Companies | AliceSolutionsGroup Toronto';
+  const pageDescription = 'AliceSolutionsGroup vision: Building ecosystems, not companies. Privacy-first cybersecurity, automation, and venture building. Serving Toronto and GTA with human-centric design.';
   const { ref: heroRef, isInView: heroInView } = useInView();
   const { ref: manifestoRef, isInView: manifestoInView } = useInView();
   const { ref: ecosystemRef, isInView: ecosystemInView } = useInView();
@@ -81,10 +88,70 @@ export default function Vision() {
     },
   ];
 
-  return (
-    <div className="min-h-screen bg-background">
-      <Header />
+  // Vision Page Schema
+  const visionPageSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "AliceSolutionsGroup Vision",
+    "description": "Building ecosystems, not companies. Privacy-first cybersecurity and venture building.",
+    "url": pageUrl,
+    "mainEntity": {
+      "@type": "Organization",
+      "name": "AliceSolutionsGroup",
+      "alternateName": "AliceSolutionsGroup Toronto"
+    }
+  };
 
+  return (
+    <>
+      <Helmet>
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDescription} />
+        <meta name="keywords" content="AliceSolutionsGroup vision, cybersecurity Toronto, venture building GTA, privacy-first design, ecosystem building Toronto, human-centric design Ontario" />
+        <meta name="author" content="AliceSolutionsGroup" />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href={pageUrl} />
+        
+        {/* Open Graph */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={pageUrl} />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={pageDescription} />
+        <meta property="og:image" content="https://alicesolutionsgroup.com/logos/AliceSolutionsGroup-logo-compact.svg" />
+        <meta property="og:site_name" content="AliceSolutionsGroup" />
+        <meta property="og:locale" content="en_CA" />
+        
+        {/* Twitter */}
+        <meta property="twitter:card" content="summary_large_image" />
+        <meta property="twitter:url" content={pageUrl} />
+        <meta property="twitter:title" content={pageTitle} />
+        <meta property="twitter:description" content={pageDescription} />
+        <meta property="twitter:image" content="https://alicesolutionsgroup.com/logos/AliceSolutionsGroup-logo-compact.svg" />
+        
+        {/* Geographic */}
+        <meta name="geo.region" content="CA-ON" />
+        <meta name="geo.placename" content="Toronto" />
+        <meta name="geo.position" content="43.6532;-79.3832" />
+        <meta name="ICBM" content="43.6532, -79.3832" />
+        
+        {/* Structured Data */}
+        <script type="application/ld+json">
+          {JSON.stringify(visionPageSchema)}
+        </script>
+      </Helmet>
+      <StructuredData 
+        type="page"
+        title={pageTitle}
+        description={pageDescription}
+        url={pageUrl}
+        breadcrumbs={[
+          { name: "Home", url: "/" },
+          { name: "Vision", url: "/vision" }
+        ]}
+      />
+      <div className="min-h-screen bg-background">
+      <Sidebar />
+      <div className={`transition-all duration-300 ${isCollapsed ? 'md:ml-20' : 'md:ml-72'} md:pt-0 pt-20`}>
       {/* Hero Section */}
       <section
         ref={heroRef}
@@ -298,17 +365,22 @@ export default function Vision() {
               15+ Years Experience
             </span>
             <span className="px-4 py-2 rounded-lg bg-primary/10 text-primary font-medium">
-              50+ Clients
+              500+ Clients
             </span>
             <span className="px-4 py-2 rounded-lg bg-secondary/10 text-secondary font-medium">
-              100+ Projects
+              1000+ Projects
+            </span>
+            <span className="px-4 py-2 rounded-lg bg-accent/10 text-accent font-medium">
+              2+ Startups
             </span>
           </div>
         </div>
       </section>
 
       <Footer />
+      </div>
     </div>
+    </>
   );
 }
 

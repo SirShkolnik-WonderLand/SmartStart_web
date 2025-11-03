@@ -1,18 +1,20 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Rocket, Users, CheckCircle, ArrowRight, Phone, Eye, Calendar, Play, Target, Award } from 'lucide-react';
-import Header from '@/components/Header';
+import Sidebar from '@/components/Sidebar';
 import Footer from '@/components/Footer';
+import { useSidebar } from '@/contexts/SidebarContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
 const LaunchLearn: React.FC = () => {
+  const { isCollapsed } = useSidebar();
   const sessions = [
     {
       title: "Clinic-e Beta Demo",
-      presenter: "Brian",
-      description: "Brian presents the Clinic-e beta and shares insights from building a healthcare CRM.",
+      presenter: "SmartStart Team",
+      description: "Presentation of the Clinic-e beta and insights from building a healthcare CRM.",
       status: "Upcoming"
     },
     {
@@ -61,10 +63,10 @@ const LaunchLearn: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-cyan-50 dark:from-slate-950 dark:via-slate-900 dark:to-cyan-950">
-      <Header />
-      
+      <Sidebar />
+      <div className={`transition-all duration-300 ${isCollapsed ? 'md:ml-20' : 'md:ml-72'} md:pt-0 pt-20`}>
       {/* Hero Section */}
-      <section className="relative pt-24 pb-16 px-4 sm:px-6 lg:px-8">
+      <section className="relative pt-8 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -258,6 +260,7 @@ const LaunchLearn: React.FC = () => {
       </section>
 
       <Footer />
+      </div>
     </div>
   );
 };

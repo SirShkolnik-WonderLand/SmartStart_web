@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import Header from "@/components/Header";
+import Sidebar from '@/components/Sidebar';
+import { useSidebar } from '@/contexts/SidebarContext';
 import Footer from "@/components/Footer";
 import {
   Building2,
@@ -108,12 +109,12 @@ export default function Architect() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      <Sidebar />
 
       {/* Hero Section */}
       <motion.section 
         style={{ opacity, scale }}
-        className="relative pt-24 pb-16 px-4 sm:px-6 md:px-8 overflow-hidden"
+        className="relative pt-8 pb-16 px-4 sm:px-6 md:px-8 overflow-hidden"
       >
         <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-indigo-500/10" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(168,85,247,0.15),transparent_50%)]" />

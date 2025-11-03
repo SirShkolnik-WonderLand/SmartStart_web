@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { Helmet } from "react-helmet";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import Header from "@/components/Header";
+import Sidebar from "@/components/Sidebar";
 import Footer from "@/components/Footer";
+import { useSidebar } from "@/contexts/SidebarContext";
+import StructuredData from "@/components/StructuredData";
 import {
   Mail,
   MapPin,
@@ -25,6 +28,10 @@ import {
 import { captureLeadSource } from "@/lib/leadSource";
 
 export default function Contact() {
+  const { isCollapsed } = useSidebar();
+  const pageUrl = 'https://alicesolutionsgroup.com/contact';
+  const pageTitle = 'Contact Us - Toronto Cybersecurity & Automation Experts | AliceSolutionsGroup';
+  const pageDescription = 'Contact AliceSolutionsGroup Toronto for cybersecurity, ISO 27001 compliance, automation, and AI services. Serving GTA and Ontario businesses. Get a free consultation today.';
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -162,12 +169,82 @@ export default function Contact() {
     "Other"
   ];
 
-  return (
-    <div className="min-h-screen bg-background">
-      <Header />
+  // ContactPage Schema
+  const contactPageSchema = {
+    "@context": "https://schema.org",
+    "@type": "ContactPage",
+    "name": "Contact AliceSolutionsGroup",
+    "description": "Contact page for AliceSolutionsGroup Toronto cybersecurity and automation services",
+    "mainEntity": {
+      "@type": "Organization",
+      "name": "AliceSolutionsGroup",
+      "alternateName": "AliceSolutionsGroup Toronto",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Toronto",
+        "addressRegion": "ON",
+        "addressCountry": "CA"
+      },
+      "email": "udi.shkolnik@alicesolutionsgroup.com",
+      "areaServed": {
+        "@type": "City",
+        "name": "Toronto"
+      }
+    }
+  };
 
+  return (
+    <>
+      <Helmet>
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDescription} />
+        <meta name="keywords" content="contact cybersecurity Toronto, ISO 27001 consultation GTA, CISO services Ontario, automation consulting Toronto, contact AliceSolutionsGroup, cybersecurity expert Toronto" />
+        <meta name="author" content="AliceSolutionsGroup" />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href={pageUrl} />
+        
+        {/* Open Graph */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={pageUrl} />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={pageDescription} />
+        <meta property="og:image" content="https://alicesolutionsgroup.com/logos/AliceSolutionsGroup-logo-compact.svg" />
+        <meta property="og:site_name" content="AliceSolutionsGroup" />
+        <meta property="og:locale" content="en_CA" />
+        
+        {/* Twitter */}
+        <meta property="twitter:card" content="summary_large_image" />
+        <meta property="twitter:url" content={pageUrl} />
+        <meta property="twitter:title" content={pageTitle} />
+        <meta property="twitter:description" content={pageDescription} />
+        <meta property="twitter:image" content="https://alicesolutionsgroup.com/logos/AliceSolutionsGroup-logo-compact.svg" />
+        
+        {/* Geographic */}
+        <meta name="geo.region" content="CA-ON" />
+        <meta name="geo.placename" content="Toronto" />
+        <meta name="geo.position" content="43.6532;-79.3832" />
+        <meta name="ICBM" content="43.6532, -79.3832" />
+        
+        {/* Structured Data */}
+        <script type="application/ld+json">
+          {JSON.stringify(contactPageSchema)}
+        </script>
+      </Helmet>
+      <StructuredData 
+        type="page"
+        title={pageTitle}
+        description={pageDescription}
+        url={pageUrl}
+        breadcrumbs={[
+          { name: "Home", url: "/" },
+          { name: "Contact", url: "/contact" }
+        ]}
+      />
+      <div className="min-h-screen bg-background">
+      <Sidebar />
+      <div className={`transition-all duration-300 ${isCollapsed ? 'md:ml-20' : 'md:ml-72'} md:pt-0 pt-20`}>
       {/* Hero Section */}
-      <section className="relative pt-24 pb-16 px-4 sm:px-6 md:px-8 overflow-hidden">
+      <section className="relative pt-8 pb-16 px-4 sm:px-6 md:px-8 overflow-hidden">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -222,7 +299,7 @@ export default function Contact() {
                     15+ Years Experience
                   </div>
                   <div className="px-4 py-2 rounded-lg bg-orange-500/10 text-orange-500 font-semibold text-sm">
-                    100+ Projects Completed
+                    1000+ Projects Completed
                   </div>
                 </div>
               </CardContent>
@@ -786,7 +863,9 @@ export default function Contact() {
       </section>
 
       <Footer />
+      </div>
     </div>
+    </>
   );
 }
 

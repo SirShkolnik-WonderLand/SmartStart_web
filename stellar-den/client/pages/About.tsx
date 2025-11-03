@@ -1,13 +1,18 @@
 import { motion } from "framer-motion";
+import { Helmet } from "react-helmet";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import Header from "@/components/Header";
+import Sidebar from "@/components/Sidebar";
 import Footer from "@/components/Footer";
+import { useSidebar } from "@/contexts/SidebarContext";
+import StructuredData from "@/components/StructuredData";
 import {
   Shield,
   Award,
   TrendingUp,
-  Users,
+  UserCircle,
+  Briefcase,
+  GraduationCap,
   Target,
   CheckCircle2,
   ExternalLink,
@@ -16,13 +21,15 @@ import {
   Linkedin,
   Github,
   Twitter,
-  Award as AwardIcon,
+  Rocket,
   BookOpen,
-  Briefcase,
-  GraduationCap
 } from "lucide-react";
 
 export default function About() {
+  const { isCollapsed } = useSidebar();
+  const pageUrl = 'https://alicesolutionsgroup.com/about';
+  const pageTitle = 'About Us - Udi Shkolnik CISSP CISM | AliceSolutionsGroup Toronto';
+  const pageDescription = 'Meet Udi Shkolnik, CISSP CISM ISO 27001 Lead Auditor, founder of AliceSolutionsGroup Toronto. 15+ years cybersecurity experience serving GTA businesses with ISO compliance, automation, and venture building.';
   const certifications = [
     {
       id: "cissp",
@@ -183,17 +190,111 @@ export default function About() {
 
   const stats = [
     { label: "Years of Experience", value: "15+", icon: TrendingUp },
-    { label: "Certifications", value: "11", icon: AwardIcon },
-    { label: "Clients Helped", value: "50+", icon: Users },
-    { label: "Projects Completed", value: "100+", icon: CheckCircle2 }
+    { label: "Certifications", value: "11", icon: Award },
+    { label: "Clients Helped", value: "500+", icon: UserCircle },
+    { label: "Projects Completed", value: "1000+", icon: CheckCircle2 },
+    { label: "Startups Built", value: "2+", icon: Rocket }
   ];
 
-  return (
-    <div className="min-h-screen bg-background">
-      <Header />
+  // Person Schema for Udi Shkolnik
+  const personSchema = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Sagi Ehud Shkolnik",
+    "alternateName": "Udi Shkolnik",
+    "jobTitle": "Founder & CISO & CTO",
+    "worksFor": {
+      "@type": "Organization",
+      "name": "AliceSolutionsGroup",
+      "alternateName": "AliceSolutionsGroup Toronto"
+    },
+    "hasCredential": [
+      {
+        "@type": "EducationalOccupationalCredential",
+        "name": "CISSP",
+        "recognizedBy": {
+          "@type": "Organization",
+          "name": "(ISC)²"
+        }
+      },
+      {
+        "@type": "EducationalOccupationalCredential",
+        "name": "CISM",
+        "recognizedBy": {
+          "@type": "Organization",
+          "name": "ISACA"
+        }
+      },
+      {
+        "@type": "EducationalOccupationalCredential",
+        "name": "ISO 27001 Lead Auditor"
+      }
+    ],
+    "knowsAbout": ["Cybersecurity", "ISO 27001", "SOC 2", "HIPAA", "PHIPA", "CISO", "Automation", "AI"],
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Toronto",
+      "addressRegion": "ON",
+      "addressCountry": "CA"
+    },
+    "sameAs": [
+      "https://www.credly.com/users/udi-shkolnik",
+      "https://www.linkedin.com/in/udishkolnik"
+    ]
+  };
 
+  return (
+    <>
+      <Helmet>
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDescription} />
+        <meta name="keywords" content="Udi Shkolnik, CISSP, CISM, ISO 27001 Lead Auditor, cybersecurity consultant Toronto, CISO Toronto, AliceSolutionsGroup founder, cybersecurity expert GTA, ISO compliance consultant Ontario" />
+        <meta name="author" content="AliceSolutionsGroup" />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href={pageUrl} />
+        
+        {/* Open Graph */}
+        <meta property="og:type" content="profile" />
+        <meta property="og:url" content={pageUrl} />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={pageDescription} />
+        <meta property="og:image" content="https://alicesolutionsgroup.com/logos/AliceSolutionsGroup-logo-compact.svg" />
+        <meta property="og:site_name" content="AliceSolutionsGroup" />
+        <meta property="og:locale" content="en_CA" />
+        
+        {/* Twitter */}
+        <meta property="twitter:card" content="summary_large_image" />
+        <meta property="twitter:url" content={pageUrl} />
+        <meta property="twitter:title" content={pageTitle} />
+        <meta property="twitter:description" content={pageDescription} />
+        <meta property="twitter:image" content="https://alicesolutionsgroup.com/logos/AliceSolutionsGroup-logo-compact.svg" />
+        
+        {/* Geographic */}
+        <meta name="geo.region" content="CA-ON" />
+        <meta name="geo.placename" content="Toronto" />
+        <meta name="geo.position" content="43.6532;-79.3832" />
+        <meta name="ICBM" content="43.6532, -79.3832" />
+        
+        {/* Structured Data */}
+        <script type="application/ld+json">
+          {JSON.stringify(personSchema)}
+        </script>
+      </Helmet>
+      <StructuredData 
+        type="page"
+        title={pageTitle}
+        description={pageDescription}
+        url={pageUrl}
+        breadcrumbs={[
+          { name: "Home", url: "/" },
+          { name: "About", url: "/about" }
+        ]}
+      />
+      <div className="min-h-screen bg-background">
+      <Sidebar />
+      <div className={`transition-all duration-300 ${isCollapsed ? 'md:ml-20' : 'md:ml-72'} md:pt-0 pt-20`}>
       {/* Hero Section */}
-      <section className="relative pt-24 pb-16 px-4 sm:px-6 md:px-8 overflow-hidden">
+      <section className="relative pt-8 pb-16 px-4 sm:px-6 md:px-8 overflow-hidden">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -671,7 +772,7 @@ export default function About() {
                 <CardContent className="p-8">
                   <div className="flex items-center gap-3 mb-6">
                     <div className="p-3 rounded-lg bg-primary/10">
-                      <Users className="w-6 h-6 text-primary" />
+                      <UserCircle className="w-6 h-6 text-primary" />
                     </div>
                     <h3 className="text-2xl font-bold text-foreground">Languages</h3>
                   </div>
@@ -794,7 +895,9 @@ export default function About() {
       </section>
 
       <Footer />
+      </div>
     </div>
+    </>
   );
 }
 

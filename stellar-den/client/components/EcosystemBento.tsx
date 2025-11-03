@@ -72,8 +72,9 @@ export default function EcosystemBento() {
   ];
 
   const metrics = [
-    { value: "50+", label: "Clients" },
-    { value: "100+", label: "Projects" },
+    { value: "500+", label: "Clients" },
+    { value: "1000+", label: "Projects" },
+    { value: "2+", label: "Startups" },
     { value: "$150K/mo", label: "Cost Savings Unlocked" },
   ];
 

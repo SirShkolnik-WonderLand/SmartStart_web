@@ -6,6 +6,7 @@ import DomainOverview from "./DomainOverview";
 import ControlsTable from "./ControlsTable";
 import ControlDetails from "./ControlDetails";
 import SmartStats from "./SmartStats";
+import AuthGate from "./AuthGate";
 import { Control, Project, Stats, Framework, Answer } from "../../../shared/iso";
 import { Card } from "@/components/ui/card";
 
@@ -16,6 +17,9 @@ interface FullAssessmentProps {
 }
 
 export default function FullAssessment({ onComplete }: FullAssessmentProps) {
+  const [authenticated, setAuthenticated] = useState(false);
+  const [authSession, setAuthSession] = useState<any>(null);
+  const [userId, setUserId] = useState<string | null>(null);
   const [currentView, setCurrentView] = useState<View>("dashboard");
   const [selectedDomain, setSelectedDomain] = useState<string | null>(null);
   const [selectedControl, setSelectedControl] = useState<Control | null>(null);
@@ -32,22 +36,86 @@ export default function FullAssessment({ onComplete }: FullAssessmentProps) {
   });
   const [loading, setLoading] = useState(true);
 
+  // Handle authentication
+  const handleAuthenticated = (session: any, authUserId: string) => {
+    setAuthSession(session);
+    setUserId(authUserId);
+    setAuthenticated(true);
+  };
+
+  // Handle logout
+  const handleLogout = () => {
+    localStorage.removeItem("iso_auth_session");
+    setAuthenticated(false);
+    setAuthSession(null);
+    setUserId(null);
+    setProject(null);
+    setControls([]);
+    setFramework(null);
+    setLoading(true);
+  };
+
   // Load data
   useEffect(() => {
+    if (!authenticated) return;
+
     const loadData = async () => {
       try {
+        // Load user's saved assessment data
+        if (userId && authSession) {
+          const savedRes = await fetch("/api/auth/load-assessment", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ userId, session: authSession }),
+          });
+          
+          if (savedRes.ok) {
+            const savedData = await savedRes.json();
+            if (savedData.data) {
+              // User has saved data, use it
+              const savedProject: Project = {
+                id: savedData.data.id || `project-${Date.now()}`,
+                name: savedData.data.name || "My ISO 27001 Project",
+                frameworkId: savedData.data.frameworkId || "iso27001",
+                answers: savedData.data.answers || {},
+                createdAt: savedData.data.createdAt || new Date().toISOString(),
+                updatedAt: savedData.data.updatedAt || new Date().toISOString(),
+              };
+              setProject(savedProject);
+              console.log("✅ Loaded saved assessment data for user:", userId);
+            } else {
+              console.log("ℹ️ No saved data found for user:", userId);
+            }
+          }
+        }
+
         // Load controls
         const controlsRes = await fetch("/api/iso/controls");
         const controlsData = await controlsRes.json();
         setControls(controlsData.controls);
 
-        // Create framework
-        const domains = [
-          { id: "A.5", code: "A.5", name: "Organizational Controls", description: "Governance and policies", controlCount: 0 },
-          { id: "A.6", code: "A.6", name: "People Controls", description: "Roles and responsibilities", controlCount: 0 },
-          { id: "A.7", code: "A.7", name: "Physical Controls", description: "Physical security", controlCount: 0 },
-          { id: "A.8", code: "A.8", name: "Technological Controls", description: "Technical security", controlCount: 0 }
-        ];
+        // Create framework domains based on actual control domainIds
+        const domainIds = [...new Set(controlsData.controls.map((c: any) => c.domainId))];
+        const domainNames: Record<string, { name: string; description: string }> = {
+          "A.5": { name: "Organizational Controls", description: "Governance and policies" },
+          "A.6": { name: "People Controls", description: "Roles and responsibilities" },
+          "A.7": { name: "Physical Controls", description: "Physical security" },
+          "A.8": { name: "Technological Controls", description: "Technical security" }
+        };
+        
+        const domains = domainIds.map((domainId: string) => {
+          const domainInfo = domainNames[domainId] || { name: domainId, description: "" };
+          const domainControls = controlsData.controls.filter((c: any) => c.domainId === domainId);
+          return {
+            id: domainId,
+            code: domainId,
+            name: domainInfo.name,
+            description: domainInfo.description,
+            controlCount: domainControls.length
+          };
+        });
 
         setFramework({
           id: "iso27001",
@@ -60,11 +128,8 @@ export default function FullAssessment({ onComplete }: FullAssessmentProps) {
           domains
         });
 
-        // Load or create project
-        const savedProject = localStorage.getItem("iso_project");
-        if (savedProject) {
-          setProject(JSON.parse(savedProject));
-        } else {
+        // Create project if not loaded from server
+        if (!project) {
           const newProject: Project = {
             id: `project-${Date.now()}`,
             name: "My ISO 27001 Project",
@@ -74,7 +139,6 @@ export default function FullAssessment({ onComplete }: FullAssessmentProps) {
             updatedAt: new Date().toISOString()
           };
           setProject(newProject);
-          localStorage.setItem("iso_project", JSON.stringify(newProject));
         }
       } catch (error) {
         console.error("Failed to load data:", error);
@@ -84,7 +148,7 @@ export default function FullAssessment({ onComplete }: FullAssessmentProps) {
     };
 
     loadData();
-  }, []);
+  }, [authenticated, userId, authSession]);
 
   // Calculate stats
   useEffect(() => {
@@ -104,8 +168,8 @@ export default function FullAssessment({ onComplete }: FullAssessmentProps) {
     }
   }, [project, controls]);
 
-  const handleSaveAnswer = (answer: Partial<Answer>) => {
-    if (!project || !selectedControl) return;
+  const handleSaveAnswer = async (answer: Partial<Answer>) => {
+    if (!project || !selectedControl || !userId || !authSession) return;
 
     const updatedProject: Project = {
       ...project,
@@ -121,7 +185,22 @@ export default function FullAssessment({ onComplete }: FullAssessmentProps) {
     };
 
     setProject(updatedProject);
-    localStorage.setItem("iso_project", JSON.stringify(updatedProject));
+    
+    // Save to server (secure JSON storage)
+    try {
+      await fetch("/api/auth/save-assessment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId,
+          session: authSession,
+          data: updatedProject,
+        }),
+      });
+    } catch (error) {
+      console.error("Failed to save assessment:", error);
+    }
+    
     setSelectedControl(null);
   };
 
@@ -144,6 +223,12 @@ export default function FullAssessment({ onComplete }: FullAssessmentProps) {
     ? controls.filter(c => c.domainId === selectedDomain)
     : controls;
 
+  // Show authentication gate if not authenticated (check this FIRST)
+  if (!authenticated) {
+    return <AuthGate onAuthenticated={handleAuthenticated} />;
+  }
+
+  // Show loading only after authentication
   if (loading) {
     return (
       <div className="iso-container pt-24 flex items-center justify-center min-h-screen px-4">
@@ -179,9 +264,11 @@ export default function FullAssessment({ onComplete }: FullAssessmentProps) {
               stats={stats}
               controls={controls}
               project={project}
-              userName="User"
+              userName={authSession?.email || "User"}
+              userId={userId}
               onNavigateToDomains={() => setCurrentView("domains")}
               onNavigateToControls={() => setCurrentView("controls")}
+              onLogout={handleLogout}
             />
             <AdvisorBot
               stats={stats}

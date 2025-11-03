@@ -1,61 +1,77 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { BarChart3, Shield, Target, CheckCircle, ArrowRight, Phone, Eye, Users, Zap, Building2, Lock } from 'lucide-react';
-import Header from '@/components/Header';
+import { BarChart3, Shield, CheckCircle, Eye, Users, Building2, Lock, FileText, TrendingUp, Layers, Code, Calendar, Download } from 'lucide-react';
+import Sidebar from '@/components/Sidebar';
 import Footer from '@/components/Footer';
+import { useSidebar } from '@/contexts/SidebarContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
 const SmartStartHub: React.FC = () => {
-  const features = [
+  const { isCollapsed } = useSidebar();
+  const coreFeatures = [
     {
       icon: BarChart3,
-      title: "Dashboard of Execution",
-      description: "One centralized place for goals, sprints, KPIs, and metrics. Built from years of managing secure SaaS products like Trakkit, Syncary, and C&C CRM."
+      title: "Real-Time Execution Dashboard",
+      description: "Plan, assign, and track sprints across teams with precision and transparency."
+    },
+    {
+      icon: FileText,
+      title: "Automatic Compliance Documentation",
+      description: "Every action, change, and approval becomes part of your ISO 27001 / 27799 or NIST evidence library—no manual effort."
     },
     {
       icon: Shield,
-      title: "Security-Ready from Day One",
-      description: "All actions logged and evidence-ready for ISO/NIST compliance. Every feature, sprint, and audit trace is automatically documented."
+      title: "Integrated Security Workflows",
+      description: "Log incidents, manage risks, and tie remediation tasks directly to compliance controls."
     },
     {
-      icon: Target,
-      title: "Built for Real Builders",
-      description: "Used internally by SmartStart ventures. Not just a tool—it's the operational backbone of our entire ecosystem."
+      icon: Layers,
+      title: "Cross-Venture Portfolio View",
+      description: "Run multiple ventures in parallel while sharing resources and insights safely."
+    },
+    {
+      icon: TrendingUp,
+      title: "Performance & Risk Analytics",
+      description: "Visualize progress, detect execution bottlenecks, and identify unmitigated risks before they escalate."
+    },
+    {
+      icon: Download,
+      title: "Audit-Ready Exports",
+      description: "Generate complete audit packs for internal reviews, clients, or investors in seconds."
+    },
+    {
+      icon: Lock,
+      title: "Secure Multi-Tenant Architecture",
+      description: "Fine-grained roles and access for each venture, client, and partner."
+    },
+    {
+      icon: Code,
+      title: "API-First Integrations",
+      description: "Connect effortlessly with CI/CD pipelines, project tools, or analytics systems."
     }
-  ];
-
-  const capabilities = [
-    "Real-time project tracking and sprint management",
-    "Automated compliance documentation and audit trails",
-    "Integrated security monitoring and incident response",
-    "Cross-venture collaboration and resource sharing",
-    "Performance analytics and optimization insights",
-    "ISO 27001/27799 compliance automation",
-    "Multi-tenant architecture with role-based access",
-    "API-first design for seamless integrations"
   ];
 
   const testimonials = [
     {
-      quote: "Everything we build runs through this hub — every feature, sprint, and audit trace.",
+      quote: "Everything we build runs through this hub—every feature, sprint, and audit trace. It's how we keep speed and security aligned.",
       author: "Udi Shkolnik",
-      role: "Founder & CISO, SmartStart"
+      role: "Founder / CISO / CTO, AliceSolutionsGroup"
     },
     {
-      quote: "The security-first approach means we never have to worry about compliance gaps.",
+      quote: "The security-first approach means we're never scrambling before audits or investor checks. The evidence is already part of the work.",
       author: "SmartStart Venture Team",
-      role: "Internal Users"
+      role: "SmartStart Venture Team"
     }
   ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-cyan-50 dark:from-slate-950 dark:via-slate-900 dark:to-cyan-950">
-      <Header />
-
+      <Sidebar />
+      <div className={`transition-all duration-300 ${isCollapsed ? 'md:ml-20' : 'md:ml-72'} md:pt-0 pt-20`}>
       {/* Hero Section */}
-      <section className="relative pt-24 pb-16 px-4 sm:px-6 lg:px-8">
+      <section className="relative pt-8 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -68,12 +84,16 @@ const SmartStartHub: React.FC = () => {
               SmartStart Hub
             </Badge>
             <h1 className="text-4xl md:text-6xl font-bold text-slate-900 dark:text-white mb-6">
-              Command Center for
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-blue-600"> Idea → Build → Traction</span>
+              The Command Center for Secure, Audit-Ready SaaS
             </h1>
-            <p className="text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto mb-8">
-              The SmartStart Hub is the operational backbone of our venture ecosystem. 
-              Built by Udi Shkolnik (CISO, CTO, ISO auditor) after years of developing secure SaaS products.
+            <p className="text-2xl md:text-3xl font-semibold text-slate-700 dark:text-slate-200 max-w-3xl mx-auto mb-6">
+              Where People and Businesses Grow Differently
+            </p>
+            <p className="text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto mb-4">
+              Turn ideas into shipped, secure products. SmartStart Hub unifies execution, metrics, and compliance in one place—so your team can move fast <em>and</em> stay ISO/NIST-ready from day zero.
+            </p>
+            <p className="text-lg text-slate-600 dark:text-slate-300 max-w-3xl mx-auto mb-8">
+              Built by <strong>Udi Shkolnik</strong> (CISO, CTO, ISO Lead Auditor) after decades of building and securing enterprise SaaS systems.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" className="bg-cyan-600 hover:bg-cyan-700 text-white">
@@ -81,7 +101,7 @@ const SmartStartHub: React.FC = () => {
                 See the Hub in Action
               </Button>
               <Button size="lg" variant="outline" className="border-cyan-600 text-cyan-600 hover:bg-cyan-50 dark:hover:bg-cyan-950">
-                <Phone className="w-5 h-5 mr-2" />
+                <Calendar className="w-5 h-5 mr-2" />
                 Schedule Demo
               </Button>
           </div>
@@ -89,7 +109,7 @@ const SmartStartHub: React.FC = () => {
         </div>
       </section>
 
-      {/* Features Grid */}
+      {/* Why SmartStart Hub Section */}
       <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto">
           <motion.div
@@ -99,15 +119,40 @@ const SmartStartHub: React.FC = () => {
             className="text-center mb-16"
           >
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">
-              Built by Experts, for Builders
+              Built by Security-Obsessed Builders, for Security-Obsessed Builders
+            </h2>
+            <p className="text-lg text-slate-600 dark:text-slate-300 max-w-3xl mx-auto mb-4">
+              SmartStart Hub was born from real experience operating and auditing SaaS ventures under tight security standards.
+            </p>
+            <p className="text-lg text-slate-600 dark:text-slate-300 max-w-3xl mx-auto mb-4">
+              It's the same system powering products like <strong>Trakkit</strong>, <strong>Syncary</strong>, and <strong>C&C CRM</strong>—each managed, audited, and scaled through the Hub itself.
+            </p>
+            <p className="text-lg text-slate-600 dark:text-slate-300 max-w-3xl mx-auto">
+              For founders, CTOs, CISOs, and studios building multiple ventures, SmartStart Hub serves as your <strong>operational backbone</strong>: a place where every sprint, decision, and document stays aligned with compliance.
+            </p>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Core Features Section */}
+      <section className="py-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">
+              What You Get Out of the Box
             </h2>
             <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
-              Developed from real-world experience building and securing enterprise-grade applications
+              Comprehensive platform for entrepreneurs and growing businesses.
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {features.map((feature, index) => (
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {coreFeatures.map((feature, index) => (
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, y: 20 }}
@@ -119,7 +164,7 @@ const SmartStartHub: React.FC = () => {
                     <div className="w-16 h-16 bg-cyan-100 dark:bg-cyan-900 rounded-lg flex items-center justify-center mb-6">
                       <feature.icon className="w-8 h-8 text-cyan-600 dark:text-cyan-400" />
                     </div>
-                    <h3 className="text-2xl font-semibold text-slate-900 dark:text-white mb-4">
+                    <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-4">
                       {feature.title}
                           </h3>
                     <p className="text-slate-600 dark:text-slate-300">
@@ -133,74 +178,82 @@ const SmartStartHub: React.FC = () => {
         </div>
       </section>
 
-      {/* Capabilities Section */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8">
+      {/* Compliance & Security Advantage Section */}
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-          <motion.div
+            <motion.div
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
-          >
+              transition={{ duration: 0.6 }}
+            >
               <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-6">
-                Enterprise-Grade Capabilities
-            </h2>
-              <p className="text-lg text-slate-600 dark:text-slate-300 mb-8">
-                The SmartStart Hub provides comprehensive project management and compliance 
-                capabilities, built from years of experience in cybersecurity and SaaS development.
+                Security-Ready from Day Zero
+              </h2>
+              <p className="text-lg text-slate-600 dark:text-slate-300 mb-6">
+                Most teams try to "bolt on" compliance right before an audit. SmartStart Hub does the opposite.
               </p>
-              <div className="grid grid-cols-1 gap-4">
-                {capabilities.map((capability, index) => (
-                <motion.div
-                  key={index}
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                    className="flex items-start gap-3"
-                  >
-                    <CheckCircle className="w-5 h-5 text-cyan-600 dark:text-cyan-400 mt-0.5 flex-shrink-0" />
-                    <span className="text-slate-700 dark:text-slate-300">{capability}</span>
-                  </motion.div>
-                ))}
-                        </div>
-                      </motion.div>
+              <p className="text-lg text-slate-600 dark:text-slate-300 mb-6">
+                From the first sprint:
+              </p>
+              <div className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-cyan-600 dark:text-cyan-400 mt-0.5 flex-shrink-0" />
+                  <span className="text-slate-700 dark:text-slate-300">Every task and event is automatically logged.</span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-cyan-600 dark:text-cyan-400 mt-0.5 flex-shrink-0" />
+                  <span className="text-slate-700 dark:text-slate-300">Evidence is mapped to ISO/NIST controls.</span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-cyan-600 dark:text-cyan-400 mt-0.5 flex-shrink-0" />
+                  <span className="text-slate-700 dark:text-slate-300">Audit reports are generated on demand.</span>
+                </div>
+              </div>
+              <p className="text-lg text-slate-600 dark:text-slate-300 mt-6 font-semibold">
+                You don't prepare for compliance—you operate within it.
+              </p>
+            </motion.div>
             <motion.div
               initial={{ opacity: 0, x: 20 }}
-                            whileInView={{ opacity: 1, x: 0 }}
+              whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6 }}
               className="relative"
             >
               <div className="bg-gradient-to-br from-cyan-500 to-blue-600 rounded-2xl p-8 text-white">
                 <div className="text-center mb-6">
-                  <h3 className="text-2xl font-bold mb-2">Proven Track Record</h3>
-                  <p className="text-cyan-100">Built from real experience</p>
+                  <h3 className="text-2xl font-bold mb-2">Proven in the Field</h3>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-6">
                   <div className="text-center">
-                    <div className="text-2xl font-bold mb-1">5+</div>
-                    <div className="text-cyan-100 text-sm">Ventures Built</div>
+                    <div className="text-3xl font-bold mb-2">5+</div>
+                    <div className="text-cyan-100">Active Ventures</div>
+                    <div className="text-sm text-cyan-200 mt-1">built and managed through SmartStart Hub</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold mb-1">ISO</div>
-                    <div className="text-cyan-100 text-sm">Compliant</div>
+                    <div className="text-3xl font-bold mb-2">20+</div>
+                    <div className="text-cyan-100">Years</div>
+                    <div className="text-sm text-cyan-200 mt-1">of experience in cybersecurity and SaaS development</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold mb-1">20+</div>
-                    <div className="text-cyan-100 text-sm">Years Experience</div>
+                    <div className="text-3xl font-bold mb-2">ISO 27001 / 27799</div>
+                    <div className="text-cyan-100">Aligned</div>
+                    <div className="text-sm text-cyan-200 mt-1">workflows built into daily operations</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold mb-1">100%</div>
-                    <div className="text-cyan-100 text-sm">Security First</div>
+                    <div className="text-3xl font-bold mb-2">100%</div>
+                    <div className="text-cyan-100">Security-First Culture</div>
+                    <div className="text-sm text-cyan-200 mt-1">from design to deployment</div>
                   </div>
                 </div>
               </div>
-                </motion.div>
+            </motion.div>
           </div>
         </div>
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm">
+      <section className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -209,11 +262,8 @@ const SmartStartHub: React.FC = () => {
             className="text-center mb-16"
           >
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">
-              Trusted by Builders
+              What Our Teams Say
             </h2>
-            <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
-              Real feedback from the people who use the Hub daily
-            </p>
           </motion.div>
 
           <div className="grid md:grid-cols-2 gap-8">
@@ -236,7 +286,7 @@ const SmartStartHub: React.FC = () => {
                         </blockquote>
                         <div className="text-sm">
                           <div className="font-semibold text-slate-900 dark:text-white">
-                            {testimonial.author}
+                            — {testimonial.author}
                           </div>
                           <div className="text-slate-600 dark:text-slate-400">
                             {testimonial.role}
@@ -253,7 +303,7 @@ const SmartStartHub: React.FC = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm">
         <div className="max-w-4xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -261,19 +311,18 @@ const SmartStartHub: React.FC = () => {
             transition={{ duration: 0.6 }}
           >
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-6">
-              Ready to Experience the SmartStart Hub?
+              Ready to See SmartStart Hub in Action?
             </h2>
             <p className="text-lg text-slate-600 dark:text-slate-300 mb-8">
-              See how our command center can transform your venture building process. 
-              Built by experts, designed for builders.
+              If you build products where security and compliance matter, SmartStart Hub is your command center. Launch faster, stay audit-ready, and scale with confidence.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" className="bg-cyan-600 hover:bg-cyan-700 text-white">
                 <Eye className="w-5 h-5 mr-2" />
                 See the Hub in Action
               </Button>
-              <Button size="lg" variant="outline" className="border-slate-300 dark:border-slate-600">
-                <Phone className="w-5 h-5 mr-2" />
+              <Button size="lg" variant="outline" className="border-cyan-600 text-cyan-600 hover:bg-cyan-50 dark:hover:bg-cyan-950">
+                <Calendar className="w-5 h-5 mr-2" />
                 Schedule Demo
               </Button>
             </div>
@@ -282,6 +331,7 @@ const SmartStartHub: React.FC = () => {
       </section>
 
       <Footer />
+      </div>
     </div>
   );
 };

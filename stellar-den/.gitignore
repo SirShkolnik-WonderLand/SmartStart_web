@@ -32,3 +32,6 @@ dist-ssr
 .env.development
 .env.*.local
 *.env
+
+# User data (secure - do not commit)
+server/data/users/

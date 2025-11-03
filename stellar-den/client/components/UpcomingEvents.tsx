@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, MapPin, Users, Clock, ArrowRight, Beer, GraduationCap, Zap, Briefcase } from "lucide-react";
+import { Calendar, MapPin, UserCircle, Clock, ArrowRight, Beer, GraduationCap, Zap, Briefcase } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export default function UpcomingEvents() {
@@ -155,7 +155,7 @@ export default function UpcomingEvents() {
                         <span>{event.location}</span>
                       </div>
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <Users className="w-3 h-3" />
+                        <UserCircle className="w-3 h-3" />
                         <span>{event.attendees} attendees</span>
                       </div>
                     </div>

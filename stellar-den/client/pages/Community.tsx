@@ -2,8 +2,9 @@ import { useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import Header from "@/components/Header";
+import Sidebar from "@/components/Sidebar";
 import Footer from "@/components/Footer";
+import { useSidebar } from "@/contexts/SidebarContext";
 import {
   Users,
   Coffee,
@@ -42,6 +43,7 @@ import {
 } from "lucide-react";
 
 export default function Community() {
+  const { isCollapsed } = useSidebar();
   const [hoveredEvent, setHoveredEvent] = useState<number | null>(null);
   const [hoveredValue, setHoveredValue] = useState<number | null>(null);
   const [selectedEvent, setSelectedEvent] = useState<number | null>(null);
@@ -250,12 +252,12 @@ export default function Community() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
-
+      <Sidebar />
+      <div className={`transition-all duration-300 ${isCollapsed ? 'md:ml-20' : 'md:ml-72'} md:pt-0 pt-20`}>
       {/* Hero Section with Parallax */}
       <motion.section 
         style={{ opacity, scale }}
-        className="relative pt-24 pb-16 px-4 sm:px-6 md:px-8 overflow-hidden"
+        className="relative pt-8 pb-16 px-4 sm:px-6 md:px-8 overflow-hidden"
       >
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/10" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.1),transparent_50%)]" />
@@ -791,6 +793,7 @@ export default function Community() {
       </section>
 
       <Footer />
+      </div>
     </div>
   );
 }

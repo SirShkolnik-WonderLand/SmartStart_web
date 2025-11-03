@@ -9,11 +9,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import Header from "@/components/Header";
+import Sidebar from "@/components/Sidebar";
 import Footer from "@/components/Footer";
+import { useSidebar } from "@/contexts/SidebarContext";
 import { Mail, BellOff, CheckCircle2, AlertCircle } from "lucide-react";
 
 export default function Unsubscribe() {
+  const { isCollapsed } = useSidebar();
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
@@ -50,10 +52,10 @@ export default function Unsubscribe() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
-
+      <Sidebar />
+      <div className={`transition-all duration-300 ${isCollapsed ? 'md:ml-20' : 'md:ml-72'} md:pt-0 pt-20`}>
       {/* Hero Section */}
-      <section className="pt-32 pb-16 px-4">
+      <section className="pt-8 pb-16 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -188,6 +190,7 @@ export default function Unsubscribe() {
       </section>
 
       <Footer />
+      </div>
     </div>
   );
 }

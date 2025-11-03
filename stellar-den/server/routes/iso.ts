@@ -8,11 +8,48 @@ import { Control, StoryBotQuestion, Checklist } from "@shared/iso";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Load data files
+// Map domain names to domain IDs based on ISO 27001 structure
+// Control IDs like A.5.1, A.6.1, A.7.1, A.8.1 help determine the domain
+const mapDomainToId = (domain: string, controlId?: string): string => {
+  // If control ID is provided, extract domain from it (e.g., A.5.1 -> A.5)
+  if (controlId && controlId.match(/^A\.\d+/)) {
+    return controlId.match(/^A\.\d+/)?.[0] || "A.5";
+  }
+  
+  // Fallback to domain name mapping
+  const domainMap: Record<string, string> = {
+    "Governance": "A.5",
+    "Risk Management": "A.6",
+    "Operations": "A.7",
+    "Compliance": "A.8"
+  };
+  return domainMap[domain] || "A.5";
+};
+
+// Load and transform data files
 const loadControls = (): Control[] => {
   const filePath = path.join(__dirname, "../data/iso-controls.json");
   const data = JSON.parse(fs.readFileSync(filePath, "utf-8"));
-  return data.controls;
+  
+  // Transform JSON structure to match Control interface
+  return data.controls.map((control: any) => {
+    const controlId = control.id || control.number;
+    return {
+      id: controlId,
+      frameworkId: "iso27001",
+      domainId: mapDomainToId(control.domain || "Governance", controlId),
+      code: control.code || control.number || controlId,
+      title: control.title,
+      description: control.description,
+      guidance: control.guidance || control.implementationGuidance || "",
+      cmmcMappings: control.cmmcMappings || [],
+      tags: control.tags || [],
+      weight: control.weight || 1,
+      priority: (control.priority || "medium") as "low" | "medium" | "high",
+      story: control.story,
+      evidence: control.evidence || []
+    };
+  });
 };
 
 const loadStoryBotQuestions = (): StoryBotQuestion[] => {

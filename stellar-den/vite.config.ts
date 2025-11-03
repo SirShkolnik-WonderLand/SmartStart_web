@@ -40,7 +40,8 @@ function expressPlugin(): Plugin {
     configureServer(server) {
       const app = createApiServer();
 
-      // Only add API routes to Vite dev server
+      // Add API routes to Vite dev server
+      // Note: The api-server expects routes without /api prefix, so we mount it at /api
       server.middlewares.use('/api', app);
     },
   };

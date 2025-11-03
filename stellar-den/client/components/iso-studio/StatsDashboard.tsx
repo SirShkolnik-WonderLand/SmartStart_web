@@ -8,7 +8,10 @@ import {
   XCircle, 
   ChevronRight,
   Shield,
-  TrendingUp
+  TrendingUp,
+  FileText,
+  LogOut,
+  User
 } from "lucide-react";
 import { Stats, Control, Project } from "../../../shared/iso";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
@@ -18,8 +21,10 @@ interface StatsDashboardProps {
   controls: Control[];
   project: Project | null;
   userName: string;
+  userId?: string | null;
   onNavigateToDomains?: () => void;
   onNavigateToControls?: () => void;
+  onLogout?: () => void;
 }
 
 export default function StatsDashboard({ 
@@ -27,8 +32,10 @@ export default function StatsDashboard({
   controls, 
   project, 
   userName,
+  userId,
   onNavigateToDomains,
-  onNavigateToControls 
+  onNavigateToControls,
+  onLogout
 }: StatsDashboardProps) {
   
   // Prepare chart data
@@ -59,7 +66,7 @@ export default function StatsDashboard({
           transition={{ duration: 0.5 }}
           className="mb-8"
         >
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
             <div className="flex items-center gap-4">
               <div className="w-16 h-16 rounded-xl bg-gradient-to-r from-primary to-secondary flex items-center justify-center shadow-lg">
                 <Shield className="w-8 h-8 text-white" />
@@ -68,12 +75,30 @@ export default function StatsDashboard({
                 <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent">
                   ISO 27001:2022 Compliance
                 </h1>
-                <p className="text-lg text-muted-foreground mt-1">
-                  Welcome back, {userName}! Track your progress across all 93 controls
-                </p>
+                <div className="flex items-center gap-3 mt-1">
+                  <p className="text-lg text-muted-foreground">
+                    Welcome back, <span className="font-semibold text-foreground">{userName}</span>!
+                  </p>
+                  {userId && (
+                    <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
+                      <User className="w-3 h-3 inline mr-1" />
+                      {userId.substring(0, 12)}...
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
             <div className="flex flex-col sm:flex-row gap-3">
+              {onLogout && (
+                <Button
+                  onClick={onLogout}
+                  variant="outline"
+                  className="flex items-center gap-2 px-6 py-3 border-destructive/50 hover:border-destructive hover:bg-destructive/10"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Logout
+                </Button>
+              )}
               {onNavigateToDomains && (
                 <Button
                   onClick={onNavigateToDomains}

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Helmet } from "react-helmet";
-import Header from "@/components/Header";
+import Sidebar from "@/components/Sidebar";
+import { useSidebar } from "@/contexts/SidebarContext";
 import Hero from "@/components/Hero";
 import FeaturedInitiatives from "@/components/FeaturedInitiatives";
 import ValueProposition from "@/components/ValueProposition";
@@ -20,6 +21,7 @@ import AliceModal from "@/components/AliceModal";
 import StructuredData from "@/components/StructuredData";
 
 export default function Index() {
+  const { isCollapsed } = useSidebar();
   const [showContactModal, setShowContactModal] = useState(false);
   const [showAliceModal, setShowAliceModal] = useState(false);
 
@@ -32,7 +34,7 @@ export default function Index() {
     <>
       <Helmet>
         <title>AliceSolutions Group - Cybersecurity & Compliance Solutions</title>
-        <meta name="description" content="Leading cybersecurity and compliance solutions for Canadian businesses. ISO 27001, CISO-as-a-Service, automation, and SmartStart programs. Trusted by 50+ companies." />
+        <meta name="description" content="Leading cybersecurity and compliance solutions for Canadian businesses. ISO 27001, CISO-as-a-Service, automation, and SmartStart programs. Trusted by 500+ companies." />
         <meta name="keywords" content="cybersecurity, compliance, ISO 27001, CISO, automation, SmartStart, Toronto, Canada" />
         <meta name="author" content="AliceSolutions Group" />
         <meta name="robots" content="index, follow" />
@@ -67,8 +69,8 @@ export default function Index() {
         url="https://alicesolutionsgroup.com"
       />
       <div className="min-h-screen bg-background">
-      <Header />
-      
+      <Sidebar />
+      <div className={`transition-all duration-300 ${isCollapsed ? 'md:ml-20' : 'md:ml-72'} md:pt-0 pt-20`}>
       {/* Hero Section */}
       <Hero
         onWorkWithUs={() => setShowContactModal(true)}
@@ -128,6 +130,7 @@ export default function Index() {
         isOpen={showAliceModal}
         onClose={() => setShowAliceModal(false)}
       />
+      </div>
     </div>
     </>
   );

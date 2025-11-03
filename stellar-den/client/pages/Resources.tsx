@@ -6,7 +6,7 @@ import {
   FileText, 
   Download, 
   Clock, 
-  Users, 
+  UserCircle, 
   Shield, 
   Zap, 
   BookOpen,
@@ -17,10 +17,13 @@ import {
   PlayCircle,
   CheckCircle2,
   ArrowRight,
-  Search
+  Search,
+  Network,
+  GraduationCap
 } from "lucide-react";
-import Header from "@/components/Header";
+import Sidebar from "@/components/Sidebar";
 import Footer from "@/components/Footer";
+import { useSidebar } from "@/contexts/SidebarContext";
 
 type ResourceCategory = "professional" | "community";
 
@@ -135,7 +138,7 @@ const resources: Resource[] = [
     description: "Complete guide to getting started with SmartStart Hub, including platform features, tools, and community guidelines.",
     category: "community",
     status: "available",
-    icon: <Users className="w-5 h-5" />,
+    icon: <Network className="w-5 h-5" />,
     downloadUrl: "/resources/smartstart-getting-started.pdf"
   },
   {
@@ -168,7 +171,7 @@ const resources: Resource[] = [
     description: "Guide to effective founder mentorship, including structured mentorship programs and best practices.",
     category: "community",
     status: "coming-soon",
-    icon: <Users className="w-5 h-5" />
+    icon: <Network className="w-5 h-5" />
   },
   {
     id: "business-model-canvas",
@@ -210,11 +213,12 @@ const resources: Resource[] = [
     description: "Best practices for building and engaging with startup communities, including event planning and networking.",
     category: "community",
     status: "coming-soon",
-    icon: <Users className="w-5 h-5" />
+    icon: <Network className="w-5 h-5" />
   }
 ];
 
 export default function Resources() {
+  const { isCollapsed } = useSidebar();
   const [activeTab, setActiveTab] = useState<ResourceCategory>("professional");
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -254,10 +258,10 @@ export default function Resources() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
-      
+      <Sidebar />
+      <div className={`transition-all duration-300 ${isCollapsed ? 'md:ml-20' : 'md:ml-72'} md:pt-0 pt-20`}>
       {/* Hero Section */}
-      <section className="pt-32 pb-16 px-4">
+      <section className="pt-8 pb-16 px-4">
         <div className="max-w-6xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -287,7 +291,7 @@ export default function Resources() {
                 <span>Free Downloads</span>
               </div>
               <div className="flex items-center gap-2">
-                <Users className="w-4 h-4" />
+                <Network className="w-4 h-4" />
                 <span>Community Access</span>
               </div>
             </div>
@@ -323,7 +327,7 @@ export default function Resources() {
                 }`}
               >
                 <div className="flex items-center justify-center gap-2">
-                  <Users className="w-5 h-5" />
+                  <Network className="w-5 h-5" />
                   <span>Community Resources</span>
                 </div>
               </button>
@@ -450,8 +454,9 @@ export default function Resources() {
           </motion.div>
         </div>
       </section>
-      
+
       <Footer />
+      </div>
     </div>
   );
 }

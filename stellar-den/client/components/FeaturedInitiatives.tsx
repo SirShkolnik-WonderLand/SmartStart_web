@@ -14,7 +14,7 @@ export default function FeaturedInitiatives() {
       tagline: "Enterprise Tools & Venture Building",
       description: "Join a community of entrepreneurs with access to enterprise tools, mentorship, and venture building support. Scale your startup with Zoho, Acronis, and expert guidance.",
       icon: Rocket,
-      price: "$98.80/month",
+      price: "$99.80/month",
       features: ["Enterprise Tools (Zoho Suite)", "Security & Backup (Acronis)", "Venture Building Track", "Mentorship & Networking"],
       cta: "Join SmartStart Hub",
       href: "/smartstart-hub",

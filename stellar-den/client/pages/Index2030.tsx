@@ -1,6 +1,7 @@
 import { useState } from "react";
-import Header from "@/components/Header";
+import Sidebar from "@/components/Sidebar";
 import Footer from "@/components/Footer";
+import { useSidebar } from "@/contexts/SidebarContext";
 import ContactModal from "@/components/ContactModal";
 import ConstellationHero2030 from "@/components/ConstellationHero2030";
 import EcosystemBento from "@/components/EcosystemBento";
@@ -25,6 +26,7 @@ import { Helmet } from "react-helmet";
  * To use this page, update App.tsx to import Index2030 instead of Index
  */
 export default function Index2030() {
+  const { isCollapsed } = useSidebar();
   const [showContactModal, setShowContactModal] = useState(false);
   const navigate = useNavigate();
 
@@ -61,7 +63,8 @@ export default function Index2030() {
         url="/"
       />
 
-      <Header />
+      <Sidebar />
+      <div className={`transition-all duration-300 ${isCollapsed ? 'md:ml-20' : 'md:ml-72'} md:pt-0 pt-20`}>
 
       {/* Hero Section - "The Constellation" */}
       <ConstellationHero2030

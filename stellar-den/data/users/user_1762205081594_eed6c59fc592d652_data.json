@@ -1,0 +1,33 @@
+{
+  "userId": "user_1762205081594_eed6c59fc592d652",
+  "data": {
+    "id": "project-1762205250827",
+    "name": "My ISO 27001 Project",
+    "frameworkId": "iso27001",
+    "answers": {
+      "A.6.2": {
+        "status": "partial",
+        "owner": "udi",
+        "dueDate": "",
+        "riskImpact": 4,
+        "effort": 2,
+        "notes": "",
+        "controlId": "A.6.2",
+        "updatedAt": "2025-11-03T21:28:13.997Z"
+      },
+      "A.8.2": {
+        "status": "ready",
+        "owner": "udi",
+        "dueDate": "",
+        "riskImpact": 2,
+        "effort": 2,
+        "notes": "",
+        "controlId": "A.8.2",
+        "updatedAt": "2025-11-03T21:28:24.830Z"
+      }
+    },
+    "createdAt": "2025-11-03T21:27:30.827Z",
+    "updatedAt": "2025-11-03T21:28:24.830Z"
+  },
+  "updatedAt": "2025-11-03T21:28:24.832Z"
+}

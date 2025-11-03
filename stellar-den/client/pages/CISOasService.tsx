@@ -1,13 +1,20 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { Helmet } from 'react-helmet';
 import { Shield, Users, Target, TrendingUp, CheckCircle, ArrowRight, Building2, Clock, Award, Phone } from 'lucide-react';
-import Header from '@/components/Header';
+import Sidebar from '@/components/Sidebar';
 import Footer from '@/components/Footer';
+import { useSidebar } from '@/contexts/SidebarContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import StructuredData from '@/components/StructuredData';
 
 const CISOasService: React.FC = () => {
+  const { isCollapsed } = useSidebar();
+  const pageUrl = 'https://alicesolutionsgroup.com/ciso-as-service';
+  const pageTitle = 'CISO as a Service Toronto | Fractional CISO Consulting | AliceSolutionsGroup';
+  const pageDescription = 'Fractional CISO services for Toronto businesses. Strategic security leadership, program development, and team building. CISSP CISM ISO Lead Auditor certified. Serving GTA and Ontario.';
   const services = [
     {
       icon: Shield,
@@ -65,12 +72,111 @@ const CISOasService: React.FC = () => {
     }
   ];
 
+  // CISO Service Schema
+  const cisoServiceSchema = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "serviceType": "CISO as a Service",
+    "name": "Fractional CISO Services",
+    "description": "Fractional CISO services for Toronto businesses providing strategic security leadership",
+    "provider": {
+      "@type": "Organization",
+      "name": "AliceSolutionsGroup",
+      "alternateName": "AliceSolutionsGroup Toronto"
+    },
+    "areaServed": {
+      "@type": "City",
+      "name": "Toronto"
+    },
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "CISO Services",
+      "itemListElement": [
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Strategic Security Leadership"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Security Program Development"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Team Building & Training"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Board & Executive Reporting"
+          }
+        }
+      ]
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-cyan-50 dark:from-slate-950 dark:via-slate-900 dark:to-cyan-950">
-      <Header />
-      
+    <>
+      <Helmet>
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDescription} />
+        <meta name="keywords" content="CISO as a service Toronto, fractional CISO GTA, CISO consulting Ontario, virtual CISO Canada, CISO services Toronto, security leadership Toronto, CISSP CISO Toronto" />
+        <meta name="author" content="AliceSolutionsGroup" />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href={pageUrl} />
+        
+        {/* Open Graph */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={pageUrl} />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={pageDescription} />
+        <meta property="og:image" content="https://alicesolutionsgroup.com/logos/AliceSolutionsGroup-logo-compact.svg" />
+        <meta property="og:site_name" content="AliceSolutionsGroup" />
+        <meta property="og:locale" content="en_CA" />
+        
+        {/* Twitter */}
+        <meta property="twitter:card" content="summary_large_image" />
+        <meta property="twitter:url" content={pageUrl} />
+        <meta property="twitter:title" content={pageTitle} />
+        <meta property="twitter:description" content={pageDescription} />
+        <meta property="twitter:image" content="https://alicesolutionsgroup.com/logos/AliceSolutionsGroup-logo-compact.svg" />
+        
+        {/* Geographic */}
+        <meta name="geo.region" content="CA-ON" />
+        <meta name="geo.placename" content="Toronto" />
+        <meta name="geo.position" content="43.6532;-79.3832" />
+        <meta name="ICBM" content="43.6532, -79.3832" />
+        
+        {/* Structured Data */}
+        <script type="application/ld+json">
+          {JSON.stringify(cisoServiceSchema)}
+        </script>
+      </Helmet>
+      <StructuredData 
+        type="page"
+        title={pageTitle}
+        description={pageDescription}
+        url={pageUrl}
+        breadcrumbs={[
+          { name: "Home", url: "/" },
+          { name: "Services", url: "/services" },
+          { name: "CISO as a Service", url: "/ciso-as-service" }
+        ]}
+      />
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-cyan-50 dark:from-slate-950 dark:via-slate-900 dark:to-cyan-950">
+      <Sidebar />
+      <div className={`transition-all duration-300 ${isCollapsed ? 'md:ml-20' : 'md:ml-72'} md:pt-0 pt-20`}>
       {/* Hero Section */}
-      <section className="relative pt-24 pb-16 px-4 sm:px-6 lg:px-8">
+      <section className="relative pt-8 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -187,18 +293,22 @@ const CISOasService: React.FC = () => {
               className="relative"
             >
               <div className="bg-gradient-to-br from-cyan-500 to-blue-600 rounded-2xl p-8 text-white">
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
                   <div className="text-center">
                     <div className="text-3xl font-bold mb-2">15+</div>
                     <div className="text-cyan-100">Years Experience</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-3xl font-bold mb-2">50+</div>
+                    <div className="text-3xl font-bold mb-2">500+</div>
                     <div className="text-cyan-100">Clients Served</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-3xl font-bold mb-2">100+</div>
+                    <div className="text-3xl font-bold mb-2">1000+</div>
                     <div className="text-cyan-100">Projects Completed</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold mb-2">2+</div>
+                    <div className="text-cyan-100">Startups Built</div>
                   </div>
                   <div className="text-center">
                     <div className="text-3xl font-bold mb-2">11</div>
@@ -282,7 +392,9 @@ const CISOasService: React.FC = () => {
       </section>
 
       <Footer />
+      </div>
     </div>
+    </>
   );
 };
 

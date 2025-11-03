@@ -19,7 +19,7 @@ export default function ValueProposition() {
     {
       icon: Zap,
       title: "Access to $500+/month tools",
-      description: "Zoho suite, Acronis backup, and enterprise tools for $98.80/month",
+      description: "Zoho suite, Acronis backup, and enterprise tools for $99.80/month",
       color: "from-purple-500 to-pink-500"
     },
     {
@@ -109,7 +109,7 @@ export default function ValueProposition() {
             <Card className="border-primary/20 bg-primary/5 backdrop-blur-sm inline-block hover:shadow-glow-teal dark:hover:shadow-glow-cyan transition-all duration-300">
               <CardContent className="p-6">
                 <p className="text-primary font-semibold">
-                  Tools that would cost $500+/month individually, plus mentorship and security — all for $98.80/month.
+                  Tools that would cost $500+/month individually, plus mentorship and security — all for $99.80/month.
                 </p>
               </CardContent>
             </Card>

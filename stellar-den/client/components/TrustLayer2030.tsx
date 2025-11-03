@@ -32,7 +32,7 @@ export default function TrustLayer2030() {
   const achievements = [
     { icon: CheckCircle2, text: "12+ ISO Certifications Delivered" },
     { icon: CheckCircle2, text: "$150K/month Average Cost Savings" },
-    { icon: CheckCircle2, text: "100+ Projects Completed" },
+    { icon: CheckCircle2, text: "1000+ Projects Completed" },
   ];
 
   return (

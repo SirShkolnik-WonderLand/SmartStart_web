@@ -10,11 +10,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import Header from "@/components/Header";
+import Sidebar from "@/components/Sidebar";
 import Footer from "@/components/Footer";
+import { useSidebar } from "@/contexts/SidebarContext";
 import { Shield, Trash2, Mail, AlertCircle, CheckCircle2 } from "lucide-react";
 
 export default function DataDeletionRequest() {
+  const { isCollapsed } = useSidebar();
   const [formData, setFormData] = useState({
     email: "",
     name: "",
@@ -70,10 +72,11 @@ export default function DataDeletionRequest() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      <Sidebar />
+      <div className={`transition-all duration-300 ${isCollapsed ? 'md:ml-20' : 'md:ml-72'} md:pt-0 pt-20`}>
 
       {/* Hero Section */}
-      <section className="pt-32 pb-16 px-4">
+      <section className="pt-8 pb-16 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -277,6 +280,7 @@ export default function DataDeletionRequest() {
       </section>
 
       <Footer />
+      </div>
     </div>
   );
 }

@@ -1,14 +1,25 @@
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
+# robots.txt for AliceSolutionsGroup
+# Updated: January 2025
 
 User-agent: *
 Allow: /
+
+# Disallow admin and private areas
+Disallow: /admin/
+Disallow: /private/
+Disallow: /temp/
+Disallow: /api/
+Disallow: /_next/
+
+# Allow important pages
+Allow: /smartstart
+Allow: /services
+Allow: /about
+Allow: /contact
+
+# Sitemap location
+Sitemap: https://alicesolutionsgroup.com/sitemap.xml
+
+# Crawl delay (optional, adjust as needed)
+Crawl-delay: 1
+

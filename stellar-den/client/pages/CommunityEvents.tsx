@@ -1,24 +1,46 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, Users, BookOpen, Beer, CheckCircle, ArrowRight, Phone, Eye, MapPin, Clock, Target } from 'lucide-react';
-import Header from '@/components/Header';
+import { Helmet } from 'react-helmet';
+import { Calendar, Users, BookOpen, Beer, CheckCircle, ArrowRight, Phone, Eye, MapPin, Clock, Target, Shield, Rocket, GraduationCap } from 'lucide-react';
+import Sidebar from '@/components/Sidebar';
 import Footer from '@/components/Footer';
+import { useSidebar } from '@/contexts/SidebarContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import StructuredData from '@/components/StructuredData';
 
 const CommunityEvents: React.FC = () => {
+  const { isCollapsed } = useSidebar();
+  const pageUrl = 'https://alicesolutionsgroup.com/community-events';
+  const pageTitle = 'Community Events | Launch & Learn, Beer + Security | SmartStart Toronto';
+  const pageDescription = 'Join SmartStart community events in Toronto: Launch & Learn Sessions, Beer + Security Nights, and technical workshops. Hybrid format (GTA + online). Monthly events for entrepreneurs.';
   const eventTypes = [
     {
-      icon: BookOpen,
+      icon: Rocket,
       title: "Launch & Learn Sessions",
-      description: "Product demos and live deconstructions where builders showcase what they've shipped that month.",
+      description: "Builders demo what they've shipped that month. Live product demonstrations and technical deep dives.",
       features: [
         "Live product demonstrations",
         "Technical deep dives",
         "Q&A sessions with builders",
         "Networking opportunities"
-      ]
+      ],
+      frequency: "Bi-weekly",
+      location: "Virtual & In-person"
+    },
+    {
+      icon: Beer,
+      title: "Beer + Security Nights",
+      description: "Founded by Udi, a former commando and CISO. Technical security discussions without the hype in Toronto's tech pubs.",
+      features: [
+        "Monthly sessions across Toronto tech pubs",
+        "Invite-only for real practitioners",
+        "Casual & technical discussions",
+        "CSP, Zero-Trust, and ISO compliance topics"
+      ],
+      frequency: "Monthly",
+      location: "Toronto Pubs + Online"
     },
     {
       icon: Target,
@@ -29,18 +51,9 @@ const CommunityEvents: React.FC = () => {
         "Expert-led sessions",
         "Practical implementation guides",
         "Interactive learning experiences"
-      ]
-    },
-    {
-      icon: Beer,
-      title: "Beer + Security Nights",
-      description: "Informal discussions on cybersecurity and startups in a relaxed, collaborative environment.",
-      features: [
-        "Casual networking",
-        "Technical discussions",
-        "Industry insights",
-        "Community building"
-      ]
+      ],
+      frequency: "Monthly",
+      location: "Toronto + Online"
     }
   ];
 
@@ -65,7 +78,7 @@ const CommunityEvents: React.FC = () => {
       date: "November 15, 2024",
       time: "7:00 PM EST",
       location: "Toronto + Online",
-      description: "Brian presents the Clinic-e beta and shares insights from building a healthcare CRM."
+      description: "Presentation of the Clinic-e beta and insights from building a healthcare CRM."
     },
     {
       title: "Workshop: Mapbox Integration",
@@ -94,12 +107,82 @@ const CommunityEvents: React.FC = () => {
     "Integration with SmartStart ecosystem and tools"
   ];
 
+  // Community Events Schema
+  const communityEventsSchema = {
+    "@context": "https://schema.org",
+    "@type": "EventSeries",
+    "name": "SmartStart Community Events",
+    "description": "Regular community events for Toronto entrepreneurs including Launch & Learn Sessions, Beer + Security Nights, and workshops",
+    "organizer": {
+      "@type": "Organization",
+      "name": "AliceSolutionsGroup",
+      "alternateName": "SmartStart Toronto"
+    },
+    "location": {
+      "@type": "Place",
+      "name": "Toronto, Ontario",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Toronto",
+        "addressRegion": "ON",
+        "addressCountry": "CA"
+      }
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-cyan-50 dark:from-slate-950 dark:via-slate-900 dark:to-cyan-950">
-      <Header />
-      
+    <>
+      <Helmet>
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDescription} />
+        <meta name="keywords" content="startup events Toronto, entrepreneur events GTA, Launch & Learn Toronto, Beer + Security Toronto, startup workshops Ontario, entrepreneur meetups Toronto, startup networking Toronto" />
+        <meta name="author" content="AliceSolutionsGroup" />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href={pageUrl} />
+        
+        {/* Open Graph */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={pageUrl} />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={pageDescription} />
+        <meta property="og:image" content="https://alicesolutionsgroup.com/logos/AliceSolutionsGroup-logo-compact.svg" />
+        <meta property="og:site_name" content="AliceSolutionsGroup" />
+        <meta property="og:locale" content="en_CA" />
+        
+        {/* Twitter */}
+        <meta property="twitter:card" content="summary_large_image" />
+        <meta property="twitter:url" content={pageUrl} />
+        <meta property="twitter:title" content={pageTitle} />
+        <meta property="twitter:description" content={pageDescription} />
+        <meta property="twitter:image" content="https://alicesolutionsgroup.com/logos/AliceSolutionsGroup-logo-compact.svg" />
+        
+        {/* Geographic */}
+        <meta name="geo.region" content="CA-ON" />
+        <meta name="geo.placename" content="Toronto" />
+        <meta name="geo.position" content="43.6532;-79.3832" />
+        <meta name="ICBM" content="43.6532, -79.3832" />
+        
+        {/* Structured Data */}
+        <script type="application/ld+json">
+          {JSON.stringify(communityEventsSchema)}
+        </script>
+      </Helmet>
+      <StructuredData 
+        type="page"
+        title={pageTitle}
+        description={pageDescription}
+        url={pageUrl}
+        breadcrumbs={[
+          { name: "Home", url: "/" },
+          { name: "Community", url: "/community-hub" },
+          { name: "Events", url: "/community-events" }
+        ]}
+      />
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-cyan-50 dark:from-slate-950 dark:via-slate-900 dark:to-cyan-950">
+      <Sidebar />
+      <div className={`transition-all duration-300 ${isCollapsed ? 'md:ml-20' : 'md:ml-72'} md:pt-0 pt-20`}>
       {/* Hero Section */}
-      <section className="relative pt-24 pb-16 px-4 sm:px-6 lg:px-8">
+      <section className="relative pt-8 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -170,6 +253,16 @@ const CommunityEvents: React.FC = () => {
                     <p className="text-slate-600 dark:text-slate-300 mb-4">
                       {eventType.description}
                     </p>
+                    <div className="flex items-center gap-4 mb-4 text-sm text-slate-500">
+                      <div className="flex items-center gap-1">
+                        <Clock className="w-4 h-4" />
+                        <span>{eventType.frequency}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <MapPin className="w-4 h-4" />
+                        <span>{eventType.location}</span>
+                      </div>
+                    </div>
                     <div className="space-y-2">
                       {eventType.features.map((feature, featureIndex) => (
                         <div key={featureIndex} className="flex items-center gap-2">
@@ -384,7 +477,9 @@ const CommunityEvents: React.FC = () => {
       </section>
 
       <Footer />
+      </div>
     </div>
+    </>
   );
 };
 
