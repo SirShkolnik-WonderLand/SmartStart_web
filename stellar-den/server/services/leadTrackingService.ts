@@ -207,6 +207,10 @@ class LeadTrackingService {
    */
   private categorizeSource(referrer: string): string {
     if (!referrer || referrer === 'Direct') return 'Direct';
+    // Check for Learn More button context first
+    if (referrer.includes('Learn More:')) {
+      return referrer; // Keep the full context for Learn More buttons
+    }
     if (referrer.includes('google.com') || referrer.includes('google.ca')) return 'Google';
     if (referrer.includes('bing.com')) return 'Bing';
     if (referrer.includes('linkedin.com')) return 'LinkedIn';
