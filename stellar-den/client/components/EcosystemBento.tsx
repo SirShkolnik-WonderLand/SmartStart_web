@@ -2,9 +2,15 @@ import { motion } from "framer-motion";
 import { useInView } from "@/hooks/useInView";
 import { ArrowRight, Shield, Rocket, Users, Zap, Lock, TrendingUp } from "lucide-react";
 import { Button } from "./ui/button";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import ContactModal from "./ContactModal";
 
 export default function EcosystemBento() {
+  const navigate = useNavigate();
   const { ref, isInView } = useInView();
+  const [showContactModal, setShowContactModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<string>("");
 
   const products = [
     {
@@ -141,13 +147,19 @@ export default function EcosystemBento() {
                       variant="ghost"
                       size="sm"
                       className="group/btn p-0 h-auto text-primary hover:text-primary/80"
-                      asChild={!!product.link && product.link !== "#"}
+                      onClick={() => {
+                        if (product.link && product.link !== "#") {
+                          // For products with links, navigate to contact with context
+                          setSelectedProduct(product.name);
+                          setShowContactModal(true);
+                        }
+                      }}
                     >
                       {product.link && product.link !== "#" ? (
-                        <a href={product.link} className="flex items-center gap-2">
+                        <span className="flex items-center gap-2">
                           Learn more
                           <ArrowRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
-                        </a>
+                        </span>
                       ) : (
                         <span className="flex items-center gap-2 text-muted-foreground cursor-not-allowed">
                           Coming soon
@@ -183,6 +195,17 @@ export default function EcosystemBento() {
             </motion.div>
           ))}
         </motion.div>
+
+        {/* Contact Modal */}
+        <ContactModal
+          isOpen={showContactModal}
+          onClose={() => {
+            setShowContactModal(false);
+            setSelectedProduct("");
+          }}
+          prefillService={selectedProduct || undefined}
+          prefillMessage={selectedProduct ? `I'm interested in learning more about ${selectedProduct}. Please send me more information.` : undefined}
+        />
       </div>
     </section>
   );

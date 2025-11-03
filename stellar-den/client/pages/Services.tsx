@@ -33,10 +33,14 @@ import {
   Star
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import ContactModal from "@/components/ContactModal";
 
 export default function Services() {
   const navigate = useNavigate();
   const { isCollapsed } = useSidebar();
+  const [showContactModal, setShowContactModal] = useState(false);
+  const [selectedService, setSelectedService] = useState<string>("");
   const pageUrl = 'https://alicesolutionsgroup.com/services';
   const pageTitle = 'Services - Cybersecurity, Automation & AI | AliceSolutionsGroup Toronto';
   const pageDescription = 'Comprehensive cybersecurity, automation, and AI services for Toronto businesses. ISO 27001, SOC 2, CISO-as-a-Service, business process automation, and SmartStart platform. Serving GTA and Ontario.';
@@ -518,6 +522,10 @@ export default function Services() {
                           {/* CTA */}
                           <div className="mt-8">
                             <Button
+                              onClick={() => {
+                                setSelectedService(service.title);
+                                setShowContactModal(true);
+                              }}
                               className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground"
                             >
                               Learn More
@@ -638,6 +646,17 @@ export default function Services() {
       </section>
 
       <Footer />
+
+      {/* Contact Modal */}
+      <ContactModal
+        isOpen={showContactModal}
+        onClose={() => {
+          setShowContactModal(false);
+          setSelectedService("");
+        }}
+        prefillService={selectedService || undefined}
+        prefillMessage={selectedService ? `I'm interested in learning more about ${selectedService}. Please send me more information and next steps.` : undefined}
+      />
       </div>
     </div>
     </>

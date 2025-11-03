@@ -3,9 +3,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, MapPin, UserCircle, Clock, ArrowRight, Beer, GraduationCap, Zap, Briefcase } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import ContactModal from "./ContactModal";
 
 export default function UpcomingEvents() {
   const navigate = useNavigate();
+  const [showContactModal, setShowContactModal] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<string>("");
 
   const events = [
     {
@@ -162,7 +166,10 @@ export default function UpcomingEvents() {
 
                     {/* CTA */}
                     <Button
-                      onClick={() => navigate('/community')}
+                      onClick={() => {
+                        setSelectedEvent(event.title);
+                        setShowContactModal(true);
+                      }}
                       variant="outline"
                       size="sm"
                       className="w-full border-primary/50 text-primary hover:bg-primary/10"
@@ -196,6 +203,17 @@ export default function UpcomingEvents() {
           </Button>
         </motion.div>
       </div>
+
+      {/* Contact Modal */}
+      <ContactModal
+        isOpen={showContactModal}
+        onClose={() => {
+          setShowContactModal(false);
+          setSelectedEvent("");
+        }}
+        prefillService="Community Events"
+        prefillMessage={selectedEvent ? `I'm interested in learning more about the ${selectedEvent} event. Please send me more information.` : undefined}
+      />
     </section>
   );
 }

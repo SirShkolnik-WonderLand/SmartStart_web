@@ -15,16 +15,18 @@ import { captureLeadSource } from "@/lib/leadSource";
 interface ContactModalProps {
   isOpen: boolean;
   onClose: () => void;
+  prefillService?: string;
+  prefillMessage?: string;
 }
 
-export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
+export default function ContactModal({ isOpen, onClose, prefillService = "", prefillMessage = "" }: ContactModalProps) {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     company: "",
     phone: "",
-    service: "",
-    message: "",
+    service: prefillService,
+    message: prefillMessage,
     mailingList: false,
     budget: "",
     timeline: "",
@@ -45,7 +47,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  // Auto-capture lead source data when modal opens
+  // Auto-capture lead source data when modal opens and update prefill data
   useEffect(() => {
     if (isOpen) {
       captureLeadSource().then(data => {
@@ -55,8 +57,34 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
           timestamp: data.timestamp
         });
       });
+      // Update form data when prefill props change
+      if (prefillService || prefillMessage) {
+        setFormData(prev => ({
+          ...prev,
+          service: prefillService || prev.service,
+          message: prefillMessage || prev.message
+        }));
+      }
+    } else {
+      // Reset form when modal closes
+      setFormData({
+        name: "",
+        email: "",
+        company: "",
+        phone: "",
+        service: "",
+        message: "",
+        mailingList: false,
+        budget: "",
+        timeline: "",
+        companySize: "",
+        industry: "",
+        howDidYouHear: "",
+        privacyConsent: false,
+        dataProcessingConsent: false
+      });
     }
-  }, [isOpen]);
+  }, [isOpen, prefillService, prefillMessage]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
