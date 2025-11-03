@@ -32,8 +32,10 @@ import {
   DollarSign,
   Star
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function Services() {
+  const navigate = useNavigate();
   const { isCollapsed } = useSidebar();
   const pageUrl = 'https://alicesolutionsgroup.com/services';
   const pageTitle = 'Services - Cybersecurity, Automation & AI | AliceSolutionsGroup Toronto';
@@ -613,6 +615,7 @@ export default function Services() {
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Button
                     size="lg"
+                    onClick={() => navigate('/contact')}
                     className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-glow-teal dark:shadow-glow-cyan"
                   >
                     <Briefcase className="mr-2 w-5 h-5" />
@@ -621,10 +624,11 @@ export default function Services() {
                   <Button
                     size="lg"
                     variant="outline"
+                    onClick={() => window.open('/resources', '_blank')}
                     className="border-primary text-primary hover:bg-primary/10"
                   >
                     <FileText className="mr-2 w-5 h-5" />
-                    Download Services Guide
+                    View Resources
                   </Button>
                 </div>
               </CardContent>

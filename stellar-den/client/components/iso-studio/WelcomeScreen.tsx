@@ -7,14 +7,17 @@ import {
   Download,
   ArrowRight,
   Shield,
-  Sparkles
+  Sparkles,
+  Phone
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface WelcomeScreenProps {
   onSelectJourney: (journey: "full" | "bot" | "checklist") => void;
 }
 
 export default function WelcomeScreen({ onSelectJourney }: WelcomeScreenProps) {
+  const navigate = useNavigate();
   const journeys = [
     {
       id: "full" as const,
@@ -162,7 +165,7 @@ export default function WelcomeScreen({ onSelectJourney }: WelcomeScreenProps) {
               <h3 className="text-lg sm:text-xl font-bold mb-3 iso-text-primary">
                 Why Assess Your Security?
               </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm mb-6">
                 <div>
                   <div className="text-xl mb-1">🎯</div>
                   <p className="font-semibold mb-1 text-xs iso-text-primary">Identify Gaps</p>
@@ -179,6 +182,14 @@ export default function WelcomeScreen({ onSelectJourney }: WelcomeScreenProps) {
                   <p className="text-xs iso-text-secondary">Meet ISO 27001 requirements systematically</p>
                 </div>
               </div>
+              <Button
+                onClick={() => navigate('/contact')}
+                variant="outline"
+                className="border-primary/50 hover:bg-primary/10 text-primary"
+              >
+                <Phone className="w-4 h-4 mr-2" />
+                Talk to an Expert
+              </Button>
             </CardContent>
           </Card>
         </motion.div>

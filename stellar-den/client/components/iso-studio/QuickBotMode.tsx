@@ -17,8 +17,10 @@ import {
   Zap,
   Brain,
   Shield,
-  ChevronRight
+  ChevronRight,
+  Phone
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { StoryBotQuestion } from "../../../shared/iso";
 
 interface QuickBotModeProps {
@@ -26,6 +28,7 @@ interface QuickBotModeProps {
 }
 
 export default function QuickBotMode({ onComplete }: QuickBotModeProps) {
+  const navigate = useNavigate();
   const [questions, setQuestions] = useState<StoryBotQuestion[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -765,28 +768,38 @@ export default function QuickBotMode({ onComplete }: QuickBotModeProps) {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1.2 }}
-                className="flex flex-col sm:flex-row gap-4"
+                className="flex flex-col gap-4"
               >
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <Button
+                    onClick={() => {
+                      setShowResults(false);
+                      setCurrentQuestionIndex(0);
+                      setConversationPhase('welcome');
+                      setShowQuestion(false);
+                      startConversation();
+                    }}
+                    variant="outline"
+                    className="flex-1 bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-xl"
+                  >
+                    <ArrowLeft className="mr-2 w-4 h-4" />
+                    Review Answers
+                  </Button>
+                  <Button
+                    onClick={onComplete}
+                    variant="outline"
+                    className="flex-1 bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-xl"
+                  >
+                    Back to Menu
+                    <ArrowRight className="ml-2 w-4 h-4" />
+                  </Button>
+                </div>
                 <Button
-                  onClick={() => {
-                    setShowResults(false);
-                    setCurrentQuestionIndex(0);
-                    setConversationPhase('welcome');
-                    setShowQuestion(false);
-                    startConversation();
-                  }}
-                  variant="outline"
-                  className="flex-1 bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-xl"
+                  onClick={() => navigate('/contact')}
+                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg"
                 >
-                  <ArrowLeft className="mr-2 w-4 h-4" />
-                  Review Answers
-                </Button>
-                <Button
-                  onClick={onComplete}
-                  className="flex-1 bg-gradient-to-r from-primary to-secondary hover:opacity-90 shadow-lg"
-                >
-                  Back to Menu
-                  <ArrowRight className="ml-2 w-4 h-4" />
+                  <Phone className="w-4 h-4 mr-2" />
+                  Book Consultation with Expert
                 </Button>
               </motion.div>
             </Card>

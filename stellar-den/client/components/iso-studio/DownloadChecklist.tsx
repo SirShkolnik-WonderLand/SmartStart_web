@@ -10,8 +10,10 @@ import {
   Mail,
   CheckCircle2,
   Send,
-  ArrowLeft
+  ArrowLeft,
+  Phone
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Control } from "../../../shared/iso";
 
 interface DownloadChecklistProps {
@@ -19,6 +21,7 @@ interface DownloadChecklistProps {
 }
 
 export default function DownloadChecklist({ onComplete }: DownloadChecklistProps) {
+  const navigate = useNavigate();
   const [controls, setControls] = useState<Control[]>([]);
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(true);
@@ -302,6 +305,33 @@ export default function DownloadChecklist({ onComplete }: DownloadChecklistProps
                   ... and {controls.length - 10} more controls
                 </div>
               </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Help Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="mt-6"
+        >
+          <Card className="iso-card border-primary/20 bg-primary/5">
+            <CardContent className="p-6 text-center">
+              <h3 className="text-lg font-bold iso-text-primary mb-2">
+                Need Implementation Help?
+              </h3>
+              <p className="text-sm iso-text-secondary mb-4">
+                Our ISO 27001 experts can guide you through implementation and certification
+              </p>
+              <Button
+                onClick={() => navigate('/contact')}
+                variant="outline"
+                className="border-primary/50 hover:bg-primary/10 text-primary"
+              >
+                <Phone className="w-4 h-4 mr-2" />
+                Get Implementation Help
+              </Button>
             </CardContent>
           </Card>
         </motion.div>

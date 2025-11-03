@@ -14,8 +14,10 @@ import {
   TrendingUp, 
   FileText,
   Shield,
-  Clock
+  Clock,
+  Phone
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Control, Answer, ControlStatus } from "../../../shared/iso";
 
 interface ControlDetailsProps {
@@ -26,6 +28,7 @@ interface ControlDetailsProps {
 }
 
 export default function ControlDetails({ control, answer, onSave, onClose }: ControlDetailsProps) {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     status: "missing" as ControlStatus,
     owner: "",
@@ -258,21 +261,35 @@ export default function ControlDetails({ control, answer, onSave, onClose }: Con
                     </div>
 
                     {/* Actions */}
-                    <div className="flex flex-col sm:flex-row gap-3 pt-4">
-                      <Button
-                        type="submit"
-                        className="flex-1 bg-primary hover:bg-primary/90 shadow-glow-teal dark:shadow-glow-cyan"
-                      >
-                        <Save className="w-4 h-4 mr-2" />
-                        Save Assessment
-                      </Button>
+                    <div className="space-y-3 pt-4">
+                      <div className="flex flex-col sm:flex-row gap-3">
+                        <Button
+                          type="submit"
+                          className="flex-1 bg-primary hover:bg-primary/90 shadow-glow-teal dark:shadow-glow-cyan"
+                        >
+                          <Save className="w-4 h-4 mr-2" />
+                          Save Assessment
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={onClose}
+                          className="flex-1"
+                        >
+                          Cancel
+                        </Button>
+                      </div>
                       <Button
                         type="button"
                         variant="outline"
-                        onClick={onClose}
-                        className="flex-1"
+                        onClick={() => {
+                          navigate('/contact');
+                          onClose();
+                        }}
+                        className="w-full border-primary/50 hover:bg-primary/10 text-primary"
                       >
-                        Cancel
+                        <Phone className="w-4 h-4 mr-2" />
+                        Ask Expert About This Control
                       </Button>
                     </div>
                   </form>

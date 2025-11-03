@@ -19,8 +19,10 @@ import {
   ArrowRight,
   Search,
   Network,
-  GraduationCap
+  GraduationCap,
+  Phone
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import Sidebar from "@/components/Sidebar";
 import Footer from "@/components/Footer";
 import { useSidebar } from "@/contexts/SidebarContext";
@@ -218,6 +220,7 @@ const resources: Resource[] = [
 ];
 
 export default function Resources() {
+  const navigate = useNavigate();
   const { isCollapsed } = useSidebar();
   const [activeTab, setActiveTab] = useState<ResourceCategory>("professional");
   const [searchQuery, setSearchQuery] = useState("");
@@ -444,12 +447,14 @@ export default function Resources() {
                 Join SmartStart Hub
                 <ArrowRight className="w-5 h-5" />
               </button>
-              <a
-                href="/contact"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-card/50 hover:bg-card text-foreground rounded-lg font-medium transition-colors border border-border"
+              <Button
+                onClick={() => navigate('/contact')}
+                variant="outline"
+                className="inline-flex items-center gap-2 px-6 py-3"
               >
-                Contact Us
-              </a>
+                <Phone className="w-5 h-5" />
+                Book Consultation
+              </Button>
             </div>
           </motion.div>
         </div>

@@ -9,8 +9,10 @@ import {
   Shield, 
   Info, 
   X,
-  Lightbulb
+  Lightbulb,
+  Phone
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Stats, Control, Project, AdvisorMessage } from "../../../shared/iso";
 
 interface AdvisorBotProps {
@@ -21,6 +23,7 @@ interface AdvisorBotProps {
 }
 
 export default function AdvisorBot({ stats, controls, project, userName }: AdvisorBotProps) {
+  const navigate = useNavigate();
   const [isVisible, setIsVisible] = useState(false);
   const [currentAdvice, setCurrentAdvice] = useState<AdvisorMessage | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -203,11 +206,21 @@ export default function AdvisorBot({ stats, controls, project, userName }: Advis
 
               {/* Action */}
               {currentAdvice.action && (
-                <div className="flex items-center gap-2 text-xs iso-text-secondary bg-muted/50 rounded-lg p-2">
+                <div className="flex items-center gap-2 text-xs iso-text-secondary bg-muted/50 rounded-lg p-2 mb-3">
                   <TrendingUp className="w-3 h-3" />
                   <span>{currentAdvice.action}</span>
                 </div>
               )}
+
+              {/* Talk to Human Expert Button */}
+              <Button
+                onClick={() => navigate('/contact')}
+                size="sm"
+                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-xs"
+              >
+                <Phone className="w-3 h-3 mr-2" />
+                Talk to Human Expert
+              </Button>
             </div>
           </Card>
         </motion.div>

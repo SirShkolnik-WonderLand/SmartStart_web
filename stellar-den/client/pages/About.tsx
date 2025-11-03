@@ -831,6 +831,7 @@ export default function About() {
                 <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                   <Button
                     size="lg"
+                    onClick={() => window.location.href = '/contact'}
                     className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-glow-teal dark:shadow-glow-cyan"
                   >
                     <Mail className="mr-2 w-5 h-5" />
@@ -839,6 +840,7 @@ export default function About() {
                   <Button
                     size="lg"
                     variant="outline"
+                    onClick={() => window.location.href = '/services'}
                     className="border-primary text-primary hover:bg-primary/10"
                   >
                     <BookOpen className="mr-2 w-5 h-5" />

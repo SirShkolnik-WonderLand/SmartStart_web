@@ -11,8 +11,10 @@ import {
   TrendingUp,
   FileText,
   LogOut,
-  User
+  User,
+  Phone
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Stats, Control, Project } from "../../../shared/iso";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
@@ -37,6 +39,7 @@ export default function StatsDashboard({
   onNavigateToControls,
   onLogout
 }: StatsDashboardProps) {
+  const navigate = useNavigate();
   
   // Prepare chart data
   const statusData = [
@@ -89,16 +92,13 @@ export default function StatsDashboard({
               </div>
             </div>
             <div className="flex flex-col sm:flex-row gap-3">
-              {onLogout && (
-                <Button
-                  onClick={onLogout}
-                  variant="outline"
-                  className="flex items-center gap-2 px-6 py-3 border-destructive/50 hover:border-destructive hover:bg-destructive/10"
-                >
-                  <LogOut className="w-4 h-4" />
-                  Logout
-                </Button>
-              )}
+              <Button
+                onClick={() => navigate('/contact')}
+                className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-3"
+              >
+                <Phone className="w-4 h-4" />
+                Get Expert Consultation
+              </Button>
               {onNavigateToDomains && (
                 <Button
                   onClick={onNavigateToDomains}
@@ -113,11 +113,22 @@ export default function StatsDashboard({
               {onNavigateToControls && (
                 <Button
                   onClick={onNavigateToControls}
-                  className="flex items-center gap-2 bg-gradient-to-r from-primary to-secondary hover:opacity-90 px-6 py-3"
+                  variant="outline"
+                  className="flex items-center gap-2 px-6 py-3"
                 >
                   <FileText className="w-4 h-4" />
                   View Controls
                   <ChevronRight className="w-4 h-4" />
+                </Button>
+              )}
+              {onLogout && (
+                <Button
+                  onClick={onLogout}
+                  variant="outline"
+                  className="flex items-center gap-2 px-6 py-3 border-destructive/50 hover:border-destructive hover:bg-destructive/10"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Logout
                 </Button>
               )}
             </div>
