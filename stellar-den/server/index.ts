@@ -19,6 +19,15 @@ import {
   sendChecklist,
   sendQuickBotReport,
 } from "./routes/iso";
+import {
+  initTOTP,
+  verifyCode,
+  confirmBackup,
+  checkUser,
+  getUserInfo,
+  saveAssessmentData,
+  loadAssessmentData,
+} from "./routes/auth";
 import zohoRoutes from "./routes/zoho";
 import { startDailyAnalyticsCron } from "./cron/dailyAnalytics";
 import privacyRoutes from "./routes/privacy";
@@ -81,6 +90,15 @@ export async function createServer() {
   app.post("/api/iso/export", exportAssessment);
   app.post("/api/iso/send-checklist", sendChecklist);
   app.post("/api/iso/send-quickbot-report", sendQuickBotReport);
+
+  // Authentication routes for Full Assessment
+  app.post("/api/auth/init-totp", initTOTP);
+  app.post("/api/auth/verify", verifyCode);
+  app.post("/api/auth/confirm-backup", confirmBackup);
+  app.get("/api/auth/check-user", checkUser);
+  app.post("/api/auth/user-info", getUserInfo);
+  app.post("/api/auth/save-assessment", saveAssessmentData);
+  app.post("/api/auth/load-assessment", loadAssessmentData);
 
   // Zoho Integration API routes
   app.use("/api/zoho", zohoRoutes);
