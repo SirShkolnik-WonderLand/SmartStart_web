@@ -46,19 +46,23 @@ interface ComprehensiveReport {
 class ComprehensiveDailyReportService {
   /**
    * Generate comprehensive daily report
-   * If showAllData is true, includes ALL leads regardless of date (for debugging)
+   * If showAllData is true, includes ALL leads regardless of date
+   * DEFAULT: showAllData is now true - shows ALL leads, not just today
    */
-  async generateDailyReport(date: Date = new Date(), showAllData: boolean = false): Promise<ComprehensiveReport> {
+  async generateDailyReport(date: Date = new Date(), showAllData: boolean = true): Promise<ComprehensiveReport> {
     const dateStr = date.toISOString().split('T')[0];
     const startOfDay = new Date(date);
     startOfDay.setHours(0, 0, 0, 0);
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
     
-    // For debugging: if showAllData, get ALL leads from the last 30 days
+    // DEFAULT: Get ALL leads from the last 90 days (or all if showAllData)
+    // This ensures you see ALL leads, not just today's
     if (showAllData) {
-      startOfDay.setDate(startOfDay.getDate() - 30);
-      console.log(`[ComprehensiveReport] 🔍 DEBUG MODE: Including ALL data from last 30 days`);
+      // Go back 90 days to catch all recent leads
+      startOfDay.setDate(startOfDay.getDate() - 90);
+      endOfDay.setDate(endOfDay.getDate() + 1); // Include today
+      console.log(`[ComprehensiveReport] 📊 Showing ALL data from last 90 days (all leads)`);
     }
 
     // Get traffic data
@@ -89,17 +93,17 @@ class ComprehensiveDailyReportService {
       console.error('Failed to fetch traffic data:', error);
     }
 
-    // Get lead data - use broader date range to catch any timezone issues
+    // Get lead data - DEFAULT: Get ALL leads, not just today's
     // Add 12 hours buffer on each side to account for timezone differences
     const startOfDayWithBuffer = new Date(startOfDay);
     startOfDayWithBuffer.setHours(startOfDayWithBuffer.getHours() - 12);
     const endOfDayWithBuffer = new Date(endOfDay);
     endOfDayWithBuffer.setHours(endOfDayWithBuffer.getHours() + 12);
     
-    console.log(`[ComprehensiveReport] Fetching leads for ${dateStr}`);
+    console.log(`[ComprehensiveReport] Fetching leads for report date: ${dateStr}`);
     console.log(`[ComprehensiveReport] Date range: ${startOfDayWithBuffer.toISOString()} to ${endOfDayWithBuffer.toISOString()}`);
     
-    // First, check ALL leads to see what exists
+    // ALWAYS check ALL leads first to see what exists
     const allLeads = analyticsStorage.getAllLeads();
     console.log(`[ComprehensiveReport] 📊 Total leads in storage: ${allLeads.length}`);
     
@@ -111,15 +115,17 @@ class ComprehensiveDailyReportService {
       console.log(`[ComprehensiveReport] Newest lead: ${sortedLeads[sortedLeads.length - 1].timestamp} (${sortedLeads[sortedLeads.length - 1].name})`);
     }
     
+    // Get leads from the date range (now includes last 90 days by default)
     const leads = analyticsStorage.getLeads(startOfDayWithBuffer, endOfDayWithBuffer);
     
-    console.log(`[ComprehensiveReport] Found ${leads.length} leads for ${dateStr}`);
-    
-    // If no leads found but we have leads, warn about it
+    // If no leads in date range but we have leads, use ALL leads instead
+    let finalLeads = leads;
     if (leads.length === 0 && allLeads.length > 0) {
-      console.log(`[ComprehensiveReport] ⚠️  WARNING: No leads found in date range but ${allLeads.length} total leads exist!`);
-      console.log(`[ComprehensiveReport] This suggests a date filtering issue. Consider using showAllData=true for debugging.`);
+      console.log(`[ComprehensiveReport] ⚠️  No leads in date range, using ALL ${allLeads.length} leads instead`);
+      finalLeads = allLeads;
     }
+    
+    console.log(`[ComprehensiveReport] ✅ Using ${finalLeads.length} leads in report`);
     
     const serviceCounts: Record<string, number> = {};
     const sourceCounts: Record<string, number> = {};
@@ -162,7 +168,11 @@ class ComprehensiveDailyReportService {
       .map(([page, count]) => ({ page, count }))
       .sort((a, b) => b.count - a.count);
 
-    const recentLeads = leads.slice(-10).reverse().map(lead => ({
+    // Show ALL recent leads (up to 50), sorted by date (newest first)
+    const recentLeads = finalLeads
+      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+      .slice(0, 50)
+      .map(lead => ({
       name: lead.name,
       email: lead.email,
       service: lead.service || 'General',
@@ -172,15 +182,15 @@ class ComprehensiveDailyReportService {
     // ISO Studio usage (would need to track this separately)
     // For now, we'll estimate from lead data if service includes ISO
     const isoStudio = {
-      assessmentsStarted: leads.filter(l => l.service?.includes('ISO') || l.message?.includes('ISO')).length,
+      assessmentsStarted: finalLeads.filter(l => l.service?.includes('ISO') || l.message?.includes('ISO')).length,
       assessmentsCompleted: 0, // Would need separate tracking
       usersAuthenticated: 0, // Would need separate tracking
     };
 
     // Engagement metrics
-    const learnMoreClicks = leads.filter(l => l.referrer?.includes('Learn More:')).length;
-    const contactFormsSubmitted = leads.length;
-    const consultationRequests = leads.filter(l => 
+    const learnMoreClicks = finalLeads.filter(l => l.referrer?.includes('Learn More:')).length;
+    const contactFormsSubmitted = finalLeads.length;
+    const consultationRequests = finalLeads.filter(l => 
       l.service?.toLowerCase().includes('consultation') || 
       l.message?.toLowerCase().includes('consultation')
     ).length;
@@ -189,7 +199,7 @@ class ComprehensiveDailyReportService {
       date: dateStr,
       traffic: trafficData,
       leads: {
-        totalLeads: leads.length,
+        totalLeads: finalLeads.length,
         leadsByService,
         leadsBySource,
         leadsByPage,
@@ -365,27 +375,34 @@ class ComprehensiveDailyReportService {
               ` : ''}
               
               ${report.leads.recentLeads.length > 0 ? `
-              <h3 style="margin-top: 20px; color: #374151;">Recent Leads</h3>
+              <h3 style="margin-top: 20px; color: #374151;">All Leads (${report.leads.recentLeads.length} shown, ${report.leads.totalLeads} total)</h3>
               <table>
                 <thead>
                   <tr>
+                    <th>Date</th>
                     <th>Name</th>
                     <th>Email</th>
                     <th>Service</th>
-                    <th>Time</th>
+                    <th>Source</th>
                   </tr>
                 </thead>
                 <tbody>
                   ${report.leads.recentLeads.map(lead => `
                     <tr>
+                      <td>${new Date(lead.timestamp).toLocaleDateString()} ${new Date(lead.timestamp).toLocaleTimeString()}</td>
                       <td><strong>${lead.name}</strong></td>
                       <td>${lead.email}</td>
                       <td>${lead.service}</td>
-                      <td>${new Date(lead.timestamp).toLocaleTimeString()}</td>
+                      <td>${lead.source || 'Direct'}</td>
                     </tr>
                   `).join('')}
                 </tbody>
               </table>
+              ${report.leads.totalLeads > report.leads.recentLeads.length ? `
+              <p style="margin-top: 10px; color: #6b7280; font-size: 14px;">
+                Showing ${report.leads.recentLeads.length} most recent leads. Total: ${report.leads.totalLeads} leads.
+              </p>
+              ` : ''}
               ` : ''}
             </div>
 
@@ -415,13 +432,12 @@ class ComprehensiveDailyReportService {
 
   /**
    * Send comprehensive daily report
+   * DEFAULT: showAllData is true - shows ALL leads (last 90 days), not just today
    */
-  async sendDailyReport(date: Date = new Date(), showAllData: boolean = false): Promise<{ success: boolean; error?: string }> {
+  async sendDailyReport(date: Date = new Date(), showAllData: boolean = true): Promise<{ success: boolean; error?: string }> {
     try {
       console.log(`📊 Generating comprehensive daily report for ${date.toISOString().split('T')[0]}...`);
-      if (showAllData) {
-        console.log(`🔍 DEBUG MODE: Including ALL data from last 30 days`);
-      }
+      console.log(`📊 Including ALL leads from last 90 days (not just today)`);
       
       const report = await this.generateDailyReport(date, showAllData);
       
@@ -438,7 +454,7 @@ class ComprehensiveDailyReportService {
       
       const result = await emailService.sendEmail({
         to: 'udi.shkolnik@alicesolutionsgroup.com',
-        subject: `📊 Comprehensive Daily Report - ${report.date}`,
+        subject: `📊 Comprehensive Daily Report - ${report.date} (${report.leads.totalLeads} Leads)`,
         html,
       });
 
