@@ -35,10 +35,16 @@ export async function generate7DayReport() {
     
     const dateStr = date.toISOString().split('T')[0];
     
-    // Get analytics for this day
-    const analytics = await enhancedAnalyticsEmailService.getDailyAnalytics(date);
+    // Get analytics for this day (may fail if auth not configured - that's okay)
+    let analytics = null;
+    try {
+      analytics = await enhancedAnalyticsEmailService.getDailyAnalytics(date);
+    } catch (error) {
+      // Analytics may not be available (e.g., missing auth), continue with 0
+      console.log(`⚠️  Analytics not available for ${dateStr} (may need ANALYTICS_ADMIN_PASSWORD)`);
+    }
     
-    // Get leads for this day
+    // Get leads for this day (this should always work - stored locally)
     const startOfDay = new Date(date);
     startOfDay.setHours(0, 0, 0, 0);
     const endOfDay = new Date(date);
@@ -76,6 +82,11 @@ export async function generate7DayReport() {
   const reportHtml = generateReportHtml(daySummaries, totalVisitors, totalPageViews, totalLeads, leadAnalytics);
 
   // Send email
+  console.log('\n📧 Sending report email...');
+  console.log(`   Total Visitors: ${totalVisitors.toLocaleString()}`);
+  console.log(`   Total Page Views: ${totalPageViews.toLocaleString()}`);
+  console.log(`   Total Leads: ${totalLeads}`);
+  
   const result = await emailService.sendEmail({
     to: 'udi.shkolnik@alicesolutionsgroup.com',
     subject: `📊 7-Day Summary Report - ${sevenDaysAgo.toLocaleDateString()} to ${today.toLocaleDateString()}`,
@@ -84,11 +95,12 @@ export async function generate7DayReport() {
 
   if (result.success) {
     console.log('✅ 7-Day Summary Report sent successfully!');
-    console.log(`   Total Visitors: ${totalVisitors.toLocaleString()}`);
-    console.log(`   Total Page Views: ${totalPageViews.toLocaleString()}`);
-    console.log(`   Total Leads: ${totalLeads}`);
+    console.log(`   Email: udi.shkolnik@alicesolutionsgroup.com`);
   } else {
     console.error('❌ Failed to send report:', result.error);
+    console.log('\n💡 Note: If running locally, SMTP credentials may not be configured.');
+    console.log('   The report will work in production where SMTP credentials are set.');
+    console.log('   You can also view the report HTML by checking the generated content.');
   }
 
   return result;
