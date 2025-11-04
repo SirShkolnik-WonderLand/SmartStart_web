@@ -45,11 +45,21 @@ export async function generate7DayReport() {
     }
     
     // Get leads for this day (this should always work - stored locally)
+    // Add timezone buffer to catch leads across timezones
     const startOfDay = new Date(date);
     startOfDay.setHours(0, 0, 0, 0);
+    startOfDay.setHours(startOfDay.getHours() - 12); // 12 hour buffer
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
-    const dayLeads = analyticsStorage.getLeads(startOfDay, endOfDay);
+    endOfDay.setHours(endOfDay.getHours() + 12); // 12 hour buffer
+    
+    let dayLeads: any[] = [];
+    try {
+      dayLeads = analyticsStorage.getLeads(startOfDay, endOfDay);
+      console.log(`  ${dateStr}: Found ${dayLeads.length} leads in storage`);
+    } catch (error) {
+      console.error(`  ${dateStr}: Error getting leads:`, error);
+    }
     
     const visitors = analytics?.totalVisitors || 0;
     const pageViews = analytics?.totalPageViews || 0;
@@ -68,12 +78,36 @@ export async function generate7DayReport() {
   }
 
   // Get leads for the entire 7-day period
+  // Add timezone buffer to catch all leads
   const startOfPeriod = new Date(sevenDaysAgo);
   startOfPeriod.setHours(0, 0, 0, 0);
+  startOfPeriod.setHours(startOfPeriod.getHours() - 12); // 12 hour buffer
   const endOfPeriod = new Date(today);
   endOfPeriod.setHours(23, 59, 59, 999);
+  endOfPeriod.setHours(endOfPeriod.getHours() + 12); // 12 hour buffer
   
-  const allLeads = analyticsStorage.getLeads(startOfPeriod, endOfPeriod);
+  console.log(`\n📊 Fetching leads from ${startOfPeriod.toISOString()} to ${endOfPeriod.toISOString()}`);
+  let allLeads: any[] = [];
+  try {
+    allLeads = analyticsStorage.getLeads(startOfPeriod, endOfPeriod);
+    console.log(`✅ Found ${allLeads.length} total leads in 7-day period`);
+    
+    // Also check ALL leads to see if there's data at all
+    const allLeadsEver = analyticsStorage.getAllLeads();
+    console.log(`📋 Total leads in storage (all time): ${allLeadsEver.length}`);
+    
+    if (allLeadsEver.length > 0 && allLeads.length === 0) {
+      console.log('⚠️  WARNING: There are leads in storage but none in the last 7 days!');
+      console.log('   This might mean the date filtering is wrong or leads are older than 7 days.');
+      // Show date range of all leads
+      const oldestLead = allLeadsEver[0];
+      const newestLead = allLeadsEver[allLeadsEver.length - 1];
+      console.log(`   Oldest lead: ${oldestLead.timestamp}`);
+      console.log(`   Newest lead: ${newestLead.timestamp}`);
+    }
+  } catch (error) {
+    console.error('❌ Error fetching leads:', error);
+  }
   
   // Aggregate lead analytics for the entire period
   const leadAnalytics = aggregateLeadAnalytics(allLeads);

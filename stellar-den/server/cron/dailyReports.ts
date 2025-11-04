@@ -6,6 +6,7 @@
 import cron from 'node-cron';
 import { enhancedAnalyticsEmailService } from '../services/enhancedAnalyticsEmailService.js';
 import { leadGenerationReportService } from '../services/leadGenerationReportService.js';
+import { comprehensiveDailyReportService } from '../services/comprehensiveDailyReportService.js';
 
 export function startDailyReportsCron() {
   // Daily Traffic & SEO Report at 8:00 AM EST
@@ -58,9 +59,35 @@ export function startDailyReportsCron() {
     }
   });
 
+  // Comprehensive Daily Report at 10:00 AM EST (includes everything)
+  const comprehensiveCronSchedule = process.env.COMPREHENSIVE_REPORT_CRON || '0 10 * * *'; // 10 AM daily
+  
+  console.log('📅 Comprehensive Daily Report scheduled:', comprehensiveCronSchedule);
+
+  cron.schedule(comprehensiveCronSchedule, async () => {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] 📊 Running comprehensive daily report (ALL DATA)...`);
+    try {
+      const result = await comprehensiveDailyReportService.sendDailyReport();
+      if (result.success) {
+        console.log(`[${timestamp}] ✅ Comprehensive daily report sent successfully`);
+      } else {
+        console.error(`[${timestamp}] ❌ Failed to send comprehensive daily report:`, result.error);
+        console.error('   Check SMTP configuration and data storage');
+      }
+    } catch (error) {
+      console.error(`[${timestamp}] ❌ Comprehensive daily report cron error:`, error);
+      if (error instanceof Error) {
+        console.error('   Error details:', error.message);
+        console.error('   Stack:', error.stack);
+      }
+    }
+  });
+
   console.log('✅ All daily reports cron jobs started');
   console.log('   - Traffic Report: 8:00 AM daily');
   console.log('   - Lead Report: 9:00 AM daily');
+  console.log('   - Comprehensive Report (ALL DATA): 10:00 AM daily');
 }
 
 /**
@@ -74,5 +101,10 @@ export async function triggerDailyTrafficReport() {
 export async function triggerDailyLeadReport() {
   console.log('💼 Manually triggering daily lead report...');
   return await leadGenerationReportService.sendDailyLeadReport();
+}
+
+export async function triggerComprehensiveDailyReport() {
+  console.log('📊 Manually triggering comprehensive daily report...');
+  return await comprehensiveDailyReportService.sendDailyReport();
 }
 

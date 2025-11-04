@@ -73,9 +73,19 @@ class AnalyticsStorage {
 
   private saveLeads(leads: LeadData[]): void {
     try {
+      // Ensure directory exists
+      if (!fs.existsSync(DATA_DIR)) {
+        fs.mkdirSync(DATA_DIR, { recursive: true });
+        console.log(`[AnalyticsStorage] Created data directory: ${DATA_DIR}`);
+      }
+      
       fs.writeFileSync(LEADS_FILE, JSON.stringify(leads, null, 2));
+      console.log(`[AnalyticsStorage] ✅ Successfully saved ${leads.length} leads to ${LEADS_FILE}`);
     } catch (error) {
-      console.error('Error saving leads:', error);
+      console.error('[AnalyticsStorage] ❌ Error saving leads:', error);
+      console.error(`[AnalyticsStorage] File path: ${LEADS_FILE}`);
+      console.error(`[AnalyticsStorage] Directory exists: ${fs.existsSync(DATA_DIR)}`);
+      throw error; // Re-throw to ensure callers know it failed
     }
   }
 
@@ -110,6 +120,12 @@ class AnalyticsStorage {
       ...leadData,
     };
     leads.push(newLead);
+    
+    // Debug logging
+    console.log(`[AnalyticsStorage] Storing lead: ${newLead.name} (${newLead.email}) at ${newLead.timestamp}`);
+    console.log(`[AnalyticsStorage] Total leads after save: ${leads.length}`);
+    console.log(`[AnalyticsStorage] Saving to: ${LEADS_FILE}`);
+    
     this.saveLeads(leads);
     return newLead;
   }
@@ -119,9 +135,41 @@ class AnalyticsStorage {
    */
   getLeads(startDate: Date, endDate: Date): LeadData[] {
     const leads = this.loadLeads();
+    
+    // Always log for debugging (reports showing zero)
+    console.log(`[AnalyticsStorage] getLeads: ${leads.length} total leads in storage`);
+    
+    // Convert dates to ISO strings for comparison
     const start = startDate.toISOString();
     const end = endDate.toISOString();
-    return leads.filter(lead => lead.timestamp >= start && lead.timestamp <= end);
+    
+    console.log(`[AnalyticsStorage] Date range: ${start} to ${end}`);
+    
+    if (leads.length > 0) {
+      // Show date range of stored leads
+      const sortedLeads = [...leads].sort((a, b) => 
+        new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+      );
+      console.log(`[AnalyticsStorage] Oldest lead: ${sortedLeads[0].timestamp}`);
+      console.log(`[AnalyticsStorage] Newest lead: ${sortedLeads[sortedLeads.length - 1].timestamp}`);
+    }
+    
+    const filtered = leads.filter(lead => {
+      const leadTime = lead.timestamp;
+      const isInRange = leadTime >= start && leadTime <= end;
+      return isInRange;
+    });
+    
+    console.log(`[AnalyticsStorage] Filtered leads: ${filtered.length} out of ${leads.length} total`);
+    
+    // If no leads found but we have leads, show why
+    if (filtered.length === 0 && leads.length > 0) {
+      console.log(`[AnalyticsStorage] ⚠️  WARNING: No leads in date range!`);
+      console.log(`[AnalyticsStorage] All leads are outside the requested date range.`);
+      console.log(`[AnalyticsStorage] This might indicate a timezone or date calculation issue.`);
+    }
+    
+    return filtered;
   }
 
   /**

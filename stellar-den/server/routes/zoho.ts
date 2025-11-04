@@ -159,7 +159,13 @@ router.post('/contact', async (req: Request, res: Response) => {
     try {
       const { leadTrackingService } = await import('../services/leadTrackingService.js');
       const buttonContext = req.body.buttonContext || 'Contact Page';
-      await leadTrackingService.trackLead({
+      
+      console.log(`[Contact Form] 📝 Tracking lead: ${name} (${email})`);
+      console.log(`[Contact Form] Service: ${service || 'General'}`);
+      console.log(`[Contact Form] Source: ${contactData.referrer || buttonContext}`);
+      console.log(`[Contact Form] Page: ${contactData.pageUrl}`);
+      
+      const trackedLead = await leadTrackingService.trackLead({
         name,
         email,
         company,
@@ -177,9 +183,12 @@ router.post('/contact', async (req: Request, res: Response) => {
         userAgent: userAgent,
         timezone: geolocation?.timezone,
       });
+      
+      console.log(`[Contact Form] ✅ Lead tracked successfully: ${trackedLead.id} at ${trackedLead.timestamp}`);
     } catch (error) {
-      console.error('Failed to track lead:', error);
-      // Don't fail the request if tracking fails
+      console.error('[Contact Form] ❌ Failed to track lead:', error);
+      console.error('[Contact Form] Error details:', error instanceof Error ? error.stack : error);
+      // Don't fail the request if tracking fails, but log it prominently
     }
 
     // Send admin notification with all data
@@ -431,6 +440,36 @@ router.post('/reports/7day', async (req: Request, res: Response) => {
     return res.status(500).json({
       success: false,
       error: error.message || 'Failed to generate 7-day report'
+    });
+  }
+});
+
+/**
+ * Generate and send comprehensive daily report (ALL DATA)
+ */
+router.post('/reports/comprehensive', async (req: Request, res: Response) => {
+  try {
+    console.log('📊 Generating comprehensive daily report...');
+    
+    const { comprehensiveDailyReportService } = await import('../services/comprehensiveDailyReportService.js');
+    const result = await comprehensiveDailyReportService.sendDailyReport();
+    
+    if (result.success) {
+      return res.json({
+        success: true,
+        message: 'Comprehensive daily report sent successfully'
+      });
+    } else {
+      return res.status(500).json({
+        success: false,
+        error: result.error || 'Failed to send report'
+      });
+    }
+  } catch (error: any) {
+    console.error('Comprehensive report error:', error);
+    return res.status(500).json({
+      success: false,
+      error: error.message || 'Failed to generate comprehensive report'
     });
   }
 });
