@@ -446,13 +446,15 @@ router.post('/reports/7day', async (req: Request, res: Response) => {
 
 /**
  * Generate and send comprehensive daily report (ALL DATA)
+ * Query param: ?showAllData=true to include last 30 days of data (for debugging)
  */
 router.post('/reports/comprehensive', async (req: Request, res: Response) => {
   try {
-    console.log('📊 Generating comprehensive daily report...');
+    const showAllData = req.query.showAllData === 'true' || req.query.showAllData === '1';
+    console.log(`📊 Generating comprehensive daily report...${showAllData ? ' (DEBUG: showing ALL data)' : ''}`);
     
     const { comprehensiveDailyReportService } = await import('../services/comprehensiveDailyReportService.js');
-    const result = await comprehensiveDailyReportService.sendDailyReport();
+    const result = await comprehensiveDailyReportService.sendDailyReport(new Date(), showAllData);
     
     if (result.success) {
       return res.json({

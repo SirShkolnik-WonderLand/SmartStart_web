@@ -46,13 +46,20 @@ interface ComprehensiveReport {
 class ComprehensiveDailyReportService {
   /**
    * Generate comprehensive daily report
+   * If showAllData is true, includes ALL leads regardless of date (for debugging)
    */
-  async generateDailyReport(date: Date = new Date()): Promise<ComprehensiveReport> {
+  async generateDailyReport(date: Date = new Date(), showAllData: boolean = false): Promise<ComprehensiveReport> {
     const dateStr = date.toISOString().split('T')[0];
     const startOfDay = new Date(date);
     startOfDay.setHours(0, 0, 0, 0);
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
+    
+    // For debugging: if showAllData, get ALL leads from the last 30 days
+    if (showAllData) {
+      startOfDay.setDate(startOfDay.getDate() - 30);
+      console.log(`[ComprehensiveReport] 🔍 DEBUG MODE: Including ALL data from last 30 days`);
+    }
 
     // Get traffic data
     let trafficData = {
@@ -92,9 +99,27 @@ class ComprehensiveDailyReportService {
     console.log(`[ComprehensiveReport] Fetching leads for ${dateStr}`);
     console.log(`[ComprehensiveReport] Date range: ${startOfDayWithBuffer.toISOString()} to ${endOfDayWithBuffer.toISOString()}`);
     
+    // First, check ALL leads to see what exists
+    const allLeads = analyticsStorage.getAllLeads();
+    console.log(`[ComprehensiveReport] 📊 Total leads in storage: ${allLeads.length}`);
+    
+    if (allLeads.length > 0) {
+      const sortedLeads = [...allLeads].sort((a, b) => 
+        new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+      );
+      console.log(`[ComprehensiveReport] Oldest lead: ${sortedLeads[0].timestamp} (${sortedLeads[0].name})`);
+      console.log(`[ComprehensiveReport] Newest lead: ${sortedLeads[sortedLeads.length - 1].timestamp} (${sortedLeads[sortedLeads.length - 1].name})`);
+    }
+    
     const leads = analyticsStorage.getLeads(startOfDayWithBuffer, endOfDayWithBuffer);
     
     console.log(`[ComprehensiveReport] Found ${leads.length} leads for ${dateStr}`);
+    
+    // If no leads found but we have leads, warn about it
+    if (leads.length === 0 && allLeads.length > 0) {
+      console.log(`[ComprehensiveReport] ⚠️  WARNING: No leads found in date range but ${allLeads.length} total leads exist!`);
+      console.log(`[ComprehensiveReport] This suggests a date filtering issue. Consider using showAllData=true for debugging.`);
+    }
     
     const serviceCounts: Record<string, number> = {};
     const sourceCounts: Record<string, number> = {};
@@ -391,11 +416,24 @@ class ComprehensiveDailyReportService {
   /**
    * Send comprehensive daily report
    */
-  async sendDailyReport(date: Date = new Date()): Promise<{ success: boolean; error?: string }> {
+  async sendDailyReport(date: Date = new Date(), showAllData: boolean = false): Promise<{ success: boolean; error?: string }> {
     try {
       console.log(`📊 Generating comprehensive daily report for ${date.toISOString().split('T')[0]}...`);
+      if (showAllData) {
+        console.log(`🔍 DEBUG MODE: Including ALL data from last 30 days`);
+      }
       
-      const report = await this.generateDailyReport(date);
+      const report = await this.generateDailyReport(date, showAllData);
+      
+      // Add diagnostic info to report if showing zeros
+      if (report.leads.totalLeads === 0) {
+        const allLeads = analyticsStorage.getAllLeads();
+        if (allLeads.length > 0) {
+          console.log(`⚠️  Report shows 0 leads but ${allLeads.length} total leads exist in storage!`);
+          console.log(`   This might indicate a date filtering issue.`);
+        }
+      }
+      
       const html = this.generateReportHtml(report);
       
       const result = await emailService.sendEmail({
