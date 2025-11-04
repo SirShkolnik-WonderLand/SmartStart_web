@@ -49,16 +49,31 @@
           track('pageview', {pageUrl: location.href, pageTitle: document.title});
         } else {
           // Wait for consent - will be tracked when consent is given
-          // This prevents tracking before consent while still allowing immediate tracking after consent
-          const checkConsent = setInterval(() => {
+          // Use longer interval and requestIdleCallback for better performance
+          let checkCount = 0;
+          const maxChecks = 20; // 20 checks * 1000ms = 20 seconds max
+          
+          const checkConsent = () => {
+            if (checkCount >= maxChecks) return;
+            checkCount++;
+            
             if (hasAnalyticsConsent()) {
               track('pageview', {pageUrl: location.href, pageTitle: document.title});
-              clearInterval(checkConsent);
+              return;
             }
-          }, 500);
+            
+            // Use requestIdleCallback if available, otherwise setTimeout with longer delay
+            if (window.requestIdleCallback) {
+              window.requestIdleCallback(() => {
+                setTimeout(checkConsent, 1000);
+              }, { timeout: 2000 });
+            } else {
+              setTimeout(checkConsent, 1000);
+            }
+          };
           
-          // Stop checking after 10 seconds (consent banner should appear by then)
-          setTimeout(() => clearInterval(checkConsent), 10000);
+          // Start checking after a short delay
+          setTimeout(checkConsent, 1000);
         }
         
         // Set config for App.tsx compatibility

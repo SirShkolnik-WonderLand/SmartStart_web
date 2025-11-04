@@ -50,9 +50,18 @@ export default function AdvisorBot({ stats, controls, project, userName }: Advis
     generateAdvice();
     setIsVisible(true);
 
-    timeoutRef.current = setTimeout(() => {
-      setIsVisible(false);
-    }, 7000);
+    // Use requestIdleCallback for better performance
+    if (window.requestIdleCallback) {
+      timeoutRef.current = window.setTimeout(() => {
+        window.requestIdleCallback(() => {
+          setIsVisible(false);
+        }, { timeout: 100 });
+      }, 7000);
+    } else {
+      timeoutRef.current = setTimeout(() => {
+        setIsVisible(false);
+      }, 7000);
+    }
   };
 
   const handleClose = () => {

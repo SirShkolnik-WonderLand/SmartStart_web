@@ -5,12 +5,27 @@ export default function Footer() {
   const [owlBlink, setOwlBlink] = useState(false);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setOwlBlink(true);
-      setTimeout(() => setOwlBlink(false), 300);
-    }, 30000);
+    // Use requestAnimationFrame for smoother animation
+    let timeoutId: ReturnType<typeof setTimeout>;
+    
+    const scheduleBlink = () => {
+      timeoutId = setTimeout(() => {
+        setOwlBlink(true);
+        // Use requestAnimationFrame for smoother animation
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            setOwlBlink(false);
+            scheduleBlink(); // Schedule next blink
+          }, 300);
+        });
+      }, 30000);
+    };
+    
+    scheduleBlink();
 
-    return () => clearInterval(interval);
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
   }, []);
 
   return (

@@ -38,15 +38,35 @@ export function useAnalyticsPageTracking() {
   const location = useLocation();
 
   useEffect(() => {
-    // Wait for analytics to be ready
-    const checkAnalytics = setInterval(() => {
+    // Wait for analytics to be ready - use longer interval to avoid performance issues
+    let checkCount = 0;
+    const maxChecks = 50; // 50 checks * 200ms = 10 seconds max
+    
+    const checkAnalytics = () => {
+      if (checkCount >= maxChecks) return;
+      checkCount++;
+      
       if ((window as any).analyticsHub) {
         (window as any).analyticsHub.trackPageView();
-        clearInterval(checkAnalytics);
+        return;
       }
-    }, 100);
+      
+      // Use requestIdleCallback if available for better performance
+      if (window.requestIdleCallback) {
+        window.requestIdleCallback(() => {
+          setTimeout(checkAnalytics, 200);
+        }, { timeout: 500 });
+      } else {
+        setTimeout(checkAnalytics, 200);
+      }
+    };
+    
+    // Start checking after a short delay
+    const timeoutId = setTimeout(checkAnalytics, 100);
 
-    return () => clearInterval(checkAnalytics);
+    return () => {
+      clearTimeout(timeoutId);
+    };
   }, [location.pathname]);
 }
 
