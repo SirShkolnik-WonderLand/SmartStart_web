@@ -172,12 +172,24 @@ class ComprehensiveDailyReportService {
     const recentLeads = finalLeads
       .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
       .slice(0, 50)
-      .map(lead => ({
-      name: lead.name,
-      email: lead.email,
-      service: lead.service || 'General',
-      timestamp: lead.timestamp,
-    }));
+      .map(lead => {
+        // Categorize source
+        let source = lead.referrer || 'Direct';
+        if (source.includes('Learn More:')) {
+          source = source; // Keep full context
+        } else if (source.includes('google')) source = 'Google';
+        else if (source.includes('linkedin')) source = 'LinkedIn';
+        else if (source.includes('alicesolutionsgroup.com')) source = 'Internal';
+        else if (source !== 'Direct') source = 'Referral';
+        
+        return {
+          name: lead.name,
+          email: lead.email,
+          service: lead.service || 'General',
+          source: source,
+          timestamp: lead.timestamp,
+        };
+      });
 
     // ISO Studio usage (would need to track this separately)
     // For now, we'll estimate from lead data if service includes ISO
