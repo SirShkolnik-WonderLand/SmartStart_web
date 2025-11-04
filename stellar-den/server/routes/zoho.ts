@@ -406,6 +406,36 @@ router.post('/reports/leads', async (req: Request, res: Response) => {
 });
 
 /**
+ * Generate and send 7-day summary report
+ */
+router.post('/reports/7day', async (req: Request, res: Response) => {
+  try {
+    console.log('📊 Generating 7-day summary report...');
+    
+    const { generate7DayReport } = await import('../../scripts/send-7day-report.js');
+    const result = await generate7DayReport();
+    
+    if (result.success) {
+      return res.json({
+        success: true,
+        message: '7-day summary report sent successfully'
+      });
+    } else {
+      return res.status(500).json({
+        success: false,
+        error: result.error || 'Failed to send report'
+      });
+    }
+  } catch (error: any) {
+    console.error('7-day report error:', error);
+    return res.status(500).json({
+      success: false,
+      error: error.message || 'Failed to generate 7-day report'
+    });
+  }
+});
+
+/**
  * Manual trigger for daily analytics report (legacy - kept for compatibility)
  */
 router.post('/analytics/report', async (req: Request, res: Response) => {
