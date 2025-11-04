@@ -52,8 +52,8 @@ export function useAnalyticsPageTracking() {
       }
       
       // Use requestIdleCallback if available for better performance
-      if (window.requestIdleCallback) {
-        window.requestIdleCallback(() => {
+      if (typeof window !== 'undefined' && (window as any).requestIdleCallback) {
+        (window as any).requestIdleCallback(() => {
           setTimeout(checkAnalytics, 200);
         }, { timeout: 500 });
       } else {

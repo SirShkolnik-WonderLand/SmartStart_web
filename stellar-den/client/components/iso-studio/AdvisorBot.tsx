@@ -51,9 +51,9 @@ export default function AdvisorBot({ stats, controls, project, userName }: Advis
     setIsVisible(true);
 
     // Use requestIdleCallback for better performance
-    if (window.requestIdleCallback) {
+    if (typeof window !== 'undefined' && (window as any).requestIdleCallback) {
       timeoutRef.current = window.setTimeout(() => {
-        window.requestIdleCallback(() => {
+        (window as any).requestIdleCallback(() => {
           setIsVisible(false);
         }, { timeout: 100 });
       }, 7000);
