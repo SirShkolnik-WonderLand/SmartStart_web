@@ -149,6 +149,12 @@ export async function createServer() {
     fallthrough: false
   }));
   
+  // Handle 404 for assets - return proper 404, not HTML
+  app.use('/assets', (req, res) => {
+    // If we get here, the static middleware didn't find the file
+    res.status(404).type('text/plain').send('Asset not found');
+  });
+  
   // Serve other static files (images, etc.)
   app.use(express.static(staticPath, {
     // Don't serve index.html for static files

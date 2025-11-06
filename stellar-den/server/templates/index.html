@@ -11,8 +11,36 @@
     
     <!-- Load CSS only if it exists as a separate file -->
     <!-- If CSSHASH is null, CSS is inlined in JS and will load via JS import -->
-    <!-- CSSLINK placeholder will be replaced by server -->
-    {{CSSLINK}}
+    <script nonce="{{NONCE}}">
+      (function() {
+        const cssHash = '{{CSSHASH}}';
+        
+        // Only load CSS if hash is provided and not null/empty/fallback
+        if (cssHash && cssHash !== 'null' && cssHash !== 'BUSY1Sdf' && cssHash.trim() !== '') {
+          const link = document.createElement('link');
+          link.rel = 'stylesheet';
+          link.href = '/assets/index-' + cssHash + '.css';
+          link.crossOrigin = 'anonymous';
+          
+          // Remove link on error to prevent MIME type errors
+          link.onerror = function() {
+            console.log('CSS file not found - CSS will load via JS bundle');
+            // Remove immediately to prevent MIME type error
+            if (link.parentNode) {
+              link.parentNode.removeChild(link);
+            }
+          };
+          
+          link.onload = function() {
+            console.log('CSS loaded successfully from separate file');
+          };
+          
+          document.head.appendChild(link);
+        } else {
+          console.log('CSS will load via JS bundle (no separate CSS file or hash is fallback)');
+        }
+      })();
+    </script>
     
     <!-- Analytics Hub Script with nonce -->
     <script nonce="{{NONCE}}">
