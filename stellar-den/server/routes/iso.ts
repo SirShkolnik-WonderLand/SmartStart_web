@@ -54,16 +54,52 @@ const loadControls = (): Control[] => {
 
 const loadStoryBotQuestions = (): StoryBotQuestion[] => {
   const filePath = path.join(__dirname, "../data/story-bot-questions.json");
+  console.log('[ISO] Loading questions from:', filePath);
+  console.log('[ISO] __dirname:', __dirname);
+  console.log('[ISO] File exists:', fs.existsSync(filePath));
   
   // Check if file exists
   if (!fs.existsSync(filePath)) {
     console.error(`[ISO] Story bot questions file not found: ${filePath}`);
+    // Try alternative paths
+    const altPath1 = path.join(__dirname, "../../server/data/story-bot-questions.json");
+    const altPath2 = path.join(process.cwd(), "server/data/story-bot-questions.json");
+    console.log('[ISO] Trying alternative path 1:', altPath1, 'exists:', fs.existsSync(altPath1));
+    console.log('[ISO] Trying alternative path 2:', altPath2, 'exists:', fs.existsSync(altPath2));
+    
+    if (fs.existsSync(altPath1)) {
+      console.log('[ISO] Using alternative path 1');
+      try {
+        const data = JSON.parse(fs.readFileSync(altPath1, "utf-8"));
+        console.log('[ISO] Loaded questions from alt path 1:', data.questions?.length || 0);
+        return data.questions || [];
+      } catch (error) {
+        console.error('[ISO] Failed to load from alt path 1:', error);
+      }
+    }
+    
+    if (fs.existsSync(altPath2)) {
+      console.log('[ISO] Using alternative path 2');
+      try {
+        const data = JSON.parse(fs.readFileSync(altPath2, "utf-8"));
+        console.log('[ISO] Loaded questions from alt path 2:', data.questions?.length || 0);
+        return data.questions || [];
+      } catch (error) {
+        console.error('[ISO] Failed to load from alt path 2:', error);
+      }
+    }
+    
     // Return empty array instead of throwing error
     return [];
   }
   
   try {
-    const data = JSON.parse(fs.readFileSync(filePath, "utf-8"));
+    const rawData = fs.readFileSync(filePath, "utf-8");
+    console.log('[ISO] Raw file data length:', rawData.length);
+    const data = JSON.parse(rawData);
+    console.log('[ISO] Parsed data keys:', Object.keys(data));
+    console.log('[ISO] Questions array:', Array.isArray(data.questions));
+    console.log('[ISO] Questions count:', data.questions?.length || 0);
     return data.questions || [];
   } catch (error) {
     console.error(`[ISO] Failed to load story bot questions:`, error);
