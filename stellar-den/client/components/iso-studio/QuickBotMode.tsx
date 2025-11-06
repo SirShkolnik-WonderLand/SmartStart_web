@@ -216,8 +216,11 @@ export default function QuickBotMode({ onComplete }: QuickBotModeProps) {
             score: 0
           }
         ];
+        console.log('[QuickBotMode] Using fallback questions:', fallbackQuestions.length);
         setQuestions(fallbackQuestions);
+        setLoading(false);
       } finally {
+        console.log('[QuickBotMode] Load questions complete, loading set to false');
         setLoading(false);
       }
     };
