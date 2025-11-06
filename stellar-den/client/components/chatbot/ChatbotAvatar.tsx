@@ -386,7 +386,11 @@ export function ChatbotAvatar({
       {/* Rotating halo ring */}
       {(state === 'listening' || state === 'talking') && (
         <motion.div
-          className={`absolute ${size === 'large' ? 'w-48 h-48' : 'w-40 h-40'}`}
+          className={`absolute ${
+            size === 'large' ? 'w-48 h-48' : 
+            size === 'small' ? 'w-12 h-12' : 
+            'w-40 h-40'
+          }`}
           variants={haloRotation}
           animate={state}
         >
