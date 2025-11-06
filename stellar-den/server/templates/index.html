@@ -23,10 +23,12 @@
           
           link.onerror = function() {
             console.log('CSS file not found - CSS will load via JS bundle');
+            // Remove immediately to prevent MIME type error
             if (link.parentNode) {
               link.parentNode.removeChild(link);
             }
             // CSS will load when JS bundle executes (App.tsx imports global.css)
+            // Don't try to load again - JS bundle will handle it
           };
           
           link.onload = function() {
@@ -160,6 +162,33 @@
     <div id="root"></div>
 
     <!-- Main application script with nonce -->
+    <!-- This script will inject CSS when it loads (App.tsx imports global.css) -->
     <script type="module" src="/assets/index-{{HASH}}.js" nonce="{{NONCE}}"></script>
+    
+    <!-- Ensure CSS loads even if separate file doesn't exist -->
+    <!-- CSS is imported in App.tsx, so it will load when JS bundle executes -->
+    <script nonce="{{NONCE}}">
+      // Fallback: If CSS hasn't loaded after JS executes, it means CSS is in the JS bundle
+      // This is normal and expected when cssCodeSplit: false or CSS is inlined
+      window.addEventListener('load', function() {
+        // Check if CSS has loaded (either via link tag or injected by JS)
+        const hasCSS = document.querySelector('link[rel="stylesheet"][href*="index-"]') ||
+                      document.querySelector('style[data-vite-dev-id]') ||
+                      document.querySelector('style[data-emotion]') ||
+                      getComputedStyle(document.body).getPropertyValue('--primary');
+        
+        if (!hasCSS) {
+          console.warn('CSS may not have loaded - checking JS bundle...');
+          // CSS should be in JS bundle, wait a bit more
+          setTimeout(function() {
+            const stillNoCSS = !document.querySelector('style') && 
+                              !getComputedStyle(document.body).fontFamily;
+            if (stillNoCSS) {
+              console.error('CSS failed to load - styles may be missing');
+            }
+          }, 1000);
+        }
+      });
+    </script>
   </body>
 </html>
