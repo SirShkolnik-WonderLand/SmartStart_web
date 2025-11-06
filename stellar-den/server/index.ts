@@ -133,11 +133,15 @@ export async function createServer() {
   console.log('Static files path:', staticPath);
   console.log('Static path exists:', fs.existsSync(staticPath));
   
-  // Add explicit MIME type handling for JavaScript files
+  // Add explicit MIME type handling for JavaScript and CSS files
   app.use('/assets', express.static(path.join(staticPath, 'assets'), {
-    setHeaders: (res, path) => {
-      if (path.endsWith('.js')) {
+    setHeaders: (res, filePath) => {
+      if (filePath.endsWith('.js')) {
         res.setHeader('Content-Type', 'application/javascript');
+        res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+      } else if (filePath.endsWith('.css')) {
+        res.setHeader('Content-Type', 'text/css');
+        res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
       }
     }
   }));
