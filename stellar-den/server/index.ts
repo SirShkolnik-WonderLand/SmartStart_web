@@ -133,7 +133,8 @@ export async function createServer() {
   console.log('Static files path:', staticPath);
   console.log('Static path exists:', fs.existsSync(staticPath));
   
-  // Add explicit MIME type handling for JavaScript and CSS files
+  // CRITICAL: Serve assets BEFORE the catch-all route
+  // This ensures CSS/JS files are served with correct MIME types
   app.use('/assets', express.static(path.join(staticPath, 'assets'), {
     setHeaders: (res, filePath) => {
       if (filePath.endsWith('.js')) {
@@ -143,17 +144,34 @@ export async function createServer() {
         res.setHeader('Content-Type', 'text/css');
         res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
       }
-    }
+    },
+    // Don't fall through to catch-all if file doesn't exist
+    fallthrough: false
   }));
   
-  app.use(express.static(staticPath));
+  // Serve other static files (images, etc.)
+  app.use(express.static(staticPath, {
+    // Don't serve index.html for static files
+    index: false
+  }));
 
   // Serve HTML with nonce for SPA (catch-all route - must be last before error handler)
-  // Only catch routes that don't start with /api
+  // Only catch routes that don't start with /api or /assets
   app.get('*', (req, res) => {
     // Skip API routes
     if (req.path.startsWith('/api/')) {
       return res.status(404).json({ error: 'API endpoint not found' });
+    }
+    
+    // Skip asset requests (CSS, JS, images) - these should be handled by static middleware
+    // If we reach here for an asset, it means the file doesn't exist
+    if (req.path.startsWith('/assets/')) {
+      // Check if it's a CSS request
+      if (req.path.endsWith('.css')) {
+        return res.status(404).setHeader('Content-Type', 'text/css').send('/* CSS file not found */');
+      }
+      // For other assets, return 404
+      return res.status(404).json({ error: 'Asset not found' });
     }
     let templatePath = ''; // Declare outside try block for error logging
     
@@ -207,6 +225,32 @@ export async function createServer() {
         }
       } catch (error) {
         console.log('Could not determine asset hashes, using fallback:', error);
+      }
+      
+      // Replace placeholders
+      html = html.replace(/\{\{NONCE\}\}/g, nonce);
+      html = html.replace(/\{\{HASH\}\}/g, jsHash);
+      html = html.replace(/\{\{CSSHASH\}\}/g, cssHash);
+      html = html.replace(/\{\{ANALYTICS_API_URL\}\}/g, process.env.ANALYTICS_API_URL || 'https://analytics-hub-server.onrender.com');
+      
+      res.setHeader('Content-Type', 'text/html');
+      res.send(html);
+    } catch (error) {
+      console.error('Error serving HTML:', error);
+      console.error('Template path attempted:', templatePath);
+      console.error('Current working directory:', process.cwd());
+      console.error('__dirname:', __dirname);
+      res.status(500).send('Internal Server Error');
+    }
+  });
+
+  // Error handling (must be last)
+  app.use(errorHandler);
+
+  return app;
+}
+
+        console.log('[HTML] Could not determine asset hashes:', error);
       }
       
       // Replace placeholders

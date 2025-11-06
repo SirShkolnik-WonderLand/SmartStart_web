@@ -16,12 +16,19 @@ export default defineConfig(({ mode }) => ({
   build: {
     outDir: "dist/spa",
     cssCodeSplit: false, // Extract all CSS into a single file for easier loading
+    cssMinify: true,
     rollupOptions: {
       output: {
         // Add nonce placeholder for CSP
         entryFileNames: 'assets/[name]-[hash].js',
         chunkFileNames: 'assets/[name]-[hash].js',
-        assetFileNames: 'assets/[name]-[hash].[ext]'
+        assetFileNames: (assetInfo) => {
+          // Ensure CSS files get proper naming
+          if (assetInfo.name && assetInfo.name.endsWith('.css')) {
+            return 'assets/[name]-[hash][extname]';
+          }
+          return 'assets/[name]-[hash].[ext]';
+        }
       }
     }
   },

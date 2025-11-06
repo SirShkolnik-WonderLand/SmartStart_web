@@ -1,0 +1,347 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "lastUpdated": "2025-01-27",
+    "description": "Comprehensive FAQ knowledge base for Helpy - AliceSolutions Group website bot",
+    "botName": "Helpy",
+    "company": "AliceSolutions Group"
+  },
+  "companyInfo": {
+    "name": "AliceSolutions Group",
+    "leader": "Udi Shkolnik",
+    "location": "Toronto, Canada",
+    "serviceAreas": ["Canada", "Israel", "Worldwide (remote)"],
+    "mission": "Help people and businesses grow differently – safer, smarter, and more sustainable.",
+    "focus": [
+      "Cybersecurity and compliance",
+      "ISO standards (ISO 27001, ISO 27799, ISO 9001)",
+      "Practical IT and cloud security",
+      "Helping founders and businesses build real products and startups"
+    ]
+  },
+  "tone": {
+    "style": "Simple, clear English",
+    "personality": "Friendly, honest, and direct",
+    "guidelines": [
+      "Always speak in simple, clear English",
+      "Be friendly, honest, and direct",
+      "If not 100% sure about details (pricing, legal terms), say so and invite user to contact us",
+      "Focus on: Cybersecurity and compliance, ISO projects and security leadership, SmartStart venture building, SmartStart community and ISO Studio",
+      "If asked about something we don't offer, be honest and suggest the closest thing we do offer"
+    ]
+  },
+  "faqs": [
+    {
+      "id": "company-001",
+      "category": "company",
+      "tags": ["about", "who", "introduction"],
+      "question": "What is AliceSolutions Group?",
+      "answer": "AliceSolutions Group is a cybersecurity, compliance, and venture-building studio led by Udi Shkolnik. We help companies secure their systems, get ISO certifications, and co-build real products and startups through our SmartStart program. We're based in Toronto, Canada, and work with clients in Canada, Israel, and worldwide (remote).",
+      "relatedQuestions": ["company-002", "company-003"]
+    },
+    {
+      "id": "company-002",
+      "category": "company",
+      "tags": ["about", "mission", "purpose"],
+      "question": "What is your mission?",
+      "answer": "Our mission is simple: Help people and businesses grow differently – safer, smarter, and more sustainable. We focus on cybersecurity, compliance, ISO standards, and practical IT security while helping founders build real products and startups.",
+      "relatedQuestions": ["company-001"]
+    },
+    {
+      "id": "company-003",
+      "category": "company",
+      "tags": ["about", "location", "where"],
+      "question": "Where are you located?",
+      "answer": "We are based in Toronto, Canada, and work with clients in Canada, Israel, and worldwide (remote).",
+      "relatedQuestions": ["company-001"]
+    },
+    {
+      "id": "services-001",
+      "category": "services",
+      "tags": ["services", "what", "offerings"],
+      "question": "What services do you offer?",
+      "answer": "We offer two main pillars: 1) Security & Compliance Services including CISO-as-a-Service, ISO 27001/27799/9001 projects, security and cloud architecture, privacy and healthcare security, and security awareness training. 2) SmartStart - our venture and community ecosystem where we co-build startups with founders and run a community of builders.",
+      "relatedQuestions": ["services-002", "services-003", "services-004", "smartstart-001"]
+    },
+    {
+      "id": "services-002",
+      "category": "services",
+      "tags": ["ciso", "virtual-ciso", "security-leadership"],
+      "question": "What is CISO-as-a-Service?",
+      "answer": "CISO-as-a-Service (also called Virtual CISO) means we act as your part-time Chief Information Security Officer. We build and run your security program, help with strategy, policies, and real-world decisions. This is perfect for growing companies who need security leadership but aren't ready for a full-time CISO.",
+      "relatedQuestions": ["services-001", "services-003"]
+    },
+    {
+      "id": "services-003",
+      "category": "services",
+      "tags": ["iso", "iso-27001", "compliance", "certification"],
+      "question": "What ISO services do you provide?",
+      "answer": "We provide comprehensive ISO project support including: Gap assessments (where you are now vs where you need to be), Risk assessments and risk treatment plans, Policies, procedures, and documentation, Preparing for certification audits and supporting you during them. We work with ISO 27001, ISO 27799, ISO 9001, and related standards.",
+      "relatedQuestions": ["services-001", "iso-studio-001"]
+    },
+    {
+      "id": "services-004",
+      "category": "services",
+      "tags": ["security-architecture", "cloud", "governance"],
+      "question": "What is Security Architecture & Governance?",
+      "answer": "We review your current systems and cloud setups, design secure environments (networks, servers, SaaS, data flows), and help you choose and configure security tools (XDR, backups, DLP, WAF, etc.). We focus on building security that actually works in daily operations, not just paper compliance.",
+      "relatedQuestions": ["services-001"]
+    },
+    {
+      "id": "services-005",
+      "category": "services",
+      "tags": ["healthcare", "phi", "pii", "privacy", "phipa"],
+      "question": "Do you work with healthcare organizations?",
+      "answer": "Yes! We specialize in healthcare and privacy security. We help protect PHI (health data) and PII (personal data), align with regulations and best practices, and support clinics, health platforms, and other regulated environments. We have expertise in PHIPA (Ontario) and PIPEDA (Canada).",
+      "relatedQuestions": ["services-001", "audience-003"]
+    },
+    {
+      "id": "services-006",
+      "category": "services",
+      "tags": ["training", "awareness", "security-culture"],
+      "question": "Do you provide security training?",
+      "answer": "Yes. We provide security training and awareness programs. This includes training teams about threats (phishing, ransomware, insider risks), creating simple, usable security processes, and helping companies build a culture of responsibility, not just checklists.",
+      "relatedQuestions": ["services-001"]
+    },
+    {
+      "id": "services-007",
+      "category": "services",
+      "tags": ["company-size", "startups", "enterprise"],
+      "question": "Do you only work with big companies?",
+      "answer": "No. We work with startups, growing companies, and established organizations, especially if they deal with sensitive data or want to get certified. What matters most is that you are serious about security, quality, and building something real.",
+      "relatedQuestions": ["services-001", "audience-001"]
+    },
+    {
+      "id": "smartstart-001",
+      "category": "smartstart",
+      "tags": ["smartstart", "what", "overview"],
+      "question": "What is SmartStart?",
+      "answer": "SmartStart is our venture and community ecosystem. It has two main parts: 1) Venture Building Program - where we co-build startups with founders and usually take 10-20% equity, and 2) Community & Learning - a group of founders, tech people, security people, creators, and operators who learn, create, and share opportunities together.",
+      "relatedQuestions": ["smartstart-002", "smartstart-003", "smartstart-004"]
+    },
+    {
+      "id": "smartstart-002",
+      "category": "smartstart",
+      "tags": ["venture-building", "co-founding", "equity"],
+      "question": "How does SmartStart Venture Building work?",
+      "answer": "In the Venture Building track, we build real products together with founders. We join as technical and security co-founders, help with architecture and technical roadmap, security and compliance from day one, and product strategy and operations structure. In return, we usually take 10-20% equity (depends on the project and level of involvement). We stay involved until the product is launched and stable.",
+      "relatedQuestions": ["smartstart-001", "smartstart-005"]
+    },
+    {
+      "id": "smartstart-003",
+      "category": "smartstart",
+      "tags": ["community", "members", "learning"],
+      "question": "What is the SmartStart Community?",
+      "answer": "The SmartStart Community is a group of founders and future founders, tech people, security people, creators, and operators who want to build, learn, and earn together. Community members can join calls, workshops, and 'Launch & Learn' sessions, take part in real projects (not just theory), get guidance on security, architecture, and operations, and be invited into new ventures when there is a good match.",
+      "relatedQuestions": ["smartstart-001", "smartstart-006", "community-001"]
+    },
+    {
+      "id": "smartstart-004",
+      "category": "smartstart",
+      "tags": ["examples", "ventures", "case-studies"],
+      "question": "What ventures have been built through SmartStart?",
+      "answer": "Some real examples of ventures built or co-built through SmartStart include: Table Go (Restaurant & table management platform), MovedIn (Moving automation platform), Delta (D.E.L.T.A.) - Marketing SOAR / analytics platform, Syncary (Work & operations management system - 'better than Monday.com'), and Clinic-e / clinic tools (Tools for small clinics and healthcare businesses).",
+      "relatedQuestions": ["smartstart-001", "smartstart-002"]
+    },
+    {
+      "id": "smartstart-005",
+      "category": "smartstart",
+      "tags": ["venture-building", "eligibility", "requirements"],
+      "question": "Can SmartStart build my idea?",
+      "answer": "SmartStart can help if your idea is serious, long-term, and you're ready to treat it as a real business. We don't just build MVPs and disappear – we prefer long-term partnerships where we share responsibility and upside. The best way to see if there's a fit is to apply or contact us through the website.",
+      "relatedQuestions": ["smartstart-001", "smartstart-002", "getting-started-001"]
+    },
+    {
+      "id": "smartstart-006",
+      "category": "smartstart",
+      "tags": ["community", "join", "membership"],
+      "question": "How do I join the SmartStart Community?",
+      "answer": "You can join the SmartStart Community by applying through the SmartStart page or contacting us. We usually start with a conversation to understand who you are, what you want to build, and how we can support each other.",
+      "relatedQuestions": ["smartstart-001", "smartstart-003", "getting-started-001"]
+    },
+    {
+      "id": "smartstart-007",
+      "category": "smartstart",
+      "tags": ["membership", "pricing", "cost"],
+      "question": "What's included in the SmartStart membership?",
+      "answer": "Your $99.80/month membership includes: Zoho enterprise suite (CRM, Projects, Books, Mail, Cliq), Acronis security & backup, mentorship from Udi Shkolnik and peers, frameworks for funding and ISO compliance, and secure data handling (GDPR + PIPEDA aligned).",
+      "relatedQuestions": ["smartstart-001", "pricing-001"]
+    },
+    {
+      "id": "smartstart-008",
+      "category": "smartstart",
+      "tags": ["wonderland", "difference", "comparison"],
+      "question": "How is WonderLand different from SmartStart?",
+      "answer": "WonderLand is our community where you can attend events, network, and explore ideas. SmartStart ($99.80/month) gives you access to enterprise tools, mentorship, and security. WonderLand is the playground where ideas are born. SmartStart is the lab where those ideas become real.",
+      "relatedQuestions": ["smartstart-001", "community-001"]
+    },
+    {
+      "id": "iso-studio-001",
+      "category": "iso-studio",
+      "tags": ["iso-studio", "what", "templates"],
+      "question": "What is ISO Studio?",
+      "answer": "ISO Studio is our ISO toolkit focused on making ISO work easier and faster. It includes templates (policies, procedures, risk forms), playbooks and guides for ISO 27001, 27799, 9001, and similar standards, and practical tools that Udi uses in real client projects. The goal is to help companies avoid 'paper only' compliance and build security that actually works.",
+      "relatedQuestions": ["services-003", "iso-studio-002"]
+    },
+    {
+      "id": "iso-studio-002",
+      "category": "iso-studio",
+      "tags": ["templates", "purchase", "buy"],
+      "question": "Can I buy ISO templates from you?",
+      "answer": "Yes, we offer ISO templates and project support through ISO Studio. The exact options may change over time, so the best way is to contact us and tell us which standards and goals you have. We'll match you with the right option.",
+      "relatedQuestions": ["iso-studio-001", "getting-started-001"]
+    },
+    {
+      "id": "audience-001",
+      "category": "audience",
+      "tags": ["who", "target", "clients"],
+      "question": "Who is this for?",
+      "answer": "We serve: Startups and founders (especially in tech, healthcare, logistics, and SaaS) who want secure and compliant products from day one. Growing companies who need ISO 27001, ISO 27799, ISO 9001, or similar standards, or want a part-time CISO. Clinics and health platforms dealing with sensitive health data. Organizations who are 'messy but serious' - they know things are chaotic, they're ready to fix it, and want a partner who speaks both tech and business.",
+      "relatedQuestions": ["audience-002", "audience-003", "services-007"]
+    },
+    {
+      "id": "audience-002",
+      "category": "audience",
+      "tags": ["solo-founder", "individual", "one-person"],
+      "question": "I'm just one person with an idea, is this for me?",
+      "answer": "Yes, if you are serious about turning your idea into a real product or business, SmartStart might be a good fit. We can explore together what stage you are at and what support you need.",
+      "relatedQuestions": ["audience-001", "smartstart-005", "getting-started-001"]
+    },
+    {
+      "id": "audience-003",
+      "category": "audience",
+      "tags": ["healthcare", "clinics", "health-platforms"],
+      "question": "Do you work with healthcare organizations?",
+      "answer": "Yes! We specialize in healthcare and privacy security. We help protect PHI (health data) and PII (personal data), align with regulations and best practices, and support clinics, health platforms, and other regulated environments. We have expertise in PHIPA (Ontario) and PIPEDA (Canada).",
+      "relatedQuestions": ["audience-001", "services-005"]
+    },
+    {
+      "id": "getting-started-001",
+      "category": "getting-started",
+      "tags": ["start", "begin", "first-step", "contact"],
+      "question": "How can I start working with you?",
+      "answer": "The best first step is to contact us through the website and book a short call. We'll ask a few questions, understand your situation, and recommend the right next step: a small assessment, an ISO project, CISO-as-a-Service, or a SmartStart collaboration.",
+      "relatedQuestions": ["getting-started-002", "pricing-001"]
+    },
+    {
+      "id": "getting-started-002",
+      "category": "getting-started",
+      "tags": ["process", "workflow", "how-it-works"],
+      "question": "How does working with AliceSolutions usually start?",
+      "answer": "Typical entry points: 1) Discovery Call / Intro - Short call to understand the situation, you share your challenges or idea, we explain how we might help. 2) Small First Project or Assessment - Example: security gap assessment, ISO readiness check, or architecture review. Goal: create clarity, quick wins, and a roadmap. 3) Ongoing Engagement - This can be CISO-as-a-Service (monthly), a full ISO project, a venture-building relationship under SmartStart, or a mix.",
+      "relatedQuestions": ["getting-started-001", "pricing-001"]
+    },
+    {
+      "id": "pricing-001",
+      "category": "pricing",
+      "tags": ["cost", "price", "pricing", "how-much"],
+      "question": "How much does it cost?",
+      "answer": "Pricing depends on the scope: simple assessments cost less, full ISO projects and venture-building cost more. Because every client is different, we do not show fixed prices on the website. The best next step is to book a quick call so we can understand your needs and give a realistic range.",
+      "relatedQuestions": ["getting-started-001", "smartstart-007"]
+    },
+    {
+      "id": "pricing-002",
+      "category": "pricing",
+      "tags": ["billing", "cancellation", "commitment"],
+      "question": "What's the billing and cancellation policy?",
+      "answer": "SmartStart is $99.80 CAD/month + tax. You can cancel anytime with no long-term commitment. Billing is handled through Zoho Subscriptions. You'll be charged monthly on the same date you first subscribed.",
+      "relatedQuestions": ["pricing-001", "smartstart-007"]
+    },
+    {
+      "id": "pricing-003",
+      "category": "pricing",
+      "tags": ["commitment", "long-term", "contract"],
+      "question": "Do I need to commit long-term?",
+      "answer": "No. SmartStart is month-to-month with no long-term commitment. You can cancel anytime.",
+      "relatedQuestions": ["pricing-001", "pricing-002"]
+    },
+    {
+      "id": "community-001",
+      "category": "community",
+      "tags": ["events", "meetups", "workshops"],
+      "question": "What community events do you host?",
+      "answer": "We host several types of events: Launch & Learn Sessions (bi-weekly) - Builders demo what they've shipped, live product demonstrations and technical deep dives. Beer + Security Nights (monthly) - Founded by Udi, casual networking for cybersecurity professionals in Toronto's tech pubs. Workshops (monthly) - Technical deep dives covering topics like Mapbox APIs, ISO preparation, and security best practices. Founder Roundtables (monthly) - Intimate discussions with Udi and industry peers. All events are hybrid (GTA + online).",
+      "relatedQuestions": ["smartstart-003", "community-002"]
+    },
+    {
+      "id": "community-002",
+      "category": "community",
+      "tags": ["community-hub", "platform", "tools"],
+      "question": "What is the Community Hub?",
+      "answer": "The Community Hub is a private online space integrated with SmartStart tools. It includes member profiles, shared documents and templates, collaboration spaces (Slack + Zoho Projects), and community analytics. It's built on the principle of community through contribution and value built in public.",
+      "relatedQuestions": ["smartstart-003", "community-001"]
+    },
+    {
+      "id": "community-003",
+      "category": "community",
+      "tags": ["archetypes", "roles", "builder", "connector"],
+      "question": "What are the community archetypes?",
+      "answer": "The SmartStart community recognizes four archetypes: Builder - Engineers and developers who ship products, focus on technical execution. Connector - Network builders who bring people together, facilitate partnerships. Architect - Strategic thinkers who design systems and processes, focus on scalable infrastructure. Dreamer - Visionaries who imagine possibilities, generate ideas and inspire innovation.",
+      "relatedQuestions": ["smartstart-003", "community-001"]
+    },
+    {
+      "id": "security-001",
+      "category": "security",
+      "tags": ["data-security", "privacy", "gdpr", "pipeda"],
+      "question": "Is my data secure?",
+      "answer": "Yes. We use enterprise-grade security with Acronis backup, GDPR + PIPEDA aligned data handling, and security-first baselines. Your data is private and secure. We implement guardrails and documented procedures.",
+      "relatedQuestions": ["services-001", "services-005"]
+    },
+    {
+      "id": "tools-001",
+      "category": "tools",
+      "tags": ["zoho", "acronis", "software", "access"],
+      "question": "What tools do I get access to?",
+      "answer": "The full Zoho suite (CRM, Projects, Books, Mail, Cliq, Vault), Acronis Cyber Backup for security and data protection, and the SmartStart Hub platform. These tools would cost $500+/month if purchased individually.",
+      "relatedQuestions": ["smartstart-007", "pricing-001"]
+    },
+    {
+      "id": "trial-001",
+      "category": "trial",
+      "tags": ["try", "trial", "test", "free"],
+      "question": "Can I try SmartStart before committing?",
+      "answer": "Yes. You can join WonderLand first to explore events, network, and see if our ecosystem is a good fit. When you're ready for enterprise tools and mentorship, you can upgrade to SmartStart.",
+      "relatedQuestions": ["smartstart-008", "getting-started-001"]
+    }
+  ],
+  "commonVariations": {
+    "company": [
+      "What is AliceSolutions?",
+      "Who is AliceSolutions Group?",
+      "Tell me about AliceSolutions",
+      "What does AliceSolutions do?"
+    ],
+    "services": [
+      "What services do you provide?",
+      "What do you do?",
+      "What can you help me with?",
+      "What are your services?"
+    ],
+    "smartstart": [
+      "What is SmartStart?",
+      "Tell me about SmartStart",
+      "What's SmartStart?",
+      "Explain SmartStart"
+    ],
+    "pricing": [
+      "How much does it cost?",
+      "What are your prices?",
+      "How much do you charge?",
+      "What's the price?",
+      "How much?"
+    ],
+    "getting-started": [
+      "How do I get started?",
+      "How can I work with you?",
+      "How do I begin?",
+      "What's the first step?"
+    ]
+  },
+  "contactInfo": {
+    "primaryAction": "Contact us through the website",
+    "recommendation": "Book a short call to discuss your needs",
+    "contactPage": "/contact",
+    "note": "For specific pricing, legal terms, or detailed information, always recommend contacting us directly"
+  }
+}
+
