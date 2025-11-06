@@ -37,6 +37,7 @@ import NotFound from "./pages/NotFound";
 import SimpleTest from "./pages/SimpleTest";
 import ZohoCallback from "./pages/ZohoCallback";
 import CookieConsentBanner from "./components/CookieConsentBanner";
+import { ChatbotWrapper } from "./components/chatbot/ChatbotWrapper";
 import { consentManager } from "./lib/consentManager";
 
 const queryClient = new QueryClient();
@@ -64,6 +65,7 @@ const App = () => {
       <SidebarProvider>
         <BrowserRouter>
         <CookieConsentBanner />
+        <ChatbotWrapper />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/about" element={<About />} />
