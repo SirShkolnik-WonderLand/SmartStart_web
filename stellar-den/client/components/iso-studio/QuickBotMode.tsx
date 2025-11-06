@@ -28,6 +28,7 @@ interface QuickBotModeProps {
 }
 
 export default function QuickBotMode({ onComplete }: QuickBotModeProps) {
+  console.log('[QuickBotMode] Component rendering');
   const navigate = useNavigate();
   const [questions, setQuestions] = useState<StoryBotQuestion[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -44,20 +45,34 @@ export default function QuickBotMode({ onComplete }: QuickBotModeProps) {
 
   // Load questions from API
   useEffect(() => {
+    console.log('[QuickBotMode] Component mounted, loading questions...');
     const loadQuestions = async () => {
       try {
+        console.log('[QuickBotMode] Fetching questions from /api/iso/story-bot-questions');
         const response = await fetch("/api/iso/story-bot-questions");
         
+        console.log('[QuickBotMode] Response status:', response.status, response.statusText);
+        
         if (!response.ok) {
-          console.error('Failed to fetch story bot questions:', response.status);
+          console.error('[QuickBotMode] Failed to fetch story bot questions:', response.status);
           setQuestions([]);
+          setLoading(false);
           return;
         }
         const data = await response.json();
+        console.log('[QuickBotMode] Received data:', { 
+          hasQuestions: Array.isArray(data.questions), 
+          questionCount: data.questions?.length || 0,
+          success: data.success 
+        });
         // Safely handle undefined or null questions
-        setQuestions(Array.isArray(data.questions) ? data.questions : []);
+        const questionsArray = Array.isArray(data.questions) ? data.questions : [];
+        setQuestions(questionsArray);
+        setLoading(false);
+        console.log('[QuickBotMode] Questions loaded:', questionsArray.length);
       } catch (error) {
-        console.error("Failed to load questions:", error);
+        console.error("[QuickBotMode] Failed to load questions:", error);
+        setLoading(false);
         // Fallback to all 20 questions when API fails
         const fallbackQuestions: StoryBotQuestion[] = [
           {
@@ -240,10 +255,16 @@ export default function QuickBotMode({ onComplete }: QuickBotModeProps) {
 
   // Initialize conversation when questions load
   useEffect(() => {
-    if (questions.length > 0 && conversationPhase === 'welcome') {
+    console.log('[QuickBotMode] Questions effect:', { 
+      questionCount: questions.length, 
+      conversationPhase, 
+      loading 
+    });
+    if (questions.length > 0 && conversationPhase === 'welcome' && !loading) {
+      console.log('[QuickBotMode] Starting conversation...');
       startConversation();
     }
-  }, [questions.length]);
+  }, [questions.length, conversationPhase, loading]);
 
 
   // Generate dynamic response based on user's answer and progress

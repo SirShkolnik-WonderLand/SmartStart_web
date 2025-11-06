@@ -83,22 +83,28 @@ export const getControls: RequestHandler = (req, res) => {
 
 // Get story bot questions
 export const getStoryBotQuestions: RequestHandler = (req, res) => {
+  console.log('[ISO] getStoryBotQuestions called');
   try {
     const questions = loadStoryBotQuestions();
+    console.log('[ISO] Loaded questions:', questions.length);
     
     // Always return questions array, even if empty
-    res.json({ 
+    const response = { 
       questions: questions || [],
       success: true 
-    });
+    };
+    console.log('[ISO] Sending response:', { questionCount: response.questions.length, success: response.success });
+    res.json(response);
   } catch (error) {
     console.error('[ISO] Error loading story bot questions:', error);
     // Return empty array instead of error to prevent frontend crash
-    res.json({ 
+    const errorResponse = { 
       questions: [],
       success: false,
       error: error instanceof Error ? error.message : "Failed to load questions"
-    });
+    };
+    console.log('[ISO] Sending error response:', errorResponse);
+    res.json(errorResponse);
   }
 };
 
