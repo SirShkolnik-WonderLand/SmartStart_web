@@ -15,6 +15,7 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     outDir: "dist/spa",
+    cssCodeSplit: false, // Extract all CSS into a single file for easier loading
     rollupOptions: {
       output: {
         // Add nonce placeholder for CSP

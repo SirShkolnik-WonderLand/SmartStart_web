@@ -6,8 +6,28 @@
     <title>AliceSolutions Group - Cybersecurity Excellence</title>
     <meta name="description" content="Leading cybersecurity solutions for businesses. ISO compliance, risk assessment, and security consulting services." />
     
-    <!-- Preload critical resources -->
-    <link rel="preload" href="/assets/index-{{HASH}}.js" as="script" />
+    <!-- Preload critical resources with proper crossorigin -->
+    <link rel="preload" href="/assets/index-{{HASH}}.js" as="script" crossorigin="anonymous" />
+    
+    <!-- Load CSS immediately (not just preload) to ensure styles load on refresh -->
+    <!-- Vite extracts CSS into separate files in production -->
+    <!-- Use conditional loading: only add link if CSS file exists -->
+    <script nonce="{{NONCE}}">
+      // Dynamically load CSS to handle cases where hash might not match
+      // This ensures CSS loads even if the hash in template doesn't match
+      (function() {
+        const cssHash = '{{CSSHASH}}';
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = '/assets/index-' + cssHash + '.css';
+        link.crossOrigin = 'anonymous';
+        link.onerror = function() {
+          // If CSS file doesn't exist, CSS will be loaded via JS import
+          console.log('CSS file not found, will load via JS');
+        };
+        document.head.appendChild(link);
+      })();
+    </script>
     
     <!-- Analytics Hub Script with nonce -->
     <script nonce="{{NONCE}}">

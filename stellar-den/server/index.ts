@@ -184,24 +184,31 @@ export async function createServer() {
       // Get nonce from response locals (set by nonceCSP middleware)
       const nonce = res.locals.nonce || '';
       
-      // Get the actual JavaScript file hash from the built assets
+      // Get the actual JavaScript and CSS file hashes from the built assets
       let jsHash = 'BUSY1Sdf'; // fallback
+      let cssHash = 'BUSY1Sdf'; // fallback
       try {
         const assetsPath = path.join(__dirname, '../spa/assets');
         if (fs.existsSync(assetsPath)) {
           const files = fs.readdirSync(assetsPath);
           const jsFile = files.find(file => file.startsWith('index-') && file.endsWith('.js'));
+          const cssFile = files.find(file => file.startsWith('index-') && file.endsWith('.css'));
+          
           if (jsFile) {
             jsHash = jsFile.replace('index-', '').replace('.js', '');
           }
+          if (cssFile) {
+            cssHash = cssFile.replace('index-', '').replace('.css', '');
+          }
         }
       } catch (error) {
-        console.log('Could not determine JS hash, using fallback:', error);
+        console.log('Could not determine asset hashes, using fallback:', error);
       }
       
       // Replace placeholders
       html = html.replace(/\{\{NONCE\}\}/g, nonce);
       html = html.replace(/\{\{HASH\}\}/g, jsHash);
+      html = html.replace(/\{\{CSSHASH\}\}/g, cssHash);
       html = html.replace(/\{\{ANALYTICS_API_URL\}\}/g, process.env.ANALYTICS_API_URL || 'https://analytics-hub-server.onrender.com');
       
       res.setHeader('Content-Type', 'text/html');
