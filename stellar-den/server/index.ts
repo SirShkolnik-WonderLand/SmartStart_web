@@ -149,31 +149,30 @@ export async function createServer() {
   
   // CRITICAL: Serve assets BEFORE the catch-all route
   // This ensures CSS/JS files are served with correct MIME types
-  app.use('/assets', express.static(path.join(staticPath, 'assets'), {
-    setHeaders: (res, filePath) => {
-      if (filePath.endsWith('.js')) {
-        res.setHeader('Content-Type', 'application/javascript');
-        res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
-      } else if (filePath.endsWith('.css')) {
-        res.setHeader('Content-Type', 'text/css');
-        res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
-      }
-    },
-    // Don't fall through to catch-all if file doesn't exist
-    fallthrough: false
-  }));
-  
-  // Handle 404 for assets - return proper 404 with correct MIME type
   app.use('/assets', (req, res, next) => {
-    // If we get here, the static middleware didn't find the file
-    // Return correct MIME type based on file extension
-    if (req.path.endsWith('.css')) {
-      res.status(404).type('text/css').send('/* CSS file not found */');
-    } else if (req.path.endsWith('.js')) {
-      res.status(404).type('application/javascript').send('// JS file not found');
-    } else {
-      res.status(404).type('text/plain').send('Asset not found');
-    }
+    // First try to serve the file
+    express.static(path.join(staticPath, 'assets'), {
+      setHeaders: (res, filePath) => {
+        if (filePath.endsWith('.js')) {
+          res.setHeader('Content-Type', 'application/javascript');
+          res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+        } else if (filePath.endsWith('.css')) {
+          res.setHeader('Content-Type', 'text/css');
+          res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+        }
+      },
+      // Don't fall through to catch-all if file doesn't exist
+      fallthrough: false
+    })(req, res, () => {
+      // If static middleware didn't serve the file, handle 404 with correct MIME type
+      if (req.path.endsWith('.css')) {
+        res.status(404).type('text/css').send('/* CSS file not found */');
+      } else if (req.path.endsWith('.js')) {
+        res.status(404).type('application/javascript').send('// JS file not found');
+      } else {
+        res.status(404).type('text/plain').send('Asset not found');
+      }
+    });
   });
   
   // Serve other static files (images, etc.)

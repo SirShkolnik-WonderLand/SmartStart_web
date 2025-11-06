@@ -351,6 +351,16 @@ export const errorHandler = (err: any, req: Request, res: Response, next: NextFu
   // Don't leak error details in production
   const isDevelopment = process.env.NODE_ENV === 'development';
   
+  // For asset requests (CSS/JS), return correct MIME type even on error
+  if (req.path.startsWith('/assets/')) {
+    if (req.path.endsWith('.css')) {
+      return res.status(err.status || 404).type('text/css').send('/* CSS file not found */');
+    } else if (req.path.endsWith('.js')) {
+      return res.status(err.status || 404).type('application/javascript').send('// JS file not found');
+    }
+    return res.status(err.status || 404).type('text/plain').send('Asset not found');
+  }
+  
   res.status(err.status || 500).json({
     error: 'Internal server error',
     message: isDevelopment ? err.message : 'Something went wrong',
