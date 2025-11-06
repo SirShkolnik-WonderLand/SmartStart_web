@@ -149,10 +149,17 @@ export async function createServer() {
     fallthrough: false
   }));
   
-  // Handle 404 for assets - return proper 404, not HTML
-  app.use('/assets', (req, res) => {
+  // Handle 404 for assets - return proper 404 with correct MIME type
+  app.use('/assets', (req, res, next) => {
     // If we get here, the static middleware didn't find the file
-    res.status(404).type('text/plain').send('Asset not found');
+    // Return correct MIME type based on file extension
+    if (req.path.endsWith('.css')) {
+      res.status(404).type('text/css').send('/* CSS file not found */');
+    } else if (req.path.endsWith('.js')) {
+      res.status(404).type('application/javascript').send('// JS file not found');
+    } else {
+      res.status(404).type('text/plain').send('Asset not found');
+    }
   });
   
   // Serve other static files (images, etc.)
@@ -170,14 +177,16 @@ export async function createServer() {
     }
     
     // Skip asset requests (CSS, JS, images) - these should be handled by static middleware
-    // If we reach here for an asset, it means the file doesn't exist
+    // This should never be reached if static middleware is working correctly
     if (req.path.startsWith('/assets/')) {
-      // Check if it's a CSS request
+      // This is a fallback - should not happen, but handle it correctly
       if (req.path.endsWith('.css')) {
-        return res.status(404).setHeader('Content-Type', 'text/css').send('/* CSS file not found */');
+        return res.status(404).type('text/css').send('/* CSS file not found */');
+      } else if (req.path.endsWith('.js')) {
+        return res.status(404).type('application/javascript').send('// JS file not found');
       }
-      // For other assets, return 404
-      return res.status(404).json({ error: 'Asset not found' });
+      // For other assets, return 404 with plain text (not JSON)
+      return res.status(404).type('text/plain').send('Asset not found');
     }
     let templatePath = ''; // Declare outside try block for error logging
     
