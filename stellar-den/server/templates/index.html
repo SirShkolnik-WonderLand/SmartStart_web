@@ -9,26 +9,24 @@
     <!-- Preload critical resources with proper crossorigin -->
     <link rel="preload" href="/assets/index-{{HASH}}.js" as="script" crossorigin="anonymous" />
     
-    <!-- Load CSS only if it exists as a separate file -->
-    <!-- If CSSHASH is null, CSS is inlined in JS and will load via JS import -->
+    <!-- Load CSS - try separate file first, fallback to JS bundle -->
     <script nonce="{{NONCE}}">
       (function() {
         const cssHash = '{{CSSHASH}}';
         
-        // Only load CSS if hash is provided and not null/empty/fallback
+        // Try to load CSS file if hash is valid
         if (cssHash && cssHash !== 'null' && cssHash !== 'BUSY1Sdf' && cssHash.trim() !== '') {
           const link = document.createElement('link');
           link.rel = 'stylesheet';
           link.href = '/assets/index-' + cssHash + '.css';
           link.crossOrigin = 'anonymous';
           
-          // Remove link on error to prevent MIME type errors
           link.onerror = function() {
             console.log('CSS file not found - CSS will load via JS bundle');
-            // Remove immediately to prevent MIME type error
             if (link.parentNode) {
               link.parentNode.removeChild(link);
             }
+            // CSS will load when JS bundle executes (App.tsx imports global.css)
           };
           
           link.onload = function() {
@@ -37,7 +35,48 @@
           
           document.head.appendChild(link);
         } else {
-          console.log('CSS will load via JS bundle (no separate CSS file or hash is fallback)');
+          // CSS is in JS bundle - ensure it loads by waiting for JS
+          // The JS bundle will inject CSS when it loads (App.tsx imports global.css)
+          console.log('CSS will load via JS bundle');
+          
+          // Fallback: Try to find CSS file by checking common patterns
+          // This helps if the hash detection failed but CSS file exists
+          const tryFindCSS = () => {
+            // Try common hash patterns or check if any CSS file exists
+            const testHashes = ['DKv5x7X6', 'BUSY1Sdf']; // Add known hashes here
+            let attemptIndex = 0;
+            
+            const tryNext = () => {
+              if (attemptIndex >= testHashes.length) return;
+              
+              const testHash = testHashes[attemptIndex++];
+              const link = document.createElement('link');
+              link.rel = 'stylesheet';
+              link.href = '/assets/index-' + testHash + '.css';
+              link.crossOrigin = 'anonymous';
+              
+              link.onerror = () => {
+                if (link.parentNode) link.parentNode.removeChild(link);
+                tryNext();
+              };
+              
+              link.onload = () => {
+                console.log('CSS found and loaded with fallback hash:', testHash);
+              };
+              
+              document.head.appendChild(link);
+            };
+            
+            tryNext();
+          };
+          
+          // Only try fallback if JS hasn't loaded after a delay
+          setTimeout(() => {
+            if (!document.querySelector('style[data-vite-dev-id]') && 
+                !document.querySelector('link[rel="stylesheet"][href*="index-"]')) {
+              tryFindCSS();
+            }
+          }, 2000);
         }
       })();
     </script>
