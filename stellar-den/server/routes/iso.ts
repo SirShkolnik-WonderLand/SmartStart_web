@@ -54,8 +54,21 @@ const loadControls = (): Control[] => {
 
 const loadStoryBotQuestions = (): StoryBotQuestion[] => {
   const filePath = path.join(__dirname, "../data/story-bot-questions.json");
-  const data = JSON.parse(fs.readFileSync(filePath, "utf-8"));
-  return data.questions;
+  
+  // Check if file exists
+  if (!fs.existsSync(filePath)) {
+    console.error(`[ISO] Story bot questions file not found: ${filePath}`);
+    // Return empty array instead of throwing error
+    return [];
+  }
+  
+  try {
+    const data = JSON.parse(fs.readFileSync(filePath, "utf-8"));
+    return data.questions || [];
+  } catch (error) {
+    console.error(`[ISO] Failed to load story bot questions:`, error);
+    return [];
+  }
 };
 
 // Get all controls
@@ -72,9 +85,20 @@ export const getControls: RequestHandler = (req, res) => {
 export const getStoryBotQuestions: RequestHandler = (req, res) => {
   try {
     const questions = loadStoryBotQuestions();
-    res.json({ questions });
+    
+    // Always return questions array, even if empty
+    res.json({ 
+      questions: questions || [],
+      success: true 
+    });
   } catch (error) {
-    res.status(500).json({ error: "Failed to load questions" });
+    console.error('[ISO] Error loading story bot questions:', error);
+    // Return empty array instead of error to prevent frontend crash
+    res.json({ 
+      questions: [],
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to load questions"
+    });
   }
 };
 

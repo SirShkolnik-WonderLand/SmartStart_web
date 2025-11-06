@@ -47,8 +47,15 @@ export default function QuickBotMode({ onComplete }: QuickBotModeProps) {
     const loadQuestions = async () => {
       try {
         const response = await fetch("/api/iso/story-bot-questions");
+        
+        if (!response.ok) {
+          console.error('Failed to fetch story bot questions:', response.status);
+          setQuestions([]);
+          return;
+        }
         const data = await response.json();
-        setQuestions(data.questions);
+        // Safely handle undefined or null questions
+        setQuestions(Array.isArray(data.questions) ? data.questions : []);
       } catch (error) {
         console.error("Failed to load questions:", error);
         // Fallback to all 20 questions when API fails
