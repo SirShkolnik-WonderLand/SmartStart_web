@@ -64,7 +64,7 @@ export function ChatbotAvatar({
   
   const dimensions = 
     size === 'large' ? 'w-40 h-40' : 
-    size === 'small' ? 'w-10 h-10' : 
+    size === 'small' ? 'w-20 h-20' : // mobile: 80px (2x original small size)
     'w-32 h-32'; // medium (desktop default)
   const colors = THEME_COLORS[theme];
 
@@ -388,7 +388,7 @@ export function ChatbotAvatar({
         <motion.div
           className={`absolute ${
             size === 'large' ? 'w-48 h-48' : 
-            size === 'small' ? 'w-12 h-12' : 
+            size === 'small' ? 'w-24 h-24' : // mobile halo ring
             'w-40 h-40'
           }`}
           variants={haloRotation}
