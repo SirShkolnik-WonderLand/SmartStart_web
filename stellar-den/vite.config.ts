@@ -23,8 +23,12 @@ export default defineConfig(({ mode }) => ({
         entryFileNames: 'assets/[name]-[hash].js',
         chunkFileNames: 'assets/[name]-[hash].js',
         assetFileNames: (assetInfo) => {
-          // Ensure CSS files get proper naming
+          // Ensure CSS files get proper naming - use index- prefix to match detection
           if (assetInfo.name && assetInfo.name.endsWith('.css')) {
+            // If it's the main CSS file, name it index-[hash].css to match our detection
+            if (assetInfo.name.includes('index') || assetInfo.name.includes('style')) {
+              return 'assets/index-[hash][extname]';
+            }
             return 'assets/[name]-[hash][extname]';
           }
           return 'assets/[name]-[hash].[ext]';
