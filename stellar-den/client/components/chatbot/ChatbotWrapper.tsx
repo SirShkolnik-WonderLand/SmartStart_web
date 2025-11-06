@@ -153,7 +153,7 @@ export function ChatbotWrapper() {
                     emotion={emotion}
                     specialAnimation={specialAnimation}
                     theme={theme}
-                    size="large" 
+                    size="small" 
                     onAnimationComplete={handleAnimationComplete}
                   />
                   <ChatInterface
