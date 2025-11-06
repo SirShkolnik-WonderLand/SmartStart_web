@@ -488,7 +488,7 @@ export function ChatbotAvatar({
               transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
             />
             
-            {/* Eyes - centered vertically in the face area */}
+            {/* Eyes - centered vertically in the face oval (not the outer circle) */}
             <motion.div 
               className={`absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 flex gap-3 ${getEyeShape()}`}
               animate={{
@@ -546,9 +546,9 @@ export function ChatbotAvatar({
               ))}
             </motion.div>
 
-            {/* Mouth - positioned below center */}
+            {/* Mouth */}
             <motion.div
-              className="absolute bottom-8 left-1/2 -translate-x-1/2"
+              className="absolute bottom-6 left-1/2 -translate-x-1/2"
               animate={
                 state === 'talking' 
                   ? {
