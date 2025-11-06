@@ -64,7 +64,7 @@ export function ChatbotAvatar({
   
   const dimensions = 
     size === 'large' ? 'w-40 h-40' : 
-    size === 'small' ? 'w-32 h-32' : // Mobile - same as desktop
+    size === 'small' ? 'w-32 h-32' : // Mobile - same size as desktop (128px)
     'w-32 h-32'; // medium (desktop default)
   const colors = THEME_COLORS[theme];
 
