@@ -202,7 +202,7 @@ export function ChatbotWrapper() {
               emotion={emotion}
               specialAnimation={specialAnimation}
               theme={theme}
-              size="medium" 
+              size={isMobile ? "small" : "medium"} 
               isClickable={!isChatOpen}
               showAttentionSeeker={showAttentionSeeker}
               onAnimationComplete={handleAnimationComplete}
@@ -243,7 +243,7 @@ export function ChatbotWrapper() {
               emotion={emotion}
               specialAnimation={specialAnimation}
               theme={theme}
-              size="medium" 
+              size="small" 
               isClickable={true}
               showAttentionSeeker={showAttentionSeeker}
               onAnimationComplete={handleAnimationComplete}

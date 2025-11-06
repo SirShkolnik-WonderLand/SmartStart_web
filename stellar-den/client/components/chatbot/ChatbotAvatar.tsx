@@ -11,7 +11,7 @@ interface ChatbotAvatarProps {
   emotion?: EmotionState;
   specialAnimation?: SpecialAnimation;
   theme?: ColorTheme;
-  size?: 'medium' | 'large';
+  size?: 'small' | 'medium' | 'large';
   isClickable?: boolean;
   showAttentionSeeker?: boolean;
   onAnimationComplete?: () => void;
@@ -62,7 +62,10 @@ export function ChatbotAvatar({
   const [idleDrift, setIdleDrift] = useState({ x: 0, y: 0 });
   const avatarRef = useRef<HTMLDivElement>(null);
   
-  const dimensions = size === 'large' ? 'w-40 h-40' : 'w-32 h-32';
+  const dimensions = 
+    size === 'large' ? 'w-40 h-40' : 
+    size === 'small' ? 'w-10 h-10' : 
+    'w-32 h-32'; // medium (desktop default)
   const colors = THEME_COLORS[theme];
 
   // Get eye shape based on emotion
