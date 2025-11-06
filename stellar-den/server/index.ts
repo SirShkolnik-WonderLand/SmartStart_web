@@ -245,11 +245,11 @@ export async function createServer() {
       html = html.replace(/\{\{NONCE\}\}/g, nonce);
       html = html.replace(/\{\{HASH\}\}/g, jsHash);
       
-      // Only add CSS link if CSS file exists
-      const cssLink = cssFileExists && cssHash 
-        ? `<link rel="stylesheet" href="/assets/index-${cssHash}.css" crossorigin="anonymous" />`
-        : '<!-- CSS is inlined in JS and will load via JS import -->';
-      html = html.replace(/\{\{CSSLINK\}\}/g, cssLink);
+      // Replace CSSHASH - use 'null' string if CSS is inlined (template will handle it)
+      // Template uses CSSHASH with conditional loading to prevent MIME type errors
+      html = html.replace(/\{\{CSSHASH\}\}/g, cssHash || 'null');
+      // Remove CSSLINK placeholder if it exists (we're using CSSHASH now)
+      html = html.replace(/\{\{CSSLINK\}\}/g, '');
       
       html = html.replace(/\{\{ANALYTICS_API_URL\}\}/g, process.env.ANALYTICS_API_URL || 'https://analytics-hub-server.onrender.com');
       
