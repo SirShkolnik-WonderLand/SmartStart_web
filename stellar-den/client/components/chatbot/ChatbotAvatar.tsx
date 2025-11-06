@@ -488,10 +488,9 @@ export function ChatbotAvatar({
               transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
             />
             
-            {/* Eyes - centered vertically in the face oval (not the outer circle) */}
-            {/* Face outline is top-0 to bottom-4, so center is at (0 + (96-16))/2 = 40px = 2.5rem */}
+            {/* Eyes - centered in the face oval, adjusted slightly left and up */}
             <motion.div 
-              className={`absolute top-[2.5rem] -translate-y-1/2 left-1/2 -translate-x-1/2 flex gap-3 ${getEyeShape()}`}
+              className={`absolute top-[48%] -translate-y-1/2 left-[48%] -translate-x-1/2 flex gap-3 ${getEyeShape()}`}
               animate={{
                 scaleY: eyeBlink ? 0.1 : emotion === 'happy' ? 0.75 : emotion === 'sleepy' ? 0.5 : 1,
                 y: emotion === 'thinking' ? [-1, 1, -1] : 0,
