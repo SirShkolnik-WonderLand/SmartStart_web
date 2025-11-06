@@ -470,7 +470,7 @@ export function ChatbotAvatar({
           }}
           style={{ transformStyle: 'preserve-3d' }}
         >
-          <div className="relative w-20 h-24">
+          <div className="relative w-20 h-24 flex items-center justify-center">
             {/* Face outline */}
             <motion.div 
               className="absolute inset-x-2 top-0 bottom-4 rounded-full"
@@ -488,9 +488,9 @@ export function ChatbotAvatar({
               transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
             />
             
-            {/* Eyes */}
+            {/* Eyes - positioned in upper third of face, better centered */}
             <motion.div 
-              className={`absolute top-8 left-1/2 -translate-x-1/2 flex gap-3 ${getEyeShape()}`}
+              className={`absolute top-6 left-1/2 -translate-x-1/2 flex gap-4 ${getEyeShape()}`}
               animate={{
                 scaleY: eyeBlink ? 0.1 : emotion === 'happy' ? 0.75 : emotion === 'sleepy' ? 0.5 : 1,
                 y: emotion === 'thinking' ? [-1, 1, -1] : 0,
@@ -546,9 +546,9 @@ export function ChatbotAvatar({
               ))}
             </motion.div>
 
-            {/* Mouth */}
+            {/* Mouth - positioned in lower third of face */}
             <motion.div
-              className="absolute bottom-6 left-1/2 -translate-x-1/2"
+              className="absolute bottom-8 left-1/2 -translate-x-1/2"
               animate={
                 state === 'talking' 
                   ? {
