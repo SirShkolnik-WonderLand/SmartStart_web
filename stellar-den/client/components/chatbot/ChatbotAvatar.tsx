@@ -470,7 +470,7 @@ export function ChatbotAvatar({
           }}
           style={{ transformStyle: 'preserve-3d' }}
         >
-          <div className="relative w-20 h-24 flex items-center justify-center">
+          <div className="relative w-20 h-24">
             {/* Face outline */}
             <motion.div 
               className="absolute inset-x-2 top-0 bottom-4 rounded-full"
@@ -488,7 +488,7 @@ export function ChatbotAvatar({
               transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
             />
             
-            {/* Eyes - centered vertically in the face */}
+            {/* Eyes - centered vertically in the face area */}
             <motion.div 
               className={`absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 flex gap-3 ${getEyeShape()}`}
               animate={{
