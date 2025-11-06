@@ -221,24 +221,46 @@ export async function createServer() {
         const assetsPath = path.join(__dirname, '../spa/assets');
         if (fs.existsSync(assetsPath)) {
           const files = fs.readdirSync(assetsPath);
+          console.log(`[HTML] Assets directory found: ${assetsPath}`);
+          console.log(`[HTML] Files in assets: ${files.slice(0, 10).join(', ')}${files.length > 10 ? '...' : ''}`);
+          
           const jsFile = files.find(file => file.startsWith('index-') && file.endsWith('.js'));
-          const cssFile = files.find(file => file.startsWith('index-') && file.endsWith('.css'));
+          // Look for CSS files - try multiple patterns
+          let cssFile = files.find(file => file.startsWith('index-') && file.endsWith('.css'));
+          
+          // If no index-*.css, try style-*.css (Vite might name it differently)
+          if (!cssFile) {
+            cssFile = files.find(file => file.startsWith('style-') && file.endsWith('.css'));
+          }
+          
+          // If still no CSS, try any CSS file
+          if (!cssFile) {
+            cssFile = files.find(file => file.endsWith('.css'));
+          }
           
           if (jsFile) {
             jsHash = jsFile.replace('index-', '').replace('.js', '');
+            console.log(`[HTML] Found JS file: index-${jsHash}.js`);
+          } else {
+            console.log(`[HTML] WARNING: No JS file found!`);
           }
+          
           if (cssFile) {
-            cssHash = cssFile.replace('index-', '').replace('.css', '');
+            // Extract hash from CSS filename (handle both index-*.css and style-*.css)
+            cssHash = cssFile.replace(/^(index|style)-/, '').replace('.css', '');
             cssFileExists = true;
-            console.log(`[HTML] Found CSS file: index-${cssHash}.css`);
+            console.log(`[HTML] Found CSS file: ${cssFile} (hash: ${cssHash})`);
           } else {
             console.log(`[HTML] No separate CSS file found - CSS is likely inlined in JS`);
+            console.log(`[HTML] CSS will load via JS bundle (App.tsx imports global.css)`);
           }
         } else {
-          console.log(`[HTML] Assets directory not found: ${assetsPath}`);
+          console.log(`[HTML] WARNING: Assets directory not found: ${assetsPath}`);
+          console.log(`[HTML] Current working directory: ${process.cwd()}`);
+          console.log(`[HTML] __dirname: ${__dirname}`);
         }
       } catch (error) {
-        console.log('[HTML] Could not determine asset hashes:', error);
+        console.log('[HTML] ERROR: Could not determine asset hashes:', error);
       }
       
       // Replace placeholders
