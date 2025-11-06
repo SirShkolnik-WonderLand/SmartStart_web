@@ -489,11 +489,11 @@ export function ChatbotAvatar({
             />
             
             {/* Eyes - centered in the face oval (not the outer circle) */}
-            {/* Face outline: inset-x-2 (8px margins) top-0 bottom-4 (16px bottom margin) */}
-            {/* Face outline center: 40px from top (80px/2), 40px from left (80px/2) */}
-            {/* Using precise positioning to center in the face oval */}
+            {/* Face outline: inset-x-2 (8px) top-0 bottom-4 (16px) = 64px wide, 80px tall */}
+            {/* Face outline center: 40px from top, 40px from left of container */}
+            {/* Container is 80px × 96px, so center is at 50% horizontal, ~41.67% vertical */}
             <motion.div 
-              className={`absolute top-[42%] -translate-y-1/2 left-1/2 -translate-x-1/2 flex gap-3 ${getEyeShape()}`}
+              className={`absolute top-[40px] -translate-y-1/2 left-[40px] -translate-x-1/2 flex gap-3 ${getEyeShape()}`}
               animate={{
                 scaleY: eyeBlink ? 0.1 : emotion === 'happy' ? 0.75 : emotion === 'sleepy' ? 0.5 : 1,
                 y: emotion === 'thinking' ? [-1, 1, -1] : 0,
