@@ -471,9 +471,9 @@ export function ChatbotAvatar({
           style={{ transformStyle: 'preserve-3d' }}
         >
           <div className="relative w-20 h-24">
-            {/* Face outline */}
+            {/* Face outline - this is the oval that contains the eyes */}
             <motion.div 
-              className="absolute inset-x-2 top-0 bottom-4 rounded-full"
+              className="absolute inset-x-2 top-0 bottom-4 rounded-full flex items-center justify-center"
               style={{
                 background: `linear-gradient(180deg, rgba(${colors.glowRGB}, 0.15) 0%, rgba(${colors.glowRGB}, 0.05) 100%)`,
                 border: `1px solid rgba(${colors.glowRGB}, 0.4)`
@@ -486,14 +486,10 @@ export function ChatbotAvatar({
                 ],
               }}
               transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-            />
-            
-            {/* Eyes - centered in the face oval (not the outer circle) */}
-            {/* Face outline: inset-x-2 (8px) top-0 bottom-4 (16px) = 64px wide, 80px tall */}
-            {/* Face outline center: 40px from top, 40px from left of container */}
-            {/* Container is 80px × 96px, so center is at 50% horizontal, ~41.67% vertical */}
-            <motion.div 
-              className={`absolute top-[40px] -translate-y-1/2 left-[40px] -translate-x-1/2 flex gap-3 ${getEyeShape()}`}
+            >
+              {/* Eyes - centered in the face oval using flexbox */}
+              <motion.div 
+                className={`flex gap-3 ${getEyeShape()}`}
               animate={{
                 scaleY: eyeBlink ? 0.1 : emotion === 'happy' ? 0.75 : emotion === 'sleepy' ? 0.5 : 1,
                 y: emotion === 'thinking' ? [-1, 1, -1] : 0,
@@ -547,6 +543,7 @@ export function ChatbotAvatar({
                   )}
                 </div>
               ))}
+              </motion.div>
             </motion.div>
 
             {/* Mouth */}
