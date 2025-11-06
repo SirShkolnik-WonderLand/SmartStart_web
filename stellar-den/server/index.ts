@@ -130,8 +130,22 @@ export async function createServer() {
 
   // Serve static files (CSS, JS, images, etc.) from the built SPA
   const staticPath = path.join(__dirname, '../spa');
+  const assetsPath = path.join(staticPath, 'assets');
   console.log('Static files path:', staticPath);
   console.log('Static path exists:', fs.existsSync(staticPath));
+  console.log('Assets path:', assetsPath);
+  console.log('Assets path exists:', fs.existsSync(assetsPath));
+  
+  // Log CSS files if assets directory exists
+  if (fs.existsSync(assetsPath)) {
+    try {
+      const files = fs.readdirSync(assetsPath);
+      const cssFiles = files.filter(f => f.endsWith('.css'));
+      console.log('CSS files found:', cssFiles);
+    } catch (err) {
+      console.log('Could not read assets directory:', err);
+    }
+  }
   
   // CRITICAL: Serve assets BEFORE the catch-all route
   // This ensures CSS/JS files are served with correct MIME types
