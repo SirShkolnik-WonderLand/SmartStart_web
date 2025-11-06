@@ -269,29 +269,3 @@ export async function createServer() {
 
   return app;
 }
-
-        console.log('[HTML] Could not determine asset hashes:', error);
-      }
-      
-      // Replace placeholders
-      html = html.replace(/\{\{NONCE\}\}/g, nonce);
-      html = html.replace(/\{\{HASH\}\}/g, jsHash);
-      html = html.replace(/\{\{CSSHASH\}\}/g, cssHash);
-      html = html.replace(/\{\{ANALYTICS_API_URL\}\}/g, process.env.ANALYTICS_API_URL || 'https://analytics-hub-server.onrender.com');
-      
-      res.setHeader('Content-Type', 'text/html');
-      res.send(html);
-    } catch (error) {
-      console.error('Error serving HTML:', error);
-      console.error('Template path attempted:', templatePath);
-      console.error('Current working directory:', process.cwd());
-      console.error('__dirname:', __dirname);
-      res.status(500).send('Internal Server Error');
-    }
-  });
-
-  // Error handling (must be last)
-  app.use(errorHandler);
-
-  return app;
-}
