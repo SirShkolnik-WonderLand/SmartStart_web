@@ -149,21 +149,23 @@ export async function createServer() {
   
   // CRITICAL: Serve assets BEFORE the catch-all route
   // This ensures CSS/JS files are served with correct MIME types
+  const assetsStatic = express.static(path.join(staticPath, 'assets'), {
+    setHeaders: (res, filePath) => {
+      if (filePath.endsWith('.js')) {
+        res.setHeader('Content-Type', 'application/javascript');
+        res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+      } else if (filePath.endsWith('.css')) {
+        res.setHeader('Content-Type', 'text/css');
+        res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+      }
+    },
+    // Allow fallthrough so we can handle 404s with correct MIME type
+    fallthrough: true
+  });
+  
   app.use('/assets', (req, res, next) => {
-    // First try to serve the file
-    express.static(path.join(staticPath, 'assets'), {
-      setHeaders: (res, filePath) => {
-        if (filePath.endsWith('.js')) {
-          res.setHeader('Content-Type', 'application/javascript');
-          res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
-        } else if (filePath.endsWith('.css')) {
-          res.setHeader('Content-Type', 'text/css');
-          res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
-        }
-      },
-      // Don't fall through to catch-all if file doesn't exist
-      fallthrough: false
-    })(req, res, () => {
+    // Try to serve the file
+    assetsStatic(req, res, () => {
       // If static middleware didn't serve the file, handle 404 with correct MIME type
       if (req.path.endsWith('.css')) {
         res.status(404).type('text/css').send('/* CSS file not found */');
