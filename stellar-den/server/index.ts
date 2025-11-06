@@ -208,7 +208,9 @@ export async function createServer() {
       
       // Get the actual JavaScript and CSS file hashes from the built assets
       let jsHash = 'BUSY1Sdf'; // fallback
-      let cssHash = 'BUSY1Sdf'; // fallback
+      let cssHash = null; // null means CSS might be inlined in JS
+      let cssFileExists = false;
+      
       try {
         const assetsPath = path.join(__dirname, '../spa/assets');
         if (fs.existsSync(assetsPath)) {
@@ -221,16 +223,28 @@ export async function createServer() {
           }
           if (cssFile) {
             cssHash = cssFile.replace('index-', '').replace('.css', '');
+            cssFileExists = true;
+            console.log(`[HTML] Found CSS file: index-${cssHash}.css`);
+          } else {
+            console.log(`[HTML] No separate CSS file found - CSS is likely inlined in JS`);
           }
+        } else {
+          console.log(`[HTML] Assets directory not found: ${assetsPath}`);
         }
       } catch (error) {
-        console.log('Could not determine asset hashes, using fallback:', error);
+        console.log('[HTML] Could not determine asset hashes:', error);
       }
       
       // Replace placeholders
       html = html.replace(/\{\{NONCE\}\}/g, nonce);
       html = html.replace(/\{\{HASH\}\}/g, jsHash);
-      html = html.replace(/\{\{CSSHASH\}\}/g, cssHash);
+      
+      // Only add CSS link if CSS file exists
+      const cssLink = cssFileExists && cssHash 
+        ? `<link rel="stylesheet" href="/assets/index-${cssHash}.css" crossorigin="anonymous" />`
+        : '<!-- CSS is inlined in JS and will load via JS import -->';
+      html = html.replace(/\{\{CSSLINK\}\}/g, cssLink);
+      
       html = html.replace(/\{\{ANALYTICS_API_URL\}\}/g, process.env.ANALYTICS_API_URL || 'https://analytics-hub-server.onrender.com');
       
       res.setHeader('Content-Type', 'text/html');
