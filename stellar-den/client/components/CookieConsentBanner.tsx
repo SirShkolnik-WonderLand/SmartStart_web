@@ -65,6 +65,12 @@ export default function CookieConsentBanner() {
 
   return (
     <>
+      {/* Blur Overlay - Covers entire page until consent is given */}
+      <div 
+        className="fixed inset-0 z-40 bg-background/60 backdrop-blur-sm"
+        aria-hidden="true"
+      />
+      
       {/* Cookie Consent Banner */}
       <div className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border shadow-2xl">
         <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
