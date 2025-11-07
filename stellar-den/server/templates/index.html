@@ -109,19 +109,34 @@
         function hasAnalyticsConsent() {
           try {
             const cookie = document.cookie.split(';').find(c => c.trim().startsWith('asg_consent_preferences='));
-            if (!cookie) return false; // No consent given yet
+            if (!cookie) {
+              console.log('[Analytics] No consent cookie found - waiting for user consent');
+              return false; // No consent given yet
+            }
             const value = cookie.split('=')[1];
             const parsed = JSON.parse(decodeURIComponent(value));
-            return parsed.analytics === true;
-          } catch {
+            console.log('[Analytics] Consent preferences:', parsed);
+            const hasConsent = parsed.analytics === true;
+            if (!hasConsent) {
+              console.log('[Analytics] Analytics tracking disabled by user preference');
+            } else {
+              console.log('[Analytics] Analytics tracking ENABLED');
+            }
+            return hasConsent;
+          } catch (e) {
+            console.error('[Analytics] Error parsing consent:', e);
             return false;
           }
         }
         
         // Track pageview if consent given, otherwise wait for consent
-        if (hasAnalyticsConsent()) {
+        const initialConsent = hasAnalyticsConsent();
+        if (initialConsent) {
+          console.log('[Analytics] Tracking initial pageview');
           track('pageview', {pageUrl: location.href, pageTitle: document.title});
         } else {
+          console.log('[Analytics] Waiting for user consent...');
+
           // Wait for consent - will be tracked when consent is given
           // Use longer interval and requestIdleCallback for better performance
           let checkCount = 0;
@@ -132,8 +147,11 @@
             checkCount++;
             
             if (hasAnalyticsConsent()) {
+              console.log('[Analytics] Consent granted! Tracking pageview');
               track('pageview', {pageUrl: location.href, pageTitle: document.title});
               return;
+            } else {
+              console.log('[Analytics] Check', checkCount, '- still waiting for consent');
             }
             
             // Use requestIdleCallback if available, otherwise setTimeout with longer delay

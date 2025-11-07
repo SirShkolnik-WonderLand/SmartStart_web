@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head><title>Analytics Test</title></head>
+<body>
+<h1>Testing Analytics on Live Site</h1>
+<pre id="output"></pre>
+<script>
+const output = document.getElementById('output');
+function log(msg) {
+  output.textContent += msg + '\n';
+  console.log(msg);
+}
+
+// Open the live site
+window.open('https://alicesolutionsgroup.com', '_blank');
+
+log('Test script ready. Open browser console on live site and run:');
+log('');
+log('// Check cookies');
+log('document.cookie');
+log('');
+log('// Check analytics consent');
+log('const cookie = document.cookie.split(";").find(c => c.trim().startsWith("asg_consent_preferences="));');
+log('console.log("Consent cookie:", cookie);');
+log('');
+log('// Manually set consent and track');
+log('document.cookie = "asg_consent_preferences=" + encodeURIComponent(JSON.stringify({essential:true,analytics:true,marketing:true,timestamp:new Date().toISOString(),version:"1.0"})) + "; path=/; max-age=31536000";');
+log('window.analyticsHub?.trackPageView();');
+</script>
+</body>
+</html>
