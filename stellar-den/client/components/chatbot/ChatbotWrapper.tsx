@@ -194,15 +194,16 @@ export function ChatbotWrapper() {
           <motion.div 
             onClick={() => setIsChatOpen(!isChatOpen)} 
             className="cursor-pointer relative z-10"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            style={{ transform: isMobile ? 'scale(0.65)' : 'scale(1)' }}
+            whileHover={{ scale: isMobile ? 0.68 : 1.05 }}
+            whileTap={{ scale: isMobile ? 0.62 : 0.95 }}
           >
             <ChatbotAvatar 
               state={avatarState} 
               emotion={emotion}
               specialAnimation={specialAnimation}
               theme={theme}
-              size={isMobile ? "small" : "medium"} 
+              size="medium"
               isClickable={!isChatOpen}
               showAttentionSeeker={showAttentionSeeker}
               onAnimationComplete={handleAnimationComplete}
@@ -232,10 +233,12 @@ export function ChatbotWrapper() {
         {isMobile && !isChatOpen && (
           <motion.div 
             initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
+            animate={{ scale: 0.65, opacity: 1 }}
             exit={{ scale: 0, opacity: 0 }}
             transition={{ type: "spring", stiffness: 260, damping: 20 }}
             onClick={() => setIsChatOpen(true)}
+            whileHover={{ scale: 0.68 }}
+            whileTap={{ scale: 0.62 }}
             className="fixed bottom-8 right-8 z-50 cursor-pointer"
           >
             <ChatbotAvatar 
@@ -243,7 +246,7 @@ export function ChatbotWrapper() {
               emotion={emotion}
               specialAnimation={specialAnimation}
               theme={theme}
-              size="small" 
+              size="medium"
               isClickable={true}
               showAttentionSeeker={showAttentionSeeker}
               onAnimationComplete={handleAnimationComplete}
