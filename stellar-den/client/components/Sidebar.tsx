@@ -185,7 +185,7 @@ export default function Sidebar() {
               variant="ghost"
               size="icon"
               onClick={handleToggleCollapse}
-              className="flex-shrink-0"
+              className="flex-shrink-0 hidden md:flex"
             >
               {isCollapsed ? (
                 <ChevronRight className="w-5 h-5" />
