@@ -147,13 +147,13 @@ export function ChatbotWrapper() {
               className="fixed inset-0 z-50 bg-slate-900/95 backdrop-blur-xl"
             >
               <div className="h-full flex flex-col">
-                <div className="flex-1 flex flex-col items-center justify-start pt-8">
+                <div className="flex-1 flex flex-col items-center justify-start pt-8" style={{ transform: 'scale(0.65)' }}>
                   <ChatbotAvatar 
                     state={avatarState} 
                     emotion={emotion}
                     specialAnimation={specialAnimation}
                     theme={theme}
-                    size="small" 
+                    size="medium"
                     onAnimationComplete={handleAnimationComplete}
                   />
                   <ChatInterface
