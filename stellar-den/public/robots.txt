@@ -21,6 +21,7 @@ Allow: /blog/cybersecurity-for-toronto-smes
 Allow: /blog/innovation-on-campus
 Allow: /blog/new-generation-of-builders
 Allow: /blog/beyond-silicon-valley-canadian-students
+Allow: /blog/the-smartstart-way
 
 # Sitemap location
 Sitemap: https://alicesolutionsgroup.com/sitemap.xml

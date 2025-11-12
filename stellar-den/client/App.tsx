@@ -32,6 +32,7 @@ import CybersecurityForTorontoSmes from "./pages/blog/CybersecurityForTorontoSme
 import InnovationOnCampus from "./pages/blog/InnovationOnCampus";
 import NewGenerationOfBuilders from "./pages/blog/NewGenerationOfBuilders";
 import BeyondSiliconValleyCanadianStudents from "./pages/blog/BeyondSiliconValley";
+import TheSmartStartWay from "./pages/blog/SmartStartWay";
 import PrivacyPolicy from "./pages/legal/PrivacyPolicy";
 import TermsOfService from "./pages/legal/TermsOfService";
 import CookiePolicy from "./pages/legal/CookiePolicy";
@@ -107,6 +108,7 @@ const App = () => {
           <Route path="/blog/innovation-on-campus" element={<InnovationOnCampus />} />
           <Route path="/blog/new-generation-of-builders" element={<NewGenerationOfBuilders />} />
         <Route path="/blog/beyond-silicon-valley-canadian-students" element={<BeyondSiliconValleyCanadianStudents />} />
+        <Route path="/blog/the-smartstart-way" element={<TheSmartStartWay />} />
           <Route path="/toronto-cybersecurity-consulting" element={<TorontoCybersecurityConsulting />} />
           {/* Legal Pages */}
           <Route path="/legal/privacy-policy" element={<PrivacyPolicy />} />
