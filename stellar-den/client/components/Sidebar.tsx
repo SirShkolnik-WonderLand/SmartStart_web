@@ -1,7 +1,7 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Moon, Sun, ChevronLeft, ChevronRight, ChevronDown, Home, UserCircle, Shield, Rocket, Globe2, ClipboardCheck, BookOpen, Mail } from "lucide-react";
+import { Moon, Sun, ChevronDown, Home, UserCircle, Shield, Rocket, Globe2, ClipboardCheck, BookOpen, Mail } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSidebar } from "@/contexts/SidebarContext";
 
@@ -9,9 +9,14 @@ export default function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
   const [isDark, setIsDark] = useState(false);
-  const { isCollapsed, toggleCollapse } = useSidebar();
+  const { isCollapsed, isExpanded, toggleCollapse, setHoverExpanded } = useSidebar();
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-  const [isHovering, setIsHovering] = useState(false);
+  const handleToggleCollapse = () => {
+    setHoverExpanded(false);
+    toggleCollapse();
+    setActiveDropdown(null);
+  };
+
 
   // Check system preference on mount
   useEffect(() => {
@@ -26,11 +31,6 @@ export default function Sidebar() {
     setIsDark(newTheme);
     document.documentElement.classList.toggle("dark", newTheme);
     localStorage.setItem("theme", newTheme ? "dark" : "light");
-  };
-
-  const handleToggleCollapse = () => {
-    toggleCollapse();
-    setActiveDropdown(null); // Close dropdowns when collapsing
   };
 
   const handleNavigation = (href: string) => {
@@ -55,8 +55,6 @@ export default function Sidebar() {
     }
     setActiveDropdown(null);
   };
-
-  const isExpanded = useMemo(() => !isCollapsed || isHovering, [isCollapsed, isHovering]);
 
   const navigationItems = [
     {
@@ -130,12 +128,10 @@ export default function Sidebar() {
         animate={{ x: 0 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
         className={`fixed left-0 top-0 h-full z-50 bg-background/95 backdrop-blur-lg border-r border-border transition-all duration-300 ${
-          isExpanded
-            ? "w-72"
-            : "w-0 md:w-20 -translate-x-full md:translate-x-0"
+          isExpanded ? "w-72" : "w-0 md:w-20 -translate-x-full md:translate-x-0"
         }`}
-        onMouseEnter={() => isCollapsed && setIsHovering(true)}
-        onMouseLeave={() => setIsHovering(false)}
+        onMouseEnter={() => isCollapsed && setHoverExpanded(true)}
+        onMouseLeave={() => setHoverExpanded(false)}
       >
         <div className="flex flex-col h-full">
           {/* Logo Section */}
@@ -186,18 +182,7 @@ export default function Sidebar() {
                 )}
               </AnimatePresence>
             </motion.div>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleToggleCollapse}
-              className="flex-shrink-0 hidden md:flex"
-            >
-              {isExpanded ? (
-                <ChevronLeft className="w-5 h-5" />
-              ) : (
-                <ChevronRight className="w-5 h-5" />
-              )}
-            </Button>
+            {/* Collapse toggle removed per UX request */}
           </div>
 
           {/* Navigation */}
