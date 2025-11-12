@@ -38,6 +38,7 @@ import LetterToBuildersBlog from "./pages/blog/LetterToBuilders";
 import BuildersManifesto from "./pages/BuildersManifesto";
 import BuildersManifestoBlog from "./pages/blog/BuildersManifesto";
 import Blog from "./pages/Blog";
+import ParentsDigitalWorld from "./pages/blog/ParentsDigitalWorld";
 import PrivacyPolicy from "./pages/legal/PrivacyPolicy";
 import TermsOfService from "./pages/legal/TermsOfService";
 import CookiePolicy from "./pages/legal/CookiePolicy";
@@ -117,6 +118,7 @@ const App = () => {
           <Route path="/blog/the-smartstart-way" element={<TheSmartStartWay />} />
           <Route path="/blog/letter-to-the-builders" element={<LetterToBuildersBlog />} />
           <Route path="/blog/builders-manifesto" element={<BuildersManifestoBlog />} />
+          <Route path="/blog/parents-digital-world" element={<ParentsDigitalWorld />} />
           <Route path="/letter-to-the-builders" element={<LetterToBuilders />} />
           <Route path="/builders-manifesto" element={<BuildersManifesto />} />
           <Route path="/toronto-cybersecurity-consulting" element={<TorontoCybersecurityConsulting />} />

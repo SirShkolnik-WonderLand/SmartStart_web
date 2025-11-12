@@ -117,7 +117,7 @@ export default function BuildersManifesto() {
                 </span>
                 <h1 className="text-3xl md:text-4xl font-semibold text-foreground">The SmartStart Builders’ Manifesto</h1>
                 <p className="text-sm text-muted-foreground">
-                  Published {new Date(PUBLISH_DATE).toLocaleDateString("en-CA", { year: "numeric", month: "long", day: "numeric" })} · Approx. 10 min read
+                  Published {new Date(PUBLISH_DATE).toLocaleDateString("en-CA", { year: "numeric", month: "long", day: "numeric" })} · Approx. 10 min read · By Udi Shkolnik
                 </p>
               </motion.div>
             </header>

@@ -24,6 +24,7 @@ Allow: /blog/beyond-silicon-valley-canadian-students
 Allow: /blog/the-smartstart-way
 Allow: /blog/letter-to-the-builders
 Allow: /blog/builders-manifesto
+Allow: /blog/parents-digital-world
 Allow: /blog
 Allow: /letter-to-the-builders
 Allow: /builders-manifesto

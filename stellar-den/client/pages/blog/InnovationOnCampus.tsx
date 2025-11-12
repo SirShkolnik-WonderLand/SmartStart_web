@@ -294,7 +294,7 @@ export default function InnovationOnCampus() {
                   Innovation on Campus: How Canadian University Students Can Turn Ideas into Impact
                 </h1>
                 <p className="text-sm text-muted-foreground">
-                  Published {new Date(PUBLISH_DATE).toLocaleDateString("en-CA", { year: "numeric", month: "long", day: "numeric" })} · Approx. 7 min read
+                  Published {new Date(PUBLISH_DATE).toLocaleDateString("en-CA", { year: "numeric", month: "long", day: "numeric" })} · Approx. 7 min read · By Udi Shkolnik
                 </p>
               </motion.div>
             </header>

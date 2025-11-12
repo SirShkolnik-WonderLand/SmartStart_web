@@ -111,7 +111,7 @@ export default function BeyondSiliconValleyCanadianStudents() {
                   Beyond Silicon Valley: How Canadian Students Are Building a New Culture of Innovation
                 </h1>
                 <p className="text-sm text-muted-foreground">
-                  Published {new Date(PUBLISH_DATE).toLocaleDateString("en-CA", { year: "numeric", month: "long", day: "numeric" })} · Approx. 8 min read
+                  Published {new Date(PUBLISH_DATE).toLocaleDateString("en-CA", { year: "numeric", month: "long", day: "numeric" })} · Approx. 8 min read · By Udi Shkolnik
                 </p>
               </motion.div>
             </header>

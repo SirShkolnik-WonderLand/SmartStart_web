@@ -108,7 +108,7 @@ export default function NewGenerationOfBuilders() {
                   The New Generation of Builders: How Canada’s Young Innovators Are Rewriting the Future
                 </h1>
                 <p className="text-sm text-muted-foreground">
-                  Published {new Date(PUBLISH_DATE).toLocaleDateString("en-CA", { year: "numeric", month: "long", day: "numeric" })} · Approx. 8 min read
+                  Published {new Date(PUBLISH_DATE).toLocaleDateString("en-CA", { year: "numeric", month: "long", day: "numeric" })} · Approx. 8 min read · By Udi Shkolnik
                 </p>
               </motion.div>
             </header>

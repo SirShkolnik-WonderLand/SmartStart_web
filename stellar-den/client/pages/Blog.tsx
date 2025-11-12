@@ -63,6 +63,15 @@ const blogPosts: BlogPost[] = [
     category: "Innovation",
   },
   {
+    slug: "/blog/parents-digital-world",
+    title: "Our Kids and Their Digital World: A Parent’s Reality Check",
+    description: "Cybersecurity dad Udi Shkolnik shares a grounded playbook for raising resilient, connected kids in an always-on world.",
+    publishDate: "2025-08-25",
+    readingTime: "8 min read",
+    image: "https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=1600&q=80",
+    category: "Smart Parenting",
+  },
+  {
     slug: "/blog/innovation-on-campus",
     title: "Innovation on Campus: How Canadian University Students Can Turn Ideas into Impact",
     description: "A practical roadmap for Canadian students to turn campus resources into launch-ready ventures in one semester.",
@@ -181,6 +190,7 @@ export default function Blog() {
                     </div>
                     <h2 className="text-2xl font-semibold text-foreground group-hover:text-primary transition-colors">{post.title}</h2>
                     <p className="text-muted-foreground text-sm leading-relaxed line-clamp-3">{post.description}</p>
+                    <div className="text-xs uppercase tracking-wide text-muted-foreground">By Udi Shkolnik</div>
                     <div className="flex items-center gap-4 text-xs text-muted-foreground uppercase tracking-wide">
                       <span className="inline-flex items-center gap-1">
                         <Calendar className="w-3 h-3" />

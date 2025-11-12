@@ -63,6 +63,7 @@ router.get("/", async (req, res) => {
       "the-smartstart-way": articleEvents,
       "letter-to-the-builders": articleEvents,
       "builders-manifesto": articleEvents,
+      "parents-digital-world": articleEvents,
     };
 
     if (pageEvents[pageParam]) {
