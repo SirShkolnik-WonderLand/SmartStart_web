@@ -374,6 +374,13 @@ export default function Services() {
                 View Case Studies
               </Button>
             </div>
+            <p className="mt-8 text-sm text-muted-foreground">
+              Supporting GTA organizations? Explore our{" "}
+              <a href="/toronto-cybersecurity-consulting" className="text-primary font-semibold underline-offset-4 hover:underline">
+                Toronto Cybersecurity Consulting program
+              </a>{" "}
+              for incident response, ISO 27001, and PHIPA/PIPEDA-ready playbooks designed for local teams.
+            </p>
           </motion.div>
 
           {/* Udi Credentials Strip */}

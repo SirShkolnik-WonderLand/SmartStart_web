@@ -16,6 +16,7 @@ Allow: /smartstart
 Allow: /services
 Allow: /about
 Allow: /contact
+Allow: /toronto-cybersecurity-consulting
 
 # Sitemap location
 Sitemap: https://alicesolutionsgroup.com/sitemap.xml

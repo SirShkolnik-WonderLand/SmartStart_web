@@ -18,6 +18,7 @@ import Vision from "./pages/Vision";
 import SmartStart from "./pages/SmartStart";
 import SmartStartVentureBuilding from "./pages/SmartStartVentureBuilding";
 import SmartStartArchetypes from "./pages/SmartStartArchetypes";
+import TorontoCybersecurityConsulting from "./pages/TorontoCybersecurityConsulting";
 import CommunityHub from "./pages/CommunityHub";
 import CommunityEvents from "./pages/CommunityEvents";
 import CISOasService from "./pages/CISOasService";
@@ -98,6 +99,7 @@ const App = () => {
           <Route path="/automation-ai" element={<AutomationAI />} />
           <Route path="/privacy-compliance" element={<PrivacyCompliance />} />
           <Route path="/advisory-audits" element={<AdvisoryAudits />} />
+          <Route path="/toronto-cybersecurity-consulting" element={<TorontoCybersecurityConsulting />} />
           {/* Legal Pages */}
           <Route path="/legal/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/legal/terms-of-service" element={<TermsOfService />} />

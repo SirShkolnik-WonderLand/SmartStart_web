@@ -252,6 +252,13 @@ const ISO27001: React.FC = () => {
                 View ISO Studio
               </Button>
             </div>
+            <p className="mt-8 text-sm text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
+              Need a GTA-specific security partner? Explore our{" "}
+              <a href="/toronto-cybersecurity-consulting" className="text-cyan-600 font-semibold underline-offset-4 hover:underline">
+                Toronto Cybersecurity Consulting program
+              </a>{" "}
+              for PHIPA/PIPEDA privacy readiness, incident response, and ISO 27001 acceleration designed for Ontario teams.
+            </p>
           </motion.div>
         </div>
       </section>

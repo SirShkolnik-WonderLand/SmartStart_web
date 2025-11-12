@@ -49,7 +49,29 @@ async function probeEndpoint(name: string, url: string): Promise<CheckResult> {
   }
 }
 
-router.get("/", async (_req, res) => {
+router.get("/", async (req, res) => {
+  const pageParam = typeof req.query.page === "string" ? req.query.page : undefined;
+
+  if (pageParam) {
+    const pageEvents: Record<string, string[]> = {
+      "toronto-cybersecurity-consulting": ["lead_open", "cta_click_primary", "form_submit_success", "scroll_75"],
+    };
+
+    if (pageEvents[pageParam]) {
+      return res.json({
+        ok: true,
+        page: pageParam,
+        events: pageEvents[pageParam],
+      });
+    }
+
+    return res.status(404).json({
+      ok: false,
+      error: "Unknown page lookup",
+      page: pageParam,
+    });
+  }
+
   const analyticsBase = getAnalyticsBaseUrl();
 
   const [analyticsHealth, analyticsDb] = await Promise.all([

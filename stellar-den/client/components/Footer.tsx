@@ -91,6 +91,11 @@ export default function Footer() {
                 </a>
               </li>
               <li>
+                <a href="/toronto-cybersecurity-consulting" className="hover:text-primary transition-colors">
+                  Toronto Cybersecurity Consulting
+                </a>
+              </li>
+              <li>
                 <a href="#" className="hover:text-primary transition-colors">
                   Careers
                 </a>

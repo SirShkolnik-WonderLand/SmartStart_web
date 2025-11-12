@@ -32,6 +32,7 @@ import zohoRoutes from "./routes/zoho";
 import { startDailyAnalyticsCron } from "./cron/dailyAnalytics";
 import privacyRoutes from "./routes/privacy";
 import healthRoutes from "./routes/health";
+import resourcesRoutes from "./routes/resources";
 import {
   nonceCSP,
   corsConfig,
@@ -109,6 +110,9 @@ export async function createServer() {
 
   // Advanced health + security diagnostics
   app.use("/api/health", healthRoutes);
+
+  // Resource generation (PDFs, downloads)
+  app.use("/api/resources", resourcesRoutes);
 
   // Analytics API routes
   const analyticsRoutes = await import('./routes/analytics.js');
