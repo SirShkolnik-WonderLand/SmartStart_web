@@ -1,5 +1,4 @@
 import { useEffect, useRef } from "react";
-import { trackEvent } from "@/lib/analytics-tracker";
 
 type TrackArticleCta = (cta: string) => void;
 
@@ -7,12 +6,33 @@ function isBrowser(): boolean {
   return typeof window !== "undefined";
 }
 
+function emitEvent(eventName: string, properties: Record<string, unknown>) {
+  if (!isBrowser()) return;
+
+  let attempts = 0;
+  const maxAttempts = 25;
+
+  const attemptEmit = () => {
+    const analytics = (window as any).analyticsHub;
+    if (analytics && typeof analytics.trackEvent === "function") {
+      analytics.trackEvent(eventName, properties);
+      return;
+    }
+
+    if (attempts < maxAttempts) {
+      attempts += 1;
+      window.setTimeout(attemptEmit, 200);
+    }
+  };
+
+  attemptEmit();
+}
+
 export function useArticleAnalytics(articleSlug: string): { trackArticleCta: TrackArticleCta } {
   const hasTrackedScrollRef = useRef(false);
 
   useEffect(() => {
-    if (!isBrowser()) return;
-    trackEvent("article_open", { article: articleSlug });
+    emitEvent("article_open", { article: articleSlug });
   }, [articleSlug]);
 
   useEffect(() => {
@@ -28,7 +48,7 @@ export function useArticleAnalytics(articleSlug: string): { trackArticleCta: Tra
 
       if (ratio >= 0.75) {
         hasTrackedScrollRef.current = true;
-        trackEvent("article_scroll_75", { article: articleSlug });
+        emitEvent("article_scroll_75", { article: articleSlug });
       }
     };
 
@@ -37,11 +57,11 @@ export function useArticleAnalytics(articleSlug: string): { trackArticleCta: Tra
   }, [articleSlug]);
 
   const trackArticleCta: TrackArticleCta = (cta) => {
-    if (!isBrowser()) return;
-    trackEvent("article_cta_click", { article: articleSlug, cta });
+    emitEvent("article_cta_click", { article: articleSlug, cta });
   };
 
   return { trackArticleCta };
 }
+
 
 
