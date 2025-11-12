@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import Sidebar from "@/components/Sidebar";
 import Footer from "@/components/Footer";
 import { useSidebar } from "@/contexts/SidebarContext";
-import { ArrowRight, Calendar, Timer, PenNib } from "lucide-react";
+import { ArrowRight, Calendar, Timer, PenSquare } from "lucide-react";
 import StructuredData from "@/components/StructuredData";
 
 type BlogPost = {
@@ -148,7 +148,7 @@ export default function Blog() {
             <div className="max-w-5xl mx-auto text-center">
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-6">
-                  <PenNib className="w-4 h-4 text-primary" />
+                  <PenSquare className="w-4 h-4 text-primary" />
                   <span className="text-primary text-sm font-medium">SmartStart Blog</span>
                 </div>
                 <h1 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-foreground via-primary to-primary/80 bg-clip-text text-transparent">
