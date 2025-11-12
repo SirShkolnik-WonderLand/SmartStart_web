@@ -28,6 +28,9 @@ import BIAnalytics from "./pages/BIAnalytics";
 import AutomationAI from "./pages/AutomationAI";
 import PrivacyCompliance from "./pages/PrivacyCompliance";
 import AdvisoryAudits from "./pages/AdvisoryAudits";
+import CybersecurityForTorontoSmes from "./pages/blog/CybersecurityForTorontoSmes";
+import InnovationOnCampus from "./pages/blog/InnovationOnCampus";
+import NewGenerationOfBuilders from "./pages/blog/NewGenerationOfBuilders";
 import PrivacyPolicy from "./pages/legal/PrivacyPolicy";
 import TermsOfService from "./pages/legal/TermsOfService";
 import CookiePolicy from "./pages/legal/CookiePolicy";
@@ -99,6 +102,9 @@ const App = () => {
           <Route path="/automation-ai" element={<AutomationAI />} />
           <Route path="/privacy-compliance" element={<PrivacyCompliance />} />
           <Route path="/advisory-audits" element={<AdvisoryAudits />} />
+          <Route path="/blog/cybersecurity-for-toronto-smes" element={<CybersecurityForTorontoSmes />} />
+          <Route path="/blog/innovation-on-campus" element={<InnovationOnCampus />} />
+          <Route path="/blog/new-generation-of-builders" element={<NewGenerationOfBuilders />} />
           <Route path="/toronto-cybersecurity-consulting" element={<TorontoCybersecurityConsulting />} />
           {/* Legal Pages */}
           <Route path="/legal/privacy-policy" element={<PrivacyPolicy />} />

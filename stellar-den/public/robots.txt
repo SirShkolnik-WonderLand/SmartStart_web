@@ -19,6 +19,7 @@ Allow: /contact
 Allow: /toronto-cybersecurity-consulting
 Allow: /blog/cybersecurity-for-toronto-smes
 Allow: /blog/innovation-on-campus
+Allow: /blog/new-generation-of-builders
 
 # Sitemap location
 Sitemap: https://alicesolutionsgroup.com/sitemap.xml
