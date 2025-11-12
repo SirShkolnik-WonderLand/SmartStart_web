@@ -21,7 +21,7 @@ const blogPosts: BlogPost[] = [
     slug: "/blog/letter-to-the-builders",
     title: "A Letter to the Builders of Tomorrow",
     description: "Udi Shkolnik’s personal invitation to every builder who refuses to follow outdated playbooks and wants to create with structure and soul.",
-    publishDate: "2025-11-12",
+    publishDate: "2025-10-21",
     readingTime: "8 min read",
     image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=80",
     category: "SmartStart Stories",
@@ -30,7 +30,7 @@ const blogPosts: BlogPost[] = [
     slug: "/blog/builders-manifesto",
     title: "The SmartStart Builders’ Manifesto",
     description: "Twelve living principles that power the SmartStart ecosystem—alignment before acceleration, community over competition, and momentum as a shared asset.",
-    publishDate: "2025-11-12",
+    publishDate: "2025-10-24",
     readingTime: "10 min read",
     image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1600&q=80",
     category: "SmartStart Manifesto",
@@ -39,7 +39,7 @@ const blogPosts: BlogPost[] = [
     slug: "/blog/the-smartstart-way",
     title: "The SmartStart Way: Building a New Kind of Business Community",
     description: "Discover the hybrid ecosystem where business strategy, creativity, and self-development merge so founders can build on their own terms.",
-    publishDate: "2025-11-12",
+    publishDate: "2025-09-30",
     readingTime: "9 min read",
     image: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1600&q=80",
     category: "SmartStart Stories",
@@ -48,7 +48,7 @@ const blogPosts: BlogPost[] = [
     slug: "/blog/beyond-silicon-valley-canadian-students",
     title: "Beyond Silicon Valley: How Canadian Students Are Building a New Culture of Innovation",
     description: "Canadian students are reinventing innovation with empathy, diversity, and purpose-driven ventures that outlast hype cycles.",
-    publishDate: "2025-11-12",
+    publishDate: "2025-09-15",
     readingTime: "7 min read",
     image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1600&q=80",
     category: "Innovation",
@@ -57,7 +57,7 @@ const blogPosts: BlogPost[] = [
     slug: "/blog/new-generation-of-builders",
     title: "The New Generation of Builders: How Canada’s Young Innovators Are Rewriting the Future",
     description: "A look at the students and creators building Canada’s next wave of companies, tools, and cultural movements.",
-    publishDate: "2025-11-12",
+    publishDate: "2025-09-10",
     readingTime: "8 min read",
     image: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1600&q=80",
     category: "Innovation",
@@ -66,7 +66,7 @@ const blogPosts: BlogPost[] = [
     slug: "/blog/innovation-on-campus",
     title: "Innovation on Campus: How Canadian University Students Can Turn Ideas into Impact",
     description: "A practical roadmap for Canadian students to turn campus resources into launch-ready ventures in one semester.",
-    publishDate: "2025-11-12",
+    publishDate: "2025-08-28",
     readingTime: "7 min read",
     image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1600&q=80",
     category: "Education",
@@ -75,7 +75,7 @@ const blogPosts: BlogPost[] = [
     slug: "/blog/cybersecurity-for-toronto-smes",
     title: "Cybersecurity for Toronto & GTA SMEs: Why It’s Not Just an IT Cost—It’s a Strategic Asset",
     description: "How Toronto SMEs can turn cybersecurity into a growth advantage with PHIPA/PIPEDA readiness and rapid incident response.",
-    publishDate: "2025-11-12",
+    publishDate: "2025-08-12",
     readingTime: "9 min read",
     image: "https://images.unsplash.com/photo-1531498860502-7c67cf02f77b?auto=format&fit=crop&w=1600&q=80",
     category: "Cybersecurity",
@@ -164,7 +164,8 @@ export default function Blog() {
           <section className="pb-20 px-4">
             <div className="max-w-6xl mx-auto grid gap-8 md:grid-cols-2">
               {blogPosts.map((post, index) => (
-                <motion.article
+                <motion.a
+                  href={post.slug}
                   key={post.slug}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -190,17 +191,12 @@ export default function Blog() {
                         {post.readingTime}
                       </span>
                     </div>
-                    <div className="pt-2">
-                      <a
-                        href={post.slug}
-                        className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary/80 transition-colors"
-                      >
-                        Read article
-                        <ArrowRight className="w-4 h-4" />
-                      </a>
+                    <div className="pt-2 inline-flex items-center gap-2 text-sm font-semibold text-primary group-hover:text-primary/80 transition-colors">
+                      Read article
+                      <ArrowRight className="w-4 h-4" />
                     </div>
                   </div>
-                </motion.article>
+                </motion.a>
               ))}
             </div>
           </section>

@@ -9,7 +9,7 @@ import { ArrowRight } from "lucide-react";
 import { useArticleAnalytics } from "@/hooks/useArticleAnalytics";
 
 const PAGE_URL = "https://alicesolutionsgroup.com/blog/cybersecurity-for-toronto-smes";
-const PUBLISH_DATE = "2025-11-12T09:00:00-05:00";
+const PUBLISH_DATE = "2025-08-12T09:00:00-04:00";
 const FEATURE_IMAGE = "https://images.unsplash.com/photo-1531498860502-7c67cf02f77b?auto=format&fit=crop&w=1600&q=80";
 
 const articleSchema = {

@@ -9,7 +9,7 @@ import { Sparkle } from "lucide-react";
 import { useArticleAnalytics } from "@/hooks/useArticleAnalytics";
 
 const PAGE_URL = "https://alicesolutionsgroup.com/blog/the-smartstart-way";
-const PUBLISH_DATE = "2025-11-12T13:45:00-05:00";
+const PUBLISH_DATE = "2025-09-30T11:30:00-04:00";
 const FEATURE_IMAGE = "https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&w=1600&q=80";
 
 const articleSchema = {

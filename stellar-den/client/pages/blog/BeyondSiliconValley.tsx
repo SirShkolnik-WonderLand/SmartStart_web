@@ -9,7 +9,7 @@ import { ArrowRight } from "lucide-react";
 import { useArticleAnalytics } from "@/hooks/useArticleAnalytics";
 
 const PAGE_URL = "https://alicesolutionsgroup.com/blog/beyond-silicon-valley-canadian-students";
-const PUBLISH_DATE = "2025-11-12T12:30:00-05:00";
+const PUBLISH_DATE = "2025-09-15T10:00:00-04:00";
 const FEATURE_IMAGE = "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1600&q=80";
 
 const articleSchema = {

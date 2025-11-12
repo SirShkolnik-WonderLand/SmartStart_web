@@ -11,7 +11,7 @@ import BuildersManifestoContent from "@/components/BuildersManifestoContent";
 
 const PAGE_SLUG = "builders-manifesto";
 const PAGE_URL = `https://alicesolutionsgroup.com/${PAGE_SLUG}`;
-const PUBLISH_DATE = "2025-11-12T16:10:00-05:00";
+const PUBLISH_DATE = "2025-10-24T10:30:00-04:00";
 const FEATURE_IMAGE = "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=1600&q=80";
 
 const articleSchema = {

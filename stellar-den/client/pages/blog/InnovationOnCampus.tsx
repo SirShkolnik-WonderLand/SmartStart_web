@@ -9,7 +9,7 @@ import { Rocket } from "lucide-react";
 import { useArticleAnalytics } from "@/hooks/useArticleAnalytics";
 
 const PAGE_URL = "https://alicesolutionsgroup.com/blog/innovation-on-campus";
-const PUBLISH_DATE = "2025-11-12T09:15:00-05:00";
+const PUBLISH_DATE = "2025-08-28T09:15:00-04:00";
 const FEATURE_IMAGE = "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1600&q=80";
 
 const articleSchema = {

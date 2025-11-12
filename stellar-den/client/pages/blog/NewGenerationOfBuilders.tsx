@@ -9,7 +9,7 @@ import { ArrowRight } from "lucide-react";
 import { useArticleAnalytics } from "@/hooks/useArticleAnalytics";
 
 const PAGE_URL = "https://alicesolutionsgroup.com/blog/new-generation-of-builders";
-const PUBLISH_DATE = "2025-11-12T09:45:00-05:00";
+const PUBLISH_DATE = "2025-09-10T09:45:00-04:00";
 const FEATURE_IMAGE = "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1600&q=80";
 
 const articleSchema = {

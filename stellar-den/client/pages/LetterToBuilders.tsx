@@ -11,7 +11,7 @@ import LetterToBuildersContent from "@/components/LetterToBuildersContent";
 
 const PAGE_SLUG = "letter-to-the-builders";
 const PAGE_URL = `https://alicesolutionsgroup.com/${PAGE_SLUG}`;
-const PUBLISH_DATE = "2025-11-12T15:00:00-05:00";
+const PUBLISH_DATE = "2025-10-21T15:00:00-04:00";
 const FEATURE_IMAGE = "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1600&q=80";
 
 const articleSchema = {
