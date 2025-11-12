@@ -138,26 +138,22 @@ export default function TorontoCybersecurityConsulting() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [hasTrackedScroll]);
 
-  const buildCtaHref = useCallback(
-    (base: string) => {
-      const url = new URL(base);
-      url.searchParams.set("utm_source", utmParams.source);
-      url.searchParams.set("utm_medium", utmParams.medium);
-      url.searchParams.set("utm_campaign", utmParams.campaign);
-      url.searchParams.set("utm_term", utmParams.term);
-      url.searchParams.set("utm_content", utmParams.content);
-      return url.toString();
-    },
-    [utmParams],
-  );
+  const scrollToForm = useCallback(() => {
+    const formElement = document.getElementById("consult-form");
+    if (formElement) {
+      formElement.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, []);
 
   const handlePrimaryCta = useCallback(() => {
     trackEvent("cta_click_primary", { cta: "book_assessment" });
-  }, []);
+    scrollToForm();
+  }, [scrollToForm]);
 
   const handleSecondaryCta = useCallback(() => {
     trackEvent("cta_click_primary", { cta: "download_checklist" });
-  }, []);
+    scrollToForm();
+  }, [scrollToForm]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = event.target;
@@ -504,29 +500,14 @@ export default function TorontoCybersecurityConsulting() {
                   team. Same-week kickoff, evidence-first reporting, and fixed-fee pilots for GTA organizations.
                 </p>
                 <div className="flex flex-wrap gap-4">
-                  <Button
-                    size="lg"
-                    asChild
-                    className="inline-flex items-center gap-3"
-                    onClick={handlePrimaryCta}
-                  >
-                    <a href={buildCtaHref("https://calendly.com/alicesolutionsgroup/15min-assessment")} target="_blank" rel="noopener noreferrer">
-                      <PhoneCall className="h-5 w-5" />
-                      Book a 15-min Assessment
-                      <ArrowRight className="h-5 w-5" />
-                    </a>
+                  <Button size="lg" className="inline-flex items-center gap-3" onClick={handlePrimaryCta}>
+                    <PhoneCall className="h-5 w-5" />
+                    Book a 15-min Assessment
+                    <ArrowRight className="h-5 w-5" />
                   </Button>
-                  <Button
-                    variant="secondary"
-                    size="lg"
-                    onClick={handleSecondaryCta}
-                    asChild
-                    className="inline-flex items-center gap-3"
-                  >
-                    <a href="#consult-form">
-                      <FileText className="h-5 w-5" />
-                      Download GTA Incident Readiness Checklist
-                    </a>
+                  <Button variant="secondary" size="lg" onClick={handleSecondaryCta} className="inline-flex items-center gap-3">
+                    <FileText className="h-5 w-5" />
+                    Download GTA Incident Readiness Checklist
                   </Button>
                 </div>
                 <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
@@ -659,17 +640,13 @@ export default function TorontoCybersecurityConsulting() {
                     </p>
                   </div>
                   <div className="flex flex-col gap-3">
-                    <Button size="lg" className="inline-flex items-center gap-3" asChild onClick={handlePrimaryCta}>
-                      <a href={buildCtaHref("https://calendly.com/alicesolutionsgroup/15min-assessment")} target="_blank" rel="noopener noreferrer">
-                        Start Discovery Call
-                        <ArrowRight className="h-5 w-5" />
-                      </a>
+                    <Button size="lg" className="inline-flex items-center gap-3" onClick={handlePrimaryCta}>
+                      Start Discovery Call
+                      <ArrowRight className="h-5 w-5" />
                     </Button>
-                    <Button variant="outline" size="lg" className="inline-flex items-center gap-3" asChild>
-                      <a href="#consult-form">
-                        Review Checklist
-                        <FileText className="h-5 w-5" />
-                      </a>
+                    <Button variant="outline" size="lg" className="inline-flex items-center gap-3" onClick={handleSecondaryCta}>
+                      Review Checklist
+                      <FileText className="h-5 w-5" />
                     </Button>
                   </div>
                 </div>
@@ -708,7 +685,7 @@ export default function TorontoCybersecurityConsulting() {
             <div id="consult-form" className="rounded-3xl border border-border/60 bg-card/80 backdrop-blur-xl p-8 shadow-2xl">
               <h3 className="text-2xl font-semibold text-foreground">Book Your 15-min Assessment</h3>
               <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                We’ll review your current maturity, identify the highest-impact controls, and align on next steps. You’ll receive the PDF instantly after submitting.
+                We’ll review your current maturity, identify the highest-impact controls, and align on next steps. You’ll receive the PDF instantly after submitting, and we’ll email you shortly to confirm a meeting time that works for your team.
               </p>
 
               <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
@@ -838,7 +815,7 @@ export default function TorontoCybersecurityConsulting() {
                   <div className="rounded-xl border border-primary/40 bg-primary/5 p-4 text-sm text-primary-foreground/80">
                     <p className="font-medium text-primary">Thanks! Check your inbox—download is ready.</p>
                     <p className="mt-2 text-muted-foreground">
-                      You can also download the checklist directly here:
+                    You can also download the checklist directly here while we coordinate your booking:
                       <a
                         href={downloadUrl}
                         className="ml-2 font-semibold text-primary hover:underline"
