@@ -101,8 +101,18 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-primary transition-colors">
+                <a href="/blog" className="hover:text-primary transition-colors">
                   Blog
+                </a>
+              </li>
+              <li>
+                <a href="/letter-to-the-builders" className="hover:text-primary transition-colors">
+                  Letter to the Builders
+                </a>
+              </li>
+              <li>
+                <a href="/builders-manifesto" className="hover:text-primary transition-colors">
+                  Builders' Manifesto
                 </a>
               </li>
               <li>

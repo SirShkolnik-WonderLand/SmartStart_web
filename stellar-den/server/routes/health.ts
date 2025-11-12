@@ -61,6 +61,8 @@ router.get("/", async (req, res) => {
       "new-generation-of-builders": articleEvents,
       "beyond-silicon-valley-canadian-students": articleEvents,
       "the-smartstart-way": articleEvents,
+      "letter-to-the-builders": articleEvents,
+      "builders-manifesto": articleEvents,
     };
 
     if (pageEvents[pageParam]) {

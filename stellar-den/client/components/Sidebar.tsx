@@ -106,7 +106,12 @@ export default function Sidebar() {
     {
       label: "Resources",
       icon: BookOpen,
-      href: "/resources"
+      items: [
+        { label: "Knowledge Hub", href: "/resources" },
+        { label: "SmartStart Blog", href: "/blog" },
+        { label: "Letter to the Builders", href: "/letter-to-the-builders" },
+        { label: "Builders' Manifesto", href: "/builders-manifesto" }
+      ]
     },
     {
       label: "Contact",

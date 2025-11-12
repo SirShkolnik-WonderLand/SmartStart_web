@@ -33,6 +33,11 @@ import InnovationOnCampus from "./pages/blog/InnovationOnCampus";
 import NewGenerationOfBuilders from "./pages/blog/NewGenerationOfBuilders";
 import BeyondSiliconValleyCanadianStudents from "./pages/blog/BeyondSiliconValley";
 import TheSmartStartWay from "./pages/blog/SmartStartWay";
+import LetterToBuilders from "./pages/LetterToBuilders";
+import LetterToBuildersBlog from "./pages/blog/LetterToBuilders";
+import BuildersManifesto from "./pages/BuildersManifesto";
+import BuildersManifestoBlog from "./pages/blog/BuildersManifesto";
+import Blog from "./pages/Blog";
 import PrivacyPolicy from "./pages/legal/PrivacyPolicy";
 import TermsOfService from "./pages/legal/TermsOfService";
 import CookiePolicy from "./pages/legal/CookiePolicy";
@@ -104,11 +109,16 @@ const App = () => {
           <Route path="/automation-ai" element={<AutomationAI />} />
           <Route path="/privacy-compliance" element={<PrivacyCompliance />} />
           <Route path="/advisory-audits" element={<AdvisoryAudits />} />
+          <Route path="/blog" element={<Blog />} />
           <Route path="/blog/cybersecurity-for-toronto-smes" element={<CybersecurityForTorontoSmes />} />
           <Route path="/blog/innovation-on-campus" element={<InnovationOnCampus />} />
           <Route path="/blog/new-generation-of-builders" element={<NewGenerationOfBuilders />} />
-        <Route path="/blog/beyond-silicon-valley-canadian-students" element={<BeyondSiliconValleyCanadianStudents />} />
-        <Route path="/blog/the-smartstart-way" element={<TheSmartStartWay />} />
+          <Route path="/blog/beyond-silicon-valley-canadian-students" element={<BeyondSiliconValleyCanadianStudents />} />
+          <Route path="/blog/the-smartstart-way" element={<TheSmartStartWay />} />
+          <Route path="/blog/letter-to-the-builders" element={<LetterToBuildersBlog />} />
+          <Route path="/blog/builders-manifesto" element={<BuildersManifestoBlog />} />
+          <Route path="/letter-to-the-builders" element={<LetterToBuilders />} />
+          <Route path="/builders-manifesto" element={<BuildersManifesto />} />
           <Route path="/toronto-cybersecurity-consulting" element={<TorontoCybersecurityConsulting />} />
           {/* Legal Pages */}
           <Route path="/legal/privacy-policy" element={<PrivacyPolicy />} />
