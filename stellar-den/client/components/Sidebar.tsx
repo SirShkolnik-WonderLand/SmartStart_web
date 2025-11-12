@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Moon, Sun, ChevronLeft, ChevronRight, ChevronDown, Home, UserCircle, Shield, Rocket, Globe2, ClipboardCheck, BookOpen, Mail } from "lucide-react";
@@ -11,6 +11,7 @@ export default function Sidebar() {
   const [isDark, setIsDark] = useState(false);
   const { isCollapsed, toggleCollapse } = useSidebar();
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const [isHovering, setIsHovering] = useState(false);
 
   // Check system preference on mount
   useEffect(() => {
@@ -54,6 +55,8 @@ export default function Sidebar() {
     }
     setActiveDropdown(null);
   };
+
+  const isExpanded = useMemo(() => !isCollapsed || isHovering, [isCollapsed, isHovering]);
 
   const navigationItems = [
     {
@@ -127,10 +130,12 @@ export default function Sidebar() {
         animate={{ x: 0 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
         className={`fixed left-0 top-0 h-full z-50 bg-background/95 backdrop-blur-lg border-r border-border transition-all duration-300 ${
-          isCollapsed 
-            ? "md:w-20 w-0 -translate-x-full md:translate-x-0" 
-            : "w-72 md:w-72"
+          isExpanded
+            ? "w-72"
+            : "w-0 md:w-20 -translate-x-full md:translate-x-0"
         }`}
+        onMouseEnter={() => isCollapsed && setIsHovering(true)}
+        onMouseLeave={() => setIsHovering(false)}
       >
         <div className="flex flex-col h-full">
           {/* Logo Section */}
@@ -163,7 +168,7 @@ export default function Sidebar() {
                 />
               </div>
               <AnimatePresence>
-                {!isCollapsed && (
+                {isExpanded && (
                   <motion.div
                     initial={{ opacity: 0, width: 0 }}
                     animate={{ opacity: 1, width: "auto" }}
@@ -187,10 +192,10 @@ export default function Sidebar() {
               onClick={handleToggleCollapse}
               className="flex-shrink-0 hidden md:flex"
             >
-              {isCollapsed ? (
-                <ChevronRight className="w-5 h-5" />
-              ) : (
+              {isExpanded ? (
                 <ChevronLeft className="w-5 h-5" />
+              ) : (
+                <ChevronRight className="w-5 h-5" />
               )}
             </Button>
           </div>
@@ -211,7 +216,7 @@ export default function Sidebar() {
               >
                 <Home className="w-5 h-5 flex-shrink-0" />
                 <AnimatePresence>
-                  {!isCollapsed && (
+                  {isExpanded && (
                     <motion.span
                       initial={{ opacity: 0, width: 0 }}
                       animate={{ opacity: 1, width: "auto" }}
@@ -266,7 +271,7 @@ export default function Sidebar() {
                         <span className="text-xl flex-shrink-0">★</span>
                       )}
                       <AnimatePresence>
-                        {!isCollapsed && (
+                      {isExpanded && (
                           <motion.div
                             initial={{ opacity: 0, width: 0 }}
                             animate={{ opacity: 1, width: "auto" }}
@@ -291,7 +296,7 @@ export default function Sidebar() {
                   {/* Dropdown Items - only show if item has items array */}
                   {item.items && (
                     <AnimatePresence>
-                      {!isCollapsed && activeDropdown === item.label && (
+                      {isExpanded && activeDropdown === item.label && (
                         <motion.div
                           initial={{ opacity: 0, height: 0 }}
                           animate={{ opacity: 1, height: "auto" }}
@@ -330,7 +335,7 @@ export default function Sidebar() {
           <div className="p-4 border-t border-border space-y-2">
             {/* CTA Button */}
             <AnimatePresence>
-              {!isCollapsed && (
+              {isExpanded && (
                 <motion.div
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
@@ -383,7 +388,7 @@ export default function Sidebar() {
                   )}
                 </AnimatePresence>
                 <AnimatePresence>
-                  {!isCollapsed && (
+                  {isExpanded && (
                     <motion.span
                       initial={{ opacity: 0, width: 0 }}
                       animate={{ opacity: 1, width: "auto" }}
