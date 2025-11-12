@@ -217,6 +217,41 @@ export default function ParentsTeens() {
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </section>
+
+            <section className="space-y-4 mt-14">
+              <h2>Scholarships, Programs & Resources</h2>
+              <ul>
+                <li>
+                  <strong>CyberTitan (ICTC Canada):</strong> National cybersecurity competition where Canadian high school teams practice incident response and ethical hacking.
+                </li>
+                <li>
+                  <strong>Mitacs Youth Programs:</strong> Early research internships and innovation challenges that introduce teens to Canadian tech careers.
+                </li>
+                <li>
+                  <strong>Toronto Public Library — Digital Innovation Hubs:</strong> Free access to Adobe Creative Cloud, podcast studios, and 3D printers with orientation sessions.
+                </li>
+              </ul>
+            </section>
+
+            <section className="space-y-4">
+              <h2>Frequently Asked Questions for Teen Families</h2>
+              <div className="space-y-3">
+                <div>
+                  <h3>Should teens use anonymous platforms?</h3>
+                  <p>
+                    We advise using them sparingly and with a clear exit strategy. Test the app together, check moderation policies, and agree on warning signs that
+                    mean it’s time to delete. Encourage teens to screenshot anything concerning and debrief with you immediately.
+                  </p>
+                </div>
+                <div>
+                  <h3>How do we support entrepreneur teens safely?</h3>
+                  <p>
+                    Register a business number if earnings exceed hobby income, separate personal and business finances, and teach invoice tracking. Review CRA
+                    youth entrepreneurship guidance and ensure payment platforms use MFA and strong passwords.
+                  </p>
+                </div>
+              </div>
+            </section>
           </article>
         </div>
         <Footer />

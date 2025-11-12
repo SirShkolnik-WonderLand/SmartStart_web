@@ -221,6 +221,29 @@ export default function ParentHub() {
               </Button>
             </section>
 
+            <section id="events" className="space-y-4 mb-14">
+              <h2>Live Events & Circles</h2>
+              <p>
+                We host a mix of virtual and in-person sessions for GTA families. Every event includes live Q&A, templates, and follow-up checklists. Popular
+                sessions currently open for registration:
+              </p>
+              <ul>
+                <li>
+                  <strong>Dec 4 · Toddler Tech 101 (Virtual):</strong> 60-minute crash course on configuring smart TVs, tablets, and streaming profiles for ages 2-6.
+                </li>
+                <li>
+                  <strong>Dec 11 · Grade School Parent Circle (Toronto, ON):</strong> Co-viewing strategies, Roblox safety, and hands-on privacy lab for parents and kids.
+                </li>
+                <li>
+                  <strong>Jan 8 · Teen Digital Identity Lab (Hybrid):</strong> Teens craft LinkedIn and GitHub portfolios while parents learn digital reputation coaching.
+                </li>
+              </ul>
+              <p>
+                Want to bring SmartStart into your school or community centre? We partner with TDSB, York Region, and Peel Region parent councils—reach out and we’ll
+                design a custom program.
+              </p>
+            </section>
+
             <section id="workshops" className="space-y-4 mb-14">
               <h2>Workshops & Circles</h2>
               <p>
@@ -236,6 +259,58 @@ export default function ParentHub() {
                 </li>
                 <li>
                   <strong>Teen Digital Identity Lab:</strong> Co-led with students to build positive digital footprints, portfolios, and entrepreneurial paths.
+                </li>
+              </ul>
+            </section>
+
+            <section id="faq" className="space-y-4 mb-14">
+              <h2>Frequently Asked Questions</h2>
+              <div className="space-y-5">
+                <div>
+                  <h3>How is SmartStart different from parental control apps?</h3>
+                  <p>
+                    We treat parental controls as guard rails, not the whole road. Our approach combines co-viewing rituals, emotional literacy, and practical
+                    cybersecurity so kids build internal judgement. We still configure controls, but they sit alongside coaching, not instead of it.
+                  </p>
+                </div>
+                <div>
+                  <h3>Do you follow Canadian privacy guidance?</h3>
+                  <p>
+                    Yes. Our recommendations reference the Office of the Privacy Commissioner of Canada’s guidance on protecting children’s privacy online and the
+                    Canadian Centre for Cyber Security’s family safety advisories. We also monitor provincial updates such as Ontario’s <em>Strengthening Cyber
+                    Security and Building Trust in the Public Sector Act</em> (Bill 194) to ensure families who work with public agencies remain compliant.
+                  </p>
+                </div>
+                <div>
+                  <h3>Can grandparents or caregivers join the sessions?</h3>
+                  <p>
+                    Absolutely. Extended family and caregivers play a massive role in digital habits. Many of our families invite grandparents so everyone uses the
+                    same scripts and rituals. We also provide multilingual quick-start guides on request.
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            <section id="further-reading" className="space-y-4 mb-14">
+              <h2>Further Reading & External Resources</h2>
+              <p>
+                Stay current with evidence-based research and official advisories. These are the sources we reference while updating SmartStart content:
+              </p>
+              <ul>
+                <li>
+                  <a className="text-primary" href="https://www.cyber.gc.ca/en/guidance/family-cyber-security" target="_blank" rel="noopener noreferrer">
+                    Canadian Centre for Cyber Security — Family Cyber Security Guidance
+                  </a>
+                </li>
+                <li>
+                  <a className="text-primary" href="https://www.priv.gc.ca/en/privacy-topics/technology-and-privacy/online-privacy/children-and-youth-online-privacy/" target="_blank" rel="noopener noreferrer">
+                    Office of the Privacy Commissioner of Canada — Children & Youth Online Privacy
+                  </a>
+                </li>
+                <li>
+                  <a className="text-primary" href="https://www.canada.ca/en/public-health/services/digital-media-literacy-parents.html" target="_blank" rel="noopener noreferrer">
+                    Public Health Agency of Canada — Digital Media Literacy for Parents
+                  </a>
                 </li>
               </ul>
             </section>

@@ -222,6 +222,41 @@ export default function ParentsPreTeens() {
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </section>
+
+            <section className="space-y-4 mt-14">
+              <h2>Recommended Tools & Mentors</h2>
+              <ul>
+                <li>
+                  <strong>Mental Health Commission of Canada — Youth Resources:</strong> Printable conversation guides to support kids experiencing online stress or anxiety.
+                </li>
+                <li>
+                  <strong>Canadian Centre for Child Protection — NeedHelpNow.ca:</strong> A step-by-step resource for removing intimate images and getting support quickly.
+                </li>
+                <li>
+                  <strong>Cyber Titans & FIRST LEGO League:</strong> Offer structured competitions that channel curiosity into ethical hacking and engineering challenges.
+                </li>
+              </ul>
+            </section>
+
+            <section className="space-y-4">
+              <h2>FAQ for Pre-Teen Parents</h2>
+              <div className="space-y-3">
+                <div>
+                  <h3>When should kids get their first phone?</h3>
+                  <p>
+                    There’s no single right age. We recommend assessing maturity through five indicators: respecting bedtime, meeting offline commitments, owning
+                    mistakes, asking for help, and practicing shared rituals. When those are consistent, a phone becomes a teaching tool rather than a battleground.
+                  </p>
+                </div>
+                <div>
+                  <h3>How do we handle group chats that spiral?</h3>
+                  <p>
+                    Keep a log of problematic threads, practice “exit scripts,” and remind your child they can screenshot and escalate to you without losing device
+                    access. If necessary, connect with school administrators—Ontario’s Education Act supports intervention when online behaviour affects students’ well-being.
+                  </p>
+                </div>
+              </div>
+            </section>
           </article>
         </div>
         <Footer />

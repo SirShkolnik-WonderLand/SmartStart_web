@@ -235,6 +235,50 @@ export default function ParentsGradeSchool() {
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </section>
+
+            <section className="space-y-4 mt-14">
+              <h2>Recommended Learning & Safety Platforms</h2>
+              <ul>
+                <li>
+                  <strong>Code.org</strong> — Age-appropriate coding puzzles that teach logic and persistence. Keep accounts private and celebrate completed courses.
+                </li>
+                <li>
+                  <strong>Common Sense Media Reviews</strong> — Before saying yes to a new game or show, review age ratings and conversation guides together.
+                </li>
+                <li>
+                  <strong>Canadian Red Cross — Be Safe Online</strong> — Free modules teaching respectful digital communication, designed for Grade 3+ classrooms.
+                </li>
+              </ul>
+            </section>
+
+            <section className="space-y-4">
+              <h2>Canadian Regulations Snapshot</h2>
+              <p>
+                Remind kids that Canadian privacy law protects them: the Personal Information Protection and Electronic Documents Act (PIPEDA) requires companies to
+                obtain meaningful consent when collecting their data. The Office of the Privacy Commissioner recommends families support this by reading app privacy
+                policies together and adjusting settings (<a className="text-primary" href="https://www.priv.gc.ca/en/privacy-topics/technology-and-privacy/online-privacy/children-and-youth-online-privacy/" target="_blank" rel="noopener noreferrer">OPC Youth Privacy Guidance</a>).
+              </p>
+            </section>
+
+            <section className="space-y-4">
+              <h2>FAQ for Grade School Families</h2>
+              <div className="space-y-3">
+                <div>
+                  <h3>How much screen time is reasonable?</h3>
+                  <p>
+                    The Canadian Paediatric Society suggests balancing daily screen use with sleep, physical activity, and offline play. We recommend setting two or
+                    three focused blocks of educational or creative time rather than leaving devices always available.
+                  </p>
+                </div>
+                <div>
+                  <h3>What about Roblox or Minecraft chat?</h3>
+                  <p>
+                    Use “friends only” chat, enable content filters, and create household scripts for reporting problematic behaviour. Encourage your child to give
+                    you a tour of their favourite servers every Friday so you can spot new contacts or trends.
+                  </p>
+                </div>
+              </div>
+            </section>
           </article>
         </div>
         <Footer />

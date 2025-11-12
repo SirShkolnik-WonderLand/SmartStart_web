@@ -254,6 +254,52 @@ export default function ParentsToddlers() {
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </section>
+
+            <section className="space-y-4 mt-14">
+              <h2>Canadian Guidance Worth Knowing</h2>
+              <p>
+                Canada’s Chief Public Health Officer recommends limiting screen time for children aged 2-5 to less than one hour per day of high-quality programs
+                (<a className="text-primary" href="https://www.canada.ca/en/public-health/services/health-promotion/childhood-obesity/childhood-obesity-healthy-active-living.html" target="_blank" rel="noopener noreferrer">CPHO Guidelines</a>).
+                Use that hour intentionally: co-viewing educational content or video calling relatives. The Canadian Centre for Cyber Security also reminds parents to
+                keep IoT toys patched and to change default passwords immediately (
+                <a className="text-primary" href="https://www.cyber.gc.ca/en/guidance/connected-family-home" target="_blank" rel="noopener noreferrer">Connected Family Home</a>).
+              </p>
+            </section>
+
+            <section className="space-y-4">
+              <h2>Trusted Early Learning Platforms</h2>
+              <ul>
+                <li>
+                  <strong>TVOKids</strong> — Ontario’s publicly funded educational platform with ad-free programming aligned with the provincial curriculum.
+                </li>
+                <li>
+                  <strong>National Film Board of Canada — Mini Lessons</strong> — Short films curated for preschoolers, available in English and French.
+                </li>
+                <li>
+                  <strong>Khan Academy Kids</strong> — A free literacy and numeracy program developed with Stanford experts; includes offline mode for travel.
+                </li>
+              </ul>
+            </section>
+
+            <section className="space-y-4">
+              <h2>FAQ for Caregivers & Grandparents</h2>
+              <div className="space-y-3">
+                <div>
+                  <h3>Should toddlers video chat with relatives?</h3>
+                  <p>
+                    Yes—video chats are considered “interactive screen time” and support language development according to the American Academy of Pediatrics and
+                    Canadian Paediatric Society. Keep sessions short and involve physical play (“show Nana your blocks”).
+                  </p>
+                </div>
+                <div>
+                  <h3>What about smart speakers like Amazon Echo or Google Nest?</h3>
+                  <p>
+                    Treat them like open microphones. Mute when not in use, disable voice purchasing, and build routines where you model polite voice commands and
+                    critical thinking (“Is that answer true? Let’s double-check.”).
+                  </p>
+                </div>
+              </div>
+            </section>
           </article>
         </div>
         <Footer />

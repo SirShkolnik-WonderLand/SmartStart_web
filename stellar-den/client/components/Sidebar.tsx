@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Moon, Sun, ChevronRight, ChevronDown, Home, UserCircle, Shield, Rocket, Globe2, ClipboardCheck, BookOpen, Mail } from "lucide-react";
+import { Moon, Sun, ChevronRight, ChevronDown, Home, UserCircle, Shield, Rocket, Globe2, ClipboardCheck, BookOpen, Mail, Baby } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSidebar } from "@/contexts/SidebarContext";
 
@@ -91,16 +91,22 @@ export default function Sidebar() {
       ]
     },
     {
+      label: "Parent Hub",
+      icon: Baby,
+      href: "/community/parents",
+      items: [
+        { label: "Toddlers & Early Learners", href: "/community/parents/toddlers" },
+        { label: "Grade School Explorers", href: "/community/parents/grade-school" },
+        { label: "Pre-Teen Navigators", href: "/community/parents/pre-teens" },
+        { label: "Teen Trailblazers", href: "/community/parents/teens" },
+      ],
+    },
+    {
       label: "Community",
       icon: Globe2,
       items: [
         { label: "Community Hub", href: "/community-hub" },
-        { label: "Events", href: "/community-events" },
-        { label: "Parent Hub", href: "/community/parents" },
-        { label: "Toddlers & Early Learners", href: "/community/parents/toddlers" },
-        { label: "Grade School Explorers", href: "/community/parents/grade-school" },
-        { label: "Pre-Teen Navigators", href: "/community/parents/pre-teens" },
-        { label: "Teen Trailblazers", href: "/community/parents/teens" }
+        { label: "Events", href: "/community-events" }
       ]
     },
     {
