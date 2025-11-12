@@ -6,6 +6,7 @@ import { useSidebar } from "@/contexts/SidebarContext";
 import StructuredData from "@/components/StructuredData";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { useArticleAnalytics } from "@/hooks/useArticleAnalytics";
 
 const PAGE_URL = "https://alicesolutionsgroup.com/blog/new-generation-of-builders";
 const PUBLISH_DATE = "2025-11-12T09:45:00-05:00";
@@ -40,6 +41,11 @@ const articleSchema = {
 
 export default function NewGenerationOfBuilders() {
   const { isExpanded } = useSidebar();
+  const { trackArticleCta } = useArticleAnalytics("new-generation-of-builders");
+  const handleContactCta = () => {
+    trackArticleCta("talk_to_team");
+    window.location.href = "/contact";
+  };
 
   return (
     <>
@@ -194,7 +200,7 @@ export default function NewGenerationOfBuilders() {
                 </a>{" "}
                 and advisory services give you the guardrails and playbooks to move faster.
               </p>
-              <Button className="inline-flex items-center gap-2" onClick={() => (window.location.href = "/contact")}>
+              <Button className="inline-flex items-center gap-2" onClick={handleContactCta}>
                 Talk to our team
                 <ArrowRight className="h-4 w-4" />
               </Button>

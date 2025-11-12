@@ -6,6 +6,7 @@ import { useSidebar } from "@/contexts/SidebarContext";
 import StructuredData from "@/components/StructuredData";
 import { Button } from "@/components/ui/button";
 import { Sparkle } from "lucide-react";
+import { useArticleAnalytics } from "@/hooks/useArticleAnalytics";
 
 const PAGE_URL = "https://alicesolutionsgroup.com/blog/the-smartstart-way";
 const PUBLISH_DATE = "2025-11-12T13:45:00-05:00";
@@ -40,6 +41,11 @@ const articleSchema = {
 
 export default function TheSmartStartWay() {
   const { isExpanded } = useSidebar();
+  const { trackArticleCta } = useArticleAnalytics("the-smartstart-way");
+  const handleSmartStartCta = () => {
+    trackArticleCta("explore_smartstart");
+    window.location.href = "/smartstart";
+  };
 
   return (
     <>
@@ -257,7 +263,7 @@ export default function TheSmartStartWay() {
                 </a>{" "}
                 and let’s map your next move together.
               </p>
-              <Button className="inline-flex items-center gap-2" onClick={() => (window.location.href = "/smartstart")}>
+              <Button className="inline-flex items-center gap-2" onClick={handleSmartStartCta}>
                 Explore SmartStart
                 <Sparkle className="h-4 w-4" />
               </Button>

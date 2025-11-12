@@ -6,6 +6,7 @@ import { useSidebar } from "@/contexts/SidebarContext";
 import StructuredData from "@/components/StructuredData";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { useArticleAnalytics } from "@/hooks/useArticleAnalytics";
 
 const PAGE_URL = "https://alicesolutionsgroup.com/blog/cybersecurity-for-toronto-smes";
 const PUBLISH_DATE = "2025-11-12T09:00:00-05:00";
@@ -259,6 +260,11 @@ const sections: Array<{ heading: string; headingId: string; content: JSX.Element
 
 export default function CybersecurityForTorontoSmes() {
   const { isExpanded } = useSidebar();
+  const { trackArticleCta } = useArticleAnalytics("cybersecurity-for-toronto-smes");
+  const handleDiscoverySession = () => {
+    trackArticleCta("book_discovery_session");
+    window.location.assign("/toronto-cybersecurity-consulting#consult-form");
+  };
 
   return (
     <>
@@ -366,7 +372,7 @@ export default function CybersecurityForTorontoSmes() {
                 </a>{" "}
                 and we’ll coordinate a 15-minute assessment call.
               </p>
-              <Button className="inline-flex items-center gap-2" onClick={() => window.location.assign("/toronto-cybersecurity-consulting#consult-form")}>
+              <Button className="inline-flex items-center gap-2" onClick={handleDiscoverySession}>
                 Book a discovery session
                 <ArrowRight className="h-4 w-4" />
               </Button>

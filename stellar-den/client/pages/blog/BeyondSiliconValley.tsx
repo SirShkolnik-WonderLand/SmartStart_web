@@ -6,6 +6,7 @@ import { useSidebar } from "@/contexts/SidebarContext";
 import StructuredData from "@/components/StructuredData";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { useArticleAnalytics } from "@/hooks/useArticleAnalytics";
 
 const PAGE_URL = "https://alicesolutionsgroup.com/blog/beyond-silicon-valley-canadian-students";
 const PUBLISH_DATE = "2025-11-12T12:30:00-05:00";
@@ -40,6 +41,11 @@ const articleSchema = {
 
 export default function BeyondSiliconValleyCanadianStudents() {
   const { isExpanded } = useSidebar();
+  const { trackArticleCta } = useArticleAnalytics("beyond-silicon-valley-canadian-students");
+  const handleSmartStartCta = () => {
+    trackArticleCta("discover_smartstart");
+    window.location.href = "/smartstart";
+  };
 
   return (
     <>
@@ -259,7 +265,7 @@ export default function BeyondSiliconValleyCanadianStudents() {
                 </a>{" "}
                 for mentorship, technical guidance, and community.
               </p>
-              <Button className="inline-flex items-center gap-2" onClick={() => (window.location.href = "/smartstart")}>
+              <Button className="inline-flex items-center gap-2" onClick={handleSmartStartCta}>
                 Discover SmartStart
                 <ArrowRight className="h-4 w-4" />
               </Button>

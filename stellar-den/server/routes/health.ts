@@ -53,8 +53,14 @@ router.get("/", async (req, res) => {
   const pageParam = typeof req.query.page === "string" ? req.query.page : undefined;
 
   if (pageParam) {
+    const articleEvents = ["article_open", "article_scroll_75", "article_cta_click"];
     const pageEvents: Record<string, string[]> = {
       "toronto-cybersecurity-consulting": ["lead_open", "cta_click_primary", "form_submit_success", "scroll_75"],
+      "cybersecurity-for-toronto-smes": articleEvents,
+      "innovation-on-campus": articleEvents,
+      "new-generation-of-builders": articleEvents,
+      "beyond-silicon-valley-canadian-students": articleEvents,
+      "the-smartstart-way": articleEvents,
     };
 
     if (pageEvents[pageParam]) {

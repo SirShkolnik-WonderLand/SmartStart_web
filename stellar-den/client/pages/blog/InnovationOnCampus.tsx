@@ -6,6 +6,7 @@ import { useSidebar } from "@/contexts/SidebarContext";
 import StructuredData from "@/components/StructuredData";
 import { Button } from "@/components/ui/button";
 import { Rocket } from "lucide-react";
+import { useArticleAnalytics } from "@/hooks/useArticleAnalytics";
 
 const PAGE_URL = "https://alicesolutionsgroup.com/blog/innovation-on-campus";
 const PUBLISH_DATE = "2025-11-12T09:15:00-05:00";
@@ -225,6 +226,11 @@ const sections: Array<{ headingId: string; heading: string; content: JSX.Element
 
 export default function InnovationOnCampus() {
   const { isExpanded } = useSidebar();
+  const { trackArticleCta } = useArticleAnalytics("innovation-on-campus");
+  const handleSmartStartCta = () => {
+    trackArticleCta("explore_smartstart");
+    window.location.href = "/smartstart";
+  };
 
   return (
     <>
@@ -322,7 +328,7 @@ export default function InnovationOnCampus() {
                 </a>{" "}
                 and see how founders grow ideas into ventures.
               </p>
-              <Button className="inline-flex items-center gap-2" onClick={() => (window.location.href = "/smartstart")}>
+              <Button className="inline-flex items-center gap-2" onClick={handleSmartStartCta}>
                 Explore SmartStart
                 <Rocket className="h-4 w-4" />
               </Button>
