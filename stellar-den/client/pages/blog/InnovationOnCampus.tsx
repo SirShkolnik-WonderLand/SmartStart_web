@@ -224,7 +224,7 @@ const sections: Array<{ headingId: string; heading: string; content: JSX.Element
 ];
 
 export default function InnovationOnCampus() {
-  const { isCollapsed } = useSidebar();
+  const { isExpanded } = useSidebar();
 
   return (
     <>
@@ -269,7 +269,7 @@ export default function InnovationOnCampus() {
 
       <div className="min-h-screen bg-background">
         <Sidebar />
-        <div className={`transition-all duration-300 ${isCollapsed ? "md:ml-20 ml-0" : "md:ml-72 ml-0"} md:pt-0 pt-16`}>
+        <div className={`transition-all duration-300 ${isExpanded ? "md:ml-72 ml-0" : "md:ml-20 ml-0"} md:pt-0 pt-16`}>
           <article className="max-w-3xl mx-auto px-4 sm:px-6 md:px-8 py-16 prose prose-slate dark:prose-invert">
             <header className="mb-10">
               <motion.img

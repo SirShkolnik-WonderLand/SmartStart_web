@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import StructuredData from '@/components/StructuredData';
 
 const ISO27001: React.FC = () => {
-  const { isCollapsed } = useSidebar();
+  const { isExpanded } = useSidebar();
   const pageUrl = 'https://alicesolutionsgroup.com/iso-27001';
   const pageTitle = 'ISO 27001 Certification Services Toronto | AliceSolutionsGroup GTA';
   const pageDescription = 'ISO 27001:2022 certification services for Toronto businesses. End-to-end implementation, gap analysis, and certification support. Serving GTA and Ontario. CISSP CISM ISO Lead Auditor certified.';
@@ -219,7 +219,7 @@ const ISO27001: React.FC = () => {
       />
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-cyan-50 dark:from-slate-950 dark:via-slate-900 dark:to-cyan-950">
       <Sidebar />
-      <div className={`transition-all duration-300 ${isCollapsed ? 'md:ml-20 ml-0' : 'md:ml-72 ml-0'} md:pt-0 pt-20`}>
+      <div className={`transition-all duration-300 ${isExpanded ? 'md:ml-72 ml-0' : 'md:ml-20 ml-0'} md:pt-0 pt-20`}>
       {/* Hero Section */}
       <section className="relative pt-8 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">

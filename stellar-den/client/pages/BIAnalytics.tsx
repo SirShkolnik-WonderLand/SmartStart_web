@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import StructuredData from '@/components/StructuredData';
 
 const BIAnalytics: React.FC = () => {
-  const { isCollapsed } = useSidebar();
+  const { isExpanded } = useSidebar();
   const pageUrl = 'https://alicesolutionsgroup.com/bi-analytics';
   const pageTitle = 'Business Intelligence & Analytics Toronto | BI Analytics Services | AliceSolutionsGroup';
   const pageDescription = 'Business intelligence and analytics services for Toronto businesses. Real-time dashboards, predictive analytics, data integration. Privacy-compliant analytics solutions. Serving GTA and Ontario.';
@@ -177,7 +177,7 @@ const BIAnalytics: React.FC = () => {
       />
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-cyan-50 dark:from-slate-950 dark:via-slate-900 dark:to-cyan-950">
       <Sidebar />
-      <div className={`transition-all duration-300 ${isCollapsed ? 'md:ml-20 ml-0' : 'md:ml-72 ml-0'} md:pt-0 pt-20`}>
+      <div className={`transition-all duration-300 ${isExpanded ? 'md:ml-72 ml-0' : 'md:ml-20 ml-0'} md:pt-0 pt-20`}>
       {/* Hero Section */}
       <section className="relative pt-8 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">

@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 
 export default function Vision() {
   const navigate = useNavigate();
-  const { isCollapsed } = useSidebar();
+  const { isExpanded } = useSidebar();
   const pageUrl = 'https://alicesolutionsgroup.com/vision';
   const pageTitle = 'Our Vision - Building Ecosystems Not Companies | AliceSolutionsGroup Toronto';
   const pageDescription = 'AliceSolutionsGroup vision: Building ecosystems, not companies. Privacy-first cybersecurity, automation, and venture building. Serving Toronto and GTA with human-centric design.';
@@ -154,7 +154,7 @@ export default function Vision() {
       />
       <div className="min-h-screen bg-background">
       <Sidebar />
-      <div className={`transition-all duration-300 ${isCollapsed ? 'md:ml-20 ml-0' : 'md:ml-72 ml-0'} md:pt-0 pt-20`}>
+      <div className={`transition-all duration-300 ${isExpanded ? 'md:ml-72 ml-0' : 'md:ml-20 ml-0'} md:pt-0 pt-20`}>
       {/* Hero Section */}
       <section
         ref={heroRef}

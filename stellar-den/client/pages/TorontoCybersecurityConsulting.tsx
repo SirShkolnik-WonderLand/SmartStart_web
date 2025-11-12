@@ -79,7 +79,7 @@ function trackEvent(name: string, properties?: Record<string, unknown>) {
 }
 
 export default function TorontoCybersecurityConsulting() {
-  const { isCollapsed } = useSidebar();
+  const { isExpanded } = useSidebar();
   const [formData, setFormData] = useState<FormState>(defaultFormState);
   const [leadSource, setLeadSource] = useState({
     pageUrl: "",
@@ -482,7 +482,7 @@ export default function TorontoCybersecurityConsulting() {
       />
       <div className="min-h-screen bg-background">
         <Sidebar />
-        <div className={`transition-all duration-300 ${isCollapsed ? "md:ml-20 ml-0" : "md:ml-72 ml-0"} md:pt-0 pt-20`}>
+        <div className={`transition-all duration-300 ${isExpanded ? "md:ml-72 ml-0" : "md:ml-20 ml-0"} md:pt-0 pt-20`}>
           {/* Hero */}
           <section className="relative overflow-hidden border-b border-border/40 bg-gradient-to-br from-background via-background/60 to-background/20">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.08),_transparent_45%)]" aria-hidden="true" />

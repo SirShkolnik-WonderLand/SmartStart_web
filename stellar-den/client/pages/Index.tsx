@@ -21,7 +21,7 @@ import AliceModal from "@/components/AliceModal";
 import StructuredData from "@/components/StructuredData";
 
 export default function Index() {
-  const { isCollapsed } = useSidebar();
+  const { isExpanded } = useSidebar();
   const [showContactModal, setShowContactModal] = useState(false);
   const [showAliceModal, setShowAliceModal] = useState(false);
 
@@ -70,7 +70,7 @@ export default function Index() {
       />
       <div className="min-h-screen bg-background">
       <Sidebar />
-      <div className={`transition-all duration-300 ${isCollapsed ? 'md:ml-20 ml-0' : 'md:ml-72 ml-0'} md:pt-0 pt-20`}>
+      <div className={`transition-all duration-300 ${isExpanded ? 'md:ml-72 ml-0' : 'md:ml-20 ml-0'} md:pt-0 pt-20`}>
       {/* Hero Section */}
       <Hero
         onWorkWithUs={() => setShowContactModal(true)}

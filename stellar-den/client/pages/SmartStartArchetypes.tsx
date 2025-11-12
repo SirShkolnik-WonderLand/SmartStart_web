@@ -29,7 +29,7 @@ import {
 } from "lucide-react";
 
 const SmartStartArchetypes: React.FC = () => {
-  const { isCollapsed } = useSidebar();
+  const { isExpanded } = useSidebar();
   const navigate = useNavigate();
   const pageUrl = 'https://alicesolutionsgroup.com/smartstart/archetypes';
   const pageTitle = 'SmartStart Archetypes | Builder, Connector, Architect, Dreamer | Toronto';
@@ -215,7 +215,7 @@ const SmartStartArchetypes: React.FC = () => {
       />
       <div className="min-h-screen bg-background">
         <Sidebar />
-        <div className={`transition-all duration-300 ${isCollapsed ? 'md:ml-20 ml-0' : 'md:ml-72 ml-0'} md:pt-0 pt-20`}>
+        <div className={`transition-all duration-300 ${isExpanded ? 'md:ml-72 ml-0' : 'md:ml-20 ml-0'} md:pt-0 pt-20`}>
           {/* Hero Section */}
           <section className="relative pt-12 pb-20 px-4 sm:px-6 md:px-8 overflow-hidden">
             {/* Background gradients */}

@@ -12,7 +12,7 @@ import { ArrowLeft } from "lucide-react";
 type JourneyType = "welcome" | "full" | "bot" | "checklist";
 
 export default function ISOStudio() {
-  const { isCollapsed } = useSidebar();
+  const { isExpanded } = useSidebar();
   const [currentJourney, setCurrentJourney] = useState<JourneyType>("welcome");
 
   const handleSelectJourney = (journey: "full" | "bot" | "checklist") => {
@@ -26,7 +26,7 @@ export default function ISOStudio() {
   return (
     <div className="min-h-screen bg-background">
       <Sidebar />
-      <div className={`transition-all duration-300 ${isCollapsed ? 'md:ml-20 ml-0' : 'md:ml-72 ml-0'} md:pt-0 pt-20`}>
+      <div className={`transition-all duration-300 ${isExpanded ? 'md:ml-72 ml-0' : 'md:ml-20 ml-0'} md:pt-0 pt-20`}>
       
       {/* Back Button */}
       <AnimatePresence>

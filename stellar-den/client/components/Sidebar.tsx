@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Moon, Sun, ChevronDown, Home, UserCircle, Shield, Rocket, Globe2, ClipboardCheck, BookOpen, Mail } from "lucide-react";
+import { Moon, Sun, ChevronRight, ChevronDown, Home, UserCircle, Shield, Rocket, Globe2, ClipboardCheck, BookOpen, Mail } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSidebar } from "@/contexts/SidebarContext";
 

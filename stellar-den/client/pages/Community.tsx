@@ -43,7 +43,7 @@ import {
 } from "lucide-react";
 
 export default function Community() {
-  const { isCollapsed } = useSidebar();
+  const { isExpanded } = useSidebar();
   const [hoveredEvent, setHoveredEvent] = useState<number | null>(null);
   const [hoveredValue, setHoveredValue] = useState<number | null>(null);
   const [selectedEvent, setSelectedEvent] = useState<number | null>(null);
@@ -253,7 +253,7 @@ export default function Community() {
   return (
     <div className="min-h-screen bg-background">
       <Sidebar />
-      <div className={`transition-all duration-300 ${isCollapsed ? 'md:ml-20 ml-0' : 'md:ml-72 ml-0'} md:pt-0 pt-20`}>
+      <div className={`transition-all duration-300 ${isExpanded ? 'md:ml-72 ml-0' : 'md:ml-20 ml-0'} md:pt-0 pt-20`}>
       {/* Hero Section with Parallax */}
       <motion.section 
         style={{ opacity, scale }}

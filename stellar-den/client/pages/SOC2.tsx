@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import StructuredData from '@/components/StructuredData';
 
 const SOC2: React.FC = () => {
-  const { isCollapsed } = useSidebar();
+  const { isExpanded } = useSidebar();
   const pageUrl = 'https://alicesolutionsgroup.com/soc-2';
   const pageTitle = 'SOC 2 Compliance Services Toronto | SOC 2 Type I & II | AliceSolutionsGroup';
   const pageDescription = 'SOC 2 compliance services for Toronto businesses. Type I and Type II readiness, implementation support, and audit preparation. Serving GTA and Ontario. CISSP CISM certified consultants.';
@@ -207,7 +207,7 @@ const SOC2: React.FC = () => {
       />
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-primary/5 dark:from-slate-950 dark:via-slate-900 dark:to-primary/10">
       <Sidebar />
-      <div className={`transition-all duration-300 ${isCollapsed ? 'md:ml-20 ml-0' : 'md:ml-72 ml-0'} md:pt-0 pt-20`}>
+      <div className={`transition-all duration-300 ${isExpanded ? 'md:ml-72 ml-0' : 'md:ml-20 ml-0'} md:pt-0 pt-20`}>
       {/* Hero Section */}
       <section className="relative pt-8 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">

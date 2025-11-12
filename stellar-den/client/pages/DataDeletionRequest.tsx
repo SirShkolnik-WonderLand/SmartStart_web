@@ -16,7 +16,7 @@ import { useSidebar } from "@/contexts/SidebarContext";
 import { Shield, Trash2, Mail, AlertCircle, CheckCircle2 } from "lucide-react";
 
 export default function DataDeletionRequest() {
-  const { isCollapsed } = useSidebar();
+  const { isExpanded } = useSidebar();
   const [formData, setFormData] = useState({
     email: "",
     name: "",
@@ -73,7 +73,7 @@ export default function DataDeletionRequest() {
   return (
     <div className="min-h-screen bg-background">
       <Sidebar />
-      <div className={`transition-all duration-300 ${isCollapsed ? 'md:ml-20 ml-0' : 'md:ml-72 ml-0'} md:pt-0 pt-20`}>
+      <div className={`transition-all duration-300 ${isExpanded ? 'md:ml-72 ml-0' : 'md:ml-20 ml-0'} md:pt-0 pt-20`}>
 
       {/* Hero Section */}
       <section className="pt-8 pb-16 px-4">

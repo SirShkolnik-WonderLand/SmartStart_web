@@ -28,7 +28,7 @@ import {
 import { captureLeadSource } from "@/lib/leadSource";
 
 export default function Contact() {
-  const { isCollapsed } = useSidebar();
+  const { isExpanded } = useSidebar();
   const pageUrl = 'https://alicesolutionsgroup.com/contact';
   const pageTitle = 'Contact Us - Toronto Cybersecurity & Automation Experts | AliceSolutionsGroup';
   const pageDescription = 'Contact AliceSolutionsGroup Toronto for cybersecurity, ISO 27001 compliance, automation, and AI services. Serving GTA and Ontario businesses. Get a free consultation today.';
@@ -242,7 +242,7 @@ export default function Contact() {
       />
       <div className="min-h-screen bg-background">
       <Sidebar />
-      <div className={`transition-all duration-300 ${isCollapsed ? 'md:ml-20 ml-0' : 'md:ml-72 ml-0'} md:pt-0 pt-20`}>
+      <div className={`transition-all duration-300 ${isExpanded ? 'md:ml-72 ml-0' : 'md:ml-20 ml-0'} md:pt-0 pt-20`}>
       {/* Hero Section */}
       <section className="relative pt-8 pb-16 px-4 sm:px-6 md:px-8 overflow-hidden">
         <div className="max-w-7xl mx-auto">
