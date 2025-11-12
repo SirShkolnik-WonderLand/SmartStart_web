@@ -83,7 +83,7 @@ app.post('/migrate', async (req: Request, res: Response) => {
     // Read the minimal schema file
     const fs = await import('fs');
     const path = await import('path');
-    const schemaPath = path.join(process.cwd(), 'complete-schema.sql');
+    const schemaPath = path.join(process.cwd(), 'server', 'database', 'schema.sql');
     const schemaSQL = fs.readFileSync(schemaPath, 'utf8');
     
     // Execute the schema
@@ -159,31 +159,68 @@ app.get('/db-test', async (req: Request, res: Response) => {
 // Temporary simple login endpoint (no auth required)
 app.post('/simple-login', async (req: Request, res: Response) => {
   try {
-    const { email, password } = req.body;
-    
-    if (email === 'udi.shkolnik@alicesolutionsgroup.com' && password === 'test123') {
-      // Generate a simple token
-      const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoidWRpLnNoa29sbmlrQGFsaWNlc29sdXRpb25zZ3JvdXAuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzYxNTA3NDY0LCJleHAiOjE3NjIxMTIyNjQsImF1ZCI6ImFuYWx5dGljcy1hZG1pbiIsImlzcyI6ImFuYWx5dGljcy1odWIifQ.ChyBG3usEfFIgGx5BEWLCwSK5m7WxsrJzUxkThH_u1Y';
-      
-      return res.status(200).json({
-        success: true,
-        token: token,
-        user: {
-          id: 1,
-          email: 'udi.shkolnik@alicesolutionsgroup.com',
-          role: 'admin'
-        }
+    const { email, password } = req.body as { email?: string; password?: string };
+
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        error: 'Email and password are required',
       });
     }
-    
-    return res.status(401).json({
-      success: false,
-      error: 'Invalid credentials'
+
+    const [{ findUserByEmail }, { verifyPassword, generateToken }] = await Promise.all([
+      import('./services/authService.js'),
+      import('./config/auth.js'),
+    ]);
+
+    const user = await findUserByEmail(email);
+
+    if (!user || !user.active) {
+      return res.status(401).json({
+        success: false,
+        error: 'Invalid credentials',
+      });
+    }
+
+    const valid = await verifyPassword(password, user.password_hash);
+
+    if (!valid) {
+      return res.status(401).json({
+        success: false,
+        error: 'Invalid credentials',
+      });
+    }
+
+    const token = generateToken({
+      id: user.id || 0,
+      email: user.email,
+      role: user.role,
+    });
+
+    await import('./services/authService.js').then(async ({ updateUser }) => {
+      if (user.id) {
+        await updateUser(user.id, {
+          lastLogin: new Date(),
+          loginCount: (user.loginCount || 0) + 1,
+          lastLoginIp: req.ip || undefined,
+        });
+      }
+    });
+
+    return res.status(200).json({
+      success: true,
+      token,
+      user: {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+      },
     });
   } catch (error) {
+    console.error('Error in /simple-login:', error);
     return res.status(500).json({
       success: false,
-      error: 'Internal server error'
+      error: 'Internal server error',
     });
   }
 });

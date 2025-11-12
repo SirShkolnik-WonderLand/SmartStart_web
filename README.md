@@ -1,5 +1,9 @@
 # 🚀 SmartStart Web - Complete Analytics Ecosystem
 
+> **Version**: 2025.11.12-b  
+> **Last Updated**: November 12, 2025  
+> **Release Notes**: Added secured `/api/health` diagnostics with upstream analytics probes, kept authentication hardening, and refreshed environment configuration for Render deployment.
+
 **Status**: ✅ **100% COMPLETE & LIVE**  
 **Website**: https://alicesolutionsgroup.com  
 **Analytics**: ✅ **REAL-TIME TRACKING ACTIVE**  
@@ -25,6 +29,7 @@ This is a complete web analytics ecosystem consisting of:
 - **URL**: https://alicesolutionsgroup.com
 - **Status**: ✅ **LIVE & WORKING**
 - **Analytics**: ✅ **REAL-TIME TRACKING ACTIVE**
+- **Health Diagnostics**: `https://alicesolutionsgroup.com/api/health` (aggregated analytics & security checks)
 - **Performance**: Optimized and fast
 
 ### Analytics Dashboard

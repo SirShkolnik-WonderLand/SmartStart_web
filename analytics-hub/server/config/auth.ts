@@ -5,6 +5,7 @@
 
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
+import bcrypt from 'bcrypt';
 import type { AdminUser } from '../../shared/types.js';
 
 // Environment variables
@@ -35,6 +36,10 @@ export async function verifyPassword(
   hash: string
 ): Promise<boolean> {
   try {
+    if (hash.startsWith('$2')) {
+      return await bcrypt.compare(password, hash);
+    }
+
     const passwordHash = crypto.createHash('sha256').update(password).digest('hex');
     return passwordHash === hash;
   } catch (error) {

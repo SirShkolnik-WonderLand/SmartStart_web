@@ -62,17 +62,35 @@ class EnhancedAnalyticsEmailService {
       // Get authentication token first
       let token = process.env.ANALYTICS_API_KEY;
       if (!token) {
-        // Try to get token from simple-login endpoint
-        try {
-          const loginResponse = await axios.post(`${this.analyticsApiUrl}/simple-login`, {
+        const adminPassword = process.env.ANALYTICS_ADMIN_PASSWORD || process.env.ADMIN_PASSWORD;
+
+        if (adminPassword) {
+          const loginPayload = {
             email: 'udi.shkolnik@alicesolutionsgroup.com',
-            password: process.env.ANALYTICS_ADMIN_PASSWORD || 'test123'
-          });
-          if (loginResponse.data?.success && loginResponse.data?.token) {
-            token = loginResponse.data.token;
+            password: adminPassword,
+          };
+
+          // Prefer the real login route; fall back to the helper if necessary
+          const loginEndpoints = ['/api/auth/login', '/simple-login'];
+
+          for (const endpoint of loginEndpoints) {
+            try {
+              const loginResponse = await axios.post(`${this.analyticsApiUrl}${endpoint}`, loginPayload, {
+                headers: { 'Content-Type': 'application/json' },
+              });
+
+              if (loginResponse.data?.success && loginResponse.data?.token) {
+                token = loginResponse.data.token;
+                break;
+              }
+            } catch (loginError) {
+              console.error(`Failed to authenticate with Analytics Hub via ${endpoint}:`, loginError);
+            }
           }
-        } catch (loginError) {
-          console.error('Failed to authenticate with Analytics Hub:', loginError);
+        } else {
+          console.warn(
+            'Analytics Hub admin password not provided (set ANALYTICS_ADMIN_PASSWORD or ADMIN_PASSWORD). Skipping analytics fetch.'
+          );
         }
       }
       

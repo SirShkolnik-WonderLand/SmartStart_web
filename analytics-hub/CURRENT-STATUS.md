@@ -1,4 +1,8 @@
 # 🚀 ANALYTICS HUB - CURRENT STATUS
+> **Version**: 2025.11.12-b  
+> **Last Updated**: November 12, 2025  
+> **Summary**: Authentication remains hardened, Render envs updated, and the public website now exposes `/api/health` to verify analytics and security posture end-to-end.
+
 ## Session Progress Report
 
 **Date**: October 22, 2025  
