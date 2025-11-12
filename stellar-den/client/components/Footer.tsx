@@ -96,6 +96,11 @@ export default function Footer() {
                 </a>
               </li>
               <li>
+                <a href="/community/parents" className="hover:text-primary transition-colors">
+                  Parent Digital Resilience Hub
+                </a>
+              </li>
+              <li>
                 <a href="#" className="hover:text-primary transition-colors">
                   Careers
                 </a>

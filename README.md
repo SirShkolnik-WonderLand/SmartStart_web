@@ -1,8 +1,8 @@
 # 🚀 SmartStart Web - Complete Analytics Ecosystem
 
-> **Version**: 2025.11.12-f  
+> **Version**: 2025.11.12-g  
 > **Last Updated**: November 12, 2025  
-> **Release Notes**: Launched SmartStart “Letter” + “Builders’ Manifesto” pages and blog index, synced sitemap/robots/nav, and expanded health/analytics coverage for new content funnels.
+> **Release Notes**: Introduced SmartStart Parent Digital Resilience Hub with age-specific guidance (toddlers → teens), wired analytics/health mappings, refreshed global navigation, and expanded sitemap/robots for family content.
 
 **Status**: ✅ **100% COMPLETE & LIVE**  
 **Website**: https://alicesolutionsgroup.com  

@@ -1,7 +1,7 @@
 # 🚀 ANALYTICS HUB - CURRENT STATUS
-> **Version**: 2025.11.12-f  
+> **Version**: 2025.11.12-g  
 > **Last Updated**: November 12, 2025  
-> **Summary**: Authentication/reporting remain stable while SmartStart letter + manifesto rollouts add analytics hooks, new routes, and sitemap/robots updates so growth funnels stay fully observable.
+> **Summary**: Authentication/reporting remain stable while the new SmartStart Parent Hub and age-tier pages deliver analytics events, refreshed `/api/health` slugs, and sitemap/robots coverage for the family expansion.
 
 ## Session Progress Report
 

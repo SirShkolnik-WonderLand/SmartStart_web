@@ -28,6 +28,11 @@ Allow: /blog/parents-digital-world
 Allow: /blog
 Allow: /letter-to-the-builders
 Allow: /builders-manifesto
+Allow: /community/parents
+Allow: /community/parents/toddlers
+Allow: /community/parents/grade-school
+Allow: /community/parents/pre-teens
+Allow: /community/parents/teens
 
 # Sitemap location
 Sitemap: https://alicesolutionsgroup.com/sitemap.xml

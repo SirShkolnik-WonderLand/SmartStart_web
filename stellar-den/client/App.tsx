@@ -39,6 +39,11 @@ import BuildersManifesto from "./pages/BuildersManifesto";
 import BuildersManifestoBlog from "./pages/blog/BuildersManifesto";
 import Blog from "./pages/Blog";
 import ParentsDigitalWorld from "./pages/blog/ParentsDigitalWorld";
+import ParentHub from "./pages/ParentHub";
+import ParentsToddlers from "./pages/parents/Toddlers";
+import ParentsGradeSchool from "./pages/parents/GradeSchool";
+import ParentsPreTeens from "./pages/parents/PreTeens";
+import ParentsTeens from "./pages/parents/Teens";
 import PrivacyPolicy from "./pages/legal/PrivacyPolicy";
 import TermsOfService from "./pages/legal/TermsOfService";
 import CookiePolicy from "./pages/legal/CookiePolicy";
@@ -91,6 +96,11 @@ const App = () => {
           <Route path="/smartstart/archetypes" element={<SmartStartArchetypes />} />
           <Route path="/community-hub" element={<CommunityHub />} />
           <Route path="/community-events" element={<CommunityEvents />} />
+          <Route path="/community/parents" element={<ParentHub />} />
+          <Route path="/community/parents/toddlers" element={<ParentsToddlers />} />
+          <Route path="/community/parents/grade-school" element={<ParentsGradeSchool />} />
+          <Route path="/community/parents/pre-teens" element={<ParentsPreTeens />} />
+          <Route path="/community/parents/teens" element={<ParentsTeens />} />
           {/* Redirect old community routes to consolidated pages */}
           <Route path="/community" element={<Navigate to="/community-hub" replace />} />
           <Route path="/beer-security" element={<Navigate to="/community-events" replace />} />

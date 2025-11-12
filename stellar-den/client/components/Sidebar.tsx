@@ -95,7 +95,12 @@ export default function Sidebar() {
       icon: Globe2,
       items: [
         { label: "Community Hub", href: "/community-hub" },
-        { label: "Events", href: "/community-events" }
+        { label: "Events", href: "/community-events" },
+        { label: "Parent Hub", href: "/community/parents" },
+        { label: "Toddlers & Early Learners", href: "/community/parents/toddlers" },
+        { label: "Grade School Explorers", href: "/community/parents/grade-school" },
+        { label: "Pre-Teen Navigators", href: "/community/parents/pre-teens" },
+        { label: "Teen Trailblazers", href: "/community/parents/teens" }
       ]
     },
     {

@@ -177,6 +177,41 @@
   </url>
   
   <url>
+    <loc>https://alicesolutionsgroup.com/community/parents</loc>
+    <lastmod>2025-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  
+  <url>
+    <loc>https://alicesolutionsgroup.com/community/parents/toddlers</loc>
+    <lastmod>2025-08-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <url>
+    <loc>https://alicesolutionsgroup.com/community/parents/grade-school</loc>
+    <lastmod>2025-08-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <url>
+    <loc>https://alicesolutionsgroup.com/community/parents/pre-teens</loc>
+    <lastmod>2025-09-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <url>
+    <loc>https://alicesolutionsgroup.com/community/parents/teens</loc>
+    <lastmod>2025-09-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <url>
     <loc>https://alicesolutionsgroup.com/toronto-cybersecurity-consulting</loc>
     <lastmod>2025-11-12</lastmod>
     <changefreq>weekly</changefreq>

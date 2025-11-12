@@ -64,6 +64,11 @@ router.get("/", async (req, res) => {
       "letter-to-the-builders": articleEvents,
       "builders-manifesto": articleEvents,
       "parents-digital-world": articleEvents,
+      "community-parents": articleEvents,
+      "parents-toddlers": articleEvents,
+      "parents-grade-school": articleEvents,
+      "parents-pre-teens": articleEvents,
+      "parents-teens": articleEvents,
     };
 
     if (pageEvents[pageParam]) {
